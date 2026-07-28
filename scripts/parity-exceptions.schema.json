@@ -10,7 +10,7 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "reason", "old", "new", "packages", "test"],
+        "required": ["id", "reason", "old", "new", "packages", "test", "approval"],
         "properties": {
           "id": { "type": "string", "minLength": 1 },
           "reason": { "type": "string", "minLength": 1 },
@@ -22,7 +22,60 @@
             "items": { "type": "string", "minLength": 1 },
             "uniqueItems": true
           },
-          "test": { "type": "string", "minLength": 1 }
+          "test": { "type": "string", "minLength": 1 },
+          "approval": { "$ref": "#/$defs/approval" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "digest": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "target": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["caseId", "runner", "digest"],
+      "properties": {
+        "caseId": {
+          "type": "string",
+          "pattern": "^rc87-[a-f0-9]{16}$"
+        },
+        "runner": { "type": "string", "minLength": 1 },
+        "digest": { "$ref": "#/$defs/digest" }
+      }
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "sourceDigest", "targets"],
+      "properties": {
+        "sourceId": {
+          "type": "string",
+          "pattern": "^rc87-[a-f0-9]{16}$"
+        },
+        "sourceDigest": { "$ref": "#/$defs/digest" },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/target" }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest", "cases"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reviewRef": { "type": "string", "minLength": 1 },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "cases": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/case" }
         }
       }
     }

@@ -10,9 +10,44 @@
     "target": { "type": "object" },
     "evidence": { "type": "object" },
     "summary": { "type": "object" },
-    "surfaces": { "type": "array" },
-    "entries": { "type": "array" },
+    "surfaces": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/auditedChange" }
+    },
+    "entries": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/auditedChange" }
+    },
     "added": { "type": "array" }
+  },
+  "$defs": {
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reviewRef": { "type": "string", "minLength": 1 },
+        "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      }
+    },
+    "auditedChange": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "string" },
+        "approval": { "$ref": "#/$defs/approval" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "approved-contract-change" } },
+            "required": ["status"]
+          },
+          "then": { "required": ["approval"] }
+        }
+      ]
+    }
   },
   "additionalProperties": false
 }

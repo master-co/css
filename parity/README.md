@@ -25,8 +25,13 @@ over from TypeScript.
 - `rust-takeover-ledger.json` accounts for all 114 test declarations in the 11 engine
   test files removed by `7c59bed3f`. Every entry must point to an executable corpus
   case, a current focused test, or an approved parity exception.
-- `../parity-exceptions.json` is the only exception registry. Do not add an exception
-  or change frozen expected output without an old/new byte diff and user QA approval.
+- `../parity-exceptions.json` is the only exception registry. Every exception approval
+  records the approver, UTC timestamp, review reference, exact rc.87 source and target
+  digests, and a scope digest over the old/new contract. Missing metadata or any scope
+  drift makes ledger generation fail. Do not add an exception or change frozen expected
+  output without an old/new byte diff and user QA approval.
+- `rust-refactor-contract-evidence.json` applies the same human-approval metadata and
+  scope-digest rule to every explicit `approved-contract-change` record or surface.
 
 Run the gate with:
 

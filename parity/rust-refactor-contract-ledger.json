@@ -84,7 +84,13 @@
       "targetDigest": "d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a",
       "status": "approved-contract-change",
       "proof": "approved-contract-change",
-      "reason": "The private generated Wasm render-session declaration now matches wasm-bindgen's Vec<bool> JavaScript ABI. The published createWasmRenderSession wrapper continues to accept readonly boolean arrays, so no package export or public API is restored or removed."
+      "reason": "The private generated Wasm render-session declaration now matches wasm-bindgen's Vec<bool> JavaScript ABI. The published createWasmRenderSession wrapper continues to accept readonly boolean arrays, so no package export or public API is restored or removed.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "e92592dd5be1ef1d6254a69593dbeee0bf2c9d2969fe4f0d75df0e63ffc12aa6"
+      }
     },
     {
       "id": "language-wire-contract",

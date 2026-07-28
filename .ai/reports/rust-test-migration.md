@@ -119,6 +119,27 @@ The full list is in the JSON ledger; the first 0 are shown here.
 
 All statically discoverable parameter matrices were expanded.
 
+## Human approval traceability
+
+Every approved divergence is bound to its exact exception text, rc.87 source ids and
+digests, target case ids, runners, and target digests. Any scope change invalidates the
+recorded scope digest and fails ledger generation.
+
+| Exception | rc.87 cases | Approved by | Approved at | Review reference | Scope digest |
+|---|---|---|---|---|---|
+| `rc87-cli-explicit-generate-command` | `rc87-020cb2849514556c` @ `5b5869980a661f084d737ffbfca5ab6efa2047ddb44464b00dda0c4c61c6ab1c`<br>→ `rc87-5afff731b12da503` (vitest) @ `09feedea3689547173230bf101b59a128fafe5467d72d2ce8ca5c2f77b294155` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `4165f6d79f3db722fd8eca3b1731844aba237ae668ad13964fc30ab555f2c7f4` |
+| `rc87-cli-master-css-binary-name` | `rc87-1fd50671fc535704` @ `b0b4757df19901d38de940a41fc09eec617d86b65bd39519c50423ced436dd1e`<br>→ `rc87-25b0e10bf66ab41a` (vitest) @ `444d23b6d6ccc56c226f0b42297031ad894ddaa2d5ca99a535db00d87c4d325b` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `d38c6584fbeeaf4aa7e857fe5f4c6ed5665e1335ed66c4237162b37bcf4b64dc` |
+| `rc87-cli-removed-command-shims` | `rc87-1fc20aa6a8bdba65` @ `a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199`<br>→ `rc87-4b144ace73024a4e` (vitest) @ `36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda`<br>`rc87-79afa858624c3b81` @ `a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199`<br>→ `rc87-4df6ca0358c81014` (vitest) @ `36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda`<br>`rc87-d770516f41616299` @ `a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199`<br>→ `rc87-6dbaed8ad2db027d` (vitest) @ `36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `5179b7e726d0c1fcde8832eb82b3c4ef1e2194b4dfa86e02156ad40c0fcbd293` |
+| `rc87-create-svelte-addon-package-rename` | `rc87-3115beeb6e85ca7f` @ `cd9143b184c96dbea7cb8710f36613e796e6d122b21ddb85a91880790c815ae0`<br>→ `rc87-6db9abcf55ac44c6` (vitest) @ `7a3a53eedf2c34299082bf2e1983714916041593798f6f066a597e55d6ac8504` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `bfd3f13ef12d55e9788148ad07666b2401222938eb3a7da94b27c4ff3963a3cd` |
+| `rc87-facade-async-rust-engine` | `rc87-fb2f146924e1ad8d` @ `afa4e1fe8ddc191d9fc098838330ab4696046e6f645c8e90b01cf03bf93d53a8`<br>→ `rc87-1f6ba6afdba0cb65` (vitest) @ `a15cc6407c0c438bd8aa5a4f1c4aca54bec8615fe04a6f293b08a4fb84c79b58` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `20560e0452189e6d7d5811691b7a75863236cd897fc727a0d9169c413408f8b8` |
+| `rc87-language-service-shiki-named-export` | `rc87-dbd7e09c6df8d73c` @ `f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692`<br>→ `rc87-58c0f707895ac675` (vitest) @ `58d1408ad681113fd30002667d2179c905b0a696f66a6fa30873968549162aef` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `4fc8da75da878dbc2f9a90b6f3e3cf9f352334ac7859cf128fe921db11f4a5e2` |
+| `rc87-lint-rust-diagnostic-delimiters` | `rc87-32ae1cd797a696d7` @ `b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f`<br>→ `rc87-1453f1fd3ba1676d` (vitest) @ `f59b0e550a161dff9cf919b3934c39b46ac589b14a1277ce411566dc3757a9da` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `f33174853df2dd06e5247a1e1f8dbfdb339804efba170aee1a0b5bb67cfa33e4` |
+| `rc87-runtime-strict-external-hydration` | `rc87-57602588c78ae709` @ `cff2a4782e93c4319597db9e6b78364ee497831e71d0f36d7f8bd472277baea8`<br>→ `rc87-f67818a2528723e4` (playwright-or-vitest-e2e) @ `d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `7b219f1fee0a4093a6c4d8e0ddf5879854b25c182498ca71af6e4114912fe036` |
+| `rc87-scanner-custom-adapter-public-api-removal` | `rc87-e15886ff6be17517` @ `9bcc90eada05e651e555ac5bb6f557be6535bb3dabcfb37eae548a890472b8ef`<br>→ `rc87-992cb1447bb56c5c` (vitest) @ `92b284ea4c7771748e106a79910f74e556f64c1659938782e47795a490421d25` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `1bf3ec6e72949f36b3880f68fb1e37e440e3cb35cdcc31142337d7d183cab35d` |
+| `rc87-stylesheet-explicit-preset-input` | `rc87-e20922b4178a8548` @ `27c702411d534f9c1bb039d3a7b3fed1ddc5b349cfd89b932684374f152f3772`<br>→ `rc87-bee4d1e5c45c7230` (vitest) @ `a0b7dd1f7d1305f28fa477e105435ca920c6db899258da22e373c5323fa6762e` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `b8e0603d0fd1772dd8cb25f49be1d48ece78ef2ccc8520e62223ca248d69adb1` |
+| `rc87-svelte-complete-stream-result` | `rc87-8fdccb91ecc7d385` @ `fbfdef00057f18fe363c92df4bd1cfe76f64789e751c010550a168ad12c524d1`<br>→ `rc87-c4d831fe47eaca8d` (vitest) @ `dd9f8c7f17a608076d7391494c6e1c2f9150a5e6d3823277bdd66b049c0f4112` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `58c317d9cb2eea03d083ccc4537de68e0cc00aee5ea850764b1fee8ecf42ae34` |
+| `rc87-vscode-rust-native-runtime-externalization` | `rc87-619282be04e91f81` @ `eec2e8e69374614eaba2b2e73a9619a1f091f7b184f1b07e123e5d924cd191e2`<br>→ `rc87-69e7b6412f26781a` (vitest) @ `e9cce201c7703532fd59cadd9f0604d62c072caff2c0d105fa24da8de19039ff` | `Aron <i@aron.tw>` | `2026-07-28T11:20:01Z` | `codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41` | `d35232492eee0598ac91a6ff378a73832873bc241c90571fab7b6ff43cfd49eb` |
+
 ## Rust refactor contract audit
 
 The completed Rust refactor at
@@ -134,15 +155,15 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Regressed or removed cases | 0 |
 | Target-added supplemental cases | 398 |
 
-| Contract surface | Status | Proof |
-|---|---|---|
-| `published-package-exports` | preserved-exact | exact-source |
-| `public-api-contract` | preserved-exact | exact-source |
-| `binding-version-contract` | preserved-exact | exact-source |
-| `native-engine-raw-surface` | preserved-exact | exact-source |
-| `wasm-engine-raw-surface` | approved-contract-change | approved-contract-change |
-| `language-wire-contract` | preserved-exact | exact-source |
-| `integration-rendering-options-contract` | preserved-exact | exact-source |
+| Contract surface | Baseline → target digest | Status | Proof | Human approval |
+|---|---|---|---|---|
+| `published-package-exports` | `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980`<br>→ `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980` | preserved-exact | exact-source | — |
+| `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb` | preserved-exact | exact-source | — |
+| `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389` | preserved-exact | exact-source | — |
+| `native-engine-raw-surface` | `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a`<br>→ `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a` | preserved-exact | exact-source | — |
+| `wasm-engine-raw-surface` | `da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012`<br>→ `d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-07-28T11:20:01Z`<br>`codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41`<br>`e92592dd5be1ef1d6254a69593dbeee0bf2c9d2969fe4f0d75df0e63ffc12aa6` |
+| `language-wire-contract` | `1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560`<br>→ `1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560` | preserved-exact | exact-source | — |
+| `integration-rendering-options-contract` | `2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef`<br>→ `2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef` | preserved-exact | exact-source | — |
 
 The rendering-mode surface preserves the current distinction between disabling an
 integration with `enabled: false` and retaining host loaders without runtime injection

@@ -24,25 +24,49 @@
           "sourceDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "proof": { "enum": ["verified-superset", "approved-contract-change"] },
-          "reason": { "type": "string", "minLength": 1 }
+          "reason": { "type": "string", "minLength": 1 },
+          "approval": { "$ref": "#/$defs/approval" }
         },
-        "additionalProperties": false
+        "additionalProperties": false,
+        "allOf": [
+          {
+            "if": {
+              "properties": { "proof": { "const": "approved-contract-change" } }
+            },
+            "then": { "required": ["approval"] },
+            "else": { "not": { "required": ["approval"] } }
+          }
+        ]
       }
     },
     "surfaces": {
       "type": "array",
       "items": {
         "type": "object",
-        "required": ["surfaceId", "baselineDigest", "targetDigest", "proof", "reason"],
+        "required": ["surfaceId", "baselineDigest", "targetDigest", "proof", "reason", "approval"],
         "properties": {
           "surfaceId": { "type": "string" },
           "baselineDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "targetDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
           "proof": { "const": "approved-contract-change" },
-          "reason": { "type": "string", "minLength": 1 }
+          "reason": { "type": "string", "minLength": 1 },
+          "approval": { "$ref": "#/$defs/approval" }
         },
         "additionalProperties": false
       }
+    }
+  },
+  "$defs": {
+    "approval": {
+      "type": "object",
+      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reviewRef": { "type": "string", "minLength": 1 },
+        "scopeDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      },
+      "additionalProperties": false
     }
   },
   "additionalProperties": false

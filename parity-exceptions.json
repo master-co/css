@@ -9,7 +9,26 @@
       "packages": [
         "compiler"
       ],
-      "test": "packages/compiler/tests/stylesheet/style.test.ts"
+      "test": "packages/compiler/tests/stylesheet/style.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "b8e0603d0fd1772dd8cb25f49be1d48ece78ef2ccc8520e62223ca248d69adb1",
+        "cases": [
+          {
+            "sourceId": "rc87-e20922b4178a8548",
+            "sourceDigest": "27c702411d534f9c1bb039d3a7b3fed1ddc5b349cfd89b932684374f152f3772",
+            "targets": [
+              {
+                "caseId": "rc87-bee4d1e5c45c7230",
+                "runner": "vitest",
+                "digest": "a0b7dd1f7d1305f28fa477e105435ca920c6db899258da22e373c5323fa6762e"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-facade-async-rust-engine",
@@ -19,7 +38,26 @@
       "packages": [
         "css"
       ],
-      "test": "packages/css/tests/facade.test.ts"
+      "test": "packages/css/tests/facade.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "20560e0452189e6d7d5811691b7a75863236cd897fc727a0d9169c413408f8b8",
+        "cases": [
+          {
+            "sourceId": "rc87-fb2f146924e1ad8d",
+            "sourceDigest": "afa4e1fe8ddc191d9fc098838330ab4696046e6f645c8e90b01cf03bf93d53a8",
+            "targets": [
+              {
+                "caseId": "rc87-1f6ba6afdba0cb65",
+                "runner": "vitest",
+                "digest": "a15cc6407c0c438bd8aa5a4f1c4aca54bec8615fe04a6f293b08a4fb84c79b58"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-scanner-custom-adapter-public-api-removal",
@@ -29,7 +67,26 @@
       "packages": [
         "tooling"
       ],
-      "test": "packages/tooling/tests/scanner/adapters.test.ts"
+      "test": "packages/tooling/tests/scanner/adapters.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "1bf3ec6e72949f36b3880f68fb1e37e440e3cb35cdcc31142337d7d183cab35d",
+        "cases": [
+          {
+            "sourceId": "rc87-e15886ff6be17517",
+            "sourceDigest": "9bcc90eada05e651e555ac5bb6f557be6535bb3dabcfb37eae548a890472b8ef",
+            "targets": [
+              {
+                "caseId": "rc87-992cb1447bb56c5c",
+                "runner": "vitest",
+                "digest": "92b284ea4c7771748e106a79910f74e556f64c1659938782e47795a490421d25"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-cli-explicit-generate-command",
@@ -39,7 +96,26 @@
       "packages": [
         "cli"
       ],
-      "test": "packages/cli/tests/rc87-core.test.ts"
+      "test": "packages/cli/tests/rc87-core.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "4165f6d79f3db722fd8eca3b1731844aba237ae668ad13964fc30ab555f2c7f4",
+        "cases": [
+          {
+            "sourceId": "rc87-020cb2849514556c",
+            "sourceDigest": "5b5869980a661f084d737ffbfca5ab6efa2047ddb44464b00dda0c4c61c6ab1c",
+            "targets": [
+              {
+                "caseId": "rc87-5afff731b12da503",
+                "runner": "vitest",
+                "digest": "09feedea3689547173230bf101b59a128fafe5467d72d2ce8ca5c2f77b294155"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-cli-removed-command-shims",
@@ -49,7 +125,48 @@
       "packages": [
         "cli"
       ],
-      "test": "packages/cli/tests/rc87-core.test.ts"
+      "test": "packages/cli/tests/rc87-core.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "5179b7e726d0c1fcde8832eb82b3c4ef1e2194b4dfa86e02156ad40c0fcbd293",
+        "cases": [
+          {
+            "sourceId": "rc87-1fc20aa6a8bdba65",
+            "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+            "targets": [
+              {
+                "caseId": "rc87-4b144ace73024a4e",
+                "runner": "vitest",
+                "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+              }
+            ]
+          },
+          {
+            "sourceId": "rc87-79afa858624c3b81",
+            "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+            "targets": [
+              {
+                "caseId": "rc87-4df6ca0358c81014",
+                "runner": "vitest",
+                "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+              }
+            ]
+          },
+          {
+            "sourceId": "rc87-d770516f41616299",
+            "sourceDigest": "a53e438743bb2dbbe81b8c6d07dac021a6181492c3e74c0acc79059c4ec98199",
+            "targets": [
+              {
+                "caseId": "rc87-6dbaed8ad2db027d",
+                "runner": "vitest",
+                "digest": "36db4d9fa6ca195b9bbe8b190ee8c5d72b0687acfeedb0e35936d30ac69c3bda"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-cli-master-css-binary-name",
@@ -59,7 +176,26 @@
       "packages": [
         "cli"
       ],
-      "test": "packages/cli/tests/rc87-core.test.ts"
+      "test": "packages/cli/tests/rc87-core.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "d38c6584fbeeaf4aa7e857fe5f4c6ed5665e1335ed66c4237162b37bcf4b64dc",
+        "cases": [
+          {
+            "sourceId": "rc87-1fd50671fc535704",
+            "sourceDigest": "b0b4757df19901d38de940a41fc09eec617d86b65bd39519c50423ced436dd1e",
+            "targets": [
+              {
+                "caseId": "rc87-25b0e10bf66ab41a",
+                "runner": "vitest",
+                "digest": "444d23b6d6ccc56c226f0b42297031ad894ddaa2d5ca99a535db00d87c4d325b"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-create-svelte-addon-package-rename",
@@ -69,7 +205,26 @@
       "packages": [
         "create"
       ],
-      "test": "packages/create/tests/setup.test.ts"
+      "test": "packages/create/tests/setup.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "bfd3f13ef12d55e9788148ad07666b2401222938eb3a7da94b27c4ff3963a3cd",
+        "cases": [
+          {
+            "sourceId": "rc87-3115beeb6e85ca7f",
+            "sourceDigest": "cd9143b184c96dbea7cb8710f36613e796e6d122b21ddb85a91880790c815ae0",
+            "targets": [
+              {
+                "caseId": "rc87-6db9abcf55ac44c6",
+                "runner": "vitest",
+                "digest": "7a3a53eedf2c34299082bf2e1983714916041593798f6f066a597e55d6ac8504"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-vscode-rust-native-runtime-externalization",
@@ -79,7 +234,26 @@
       "packages": [
         "vscode"
       ],
-      "test": "packages/vscode/tests/server-bundle.test.js"
+      "test": "packages/vscode/tests/server-bundle.test.js",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "d35232492eee0598ac91a6ff378a73832873bc241c90571fab7b6ff43cfd49eb",
+        "cases": [
+          {
+            "sourceId": "rc87-619282be04e91f81",
+            "sourceDigest": "eec2e8e69374614eaba2b2e73a9619a1f091f7b184f1b07e123e5d924cd191e2",
+            "targets": [
+              {
+                "caseId": "rc87-69e7b6412f26781a",
+                "runner": "vitest",
+                "digest": "e9cce201c7703532fd59cadd9f0604d62c072caff2c0d105fa24da8de19039ff"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-language-service-shiki-named-export",
@@ -89,7 +263,26 @@
       "packages": [
         "language-service"
       ],
-      "test": "packages/language-service/tests/rc87-shiki.test.ts"
+      "test": "packages/language-service/tests/rc87-shiki.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "4fc8da75da878dbc2f9a90b6f3e3cf9f352334ac7859cf128fe921db11f4a5e2",
+        "cases": [
+          {
+            "sourceId": "rc87-dbd7e09c6df8d73c",
+            "sourceDigest": "f9c7bb75b9f6309414ecb28da6e6877b5aeff8796b846bc86012faebeba97692",
+            "targets": [
+              {
+                "caseId": "rc87-58c0f707895ac675",
+                "runner": "vitest",
+                "digest": "58d1408ad681113fd30002667d2179c905b0a696f66a6fa30873968549162aef"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-runtime-strict-external-hydration",
@@ -99,7 +292,26 @@
       "packages": [
         "runtime"
       ],
-      "test": "packages/runtime/e2e/rc87-rendering.test.ts"
+      "test": "packages/runtime/e2e/rc87-rendering.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "7b219f1fee0a4093a6c4d8e0ddf5879854b25c182498ca71af6e4114912fe036",
+        "cases": [
+          {
+            "sourceId": "rc87-57602588c78ae709",
+            "sourceDigest": "cff2a4782e93c4319597db9e6b78364ee497831e71d0f36d7f8bd472277baea8",
+            "targets": [
+              {
+                "caseId": "rc87-f67818a2528723e4",
+                "runner": "playwright-or-vitest-e2e",
+                "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-svelte-complete-stream-result",
@@ -110,7 +322,26 @@
         "server",
         "svelte"
       ],
-      "test": "packages/svelte/tests/rc87-rendering.test.ts"
+      "test": "packages/svelte/tests/rc87-rendering.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "58c317d9cb2eea03d083ccc4537de68e0cc00aee5ea850764b1fee8ecf42ae34",
+        "cases": [
+          {
+            "sourceId": "rc87-8fdccb91ecc7d385",
+            "sourceDigest": "fbfdef00057f18fe363c92df4bd1cfe76f64789e751c010550a168ad12c524d1",
+            "targets": [
+              {
+                "caseId": "rc87-c4d831fe47eaca8d",
+                "runner": "vitest",
+                "digest": "dd9f8c7f17a608076d7391494c6e1c2f9150a5e6d3823277bdd66b049c0f4112"
+              }
+            ]
+          }
+        ]
+      }
     },
     {
       "id": "rc87-lint-rust-diagnostic-delimiters",
@@ -120,7 +351,26 @@
       "packages": [
         "tooling"
       ],
-      "test": "packages/tooling/tests/lint/rc87-index.test.ts"
+      "test": "packages/tooling/tests/lint/rc87-index.test.ts",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T11:20:01Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "f33174853df2dd06e5247a1e1f8dbfdb339804efba170aee1a0b5bb67cfa33e4",
+        "cases": [
+          {
+            "sourceId": "rc87-32ae1cd797a696d7",
+            "sourceDigest": "b66d32851ef9ba9267ee0aee91cf299ea61655c14522b63999527644484c541f",
+            "targets": [
+              {
+                "caseId": "rc87-1453f1fd3ba1676d",
+                "runner": "vitest",
+                "digest": "f59b0e550a161dff9cf919b3934c39b46ac589b14a1277ce411566dc3757a9da"
+              }
+            ]
+          }
+        ]
+      }
     }
   ]
 }

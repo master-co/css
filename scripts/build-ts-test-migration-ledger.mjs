@@ -849,6 +849,53 @@ function assertObjectKeys(value, allowedKeys, label) {
   assert.deepEqual(unknownKeys, [], `${label} has unsupported keys.`)
 }
 
+function validateApprovalMetadata(approval, label) {
+  assert.equal(typeof approval.approvedBy, 'string', `${label} approvedBy must be a string.`)
+  assert.ok(approval.approvedBy.length, `${label} approvedBy must not be empty.`)
+  assert.equal(typeof approval.approvedAt, 'string', `${label} approvedAt must be a string.`)
+  assert.match(
+    approval.approvedAt,
+    /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/u,
+    `${label} approvedAt must be an RFC 3339 UTC timestamp.`
+  )
+  assert.ok(!Number.isNaN(Date.parse(approval.approvedAt)), `${label} approvedAt is invalid.`)
+  assert.equal(typeof approval.reviewRef, 'string', `${label} reviewRef must be a string.`)
+  assert.ok(approval.reviewRef.length, `${label} reviewRef must not be empty.`)
+  assert.match(approval.scopeDigest, /^[a-f0-9]{64}$/u, `${label} scopeDigest is invalid.`)
+}
+
+function parityExceptionScopeDigest(exception) {
+  return sha256(JSON.stringify({
+    id: exception.id,
+    reason: exception.reason,
+    old: exception.old,
+    new: exception.new,
+    packages: exception.packages,
+    test: exception.test,
+    cases: exception.approval.cases
+  }))
+}
+
+function rustContractRecordScopeDigest(record) {
+  return sha256(JSON.stringify({
+    sourceId: record.sourceId,
+    sourceDigest: record.sourceDigest,
+    targetDigest: record.targetDigest,
+    proof: record.proof,
+    reason: record.reason
+  }))
+}
+
+function rustContractSurfaceScopeDigest(record) {
+  return sha256(JSON.stringify({
+    surfaceId: record.surfaceId,
+    baselineDigest: record.baselineDigest,
+    targetDigest: record.targetDigest,
+    proof: record.proof,
+    reason: record.reason
+  }))
+}
+
 function loadMigrationEvidence() {
   assert.ok(existsSync(evidencePath), `${path.relative(process.cwd(), evidencePath)} does not exist.`)
   const evidence = JSON.parse(readFileSync(evidencePath, 'utf8'))
@@ -1317,15 +1364,79 @@ function seedFinalLanguageEvidence(legacyInventory, targetInventory) {
   writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`)
 }
 
-function loadParityExceptions() {
+function loadParityExceptions(migrationEvidence) {
   const registry = JSON.parse(readFileSync(exceptionsPath, 'utf8'))
+  assertObjectKeys(registry, ['$schema', 'exceptions'], 'Parity exception registry')
   assert.ok(Array.isArray(registry.exceptions), 'Parity exceptions must be an array.')
   assert.equal(
     new Set(registry.exceptions.map((exception) => exception.id)).size,
     registry.exceptions.length,
     'Parity exception ids must be unique.'
   )
-  return new Map(registry.exceptions.map((exception) => [exception.id, exception]))
+  const recordsByException = new Map()
+  for (const record of migrationEvidence.records.filter(({ proof }) => proof === 'approved-divergence')) {
+    if (!recordsByException.has(record.exceptionId)) recordsByException.set(record.exceptionId, [])
+    recordsByException.get(record.exceptionId).push({
+      sourceId: record.sourceId,
+      sourceDigest: record.sourceDigest,
+      targets: record.targets
+    })
+  }
+  for (const exception of registry.exceptions) {
+    const label = `Parity exception ${exception.id ?? '<unknown>'}`
+    assertObjectKeys(exception, ['id', 'reason', 'old', 'new', 'packages', 'test', 'approval'], label)
+    assert.equal(typeof exception.id, 'string', `${label} id must be a string.`)
+    assert.ok(exception.id.length, `${label} id must not be empty.`)
+    assert.equal(typeof exception.reason, 'string', `${label} reason must be a string.`)
+    assert.ok(exception.reason.length, `${label} reason must not be empty.`)
+    assert.equal(typeof exception.old, 'string', `${label} old behavior must be a string.`)
+    assert.equal(typeof exception.new, 'string', `${label} new behavior must be a string.`)
+    assert.ok(Array.isArray(exception.packages) && exception.packages.length, `${label} packages are required.`)
+    assert.equal(typeof exception.test, 'string', `${label} test must be a string.`)
+    assertObjectKeys(
+      exception.approval,
+      ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest', 'cases'],
+      `${label} approval`
+    )
+    validateApprovalMetadata(exception.approval, `${label} approval`)
+    assert.ok(Array.isArray(exception.approval.cases) && exception.approval.cases.length, `${label} approval cases are required.`)
+    assert.equal(
+      new Set(exception.approval.cases.map(({ sourceId }) => sourceId)).size,
+      exception.approval.cases.length,
+      `${label} approval source ids must be unique.`
+    )
+    for (const approvedCase of exception.approval.cases) {
+      assertObjectKeys(approvedCase, ['sourceId', 'sourceDigest', 'targets'], `${label} approval case`)
+      assert.match(approvedCase.sourceId, /^rc87-[a-f0-9]{16}$/u, `${label} approval source id is invalid.`)
+      assert.match(approvedCase.sourceDigest, /^[a-f0-9]{64}$/u, `${label} approval source digest is invalid.`)
+      assert.ok(Array.isArray(approvedCase.targets) && approvedCase.targets.length, `${label} approval targets are required.`)
+      for (const target of approvedCase.targets) {
+        assertObjectKeys(target, ['caseId', 'runner', 'digest'], `${label} approval target`)
+        assert.match(target.caseId, /^rc87-[a-f0-9]{16}$/u, `${label} approval target id is invalid.`)
+        assert.equal(typeof target.runner, 'string', `${label} approval target runner is invalid.`)
+        assert.match(target.digest, /^[a-f0-9]{64}$/u, `${label} approval target digest is invalid.`)
+      }
+    }
+    const expectedCases = recordsByException.get(exception.id) ?? []
+    assert.ok(expectedCases.length, `${label} does not close any migration evidence.`)
+    assert.deepEqual(
+      exception.approval.cases,
+      expectedCases,
+      `${label} approval cases drifted from migration evidence.`
+    )
+    assert.equal(
+      exception.approval.scopeDigest,
+      parityExceptionScopeDigest(exception),
+      `${label} approval scope digest is stale.`
+    )
+  }
+  const exceptions = new Map(registry.exceptions.map((exception) => [exception.id, exception]))
+  assert.deepEqual(
+    [...recordsByException.keys()].sort(),
+    [...exceptions.keys()].sort(),
+    'Approved-divergence evidence and parity exception approvals must have identical ids.'
+  )
+  return exceptions
 }
 
 function targetOwner(packageName, sourceId, sourceFile) {
@@ -1603,6 +1714,11 @@ function buildReport(ledger, rustRefactorContractLedger, postRc87Delta) {
   const active = ledger.entries.filter((entry) => entry.source.state === 'active' || entry.source.state === 'only')
   const complete = active.filter((entry) => ['verified-exact', 'approved-divergence'].includes(entry.migration.status))
   const unresolvedMatrices = ledger.entries.filter((entry) => entry.source.matrix?.resolved === false)
+  const divergenceApprovals = [...new Map(
+    ledger.entries
+      .filter((entry) => entry.migration.status === 'approved-divergence')
+      .map((entry) => [entry.divergence.id, entry.divergence])
+  ).values()].sort((left, right) => left.id.localeCompare(right.id))
   const packageRows = Object.entries(ledger.summary.byPackage)
     .map(([packageName, counts]) => `| \`${packageName}\` | ${counts.total} | ${counts.P0 ?? 0} | ${counts.P1 ?? 0} | ${counts.P2 ?? 0} | ${counts.mapped ?? 0} | ${counts.gap ?? 0} |`)
     .join('\n')
@@ -1612,8 +1728,19 @@ function buildReport(ledger, rustRefactorContractLedger, postRc87Delta) {
   const overlayRows = postRc87Delta.files
     .map((entry) => `| ${entry.priority} | \`${entry.file}\` | ${entry.decision} | ${entry.behavior} |`)
     .join('\n') || '| — | None | — | — |'
+  const divergenceApprovalRows = divergenceApprovals
+    .map((exception) => {
+      const caseBindings = exception.approval.cases.map(({ sourceId, sourceDigest, targets }) => {
+        const targetBindings = targets
+          .map(({ caseId, runner, digest }) => `\`${caseId}\` (${runner}) @ \`${digest}\``)
+          .join('<br>')
+        return `\`${sourceId}\` @ \`${sourceDigest}\`<br>→ ${targetBindings}`
+      }).join('<br>')
+      return `| \`${exception.id}\` | ${caseBindings} | \`${exception.approval.approvedBy}\` | \`${exception.approval.approvedAt}\` | \`${exception.approval.reviewRef}\` | \`${exception.approval.scopeDigest}\` |`
+    })
+    .join('\n')
   const contractSurfaceRows = rustRefactorContractLedger.surfaces
-    .map((surface) => `| \`${surface.id}\` | ${surface.status} | ${surface.proof} |`)
+    .map((surface) => `| \`${surface.id}\` | \`${surface.digest}\`<br>→ \`${surface.targetDigest}\` | ${surface.status} | ${surface.proof} | ${surface.approval ? `\`${surface.approval.approvedBy}\`<br>\`${surface.approval.approvedAt}\`<br>\`${surface.approval.reviewRef}\`<br>\`${surface.approval.scopeDigest}\`` : '—'} |`)
     .join('\n')
 
   return `# Rust test migration from v2.0.0-rc.87
@@ -1698,6 +1825,16 @@ ${unresolvedMatrices.length
     ? unresolvedMatrices.map((entry) => `- \`${entry.source.file}:${entry.source.line}\` — ${entry.source.title}`).join('\n')
     : 'All statically discoverable parameter matrices were expanded.'}
 
+## Human approval traceability
+
+Every approved divergence is bound to its exact exception text, rc.87 source ids and
+digests, target case ids, runners, and target digests. Any scope change invalidates the
+recorded scope digest and fails ledger generation.
+
+| Exception | rc.87 cases | Approved by | Approved at | Review reference | Scope digest |
+|---|---|---|---|---|---|
+${divergenceApprovalRows}
+
 ## Rust refactor contract audit
 
 The completed Rust refactor at
@@ -1713,8 +1850,8 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Regressed or removed cases | ${(rustRefactorContractLedger.summary.byStatus.regressed ?? 0) + (rustRefactorContractLedger.summary.byStatus['removed-unapproved'] ?? 0)} |
 | Target-added supplemental cases | ${rustRefactorContractLedger.summary.addedCases} |
 
-| Contract surface | Status | Proof |
-|---|---|---|
+| Contract surface | Baseline → target digest | Status | Proof | Human approval |
+|---|---|---|---|---|
 ${contractSurfaceRows}
 
 The rendering-mode surface preserves the current distinction between disabling an
@@ -1776,6 +1913,11 @@ function validateLedger(ledger) {
     } else if (entry.migration.status === 'approved-divergence') {
       assert.equal(entry.migration.proof?.kind, 'approved-divergence', `Divergence entry ${entry.id} is missing proof.`)
       assert.ok(entry.divergence, `Divergence entry ${entry.id} is missing exception data.`)
+      assert.ok(entry.divergence.approval, `Divergence entry ${entry.id} is missing human approval.`)
+      assert.ok(
+        entry.divergence.approval.cases.some(({ sourceId }) => sourceId === entry.id),
+        `Divergence entry ${entry.id} is outside its approved case scope.`
+      )
     } else {
       assert.equal(entry.migration.proof, null, `Incomplete entry ${entry.id} cannot carry proof.`)
       assert.equal(entry.divergence, null, `Incomplete entry ${entry.id} cannot carry a divergence.`)
@@ -1801,7 +1943,9 @@ function loadRustRefactorContractEvidence() {
     `${path.relative(process.cwd(), rustRefactorContractEvidencePath)} does not exist.`
   )
   const evidence = JSON.parse(readFileSync(rustRefactorContractEvidencePath, 'utf8'))
+  assertObjectKeys(evidence, ['$schema', 'version', 'baseline', 'records', 'surfaces'], 'Rust refactor contract evidence')
   assert.equal(evidence.version, 1, 'Unsupported Rust refactor contract evidence version.')
+  assertObjectKeys(evidence.baseline, ['ref', 'commit'], 'Rust refactor contract evidence baseline')
   assert.equal(
     evidence.baseline.commit,
     RUST_REFACTOR_CONTRACT_COMMIT,
@@ -1809,6 +1953,24 @@ function loadRustRefactorContractEvidence() {
   )
   assert.ok(Array.isArray(evidence.records), 'Rust refactor contract evidence records must be an array.')
   assert.ok(Array.isArray(evidence.surfaces), 'Rust refactor contract surface evidence must be an array.')
+  for (const record of evidence.records) {
+    const label = `Rust contract evidence ${record.sourceId ?? '<unknown>'}`
+    assertObjectKeys(record, ['sourceId', 'sourceDigest', 'targetDigest', 'proof', 'reason', 'approval'], label)
+    if (record.proof === 'approved-contract-change') {
+      assertObjectKeys(record.approval, ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest'], `${label} approval`)
+      validateApprovalMetadata(record.approval, `${label} approval`)
+      assert.equal(record.approval.scopeDigest, rustContractRecordScopeDigest(record), `${label} approval scope digest is stale.`)
+    } else {
+      assert.equal(record.approval, undefined, `${label} cannot carry approval metadata for ${record.proof}.`)
+    }
+  }
+  for (const record of evidence.surfaces) {
+    const label = `Rust contract surface ${record.surfaceId ?? '<unknown>'}`
+    assertObjectKeys(record, ['surfaceId', 'baselineDigest', 'targetDigest', 'proof', 'reason', 'approval'], label)
+    assertObjectKeys(record.approval, ['approvedBy', 'approvedAt', 'reviewRef', 'scopeDigest'], `${label} approval`)
+    validateApprovalMetadata(record.approval, `${label} approval`)
+    assert.equal(record.approval.scopeDigest, rustContractSurfaceScopeDigest(record), `${label} approval scope digest is stale.`)
+  }
   return evidence
 }
 
@@ -1828,7 +1990,7 @@ function extractContractBlock(source, signature) {
       else if (character === quote) quote = undefined
       continue
     }
-    if (character === '"' || character === "'" || character === '`') {
+    if (character === '"' || character === '\'' || character === '`') {
       quote = character
       continue
     }
@@ -1983,7 +2145,8 @@ function buildRustRefactorContractLedger(targetInventory, targetCommit) {
       status: record.proof,
       target: targetReference(target),
       proof: record.proof,
-      reason: record.reason
+      reason: record.reason,
+      ...(record.approval ? { approval: record.approval } : {})
     }
   })
   assert.deepEqual(
@@ -2024,7 +2187,8 @@ function buildRustRefactorContractLedger(targetInventory, targetCommit) {
       targetDigest: target.digest,
       status: 'approved-contract-change',
       proof: record.proof,
-      reason: record.reason
+      reason: record.reason,
+      approval: record.approval
     }
   })
   assert.deepEqual(
@@ -2077,6 +2241,9 @@ function validateRustRefactorContractLedger(ledger) {
       ['preserved-exact', 'verified-superset', 'approved-contract-change', 'regressed', 'removed-unapproved'].includes(entry.status),
       `Invalid Rust contract status for ${entry.source.id}.`
     )
+    if (entry.status === 'approved-contract-change') {
+      assert.ok(entry.approval, `Approved Rust contract change ${entry.source.id} is missing human approval.`)
+    }
   }
   assert.ok(
     ledger.entries.every(({ status }) => !['regressed', 'removed-unapproved'].includes(status)),
@@ -2086,6 +2253,9 @@ function validateRustRefactorContractLedger(ledger) {
     ledger.surfaces.every(({ status }) => status !== 'regressed'),
     'Rust refactor contract surfaces contain an unapproved regression.'
   )
+  for (const surface of ledger.surfaces.filter(({ status }) => status === 'approved-contract-change')) {
+    assert.ok(surface.approval, `Approved Rust contract surface ${surface.id} is missing human approval.`)
+  }
 }
 
 function validatePostRc87Delta(delta) {
@@ -2160,7 +2330,7 @@ if (process.argv.includes('--seed-final-language-evidence')) {
   seedFinalLanguageEvidence(legacyInventory, targetInventory)
 }
 const migrationEvidence = loadMigrationEvidence()
-const exceptions = loadParityExceptions()
+const exceptions = loadParityExceptions(migrationEvidence)
 const mapping = mapCases(legacyInventory, targetInventory, takeover, migrationEvidence, exceptions)
 const byStatus = countBy(mapping.entries, (entry) => entry.migration.status)
 const byPriority = countBy(mapping.entries, (entry) => entry.priority)

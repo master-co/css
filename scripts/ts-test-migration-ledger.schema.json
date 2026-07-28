@@ -108,7 +108,12 @@
               }
             }
           },
-          "divergence": { "type": ["object", "null"] }
+          "divergence": {
+            "oneOf": [
+              { "type": "null" },
+              { "$ref": "#/$defs/divergence" }
+            ]
+          }
         }
       }
     },
@@ -165,6 +170,55 @@
           "uniqueItems": true
         },
         "exceptionId": { "type": "string", "minLength": 1 }
+      }
+    },
+    "approvalCase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sourceId", "sourceDigest", "targets"],
+      "properties": {
+        "sourceId": { "$ref": "#/$defs/sourceId" },
+        "sourceDigest": { "$ref": "#/$defs/digest" },
+        "targets": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/proofTarget" }
+        }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["approvedBy", "approvedAt", "reviewRef", "scopeDigest", "cases"],
+      "properties": {
+        "approvedBy": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reviewRef": { "type": "string", "minLength": 1 },
+        "scopeDigest": { "$ref": "#/$defs/digest" },
+        "cases": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/approvalCase" }
+        }
+      }
+    },
+    "divergence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "reason", "old", "new", "packages", "test", "approval"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "old": { "type": "string" },
+        "new": { "type": "string" },
+        "packages": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "test": { "type": "string", "minLength": 1 },
+        "approval": { "$ref": "#/$defs/approval" }
       }
     }
   }
