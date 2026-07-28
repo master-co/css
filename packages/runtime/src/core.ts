@@ -201,12 +201,26 @@ function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source
 
 async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest> {
   try {
-    const loadHydrationManifestModule = globalThis.Function(
-      'specifier',
-      "return import(specifier, { with: { type: 'json' } })"
-    ) as (specifier: string) => Promise<{ default: unknown }>
-    const module = await loadHydrationManifestModule(url)
-    const hydrationManifest = validateHydrationManifest(module.default)
+    let value: unknown
+    let loadHydrationManifestModule: ((specifier: string) => Promise<{ default: unknown }>) | undefined
+    try {
+      loadHydrationManifestModule = globalThis.Function(
+        'specifier',
+        "return import(specifier, { with: { type: 'json' } })"
+      ) as (specifier: string) => Promise<{ default: unknown }>
+    } catch (cause) {
+      if ((cause as { name?: unknown })?.name !== 'SyntaxError') throw cause
+    }
+    if (loadHydrationManifestModule) {
+      value = (await loadHydrationManifestModule(url)).default
+    } else {
+      const response = await fetch(url)
+      if (!response.ok) {
+        throw new Error(`Cannot load the Master CSS hydration manifest from ${url} (HTTP ${response.status}).`)
+      }
+      value = await response.json()
+    }
+    const hydrationManifest = validateHydrationManifest(value)
     if (hydrationManifest) return hydrationManifest
     throw invalidHydrationManifest(`Invalid Master CSS hydration manifest loaded from ${url}.`)
   } catch (cause) {
