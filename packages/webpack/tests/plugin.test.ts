@@ -189,6 +189,7 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
 
 function makeStylesheetCollection(dependencies: string[]) {
   return {
+    compose: vi.fn(async () => ({ css: '', emittedGlobals: {} })),
     snapshot: () => ({
       dependencies,
       sources: []
@@ -1031,6 +1032,48 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
 
       expect(reset).toHaveBeenCalledWith(plugin.options)
     } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  test('fails a watch build on reset replay errors and recovers on the next reset', async () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-watch-failure-'))
+    const configPath = path.join(root, 'app.css')
+    const tokenPath = path.join(root, 'theme.css')
+    const errorLog = vi.spyOn(console, 'error').mockImplementation(() => {})
+    try {
+      const plugin = makePlugin({}, root)
+      const stylesheets = makeStylesheetCollection([configPath, tokenPath])
+      const replayError = new Error('Cannot compose reset CSS')
+      stylesheets.compose
+        .mockRejectedValueOnce(replayError)
+        .mockResolvedValue({ css: '@layer utilities{}', emittedGlobals: {} })
+      ;(plugin as any).stylesheets = stylesheets
+      const reset = vi.fn(async function (this: MasterCSSWebpackPlugin) {
+        this.emit('reset')
+        return this
+      })
+      ;(plugin as any).reset = reset
+      const { compiler } = makeFakeCompiler({
+        context: root,
+        modifiedFiles: new Set([tokenPath])
+      })
+      ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+      plugin.apply(compiler as any)
+      const runWatch = () => new Promise<void>((resolve, reject) => {
+        compiler.hooks.watchRun.callAsync(compiler, (error) => error ? reject(error) : resolve())
+      })
+
+      await expect(runWatch()).rejects.toBe(replayError)
+      expect(errorLog).toHaveBeenCalledWith('[master-css.webpack] reset replay failed:', replayError)
+      expect(stylesheets.compose).toHaveBeenCalledTimes(1)
+
+      await expect(runWatch()).resolves.toBeUndefined()
+      expect(stylesheets.compose).toHaveBeenCalledTimes(2)
+      expect(reset).toHaveBeenCalledTimes(2)
+    } finally {
+      errorLog.mockRestore()
       rmSync(root, { recursive: true, force: true })
     }
   })

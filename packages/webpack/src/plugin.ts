@@ -125,6 +125,7 @@ export class MasterCSSWebpackPlugin {
   defaultManifestDependencies: string[] = []
   emittedGlobals: MasterCSSEmittedGlobals = {}
   resetReplayChain: Promise<unknown> = Promise.resolve()
+  private resetReplayFailure: { error: unknown } | undefined
   stylesheets: MasterCSSStylesheetCollection = createStylesheetCollection()
   stylesheetDependencyFallbacks = new Map<string, string[]>()
   development = false
@@ -425,11 +426,18 @@ export class MasterCSSWebpackPlugin {
           .then(context.replayModuleContents)
           .then(context.writeGeneratedCSSModule)
           .catch((error: unknown) => {
+            this.resetReplayFailure ??= { error }
             console.error('[master-css.webpack] reset replay failed:', error)
           })
         return this.resetReplayChain
       },
-      waitForResetReplay: () => this.resetReplayChain,
+      waitForResetReplay: async () => {
+        await this.resetReplayChain
+        const failure = this.resetReplayFailure
+        if (!failure) return
+        this.resetReplayFailure = undefined
+        throw failure.error
+      },
       isGeneratedCSSModulePath: (modulePath) => {
         const normalizedModulePath = normalizePath(modulePath)
         const normalizedGeneratedCSSImportModuleId = normalizePath(context.virtualCSSImportModuleId)
