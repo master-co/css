@@ -229,7 +229,7 @@ function resolveDevelopmentArtifact(name: string) {
         resolve(directory, 'node_modules/@master/css-binding/artifacts', name),
         resolve(directory, 'packages/binding/artifacts', name)
       ]) {
-        if (existsSync(artifact)) return artifact
+        if (existsSync(/*turbopackIgnore: true*/ artifact)) return artifact
       }
       if (directory === root) break
       directory = dirname(directory)
