@@ -21,6 +21,7 @@ export interface MasterCSSNativeEngineSessionOptions {
 export interface MasterCSSNativeEngineSession extends Disposable {
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot

@@ -726,10 +726,56 @@ impl EngineSession {
         Ok(emitted_globals)
     }
 
+    pub fn register_emitted_globals(
+        &mut self,
+        emitted_globals_json: &str,
+    ) -> Result<EngineTransitionIr, EngineError> {
+        self.ensure_active()?;
+        let emitted_globals = EmittedGlobals::parse(emitted_globals_json)
+            .map_err(|error| EngineError::InvalidEmittedGlobals(error.to_string()))?;
+        let mut merged = self.emitted_globals.clone();
+        let mut changed = false;
+        for (name, count) in emitted_globals.variables {
+            if count == 0 {
+                continue;
+            }
+            let current = merged.variable_count(&name);
+            let next = current.saturating_add(count);
+            if next != current {
+                merged.variables.insert(name, next);
+                changed = true;
+            }
+        }
+        for (name, count) in emitted_globals.animations {
+            if count == 0 {
+                continue;
+            }
+            let current = merged.animation_count(&name);
+            let next = current.saturating_add(count);
+            if next != current {
+                merged.animations.insert(name, next);
+                changed = true;
+            }
+        }
+        if !changed {
+            return Ok(EngineTransitionIr::new(Vec::new()));
+        }
+        self.rebuild(self.manifest.clone(), self.compiled.clone(), merged)
+    }
+
     pub fn refresh(&mut self, manifest_json: &str) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
         let manifest = MasterCssManifest::parse(manifest_json)?;
         let compiled = compile_manifest(&manifest)?;
+        self.rebuild(manifest, compiled, self.emitted_globals.clone())
+    }
+
+    fn rebuild(
+        &mut self,
+        manifest: MasterCssManifest,
+        compiled: ManifestProjection,
+        emitted_globals: EmittedGlobals,
+    ) -> Result<EngineTransitionIr, EngineError> {
         let connected_classes = self.class_order.clone();
         let mut mutations = Vec::new();
         for layer in UTILITY_LAYERS.into_iter().rev() {
@@ -765,6 +811,7 @@ impl EngineSession {
         }
         self.compiled = compiled;
         self.manifest = manifest;
+        self.emitted_globals = emitted_globals;
         self.class_rules.clear();
         self.class_order.clear();
         self.rule_counts.clear();
@@ -1352,10 +1399,11 @@ impl EngineSession {
             .cloned()
             .collect::<Vec<_>>();
         for variable_name in static_variables {
-            *self
+            let count = self
                 .variable_counts
                 .entry(variable_name.clone())
-                .or_default() += 1;
+                .or_default();
+            *count = count.saturating_add(1);
             self.theme_variable_names.push(variable_name);
         }
     }
@@ -1380,7 +1428,8 @@ impl EngineSession {
             .collect::<Vec<_>>();
         for name in static_animations {
             if self.emitted_globals.animation_count(&name) == 0 {
-                *self.animation_counts.entry(name.clone()).or_default() += 1;
+                let count = self.animation_counts.entry(name.clone()).or_default();
+                *count = count.saturating_add(1);
                 self.animation_names.push(name.clone());
             }
             let mut ignored = Vec::new();
@@ -1589,7 +1638,7 @@ impl EngineSession {
                 continue;
             }
             let count = self.animation_counts.entry(name.clone()).or_default();
-            *count += 1;
+            *count = count.saturating_add(1);
             if *count != 1 || self.emitted_globals.animation_count(name) > 0 {
                 continue;
             }
@@ -1616,12 +1665,17 @@ impl EngineSession {
         mutations: &mut Vec<RuleMutationIr>,
     ) {
         for name in animation_names {
+            let host_count = self.emitted_globals.animation_count(name);
             let remove = match self.animation_counts.get_mut(name) {
-                Some(count) if *count > 1 => {
-                    *count -= 1;
-                    false
+                Some(count) if *count > host_count => {
+                    if host_count == 0 && *count == 1 {
+                        true
+                    } else {
+                        *count -= 1;
+                        false
+                    }
                 }
-                Some(_) => true,
+                Some(_) => false,
                 None => false,
             };
             if !remove {
@@ -1675,7 +1729,7 @@ impl EngineSession {
             .variable_counts
             .entry(variable_name.to_owned())
             .or_default();
-        *count += 1;
+        *count = count.saturating_add(1);
         if *count == 1 {
             let previous = self.theme_rule_text();
             self.theme_variable_names.push(variable_name.to_owned());
@@ -1712,12 +1766,17 @@ impl EngineSession {
             return;
         }
         let previous = self.theme_rule_text();
+        let host_count = self.emitted_globals.variable_count(variable_name);
         let remove = match self.variable_counts.get_mut(variable_name) {
-            Some(count) if *count > 1 => {
-                *count -= 1;
-                false
+            Some(count) if *count > host_count => {
+                if host_count == 0 && *count == 1 {
+                    true
+                } else {
+                    *count -= 1;
+                    false
+                }
             }
-            Some(_) => true,
+            Some(_) => false,
             None => false,
         };
         if remove {
@@ -6632,6 +6691,172 @@ mod tests {
             "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
         );
         engine.delete_class_rules(["fg:red-60"]).unwrap();
+        assert_eq!(engine.css_text(), "");
+    }
+
+    #[test]
+    fn registers_host_globals_transactionally_after_classes_are_ensured() {
+        let mut engine = EngineSession::create(MANIFEST).unwrap();
+        engine.ensure_class_rules(["fg:red-60"]).unwrap();
+        let before = engine.css_text();
+        assert!(before.contains("--color-red-60:#d00"));
+
+        let error = engine
+            .register_emitted_globals(r#"{"variables":{"color-red-60":-1}}"#)
+            .unwrap_err();
+        assert!(matches!(error, EngineError::InvalidEmittedGlobals(_)));
+        assert_eq!(engine.css_text(), before);
+
+        let transition = engine
+            .register_emitted_globals(r#"{"variables":{"color-red-60":1}}"#)
+            .unwrap();
+        assert!(transition.mutations.iter().any(|mutation| matches!(
+            mutation,
+            RuleMutationIr::Delete {
+                target: RuleTarget::Theme,
+                ..
+            }
+        )));
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        );
+
+        engine.delete_class_rules(["fg:red-60"]).unwrap();
+        assert_eq!(engine.css_text(), "");
+        let globals = engine.emitted_globals_snapshot().unwrap();
+        assert_eq!(globals.variable_count("color-red-60"), 1);
+        assert!(
+            engine
+                .register_emitted_globals(r#"{"variables":{"color-red-60":0}}"#)
+                .unwrap()
+                .mutations
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn validates_and_saturates_host_globals_before_classes_are_ensured() {
+        let mut engine = EngineSession::create(MANIFEST).unwrap();
+        let before = engine.snapshot().unwrap();
+        for invalid in [
+            r#"{"variables":{"color-red-60":0.5}}"#,
+            r#"{"variables":{"color-red-60":-1}}"#,
+            r#"{"variables":}"#,
+        ] {
+            assert!(matches!(
+                engine.register_emitted_globals(invalid),
+                Err(EngineError::InvalidEmittedGlobals(_))
+            ));
+            assert_eq!(engine.snapshot().unwrap(), before);
+        }
+
+        assert!(
+            engine
+                .register_emitted_globals(r#"{"variables":{"color-red-60":4294967295}}"#)
+                .unwrap()
+                .mutations
+                .is_empty()
+        );
+        assert!(
+            engine
+                .register_emitted_globals(r#"{"variables":{"color-red-60":1}}"#)
+                .unwrap()
+                .mutations
+                .is_empty()
+        );
+        assert_eq!(
+            engine
+                .emitted_globals_snapshot()
+                .unwrap()
+                .variable_count("color-red-60"),
+            u32::MAX
+        );
+
+        engine.ensure_class_rules(["fg:red-60"]).unwrap();
+        assert_eq!(
+            engine.css_text(),
+            "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        );
+        engine.delete_class_rules(["fg:red-60"]).unwrap();
+        assert_eq!(engine.css_text(), "");
+        assert_eq!(
+            engine
+                .emitted_globals_snapshot()
+                .unwrap()
+                .variable_count("color-red-60"),
+            u32::MAX
+        );
+
+        let mut animation_engine = EngineSession::create(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+        animation_engine
+            .register_emitted_globals(r#"{"animations":{"fade":4294967295}}"#)
+            .unwrap();
+        animation_engine
+            .ensure_class_rules(["animation:fade|1s"])
+            .unwrap();
+        assert!(!animation_engine.css_text().contains("@keyframes fade{"));
+        animation_engine
+            .delete_class_rules(["animation:fade|1s"])
+            .unwrap();
+        assert_eq!(
+            animation_engine
+                .emitted_globals_snapshot()
+                .unwrap()
+                .animation_count("fade"),
+            u32::MAX
+        );
+    }
+
+    #[test]
+    fn registers_host_keyframes_after_animation_rules_are_ensured() {
+        let mut engine = EngineSession::create(include_str!(
+            "../../../packages/preset/src/default-manifest.json"
+        ))
+        .unwrap();
+        engine.ensure_class_rules(["animation:fade|1s"]).unwrap();
+        assert!(engine.css_text().contains("@keyframes fade{"));
+
+        engine
+            .register_emitted_globals(r#"{"animations":{"fade":1}}"#)
+            .unwrap();
+        assert!(!engine.css_text().contains("@keyframes fade{"));
+        assert!(
+            engine
+                .css_text()
+                .contains(".animation\\:fade\\|1s{animation:fade 1s}")
+        );
+
+        engine.delete_class_rules(["animation:fade|1s"]).unwrap();
+        assert!(!engine.css_text().contains("animation:fade 1s"));
+        assert_eq!(
+            engine
+                .emitted_globals_snapshot()
+                .unwrap()
+                .animation_count("fade"),
+            1
+        );
+    }
+
+    #[test]
+    fn host_globals_replace_locally_emitted_static_resources() {
+        let manifest = r##"{
+          "version":1,
+          "variables":{"color":[{"key":"brand","value":"#123","static":true}]},
+          "animations":{"pulse":{"to":{"opacity":"1"}}},
+          "animationOptions":{"pulse":{"static":true}},
+          "utilities":[]
+        }"##;
+        let mut engine = EngineSession::create(manifest).unwrap();
+        assert!(engine.css_text().contains("--color-brand:#123"));
+        assert!(engine.css_text().contains("@keyframes pulse{"));
+
+        engine
+            .register_emitted_globals(r#"{"variables":{"color-brand":1},"animations":{"pulse":1}}"#)
+            .unwrap();
         assert_eq!(engine.css_text(), "");
     }
 

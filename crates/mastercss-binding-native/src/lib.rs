@@ -1032,6 +1032,16 @@ impl NodeEngineSession {
     }
 
     #[napi]
+    pub fn register_emitted_globals(&mut self, emitted_globals_json: String) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .register_emitted_globals(&emitted_globals_json)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn native_declaration_candidates(&self, class_names: Vec<String>) -> Result<String> {
         to_json(
             &self

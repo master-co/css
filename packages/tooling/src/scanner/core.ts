@@ -194,6 +194,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   private bindingSession?: BindingScannerSession
   private bindingState?: BindingScannerState
   private currentManifest: MasterCSSManifest
+  private lifecycleGeneration = 0
 
   /** Precompiled minimatch patterns for per-module allow/exclude checks. */
   private sourceMatchers?: SourceMatchers
@@ -210,30 +211,53 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   init(customOptions: MasterCSSScannerOptions = this.customOptions) {
     if (this.initialized) return Promise.resolve(this)
     if (this.initializing) return this.initializing
-    return this.initializing = this.initInternal(customOptions)
+    const generation = ++this.lifecycleGeneration
+    let initializing: Promise<this>
+    initializing = this.initInternal(customOptions, generation)
       .finally(() => {
-        this.initializing = undefined
+        if (this.initializing === initializing) this.initializing = undefined
       })
+    this.initializing = initializing
+    return initializing
   }
 
-  private async initInternal(customOptions: MasterCSSScannerOptions = this.customOptions) {
+  private async initInternal(
+    customOptions: MasterCSSScannerOptions,
+    generation: number
+  ) {
     if (typeof customOptions !== 'object' || customOptions === null || Array.isArray(customOptions)) {
       throw new TypeError('MasterCSSScanner options must be an object.')
     }
-    this.options = defu(customOptions, defaultScannerOptions) as MasterCSSScannerOptions
-    if (this.options.verbose && this.options.verbose > 1) {
+    const options = defu(customOptions, defaultScannerOptions) as MasterCSSScannerOptions
+    if (options.verbose && options.verbose > 1) {
       logger.success('options')
-      logger.log(this.options)
+      logger.log(options)
       logger.log('')
     }
+    const bindingSession = await createScannerSession(options.manifest)
+    if (generation !== this.lifecycleGeneration) {
+      bindingSession.dispose()
+      return this
+    }
+    this.options = options
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
-    this.currentManifest = this.options.manifest
-    this.bindingSession = await createScannerSession(this.currentManifest)
-    this.insertSafelist()
-    this.emit('init', this.options, this.manifest)
-    this.initialized = true
+    this.currentManifest = options.manifest
+    this.bindingSession = bindingSession
+    try {
+      this.insertSafelist()
+      this.emit('init', options, this.manifest)
+      if (generation === this.lifecycleGeneration) this.initialized = true
+    } catch (error) {
+      if (this.bindingSession === bindingSession) {
+        this.bindingSession = undefined
+        this.bindingState = undefined
+        this.initialized = false
+        bindingSession.dispose()
+      }
+      throw error
+    }
     return this
   }
 
@@ -241,6 +265,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     customOptions: MasterCSSScannerOptions = this.customOptions,
     resetOptions: ScannerResetOptions = {}
   ) {
+    this.lifecycleGeneration++
     this.bindingSession?.dispose()
     this.bindingSession = undefined
     this.bindingState = undefined
@@ -249,22 +274,33 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     this.sourceMatcherOptions = undefined
     this.initialized = false
     this.initializing = undefined
-    await this.init(customOptions)
-    if (resetOptions.emit !== false) {
+    const initializing = this.init(customOptions)
+    const generation = this.lifecycleGeneration
+    await initializing
+    if (generation === this.lifecycleGeneration
+      && this.initialized
+      && resetOptions.emit !== false) {
       this.emit('reset')
     }
     return this
   }
 
   async dispose() {
-    this.bindingSession?.dispose()
+    this.lifecycleGeneration++
+    const bindingSession = this.bindingSession
     this.bindingSession = undefined
     this.bindingState = undefined
     this.resetDependencies = []
     this.sourceMatchers = undefined
     this.sourceMatcherOptions = undefined
-    this.removeAllListeners()
-    this.emit('dispose')
+    this.initialized = false
+    this.initializing = undefined
+    bindingSession?.dispose()
+    try {
+      this.emit('dispose')
+    } finally {
+      this.removeAllListeners()
+    }
     return this
   }
 

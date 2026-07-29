@@ -268,9 +268,31 @@ function cloneEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals): Required
   }
 }
 
+function addEmittedGlobals(
+  target: Required<MasterCSSEmittedGlobals>,
+  source: MasterCSSEmittedGlobals
+) {
+  for (const kind of ['variables', 'animations'] as const) {
+    for (const [name, count] of Object.entries(source[kind] || {})) {
+      if (count) {
+        target[kind][name] = Math.min(
+          0xffff_ffff,
+          (target[kind][name] || 0) + count
+        )
+      }
+    }
+  }
+}
+
+interface PendingRuntimeStart {
+  readonly promise: Promise<MasterCSSRuntime>
+  readonly emittedGlobals: MasterCSSEmittedGlobals[]
+  hydrationManifest?: MasterCSSHydrationManifest
+}
+
 export class MasterCSSRuntime implements Disposable {
   static #instances = new WeakMap<Document | ShadowRoot, MasterCSSRuntime>()
-  static #starts = new WeakMap<Document | ShadowRoot, Promise<MasterCSSRuntime>>()
+  static #starts = new WeakMap<Document | ShadowRoot, PendingRuntimeStart>()
 
   private readonly host: Element
   private readonly container: HTMLElement | ShadowRoot
@@ -371,11 +393,36 @@ export class MasterCSSRuntime implements Disposable {
       return current
     }
     const pending = MasterCSSRuntime.#starts.get(root)
-    if (pending) return await pending
+    if (pending) {
+      if (options.emittedGlobals) pending.emittedGlobals.push(options.emittedGlobals)
+      if (options.hydrationManifest !== undefined) {
+        pending.hydrationManifest = options.hydrationManifest
+      }
+      return await pending.promise
+    }
 
+    let pendingStart: PendingRuntimeStart
     const startup = MasterCSSRuntime.startNew(root, options)
+      .then((runtime) => {
+        try {
+          for (const emittedGlobals of pendingStart.emittedGlobals) {
+            runtime.registerEmittedGlobals(emittedGlobals)
+          }
+          if (pendingStart.hydrationManifest !== undefined) {
+            runtime.setHydrationManifest(pendingStart.hydrationManifest)
+          }
+          return runtime
+        } catch (error) {
+          runtime.dispose()
+          throw error
+        }
+      })
       .finally(() => MasterCSSRuntime.#starts.delete(root))
-    MasterCSSRuntime.#starts.set(root, startup)
+    pendingStart = {
+      promise: startup,
+      emittedGlobals: []
+    }
+    MasterCSSRuntime.#starts.set(root, pendingStart)
     return await startup
   }
 
@@ -387,13 +434,19 @@ export class MasterCSSRuntime implements Disposable {
     } = options
     const ownerWindow = (isDocumentRoot(root) ? root : root.ownerDocument).defaultView || globalThis
     let abandoned = false
+    let ownedEngine: MasterCSSEngine | undefined
+    let startupRuntime: MasterCSSRuntime | undefined
     let timeoutHandle: ReturnType<typeof globalThis.setTimeout> | undefined
     const enginePromise = createEngine({
       manifest: options.manifest,
       emittedGlobals: options.emittedGlobals,
       binding
     }).then((engine) => {
-      if (abandoned) engine.dispose()
+      if (abandoned) {
+        engine.dispose()
+      } else {
+        ownedEngine = engine
+      }
       return engine
     })
     const hydrationPromise = resolveHydrationManifest(root, options.hydrationManifest)
@@ -411,15 +464,17 @@ export class MasterCSSRuntime implements Disposable {
         timeoutPromise
       ])
       if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
-      return new MasterCSSRuntime(
+      startupRuntime = new MasterCSSRuntime(
         root,
         options.manifest,
         options.emittedGlobals,
         hydrationManifest,
         engine
-      ).register()
+      )
+      return startupRuntime.register()
     } catch (error) {
       abandoned = true
+      ;(startupRuntime || ownedEngine)?.dispose()
       if (timeoutHandle !== undefined) ownerWindow.clearTimeout(timeoutHandle)
       getRootHost(root).removeAttribute('hidden')
       onDiagnostic?.(toStartupDiagnostic(error))
@@ -492,20 +547,10 @@ export class MasterCSSRuntime implements Disposable {
   }
 
   private registerEmittedGlobals(emittedGlobals?: MasterCSSEmittedGlobals) {
-    if (!emittedGlobals) return this
-    const snapshot = this.bindingEngine.snapshot()
-    this.syncResourceSnapshot(snapshot.resources)
-    for (const [name, count] of Object.entries(emittedGlobals.variables || {})) {
-      if (!count) continue
-      this.emittedGlobals.variables[name] = (this.emittedGlobals.variables[name] || 0) + count
-      this.themeLayer.tokenCounts.set(name, (this.themeLayer.tokenCounts.get(name) || 0) + count)
-    }
-    for (const [name, count] of Object.entries(emittedGlobals.animations || {})) {
-      if (!count) continue
-      this.emittedGlobals.animations[name] = (this.emittedGlobals.animations[name] || 0) + count
-      this.animationsNonLayer.tokenCounts.set(name, (this.animationsNonLayer.tokenCounts.get(name) || 0) + count)
-    }
-    return this
+    if (!emittedGlobals) return
+    const transition = this.bindingEngine.registerEmittedGlobals(emittedGlobals)
+    addEmittedGlobals(this.emittedGlobals, emittedGlobals)
+    this.applyTransition(transition)
   }
 
   private setHydrationManifest(hydrationManifest?: MasterCSSHydrationManifest): this {
@@ -691,15 +736,24 @@ export class MasterCSSRuntime implements Disposable {
   private syncResourceSnapshot(resources: MasterCSSEngineResources) {
     this.themeLayer.resourceText = resources.themeText || ''
     this.themeLayer.rules.length = 0
-    this.themeLayer.tokenCounts.clear()
+    this.resetResourceCounts()
     for (const { name, refCount } of resources.variables) {
       const rule: RuntimeResourceRule = { key: name, name, text: '' }
       this.themeLayer.rules.push(rule)
-      if (refCount) this.themeLayer.tokenCounts.set(name, refCount)
+      if (refCount) {
+        this.themeLayer.tokenCounts.set(
+          name,
+          (this.themeLayer.tokenCounts.get(name) || 0) + refCount
+        )
+      }
     }
-    this.animationsNonLayer.tokenCounts.clear()
     for (const { name, refCount } of resources.animations) {
-      if (refCount) this.animationsNonLayer.tokenCounts.set(name, refCount)
+      if (refCount) {
+        this.animationsNonLayer.tokenCounts.set(
+          name,
+          (this.animationsNonLayer.tokenCounts.get(name) || 0) + refCount
+        )
+      }
     }
   }
 
@@ -1148,7 +1202,7 @@ export class MasterCSSRuntime implements Disposable {
   }
 
   private handleMutationRecords(records: MutationRecord[]) {
-    const deltaCounts = this.classTracker.collectMutations(records)
+    const deltaCounts = this.classTracker.collectMutations(records, this.root)
     const warmClassNames: string[] = []
     const queuedClassNames: string[] = []
     const removedClassNames: string[] = []

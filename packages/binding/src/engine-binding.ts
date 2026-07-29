@@ -48,6 +48,7 @@ export interface MasterCSSEngineBindingSession extends Disposable {
   readonly binding: MasterCSSResolvedBinding
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot

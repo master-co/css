@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { resolve } from 'node:path'
 import {
+  assertMasterCSSBindingInfo,
   MASTER_CSS_BINDING_ABI_VERSION
 } from '../src'
 import {
@@ -67,6 +68,17 @@ describe('native target resolution', () => {
     const second = loadNativeBinding({ required: true })
 
     expect(first).toBe(second)
+  })
+
+  it('rejects binding ABI 5 metadata after the engine surface expansion', () => {
+    const info = loadNativeBinding({ required: true })!.info
+    expect(() => assertMasterCSSBindingInfo({
+      ...info,
+      bindingAbiVersion: 5
+    }, {
+      surface: 'native',
+      features: ['engine']
+    })).toThrow('contract mismatch')
   })
 
   it('rejects a configured missing executable without falling back', () => {

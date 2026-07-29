@@ -1,5 +1,9 @@
 import { test, expect } from '@playwright/test'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init from './init'
+
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 const html = `
   <div class="z:1">
@@ -113,4 +117,69 @@ test('remove a class while the subtree is disconnected and append again', async 
     document.body.append(parent)
   })
   expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toMatchObject({})
+})
+
+test('moves class subtrees across document and shadow roots without stale counts', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (manifest) => {
+    const hostA = document.createElement('div')
+    const hostB = document.createElement('div')
+    document.body.append(hostA, hostB)
+    const rootA = hostA.attachShadow({ mode: 'open' })
+    const rootB = hostB.attachShadow({ mode: 'open' })
+    rootA.innerHTML = '<section id="moved" class="block"><span class="fg:red-60"></span></section>'
+    const runtimeA = await globalThis.MasterCSSRuntime.start({ manifest, root: rootA })
+    const runtimeB = await globalThis.MasterCSSRuntime.start({ manifest, root: rootB })
+    runtimeA.observe()
+    runtimeB.observe()
+
+    const before = {
+      a: runtimeA.snapshot().usageCounts,
+      b: runtimeB.snapshot().usageCounts
+    }
+    rootB.append(rootA.getElementById('moved')!)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const afterShadowMove = {
+      a: runtimeA.snapshot().usageCounts,
+      b: runtimeB.snapshot().usageCounts
+    }
+
+    rootB.append(rootB.getElementById('moved')!)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const afterSameRootMove = runtimeB.snapshot().usageCounts
+
+    const documentNode = document.createElement('div')
+    documentNode.className = 'font:bold'
+    document.body.append(documentNode)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    rootB.append(documentNode)
+    await new Promise(resolve => setTimeout(resolve, 0))
+    const afterDocumentMove = {
+      document: globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().usageCounts,
+      b: runtimeB.snapshot().usageCounts
+    }
+
+    runtimeA.deleteClassRules(['block', 'fg:red-60'])
+    const sourceTextAfterCleanup = runtimeA.snapshot().cssText
+    runtimeA.dispose()
+    runtimeB.dispose()
+    return { before, afterShadowMove, afterSameRootMove, afterDocumentMove, sourceTextAfterCleanup }
+  }, defaultManifest)
+
+  expect(result.before).toEqual({
+    a: { block: 1, 'fg:red-60': 1 },
+    b: {}
+  })
+  expect(result.afterShadowMove).toEqual({
+    a: {},
+    b: { block: 1, 'fg:red-60': 1 }
+  })
+  expect(result.afterSameRootMove).toEqual({ block: 1, 'fg:red-60': 1 })
+  expect(result.afterDocumentMove.document).not.toHaveProperty('font:bold')
+  expect(result.afterDocumentMove.b).toEqual({
+    block: 1,
+    'fg:red-60': 1,
+    'font:bold': 1
+  })
+  expect(result.sourceTextAfterCleanup).toBe('')
 })

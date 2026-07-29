@@ -8,7 +8,7 @@ use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 1;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
-pub const BINDING_ABI_VERSION: u32 = 5;
+pub const BINDING_ABI_VERSION: u32 = 6;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
 pub const VALIDATOR_BATCH_VERSION: u32 = 1;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 1;

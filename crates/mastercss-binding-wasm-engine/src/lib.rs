@@ -68,6 +68,18 @@ impl WasmEngineSession {
         serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
     }
 
+    #[wasm_bindgen(js_name = registerEmittedGlobals)]
+    pub fn register_emitted_globals(
+        &mut self,
+        emitted_globals_json: &str,
+    ) -> Result<JsValue, JsValue> {
+        let transition = self
+            .inner
+            .register_emitted_globals(emitted_globals_json)
+            .map_err(js_error)?;
+        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
+    }
+
     #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
     pub fn native_declaration_candidates(
         &self,

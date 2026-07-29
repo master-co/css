@@ -287,18 +287,25 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
 
 test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
   await init(page)
+  await page.evaluate(() => {
+    document.body.innerHTML = '<div class="fg:red-60 animation:fade|1s"></div>'
+  })
+  await waitForRuntimeRuleFlush(page)
   const result = await page.evaluate(async (manifest) => {
     const current = globalThis.__MASTER_CSS_RUNTIME_TEST__
+    const before = current.text
     const returned = await globalThis.MasterCSSRuntime.start({
       manifest,
       emittedGlobals: {
-        variables: { 'color-primary': 1 },
+        variables: { 'color-red-60': 1 },
         animations: { fade: 1 }
       }
     })
     const returnedAgain = await globalThis.MasterCSSRuntime.start({ manifest })
     return {
       same: returned === returnedAgain,
+      before,
+      after: current.text,
       variables: current.emittedGlobals.variables,
       animations: current.emittedGlobals.animations,
       variableCounts: Object.fromEntries(current.themeLayer.tokenCounts),
@@ -307,10 +314,74 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
   }, defaultManifest)
 
   expect(result.same).toBe(true)
-  expect(result.variables).toMatchObject({ 'color-primary': 1 })
+  expect(result.before).toContain('--color-red-60:')
+  expect(result.before).toContain('@keyframes fade{')
+  expect(result.after).toContain('.fg\\:red-60')
+  expect(result.after).toContain('.animation\\:fade\\|1s')
+  expect(result.after).not.toContain('--color-red-60:')
+  expect(result.after).not.toContain('@keyframes fade{')
+  expect(result.variables).toMatchObject({ 'color-red-60': 1 })
   expect(result.animations).toMatchObject({ fade: 1 })
-  expect(result.variableCounts).toMatchObject({ 'color-primary': 1 })
+  expect(result.variableCounts).toMatchObject({ 'color-red-60': 1 })
   expect(result.animationCounts).toMatchObject({ fade: 1 })
+})
+
+test('merges emittedGlobals from concurrent starts before resolving callers', async ({ page }) => {
+  await init(page)
+  const result = await page.evaluate(async (manifest) => {
+    const host = document.createElement('div')
+    document.body.append(host)
+    const root = host.attachShadow({ mode: 'open' })
+    root.innerHTML = '<div class="fg:red-60 animation:fade|1s"></div>'
+    const first = globalThis.MasterCSSRuntime.start({ manifest, root })
+    const second = globalThis.MasterCSSRuntime.start({
+      manifest,
+      root,
+      emittedGlobals: {
+        variables: { 'color-red-60': 1 },
+        animations: { fade: 1 }
+      }
+    })
+    const third = globalThis.MasterCSSRuntime.start({
+      manifest,
+      root,
+      emittedGlobals: {
+        variables: { 'color-red-60': 2 },
+        animations: { fade: 3 }
+      }
+    })
+    const [firstRuntime, secondRuntime, thirdRuntime] = await Promise.all([first, second, third])
+    firstRuntime.observe()
+    const snapshot = firstRuntime.snapshot()
+    const internal = firstRuntime as unknown as {
+      emittedGlobals: {
+        variables: Record<string, number>
+        animations: Record<string, number>
+      }
+    }
+    const emittedGlobals = structuredClone(internal.emittedGlobals)
+    firstRuntime.dispose()
+    return {
+      same: firstRuntime === secondRuntime && secondRuntime === thirdRuntime,
+      text: snapshot.cssText,
+      counts: snapshot.usageCounts,
+      emittedGlobals
+    }
+  }, defaultManifest)
+
+  expect(result.same).toBe(true)
+  expect(result.counts).toEqual({
+    'animation:fade|1s': 1,
+    'fg:red-60': 1
+  })
+  expect(result.emittedGlobals).toEqual({
+    variables: { 'color-red-60': 3 },
+    animations: { fade: 4 }
+  })
+  expect(result.text).toContain('.fg\\:red-60')
+  expect(result.text).toContain('.animation\\:fade\\|1s')
+  expect(result.text).not.toContain('--color-red-60:')
+  expect(result.text).not.toContain('@keyframes fade{')
 })
 
 test('registers emittedGlobals counts once on a new runtime', async ({ page }) => {

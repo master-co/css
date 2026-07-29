@@ -22696,7 +22696,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 5
+      "value": 6
     },
     {
       "kind": "wire-contract",

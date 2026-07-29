@@ -13,6 +13,7 @@ interface GeneratedEngineSession {
   manifestJSON(): string
   ensureClassRules(classNames: string[]): MasterCSSWasmEngineTransition
   deleteClassRules(classNames: string[]): MasterCSSWasmEngineTransition
+  registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSWasmEngineTransition
   nativeDeclarationCandidates(classNames: string[]): unknown
   ensureClassRulesWithNativeSupport(classNames: string[], supported: Uint8Array): MasterCSSWasmEngineTransition
   refresh(manifestJSON: string): MasterCSSWasmEngineTransition
@@ -185,6 +186,14 @@ export async function createWasmEngineSession(
     deleteClassRules(classNames: string[]) {
       assertActive()
       return session.deleteClassRules(classNames)
+    },
+    registerEmittedGlobals(emittedGlobals: unknown) {
+      assertActive()
+      return session.registerEmittedGlobals(
+        typeof emittedGlobals === 'string'
+          ? emittedGlobals
+          : JSON.stringify(emittedGlobals)
+      )
     },
     refresh(nextManifestJSON: string) {
       assertActive()

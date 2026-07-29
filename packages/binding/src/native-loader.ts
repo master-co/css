@@ -39,6 +39,7 @@ export interface NativeEngineSession {
   manifestJson(): string
   ensureClassRules(classNames: string[]): string
   deleteClassRules(classNames: string[]): string
+  registerEmittedGlobals(emittedGlobalsJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
   ensureClassRulesWithNativeSupport(classNames: string[], supported: boolean[]): string
   refresh(manifestJSON: string): string

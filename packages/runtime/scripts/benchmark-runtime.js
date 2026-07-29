@@ -423,6 +423,39 @@ try {
     }
   }))
 
+  results.push(await runBenchmark('late globals rebuild + CSSOM apply', async () => {
+    const page = await createObservedPage(
+      browser,
+      server.url,
+      scriptURL,
+      '<div class="fg:red-60 animation:fade|1s"></div>',
+      { preloadManifest: true }
+    )
+    try {
+      const elapsed = await page.evaluate(async (manifest) => {
+        const startedAt = performance.now()
+        await globalThis.MasterCSSRuntime.start({
+          manifest,
+          emittedGlobals: {
+            variables: { 'color-red-60': 1 },
+            animations: { fade: 1 }
+          }
+        })
+        return performance.now() - startedAt
+      }, defaultManifest)
+      const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().cssText)
+      if (cssText.includes('--color-red-60:') || cssText.includes('@keyframes fade{')) {
+        throw new Error('Late emitted globals were not removed from runtime CSS.')
+      }
+      if (!cssText.includes('.fg\\:red-60') || !cssText.includes('.animation\\:fade\\|1s')) {
+        throw new Error('Late emitted globals rebuild removed utility CSS.')
+      }
+      return elapsed
+    } finally {
+      await page.close()
+    }
+  }))
+
   results.push(await runBenchmark('initial DOM scan + unique class add (no preload)', async () => {
     const page = await createPage(browser, server.url, scanMarkup)
     try {

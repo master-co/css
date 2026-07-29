@@ -356,6 +356,36 @@ describe('Rust engine session', () => {
     }
   })
 
+  it('registers emitted globals through native and Wasm engines', async () => {
+    const native = createEngineSync({ manifest: typedDefaultManifest })
+    const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
+    const classNames = ['fg:red-60', 'animation:fade|1s']
+
+    try {
+      native.ensureClassRules(classNames)
+      wasm.ensureClassRules(classNames)
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().text).toContain('@keyframes fade{')
+
+      const emittedGlobals = {
+        variables: { 'color-red-60': 1 },
+        animations: { fade: 1 }
+      }
+      expect(wasm.registerEmittedGlobals(emittedGlobals))
+        .toEqual(native.registerEmittedGlobals(emittedGlobals))
+      expect(wasm.snapshot()).toEqual(native.snapshot())
+      expect(native.snapshot().text).toContain('.fg\\:red-60')
+      expect(native.snapshot().text).toContain('.animation\\:fade\\|1s')
+      expect(native.snapshot().text).not.toContain('--color-red-60:')
+      expect(native.snapshot().text).not.toContain('@keyframes fade{')
+    } finally {
+      native.dispose()
+      wasm.dispose()
+    }
+    expect(() => native.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
+    expect(() => wasm.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
+  })
+
   it('renders representative default-manifest classes without a TypeScript oracle', () => {
     const engine = createEngineSync({ manifest: typedDefaultManifest })
     const transition = engine.ensureClassRules([

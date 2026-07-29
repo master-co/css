@@ -101,6 +101,31 @@ it('passes emitted globals to the Wasm-owned session', async () => {
   session.dispose()
 })
 
+it('registers emitted globals after the Wasm-owned session starts', async () => {
+  vi.stubGlobal('CSS', { supports: () => true })
+  const input = new Uint8Array(await readFile(new URL(
+    '../artifacts/mastercss_binding_wasm_engine_bg.wasm',
+    import.meta.url
+  )))
+  const session = await createWasmEngineSession(JSON.stringify({
+    version: 1,
+    variables: {
+      color: [{ key: 'red-60', value: '#d00' }]
+    },
+    utilities: []
+  }), {}, { input })
+
+  session.ensureClassRules(['fg:red-60'])
+  expect(session.snapshot().text).toContain('--color-red-60:#d00')
+  expect(session.registerEmittedGlobals({ variables: { 'color-red-60': 1 } }).mutations.length)
+    .toBeGreaterThan(0)
+  expect(session.snapshot().text).toBe(
+    '@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}'
+  )
+  session.dispose()
+  expect(() => session.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
+})
+
 it('uses a batched CSS.supports handshake for browser-native declarations', async () => {
   vi.stubGlobal('CSS', {
     supports: (property: string, value: string) => property === 'display' && value === 'block'

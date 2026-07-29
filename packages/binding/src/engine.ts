@@ -72,6 +72,8 @@ export function createNativeEngineSession(
         ))
       },
       deleteClassRules: (classNames) => parse(session.deleteClassRules([...classNames])),
+      registerEmittedGlobals: (emittedGlobals) =>
+        parse(session.registerEmittedGlobals(JSON.stringify(emittedGlobals))),
       refresh: (manifest) => parse(session.refresh(serializeMasterCSSManifest(manifest))),
       inspect: (className) => parse(session.inspect(className)),
       snapshot: () => parse(session.snapshot()),

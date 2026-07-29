@@ -128,7 +128,11 @@ const cssRuntime = await MasterCSSRuntime.start({
 cssRuntime.observe()
 ```
 
-`start()` resolves explicit, inline, or external hydration data before returning. `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. `globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade.
+`start()` resolves explicit, inline, or external hydration data before returning. `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. These counts are cumulative for the lifetime of the runtime and cannot be unregistered.
+
+Concurrent `start()` calls for the same root share one startup. The first call's manifest, binding, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
+
+`globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade.
 
 ## Related docs
 

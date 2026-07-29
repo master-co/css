@@ -1,5 +1,6 @@
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSResolvedBinding } from '@master/css-binding'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   normalizeEngineError,
@@ -29,6 +30,13 @@ export default class BoundEngine implements MasterCSSEngine {
     this.assertActive()
     return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
       this.session.deleteClassRules([...classNames])
+    ))
+  }
+
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals) {
+    this.assertActive()
+    return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
+      this.session.registerEmittedGlobals(emittedGlobals)
     ))
   }
 

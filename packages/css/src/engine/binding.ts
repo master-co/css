@@ -92,6 +92,11 @@ export interface MasterCSSEngine extends Disposable {
   readonly binding: MasterCSSResolvedBinding
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  /**
+   * Adds host-owned variable and animation counts to the active engine session.
+   * Counts are cumulative for the lifetime of the session and cannot be unregistered.
+   */
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
@@ -101,6 +106,7 @@ export interface MasterCSSEngine extends Disposable {
 export interface BindingEngineSession {
   ensureClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
+  registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
