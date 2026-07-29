@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --dir .. build && ../node_modules/.bin/next dev",
-    "build": "pnpm --dir .. build && ../node_modules/.bin/next build",
-    "start": "../node_modules/.bin/next start"
+    "dev": "pnpm --dir .. build && pnpm exec next dev",
+    "build": "pnpm --dir .. build && pnpm exec next build",
+    "start": "pnpm exec next start"
   },
   "dependencies": {
     "@master/css-internal": "workspace:^",
