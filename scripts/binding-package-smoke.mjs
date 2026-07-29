@@ -10,7 +10,9 @@ import {
 } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { basename, dirname, join, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
+const inspectNativePackageArgument = '--inspect-native-package'
 const packageDirectory = resolve(process.argv[2] || '')
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm'
 
@@ -98,6 +100,19 @@ function inspectNativePackage(directory) {
   return { packageJSON, bindingInfo, selfTest }
 }
 
+function inspectNativePackageInChild(directory) {
+  return JSON.parse(execFileSync(process.execPath, [
+    fileURLToPath(import.meta.url),
+    inspectNativePackageArgument,
+    directory
+  ], { encoding: 'utf8' }))
+}
+
+if (process.argv[2] === inspectNativePackageArgument) {
+  writeFileSync(1, JSON.stringify(inspectNativePackage(resolve(process.argv[3] || ''))) + '\n')
+  process.exit(0)
+}
+
 function copyPackageForPacking(sourceDirectory, targetDirectory, packageJSON, version) {
   mkdirSync(targetDirectory, { recursive: true })
   writeFileSync(
@@ -145,7 +160,7 @@ try {
   ], { cwd: installDirectory, env: npmEnvironment })
 
   const installedDirectory = resolve(installDirectory, 'node_modules', source.packageJSON.name)
-  const installed = inspectNativePackage(installedDirectory)
+  const installed = inspectNativePackageInChild(installedDirectory)
   if (installed.packageJSON.version !== version) {
     throw new Error('Installed native target package version does not match its tarball.')
   }
