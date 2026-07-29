@@ -28,13 +28,16 @@ import {
   type MasterCSSManifest
 } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import { stripWindowsExtendedPathPrefix } from '../../src/node-compiler'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test('recognizes CSS requests with Windows extended-length path prefixes', () => {
   const paths = [
     '//?/C:/workspace/index.css',
-    '\\\\?\\C:\\workspace\\index.css'
+    '\\\\?\\C:\\workspace\\index.css',
+    '//?/UNC/server/share/index.css',
+    '\\\\?\\UNC\\server\\share\\index.css'
   ]
 
   for (const path of paths) {
@@ -44,6 +47,17 @@ test('recognizes CSS requests with Windows extended-length path prefixes', () =>
     expect(isCSSManifestRequest(`${path}?inline`)).toBe(true)
   }
   expect(isCSSManifestRequest('//?/C:/workspace/index.ts?lang=css')).toBe(false)
+})
+
+test('normalizes Windows extended-length binding paths for host filesystem access', () => {
+  expect(stripWindowsExtendedPathPrefix('//?/C:/workspace/index.css'))
+    .toBe('C:/workspace/index.css')
+  expect(stripWindowsExtendedPathPrefix('\\\\?\\C:\\workspace\\index.css'))
+    .toBe('C:\\workspace\\index.css')
+  expect(stripWindowsExtendedPathPrefix('//?/UNC/server/share/index.css'))
+    .toBe('\\\\server/share/index.css')
+  expect(stripWindowsExtendedPathPrefix('\\\\?\\UNC\\server\\share\\index.css'))
+    .toBe('\\\\server\\share\\index.css')
 })
 
 function createFixture() {

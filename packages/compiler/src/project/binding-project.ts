@@ -1,7 +1,10 @@
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { resolveCSSImportGraph } from '../node-compiler'
+import {
+  resolveCSSImportGraph,
+  stripWindowsExtendedPathPrefix
+} from '../node-compiler'
 import { realpathSync } from 'node:fs'
 import { join, relative, resolve, sep } from 'node:path'
 
@@ -39,12 +42,12 @@ export function loadBindingProjectManifest(
   const root = resolve(projectDir)
   let realRoot = root
   try {
-    realRoot = realpathSync.native(root)
+    realRoot = resolve(stripWindowsExtendedPathPrefix(realpathSync.native(root)))
   } catch {
     // The binding project layer reports unreadable project roots with its typed error.
   }
   const preservePath = (file: string) => {
-    const absoluteFile = resolve(file)
+    const absoluteFile = resolve(stripWindowsExtendedPathPrefix(file))
     return realRoot !== root
       && (absoluteFile === realRoot || absoluteFile.startsWith(`${realRoot}${sep}`))
       ? join(root, relative(realRoot, absoluteFile))

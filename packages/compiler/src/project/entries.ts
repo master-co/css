@@ -3,7 +3,9 @@ import { readFile, readdir } from 'node:fs/promises'
 import { dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import {
   inspectCSS,
-  resolveMasterCSSPackageEntryFile
+  resolveMasterCSSPackageEntryFile,
+  stripRequestSuffix,
+  stripWindowsExtendedPathPrefix
 } from '../node-compiler'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 
@@ -43,9 +45,7 @@ const PACKAGE_JSON_DEPENDENCY_FIELDS = [
 type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
 
 export function cleanCSSManifestRequest(id: string) {
-  const searchStart = id.startsWith('//?/') || id.startsWith('\\\\?\\') ? 4 : 0
-  const suffixIndex = id.slice(searchStart).search(/[?#]/)
-  return suffixIndex === -1 ? id : id.slice(0, searchStart + suffixIndex)
+  return stripRequestSuffix(id)
 }
 
 export function isCSSManifestRequest(id: string) {
@@ -66,14 +66,14 @@ export function findCSSManifestEntryFilesSync(projectDir = process.cwd()) {
   const root = resolve(projectDir)
   let realRoot = root
   try {
-    realRoot = realpathSync.native(root)
+    realRoot = resolve(stripWindowsExtendedPathPrefix(realpathSync.native(root)))
   } catch {
     // Let the native project layer report unreadable roots.
   }
   return createCompilerBindingSessionSync()
     .findManifestEntries(root)
     .map((entry) => {
-      const absoluteEntry = resolve(entry)
+      const absoluteEntry = resolve(stripWindowsExtendedPathPrefix(entry))
       return realRoot !== root
         && (absoluteEntry === realRoot || absoluteEntry.startsWith(`${realRoot}${sep}`))
         ? join(root, relative(realRoot, absoluteEntry))

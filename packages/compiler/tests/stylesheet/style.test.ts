@@ -19,6 +19,7 @@ import {
   createExtractedCSS,
   createExtractedCSSResult,
   collectStylesheetDependencies,
+  cleanStyleRequest,
   getNativeCSS,
   hasPreserveNativeDirective,
   hasMasterStyleEntrypoint,
@@ -205,6 +206,22 @@ describe('style CSS extraction helpers', () => {
     expect(isStylesheetRequest('/project/src/Button.module.css')).toBe(true)
     expect(isStylesheetRequest('/project/src/Button.vue?vue&type=style&index=0&lang.css')).toBe(true)
     expect(isMasterStyleSource('.card { @compose block; }')).toBe(false)
+  })
+
+  it('preserves Windows extended-length path prefixes while cleaning style requests', () => {
+    const paths = [
+      '//?/C:/workspace/index.css',
+      '\\\\?\\C:\\workspace\\index.css',
+      '//?/UNC/server/share/index.css',
+      '\\\\?\\UNC\\server\\share\\index.css'
+    ]
+
+    for (const path of paths) {
+      expect(cleanStyleRequest(path)).toBe(path)
+      expect(cleanStyleRequest(`${path}?inline`)).toBe(path)
+      expect(cleanStyleRequest(`${path}#fragment`)).toBe(path)
+      expect(isStylesheetRequest(`${path}?inline`)).toBe(true)
+    }
   })
 
   it('collects best-effort style dependencies from local import graphs', () => {

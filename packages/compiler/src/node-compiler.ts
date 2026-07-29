@@ -321,8 +321,21 @@ export function resolveMasterCSSPackageImportGraph(projectDir?: string) {
   })
 }
 
+export function stripRequestSuffix(id: string) {
+  const searchStart = id.startsWith('//?/') || id.startsWith('\\\\?\\') ? 4 : 0
+  const suffixIndex = id.slice(searchStart).search(/[?#]/)
+  return suffixIndex === -1 ? id : id.slice(0, searchStart + suffixIndex)
+}
+
+export function stripWindowsExtendedPathPrefix(file: string) {
+  const match = /^[/\\]{2}\?[/\\](?:(UNC)[/\\])?/i.exec(file)
+  if (!match) return file
+  const path = file.slice(match[0].length)
+  return match[1] ? `\\\\${path}` : path
+}
+
 function stripRequest(id: string) {
-  return id.replace(/[?#].*$/, '')
+  return stripRequestSuffix(id)
 }
 
 function resolveComparablePath(file: string) {

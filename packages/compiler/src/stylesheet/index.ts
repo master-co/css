@@ -8,7 +8,8 @@ import {
   type CompileCSSOptions,
   type CompileCSSResult,
   isMasterCSSPackageStyleFile as isMasterCSSCompilerPackageStyleFile,
-  resolveMasterCSSPackageImportGraph
+  resolveMasterCSSPackageImportGraph,
+  stripRequestSuffix
 } from '../node-compiler'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -178,7 +179,7 @@ function createStylesheetImportPattern() {
 }
 
 export function cleanStyleRequest(id: string) {
-  return id.replace(/[?#].*$/, '')
+  return stripRequestSuffix(id)
 }
 
 function getStyleRequestSearchParams(id: string) {
