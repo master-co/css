@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { readFile } from 'node:fs/promises'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { compileBrowserStylesheet } from '../../src/stylesheet/browser'
@@ -24,6 +25,20 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     expect(result.css).toContain('color:red')
     expect(result.generatedCSS).toContain('.btn')
     expect(result.nativeCSS).toBe('')
+  })
+
+  it('uses one explicit compiler artifact for compilation and rendering', async () => {
+    const input = new Uint8Array(await readFile(new URL(
+      '../../../binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm',
+      import.meta.url
+    )))
+    const result = await compileBrowserStylesheet('@components { card { display: block; } }', {
+      baseManifest: defaultManifest,
+      classNames: ['card'],
+      binding: { input }
+    })
+
+    expect(result.css).toContain('.card{display:block}')
   })
 
   it('preserves native CSS while rendering class names', async () => {

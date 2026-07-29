@@ -4,13 +4,14 @@ import { test } from 'node:test'
 import { compilePlayCSS } from '../../../../play-compiler/compile-play-css'
 
 const compilerWasmURL = new URL('../../../../../packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)
+const compilerWasmInput = new Uint8Array(readFileSync(compilerWasmURL))
 
 function readFixture(path: string) {
   return readFileSync(new URL(path, import.meta.url), 'utf-8')
 }
 
 function compileFixture(sourceCSS: string, classes: string[]) {
-  return compilePlayCSS(sourceCSS, classes, { input: compilerWasmURL })
+  return compilePlayCSS(sourceCSS, classes, { input: compilerWasmInput })
 }
 
 function extractClassNamesFromHTML(html: string) {

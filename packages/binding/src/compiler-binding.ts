@@ -1,8 +1,15 @@
+import { MasterCSSError } from '@master/css-schema'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import { bindCompilerBindingSession } from './compiler-binding-adapter'
-import { createCompilerWasmBindingSession } from './compiler-binding-wasm'
+import {
+  createCompilerWasmBindingSession,
+  createCompilerWasmRenderBindingSession
+} from './compiler-binding-wasm'
 import type {
   MasterCSSBindingLoadOptions,
-  MasterCSSCompilerBindingSession
+  MasterCSSCompilerBindingSession,
+  MasterCSSCompilerRenderBindingSession,
+  MasterCSSCompilerRenderBindingSessionOptions
 } from './compiler-binding-contract'
 import { normalizeBindingError } from './normalize-error'
 import { shouldLoadMasterCSSNativeBinding } from './binding-options'
@@ -39,6 +46,7 @@ export type {
   MasterCSSBindingLoadOptions,
   MasterCSSCompilerBindingSession,
   MasterCSSCompilerRenderBindingSession,
+  MasterCSSCompilerRenderBindingSessionOptions,
   MasterCSSNativeBindingLoadOptions,
   MasterCSSWasmBindingLoadOptions
 } from './compiler-binding-contract'
@@ -61,6 +69,30 @@ export async function createCompilerBindingSession(
       }
     }
     return await createCompilerWasmBindingSession(options.wasm)
+  } catch (cause) {
+    throw normalizeBindingError(cause, 'compiler')
+  }
+}
+
+export async function createCompilerRenderBindingSession(
+  options: MasterCSSCompilerRenderBindingSessionOptions,
+  loadOptions: MasterCSSBindingLoadOptions = {}
+): Promise<MasterCSSCompilerRenderBindingSession> {
+  try {
+    if (loadOptions.binding === 'native') {
+      throw new MasterCSSError({
+        code: 'NATIVE_UNAVAILABLE',
+        domain: 'binding',
+        message: 'The Master CSS compiler render session is only available through Wasm.'
+      })
+    }
+    return await createCompilerWasmRenderBindingSession(
+      serializeMasterCSSManifest(options.manifest),
+      options.emittedGlobals === undefined
+        ? undefined
+        : JSON.stringify(options.emittedGlobals),
+      loadOptions.wasm
+    )
   } catch (cause) {
     throw normalizeBindingError(cause, 'compiler')
   }

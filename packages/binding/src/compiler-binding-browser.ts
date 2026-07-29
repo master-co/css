@@ -1,9 +1,15 @@
 import { MasterCSSError } from '@master/css-schema'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import { createMasterCSSCompilerWasmProvider } from '@master/css-binding-wasm-compiler'
-import { createCompilerWasmBindingSession } from './compiler-binding-wasm'
+import {
+  createCompilerWasmBindingSession,
+  createCompilerWasmRenderBindingSession
+} from './compiler-binding-wasm'
 import type {
   MasterCSSBindingLoadOptions,
-  MasterCSSCompilerBindingSession
+  MasterCSSCompilerBindingSession,
+  MasterCSSCompilerRenderBindingSession,
+  MasterCSSCompilerRenderBindingSessionOptions
 } from './compiler-binding-contract'
 import { callBindingAsync } from './normalize-error'
 
@@ -34,6 +40,7 @@ export type {
   MasterCSSBindingLoadOptions,
   MasterCSSCompilerBindingSession,
   MasterCSSCompilerRenderBindingSession,
+  MasterCSSCompilerRenderBindingSessionOptions,
   MasterCSSNativeBindingLoadOptions,
   MasterCSSWasmBindingLoadOptions
 } from './compiler-binding-contract'
@@ -52,6 +59,30 @@ export function createCompilerBindingSession(
     'compiler',
     () => createCompilerWasmBindingSession(
       options.wasm,
+      createMasterCSSCompilerWasmProvider
+    )
+  )
+}
+
+export function createCompilerRenderBindingSession(
+  options: MasterCSSCompilerRenderBindingSessionOptions,
+  loadOptions: MasterCSSBindingLoadOptions = {}
+): Promise<MasterCSSCompilerRenderBindingSession> {
+  if (loadOptions.binding === 'native') {
+    throw new MasterCSSError({
+      code: 'NATIVE_UNAVAILABLE',
+      domain: 'binding',
+      message: 'Master CSS native compiler bindings are unavailable in browsers.'
+    })
+  }
+  return callBindingAsync(
+    'compiler',
+    () => createCompilerWasmRenderBindingSession(
+      serializeMasterCSSManifest(options.manifest),
+      options.emittedGlobals === undefined
+        ? undefined
+        : JSON.stringify(options.emittedGlobals),
+      loadOptions.wasm,
       createMasterCSSCompilerWasmProvider
     )
   )

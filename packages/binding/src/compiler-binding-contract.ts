@@ -97,6 +97,11 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
   dispose(): void
 }
 
+export interface MasterCSSCompilerRenderBindingSessionOptions {
+  readonly manifest: MasterCSSManifest
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
+}
+
 export interface MasterCSSCompilerRenderBindingSession extends Disposable {
   readonly binding: MasterCSSResolvedBinding
   nativeDeclarationCandidates(

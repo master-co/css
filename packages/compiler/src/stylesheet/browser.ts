@@ -2,7 +2,7 @@ import {
   createCompiler,
   type MasterCSSCompileManifestResult
 } from '../index'
-import { createRenderBindingSession } from '@master/css-binding/engine'
+import { createCompilerRenderBindingSession } from '@master/css-binding/compiler'
 import type { MasterCSSDiagnostic } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -64,7 +64,7 @@ export async function compileBrowserStylesheet(
     compiler.dispose()
   }
   signal?.throwIfAborted()
-  const bindingSession = await createRenderBindingSession(
+  const bindingSession = await createCompilerRenderBindingSession(
     { manifest: result.manifest },
     { binding: 'wasm', wasm: binding }
   )
@@ -72,7 +72,7 @@ export async function compileBrowserStylesheet(
     nativeDeclarationCandidates: (classNames) =>
       bindingSession.nativeDeclarationCandidates(classNames),
     ensureClasses: (classNames, nativeSupport) =>
-      bindingSession.ensureClassRules(classNames, nativeSupport),
+      bindingSession.ensureClasses(classNames, nativeSupport),
     ensureStylesheetResources: (nativeCSS) =>
       bindingSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () =>
