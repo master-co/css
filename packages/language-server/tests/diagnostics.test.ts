@@ -42,6 +42,24 @@ withFixture('basic', async (context) => {
     sendDiagnostics.mockRestore()
   })
 
+  test('locates SFC diagnostics after matching attribute text', async ({ expect }) => {
+    const source = '.btn { @compose not-a-real-class; }'
+    const text = `<style data-source="${source}">${source}</style>`
+    const document = context.createDocument(text, { lang: 'vue' })
+    const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
+
+    await context.server.onDidOpen({ document })
+
+    const diagnostic = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics[0]
+    expect(diagnostic).toBeDefined()
+    if (!diagnostic) throw new Error('Expected an SFC diagnostic.')
+    expect(document.offsetAt(diagnostic.range.start)).toBe(text.lastIndexOf('not-a-real-class'))
+    expect(document.offsetAt(diagnostic.range.end)).toBe(text.lastIndexOf('not-a-real-class') + 'not-a-real-class'.length)
+
+    await context.server.onDidClose({ document })
+    sendDiagnostics.mockRestore()
+  })
+
   test('preserves UTF-16 offsets in Svelte style fragments', async ({ expect }) => {
     const text = '<script>const icon = "😀"</script>\n<style>\n.btn { @compose not-a-real-class; }\n</style>'
     const document = context.createDocument(text, { lang: 'svelte' })

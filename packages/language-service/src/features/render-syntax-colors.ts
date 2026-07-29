@@ -17,16 +17,19 @@ export default async function renderSyntaxColors(
       const color = new Color(token.value)
       if (token.alpha !== undefined) color.alpha *= token.alpha
       const srgb = color.to('srgb')
+      const clamp = (value: number) => Number.isFinite(value)
+        ? Math.min(1, Math.max(0, value))
+        : 0
       colors.push({
         range: {
           start: document.positionAt(token.range.start),
           end: document.positionAt(token.range.end)
         },
         color: {
-          red: srgb.r ?? 0,
-          green: srgb.g ?? 0,
-          blue: srgb.b ?? 0,
-          alpha: Number(srgb.alpha)
+          red: clamp(srgb.r ?? 0),
+          green: clamp(srgb.g ?? 0),
+          blue: clamp(srgb.b ?? 0),
+          alpha: clamp(Number(srgb.alpha))
         }
       })
     } catch { }

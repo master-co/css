@@ -56,6 +56,13 @@ test.concurrent('formats CSS-family SFC style blocks only', () => {
   ].join('\n'))
 })
 
+test.concurrent('locates SFC style content after matching attribute text', () => {
+  const directive = '.btn { @compose bg:transparent !; }'
+  const source = `<style data-source="${directive}">${directive}</style>`
+  expect(format('vue', source))
+    .toBe(`<style data-source="${directive}">.btn { @compose bg:transparent!; }</style>`)
+})
+
 test.concurrent('formats safelist quoted class lists', () => {
   expect(format('css', '@safelist "bg:transparent !  fg:red !@sm";'))
     .toBe('@safelist "bg:transparent! fg:red!@sm";')
@@ -77,4 +84,3 @@ test.concurrent('respects range formatting', () => {
   }) ?? []
   expect(applyTextEdits(source, edits, doc)).toBe('.a { @compose bg:red !; }\n.b { @compose bg:blue!; }')
 })
-

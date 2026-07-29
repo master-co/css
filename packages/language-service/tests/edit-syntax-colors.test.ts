@@ -59,7 +59,7 @@ test.concurrent('lch', async () => {
 })
 
 test.concurrent('oklab', async () => {
-  await expectEditedColors({ before: 'oklab(50%|0.1|0.11)', after: 'oklab(38%|0.0877|-0.1906)' })
+  await expectEditedColors({ before: 'oklab(50%|0.1|0.11)', after: 'oklab(38%|0.04|-0.08)' })
 })
 
 test.concurrent('oklch', async () => {
@@ -69,4 +69,3 @@ test.concurrent('oklch', async () => {
 test.concurrent('hex to hex8', async () => {
   await expectEditedColors({ before: '#333333', after: 'rgb(40%|40%|40%/0)' })
 })
-

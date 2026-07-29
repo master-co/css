@@ -1,7 +1,8 @@
 import { resolve } from 'path'
 import { withFixture } from './setup'
-import { test } from 'vitest'
+import { test, vi } from 'vitest'
 import type { MasterCSSWorkspace } from '../src'
+import { connect } from './connection'
 
 function createWorkspace(uri: string): MasterCSSWorkspace {
   return {
@@ -10,6 +11,27 @@ function createWorkspace(uri: string): MasterCSSWorkspace {
     languageServiceSettings: {}
   }
 }
+
+test('propagates workspace initialization failures', async ({ expect }) => {
+  const { server, clientConnection } = connect()
+  const failure = new Error('workspace initialization failed')
+  const mutableServer = server as unknown as {
+    initWorkspaceFolder(uri: string): Promise<void>
+  }
+  let shouldFail = true
+  mutableServer.initWorkspaceFolder = async () => {
+    if (shouldFail) throw failure
+  }
+  server.workspaceFolders = [{ uri: 'file:///project', name: 'project' }]
+  try {
+    await expect(server.init()).rejects.toBe(failure)
+    shouldFail = false
+    await expect(server.init()).resolves.toBeUndefined()
+  } finally {
+    server.dispose()
+    clientConnection.dispose()
+  }
+})
 
 withFixture('basic', async (context) => {
   test('root workspace', async ({ expect }) => {
@@ -24,6 +46,37 @@ withFixture('basic', async (context) => {
     expect(context.rootWorkspace?.openedTextDocuments).toEqual([textDocument])
     await context.server.onDidClose({ document: textDocument })
     expect(context.rootWorkspace?.openedTextDocuments?.length).toBe(0)
+  })
+
+  test('coordinates concurrent document opens with closes during initialization', async ({ expect }) => {
+    const first = context.createDocument()
+    const second = context.createDocument()
+    const originalInit = context.server.initWorkspaceLanguageService.bind(context.server)
+    let releaseInitialization: (() => void) | undefined
+    const initializationGate = new Promise<void>((resolve) => {
+      releaseInitialization = resolve
+    })
+    let initializationCalls = 0
+    context.server.initWorkspaceLanguageService = async (workspace) => {
+      initializationCalls++
+      await initializationGate
+      await originalInit(workspace)
+    }
+    try {
+      const firstOpen = context.server.onDidOpen({ document: first })
+      const secondOpen = context.server.onDidOpen({ document: second })
+      await vi.waitFor(() => expect(initializationCalls).toBe(1))
+      await context.server.onDidClose({ document: first })
+      await context.server.onDidClose({ document: second })
+      releaseInitialization?.()
+      await Promise.all([firstOpen, secondOpen])
+
+      expect(context.rootWorkspace?.openedTextDocuments).toEqual([])
+      expect(context.rootWorkspace?.languageService).toBeUndefined()
+    } finally {
+      releaseInitialization?.()
+      context.server.initWorkspaceLanguageService = originalInit
+    }
   })
 
   test('open an external document', async ({ expect }) => {

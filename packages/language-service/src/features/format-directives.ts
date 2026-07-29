@@ -40,7 +40,7 @@ function collectSFCStyleRanges(document: TextDocument) {
     const styleLanguage = getSFCStyleLanguage(match[1])
     if (!CSS_FORMAT_LANGUAGE_IDS.has(styleLanguage)) continue
     const styleText = match[2]
-    const styleStart = (match.index || 0) + match[0].indexOf(styleText)
+    const styleStart = (match.index || 0) + match[0].indexOf('>') + 1
     const styleEnd = styleStart + styleText.length
     ranges.push({ start: styleStart, end: styleEnd })
   }

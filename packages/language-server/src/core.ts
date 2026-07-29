@@ -158,7 +158,7 @@ function getCSSDiagnosticSources(textDocument: TextDocument): CSSDiagnosticSourc
     const styleLanguage = getSFCStyleLanguage(match[1])
     if (!CSS_DIAGNOSTIC_LANGUAGE_IDS.has(styleLanguage)) continue
     const source = match[2]
-    const offset = (match.index || 0) + match[0].indexOf(source)
+    const offset = (match.index || 0) + match[0].indexOf('>') + 1
     sources.push({ source, offset })
   }
   return sources
@@ -250,6 +250,7 @@ export class MasterCSSLanguageServer implements Disposable {
   settings?: MasterCSSLanguageServerSettings
   console: RemoteConsole
   private disposables: LSPDisposable[] = []
+  private workspaceLanguageServiceInitializations = new Map<MasterCSSWorkspace, Promise<void>>()
   private disposed = false
 
   constructor(
@@ -297,10 +298,13 @@ export class MasterCSSLanguageServer implements Disposable {
 
   init() {
     if (this.initializing) return this.initializing
-    return this.initializing = new Promise(async (resolve) => {
-      await Promise.all(this.workspaceFolders.map((folder) => this.initWorkspaceFolder(folder.uri)))
-      resolve()
-    })
+    return this.initializing = Promise
+      .all(this.workspaceFolders.map((folder) => this.initWorkspaceFolder(folder.uri)))
+      .then(() => undefined)
+      .catch((error: unknown) => {
+        this.initializing = undefined
+        throw error
+      })
   }
 
   onInitialize(params: InitializeParams): InitializeResult {
@@ -416,14 +420,12 @@ export class MasterCSSLanguageServer implements Disposable {
     await this.init()
     const workspace = this.findClosestWorkspace(params.document.uri)
     if (!workspace) return
-    if (workspace.openedTextDocuments.includes(params.document)) {
-      this.publishDiagnostics(params.document, workspace)
-      return
-    }
-    if (!workspace.openedTextDocuments.length) {
-      await this.initWorkspaceLanguageService(workspace)
-    }
-    workspace.openedTextDocuments.push(params.document)
+    const documentIndex = workspace.openedTextDocuments
+      .findIndex(({ uri }) => uri === params.document.uri)
+    if (documentIndex < 0) workspace.openedTextDocuments.push(params.document)
+    else workspace.openedTextDocuments[documentIndex] = params.document
+    await this.ensureWorkspaceLanguageService(workspace)
+    if (!workspace.openedTextDocuments.some(({ uri }) => uri === params.document.uri)) return
     this.publishDiagnostics(params.document, workspace)
   }
 
@@ -431,6 +433,9 @@ export class MasterCSSLanguageServer implements Disposable {
     await this.init()
     const workspace = this.findClosestWorkspace(params.document.uri)
     if (!workspace) return
+    const documentIndex = workspace.openedTextDocuments
+      .findIndex(({ uri }) => uri === params.document.uri)
+    if (documentIndex >= 0) workspace.openedTextDocuments[documentIndex] = params.document
     this.publishDiagnostics(params.document, workspace)
   }
 
@@ -438,7 +443,9 @@ export class MasterCSSLanguageServer implements Disposable {
     await this.init()
     const workspace = this.findClosestWorkspace(params.document.uri)
     if (!workspace) return
-    workspace.openedTextDocuments.splice(workspace.openedTextDocuments.indexOf(params.document), 1)
+    const documentIndex = workspace.openedTextDocuments
+      .findIndex(({ uri }) => uri === params.document.uri)
+    if (documentIndex >= 0) workspace.openedTextDocuments.splice(documentIndex, 1)
     this.connection.sendDiagnostics({ uri: params.document.uri, diagnostics: [] })
     if (!workspace.openedTextDocuments.length) {
       this.destroyLanguageService(workspace)
@@ -555,6 +562,25 @@ export class MasterCSSLanguageServer implements Disposable {
       { ...workspace.languageServiceSettings, manifest },
       { session: await createToolingSession({ manifest }) }
     )
+  }
+
+  private async ensureWorkspaceLanguageService(workspace: MasterCSSWorkspace) {
+    if (workspace.languageService) return
+    let initialization = this.workspaceLanguageServiceInitializations.get(workspace)
+    if (!initialization) {
+      initialization = this.initWorkspaceLanguageService(workspace)
+      this.workspaceLanguageServiceInitializations.set(workspace, initialization)
+    }
+    try {
+      await initialization
+    } finally {
+      if (this.workspaceLanguageServiceInitializations.get(workspace) === initialization) {
+        this.workspaceLanguageServiceInitializations.delete(workspace)
+      }
+      if ((this.disposed || !workspace.openedTextDocuments.length) && workspace.languageService) {
+        this.destroyLanguageService(workspace)
+      }
+    }
   }
 
   private async loadWorkspacePlan(workspace: MasterCSSWorkspace, baseManifest: MasterCSSManifest) {
@@ -841,6 +867,7 @@ export class MasterCSSLanguageServer implements Disposable {
     }
     this.disposables.forEach((disposable) => disposable.dispose())
     this.disposables.length = 0
+    this.workspaceLanguageServiceInitializations.clear()
     this.connection.dispose()
     this.initializing = undefined
   }
