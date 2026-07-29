@@ -43,9 +43,13 @@ export function loadBindingProjectManifest(
   } catch {
     // The binding project layer reports unreadable project roots with its typed error.
   }
-  const preservePath = (file: string) => realRoot !== root && (file === realRoot || file.startsWith(`${realRoot}${sep}`))
-    ? join(root, relative(realRoot, file))
-    : file
+  const preservePath = (file: string) => {
+    const absoluteFile = resolve(file)
+    return realRoot !== root
+      && (absoluteFile === realRoot || absoluteFile.startsWith(`${realRoot}${sep}`))
+      ? join(root, relative(realRoot, absoluteFile))
+      : absoluteFile
+  }
   const resolvedEntries = (entries ?? compiler.findManifestEntries(projectDir)).map(preservePath)
   const graphs = resolvedEntries.map((entry) => ({
     entry,

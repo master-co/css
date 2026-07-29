@@ -3,7 +3,7 @@ import {
   type MasterCSSDiagnostic
 } from '@master/css-schema'
 import { resolve } from 'node:path'
-import { findCSSManifestEntryFilesSync } from './entries'
+import { findCSSManifestEntryFilesSync, isCSSManifestRequest } from './entries'
 import type {
   MasterCSSProjectCompileOptions,
   MasterCSSProjectDiscoveryOptions,
@@ -31,7 +31,7 @@ function warningDiagnostic(message: string): MasterCSSDiagnostic {
 
 function assertStylesheetEntries(entries: readonly string[] | undefined) {
   for (const entry of entries ?? []) {
-    if (!entry.replace(/[?#].*$/, '').endsWith('.css')) {
+    if (!isCSSManifestRequest(entry)) {
       throw new TypeError('Master CSS project entries must be CSS files.')
     }
   }

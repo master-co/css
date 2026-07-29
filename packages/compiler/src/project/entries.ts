@@ -43,7 +43,9 @@ const PACKAGE_JSON_DEPENDENCY_FIELDS = [
 type PackageJSON = Partial<Record<typeof PACKAGE_JSON_DEPENDENCY_FIELDS[number], unknown>>
 
 export function cleanCSSManifestRequest(id: string) {
-  return id.replace(/[?#].*$/, '')
+  const searchStart = id.startsWith('//?/') || id.startsWith('\\\\?\\') ? 4 : 0
+  const suffixIndex = id.slice(searchStart).search(/[?#]/)
+  return suffixIndex === -1 ? id : id.slice(0, searchStart + suffixIndex)
 }
 
 export function isCSSManifestRequest(id: string) {
@@ -70,9 +72,13 @@ export function findCSSManifestEntryFilesSync(projectDir = process.cwd()) {
   }
   return createCompilerBindingSessionSync()
     .findManifestEntries(root)
-    .map((entry) => realRoot !== root && (entry === realRoot || entry.startsWith(`${realRoot}${sep}`))
-      ? join(root, relative(realRoot, entry))
-      : entry)
+    .map((entry) => {
+      const absoluteEntry = resolve(entry)
+      return realRoot !== root
+        && (absoluteEntry === realRoot || absoluteEntry.startsWith(`${realRoot}${sep}`))
+        ? join(root, relative(realRoot, absoluteEntry))
+        : absoluteEntry
+    })
 }
 
 export async function findCSSManifestEntryFile(projectDir = process.cwd()) {

@@ -8,9 +8,11 @@ import {
   loadProjectManifestSync
 } from '../../src/project/manifest-sync'
 import {
+  cleanCSSManifestRequest,
   findCSSManifestEntryFiles,
   findMasterCSSWorkspaceDirectories,
   hasMasterCSSManifestEntrypoint,
+  isCSSManifestRequest,
   resolveMasterCSSPackageEntryFile
 } from '../../src/project/entries'
 import {
@@ -28,6 +30,21 @@ import {
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+
+test('recognizes CSS requests with Windows extended-length path prefixes', () => {
+  const paths = [
+    '//?/C:/workspace/index.css',
+    '\\\\?\\C:\\workspace\\index.css'
+  ]
+
+  for (const path of paths) {
+    expect(cleanCSSManifestRequest(path)).toBe(path)
+    expect(cleanCSSManifestRequest(`${path}?inline`)).toBe(path)
+    expect(cleanCSSManifestRequest(`${path}#fragment`)).toBe(path)
+    expect(isCSSManifestRequest(`${path}?inline`)).toBe(true)
+  }
+  expect(isCSSManifestRequest('//?/C:/workspace/index.ts?lang=css')).toBe(false)
+})
 
 function createFixture() {
   return mkdtempSync(join(tmpdir(), 'master-css-manifester-'))
