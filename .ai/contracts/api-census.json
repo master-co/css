@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 845,
+    "records": 847,
     "byKind": {
       "bin": 3,
       "cli-command": 3,
-      "export": 663,
+      "export": 665,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -1054,6 +1054,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#createCompilerRenderBindingSession",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "createCompilerRenderBindingSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -1234,6 +1256,28 @@
       "package": "@master/css-binding",
       "subpath": "./compiler",
       "name": "MasterCSSCompilerRenderBindingSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSCompilerRenderBindingSessionOptions",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSCompilerRenderBindingSessionOptions"
     },
     {
       "kind": "export",

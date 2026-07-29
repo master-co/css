@@ -77,6 +77,7 @@
           "MasterCSSCompilerBindingSession",
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerRenderBindingSession",
+          "MasterCSSCompilerRenderBindingSessionOptions",
           "MasterCSSDependencyAnalysis",
           "MasterCSSDiagnosticsReportInput",
           "MasterCSSDirectiveCompilation",
@@ -94,7 +95,8 @@
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
           "MasterCSSWasmBindingLoadOptions",
-          "createCompilerBindingSession"
+          "createCompilerBindingSession",
+          "createCompilerRenderBindingSession"
         ],
         "./compiler/node": [
           "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
@@ -174,7 +176,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "07481e1d005ed44e"
+      "surface": "6b7267128dce22ea"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
