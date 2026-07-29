@@ -584,12 +584,15 @@ export class MasterCSSLanguageServer implements Disposable {
   }
 
   private async loadWorkspacePlan(workspace: MasterCSSWorkspace, baseManifest: MasterCSSManifest) {
+    const entries = workspace.planEntries ?? []
+    if (!entries.length) return workspace.languageServiceSettings.manifest
     const cwd = workspace.uri ? URI.parse(workspace.uri).fsPath : process.cwd()
     const result = await loadProjectManifest({
       root: cwd,
+      entries,
       baseManifest
     })
-    return result.entries.length ? result.manifest : workspace.languageServiceSettings.manifest
+    return result.manifest
   }
 
   private async loadWorkspaceBaseManifest(workspace: MasterCSSWorkspace): Promise<MasterCSSManifest> {

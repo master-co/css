@@ -115,6 +115,25 @@ withFixture('basic', async (context) => {
   })
 })
 
+withFixture('missing-workspace', async (context) => {
+  test('does not report manifest errors when discovery found no entries', async ({ expect }) => {
+    const text = '.btn { @compose not-a-real-class; }'
+    const document = context.createDocument(text, { lang: 'css' })
+    const sendDiagnostics = vi.spyOn(context.server.connection, 'sendDiagnostics').mockImplementation(() => undefined as any)
+
+    await context.server.onDidOpen({ document })
+
+    const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnostics || []
+    expect(context.rootWorkspace?.planEntries).toEqual([])
+    expect(context.rootWorkspace?.manifestErrors).toEqual([])
+    expect(diagnostics).toHaveLength(1)
+    expect(diagnostics[0].code).toBe('invalid-compose-class')
+
+    await context.server.onDidClose({ document })
+    sendDiagnostics.mockRestore()
+  })
+})
+
 withFixture('invalid-manifest', async (context) => {
   test('publishes manifest loading diagnostics', async ({ expect }) => {
     const document = context.createDocument('<div class="block"></div>', { lang: 'html' })
