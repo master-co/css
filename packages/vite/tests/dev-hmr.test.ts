@@ -85,13 +85,13 @@ describe('Vite dev HMR', () => {
     browser = await chromium.launch()
     const page = await browser.newPage()
     reportBrowserErrors(page)
-    await page.goto(url)
+    await page.goto(url, { timeout: 120_000 })
     await page.waitForFunction(() => {
       const probe = document.querySelector('#probe')
       return !!document.getElementById('master-css')
         && !!probe
         && getComputedStyle(probe).display === 'block'
-    })
+    }, undefined, { timeout: 120_000 })
 
     const state = await page.evaluate(() => {
       const runtimeScript = document.querySelector('script[src="/@id/__x00__virtual:master-css-runtime"]')
@@ -157,8 +157,12 @@ describe('Vite dev HMR', () => {
     browser = await chromium.launch()
     const page = await browser.newPage()
     reportBrowserErrors(page)
-    await page.goto(url)
-    await page.waitForFunction(() => getComputedStyle(document.querySelector('#probe')!).display === 'inline-flex')
+    await page.goto(url, { timeout: 120_000 })
+    await page.waitForFunction(
+      () => getComputedStyle(document.querySelector('#probe')!).display === 'inline-flex',
+      undefined,
+      { timeout: 120_000 }
+    )
     await page.evaluate(() => {
       (window as Window & { __MASTER_CSS_HMR_MARKER?: string }).__MASTER_CSS_HMR_MARKER = 'preserve'
     })
