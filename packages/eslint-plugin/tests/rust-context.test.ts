@@ -23,3 +23,27 @@ test('uses the shared Rust-backed tooling session', () => {
   first.release()
   second.release()
 })
+
+test('reuses a tooling session across source files in one lint run', () => {
+  const first = resolveContext({
+    cwd: process.cwd(),
+    filename: '<input>',
+    physicalFilename: '<input>',
+    options: [],
+    sourceCode: {},
+    settings: {}
+  } as unknown as RuleContext<any, any[]>)
+  first.release()
+
+  const second = resolveContext({
+    cwd: process.cwd(),
+    filename: '<input>',
+    physicalFilename: '<input>',
+    options: [],
+    sourceCode: {},
+    settings: {}
+  } as unknown as RuleContext<any, any[]>)
+
+  expect(second.tooling).toBe(first.tooling)
+  second.release()
+})
