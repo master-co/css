@@ -1,5 +1,6 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import { createRenderBindingSession } from '@master/css-binding/engine'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
@@ -132,10 +133,9 @@ const manifest: MasterCSSManifest = {
 }
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 describe('Rust engine session', () => {

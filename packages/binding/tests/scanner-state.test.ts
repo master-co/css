@@ -1,11 +1,11 @@
 import { beforeAll, describe, expect, test } from 'vitest'
+import { fileURLToPath } from 'node:url'
 import { loadNativeToolingBinding } from '../src/tooling'
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 const manifest = {

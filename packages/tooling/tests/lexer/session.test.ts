@@ -1,11 +1,11 @@
 import { beforeAll, expect, test } from 'vitest'
+import { fileURLToPath } from 'node:url'
 import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 test('batches class lists, CSS inspection, and identifier escaping in Rust', () => {

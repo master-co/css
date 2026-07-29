@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createEngineBindingSessionSync } from '@master/css-binding/engine/node'
 import {
   flattenMasterCSSManifestVariables,
@@ -15,10 +16,9 @@ import {
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 describe('Rust-owned default preset', () => {

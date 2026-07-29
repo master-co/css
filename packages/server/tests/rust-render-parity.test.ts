@@ -2,14 +2,14 @@ import { createRenderBindingSessionSync } from '@master/css-binding/engine/node'
 import { renderClassNamesSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { fileURLToPath } from 'node:url'
 import { beforeAll, expect, it } from 'vitest'
 import parseHTML from '../src/parse-html'
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 it('matches the core render owner and native render protocol', () => {

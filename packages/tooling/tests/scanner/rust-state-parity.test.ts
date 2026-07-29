@@ -1,13 +1,13 @@
 import { beforeAll, expect, test } from 'vitest'
 import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { fileURLToPath } from 'node:url'
 import { MasterCSSScanner } from './test-scanner'
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 const manifest = {
