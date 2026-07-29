@@ -22,6 +22,51 @@ function runNPM(args, options = {}) {
   })
 }
 
+function exerciseEngineSession(binding) {
+  const session = new binding.EngineSession(JSON.stringify({
+    version: 1,
+    variables: {
+      '': [{
+        name: 'stripe',
+        key: 'stripe',
+        type: 'string',
+        value: 'linear-gradient(red,blue)'
+      }]
+    },
+    utilities: []
+  }))
+
+  try {
+    const ensured = JSON.parse(session.ensureClassRulesWithNativeSupport(['bg:stripe'], [true]))
+    if (!ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'theme')
+      || !ensured.mutations.some(({ op, target }) => op === 'insert' && target === 'utilities')) {
+      throw new Error('Native engine smoke did not emit the expected theme and utility rules.')
+    }
+
+    const registered = JSON.parse(session.registerEmittedGlobals(JSON.stringify({
+      variables: { stripe: 1 }
+    })))
+    if (!registered.mutations.some(({ op, target }) => op === 'delete' && target === 'theme')) {
+      throw new Error('Native engine smoke did not remove the host-owned theme rule.')
+    }
+
+    const snapshot = JSON.parse(session.snapshot())
+    if (snapshot.text.includes('--stripe:')
+      || !snapshot.text.includes('.bg\\:stripe{background:var(--stripe)}')) {
+      throw new Error('Native engine smoke did not preserve the utility without local theme output.')
+    }
+  } finally {
+    session.dispose()
+  }
+
+  try {
+    session.snapshot()
+  } catch {
+    return
+  }
+  throw new Error('Native engine smoke accepted use after disposal.')
+}
+
 function inspectNativePackage(directory) {
   const packageJSON = JSON.parse(readFileSync(resolve(directory, 'package.json'), 'utf8'))
   if (packageJSON.bin !== undefined) {
@@ -34,6 +79,7 @@ function inspectNativePackage(directory) {
   }
 
   const binding = createRequire(import.meta.url)(resolve(directory, 'mastercss.node'))
+  exerciseEngineSession(binding)
   const bindingInfo = JSON.parse(binding.bindingInfoJson())
   const selfTest = JSON.parse(execFileSync(resolve(directory, executableRelativePath), ['--self-test'], {
     encoding: 'utf8'
