@@ -72,6 +72,7 @@ function makeFakeCompiler(options: {
       initialize: new SyncHook<[]>([]),
       beforeRun: new AsyncSeriesHook<[unknown]>(['compiler']),
       watchRun: new AsyncSeriesHook<[unknown]>(['compiler']),
+      shutdown: new AsyncSeriesHook<[]>([]),
       afterEnvironment: new SyncHook<[]>([]),
       afterResolvers: new SyncHook<[unknown]>(['compiler']),
       thisCompilation: new SyncHook<[typeof compilation]>(['compilation']),
@@ -200,6 +201,34 @@ function makeStylesheetCollection(dependencies: string[]) {
 describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
   test('exports the plugin as the default export', () => {
     expect(MasterCSSWebpackPlugin.name).toBe('MasterCSSWebpackPlugin')
+  })
+
+  test('defers scanner initialization until Webpack starts a build', async () => {
+    const plugin = makePlugin()
+    const init = vi.spyOn(plugin, 'init')
+    const { compiler } = makeFakeCompiler()
+    ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+    plugin.apply(compiler as any)
+    await Promise.resolve()
+    expect(init).not.toHaveBeenCalled()
+
+    await compiler.hooks.beforeRun.promise(compiler)
+    expect(init).toHaveBeenCalledOnce()
+  })
+
+  test('disposes scanner and stylesheet sessions when Webpack shuts down', async () => {
+    const plugin = makePlugin()
+    const scannerDispose = vi.spyOn(plugin.scanner, 'dispose')
+    const stylesheetDispose = vi.spyOn((plugin as any).stylesheets, 'dispose')
+    const { compiler } = makeFakeCompiler()
+    ;(compiler as any).webpack = { sources: { RawSource: function NoopSource(this: object) { /* stub */ } } }
+
+    plugin.apply(compiler as any)
+    await compiler.hooks.shutdown.promise()
+
+    expect(scannerDispose).toHaveBeenCalledOnce()
+    expect(stylesheetDispose).toHaveBeenCalledOnce()
   })
 
   test('installs a pre style loader for managed CSS entries', () => {

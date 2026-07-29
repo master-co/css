@@ -21,8 +21,6 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
         })
         void context.queueResetReplay()
       })
-      void context.init()
-
       compiler.hooks.beforeRun.tapPromise(context.name, async () => {
         await context.init()
         await context.writeGeneratedCSSModule()
@@ -38,6 +36,8 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
           await context.waitForResetReplay()
         }
       })
+
+      compiler.hooks.shutdown.tapPromise(context.name, () => context.dispose())
 
       context.setPluginInitialized(true)
     }

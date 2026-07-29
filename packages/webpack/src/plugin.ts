@@ -90,6 +90,7 @@ export interface MasterCSSWebpackContext {
   on(...args: Parameters<MasterCSSScanner['on']>): unknown
   init(customOptions?: MasterCSSScannerConfiguration): Promise<unknown>
   reset(customOptions?: MasterCSSScannerConfiguration): Promise<unknown>
+  dispose(): Promise<void>
   getOptions(): MasterCSSScannerConfiguration
   getPluginInitialized(): boolean
   setPluginInitialized(pluginInitialized: boolean): void
@@ -367,6 +368,13 @@ export class MasterCSSWebpackPlugin {
       on: (...args) => this.on(...args),
       init: (customOptions = this.customOptions) => this.init(customOptions),
       reset: (customOptions = this.customOptions) => this.reset(customOptions),
+      dispose: async () => {
+        try {
+          await this.scanner.dispose()
+        } finally {
+          this.stylesheets.dispose()
+        }
+      },
       getOptions: () => this.options,
       getPluginInitialized: () => this.pluginInitialized,
       setPluginInitialized: (pluginInitialized) => {
