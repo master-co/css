@@ -1,4 +1,5 @@
 import { describe, expect, test, vi } from 'vitest'
+import { resolve } from 'node:path'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
 import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -127,7 +128,7 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )).rejects.toThrow('Invalid @compose class')
 
-    expect(addWatchFile).toHaveBeenCalledWith('/project/src/style.css')
+    expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
   })
 
   test('serve transform keeps native imports before generated CSS when @master/css comes first', async () => {
