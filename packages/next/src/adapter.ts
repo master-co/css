@@ -216,6 +216,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
     const baseBuildState = await buildStateResolver.resolve()
     renderer = createServerRenderer({
       manifest: baseBuildState.manifest,
+      emittedGlobals: baseBuildState.emittedGlobals,
       maxCachedClasses: Infinity
     })
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)

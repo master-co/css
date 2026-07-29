@@ -29,6 +29,9 @@ describe('resolveMasterCSSBuildState', () => {
     writeFileSync(entry, [
       '@import "@master/css";',
       '',
+      '@theme { --color-host: #123456; }',
+      '.host { color: var(--color-host); }',
+      '',
       '.hidden-card {',
       '    @compose hidden;',
       '}'
@@ -41,6 +44,7 @@ describe('resolveMasterCSSBuildState', () => {
     expect(result.nativeCSS).toContain('text-rendering: geometricprecision')
     expect(result.nativeCSS).toContain('.hidden-card')
     expect(result.nativeCSS).toContain('display:none')
+    expect(result.emittedGlobals.variables?.['color-host']).toBe(1)
     expect(dispose).toHaveBeenCalledOnce()
   })
 })

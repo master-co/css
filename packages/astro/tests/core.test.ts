@@ -38,6 +38,7 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
   return {
     addMiddleware,
     injectScript,
+    plugins,
     pluginNames: plugins.map(({ name }) => name),
     viteConfig: config?.vite
   }
@@ -59,6 +60,7 @@ describe('@master/css-astro integration', () => {
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
+    expect(result.pluginNames).toContain('master-css:astro-emitted-globals')
     expect(result.pluginNames).not.toContain('master-css:scanner')
     expect(result.pluginNames).not.toContain('master-css:style-entry')
     expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
@@ -75,6 +77,7 @@ describe('@master/css-astro integration', () => {
     expect(result.injectScript).not.toHaveBeenCalled()
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
+    expect(result.pluginNames).toContain('master-css:astro-emitted-globals')
   })
 
   it('injects runtime script without Astro middleware in runtime mode', async () => {
@@ -189,6 +192,32 @@ describe('@master/css-astro integration', () => {
       expect(readFileSync(files[0], 'utf-8')).toContain('"className":"block"')
       expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_master-css/hydration/`)
       expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+    } finally {
+      rmSync(dir, { recursive: true, force: true })
+    }
+  })
+
+  it('prefixes static hydration manifests with the configured Astro base', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'master-css-astro-base-'))
+    const htmlFile = join(dir, 'index.html')
+    try {
+      writeFileSync(htmlFile, [
+        '<html><head>',
+        '<style id="master-css">@layer utilities{.block{display:block}}</style>',
+        `<script type="application/json" id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}">{"version":1,"rules":[{"className":"block"}]}</script>`,
+        '</head><body><div class="block"></div></body></html>'
+      ].join(''))
+      const integration = masterCSS({ mode: 'progressive' })
+
+      await integration.hooks['astro:config:done']?.({
+        config: { base: '/docs' },
+        buildOutput: 'static'
+      } as never)
+      await integration.hooks['astro:build:done']?.({ dir } as never)
+
+      expect(readFileSync(htmlFile, 'utf-8')).toContain(
+        `${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/docs/_master-css/hydration/`
+      )
     } finally {
       rmSync(dir, { recursive: true, force: true })
     }

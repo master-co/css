@@ -75,6 +75,13 @@ export function createVirtualDefaultManifestModulePathPattern() {
   return new RegExp(String.raw`(?:^|[/\\])${source}$`)
 }
 
+export function createVirtualEmittedGlobalsModulePathPattern() {
+  const source = [...VIRTUAL_MODULE_DIR_SEGMENTS, VIRTUAL_EMITTED_GLOBALS_FILE]
+    .map(escapeRegExp)
+    .join(String.raw`[/\\]`)
+  return new RegExp(String.raw`(?:^|[/\\])${source}$`)
+}
+
 function ensureVirtualModuleDirectory(dir: string) {
   mkdirSync(dir, { recursive: true })
   const packageJSONPath = join(dir, 'package.json')

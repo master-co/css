@@ -1,5 +1,5 @@
 <template>
-  <div class="box block">
+  <div class="box block fg:host">
     basic
   </div>
 </template>

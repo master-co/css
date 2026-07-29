@@ -1,9 +1,14 @@
 @import '@master/css';
 @source './app.vue';
 
+@theme {
+  --color-host: #123456;
+}
+
 @layer components {
   .box {
     display: flex;
     font-size: 1em;
+    color: var(--color-host);
   }
 }

@@ -5,9 +5,11 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import {
+  collectStylesheetEmittedGlobals,
   createStylesheetCollection
 } from '@master/css-compiler/stylesheet'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import { readFile } from 'node:fs/promises'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 
@@ -23,6 +25,7 @@ const manifestHost = {
 
 export interface MasterCSSBuildState {
   manifest: MasterCSSManifest
+  emittedGlobals: MasterCSSEmittedGlobals
   nativeCSS: string
   dependencies: string[]
   styleSources: string[]
@@ -42,6 +45,8 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
     manifest: result.manifest
   }, projectDir)
   const stylesheets = createStylesheetCollection()
+  let emittedGlobals: MasterCSSEmittedGlobals = {}
+  let emittedGlobalsDependencies: readonly string[] = []
   try {
     await scanner.init()
     for (const entry of result.entries) {
@@ -50,6 +55,12 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
         projectDir
       })
     }
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...result.entries], {
+      baseManifest: result.manifest,
+      projectDir
+    })
+    emittedGlobals = emittedGlobalsResult.emittedGlobals
+    emittedGlobalsDependencies = emittedGlobalsResult.dependencies
   } catch (error) {
     await scanner.dispose()
     stylesheets.dispose()
@@ -72,9 +83,11 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
       const stylesheetSnapshot = stylesheets.snapshot()
       return {
         manifest: result.manifest,
+        emittedGlobals,
         nativeCSS,
         dependencies: [...new Set([
           ...result.dependencies,
+          ...emittedGlobalsDependencies,
           ...stylesheetSnapshot.dependencies
         ])],
         styleSources: [...stylesheetSnapshot.sourceIds]

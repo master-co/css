@@ -143,6 +143,16 @@ describe('withMasterCSS', () => {
         ]
       }),
       expect.objectContaining({
+        test: expect.any(RegExp),
+        use: [
+          expect.objectContaining({
+            options: {
+              emittedGlobals: true
+            }
+          })
+        ]
+      }),
+      expect.objectContaining({
         test: /\.(css|scss|sass)$/,
         resourceQuery: {
           not: [/master-css-manifest/]
@@ -202,6 +212,19 @@ describe('withMasterCSS', () => {
           ],
           type: 'ecmascript',
           as: '*.js'
+        }),
+        expect.objectContaining({
+          condition: {
+            path: expect.any(RegExp)
+          },
+          loaders: [
+            expect.objectContaining({
+              options: {
+                emittedGlobals: true
+              }
+            })
+          ],
+          type: 'ecmascript'
         }),
         expect.objectContaining({
           condition: {

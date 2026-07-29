@@ -11,6 +11,7 @@ import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import { VIRTUAL_EMITTED_GLOBALS_ID } from '@master/css-internal/emitted-globals-module'
 import {
   createVirtualDefaultManifestModulePathPattern,
+  createVirtualEmittedGlobalsModulePathPattern,
   ensureVirtualManifestModulePath,
   ensureVirtualEmittedGlobalsModulePath,
   ensureVirtualModuleFile,
@@ -31,6 +32,7 @@ type TurbopackRuleConfigCollection = TurbopackRules[string]
 const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.slice(1))
 const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
+const MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN = createVirtualEmittedGlobalsModulePathPattern()
 const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createManifestEntryPattern().source}|@(compose|at)\\b`)
 const NEXT_INSTRUMENTATION_CLIENT_ID = 'private-next-instrumentation-client'
 const MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID = 'private-next-master-css-user-instrumentation-client'
@@ -249,6 +251,17 @@ function applyMasterCSSWebpackConfig(
     ]
   })
   config.module.rules.push({
+    test: MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN,
+    use: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          emittedGlobals: true
+        }
+      }
+    ]
+  })
+  config.module.rules.push({
     resourceQuery: MASTER_CSS_MANIFEST_RESOURCE_QUERY,
     use: [
       {
@@ -332,6 +345,20 @@ function applyMasterCSSTurbopackConfig(
     ],
     type: 'ecmascript' as const
   }
+  const masterCSSEmittedGlobalsRule = {
+    condition: {
+      path: MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN
+    },
+    loaders: [
+      {
+        loader: cssManifestLoaderPath,
+        options: {
+          emittedGlobals: true
+        }
+      }
+    ],
+    type: 'ecmascript' as const
+  }
   const masterCSSManifestRule = {
     condition: {
       all: [
@@ -389,6 +416,7 @@ function applyMasterCSSTurbopackConfig(
       ])),
       '*': [
         masterCSSVirtualManifestRule,
+        masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
         ...(includeStyleRule ? [masterCSSStyleRule] : []),
         ...toRuleArray(configRules)

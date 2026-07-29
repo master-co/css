@@ -23,6 +23,7 @@
 import { describe, test, expect, vi } from 'vitest'
 import { EventEmitter } from 'node:events'
 import StyleEntryHMRPlugin from '../../src/plugins/style-entry-hmr'
+import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID } from '../../src/common'
 
 function makeScanner() {
   const scanner = new EventEmitter() as unknown as Record<string, unknown> & EventEmitter
@@ -180,6 +181,24 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     await tick(5)
 
     expect(server.reloadModule).toHaveBeenCalledWith(cssModule)
+  })
+
+  test('reloads emitted globals when extracted CSS ownership changes', async () => {
+    const scanner = makeScanner()
+    const emittedGlobalsModule = { id: RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID }
+    const server = makeServer()
+    ;(server.moduleGraph as any).getModuleById = (id: string) => {
+      return id === RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID ? emittedGlobalsModule : null
+    }
+
+    const plugin = StyleEntryHMRPlugin({} as any, { scanner } as any)
+    ;(plugin as any).configureServer.call({}, server as any)
+    ;(plugin as any).buildStart.call({})
+
+    scanner.emit('change')
+    await tick(5)
+
+    expect(server.reloadModule).toHaveBeenCalledWith(emittedGlobalsModule)
   })
 
   test('C4: an error in one reset does not poison the chain (subsequent resets still run)', async () => {

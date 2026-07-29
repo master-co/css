@@ -9,7 +9,7 @@ import {
   VIRTUAL_MANIFEST_ID
 } from '@master/css-internal/manifest-module'
 import {
-  EMPTY_EMITTED_GLOBALS_MODULE,
+  toEmittedGlobalsModule,
   VIRTUAL_EMITTED_GLOBALS_ID
 } from '@master/css-internal/emitted-globals-module'
 import {
@@ -23,6 +23,7 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { ModuleNode, Plugin } from 'vite'
 import {
@@ -142,6 +143,28 @@ function RuntimeVirtualModulesPlugin(publicManifestHref: string, projectDir: str
     cssManifestDependencies = [...result.dependencies]
     return serializeMasterCSSManifest(result.manifest)
   }
+  const loadEmittedGlobals = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+    const dependencies = new Set<string>()
+    const manifestResult = await loadMasterCSSVirtualManifest({
+      host: manifestHost,
+      root: projectDir,
+      onDependency(dependency) {
+        dependencies.add(dependency)
+        cssManifestDependencies = [...dependencies]
+        pluginContext?.addWatchFile?.(dependency)
+      }
+    })
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...manifestResult.entries], {
+      baseManifest: manifestResult.manifest,
+      projectDir
+    })
+    for (const dependency of emittedGlobalsResult.dependencies) {
+      dependencies.add(dependency)
+      pluginContext?.addWatchFile?.(dependency)
+    }
+    cssManifestDependencies = [...dependencies]
+    return toEmittedGlobalsModule(emittedGlobalsResult.emittedGlobals)
+  }
   return {
     name: 'master-css:nuxt-runtime-manifest',
     enforce: 'pre',
@@ -153,7 +176,7 @@ function RuntimeVirtualModulesPlugin(publicManifestHref: string, projectDir: str
       if (id === VIRTUAL_EMITTED_GLOBALS_ID) return resolvedEmittedGlobalsId
     },
     async load(id) {
-      if (id === resolvedEmittedGlobalsId) return EMPTY_EMITTED_GLOBALS_MODULE
+      if (id === resolvedEmittedGlobalsId) return loadEmittedGlobals(this)
       if (id === RESOLVED_VIRTUAL_MANIFEST_ID) {
         if (command === 'serve') {
           return toInlineManifestModule(await loadInlineManifest(this))
@@ -163,8 +186,16 @@ function RuntimeVirtualModulesPlugin(publicManifestHref: string, projectDir: str
     },
     handleHotUpdate({ file, server }) {
       if (command !== 'serve' || !includesFile(cssManifestDependencies, file)) return
-      const module = server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID)
-      return invalidateManifestModule(module, server)
+      return [
+        ...invalidateManifestModule(
+          server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID),
+          server
+        ),
+        ...invalidateManifestModule(
+          server.moduleGraph.getModuleById(resolvedEmittedGlobalsId),
+          server
+        )
+      ]
     }
   }
 }
@@ -183,7 +214,15 @@ export const masterCSSNuxtModule = defineNuxtModule<MasterCSSNuxtModuleOptions>(
       host: manifestHost,
       root: nuxt.options.rootDir
     })
-    const manifestDependencies = [...manifestResult.dependencies]
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...manifestResult.entries], {
+      baseManifest: manifestResult.manifest,
+      projectDir: nuxt.options.rootDir
+    })
+    const manifestDependencies = [...new Set([
+      ...manifestResult.dependencies,
+      ...emittedGlobalsResult.dependencies
+    ])]
+    const emittedGlobalsModule = toEmittedGlobalsModule(emittedGlobalsResult.emittedGlobals)
     const manifestJSON = serializeMasterCSSManifest(manifestResult.manifest)
     const manifestFileName = toHashedManifestAssetFileName(manifestJSON)
     const manifestDir = resolvePath(nuxt.options.rootDir, 'node_modules', '.master-css', 'manifest')
@@ -211,6 +250,7 @@ export const masterCSSNuxtModule = defineNuxtModule<MasterCSSNuxtModuleOptions>(
       config.virtual[VIRTUAL_MANIFEST_ID] = toNodeManifestReadFileModule(
         `new URL(${JSON.stringify(pathToFileURL(manifestAssetPath).href)})`
       )
+      config.virtual[VIRTUAL_EMITTED_GLOBALS_ID] = emittedGlobalsModule
       if (options.mode === 'runtime' && options.injectRuntime) {
         addNitroPublicAsset(config, manifestDir, MASTER_CSS_MANIFEST_ASSET_BASE)
       }

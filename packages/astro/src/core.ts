@@ -1,4 +1,5 @@
 import type { AstroIntegration } from 'astro'
+import type { ModuleNode, Plugin } from 'vite'
 import {
   createMasterCSSVitePlugin,
   type MasterCSSVitePluginOptions
@@ -19,13 +20,14 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
 import {
   createMasterCSSRuntimeBootstrapSource,
   MASTER_CSS_RUNTIME_BOOTSTRAP_ID,
   RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
 } from '@master/css-internal/runtime-bootstrap'
 import {
-  EMPTY_EMITTED_GLOBALS_MODULE,
+  toEmittedGlobalsModule,
   VIRTUAL_EMITTED_GLOBALS_ID
 } from '@master/css-internal/emitted-globals-module'
 
@@ -53,20 +55,62 @@ function createManifestVirtualModulePlugin() {
 }
 
 function createRuntimeBootstrapPlugin() {
-  const resolvedEmittedGlobalsId = `\0${VIRTUAL_EMITTED_GLOBALS_ID}`
   return {
     name: 'master-css:astro-runtime-bootstrap',
     resolveId(id: string) {
       if (id === MASTER_CSS_RUNTIME_BOOTSTRAP_ID) {
         return RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
       }
-      if (id === VIRTUAL_EMITTED_GLOBALS_ID) return resolvedEmittedGlobalsId
     },
     load(id: string) {
       if (id === RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID) {
         return createMasterCSSRuntimeBootstrapSource()
       }
-      if (id === resolvedEmittedGlobalsId) return EMPTY_EMITTED_GLOBALS_MODULE
+    }
+  }
+}
+
+function createEmittedGlobalsVirtualModulePlugin(): Plugin {
+  const resolvedId = `\0${VIRTUAL_EMITTED_GLOBALS_ID}`
+  let projectDir: string | undefined
+  let dependencies: readonly string[] = []
+  const loadEmittedGlobals = async (pluginContext?: { addWatchFile?: (id: string) => void }) => {
+    const manifestResult = await loadMasterCSSVirtualManifest({
+      host: manifestHost,
+      root: projectDir,
+      onDependency: (dependency) => pluginContext?.addWatchFile?.(dependency)
+    })
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...manifestResult.entries], {
+      baseManifest: manifestResult.manifest,
+      projectDir
+    })
+    dependencies = [...new Set([
+      ...manifestResult.dependencies,
+      ...emittedGlobalsResult.dependencies
+    ])]
+    for (const dependency of emittedGlobalsResult.dependencies) {
+      pluginContext?.addWatchFile?.(dependency)
+    }
+    return toEmittedGlobalsModule(emittedGlobalsResult.emittedGlobals)
+  }
+  return {
+    name: 'master-css:astro-emitted-globals',
+    enforce: 'pre',
+    configResolved(config) {
+      projectDir = config.root
+    },
+    resolveId(id) {
+      if (id === VIRTUAL_EMITTED_GLOBALS_ID) return resolvedId
+    },
+    async load(id) {
+      if (id === resolvedId) return loadEmittedGlobals(this)
+    },
+    handleHotUpdate({ file, server }) {
+      if (!dependencies.includes(file)) return
+      const module = server.moduleGraph.getModuleById(resolvedId) as ModuleNode | undefined
+      if (!module) return []
+      server.moduleGraph.invalidateModule(module)
+      return [module]
     }
   }
 }
@@ -130,7 +174,10 @@ export function createMasterCSSAstroIntegration(
               createMasterCSSVitePlugin(getViteOptions(options)) as never,
               ...(
                 options.mode === 'pre-render' || options.mode === 'progressive'
-                  ? [createManifestVirtualModulePlugin() as never]
+                  ? [
+                    createManifestVirtualModulePlugin() as never,
+                    createEmittedGlobalsVirtualModulePlugin() as never
+                  ]
                   : []
               ),
               ...(options.injectRuntime ? [createRuntimeBootstrapPlugin()] : [])
@@ -157,7 +204,7 @@ export function createMasterCSSAstroIntegration(
         switch (options.mode) {
           case 'pre-render':
           case 'progressive':
-            await externalizeAstroHydrationManifests(dir)
+            await externalizeAstroHydrationManifests(dir, astroBase)
             break
         }
       }

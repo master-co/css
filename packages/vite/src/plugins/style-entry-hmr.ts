@@ -2,6 +2,7 @@ import type { Plugin, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
+import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
 import { getScanner } from '../utils/scanner-context'
 
 /** HMR when the config and source files changed */
@@ -10,8 +11,9 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
   const servers: ViteDevServer[] = []
   const updateStylesheetImporters = async ({ server }: { server: ViteDevServer }) => {
     if (!server) return
-    const virtualCSSImporters = Array.from(context.virtualCSSImporters || [])
-    await Promise.all(virtualCSSImporters.map(async (eachModuleId) => {
+    const affectedModuleIds = new Set(context.virtualCSSImporters || [])
+    affectedModuleIds.add(RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID)
+    await Promise.all(Array.from(affectedModuleIds).map(async (eachModuleId) => {
       const eachModule = server.moduleGraph.getModuleById(eachModuleId)
       if (eachModule) {
         await server.reloadModule(eachModule)

@@ -51,6 +51,25 @@ describe('shared scanner plugins', () => {
     })
   })
 
+  test('reinitializes the scanner for a later build environment', async () => {
+    const ctx: any = {}
+    const scannerPlugin = ScannerPlugin({} as any, ctx) as any
+
+    await scannerPlugin.configResolved.call({}, fakeViteConfig)
+    const firstScanner = ctx.scanner
+    firstScanner.dispose = vi.fn()
+
+    await scannerPlugin.closeBundle.call({})
+    expect(firstScanner.dispose).toHaveBeenCalledOnce()
+    expect(ctx.scanner).toBeUndefined()
+
+    await scannerPlugin.buildStart.call({})
+    expect(ctx.scanner).toBeDefined()
+    expect(ctx.scanner).not.toBe(firstScanner)
+
+    await scannerPlugin.closeBundle.call({})
+  })
+
   describe('usage graph delegation', () => {
     async function drive(ids: string[]) {
       const ctx: any = {}

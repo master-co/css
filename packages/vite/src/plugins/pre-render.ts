@@ -14,6 +14,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME
 } from '@master/css-schema/hydration-manifest'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
@@ -50,14 +51,24 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       entries,
       baseManifest: defaultBuildManifest
     })
+    const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...entries], {
+      baseManifest: result.manifest,
+      projectDir: root
+    })
     cssManifest = result.manifest
     const nextRenderer = createServerRenderer({
       manifest: cssManifest,
+      emittedGlobals: emittedGlobalsResult.emittedGlobals,
       maxCachedClasses: context.config?.command === 'build' ? Infinity : undefined
     })
     renderer?.dispose()
     renderer = nextRenderer
     for (const dependency of result.dependencies) {
+      if (dependencies.has(dependency)) continue
+      dependencies.add(dependency)
+      pluginContext?.addWatchFile?.(dependency)
+    }
+    for (const dependency of emittedGlobalsResult.dependencies) {
       if (dependencies.has(dependency)) continue
       dependencies.add(dependency)
       pluginContext?.addWatchFile?.(dependency)

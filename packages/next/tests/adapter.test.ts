@@ -195,6 +195,26 @@ describe('renderNextBuildOutputs', () => {
     expect(hydrationManifest.rules).toHaveLength(2)
   })
 
+  it('does not duplicate globals already emitted by project CSS entries', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    const entryFile = join(projectDir, 'app/globals.css')
+    mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryFile, [
+      '@master entry;',
+      '@theme { --color-primary: #123456; }',
+      '.host { color: var(--color-primary); }'
+    ].join('\n'))
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:primary">Hello</h1></body></html>')
+
+    await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+
+    const style = readMasterStyle(readFileSync(htmlFile, 'utf-8'))
+    expect(style).toContain('.fg\\:primary{color:var(--color-primary)}')
+    expect(style).not.toContain('--color-primary:')
+  })
+
   it('writes static export hydration manifests into the default export root', async () => {
     const projectDir = createFixtureDir()
     const exportDir = join(projectDir, 'out')

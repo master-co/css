@@ -168,4 +168,36 @@ describe('PreRenderPlugin', () => {
       rmSync(root, { recursive: true, force: true })
     }
   })
+
+  it('does not duplicate globals already emitted by managed CSS entries', async () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-globals-'))
+    const entryPath = path.join(root, 'app.css')
+    try {
+      writeFileSync(entryPath, [
+        '@master entry;',
+        '@theme { --color-primary: #123456; }',
+        '.host { color: var(--color-primary); }'
+      ].join('\n'))
+      const plugins = masterCSS({ mode: 'pre-render' })
+      const viteConfig = {
+        root,
+        plugins,
+        server: { fs: { allow: [] } }
+      }
+
+      await resolveConfigHooks(plugins, viteConfig)
+      const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
+      const result = await preRenderPlugin.transformIndexHtml.call(
+        {},
+        '<html><head></head><body><section class="fg:primary">Content</section></body></html>'
+      )
+      const html = typeof result === 'string' ? result : result.html
+      const style = html.match(/<style\b(?=[^>]*\bid=(['"])master-css\1)[^>]*>([\s\S]*?)<\/style>/)?.[2] ?? ''
+
+      expect(style).toContain('.fg\\:primary{color:var(--color-primary)}')
+      expect(style).not.toContain('--color-primary:')
+    } finally {
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
 })

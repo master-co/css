@@ -18,6 +18,8 @@ import {
 } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
+import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 
 interface LoaderContext {
   resourcePath: string
@@ -31,6 +33,7 @@ interface MasterCSSManifestLoaderOptions {
   virtual?: boolean
   module?: boolean
   external?: boolean
+  emittedGlobals?: boolean
 }
 
 const manifestHost = {
@@ -81,6 +84,27 @@ async function loadVirtualManifestJSON(context: LoaderContext) {
   return serializeMasterCSSManifest(result.manifest)
 }
 
+async function loadVirtualEmittedGlobalsModule(context: LoaderContext) {
+  const projectDir = context.rootContext || process.cwd()
+  const dependencies = new Set<string>()
+  const addDependency = (dependency: string) => {
+    if (dependencies.has(dependency)) return
+    dependencies.add(dependency)
+    context.addDependency?.(dependency)
+  }
+  const result = await loadMasterCSSVirtualManifest({
+    host: manifestHost,
+    root: projectDir,
+    onDependency: addDependency
+  })
+  const emittedGlobals = await collectStylesheetEmittedGlobals([...result.entries], {
+    baseManifest: result.manifest,
+    projectDir
+  })
+  for (const dependency of emittedGlobals.dependencies) addDependency(dependency)
+  return toEmittedGlobalsModule(emittedGlobals.emittedGlobals)
+}
+
 function loadCSSManifestJSON(context: LoaderContext) {
   const resourcePath = stripMasterCSSManifestQuery(context.resourcePath)
   if (!isManifestStylesheetRequest(resourcePath)) {
@@ -110,6 +134,12 @@ export default function masterCSSManifestLoader(this: LoaderContext) {
     throw new Error('[@master/css-next] CSS manifest loader requires an async loader context.')
   }
   const options = this.getOptions?.() || {}
+  if (options.emittedGlobals) {
+    loadVirtualEmittedGlobalsModule(this)
+      .then((source) => callback(null, source))
+      .catch((error: Error) => callback(error))
+    return
+  }
   const result = options.virtual
     ? loadVirtualManifestJSON(this)
     : Promise.resolve(loadCSSManifestJSON(this))
