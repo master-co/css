@@ -1,4 +1,5 @@
 import { beforeAll, expect, it } from 'vitest'
+import { fileURLToPath } from 'node:url'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { validateCSS } from '../../src/css'
@@ -7,10 +8,9 @@ import { createTestToolingSession } from '../helpers/create-tooling-session'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 beforeAll(() => {
-  process.env.MASTER_CSS_NATIVE_BINDING_PATH = new URL(
-    '../../../binding/artifacts/mastercss.node',
-    import.meta.url
-  ).pathname
+  process.env.MASTER_CSS_NATIVE_BINDING_PATH = fileURLToPath(
+    new URL('../../../binding/artifacts/mastercss.node', import.meta.url)
+  )
 })
 
 it('validates classes through a Rust session and host CSS oracle', () => {

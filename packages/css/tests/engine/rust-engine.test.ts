@@ -139,16 +139,19 @@ beforeAll(() => {
 })
 
 describe('Rust engine session', () => {
-  it('executes the semantic engine corpus through native and Wasm sessions', async () => {
+  it('uses semantic engine corpus version 2', () => {
     expect(semanticParityCorpus.version).toBe(2)
-    const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
-    Object.defineProperty(globalThis, 'CSS', {
-      configurable: true,
-      value: { supports: () => true }
-    })
+  })
 
-    try {
-      for (const parityCase of semanticParityCorpus.engineCases) {
+  for (const parityCase of semanticParityCorpus.engineCases) {
+    it(`executes semantic engine corpus case ${parityCase.id} through native and Wasm sessions`, async () => {
+      const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
+      Object.defineProperty(globalThis, 'CSS', {
+        configurable: true,
+        value: { supports: () => true }
+      })
+
+      try {
         const caseManifest = parityCase.manifest === 'default'
           ? typedDefaultManifest
           : parityCase.manifest
@@ -263,12 +266,12 @@ describe('Rust engine session', () => {
           nativeRender.dispose()
           wasmRender.dispose()
         }
+      } finally {
+        if (originalCSS) Object.defineProperty(globalThis, 'CSS', originalCSS)
+        else delete (globalThis as { CSS?: unknown }).CSS
       }
-    } finally {
-      if (originalCSS) Object.defineProperty(globalThis, 'CSS', originalCSS)
-      else delete (globalThis as { CSS?: unknown }).CSS
-    }
-  })
+    })
+  }
 
   it('uses Wasm for auto binding when native addons are disabled', async () => {
     process.execArgv.push('--no-addons')
