@@ -120,12 +120,8 @@ export default function defineVisitors(
       if (!name || !classAttributeRegex.test(name)) return
       if (node.value && node.value.type === 'VLiteral') {
         visitClassNode(node.value)
-      } else if (node.value) {
-        if (node.value.type === 'VExpressionContainer') {
-          if (node.value.expression?.type === 'ArrayExpression' || node.value.expression?.type === 'ObjectExpression') {
-            visitClassNode(node.value.expression)
-          }
-        }
+      } else if (node.value?.type === 'VExpressionContainer' && node.value.expression) {
+        visitClassNode(node.value.expression)
       }
     }
   }

@@ -5,6 +5,7 @@ import { noInvalidClassesOptionsSchema } from '../settings-schema'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'no-invalid-classes',
@@ -22,18 +23,18 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { options, settings, tooling } = resolveContext(context)
+    const { options, settings, tooling, release } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
         tooling,
         ruleId: 'no-invalid-classes',
         ruleOptions: {
           disallowUnknownClass: options.disallowUnknownClass
         }
-      })
+      }), release)
     }
-    return defineVisitors({ context, settings, tooling }, (node, resolved) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
       const diagnostics = createMasterCSSLintDiagnostics(
         tooling.analyzeLintClassList(resolved.raw, resolved.classValues, {
           disallowUnknownClass: options.disallowUnknownClass
@@ -46,6 +47,6 @@ export default createRule({
         resolved,
         diagnostics
       )
-    })
+    }), release)
   }
 })

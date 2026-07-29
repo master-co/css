@@ -18,24 +18,28 @@ declare interface CSSCache {
   tooling: MasterCSSToolingSession
 }
 
-const cssCaches: CSSCache[] = []
-const workspaceDirectoriesByCwd = new Map<string, string[]>()
+declare interface SourceCache {
+  cssCaches: CSSCache[]
+  references: number
+  workspaceDirectoriesByCwd: Map<string, string[]>
+}
+
+const sourceCaches = new WeakMap<object, SourceCache>()
 
 function getContextFilename(context: RuleContext<any, any[]>) {
   const filename = context.physicalFilename || context.filename
   if (!filename || filename.startsWith('<')) return
-  const resolvedFilename = path.isAbsolute(filename) ? filename : path.resolve(context.cwd, filename)
-  return existsSync(resolvedFilename) ? resolvedFilename : undefined
+  return path.isAbsolute(filename) ? filename : path.resolve(context.cwd, filename)
 }
 
-function getWorkspaceDirectories(cwd: string) {
-  let directories = workspaceDirectoriesByCwd.get(cwd)
+function getWorkspaceDirectories(sourceCache: SourceCache, cwd: string) {
+  let directories = sourceCache.workspaceDirectoriesByCwd.get(cwd)
   if (!directories) {
     directories = [...discoverBuildWorkspaceDirectoriesSync(
       cwd,
       discoverManifestEntriesSync({ root: cwd })
     )]
-    workspaceDirectoriesByCwd.set(cwd, directories)
+    sourceCache.workspaceDirectoriesByCwd.set(cwd, directories)
   }
   return directories
 }
@@ -57,10 +61,14 @@ function resolveSearchDirectory(context: RuleContext<any, any[]>, filename: stri
   return findNearestPackageDirectory(filename)
 }
 
-function resolveWorkspaceDirectory(context: RuleContext<any, any[]>, filename: string) {
+function resolveWorkspaceDirectory(
+  context: RuleContext<any, any[]>,
+  sourceCache: SourceCache,
+  filename: string
+) {
   const cwd = resolveSearchDirectory(context, filename)
   let closestDirectory: string | undefined
-  for (const directory of getWorkspaceDirectories(cwd)) {
+  for (const directory of getWorkspaceDirectories(sourceCache, cwd)) {
     if (
       isSameOrChildPath(directory, filename)
       && (!closestDirectory || directory.length > closestDirectory.length)
@@ -80,10 +88,24 @@ function resolvePlan(workspaceDir: string, manifest?: MasterCSSManifest) {
 }
 
 export default function resolveContext(context: RuleContext<any, any[]>) {
+  const sourceCode = context.sourceCode
+  let sourceCache = sourceCaches.get(sourceCode)
+  if (!sourceCache) {
+    sourceCache = {
+      cssCaches: [],
+      references: 0,
+      workspaceDirectoriesByCwd: new Map()
+    }
+    sourceCaches.set(sourceCode, sourceCache)
+  }
+  sourceCache.references++
+
   const resolvedSettings = Object.assign({}, settings, context.settings?.['@master/css'])
   const filename = getContextFilename(context)
-  const workspaceDir = filename ? resolveWorkspaceDirectory(context, filename) : context.cwd || process.cwd()
-  let cache = cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
+  const workspaceDir = filename
+    ? resolveWorkspaceDirectory(context, sourceCache, filename)
+    : context.cwd || process.cwd()
+  let cache = sourceCache.cssCaches.find(cache => cache.manifest === resolvedSettings.manifest &&
     cache.cwd === workspaceDir)
 
   if (!cache) {
@@ -97,12 +119,23 @@ export default function resolveContext(context: RuleContext<any, any[]>) {
       manifest: resolvedSettings.manifest,
       tooling
     }
-    cssCaches.push(cache)
+    sourceCache.cssCaches.push(cache)
   }
+
+  let released = false
 
   return {
     settings: resolvedSettings,
     options: context.options[0] || {},
-    tooling: cache.tooling
+    tooling: cache.tooling,
+    release() {
+      if (released) return
+      released = true
+      if (--sourceCache.references !== 0) return
+      for (const { tooling } of sourceCache.cssCaches) tooling.dispose()
+      sourceCache.cssCaches.length = 0
+      sourceCache.workspaceDirectoriesByCwd.clear()
+      sourceCaches.delete(sourceCode)
+    }
   }
 }

@@ -5,6 +5,7 @@ import type { RawValuePolicyOptions } from '@master/css-tooling/lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'no-unapproved-raw-values',
@@ -41,18 +42,18 @@ export default createRule({
     allowedPatterns: []
   }],
   create(context) {
-    const { settings, tooling } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     const options = (context.options[0] || {}) as RawValuePolicyOptions
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
         tooling,
         ruleId: 'no-unapproved-raw-values',
         ruleOptions: options
-      })
+      }), release)
     }
 
-    return defineVisitors({ context, settings, tooling }, (node, resolved) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
       const diagnostics = createMasterCSSLintDiagnostics(
         tooling.analyzeLintClassList(resolved.raw, resolved.classValues, {
           rawValuePolicy: options
@@ -64,6 +65,6 @@ export default createRule({
         resolved,
         diagnostics
       )
-    })
+    }), release)
   }
 })

@@ -4,6 +4,7 @@ import createRule from '../create-rule'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
 import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'sort-classes',
@@ -20,11 +21,14 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { settings, tooling } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, tooling, ruleId: 'sort-classes' })
+      return withContextRelease(
+        defineSourceVisitors({ context, tooling, ruleId: 'sort-classes' }),
+        release
+      )
     }
-    return defineVisitors({ context, settings, tooling }, (node, resolved) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
       const { raw, start, end, nodes, unescape } = resolved
       if (nodes.length <= 1) return
       const diagnostics = createMasterCSSLintDiagnostics(
@@ -37,6 +41,6 @@ export default createRule({
         { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
         diagnostics
       )
-    })
+    }), release)
   },
 })

@@ -11,6 +11,7 @@ import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'prefer-canonical-classes',
@@ -41,18 +42,18 @@ export default createRule({
   },
   defaultOptions: [defaultCanonicalClassNameOptions],
   create(context) {
-    const { settings, tooling } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     const options = {
       ...defaultCanonicalClassNameOptions,
       ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
     }
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
         tooling,
         ruleId: 'prefer-canonical-classes',
         ruleOptions: options
-      })
+      }), release)
     }
 
     const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {
@@ -103,7 +104,7 @@ export default createRule({
     const visitors = defineVisitors({ context, settings, tooling }, reportCanonicalClassList)
     const visitProgram = visitors.Program
 
-    return {
+    return withContextRelease({
       ...visitors,
       Program(node) {
         if (typeof visitProgram === 'function') {
@@ -113,7 +114,7 @@ export default createRule({
           reportCanonicalComposeDirective(node, classNode)
         }
       }
-    }
+    }, release)
   }
 })
 
