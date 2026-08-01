@@ -44,7 +44,7 @@ Progressive Rendering moves that first CSS pass into the build:
 4. The generated CSS is injected as `<style id="master-css">`, and the page hydration manifest is written as a hashed JSON asset.
 5. The style tag receives `data-master-css-hydration-manifest`, and the runtime imports that manifest during hydration to attach existing CSS rules to runtime-managed rule objects instead of regenerating them.
 
-The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the hydration manifest is missing, invalid, or no longer matches `style#master-css`, the runtime safely rebuilds its stylesheet from the connected DOM classes.
+The result is a page that can arrive from the server already carrying the CSS needed for its first render, while still keeping the runtime behavior that makes Master CSS practical in interactive applications. If the manifest pointer is missing or the loaded rules no longer match `style#master-css`, the runtime warns and rebuilds its stylesheet from connected DOM classes. A referenced manifest that cannot be loaded or validated instead rejects startup with `INVALID_HYDRATION_MANIFEST`.
 
 ### Hydration manifest hydration
 
@@ -269,7 +269,7 @@ Dynamic SSR responses still rely on the Master CSS runtime engine, because those
 
 In static mode, the generated CSS asset comes from source scanning. It works best when the complete class strings are visible in source files. The Turbopack scanner loader improves incremental updates for modules that pass through the build, but source-glob scanning remains the production correctness baseline.
 
-If another integration already owns Next.js `adapterPath`, use runtime mode until adapter composition is available.
+If another integration already owns Next.js `adapterPath`, `@master/css-next` composes it with the Master CSS adapter. Master CSS runs first by default; set `adapterOrder: 'external-first'` when the external adapter must process each build output first.
 
 ---
 

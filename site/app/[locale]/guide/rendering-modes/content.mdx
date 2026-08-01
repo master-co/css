@@ -116,7 +116,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```html
     <h1 class="font:6xl">Hello World</h1> <!-- [!code ++] -->
     ```
-    The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and updates active usage immediately. If no connected element still uses `font:6xl`, the generated rule can be retained until idle cleanup or an explicit forced cleanup removes it:
+    The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and updates active usage immediately. If no connected element still uses `font:6xl`, the generated rule can be retained until idle cleanup removes it:
     ```css
     .font\:6xl { /* [!code --] */
       font-size: 3rem /* [!code --] */
@@ -125,7 +125,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
   </Step>
   <Step>
     #### <StepNum />All active DOM class counts have been removed
-    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct `deleteClassRules(...)` calls still remove rules synchronously.
+    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font:6xl'])` still remove rules synchronously.
   </Step>
 </StepSection>
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
@@ -166,13 +166,22 @@ The manifest tells the runtime how to interpret project-specific tokens, modes, 
 ### Runtime state
 Runtime rendering separates the question "is this class currently used by the DOM?" from "does the runtime already have generated CSS for this class?"
 
-| State | Meaning |
-| --- | --- |
-| `classCounts` | Active connected DOM usage. It updates immediately when observed elements are added, removed, or change class names. |
-| `classUtilities` | Generated rule cache. It can include rules that are active, warmed, hydrated, or retained for reuse. |
-| `retainedClassNames` | Mutation-generated rules that are no longer used by the DOM but are intentionally kept for idle cleanup or fast reuse. |
+Call `snapshot()` when application or debugging code needs an immutable view of runtime state:
 
-Direct runtime APIs are rule APIs, not DOM usage APIs. `ensureClassRules(...classNames)` synchronously generates or reuses rules and is the explicit warming path before inserting a large dynamic view. `deleteClassRules(...classNames)` synchronously removes generated rules and bypasses retention. The MutationObserver path is more conservative: removed DOM classes leave `classCounts` immediately, then their generated rules can be retained and cleaned later outside the interaction window.
+```js
+const snapshot = cssRuntime.snapshot()
+console.log(snapshot.usageCounts['btn'])
+console.log(snapshot.classRules['btn']?.retained)
+console.log(snapshot.classRules['btn']?.rules)
+```
+
+| Snapshot field | Meaning |
+| --- | --- |
+| `usageCounts` | Active connected DOM usage by class name. It updates when observed elements are added, removed, or change class names. |
+| `classRules` | Generated rule snapshots by class name, including active, warmed, hydrated, and retained rules. |
+| `classRules[className].retained` | Whether an unused rule is being kept temporarily for idle cleanup or fast reuse. |
+
+Direct runtime APIs are rule APIs, not DOM usage APIs. `ensureClassRules(classNames)` accepts an array and synchronously generates or reuses rules, so it is the explicit warming path before inserting a large dynamic view. `deleteClassRules(classNames)` accepts an array, synchronously removes generated rules, and bypasses retention. The MutationObserver path is more conservative: a removed DOM class disappears from `snapshot().usageCounts` immediately, while its generated rules can be retained and cleaned later outside the interaction window.
 
 ### Interaction-heavy screens
 Runtime and progressive rendering work best when the classes used during interaction are already generated, hydrated, retained, or warmed. A large interaction that inserts many elements with first-time class names still asks the browser to process DOM changes and new CSS rules in the same frame window.
@@ -180,7 +189,7 @@ Runtime and progressive rendering work best when the classes used during interac
 For highly interactive UI such as editors, builders, data grids, virtualized lists, drag surfaces, or dashboards with many per-item values, prefer a mixed strategy:
 
 - Keep stable layout, typography, state, and component classes in Master CSS.
-- Warm predictable runtime classes with `ensureClassRules(...)` before inserting a large dynamic view.
+- Warm predictable runtime classes with `ensureClassRules(['grid', 'gap:md'])` before inserting a large dynamic view.
 - Use inline styles or CSS variables for volatile per-element values such as coordinates, dimensions, transforms, or user-generated colors.
 - Use top-level native CSS or component-authored CSS for large repeated interaction states that are easier to model as selectors than as many runtime-generated utilities.
 
@@ -218,7 +227,7 @@ The `/_master-css/hydration/` path above is the integration-neutral route. Frame
 <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.<hash>.json">...</style>
 ```
 
-This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing native CSS rules, and continues observing dynamic classes. If the manifest is missing, invalid, fails to import, or no longer matches `style#master-css`, the runtime safely rebuilds the stylesheet from connected DOM classes.
+This keeps the first-render CSS in the HTML while moving the runtime handoff data into a cacheable route-level JSON file. The browser can paint from `style#master-css` without waiting for the manifest request. When the runtime starts, it imports the manifest as a JSON module, adopts the existing native CSS rules, and continues observing dynamic classes. If a pre-rendered style has no manifest pointer, or a loaded manifest no longer matches `style#master-css`, the runtime warns and rebuilds the stylesheet from connected DOM classes. If an inline or external manifest is referenced but cannot be loaded or validated, startup rejects with `INVALID_HYDRATION_MANIFEST` so a broken deployment is not silently accepted.
 
 After adoption, progressive rendering uses the same runtime state model as runtime rendering. Hydrated rules become runtime-managed rule objects, new classes can be generated later, and mutation-driven removals can enter the retained-rule cache before idle cleanup. This keeps the first paint deterministic while still avoiding repeated CSSOM insertion/deletion during interactive updates.
 
@@ -293,7 +302,7 @@ The runtime reads explicit `hydrationManifest` options first. Without an explici
 
 Each manifest rule stores the class name, layer, priority, selector text, generated CSS text, and any referenced variables or animations. The manifest's `resourceOrder` preserves the variable and animation insertion order needed to reproduce the exact resource buckets without parsing CSS text. During hydration, the runtime compares that IR with the native rules already present in `style#master-css`. When they match, it attaches those native CSS rules to runtime-managed rule objects instead of regenerating them.
 
-Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime. Classes removed after hydration leave `classCounts` immediately; their generated rules may be retained briefly and removed later by idle cleanup or by an explicit `flushRetainedClassRules()` call.
+Once hydrated, Master CSS can efficiently detect new or removed class names and update styles accordingly, without needing to reparse or regenerate previously defined rules. Classes that were not present in the initial HTML are still generated at runtime. Classes removed after hydration disappear from `snapshot().usageCounts` immediately; their generated rules may be retained briefly and removed later by idle cleanup.
 
 The [CSS runtime](#runtime-rendering) then takes over to detect any changes in dynamic class names.
 
@@ -463,7 +472,7 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 | Project manifest JSON asset | Official runtime integrations | `virtual:master-css-manifest` facade and the runtime | Cacheable JSON form of the project manifest. Pure runtime pages can preload it because the runtime needs it before interpreting project classes. |
 | `virtual:master-css-emitted-globals` | Static and build integrations | Runtime code | Counts variables and keyframes already emitted by the CSS entry output, so runtime rendering does not insert duplicate global CSS. |
 | Hydration manifest | Server rendering and progressive integrations | Runtime hydration | JSON rule IR with `version: 1`, used to map `style#master-css` back into runtime-managed rule objects. |
-| Next build manifest | `@master/css-next` when `manifest` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
+| Next build report | `@master/css-next` when `buildReport` is enabled | Build analysis and reporting | Route/output report for rendered files; it is separate from the runtime hydration manifest. |
 
 ---
 

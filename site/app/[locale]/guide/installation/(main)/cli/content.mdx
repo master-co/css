@@ -31,7 +31,7 @@ Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-ren
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npx @master/css-cli "index.html" --output master.css --watch
+      npx @master/css-cli generate "index.html" --output master.css --watch
       ```
     </StepR>
   </Step>
@@ -43,8 +43,6 @@ Use the CLI as a standalone [static rendering](/guide/rendering-modes#static-ren
   </Step>
   <HelloWorld />
 </StepSection>
-
-For Rust migration testing, a one-shot scan can use `--binding native`. The CLI verifies the native executable's package and schema versions before running it. Watch mode continues to use the Node host until native watch parity is complete. Set `MASTER_CSS_CLI_BINDING=native` to select the same binding in automation.
 
 ```html name=index.html
 <!DOCTYPE html>

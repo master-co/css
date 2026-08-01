@@ -7,6 +7,8 @@ import defaultManifestJSON from '@master/css-preset/default-manifest.json' with 
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import { validateCSS } from '@master/css-tooling/css'
+import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
+import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
@@ -16,6 +18,34 @@ const visibleSourceFiles = [
 ]
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const tooling = createToolingSessionSync({ manifest: defaultManifest })
+const privateRuntimeNames = [
+  'classCounts',
+  'classUtilities',
+  'retainedClassNames',
+  'flushRetainedClassRules'
+] as const
+
+interface PublicAPIPackage {
+  entrypoints: Record<string, string[]>
+  exports: string[]
+}
+
+interface PublicAPIContract {
+  packages: Record<string, PublicAPIPackage>
+}
+
+interface APICensusContract {
+  records: {
+    id: string
+    kind: string
+    name?: string
+  }[]
+}
+
+const publicAPI = publicAPIJSON as PublicAPIContract
+const cliCommands = new Set((apiCensusJSON as APICensusContract).records
+  .filter(({ id, kind }) => kind === 'cli-command' && id.startsWith('cli-command:master-css:'))
+  .flatMap(({ name }) => name ? [name] : []))
 
 after(() => tooling.dispose())
 
@@ -51,6 +81,19 @@ interface ExampleCandidate {
 
 interface PageCategory {
   name: string
+}
+
+interface FencedExample {
+  index: number
+  info: string
+  range: [number, number]
+  text: string
+}
+
+interface DocumentedImport {
+  index: number
+  names: string[]
+  specifier: string
 }
 
 test('overview category references resolve to generated categories', async () => {
@@ -107,6 +150,220 @@ test('docs example classes are valid default preset classes or locally defined c
   assert.deepEqual(failures, [])
 })
 
+test('docs @master imports resolve to public package subpaths and exports', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const example of extractFencedExamples(content)) {
+      for (const documentedImport of extractDocumentedImports(example.text)) {
+        for (const message of validateDocumentedImport(documentedImport)) {
+          failures.push(`${formatFileLine(file, lineAt(content, example.index + documentedImport.index))} | ${message}`)
+        }
+      }
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs CLI examples use registered master-css subcommands', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const example of extractFencedExamples(content)) {
+      if (!isShellFence(example.info)) continue
+      for (const invocation of extractCLIInvocations(example.text)) {
+        if (invocation.command && cliCommands.has(invocation.command)) continue
+        failures.push(`${formatFileLine(file, lineAt(content, example.index + invocation.index))} | master-css requires a registered subcommand; received ${invocation.command || 'none'}`)
+      }
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs runtime examples use the public runtime state and rule API signatures', async () => {
+  const failures: string[] = []
+  for (const file of await collectMdxDocs()) {
+    const content = await readFile(file, 'utf8')
+    for (const name of privateRuntimeNames) {
+      for (const match of content.matchAll(new RegExp(`\\b${name}\\b`, 'g'))) {
+        failures.push(`${formatFileLine(file, lineAt(content, match.index))} | ${name} is private runtime state`)
+      }
+    }
+    for (const call of extractRuntimeRuleCalls(content)) {
+      if (isValidRuntimeRuleCall(call.arguments)) continue
+      failures.push(`${formatFileLine(file, lineAt(content, call.index))} | ${call.name} expects one class-name array`)
+    }
+  }
+
+  assert.deepEqual(failures, [])
+})
+
+test('docs contract helpers reject stale public examples', () => {
+  assert.deepEqual(validateDocumentedImport({
+    index: 0,
+    names: ['MasterCSSRuntime'],
+    specifier: '@master/css-runtime'
+  }), [])
+  assert.match(validateDocumentedImport({
+    index: 0,
+    names: ['classCounts'],
+    specifier: '@master/css-runtime'
+  })[0], /is not exported/)
+  assert.match(validateDocumentedImport({
+    index: 0,
+    names: [],
+    specifier: '@master/css-runtime/private'
+  })[0], /is not a public package subpath/)
+  assert.deepEqual(extractCLIInvocations('npx @master/css-cli generate "index.html"')[0]?.command, 'generate')
+  assert.equal(cliCommands.has(extractCLIInvocations('npx @master/css-cli "index.html"')[0]?.command || ''), false)
+  assert.equal(isValidRuntimeRuleCall("['btn', 'grid']"), true)
+  assert.equal(isValidRuntimeRuleCall('...classNames'), false)
+  assert.equal(isValidRuntimeRuleCall("'btn'"), false)
+})
+
+function extractFencedExamples(content: string): FencedExample[] {
+  const examples: FencedExample[] = []
+  const pattern = /^```([^\n]*)\n([\s\S]*?)^```/gm
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(content))) {
+    const text = match[2]
+    examples.push({
+      index: match.index + match[0].indexOf(text),
+      info: match[1].trim(),
+      range: [match.index, pattern.lastIndex],
+      text
+    })
+  }
+  return examples
+}
+
+function extractDocumentedImports(text: string): DocumentedImport[] {
+  const imports: DocumentedImport[] = []
+  const add = (match: RegExpExecArray, specifier: string, names: string[] = []) => {
+    imports.push({ index: match.index, names, specifier })
+  }
+  const importPattern = /\bimport\s+(?:type\s+)?(?:([A-Za-z_$][\w$]*)\s*(?:,\s*)?)?(?:\{([^{}]*?)\}|\*\s+as\s+[A-Za-z_$][\w$]*)?\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\3/g
+  const exportPattern = /\bexport\s+(?:type\s+)?\{([^{}]*?)\}\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\2/g
+  const exportAllPattern = /\bexport\s+\*\s+from\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1/g
+  const sideEffectPattern = /\bimport\s+(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1/g
+  const dynamicPattern = /\bimport\s*\(\s*(['"])(@master\/[\w.-]+(?:\/[^'"]+)?)\1\s*\)/g
+  let match: RegExpExecArray | null
+
+  while ((match = importPattern.exec(text))) {
+    add(match, match[4], [
+      ...(match[1] ? ['default'] : []),
+      ...extractImportedNames(match[2] || '')
+    ])
+  }
+  while ((match = exportPattern.exec(text))) add(match, match[3], extractImportedNames(match[1]))
+  while ((match = exportAllPattern.exec(text))) add(match, match[2])
+  while ((match = sideEffectPattern.exec(text))) add(match, match[2])
+  while ((match = dynamicPattern.exec(text))) add(match, match[2])
+
+  return imports.sort((left, right) => left.index - right.index)
+}
+
+function extractImportedNames(clause: string): string[] {
+  return clause
+    .replace(/\/\*[\s\S]*?\*\//g, '')
+    .replace(/\/\/.*$/gm, '')
+    .split(',')
+    .map((name) => name.trim().replace(/^type\s+/, '').split(/\s+as\s+/)[0])
+    .filter(Boolean)
+}
+
+function validateDocumentedImport(documentedImport: DocumentedImport): string[] {
+  const match = documentedImport.specifier.match(/^(@master\/[^/]+)(?:\/(.+))?$/)
+  if (!match) return [`${documentedImport.specifier} is not a valid @master package specifier`]
+  const packageName = match[1]
+  const subpath = match[2] ? `./${match[2]}` : '.'
+  const packageContract = publicAPI.packages[packageName]
+  if (!packageContract) return [`${packageName} is not a public package`]
+  if (!packageContract.exports.includes(subpath)) {
+    return [`${documentedImport.specifier} is not a public package subpath`]
+  }
+  const exports = new Set(packageContract.entrypoints[subpath] || [])
+  return documentedImport.names
+    .filter((name) => !exports.has(name))
+    .map((name) => `${name} is not exported by ${documentedImport.specifier}`)
+}
+
+function isShellFence(info: string) {
+  return /^(?:bash|console|sh|shell|zsh)(?:\s|$)/.test(info)
+}
+
+function extractCLIInvocations(text: string): { command?: string, index: number }[] {
+  const invocations: { command?: string, index: number }[] = []
+  let offset = 0
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim().replace(/^\$\s*/, '')
+    const npxPattern = /\bnpx\s+(?:(?:-y|--yes)\s+)?@master\/css-cli(?:@[^\s]+)?(?:\s+([^\s\\]+))?/g
+    let match: RegExpExecArray | null
+    while ((match = npxPattern.exec(line))) {
+      invocations.push({ command: match[1], index: offset + rawLine.indexOf(match[0]) })
+    }
+    const direct = line.match(/^(?:[A-Za-z_]\w*=\S+\s+)*master-css(?:\s+([^\s\\]+))?/)
+    if (direct) invocations.push({ command: direct[1], index: offset + rawLine.indexOf('master-css') })
+    offset += rawLine.length + 1
+  }
+  return invocations
+}
+
+function extractRuntimeRuleCalls(content: string): { arguments: string, index: number, name: string }[] {
+  const calls: { arguments: string, index: number, name: string }[] = []
+  const pattern = /\b(ensureClassRules|deleteClassRules)\s*\(/g
+  let match: RegExpExecArray | null
+  while ((match = pattern.exec(content))) {
+    const open = content.indexOf('(', match.index)
+    const call = readCallArguments(content, open)
+    if (!call) continue
+    calls.push({ arguments: call.value, index: match.index, name: match[1] })
+    pattern.lastIndex = call.end
+  }
+  return calls
+}
+
+function readCallArguments(text: string, open: number): { end: number, value: string } | undefined {
+  let depth = 1
+  for (let index = open + 1; index < text.length; index++) {
+    const char = text[index]
+    if (char === '"' || char === '\'' || char === '`') {
+      const literal = readStringLiteral(text, index)
+      if (!literal) return
+      index = literal.end - 1
+    } else if (char === '(') {
+      depth++
+    } else if (char === ')' && --depth === 0) {
+      return { end: index + 1, value: text.slice(open + 1, index) }
+    }
+  }
+}
+
+function isValidRuntimeRuleCall(argumentsText: string) {
+  const value = argumentsText.trim()
+  if (!value || value.startsWith('...') || /^["'`]/.test(value)) return false
+  let squareDepth = 0
+  let braceDepth = 0
+  let parenthesisDepth = 0
+  for (let index = 0; index < value.length; index++) {
+    const char = value[index]
+    if (char === '"' || char === '\'' || char === '`') {
+      const literal = readStringLiteral(value, index)
+      if (!literal) return false
+      index = literal.end - 1
+    } else if (char === '[') squareDepth++
+    else if (char === ']') squareDepth--
+    else if (char === '{') braceDepth++
+    else if (char === '}') braceDepth--
+    else if (char === '(') parenthesisDepth++
+    else if (char === ')') parenthesisDepth--
+    else if (char === ',' && squareDepth === 0 && braceDepth === 0 && parenthesisDepth === 0) return false
+  }
+  return squareDepth === 0 && braceDepth === 0 && parenthesisDepth === 0
+}
+
 async function collectMdxDocs(): Promise<string[]> {
   const files: string[] = []
   await walk(appRoot, files)
@@ -158,21 +415,15 @@ function isNotFoundError(error: unknown): boolean {
 function extractExampleCandidates(file: string, content: string): ExampleCandidate[] {
   const candidates: ExampleCandidate[] = []
   const fencedRanges: [number, number][] = []
-  const fencePattern = /^```([^\n]*)\n([\s\S]*?)^```/gm
-  let fenceMatch: RegExpExecArray | null
-
-  while ((fenceMatch = fencePattern.exec(content))) {
-    const info = fenceMatch[1]
-    const body = fenceMatch[2]
-    const bodyIndex = fenceMatch.index + fenceMatch[0].indexOf(body)
-    fencedRanges.push([fenceMatch.index, fencePattern.lastIndex])
+  for (const example of extractFencedExamples(content)) {
+    fencedRanges.push(example.range)
     candidates.push(...extractCandidatesFromSnippet({
       content,
       file,
-      index: bodyIndex,
-      kind: `fenced:${info.trim().split(/\s+/)[0] || 'text'}`,
+      index: example.index,
+      kind: `fenced:${example.info.split(/\s+/)[0] || 'text'}`,
       scanClassAttributes: true,
-      text: body
+      text: example.text
     }))
   }
 
