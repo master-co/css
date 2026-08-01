@@ -47,6 +47,9 @@ entrypoint.
 - `src/language`
 - `src/diagnostics`
 
+For Rust implementation routing, use `.ai/context/rust-routing.md`; lexer, lint, and
+language crates now expose domain modules instead of monolithic `lib.rs` files.
+
 ## Risk Areas
 
 - UTF-16 and source range correctness.

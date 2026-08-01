@@ -44,6 +44,7 @@ or compatibility subpaths.
 - `src/engine/bound-engine.ts`
 - `src/engine/create-engine.ts`
 - `src/*.css`
+- `crates/mastercss-engine/AI.md`
 
 ## Risk Areas
 

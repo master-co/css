@@ -30,6 +30,9 @@
 ## Key Files
 
 - `src/core.ts`
+- `src/shiki.ts`
+- `src/shiki/hast.ts`
+- `src/shiki/languages.ts`
 - `src/settings.ts`
 - `src/features/*`
 - `src/utils/query-syntax-completions.ts`
@@ -68,4 +71,4 @@ pnpm --filter @master/css-language-service type-check
 pnpm --filter @master/css-language-service build
 ```
 
-Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.
+Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-semantic-tokens.test.ts`, `tests/render-css-semantic-tokens.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.

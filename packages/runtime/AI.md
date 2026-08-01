@@ -40,6 +40,12 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 ## Key Files
 
 - `src/core.ts`
+- `src/host.ts`
+- `src/hydration.ts`
+- `src/mutation.ts`
+- `src/retention-config.ts`
+- `src/startup.ts`
+- `src/types.ts`
 - `src/class-tracker.ts`
 - `src/layer.ts`
 - `src/utility-layer.ts`

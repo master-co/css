@@ -127,6 +127,8 @@ jobs:
         with:
           submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
+      - name: Validate AI context budgets
+        run: pnpm run check:ai-context
       - name: Detect affected release consumers
         id: consumers
         shell: bash

@@ -17,10 +17,16 @@ pnpm type-check:refs
 pnpm type-check:affected
 pnpm type-check:clean
 pnpm commit-check
+pnpm check:ai-context
+pnpm test:ai-context
 pnpm submodules
 ```
 
 `pnpm check` runs commit check, build, and package test/lint/type-check scripts.
+
+`pnpm check:ai-context` enforces production, support-code, and AI-context line/byte
+budgets. Generated files need an explicit marker; exceptional static data needs a
+bounded entry in `.ai/context/source-budget.json`.
 
 Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Next's local cache needs to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
 

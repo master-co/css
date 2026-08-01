@@ -39,9 +39,11 @@
 - `src/browser.ts`
 - `src/project/*`
 - `src/stylesheet/*`
+- `src/stylesheet/types.ts`
 - `src/diagnostics/index.ts`
-- `crates/mastercss-compiler/src/lib.rs`
-- `crates/mastercss-compiler/src/lower.rs`
+- `crates/mastercss-compiler/src/directives.rs`
+- `crates/mastercss-compiler/src/manifest/*`
+- `crates/mastercss-compiler/src/lower/*`
 
 ## Risk Areas
 

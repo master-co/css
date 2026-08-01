@@ -23,6 +23,21 @@
 Native, Wasm, schema, preset, and their consumers publish in exact lockstep. They are
 not alternative implementations of the language.
 
+## Rust Workspace
+
+Rust crates are the semantic implementation behind the public packages. Route a
+focused change with `.ai/context/rust-routing.md` and the crate-local `AI.md` rather
+than loading every crate:
+
+| Crate group | Responsibility |
+|---|---|
+| `mastercss-schema`, `mastercss-lexer` | Dependency-light wire contracts and tokens |
+| `mastercss-engine`, `mastercss-compiler`, `mastercss-project` | CSS execution, authoring lowering, and project policy |
+| `mastercss-source`, `mastercss-scanner`, `mastercss-validator`, `mastercss-lint`, `mastercss-language` | Developer-tooling semantics |
+| `mastercss-render`, `mastercss-diagnostics` | Server render and diagnostic IR |
+| `mastercss-binding-native`, `mastercss-binding-wasm-*` | ABI adaptation and artifact delivery only |
+| `mastercss-cli`, `xtask` | Native CLI transport and repository build/codegen/parity orchestration |
+
 ## Runtime, Tooling Consumers, And Adapters
 
 | Package | Entry points | Responsibility |

@@ -27,6 +27,7 @@
 ## Key Files
 
 - `src/core.ts`
+- `src/diagnostics.ts`
 - `src/settings.ts`
 - `src/utils/create-document.ts`
 - `tests/fixtures/**`

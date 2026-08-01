@@ -1,0 +1,27 @@
+{
+  "$schema": "./source-budget.schema.json",
+  "version": 1,
+  "limits": {
+    "source": {
+      "maxLines": 800,
+      "maxBytes": 65536
+    },
+    "support": {
+      "maxLines": 1000,
+      "maxBytes": 98304
+    },
+    "context": {
+      "maxLines": 400,
+      "maxBytes": 49152
+    }
+  },
+  "exceptions": [
+    {
+      "path": "examples/svelte/src/routes/sverdle/words.server.ts",
+      "category": "static-data",
+      "maxLines": 13000,
+      "maxBytes": 147456,
+      "reason": "The upstream Sverdle word corpus is static fixture data; splitting it would add lookup indirection without creating useful semantic context."
+    }
+  ]
+}

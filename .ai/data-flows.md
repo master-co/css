@@ -15,7 +15,10 @@ class string
 
 Main files:
 
-- `crates/mastercss-engine/src/lib.rs`
+- `crates/mastercss-engine/src/session.rs`
+- `crates/mastercss-engine/src/utility.rs`
+- `crates/mastercss-engine/src/condition.rs`
+- `crates/mastercss-engine/src/generation.rs`
 - `packages/css/src/engine/bound-engine.ts`
 - `packages/css/src/engine/create-engine.ts`
 
@@ -45,8 +48,9 @@ Main files:
 - `packages/compiler/src/project/manifest.ts`
 - `packages/compiler/src/index.ts`
 - `crates/mastercss-project/src/lib.rs`
-- `crates/mastercss-compiler/src/lib.rs`
-- `crates/mastercss-compiler/src/lower.rs`
+- `crates/mastercss-compiler/src/directives.rs`
+- `crates/mastercss-compiler/src/manifest/`
+- `crates/mastercss-compiler/src/lower/`
 
 Risks:
 
@@ -107,6 +111,10 @@ document or shadow root
 Main files:
 
 - `packages/runtime/src/core.ts`
+- `packages/runtime/src/host.ts`
+- `packages/runtime/src/hydration.ts`
+- `packages/runtime/src/mutation.ts`
+- `packages/runtime/src/startup.ts`
 - `packages/runtime/src/layer.ts`
 - `packages/runtime/src/utility-layer.ts`
 - `packages/runtime/src/class-tracker.ts`

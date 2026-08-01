@@ -10,7 +10,7 @@ Package lint is mandatory for every changed workspace package that defines a pac
 
 Benchmarks are advisory guardrails, not exact CI pass/fail gates. Run correctness validation first, then run the relevant benchmark when a change touches an engine or runtime hot path unless the change is documentation-only or purely type-only.
 
-Engine hot paths live in `crates/mastercss-engine/src/lib.rs` and include matcher/index behavior, value parsing, selector/condition generation, priority sorting, layer insertion, resource tracking, and manifest compilation/cache behavior. The TypeScript engine wrapper is startup/FFI overhead, not a semantic hot path.
+Engine hot paths are routed through `crates/mastercss-engine/src/session.rs`, `utility.rs`, `value_syntax.rs`, `condition.rs`, `generation.rs`, `resources.rs`, and `manifest.rs`. They include matcher/index behavior, value parsing, selector/condition generation, priority sorting, layer insertion, resource tracking, and manifest compilation/cache behavior. The TypeScript engine wrapper is startup/FFI overhead, not a semantic hot path.
 
 Runtime hot paths include `@master/css-binding-wasm-engine`, `packages/runtime/src/core.ts`, DOM hydration, class mutation tracking, transition mapping, CSSOM insertion/deletion, and the global browser bundle.
 
@@ -49,6 +49,7 @@ Do not chase benchmark wins by changing CSS output, cascade order, hydration che
 | Validator | `pnpm --filter @master/css-tooling test` |
 | CLI | `pnpm --filter @master/css-cli test` |
 | Public exports/types | Package build and type-check; downstream package checks if needed |
+| AI/source context structure | `pnpm run check:ai-context`; run `pnpm run test:ai-context` when checker policy changes |
 
 ## Snapshots And Fixtures
 

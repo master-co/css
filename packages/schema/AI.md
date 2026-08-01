@@ -46,6 +46,7 @@
 - `src/runtime-style.ts`
 - `src/native-css-shorthand.ts`
 - `src/css-common.ts`
+- `crates/mastercss-schema/AI.md`
 
 ## Risk Areas
 

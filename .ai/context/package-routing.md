@@ -6,9 +6,10 @@ Use this after `.ai/context/index.md` when a task names files, paths, packages, 
 
 1. Match changed or referenced paths below.
 2. Read each affected workspace `package.json`.
-3. Read each affected package-local `AI.md`, if present.
-4. Read the task pack from `.ai/context/index.md`.
-5. Escalate through `.ai/context/accuracy-guardrails.md` when the path touches high-risk behavior.
+3. For `crates/**`, read root/affected `Cargo.toml` and `.ai/context/rust-routing.md`.
+4. Read each affected package/crate-local `AI.md`, if present.
+5. Read the task pack from `.ai/context/index.md`.
+6. Escalate through `.ai/context/accuracy-guardrails.md` when the path touches high-risk behavior.
 
 When a task spans multiple paths, load the lowest owning package for each path and then read `.ai/context/package-boundaries.md` if behavior crosses package layers.
 
@@ -34,13 +35,22 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 | `packages/cli/**` | CLI | `testing.md`, `package-boundaries.md` |
 | `packages/figma/**` | app/plugin surface | `testing.md` |
 
+## Rust Crate Paths
+
+For `crates/<name>/**`, read root `Cargo.toml`, `crates/<name>/Cargo.toml`, the
+crate-local `AI.md` when present, and `.ai/context/rust-routing.md`. Pair binding
+crates with their matching `packages/binding*` delivery package; pair semantic crates
+with the public host named by the Rust routing pack.
+
 ## Root And Workspace Paths
 
 | Path | Read | Notes |
 |---|---|---|
 | `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs and site behavior. |
 | `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
-| `benchmarks/**` | `benchmarks/package.json`, `performance.md` | Do not commit benchmark history output. |
+| `benchmarks/**` | `benchmarks/package.json`, `benchmarks/AI.md`, `performance.md` | Do not commit benchmark history output. |
+| `crates/**`, `Cargo.toml`, `Cargo.lock` | root/affected `Cargo.toml`, `rust-routing.md` | Rust is the semantic source; use crate-local tests first. |
+| `parity/**`, `parity-exceptions.json`, `scripts/ts-test-migration/**` | `rust-routing.md`, `testing.md` | Evidence and digests are contracts; do not refresh blindly. |
 | `internal/**` | `internal/package.json`, `site/AI.md` when used by site | Root site support workspace; distinct from `packages/internal`. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |
@@ -53,3 +63,4 @@ For `packages/<name>/**`, read `packages/<name>/package.json` and `packages/<nam
 - CSS output can change: read `.ai/context/css-output.md`.
 - Runtime, extraction, language, ESLint, compiler, or parser behavior changes: read `.ai/context/accuracy-guardrails.md`.
 - Public docs or examples describe changed behavior: read `.ai/context/docs.md`.
+- Rust ABI, generated protocol, or parity evidence changes: read `.ai/context/rust-routing.md` and run codegen/parity checks.

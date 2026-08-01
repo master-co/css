@@ -49,7 +49,10 @@ stable layer statement remains:
 
 Important files:
 
-- `crates/mastercss-engine/src/lib.rs`
+- `crates/mastercss-engine/src/session.rs`
+- `crates/mastercss-engine/src/utility.rs`
+- `crates/mastercss-engine/src/condition.rs`
+- `crates/mastercss-engine/src/resources.rs`
 - `packages/css/src/engine/bound-engine.ts`
 - `packages/css/src/engine/create-engine.ts`
 - `packages/css/src/node.ts`
@@ -71,6 +74,11 @@ The Rust compiler and project crates own parsing, graph policy, merge policy, an
 report classification. TypeScript supplies files, Node package exports resolution,
 host CSS support, and orchestration. Directive syntax or CSS-byte changes remain
 high-risk even though these responsibilities now share one npm package.
+
+Within `mastercss-compiler`, directive/native/import domains live at crate root,
+Manifest normalization lives under `src/manifest/`, and lowering orchestration lives
+under `src/lower/`. Use `.ai/context/rust-routing.md` instead of loading the entire
+crate for a focused change.
 
 ## Tooling Surface
 
@@ -97,6 +105,10 @@ belong to `@master/css-language-service`, not the editor-neutral tooling core.
 `packages/runtime` owns browser DOM observation, class reference counts, CSSOM
 mutation, scheduling, and hydration around the runtime-Wasm engine session. It must
 not gain build-time observers, global tooling event buses, or configuration loaders.
+
+Runtime host responsibilities are split across `core.ts` (public orchestration),
+`host.ts` (DOM/CSSOM host), `hydration.ts`, `mutation.ts`, `retention-config.ts`, and
+`startup.ts`. Read only the domain involved, then its browser tests.
 
 `packages/server` owns HTML parsing/serialization and `style#master-css` injection.
 Rust render sessions extract classes, generate CSS, and produce hydration/resource IR.
