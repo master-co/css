@@ -80,4 +80,3 @@ export const interactionCostMetrics = [
     description: '1 when the Master progressive variant adopted server-rendered style#master-css before interaction.'
   }
 ] satisfies BenchmarkMetric[]
-

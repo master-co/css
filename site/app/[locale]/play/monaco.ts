@@ -363,4 +363,3 @@ export function scheduleMonacoShikiLanguageRefresh(runtime: PlayShikiRuntime, mo
     scheduleClearPlayCSSDiagnostics(monaco)
   }, 250)
 }
-

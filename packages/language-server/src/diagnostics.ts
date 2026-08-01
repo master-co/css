@@ -96,4 +96,3 @@ export function toCSSDirectiveError(error: unknown): CSSDirectiveError | undefin
     }
   )
 }
-

@@ -218,4 +218,3 @@ export const runtimeStyleInvalidationMetrics = [
     description: '1 when progressive mode adopted server-rendered style#master-css before interaction.'
   }
 ] satisfies BenchmarkMetric[]
-

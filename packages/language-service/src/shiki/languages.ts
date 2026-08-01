@@ -68,4 +68,3 @@ export function getLanguageServiceLanguageId(lang?: string) {
   const languageId = lang ? languageServiceLanguageIds[lang] ?? lang : undefined
   return languageId
 }
-

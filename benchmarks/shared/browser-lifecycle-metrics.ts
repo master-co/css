@@ -308,4 +308,3 @@ export const browserLifecycleMetrics = [
     description: '1 when the scenario computed-style assertion passed, otherwise 0.'
   }
 ] satisfies BenchmarkMetric[]
-

@@ -508,4 +508,3 @@ test.concurrent('renders CSS directive class-list semantic tokens when embedded 
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })
-

@@ -212,4 +212,3 @@ export const masterDeliveryModeMetrics = [
     description: 'Raw bytes of style#master-css after runtime observe/hydration.'
   }
 ] satisfies BenchmarkMetric[]
-

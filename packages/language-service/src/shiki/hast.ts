@@ -183,4 +183,3 @@ export function applyClassAttributeValueWrappers(root: unknown, source: string, 
     }
   }
 }
-
