@@ -8,11 +8,11 @@
       "expectedTests": 10,
       "tests": [
         { "name": "keeps on-demand insertion lifecycle for utilities variables and semantic components", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-semantic-manifest-layer", "corpus:engine-same-class-across-layers"] },
-        { "name": "prevents duplicate insertion and preserves emittedGlobals variable and animation counts", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"] },
-        { "name": "emits static variables, dependencies, aliases, and keyframes without class references", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources", "corpus:engine-inline-theme-variable-dependencies"] },
-        { "name": "does not duplicate emittedGlobals static variables and keyframes", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"] },
-        { "name": "emits referenced keyframes outside cascade layers", "coverage": ["test:crates/mastercss-engine/src/lib.rs#tracks_variable_resources_across_aliases_and_deletion", "corpus:engine-animation-resource-metadata"] },
-        { "name": "routes explicit layer variants and rejects conflicting layer variants", "coverage": ["corpus:engine-selector-condition-layer", "test:crates/mastercss-engine/src/lib.rs#renders_selector_condition_layer_and_important_state"] },
+        { "name": "prevents duplicate insertion and preserves emittedGlobals variable and animation counts", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/tests/lifecycle.rs#ensure_is_idempotent_and_delete_reports_exact_index"] },
+        { "name": "emits static variables, dependencies, aliases, and keyframes without class references", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources", "corpus:engine-inline-theme-variable-dependencies"] },
+        { "name": "does not duplicate emittedGlobals static variables and keyframes", "coverage": ["corpus:engine-emitted-global-variable", "test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host"] },
+        { "name": "emits referenced keyframes outside cascade layers", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#tracks_variable_resources_across_aliases_and_deletion", "corpus:engine-animation-resource-metadata"] },
+        { "name": "routes explicit layer variants and rejects conflicting layer variants", "coverage": ["corpus:engine-selector-condition-layer", "test:crates/mastercss-engine/src/tests/syntax.rs#renders_selector_condition_layer_and_important_state"] },
         { "name": "keeps at-rules authored on semantic component rules within the component layer", "coverage": ["corpus:engine-semantic-manifest-layer"] },
         { "name": "keeps deterministic rule order independent of insertion order", "coverage": ["corpus:engine-basic-order", "corpus:engine-basic-order-reversed"] },
         { "name": "keeps declaration and media priority order", "coverage": ["corpus:engine-responsive-priority", "corpus:engine-selector-priority-metadata"] },
@@ -23,10 +23,10 @@
       "file": "packages/engine/tests/class-inspection.test.ts",
       "expectedTests": 4,
       "tests": [
-        { "name": "inspects key/value utilities with variants and token metadata", "coverage": ["test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session", "corpus:engine-pseudo-and-responsive-selectors"] },
-        { "name": "inspects static utilities and important suffixes", "coverage": ["test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session", "corpus:engine-selector-condition-layer"] },
-        { "name": "falls back to lexical class parts for unknown classes", "coverage": ["test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session"] },
-        { "name": "normalizes number, rem, px, and base-unit numeric values", "coverage": ["test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions", "corpus:engine-functions-and-negative-values", "corpus:engine-negative-base-unit-bytes"] }
+        { "name": "inspects key/value utilities with variants and token metadata", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session", "corpus:engine-pseudo-and-responsive-selectors"] },
+        { "name": "inspects static utilities and important suffixes", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session", "corpus:engine-selector-condition-layer"] },
+        { "name": "falls back to lexical class parts for unknown classes", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session"] },
+        { "name": "normalizes number, rem, px, and base-unit numeric values", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions", "corpus:engine-functions-and-negative-values", "corpus:engine-negative-base-unit-bytes"] }
       ]
     },
     {
@@ -34,11 +34,11 @@
       "expectedTests": 10,
       "tests": [
         { "name": "keeps group syntax independent from preset utilities", "coverage": ["corpus:engine-grouped-declarations"] },
-        { "name": "keeps grouped declarations generated utilities and invalid group recovery", "coverage": ["corpus:engine-grouped-declarations", "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"] },
+        { "name": "keeps grouped declarations generated utilities and invalid group recovery", "coverage": ["corpus:engine-grouped-declarations", "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"] },
         { "name": "keeps grouped declaration important propagation", "coverage": ["corpus:engine-grouped-declarations"] },
         { "name": "keeps grouped gradient values with custom variables and quoted separators", "coverage": ["corpus:engine-functions-and-negative-values"] },
         { "name": "keeps grid-col span shorthand and removes long alias", "coverage": ["corpus:engine-complex-utility-values"] },
-        { "name": "resolves mapped enum pattern values from manifest valueMap", "coverage": ["test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
+        { "name": "resolves mapped enum pattern values from manifest valueMap", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
         { "name": "keeps inset utilities values and priority order", "coverage": ["corpus:engine-basic-order", "corpus:engine-border-radius-aliases"] },
         { "name": "keeps size max and min single-value utility parsing", "coverage": ["corpus:engine-complex-utility-values"] },
         { "name": "keeps transition multi-value syntax and rejects removed shorthand prefix", "coverage": ["corpus:engine-complex-utility-values", "corpus:engine-rejects-retired-syntax"] },
@@ -52,13 +52,13 @@
         { "name": "generates representative background utilities", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-pseudo-and-responsive-selectors"] },
         { "name": "keeps gradient color token functions as resolved color values", "coverage": ["corpus:engine-functions-and-negative-values"] },
         { "name": "preserves margin aliases and priority order", "coverage": ["corpus:engine-responsive-priority", "corpus:engine-functions-and-negative-values"] },
-        { "name": "resolves native value namespaces with aliases tokens and validation", "coverage": ["test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules", "corpus:engine-basic-order", "corpus:engine-native-alias-global-variable", "corpus:engine-native-alias-warm-session"] },
-        { "name": "prefers raw managed dynamic utilities before native and semantic fallbacks", "coverage": ["test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"] },
-        { "name": "drops colliding shorthand token aliases", "coverage": ["test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
+        { "name": "resolves native value namespaces with aliases tokens and validation", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules", "corpus:engine-basic-order", "corpus:engine-native-alias-global-variable", "corpus:engine-native-alias-warm-session"] },
+        { "name": "prefers raw managed dynamic utilities before native and semantic fallbacks", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"] },
+        { "name": "drops colliding shorthand token aliases", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
         { "name": "preserves radius corner aliases through key aliases", "coverage": ["corpus:engine-border-radius-aliases"] },
         { "name": "preserves border shorthand matching across value separators", "coverage": ["corpus:engine-border-radius-aliases"] },
         { "name": "keeps border single-value aliases on color and width utilities with static style utilities", "coverage": ["corpus:engine-border-radius-aliases"] },
-        { "name": "supports native axis shorthand aliases alongside logical replacements", "coverage": ["test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"] },
+        { "name": "supports native axis shorthand aliases alongside logical replacements", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules"] },
         { "name": "executes compiled value functions and complex utilities", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-complex-utility-values"] },
         { "name": "resolves negative numeric aliases without synthetic variables", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-negative-base-unit-bytes", "corpus:engine-negative-variable-identifier-bytes"] },
         { "name": "keeps unitful numeric variables from receiving a second unit conversion", "coverage": ["corpus:engine-variable-lifecycle"] },
@@ -70,36 +70,36 @@
         { "name": "keeps grouped declarations important when configured globally", "coverage": ["corpus:engine-grouped-declarations"] },
         { "name": "keeps migrated issue regressions for modern utility syntax", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-pseudo-and-responsive-selectors"] },
         { "name": "does not support bare function utilities", "coverage": ["corpus:engine-rejects-retired-syntax"] },
-        { "name": "removes legacy css variable assignment shorthand while keeping native custom property fallback opt-in", "coverage": ["corpus:engine-rejects-retired-syntax", "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"] },
-        { "name": "uses injected native declaration matcher after manifest misses and rejects removed aliases", "coverage": ["test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"] },
-        { "name": "uses native declaration fast path without bypassing aliases and smart utilities", "coverage": ["test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules", "corpus:engine-native-alias-global-variable", "corpus:engine-native-alias-warm-session"] },
+        { "name": "removes legacy css variable assignment shorthand while keeping native custom property fallback opt-in", "coverage": ["corpus:engine-rejects-retired-syntax", "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"] },
+        { "name": "uses injected native declaration matcher after manifest misses and rejects removed aliases", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"] },
+        { "name": "uses native declaration fast path without bypassing aliases and smart utilities", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules", "corpus:engine-native-alias-global-variable", "corpus:engine-native-alias-warm-session"] },
         { "name": "classifies native shorthand declarations for priority sorting", "coverage": ["corpus:engine-basic-order", "corpus:engine-border-radius-aliases"] },
-        { "name": "starts empty and inserts on demand", "coverage": ["test:crates/mastercss-engine/src/lib.rs#creates_sorted_rule_transitions_and_css"] },
-        { "name": "prevents duplicate insertion", "coverage": ["test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"] },
+        { "name": "starts empty and inserts on demand", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#creates_sorted_rule_transitions_and_css"] },
+        { "name": "prevents duplicate insertion", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#ensure_is_idempotent_and_delete_reports_exact_index"] },
         { "name": "does not duplicate emittedGlobals variables", "coverage": ["corpus:engine-emitted-global-variable"] },
-        { "name": "does not duplicate emittedGlobals animations", "coverage": ["test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"] },
+        { "name": "does not duplicate emittedGlobals animations", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host"] },
         { "name": "executes semantic component utilities from manifest records", "coverage": ["corpus:engine-semantic-manifest-layer"] },
         { "name": "keeps semantic utility declarations in their configured layer", "coverage": ["corpus:engine-semantic-manifest-layer"] },
         { "name": "keeps explicit layer variants routed to the requested layer", "coverage": ["corpus:engine-selector-condition-layer"] },
         { "name": "keeps deterministic rule ordering independent of insertion order", "coverage": ["corpus:engine-basic-order", "corpus:engine-basic-order-reversed"] },
-        { "name": "recovers generated utilities from selector text", "coverage": ["test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values"] }
+        { "name": "recovers generated utilities from selector text", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#separates_child_selectors_from_dynamic_values"] }
       ]
     },
     {
       "file": "packages/engine/tests/issue-regressions.test.ts",
       "expectedTests": 12,
       "tests": [
-        { "name": "preserves hsl strings in engine-owned Manifest records", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
+        { "name": "preserves hsl strings in engine-owned Manifest records", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
         { "name": "keeps flat color key namespace metadata", "coverage": ["corpus:engine-variable-lifecycle"] },
-        { "name": "issue #215: touch-action native declarations replace the removed touch shorthand", "coverage": ["test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"] },
-        { "name": "issue #265: View Transitions API declarations and pseudo-elements", "coverage": ["test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations", "corpus:engine-pseudo-and-responsive-selectors", "corpus:engine-legacy-pseudo-element-bytes"] },
-        { "name": "issue #321: individual transforms replace legacy transform function utilities", "coverage": ["test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"] },
+        { "name": "issue #215: touch-action native declarations replace the removed touch shorthand", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"] },
+        { "name": "issue #265: View Transitions API declarations and pseudo-elements", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations", "corpus:engine-pseudo-and-responsive-selectors", "corpus:engine-legacy-pseudo-element-bytes"] },
+        { "name": "issue #321: individual transforms replace legacy transform function utilities", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"] },
         { "name": "issue #332: logical borders and logical corner radii", "coverage": ["corpus:engine-border-radius-aliases"] },
         { "name": "preserves native CSS color function values in engine-owned Manifest records", "coverage": ["corpus:engine-functions-and-negative-values"] },
-        { "name": "keeps compiled alpha aliases and color-mix values executable through explicit variable dependencies", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
-        { "name": "does not lower stylesheet --alpha() or infer dependencies from direct manifest variable values", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
-        { "name": "does not validate stylesheet variable alias syntax in direct manifest variable values", "coverage": ["test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
-        { "name": "issue #358: clamp arithmetic is wrapped and normalized without double wrapping", "coverage": ["corpus:engine-functions-and-negative-values", "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"] },
+        { "name": "keeps compiled alpha aliases and color-mix values executable through explicit variable dependencies", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
+        { "name": "does not lower stylesheet --alpha() or infer dependencies from direct manifest variable values", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
+        { "name": "does not validate stylesheet variable alias syntax in direct manifest variable values", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"] },
+        { "name": "issue #358: clamp arithmetic is wrapped and normalized without double wrapping", "coverage": ["corpus:engine-functions-and-negative-values", "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"] },
         { "name": "issue #363: pipe separators inside groups lower to declaration spaces", "coverage": ["corpus:engine-grouped-declarations"] }
       ]
     },
@@ -107,36 +107,36 @@
       "file": "packages/engine/tests/master-css-manifest.test.ts",
       "expectedTests": 14,
       "tests": [
-        { "name": "executes semantic enum pattern utilities after exact semantic utilities", "coverage": ["test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
+        { "name": "executes semantic enum pattern utilities after exact semantic utilities", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
         { "name": "keeps all matching exact semantic utilities when arbitrary utilities are indexed", "coverage": ["corpus:engine-semantic-manifest-layer"] },
-        { "name": "falls back to pattern scanning when pattern names cannot be safely indexed", "coverage": ["test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
-        { "name": "tries raw managed utilities before key alias fallback", "coverage": ["test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"] },
+        { "name": "falls back to pattern scanning when pattern names cannot be safely indexed", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"] },
+        { "name": "tries raw managed utilities before key alias fallback", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"] },
         { "name": "executes pre-bucketed utility and variable aliases without config-style resolution", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-semantic-manifest-layer"] },
         { "name": "resolves variable alias refs during manifest loading without serialized namespaces", "coverage": ["corpus:engine-variable-lifecycle"] },
-        { "name": "reuses compiled manifest data without sharing mutable instance state", "coverage": ["test:crates/mastercss-engine/src/lib.rs#refresh_replays_connected_classes_against_new_manifest"] },
-        { "name": "keeps native declaration matcher behavior instance-local for cached manifests", "coverage": ["test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"] },
-        { "name": "ignores manifest-carried registry fields", "coverage": ["test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"] },
-        { "name": "rejects v2 manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"] },
-        { "name": "rejects stale flat v1 variable manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"] },
-        { "name": "rejects stale v1 utility bucket manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"] },
-        { "name": "uses compiled condition aliases from the manifest", "coverage": ["corpus:engine-responsive-priority", "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
-        { "name": "serializes generated hydration manifest rules in layer order", "coverage": ["test:crates/mastercss-schema/src/lib.rs#hydration_json_is_script_safe", "corpus:engine-selector-condition-metadata", "corpus:engine-animation-resource-metadata"] }
+        { "name": "reuses compiled manifest data without sharing mutable instance state", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#refresh_replays_connected_classes_against_new_manifest"] },
+        { "name": "keeps native declaration matcher behavior instance-local for cached manifests", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"] },
+        { "name": "ignores manifest-carried registry fields", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules"] },
+        { "name": "rejects v2 manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"] },
+        { "name": "rejects stale flat v1 variable manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"] },
+        { "name": "rejects stale v1 utility bucket manifests instead of compatibility-loading them", "coverage": ["test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"] },
+        { "name": "uses compiled condition aliases from the manifest", "coverage": ["corpus:engine-responsive-priority", "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"] },
+        { "name": "serializes generated hydration manifest rules in layer order", "coverage": ["test:crates/mastercss-schema/src/tests.rs#hydration_json_is_script_safe", "corpus:engine-selector-condition-metadata", "corpus:engine-animation-resource-metadata"] }
       ]
     },
     {
       "file": "packages/engine/tests/parser-boundary-parity.test.ts",
       "expectedTests": 3,
       "tests": [
-        { "name": "parses primitive values with the old public parse-value expectations", "coverage": ["test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"] },
+        { "name": "parses primitive values with the old public parse-value expectations", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"] },
         { "name": "keeps selector aliases, pseudos, shorthands, and descendants intact", "coverage": ["corpus:engine-pseudo-and-responsive-selectors", "corpus:engine-selector-condition-metadata", "corpus:engine-legacy-pseudo-element-bytes"] },
-        { "name": "recovers generated utilities from selector text across modes scope and grouped selectors", "coverage": ["test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values", "corpus:engine-grouped-declarations"] }
+        { "name": "recovers generated utilities from selector text across modes scope and grouped selectors", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#separates_child_selectors_from_dynamic_values", "corpus:engine-grouped-declarations"] }
       ]
     },
     {
       "file": "packages/engine/tests/parser-parity.test.ts",
       "expectedTests": 1,
       "tests": [
-        { "name": "resolves custom at-rule and condition aliases from the compiled manifest", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar", "corpus:engine-mode-conditions"] }
+        { "name": "resolves custom at-rule and condition aliases from the compiled manifest", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar", "corpus:engine-mode-conditions"] }
       ]
     },
     {
@@ -154,21 +154,21 @@
         { "name": "does not hide expected native load failures behind the auto Wasm fallback", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#does not hide an invalid native binding behind Wasm fallback"] },
         { "name": "matches existing static, pattern, property, sorting, and escaping output", "coverage": ["corpus:engine-basic-order", "corpus:engine-complex-utility-values"] },
         { "name": "keeps ensure idempotent and delete synchronous", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#keeps transitions synchronous after session creation"] },
-        { "name": "matches selector, condition, layer, important, and base-unit state", "coverage": ["corpus:engine-selector-condition-layer", "corpus:engine-negative-base-unit-bytes", "test:crates/mastercss-engine/src/lib.rs#renders_selector_condition_layer_and_important_state"] },
+        { "name": "matches selector, condition, layer, important, and base-unit state", "coverage": ["corpus:engine-selector-condition-layer", "corpus:engine-negative-base-unit-bytes", "test:crates/mastercss-engine/src/tests/syntax.rs#renders_selector_condition_layer_and_important_state"] },
         { "name": "matches deterministic cascade ordering for mixed utility batches", "coverage": ["corpus:engine-basic-order", "corpus:engine-basic-order-reversed", "corpus:engine-responsive-priority", "corpus:engine-selector-priority-metadata"] },
         { "name": "rejects use after dispose in the host adapter", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#inspects without mutating state and rejects use after disposal"] },
         { "name": "preserves structured Rust errors across the native boundary", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#preserves structured Rust errors"] },
-        { "name": "inspects without mutating session state", "coverage": ["test:crates/mastercss-engine/src/lib.rs#inspection_does_not_mutate_the_session"] },
+        { "name": "inspects without mutating session state", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#inspection_does_not_mutate_the_session"] },
         { "name": "matches all directly representable default-manifest static and property classes", "coverage": ["test:packages/css/tests/engine/rust-engine.test.ts#renders representative default-manifest classes without a TypeScript oracle"] },
         { "name": "matches manifest-declared variable, value, and key matcher samples", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-border-radius-aliases"] },
-        { "name": "matches every builtin key alias through native-value fallback", "coverage": ["test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"] },
+        { "name": "matches every builtin key alias through native-value fallback", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules"] },
         { "name": "matches representative native namespaces, aliases, and compound values", "coverage": ["corpus:engine-basic-order", "corpus:engine-complex-utility-values"] },
-        { "name": "matches representative parser, function, alpha, condition, and selector cases", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-pseudo-and-responsive-selectors", "corpus:engine-legacy-pseudo-element-bytes", "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
+        { "name": "matches representative parser, function, alpha, condition, and selector cases", "coverage": ["corpus:engine-functions-and-negative-values", "corpus:engine-pseudo-and-responsive-selectors", "corpus:engine-legacy-pseudo-element-bytes", "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"] },
         { "name": "matches grouped declaration lowering and nested utility resolution", "coverage": ["corpus:engine-grouped-declarations"] },
         { "name": "matches default-manifest variable aliases, base units, ordering, and resource retention", "coverage": ["corpus:engine-variable-lifecycle", "corpus:engine-functions-and-negative-values"] },
         { "name": "suppresses theme variables declared through emittedGlobals", "coverage": ["corpus:engine-emitted-global-variable"] },
         { "name": "matches mode-variable buckets for media, class, and host triggers", "coverage": ["corpus:engine-mode-conditions", "corpus:engine-inline-theme-variable-dependencies"] },
-        { "name": "matches keyframe lifecycle and emitted animation suppression", "coverage": ["test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host", "test:crates/mastercss-engine/src/lib.rs#tracks_keyframes_only_from_animation_declarations", "corpus:engine-animation-resource-metadata"] }
+        { "name": "matches keyframe lifecycle and emitted animation suppression", "coverage": ["test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host", "test:crates/mastercss-engine/src/tests/syntax.rs#tracks_keyframes_only_from_animation_declarations", "corpus:engine-animation-resource-metadata"] }
       ]
     },
     {
@@ -176,9 +176,9 @@
       "expectedTests": 6,
       "tests": [
         { "name": "keeps default variable buckets before mode buckets when defaults are inserted later", "coverage": ["corpus:engine-mode-conditions", "corpus:engine-variable-lifecycle", "corpus:engine-inline-theme-variable-dependencies"] },
-        { "name": "emits color-scheme for built-in class mode buckets", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
-        { "name": "emits color-scheme for built-in host mode buckets", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
-        { "name": "does not merge the default mode selector when default-mode is none", "coverage": ["test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"] },
+        { "name": "emits color-scheme for built-in class mode buckets", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"] },
+        { "name": "emits color-scheme for built-in host mode buckets", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"] },
+        { "name": "does not merge the default mode selector when default-mode is none", "coverage": ["test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"] },
         { "name": "does not emit color-scheme for media mode buckets", "coverage": ["corpus:engine-mode-conditions"] },
         { "name": "does not emit color-scheme for custom mode buckets", "coverage": ["corpus:engine-mode-conditions"] }
       ]
