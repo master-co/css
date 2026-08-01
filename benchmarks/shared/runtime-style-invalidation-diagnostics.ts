@@ -17,6 +17,11 @@ import {
   type InteractionResult,
   type RuntimeState
 } from './interaction-cost'
+import { runtimeStyleInvalidationMetrics } from './runtime-style-invalidation-metrics'
+import { createRuntimeStyleInvalidationSamples } from './runtime-style-invalidation-samples'
+import { fixedViewport, runtimeStyleInvalidationFixtureIds } from './runtime-style-invalidation-config'
+import type { RuntimeStyleDiagnosticAction, RuntimeStyleDiagnosticDescriptor } from './runtime-style-invalidation-config'
+import { createRuntimeStyleInvalidationVariants, filterRuntimeStyleInvalidationVariants } from './runtime-style-invalidation-variants'
 import { writeBenchmarkReport } from './report'
 import { summarizeReportSamples } from './stats'
 import type {
@@ -24,7 +29,6 @@ import type {
   BenchmarkArtifact,
   BenchmarkFixture,
   BenchmarkFixtureId,
-  BenchmarkMetric,
   BenchmarkMetricUnit,
   BenchmarkReport,
   BenchmarkSample,
@@ -96,7 +100,7 @@ interface RuntimeStyleInvalidationMeasurement {
   artifacts: BenchmarkArtifact[]
 }
 
-interface RuntimeStyleInvalidationResult {
+export interface RuntimeStyleInvalidationResult {
   interaction: InteractionResult
   traceMetrics: {
     styleRecalculationMs: number
@@ -120,265 +124,6 @@ interface RuntimeStyleInvalidationResult {
   }
   consoleWarnings: string[]
 }
-
-type RuntimeStyleDiagnosticKind =
-  | 'static-baseline'
-  | 'runtime-baseline'
-  | 'observer-paused'
-  | 'runtime-style-idle'
-  | 'retained-volume'
-
-type RuntimeStyleDiagnosticAction = 'mutation-cleanup-cycle' | 'idle-window'
-
-interface RuntimeStyleDiagnosticDescriptor extends BenchmarkVariant {
-  modeId: InteractionModeId
-  kind: RuntimeStyleDiagnosticKind
-  action: RuntimeStyleDiagnosticAction
-  preseedTempRules: boolean
-  pauseObserver: boolean
-  retainedVolume: number
-}
-
-const fixedViewport = {
-  width: 1280,
-  height: 720
-}
-
-const runtimeStyleInvalidationFixtureIds = [
-  'dynamic',
-  'stress-dom'
-] satisfies BenchmarkFixtureId[]
-
-const runtimeStyleInvalidationRuntimeModeIds = [
-  'master-runtime',
-  'master-progressive'
-] satisfies InteractionModeId[]
-
-const runtimeStyleInvalidationStaticModeIds = [
-  'master-static',
-  'tailwind-static'
-] satisfies InteractionModeId[]
-
-const retainedVolumeLevels = [0, 2, 128, 512]
-
-export const runtimeStyleInvalidationMetrics = [
-  {
-    id: 'interaction-ready-ms',
-    label: 'Mutation to ready',
-    unit: 'ms',
-    description: 'Elapsed time from diagnostic action start until the page completes its configured animation-frame settle.'
-  },
-  {
-    id: 'style-recalculation-ms',
-    label: 'Style recalculation',
-    unit: 'ms',
-    description: 'Trace-derived style recalculation duration.'
-  },
-  {
-    id: 'layout-ms',
-    label: 'Layout',
-    unit: 'ms',
-    description: 'Trace-derived layout duration.'
-  },
-  {
-    id: 'paint-ms',
-    label: 'Paint',
-    unit: 'ms',
-    description: 'Trace-derived paint and pre-paint duration.'
-  },
-  {
-    id: 'long-task-count',
-    label: 'Long tasks',
-    unit: 'count',
-    description: 'Count of trace task events at or above 50 ms.'
-  },
-  {
-    id: 'runtime-mutation-ms',
-    label: 'Runtime ensure/delete total',
-    unit: 'ms',
-    description: 'Instrumented Master CSS runtime ensure/delete class-rules duration during the diagnostic action.'
-  },
-  {
-    id: 'runtime-ensure-class-rules-duration-ms',
-    label: 'Runtime ensure class rules duration',
-    unit: 'ms',
-    description: 'Instrumented duration spent inside CSSRuntime.ensureClassRules(...).'
-  },
-  {
-    id: 'runtime-delete-class-rules-duration-ms',
-    label: 'Runtime delete class rules duration',
-    unit: 'ms',
-    description: 'Instrumented duration spent inside CSSRuntime.deleteClassRules(...).'
-  },
-  {
-    id: 'mutation-observer-callback-count',
-    label: 'MutationObserver callbacks',
-    unit: 'count',
-    description: 'Number of MutationObserver callback deliveries during the trace.'
-  },
-  {
-    id: 'mutation-observer-callback-duration-ms',
-    label: 'MutationObserver callback duration',
-    unit: 'ms',
-    description: 'Instrumented duration spent inside delivered MutationObserver callbacks.'
-  },
-  {
-    id: 'mutation-record-count',
-    label: 'Mutation records',
-    unit: 'count',
-    description: 'Total MutationRecord count delivered during the trace.'
-  },
-  {
-    id: 'runtime-generated-rule-count-delta',
-    label: 'Runtime rule delta',
-    unit: 'count',
-    description: 'Change in runtime classUtilities size after the diagnostic action.'
-  },
-  {
-    id: 'preseeded-runtime-rule-count',
-    label: 'Preseeded runtime rules',
-    unit: 'count',
-    description: 'Number of temporary cleanup rules generated before trace collection.'
-  },
-  {
-    id: 'seeded-retained-class-count',
-    label: 'Seeded retained classes',
-    unit: 'count',
-    description: 'Number of benchmark-only inactive retained classes seeded before trace collection.'
-  },
-  {
-    id: 'seeded-retained-rule-count',
-    label: 'Seeded retained rules',
-    unit: 'count',
-    description: 'Estimated generated rule count for benchmark-only inactive retained classes.'
-  },
-  {
-    id: 'seeded-retained-raw-bytes',
-    label: 'Seeded retained bytes',
-    unit: 'B',
-    description: 'Estimated raw CSS bytes for benchmark-only inactive retained classes.'
-  },
-  {
-    id: 'retained-set-add-count',
-    label: 'Retained set adds',
-    unit: 'count',
-    description: 'Benchmark-instrumented retainedClassNames.add(...) calls during trace collection.'
-  },
-  {
-    id: 'retained-set-delete-count',
-    label: 'Retained set deletes',
-    unit: 'count',
-    description: 'Benchmark-instrumented retainedClassNames.delete(...) calls during trace collection.'
-  },
-  {
-    id: 'retained-set-clear-count',
-    label: 'Retained set clears',
-    unit: 'count',
-    description: 'Benchmark-instrumented retainedClassNames.clear() calls during trace collection.'
-  },
-  {
-    id: 'observer-paused',
-    label: 'Observer paused',
-    unit: 'count',
-    description: '1 when the runtime MutationObserver was disconnected before trace collection.'
-  },
-  {
-    id: 'runtime-style-rule-count-before',
-    label: 'Runtime stylesheet rules before',
-    unit: 'count',
-    description: 'Runtime-generated stylesheet rule count before trace collection.'
-  },
-  {
-    id: 'runtime-style-rule-count-after',
-    label: 'Runtime stylesheet rules after trace',
-    unit: 'count',
-    description: 'Runtime-generated stylesheet rule count after trace collection.'
-  },
-  {
-    id: 'runtime-style-rule-count-after-flush',
-    label: 'Runtime stylesheet rules after flush',
-    unit: 'count',
-    description: 'Runtime-generated stylesheet rule count after the post-trace product settle window.'
-  },
-  {
-    id: 'runtime-utility-count-before',
-    label: 'Runtime utility count before',
-    unit: 'count',
-    description: 'Runtime classUtilities.size before trace collection.'
-  },
-  {
-    id: 'runtime-utility-count-after',
-    label: 'Runtime utility count after trace',
-    unit: 'count',
-    description: 'Runtime classUtilities.size after trace collection.'
-  },
-  {
-    id: 'runtime-utility-count-after-flush',
-    label: 'Runtime utility count after flush',
-    unit: 'count',
-    description: 'Runtime classUtilities.size after the post-trace product settle window.'
-  },
-  {
-    id: 'retained-class-count-before',
-    label: 'Retained classes before',
-    unit: 'count',
-    description: 'Runtime retainedClassNames.size before trace collection.'
-  },
-  {
-    id: 'retained-class-count-after',
-    label: 'Retained classes after trace',
-    unit: 'count',
-    description: 'Runtime retainedClassNames.size after trace collection.'
-  },
-  {
-    id: 'retained-class-count-after-flush',
-    label: 'Retained classes after flush',
-    unit: 'count',
-    description: 'Runtime retainedClassNames.size after the post-trace product settle window.'
-  },
-  {
-    id: 'retained-rule-count-after-flush',
-    label: 'Retained rules after flush',
-    unit: 'count',
-    description: 'Estimated retained generated rule count after the post-trace product settle window.'
-  },
-  {
-    id: 'retained-raw-bytes-after-flush',
-    label: 'Retained bytes after flush',
-    unit: 'B',
-    description: 'Estimated retained generated CSS raw bytes after the post-trace product settle window.'
-  },
-  {
-    id: 'retained-cleanup-removed-class-count',
-    label: 'Forced retained cleanup classes',
-    unit: 'count',
-    description: 'Class count removed by the out-of-trace flushRetainedClassRules() validation.'
-  },
-  {
-    id: 'retained-cleanup-duration-ms',
-    label: 'Forced retained cleanup duration',
-    unit: 'ms',
-    description: 'Duration of the out-of-trace flushRetainedClassRules() validation.'
-  },
-  {
-    id: 'computed-style-valid',
-    label: 'Computed style valid',
-    unit: 'count',
-    description: '1 when the computed-style smoke check passed.'
-  },
-  {
-    id: 'cleanup-valid',
-    label: 'Cleanup valid',
-    unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after product settle.'
-  },
-  {
-    id: 'progressive-adopted',
-    label: 'Progressive adopted',
-    unit: 'count',
-    description: '1 when progressive mode adopted server-rendered style#master-css before interaction.'
-  }
-] satisfies BenchmarkMetric[]
 
 export async function writeRuntimeStyleInvalidationDiagnosticsReport() {
   const report = await createRuntimeStyleInvalidationDiagnosticsReport()
@@ -414,109 +159,6 @@ export async function writeMergedRuntimeStyleInvalidationDiagnosticsReport(repor
     limits: reports[0].limits,
     artifacts
   })
-}
-
-function createRuntimeStyleInvalidationVariants(): RuntimeStyleDiagnosticDescriptor[] {
-  return runtimeStyleInvalidationFixtureIds.flatMap((fixtureId) => [
-    ...runtimeStyleInvalidationStaticModeIds.map((modeId) => createDescriptor({
-      fixtureId,
-      modeId,
-      kind: 'static-baseline',
-      action: 'mutation-cleanup-cycle',
-      preseedTempRules: false,
-      pauseObserver: false,
-      retainedVolume: 0,
-      labelSuffix: 'static cleanup baseline'
-    })),
-    ...runtimeStyleInvalidationRuntimeModeIds.flatMap((modeId) => [
-      createDescriptor({
-        fixtureId,
-        modeId,
-        kind: 'runtime-baseline',
-        action: 'mutation-cleanup-cycle',
-        preseedTempRules: false,
-        pauseObserver: false,
-        retainedVolume: 0,
-        labelSuffix: 'runtime cleanup baseline'
-      }),
-      createDescriptor({
-        fixtureId,
-        modeId,
-        kind: 'observer-paused',
-        action: 'mutation-cleanup-cycle',
-        preseedTempRules: true,
-        pauseObserver: true,
-        retainedVolume: 0,
-        labelSuffix: 'observer paused with preseeded temp rules'
-      }),
-      createDescriptor({
-        fixtureId,
-        modeId,
-        kind: 'runtime-style-idle',
-        action: 'idle-window',
-        preseedTempRules: true,
-        pauseObserver: false,
-        retainedVolume: 0,
-        labelSuffix: 'runtime style idle window'
-      }),
-      ...retainedVolumeLevels.map((retainedVolume) => createDescriptor({
-        fixtureId,
-        modeId,
-        kind: 'retained-volume',
-        action: 'mutation-cleanup-cycle',
-        preseedTempRules: true,
-        pauseObserver: false,
-        retainedVolume,
-        labelSuffix: `preseeded temp rules with retained volume ${retainedVolume}`
-      }))
-    ])
-  ])
-}
-
-function filterRuntimeStyleInvalidationVariants(variants: RuntimeStyleDiagnosticDescriptor[]) {
-  const value = process.env.RUNTIME_STYLE_INVALIDATION_DIAGNOSTIC_VARIANT
-  if (!value) return variants
-  const filtered = variants.filter((variant) => variant.id === value)
-  if (!filtered.length) {
-    throw new Error(`No runtime style invalidation diagnostic variant matched ${JSON.stringify(value)}.`)
-  }
-  return filtered
-}
-
-function createDescriptor(options: {
-  fixtureId: BenchmarkFixtureId
-  modeId: InteractionModeId
-  kind: RuntimeStyleDiagnosticKind
-  action: RuntimeStyleDiagnosticAction
-  preseedTempRules: boolean
-  pauseObserver: boolean
-  retainedVolume: number
-  labelSuffix: string
-}): RuntimeStyleDiagnosticDescriptor {
-  return {
-    id: createRuntimeStyleInvalidationVariantId(options),
-    fixtureId: options.fixtureId,
-    adapterId: options.modeId === 'tailwind-static' ? 'tailwind-cli' : options.modeId,
-    label: `${options.fixtureId} / ${formatModeLabel(options.modeId)} / ${options.labelSuffix}`,
-    modeId: options.modeId,
-    kind: options.kind,
-    action: options.action,
-    preseedTempRules: options.preseedTempRules,
-    pauseObserver: options.pauseObserver,
-    retainedVolume: options.retainedVolume
-  }
-}
-
-function createRuntimeStyleInvalidationVariantId(options: {
-  fixtureId: BenchmarkFixtureId
-  modeId: InteractionModeId
-  kind: RuntimeStyleDiagnosticKind
-  retainedVolume: number
-}) {
-  const suffix = options.kind === 'retained-volume'
-    ? `retained-${options.retainedVolume}`
-    : options.kind
-  return `${options.fixtureId}-${options.modeId}-style-invalidation-${suffix}`
 }
 
 async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<BenchmarkReport> {
@@ -790,12 +432,12 @@ async function seedRetainedRuntimeRules(page: Page, count: number) {
   return page.evaluate((classCount) => {
     const runtime = globalThis.masterCSSRuntime as {
       ensureClassRules?: (...classNames: string[]) => unknown
-      classUtilities?: Map<string, Array<{
+      classUtilities?: Map<string, {
         text?: string
-        nodes?: Array<{
+        nodes?: {
           text?: string
-        }>
-      }>>
+        }[]
+      }[]>
       retainedClassNames?: Set<string>
       retainedClassRules?: Map<string, {
         retainedAt: number
@@ -835,12 +477,12 @@ async function seedRetainedRuntimeRules(page: Page, count: number) {
       rawBytes
     }
 
-    function summarizeRuntimeClassRules(rules: Array<{
+    function summarizeRuntimeClassRules(rules: {
       text?: string
-      nodes?: Array<{
+      nodes?: {
         text?: string
-      }>
-    }>) {
+      }[]
+    }[]) {
       let ruleCount = 0
       let rawBytes = 0
       for (const rule of rules) {
@@ -1032,60 +674,6 @@ async function traceRuntimeStyleInvalidationDiagnostic(page: Page, action: Runti
     forcedRetainedCleanup,
     runtimeDiagnostics,
     traceMetrics: summarizeTraceEvents(events)
-  }
-}
-
-function createRuntimeStyleInvalidationSamples(
-  variantId: string,
-  round: number,
-  result: RuntimeStyleInvalidationResult
-): BenchmarkSample[] {
-  return [
-    sample('interaction-ready-ms', variantId, round, result.interaction.elapsedMs),
-    sample('style-recalculation-ms', variantId, round, result.traceMetrics.styleRecalculationMs),
-    sample('layout-ms', variantId, round, result.traceMetrics.layoutMs),
-    sample('paint-ms', variantId, round, result.traceMetrics.paintMs),
-    sample('long-task-count', variantId, round, result.traceMetrics.longTaskCount),
-    sample('runtime-mutation-ms', variantId, round, result.interaction.runtimeMutationMs),
-    sample('runtime-ensure-class-rules-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeAddDurationMs),
-    sample('runtime-delete-class-rules-duration-ms', variantId, round, result.runtimeDiagnostics.runtimeRemoveDurationMs),
-    sample('mutation-observer-callback-count', variantId, round, result.runtimeDiagnostics.mutationObserverCallbackCount),
-    sample('mutation-observer-callback-duration-ms', variantId, round, result.runtimeDiagnostics.mutationObserverCallbackDurationMs),
-    sample('mutation-record-count', variantId, round, result.runtimeDiagnostics.mutationRecordCount),
-    sample('runtime-generated-rule-count-delta', variantId, round, result.interaction.runtimeGeneratedRuleCountDelta),
-    sample('preseeded-runtime-rule-count', variantId, round, result.preparation.preseededRuntimeRuleCount),
-    sample('seeded-retained-class-count', variantId, round, result.preparation.seededRetainedClassCount),
-    sample('seeded-retained-rule-count', variantId, round, result.preparation.seededRetainedRuleCount),
-    sample('seeded-retained-raw-bytes', variantId, round, result.preparation.seededRetainedRawBytes),
-    sample('retained-set-add-count', variantId, round, result.runtimeDiagnostics.retainedSetAddCount),
-    sample('retained-set-delete-count', variantId, round, result.runtimeDiagnostics.retainedSetDeleteCount),
-    sample('retained-set-clear-count', variantId, round, result.runtimeDiagnostics.retainedSetClearCount),
-    sample('observer-paused', variantId, round, result.preparation.observerPaused),
-    sample('runtime-style-rule-count-before', variantId, round, result.beforeRuntimeStyleRuleCount),
-    sample('runtime-style-rule-count-after', variantId, round, result.afterTraceRuntimeStyleRuleCount),
-    sample('runtime-style-rule-count-after-flush', variantId, round, result.afterFlushRuntimeStyleRuleCount),
-    sample('runtime-utility-count-before', variantId, round, result.beforeState.classUtilityNames.length),
-    sample('runtime-utility-count-after', variantId, round, result.afterTraceState.classUtilityNames.length),
-    sample('runtime-utility-count-after-flush', variantId, round, result.afterFlushState.classUtilityNames.length),
-    sample('retained-class-count-before', variantId, round, result.beforeState.retainedClassNames.length),
-    sample('retained-class-count-after', variantId, round, result.afterTraceState.retainedClassNames.length),
-    sample('retained-class-count-after-flush', variantId, round, result.afterFlushState.retainedClassNames.length),
-    sample('retained-rule-count-after-flush', variantId, round, result.afterFlushState.retainedClassRuleCount),
-    sample('retained-raw-bytes-after-flush', variantId, round, result.afterFlushState.retainedClassRawBytes),
-    sample('retained-cleanup-removed-class-count', variantId, round, result.forcedRetainedCleanup.removedClassCount),
-    sample('retained-cleanup-duration-ms', variantId, round, result.forcedRetainedCleanup.durationMs),
-    sample('computed-style-valid', variantId, round, result.interaction.computedStyleValid),
-    sample('cleanup-valid', variantId, round, result.interaction.cleanupValid),
-    sample('progressive-adopted', variantId, round, result.interaction.progressiveAdopted)
-  ]
-}
-
-function sample(metricId: string, variantId: string, round: number, value: number): BenchmarkSample {
-  return {
-    metricId,
-    variantId,
-    round,
-    value
   }
 }
 
@@ -1321,19 +909,6 @@ function getWarmupRounds() {
   const value = Number(process.env.RUNTIME_STYLE_INVALIDATION_DIAGNOSTIC_WARMUP_ROUNDS || 1)
   if (!Number.isFinite(value) || value < 0) return 1
   return Math.floor(value)
-}
-
-function formatModeLabel(modeId: InteractionModeId) {
-  switch (modeId) {
-    case 'master-static':
-      return 'Master CSS static'
-    case 'master-runtime':
-      return 'Master CSS runtime'
-    case 'master-progressive':
-      return 'Master CSS progressive'
-    case 'tailwind-static':
-      return 'Tailwind CSS static'
-  }
 }
 
 function getTemporaryClassNames() {
