@@ -31,7 +31,7 @@ interface WorkspacePackage {
   name: string
   path: string
   private: boolean
-  kind: 'root' | 'package' | 'site' | 'shared' | 'benchmarks' | 'example'
+  kind: 'root' | 'package' | 'crate' | 'site' | 'shared' | 'benchmarks' | 'example'
   scripts: string[]
   exports: string[]
   dependencies: string[]
@@ -44,6 +44,7 @@ interface RoutedPackage {
   path: string
   kind: WorkspacePackage['kind'] | 'agent-docs' | 'repo-root'
   packageJSON?: string
+  cargoManifest?: string
   aiNotes?: string | null
   matchedPaths: string[]
 }
@@ -75,6 +76,10 @@ const PACKAGE_JSON_PATTERNS = [
   'examples/*/package.json'
 ]
 
+const CARGO_TOML_PATTERNS = [
+  'crates/*/Cargo.toml'
+]
+
 const PACKAGE_JSON_IGNORE = [
   '**/node_modules/**',
   '**/dist/**',
@@ -100,6 +105,24 @@ const HIGH_RISK_PACKAGES: Record<string, PackageRisk> = {
   'binding-wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
   'binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'runtime Wasm ABI and browser delivery' },
   'binding-wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' }
+}
+
+const HIGH_RISK_CRATES: Record<string, PackageRisk> = {
+  'mastercss-schema': { id: 'schema', severity: 'warning', reason: 'Rust wire contracts shared by native, Wasm, and TypeScript hosts' },
+  'mastercss-lexer': { id: 'tooling', severity: 'high', reason: 'canonical syntax tokenization and source ranges' },
+  'mastercss-engine': { id: 'css-output', severity: 'high', reason: 'canonical class execution, priority, resources, and CSS output' },
+  'mastercss-compiler': { id: 'css-output', severity: 'high', reason: 'canonical directive parsing and Manifest lowering' },
+  'mastercss-project': { id: 'compiler', severity: 'high', reason: 'project graph and manifest merge policy' },
+  'mastercss-source': { id: 'tooling', severity: 'high', reason: 'canonical source extraction and ranges' },
+  'mastercss-scanner': { id: 'tooling', severity: 'high', reason: 'canonical multi-file scanning state' },
+  'mastercss-lint': { id: 'lint', severity: 'high', reason: 'canonical lint ordering, conflict, and edit policy' },
+  'mastercss-language': { id: 'language-service', severity: 'high', reason: 'canonical UTF-16 language analysis and edit IR' },
+  'mastercss-render': { id: 'server', severity: 'warning', reason: 'server rendering and hydration IR' },
+  'mastercss-binding-native': { id: 'native', severity: 'high', reason: 'native ABI adaptation and artifact delivery' },
+  'mastercss-binding-wasm-engine': { id: 'wasm', severity: 'high', reason: 'runtime engine Wasm ABI and browser payload' },
+  'mastercss-binding-wasm-compiler': { id: 'wasm', severity: 'high', reason: 'compiler Wasm ABI and browser delivery' },
+  'mastercss-binding-wasm-tooling': { id: 'wasm', severity: 'high', reason: 'tooling Wasm ABI and browser delivery' },
+  xtask: { id: 'parity-codegen', severity: 'warning', reason: 'generated protocols, artifacts, and parity evidence' }
 }
 
 const PACKAGE_COMMON_PACKS: Record<string, string[]> = {
@@ -248,6 +271,31 @@ async function loadWorkspacePackages(context: MasterCSSMCPContext, includeExampl
       aiNotes: existsSync(resolve(context.root, aiPath)) ? aiPath : null
     })
   }
+  const cargoFiles = await fg(CARGO_TOML_PATTERNS, {
+    cwd: context.root,
+    ignore: PACKAGE_JSON_IGNORE,
+    onlyFiles: true
+  })
+  for (const filePath of cargoFiles.sort((a, b) => a.localeCompare(b))) {
+    const source = await readFile(resolve(context.root, filePath), 'utf8')
+    const name = source.match(/^name\s*=\s*"([^"]+)"/mu)?.[1]
+    if (!name) continue
+    const path = filePath.replace(/\/Cargo\.toml$/u, '')
+    const dependencies = [...source.matchAll(/^([a-z0-9_-]+)\s*=\s*\{[^\n]*\bpath\s*=/gmu)]
+      .map((match) => match[1])
+    const aiPath = `${path}/AI.md`
+    packages.push({
+      name,
+      path,
+      private: true,
+      kind: 'crate',
+      scripts: [],
+      exports: [],
+      dependencies: sortStrings(dependencies),
+      dependents: [],
+      aiNotes: existsSync(resolve(context.root, aiPath)) ? aiPath : null
+    })
+  }
   const packageNames = new Set(packages.map((pkg) => pkg.name))
   for (const pkg of packages) {
     pkg.dependencies = pkg.dependencies.filter((dependency) => packageNames.has(dependency))
@@ -277,6 +325,18 @@ function routePath(packages: WorkspacePackage[], path: string): Omit<RoutedPacka
       aiNotes: pkg?.aiNotes ?? null
     }
   }
+  const crateMatch = path.match(/^crates\/([^/]+)(?:\/|$)/)
+  if (crateMatch) {
+    const cratePath = `crates/${crateMatch[1]}`
+    const crate = packages.find((candidate) => candidate.path === cratePath)
+    return {
+      name: crate?.name ?? cratePath,
+      path: cratePath,
+      kind: 'crate',
+      cargoManifest: `${cratePath}/Cargo.toml`,
+      aiNotes: crate?.aiNotes ?? null
+    }
+  }
   if (path.startsWith('site/')) {
     const pkg = packages.find((candidate) => candidate.path === 'site')
     return {
@@ -304,7 +364,7 @@ function routePath(packages: WorkspacePackage[], path: string): Omit<RoutedPacka
       path: 'benchmarks',
       kind: 'benchmarks',
       packageJSON: 'benchmarks/package.json',
-      aiNotes: null
+      aiNotes: pkg?.aiNotes ?? null
     }
   }
   const exampleMatch = path.match(/^examples\/([^/]+)(?:\/|$)/)
@@ -369,13 +429,14 @@ function taskPacks(task = '') {
   if (/\b(doc|docs|readme|site|guide)\b/.test(normalized)) packs.push('.ai/context/docs.md')
   if (/\b(bug|fix|regression|error|failing|failure)\b/.test(normalized)) packs.push('.ai/context/bugfix.md')
   if (/\b(package|boundary|dependency|export|public api|cycle)\b/.test(normalized)) packs.push('.ai/context/package-boundaries.md')
+  if (/\b(rust|crate|cargo|napi|wasm|binding|codegen|parity)\b/.test(normalized)) packs.push('.ai/context/rust-routing.md')
   return packs
 }
 
 function pathPacks(paths: string[]) {
   const packs: string[] = []
   if (paths.length) packs.push('.ai/context/package-routing.md')
-  if (paths.some((path) => path.includes('/tests/') || path.endsWith('.test.ts') || path.endsWith('.test.js'))) {
+  if (paths.some((path) => path.includes('/tests/') || path.includes('/src/tests') || path.endsWith('.test.ts') || path.endsWith('.test.js'))) {
     packs.push('.ai/context/testing.md')
   }
   if (paths.some((path) => path.startsWith('site/') || path.endsWith('README.md') || path.endsWith('.mdx'))) {
@@ -383,6 +444,9 @@ function pathPacks(paths: string[]) {
   }
   if (paths.some((path) => path.endsWith('package.json') || path === 'pnpm-workspace.yaml' || path.includes('tsconfig'))) {
     packs.push('.ai/context/package-boundaries.md')
+  }
+  if (paths.some((path) => path.startsWith('crates/') || path === 'Cargo.toml' || path === 'Cargo.lock' || path.startsWith('parity/'))) {
+    packs.push('.ai/context/rust-routing.md')
   }
   return packs
 }
@@ -399,6 +463,13 @@ function packagePacks(routes: RoutedPackage[]) {
     }
     if (route.kind === 'site') packs.push('.ai/context/docs.md')
     if (route.kind === 'shared') packs.push('.ai/context/package-boundaries.md')
+    if (route.kind === 'crate') {
+      packs.push('.ai/context/rust-routing.md', '.ai/context/testing.md')
+      if (route.name === 'mastercss-engine' || route.name === 'mastercss-compiler') {
+        packs.push('.ai/context/css-output.md')
+      }
+      if (route.name.includes('binding')) packs.push('.ai/context/package-boundaries.md')
+    }
   }
   return packs
 }
@@ -427,6 +498,13 @@ function detectRisks(paths: string[], routes: RoutedPackage[]) {
         paths: route.matchedPaths
       })
     }
+    const crateRisk = route.kind === 'crate' ? HIGH_RISK_CRATES[route.name] : undefined
+    if (crateRisk) {
+      pushRisk(risks, {
+        ...crateRisk,
+        paths: route.matchedPaths
+      })
+    }
   }
   if (paths.some((path) => path.endsWith('generated.css') || path.endsWith('.snap') || path.includes('/fixtures/'))) {
     pushRisk(risks, {
@@ -436,12 +514,12 @@ function detectRisks(paths: string[], routes: RoutedPackage[]) {
       paths: paths.filter((path) => path.endsWith('generated.css') || path.endsWith('.snap') || path.includes('/fixtures/'))
     })
   }
-  if (paths.some((path) => path.endsWith('package.json') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts'))) {
+  if (paths.some((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))) {
     pushRisk(risks, {
       id: 'public-api-or-package-boundary',
       severity: 'warning',
       reason: 'Package exports, scripts, dependencies, or public entrypoints may affect downstream consumers.',
-      paths: paths.filter((path) => path.endsWith('package.json') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts'))
+      paths: paths.filter((path) => path.endsWith('package.json') || path.endsWith('Cargo.toml') || path === 'pnpm-workspace.yaml' || path.includes('/src/index.ts') || path.includes('/src/lib.rs'))
     })
   }
   if (paths.some((path) => path.startsWith('site/') || path.endsWith('README.md') || path.endsWith('.mdx'))) {
@@ -483,9 +561,11 @@ function contextFiles(paths: string[], routes: RoutedPackage[], risks: Risk[], t
     ...taskPacks(task),
     ...routes.flatMap((route) => [
       route.packageJSON,
+      route.cargoManifest,
       route.aiNotes
     ].filter(Boolean) as string[])
   ]
+  if (routes.some((route) => route.kind === 'crate')) files.push('Cargo.toml')
   if (risks.some((risk) => risk.severity === 'high' || [
     'public-api-or-package-boundary',
     'multi-package',
@@ -511,6 +591,17 @@ function validationCommands(packages: WorkspacePackage[], routes: RoutedPackage[
   for (const route of routes) {
     const pkg = packageByPath.get(route.path)
     if (!pkg || pkg.kind === 'root' || pkg.kind === 'example') continue
+    if (pkg.kind === 'crate') {
+      commands.push(commandReason(`cargo test -p ${pkg.name}`, `Run ${pkg.name} focused Rust tests.`))
+      commands.push(commandReason(`cargo clippy -p ${pkg.name} --all-targets --all-features -- -D warnings`, `Lint every ${pkg.name} Rust target and feature.`))
+      if (pkg.name.includes('binding') || pkg.name === 'xtask') {
+        commands.push(commandReason('cargo xtask codegen --check', 'Validate generated binding and protocol contracts.'))
+      }
+      if (pkg.name === 'mastercss-engine' || pkg.name === 'mastercss-compiler' || pkg.name === 'xtask') {
+        commands.push(commandReason('cargo xtask parity', 'Validate Rust semantic and parity evidence.'))
+      }
+      continue
+    }
     if (pkg.scripts.includes('test')) {
       commands.push(commandReason(`pnpm --filter ${pkg.name} test`, `Run ${pkg.name} focused tests.`))
     }
@@ -531,7 +622,7 @@ function validationCommands(packages: WorkspacePackage[], routes: RoutedPackage[
     }
   }
   if (routes.some((route) => route.kind === 'agent-docs')) {
-    commands.push(commandReason('pnpm run test:docs-consistency', 'Validate AI-facing context pack routing consistency.'))
+    commands.push(commandReason('pnpm run check:ai-context', 'Validate AI-facing routing and source/context budgets.'))
   }
   return unique(commands.map((entry) => JSON.stringify(entry))).map((entry) => JSON.parse(entry) as { command: string, reason: string })
 }
@@ -561,6 +652,7 @@ export async function getPackageGraph(context: MasterCSSMCPContext, input: Packa
     summary: {
       packages: filtered.length,
       workspacePackages: filtered.filter((pkg) => pkg.kind === 'package').length,
+      crates: filtered.filter((pkg) => pkg.kind === 'crate').length,
       examples: filtered.filter((pkg) => pkg.kind === 'example').length
     }
   }

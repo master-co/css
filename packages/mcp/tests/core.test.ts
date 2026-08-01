@@ -23,6 +23,7 @@ function createContributorFixture() {
   const root = createTempDir('master-css-mcp-contributor-')
   mkdirSync(join(root, '.ai/context'), { recursive: true })
   mkdirSync(join(root, '.github/prompts'), { recursive: true })
+  mkdirSync(join(root, 'crates/mastercss-engine/src'), { recursive: true })
   mkdirSync(join(root, 'packages/css'), { recursive: true })
   mkdirSync(join(root, 'packages/runtime'), { recursive: true })
   mkdirSync(join(root, 'packages/mcp'), { recursive: true })
@@ -32,13 +33,14 @@ function createContributorFixture() {
   writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
   writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
   writeFileSync(join(root, '.ai/context/package-routing.md'), '# Package Routing Pack')
+  writeFileSync(join(root, '.ai/context/rust-routing.md'), '# Rust Routing Pack')
   writeFileSync(join(root, '.ai/context/docs.md'), '# Docs Pack')
   writeFileSync(join(root, '.github/prompts/fix-bug.prompt.md'), '# Fix Bug')
   writeJSON(join(root, 'package.json'), {
     name: 'master-css-repo',
     private: true,
     scripts: {
-      'test:docs-consistency': 'node --test .ai/scripts/validate-doc-consistency.test.js'
+      'check:ai-context': 'node scripts/check-ai-context.mjs'
     }
   })
   writeJSON(join(root, 'packages/css/package.json'), {
@@ -51,6 +53,10 @@ function createContributorFixture() {
     }
   })
   writeFileSync(join(root, 'packages/css/AI.md'), '# AI Notes For `@master/css`')
+  writeFileSync(join(root, 'Cargo.toml'), '[workspace]\nmembers = ["crates/mastercss-engine"]\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/Cargo.toml'), '[package]\nname = "mastercss-engine"\nversion = "0.0.0"\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/AI.md'), '# AI Notes For `mastercss-engine`')
+  writeFileSync(join(root, 'crates/mastercss-engine/src/session.rs'), 'pub struct EngineSession;\n')
   writeJSON(join(root, 'packages/runtime/package.json'), {
     name: '@master/css-runtime',
     scripts: {
@@ -533,6 +539,60 @@ describe('@master/css-mcp', () => {
     }
   })
 
+  it('routes Rust crates to Cargo context, risk packs, and scoped validation', async () => {
+    const root = createContributorFixture()
+    const connection = await connect(root)
+    try {
+      const report = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_repo_context',
+        arguments: {
+          task: 'refactor Rust engine session lifecycle',
+          paths: ['crates/mastercss-engine/src/session.rs']
+        }
+      }))
+
+      expect(report.status).toBe('loaded')
+      expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        path: 'crates/mastercss-engine',
+        kind: 'crate',
+        cargoManifest: 'crates/mastercss-engine/Cargo.toml',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(report.context.files).toEqual(expect.arrayContaining([
+        '.ai/context/rust-routing.md',
+        '.ai/context/testing.md',
+        '.ai/context/css-output.md',
+        '.ai/context/accuracy-guardrails.md',
+        'Cargo.toml',
+        'crates/mastercss-engine/Cargo.toml',
+        'crates/mastercss-engine/AI.md'
+      ]))
+      expect(report.risks).toContainEqual(expect.objectContaining({
+        id: 'css-output',
+        severity: 'high'
+      }))
+      expect(report.validation.commands).toEqual(expect.arrayContaining([
+        expect.objectContaining({ command: 'cargo test -p mastercss-engine' }),
+        expect.objectContaining({ command: 'cargo clippy -p mastercss-engine --all-targets --all-features -- -D warnings' }),
+        expect.objectContaining({ command: 'cargo xtask parity' })
+      ]))
+
+      const graph = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_package_graph',
+        arguments: { packageName: 'mastercss-engine' }
+      }))
+      expect(graph.packages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        kind: 'crate',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(graph.summary.crates).toBe(1)
+    } finally {
+      await connection.close()
+    }
+  })
+
   it('routes setup package contributor paths to testing and package-boundary context', async () => {
     const root = createContributorFixture()
     const connection = await connect(root)
@@ -660,7 +720,7 @@ describe('@master/css-mcp', () => {
         severity: 'info'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm run test:docs-consistency'
+        command: 'pnpm run check:ai-context'
       }))
     } finally {
       await connection.close()

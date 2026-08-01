@@ -10,6 +10,7 @@
 - MCP tool, resource, and prompt registration.
 - Workspace root containment and two-step write confirmation for generated fixes.
 - Tool-oriented orchestration around existing project, scanner, stylesheet, language-service, lint, validator, server, and engine APIs.
+- Contributor routing across npm workspaces and Rust crates, including Cargo manifests, crate-local AI notes, risk packs, and scoped validation commands.
 
 ## Does Not Own
 
@@ -31,6 +32,7 @@
 - Accidentally logging to stdout in stdio mode.
 - Importing private CLI implementation files instead of lower package public APIs.
 - Broad file glob inputs escaping the configured workspace root.
+- Rust crate paths falling back to repo-root context instead of `.ai/context/rust-routing.md`.
 
 ## Validation
 
