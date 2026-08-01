@@ -17,7 +17,7 @@ async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
     contentType: 'text/html',
     body: '<!doctype html><html hidden><head></head><body><p class="block"></p></body></html>'
   }))
-  await page.goto(blankURL)
+  await page.goto(blankURL, { waitUntil: 'domcontentloaded' })
 }
 
 async function startAndCaptureFailure(page: Page, loaderURL: string, startupTimeoutMs?: number) {
