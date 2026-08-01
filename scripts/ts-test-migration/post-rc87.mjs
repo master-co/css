@@ -44,8 +44,8 @@ export function loadPostRc87Decisions(targetInventory, targetCommit) {
     'packages/internal/src/manifest-facade.ts',
     'packages/internal/tests/module.test.ts',
     'packages/next/tests/css-manifest-loader.test.ts',
-    'packages/runtime/src/core.ts',
-    'packages/runtime/e2e/edge-cases.test.ts',
+    'packages/runtime/src/hydration.ts',
+    'packages/runtime/e2e/hydration-edge-cases.test.ts',
     'packages/vite/tests/plugins/manifest-loader.test.ts',
     'packages/vite/tests/plugins/manifest-virtual-module.test.ts',
     'packages/webpack/tests/plugin.test.ts'
@@ -116,9 +116,13 @@ export function loadPostRc87Decisions(targetInventory, targetCommit) {
       decision.target.implementedAtCommit
     ]).trim().split('\n').filter(Boolean))
     for (const fileRecord of decision.target.files) {
-      assertObjectKeys(fileRecord, ['file', 'digest'], `${label} target file`)
+      assertObjectKeys(fileRecord, ['file', 'digest', 'implementedFrom'], `${label} target file`)
       assert.match(fileRecord.digest, /^[a-f0-9]{64}$/u, `${label} target file digest is invalid.`)
-      assert.ok(implementationFiles.has(fileRecord.file), `${label} implementation commit does not change ${fileRecord.file}.`)
+      const implementationFile = fileRecord.implementedFrom ?? fileRecord.file
+      assert.ok(
+        implementationFiles.has(implementationFile),
+        `${label} implementation commit does not change ${implementationFile}.`
+      )
       assert.equal(
         fileRecord.digest,
         sha256(sourceAtCommit(targetCommit, fileRecord.file)),

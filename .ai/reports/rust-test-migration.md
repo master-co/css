@@ -150,20 +150,20 @@ older API, export, binding ABI, language wire shape, or rendering-mode option co
 | Measure | Count |
 |---|---:|
 | Baseline contract cases | 1033 |
-| Preserved exact cases | 1019 |
-| Verified supersets | 6 |
-| Approved contract changes | 8 |
+| Preserved exact cases | 1005 |
+| Verified supersets | 15 |
+| Approved contract changes | 13 |
 | Regressed or removed cases | 0 |
-| Target-added supplemental cases | 408 |
+| Target-added supplemental cases | 446 |
 
 | Contract surface | Baseline → target digest | Status | Proof | Human approval |
 |---|---|---|---|---|
 | `published-package-exports` | `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980`<br>→ `f9e136dac3935614d62c33ccf0afe651fe93a7aafb79b9d6e7289d8f157f3980` | preserved-exact | exact-source | — |
-| `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb` | preserved-exact | exact-source | — |
+| `public-api-contract` | `b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb`<br>→ `71d3cf79e4fc73d15e08823e7cd73f89ed3c457ea7ca3e220d0b8c60107a148b` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-08-01T12:55:21Z`<br>`codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c`<br>`3b75d42c2c71d39855e342bf207cc5991e8ab76b4b30f46d94fc24e29f6c6fd3` |
 | `native-target-package-contract` | `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8`<br>→ `d2d2e2067f675f975a1c2e74c1ac3363680876760ee0805fc272cc0675b8aef8` | preserved-exact | exact-source | — |
-| `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389` | preserved-exact | exact-source | — |
-| `native-engine-raw-surface` | `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a`<br>→ `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a` | preserved-exact | exact-source | — |
-| `wasm-engine-raw-surface` | `da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012`<br>→ `d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-07-28T11:20:01Z`<br>`codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41`<br>`e92592dd5be1ef1d6254a69593dbeee0bf2c9d2969fe4f0d75df0e63ffc12aa6` |
+| `binding-version-contract` | `a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389`<br>→ `16cda28179e52dde2751c452a0ce4ee5cff1612ade85bb50c90caf258b1b89dd` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-08-01T12:55:21Z`<br>`codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c`<br>`be6e83be61df4f4a673dc2faa19853e668760c9cdf6e185e1413d98ffafd86d8` |
+| `native-engine-raw-surface` | `ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a`<br>→ `c0fe94acfe7dccfe5e71270fcfd5849e1418185a267640bab7a9a22c89e084ac` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-08-01T12:55:21Z`<br>`codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c`<br>`ad6fda408474c6d1576332ca4b340905689a1ac8cd1af1e4f4257ed7bc460636` |
+| `wasm-engine-raw-surface` | `da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012`<br>→ `6563b821480af814fefd211bd636c111eb9e361c83ea6ac467462df820ab4474` | approved-contract-change | approved-contract-change | `Aron <i@aron.tw>`<br>`2026-08-01T12:40:43Z`<br>`codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c`<br>`667e82c6b9260004f951d92075a9edc30c56825eb0674a208919b8298e75c9cc` |
 | `language-wire-contract` | `1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560`<br>→ `1b3028403047459c52dc0b7778109b719db01e02e2700bcc6c7f6d23133c0560` | preserved-exact | exact-source | — |
 | `integration-rendering-options-contract` | `2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef`<br>→ `2a3221834490cd8fddc853aff2bb1bdea0c3f30fa9083512961c2ef3fb5e61ef` | preserved-exact | exact-source | — |
 
@@ -177,11 +177,11 @@ These entries do not affect rc.87 parity completion or belong in `parity-excepti
 The browser manifest adaptation has its own approved decision source, implementation
 commit, upstream and target scope digests, target test bindings, and human approval.
 The target audit follows the latest package commit at
-`latest-target-change@37355b370a8a4232c6020c380bef3d7dc2e3851b`.
+`latest-target-change@f6d4fb9851fb4490afa241ee3bea4373287bb624`.
 
 | Decision | Status | Owner | Implementation commit | Upstream → target digest | Tests | Human approval |
 |---|---|---|---|---|---:|---|
-| `post-rc87-browser-manifest-import-fallback` | approved-adaptation | `@master/css-runtime, @master/css-internal, and build integrations` | `becef751987086ffe7a93cdbd6985f1ac0158c08` | `ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d`<br>→ `ecfb0d91ab4095f714c5b7e1aa90c8ac5bf317df7ca496ebcedf7d8096849774` | 21 | `Aron <i@aron.tw>`<br>`2026-07-28T12:14:27Z`<br>`codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41`<br>`4b5e8b044a591143bd152d7ec30ace41fcce508c3d4a2f97717ad21b3affabff` |
+| `post-rc87-browser-manifest-import-fallback` | approved-adaptation | `@master/css-runtime, @master/css-internal, and build integrations` | `becef751987086ffe7a93cdbd6985f1ac0158c08` | `ac5df2e06eef38ac2b851263a4d7fa90f6c2c6fb7c17fb263b31cbd772c3459d`<br>→ `65bce5983f2a05fea6fe10339768d726eb6ac655fe6e9a1bd52eec8b8cbad640` | 21 | `Aron <i@aron.tw>`<br>`2026-08-01T12:46:46Z`<br>`codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c`<br>`004cf73c481819fb9bea3064499b04789bfd8d96c9c3514d6b71809957d032f0` |
 
 | Priority | File | Decision | Behavior |
 |---|---|---|---|

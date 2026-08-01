@@ -93,6 +93,7 @@
         "required": ["file", "digest"],
         "properties": {
           "file": { "type": "string", "pattern": "^packages/" },
+          "implementedFrom": { "type": "string", "pattern": "^packages/" },
           "digest": { "$ref": "#/$defs/digest" }
         }
       }

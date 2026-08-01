@@ -26,6 +26,12 @@ over from TypeScript.
 - `rust-refactor-contract-evidence.json` records reviewed supersets and explicit
   contract-surface changes. Unapproved case removal, digest drift, or surface drift
   makes the generator fail.
+- Rust refactor cases moved between test files are preserved only through a unique
+  package/suite/title/runner/matrix/body match. RuleTester entries use a per-case
+  configuration digest, so adding a neighboring matrix case does not invalidate the
+  whole suite; ambiguous moves still fail. Post-rc.87 file records use
+  `implementedFrom` when a current split module differs from its original
+  implementation path.
 - `rust-semantic-corpus.json` records exact CSS bytes and selected rule metadata from
   `ef1a7c851`, with `v2.0.0-rc.87` recorded as the public baseline.
 - `rust-takeover-ledger.json` accounts for all 114 test declarations in the 11 engine

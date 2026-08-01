@@ -19,7 +19,7 @@ export function normalizeTitle(value) {
     .toLowerCase()
 }
 
-function exactTitle(value) {
+export function exactTitle(value) {
   return normalizeWhitespace(value).toLowerCase()
 }
 
@@ -463,7 +463,7 @@ export function collectCasesFromRef(ref, commit) {
       return next
     }
 
-    function addCase({ node, suites, title, runner, state = 'active', matrix, sourceKind = 'test' }) {
+    function addCase({ node, suites, title, runner, state = 'active', matrix, sourceKind = 'test', contractDigest }) {
       if (
         (file === 'packages/css/tests/engine/rust-engine.test.ts'
           && title === 'executes the semantic engine corpus through native and Wasm sessions')
@@ -472,6 +472,7 @@ export function collectCasesFromRef(ref, commit) {
       ) return
       const packageName = packageOf(file)
       const sourceText = normalizeWhitespace(node.getText(sourceFile))
+      const sourceDigest = sha256(sourceText)
       const testCase = {
         id: `rc87-${shortDigest(`${file}\0${suites.join('\0')}\0${title}\0${runner}\0${matrix?.index ?? ''}\0${sourceKind}`)}`,
         package: packageName,
@@ -483,9 +484,12 @@ export function collectCasesFromRef(ref, commit) {
         kind: /\/e2e\/|[-.]e2e\./u.test(file) ? 'e2e' : 'test',
         state,
         sourceKind,
-        sourceDigest: sha256(sourceText),
+        sourceDigest,
         matrix
       }
+      Object.defineProperty(testCase, 'contractDigest', {
+        value: contractDigest ?? sourceDigest
+      })
       Object.assign(testCase, classifyCase(testCase))
       fileCases.push(testCase)
       cases.push(testCase)
@@ -515,6 +519,7 @@ export function collectCasesFromRef(ref, commit) {
             title: `${runTitle} / ${group}[${index + 1}] / ${displayValue(value)}`,
             runner: 'eslint-rule-tester',
             sourceKind: 'rule-tester',
+            contractDigest: sha256(JSON.stringify(value)),
             matrix: { index, resolved: true, value: displayValue(value) }
           })
         })

@@ -9852,7 +9852,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-emitted-global-variable",
-          "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#ensure_is_idempotent_and_delete_reports_exact_index"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -9911,7 +9911,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources",
+          "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources",
           "corpus:engine-inline-theme-variable-dependencies"
         ],
         "proof": {
@@ -9971,7 +9971,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-emitted-global-variable",
-          "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -10029,7 +10029,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#tracks_variable_resources_across_aliases_and_deletion",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#tracks_variable_resources_across_aliases_and_deletion",
           "corpus:engine-animation-resource-metadata"
         ],
         "proof": {
@@ -10089,7 +10089,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-selector-condition-layer",
-          "test:crates/mastercss-engine/src/lib.rs#renders_selector_condition_layer_and_important_state"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_selector_condition_layer_and_important_state"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -10377,7 +10377,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
           "corpus:engine-pseudo-and-responsive-selectors"
         ],
         "proof": {
@@ -10436,7 +10436,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session",
           "corpus:engine-selector-condition-layer"
         ],
         "proof": {
@@ -10494,7 +10494,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#exposes_manifest_driven_class_semantics_without_mutating_the_session"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -10551,7 +10551,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions",
           "corpus:engine-functions-and-negative-values",
           "corpus:engine-negative-base-unit-bytes"
         ],
@@ -10668,7 +10668,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-grouped-declarations",
-          "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -10897,7 +10897,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -11361,7 +11361,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules",
           "corpus:engine-basic-order",
           "corpus:engine-native-alias-global-variable",
           "corpus:engine-native-alias-warm-session"
@@ -11422,7 +11422,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -11480,7 +11480,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -11713,7 +11713,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -12416,7 +12416,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-rejects-retired-syntax",
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -12474,7 +12474,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -12532,7 +12532,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules",
           "corpus:engine-native-alias-global-variable",
           "corpus:engine-native-alias-warm-session"
         ],
@@ -12651,7 +12651,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#creates_sorted_rule_transitions_and_css"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#creates_sorted_rule_transitions_and_css"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -12709,7 +12709,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#ensure_is_idempotent_and_delete_reports_exact_index"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#ensure_is_idempotent_and_delete_reports_exact_index"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -12825,7 +12825,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#suppresses_variables_already_emitted_by_the_host"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#suppresses_variables_already_emitted_by_the_host"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13116,7 +13116,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#separates_child_selectors_from_dynamic_values"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13175,7 +13175,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13290,7 +13290,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13346,7 +13346,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations",
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations",
           "corpus:engine-pseudo-and-responsive-selectors",
           "corpus:engine-legacy-pseudo-element-bytes"
         ],
@@ -13404,7 +13404,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13578,7 +13578,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13637,7 +13637,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13696,7 +13696,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#resolves_dependencies_of_inline_variables_without_emitting_resources"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13753,7 +13753,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-functions-and-negative-values",
-          "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13866,7 +13866,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -13980,7 +13980,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14037,7 +14037,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#preserves_pattern_utility_precedence_inside_groups"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#preserves_pattern_utility_precedence_inside_groups"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14211,7 +14211,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#refresh_replays_connected_classes_against_new_manifest"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#refresh_replays_connected_classes_against_new_manifest"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14268,7 +14268,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#commits_only_host_supported_native_declarations"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#commits_only_host_supported_native_declarations"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14325,7 +14325,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#validates_native_value_namespaces_before_committing_rules"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#validates_native_value_namespaces_before_committing_rules"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14382,7 +14382,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
+          "test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14440,7 +14440,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
+          "test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14498,7 +14498,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-schema/src/lib.rs#rejects_legacy_manifest_shapes"
+          "test:crates/mastercss-schema/src/tests.rs#rejects_legacy_manifest_shapes"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14557,7 +14557,7 @@
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
           "corpus:engine-responsive-priority",
-          "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14616,7 +14616,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-schema/src/lib.rs#hydration_json_is_script_safe",
+          "test:crates/mastercss-schema/src/tests.rs#hydration_json_is_script_safe",
           "corpus:engine-selector-condition-metadata",
           "corpus:engine-animation-resource-metadata"
         ],
@@ -14675,7 +14675,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#normalizes_base_units_inside_css_math_functions"
+          "test:crates/mastercss-engine/src/tests/lifecycle.rs#normalizes_base_units_inside_css_math_functions"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -14791,7 +14791,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#separates_child_selectors_from_dynamic_values",
+          "test:crates/mastercss-engine/src/tests/syntax.rs#separates_child_selectors_from_dynamic_values",
           "corpus:engine-grouped-declarations"
         ],
         "proof": {
@@ -16410,7 +16410,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar",
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar",
           "corpus:engine-mode-conditions"
         ],
         "proof": {
@@ -20171,7 +20171,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -20229,7 +20229,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"
         ],
         "proof": {
           "kind": "rc87-golden",
@@ -20287,7 +20287,7 @@
         ],
         "sourceIdenticalTargetIds": [],
         "takeoverCoverage": [
-          "test:crates/mastercss-engine/src/lib.rs#renders_the_compiled_condition_grammar"
+          "test:crates/mastercss-engine/src/tests/syntax.rs#renders_the_compiled_condition_grammar"
         ],
         "proof": {
           "kind": "rc87-golden",

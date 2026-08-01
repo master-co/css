@@ -151,20 +151,187 @@
         "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
         "scopeDigest": "dadb0a81246c558c8cb04b3a97b06e2fa86b059ccf9af6e3ded00ec003d20aae"
       }
+    },
+    {
+      "sourceId": "rc87-38e614a90e947c6e",
+      "sourceDigest": "881fc820f146082f4ab3858223cf9e487007579535731b6441db4e762d7e97a1",
+      "targetDigest": "e83c6a132c65f0e332d86e4d3474165c1d64f8fdac8551eb72551ff9e1d6473d",
+      "proof": "verified-superset",
+      "reason": "The progressive Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+    },
+    {
+      "sourceId": "rc87-c0aa293b8c818099",
+      "sourceDigest": "7dd12ad038b1f8a035766a130deae34304c76c9515c9e7620cfaaff34623093e",
+      "targetDigest": "18a7fa906d36827b33bb1604278ced824c5d54279b1198b04d65a8427739dbb7",
+      "proof": "verified-superset",
+      "reason": "The pre-render Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+    },
+    {
+      "sourceId": "rc87-52d38fb240c780c8",
+      "sourceDigest": "a5da3731ff8892701ce6a2207e45f09459343332877fb5a5217017922dc9b20e",
+      "targetDigest": "ebc04dc051847b727e8d9091f4c852f0d2651867c97a3361c5278a434b09f8f7",
+      "proof": "verified-superset",
+      "reason": "The shared native Rust tooling-session assertions remain and the target adds same-source reuse and explicit release coverage."
+    },
+    {
+      "sourceId": "rc87-f3a51f991c07da68",
+      "sourceDigest": "87c4cc5f64bbc47012f4ddae1788eb544fce9de856542b26f5e0d5b7180efbce",
+      "targetDigest": "999028c048d0793e5b6979d2efc0cbc7507e4e313db5910e0cc0f8ce509dc0e7",
+      "proof": "verified-superset",
+      "reason": "The Next build-state compose, native CSS, and disposal assertions remain and the target adds emitted-global variable coverage."
+    },
+    {
+      "sourceId": "rc87-64695981843c3c3f",
+      "sourceDigest": "539e9d5dff37e4cbc2fd277e41133ff42fe1d948f7f938be03e3c0b78b0e27dc",
+      "targetDigest": "831214290606fcec676fffb39cea34b44d0adfa2f687a9eaea5a81205d371978",
+      "proof": "verified-superset",
+      "reason": "The Next Webpack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+    },
+    {
+      "sourceId": "rc87-bc7adf7569796dc8",
+      "sourceDigest": "9fe3dfa54a4f08cfcd77745c1601c9077b3a554ed8b2be8460e83c62c356fcdd",
+      "targetDigest": "3635270702bb7333ab86052d08b87177fb2bffc2bec0180570e7e7da16c782b8",
+      "proof": "verified-superset",
+      "reason": "The Next Turbopack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+    },
+    {
+      "sourceId": "rc87-bb811e6bf975c3ed",
+      "sourceDigest": "273cda5376e1c542749cec494aa53fdcdbd55e19f8efac03b9f104d08d832708",
+      "targetDigest": "6cf6ae349b1772019addebb1572bdd5bbf6825fee995cdf6aa9c5f80807c0a5b",
+      "proof": "verified-superset",
+      "reason": "The Nuxt pre-render CSS assertions remain and the target adds global variable ownership and placement coverage."
+    },
+    {
+      "sourceId": "rc87-60160a1512713e62",
+      "sourceDigest": "38a89dfa54b675dc67cef33bf351e323d2635f52b23f82827dfd9ac992524c1e",
+      "targetDigest": "cf1b32532b0d0cae3092bf583438c9e7d4bfa156695b78ec99be4bccfe3014c7",
+      "proof": "verified-superset",
+      "reason": "The Nuxt progressive CSS assertions remain and the target adds global variable ownership and placement coverage."
+    },
+    {
+      "sourceId": "rc87-060c3ad6820a18f8",
+      "sourceDigest": "0c7dafc66d591403af76835958acefdf9273092f334ae0a5bd9a5866397f9466",
+      "targetDigest": "de25f1b167d1913e1be6709cc2385f66201efcdcbf2e6f1c9b8d405e31a71d93",
+      "proof": "verified-superset",
+      "reason": "The Nuxt runtime cascade assertion remains and the target also verifies emitted global variables stay out of the runtime stylesheet."
+    },
+    {
+      "sourceId": "rc87-51b092cde77ad479",
+      "sourceDigest": "ad922ad887d5788df061fc6c7be97aca42f6b4bb56bfdea20f76480ad239e7b9",
+      "targetDigest": "251f5ded15b180c78dc2a5ed3bbdc758461a7235096faf7f9ed892e083b72984",
+      "proof": "approved-contract-change",
+      "reason": "Contributor documentation routing now validates the enforced AI context budget and adds Rust crate routing coverage, replacing the retired documentation-consistency command.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "650a0b3830fece1d4a2ded37f7fd114a49175c94252aa19bb5deeeac0b1a41c6"
+      }
+    },
+    {
+      "sourceId": "rc87-19ccc0505d60d982",
+      "sourceDigest": "2613dedadd32ea00fc41f50a5c91fc37f928db07242138ae139e6718fc4e2503",
+      "targetDigest": "657727f550badd476e66a660280ff8419d3b03b6ce494cfada7ec75189957a27",
+      "proof": "approved-contract-change",
+      "reason": "The runtime emittedGlobals case now verifies referenced resource removal and concurrent count merging with concrete globals while retaining same-instance and registration-count coverage.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "ed1ea81e04702dd01c92be68b0059b52f438072d7ed610408a4e4dae4ede5d3a"
+      }
+    },
+    {
+      "sourceId": "rc87-6037936609bf96b7",
+      "sourceDigest": "abbb842d05f49eddc7f51f331d5fb21227e26e76bc03078d4bd87119bea5a144",
+      "targetDigest": "6387e9c21ea68945e8d6f547750b2af1f73f1fa58a4ee0873156be1ecb42f595",
+      "proof": "approved-contract-change",
+      "reason": "The Vite browser HMR case retains its global-CSS-before-runtime assertions and uses an explicit navigation and readiness timeout for loaded CI runners.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "2cb2d0803fb3465a0fa644392ce46b53fbfc5753bf1bb9b56fd0c993435cf58f"
+      }
+    },
+    {
+      "sourceId": "rc87-9b27332e72026599",
+      "sourceDigest": "51a1859e9f6e589bc75d64e3d898ec4ebcd3aff92053c05e896a409cb9a446eb",
+      "targetDigest": "64ce350cfd396e57a956c28384379f1f0bb4378050f975617fdcd0ce76788974",
+      "proof": "approved-contract-change",
+      "reason": "The Vite invalid-CSS recovery case retains its HMR and no-full-reload assertions and uses an explicit navigation and readiness timeout for loaded CI runners.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "2130ab3173d6d19ce3c730d5593bc6f598d066e39cd484db6aec0a5b8cd2b510"
+      }
+    },
+    {
+      "sourceId": "rc87-48ff4814761d1c90",
+      "sourceDigest": "c62fd9d5353d8b511ad24233e46b4cf160e758ea23c413735a73c3c1c911a7fe",
+      "targetDigest": "4eff30677d1e0c99728b77d0be687e3e063f2a9f5a719e1c76d66a5160d0c2e9",
+      "proof": "approved-contract-change",
+      "reason": "The failed-style dependency case now compares the normalized absolute path returned by the Vite host while preserving the same dependency registration requirement.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "09fffd6b3e164cc50628cca661459c30f2993f80ccddbb9d33871ffcdd54ea75"
+      }
     }
   ],
   "surfaces": [
     {
-      "surfaceId": "wasm-engine-raw-surface",
-      "baselineDigest": "da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012",
-      "targetDigest": "d85e9791a68f93c5e4b67fb55c8145d77d72808b9cff0f84e75781cec8c8770a",
+      "surfaceId": "public-api-contract",
+      "baselineDigest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
+      "targetDigest": "71d3cf79e4fc73d15e08823e7cd73f89ed3c457ea7ca3e220d0b8c60107a148b",
       "proof": "approved-contract-change",
-      "reason": "The private generated Wasm render-session declaration now matches wasm-bindgen's Vec<bool> JavaScript ABI. The published createWasmRenderSession wrapper continues to accept readonly boolean arrays, so no package export or public API is restored or removed.",
+      "reason": "The published-internal compiler binding intentionally adds createCompilerRenderBindingSession and its options type so compiler rendering can use the dedicated Rust session without changing package exports.",
       "approval": {
         "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-07-28T11:20:01Z",
-        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
-        "scopeDigest": "e92592dd5be1ef1d6254a69593dbeee0bf2c9d2969fe4f0d75df0e63ffc12aa6"
+        "approvedAt": "2026-08-01T12:55:21Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "3b75d42c2c71d39855e342bf207cc5991e8ab76b4b30f46d94fc24e29f6c6fd3"
+      }
+    },
+    {
+      "surfaceId": "binding-version-contract",
+      "baselineDigest": "a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389",
+      "targetDigest": "16cda28179e52dde2751c452a0ce4ee5cff1612ade85bb50c90caf258b1b89dd",
+      "proof": "approved-contract-change",
+      "reason": "The native binding ABI version intentionally advances from 5 to 6 for the emittedGlobals session operation; Manifest, hydration, transition, and language protocol versions remain unchanged.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:55:21Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "be6e83be61df4f4a673dc2faa19853e668760c9cdf6e185e1413d98ffafd86d8"
+      }
+    },
+    {
+      "surfaceId": "native-engine-raw-surface",
+      "baselineDigest": "ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a",
+      "targetDigest": "c0fe94acfe7dccfe5e71270fcfd5849e1418185a267640bab7a9a22c89e084ac",
+      "proof": "approved-contract-change",
+      "reason": "The native engine-session raw surface intentionally adds registerEmittedGlobals to mirror the Rust engine operation used by runtime and scanner hosts; existing methods remain unchanged.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:55:21Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "ad6fda408474c6d1576332ca4b340905689a1ac8cd1af1e4f4257ed7bc460636"
+      }
+    },
+    {
+      "surfaceId": "wasm-engine-raw-surface",
+      "baselineDigest": "da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012",
+      "targetDigest": "6563b821480af814fefd211bd636c111eb9e361c83ea6ac467462df820ab4474",
+      "proof": "approved-contract-change",
+      "reason": "The private generated Wasm render-session declaration matches wasm-bindgen's Vec<bool> JavaScript ABI. The engine-session raw surface now includes registerEmittedGlobals, and its wrapper intentionally exposes the operation so runtime and scanner hosts can coordinate emitted global reference counts. Package exports and existing session behavior remain unchanged; the new method is covered across Wasm binding, engine, runtime, and scanner tests.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:40:43Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "667e82c6b9260004f951d92075a9edc30c56825eb0674a208919b8298e75c9cc"
       }
     }
   ]

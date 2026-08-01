@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
-import { DEFAULT_BASELINE_REF, RC87_AUTHORING_TARGET_COMMIT, RC87_FINAL_LANGUAGE_TARGET_COMMIT, RC87_LANGUAGE_TARGET_COMMIT, RC87_P1_TARGET_COMMIT, RC87_P2_TARGET_COMMIT, RC87_RENDERING_TARGET_COMMIT, RC87_SCANNER_TARGET_COMMIT, evidencePath, exceptionsPath, rustRefactorContractEvidencePath } from './config.mjs'
-import { normalizeTitle } from './inventory.mjs'
+import { DEFAULT_BASELINE_REF, RC87_AUTHORING_TARGET_COMMIT, RC87_COMMIT, RC87_FINAL_LANGUAGE_TARGET_COMMIT, RC87_LANGUAGE_TARGET_COMMIT, RC87_P1_TARGET_COMMIT, RC87_P2_TARGET_COMMIT, RC87_RENDERING_TARGET_COMMIT, RC87_SCANNER_TARGET_COMMIT, evidencePath, exceptionsPath, ledgerPath, legacyCaseOwnerMap, legacyOwnerMap, rustRefactorContractEvidencePath } from './config.mjs'
+import { exactTitle, normalizeTitle } from './inventory.mjs'
 import { git, sha256 } from './utils.mjs'
 
 export function loadTakeoverEvidence() {

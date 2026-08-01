@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { existsSync, readFileSync } from 'node:fs'
 import path from 'node:path'
-import { RUST_REFACTOR_CONTRACT_COMMIT, rustRefactorContractEvidencePath } from './config.mjs'
+import { DEFAULT_BASELINE_REF, POST_RC87_COMMIT, RC87_COMMIT, RUST_REFACTOR_CONTRACT_COMMIT, rustRefactorContractEvidencePath } from './config.mjs'
 import { assertObjectKeys, rustContractRecordScopeDigest, rustContractSurfaceScopeDigest, targetReference, validateApprovalMetadata } from './evidence.mjs'
 import { collectCasesFromRef, normalizeWhitespace } from './inventory.mjs'
 import { git, sha256 } from './utils.mjs'
@@ -199,6 +199,29 @@ function contractSurfaceSources(commit) {
   }))
 }
 
+function contractRelocationKey(testCase) {
+  if (testCase.sourceKind === 'rule-tester') {
+    return JSON.stringify([
+      testCase.package,
+      testCase.suites,
+      testCase.runner,
+      testCase.kind,
+      testCase.sourceKind,
+      testCase.contractDigest
+    ])
+  }
+  return JSON.stringify([
+    testCase.package,
+    testCase.suites,
+    testCase.title,
+    testCase.runner,
+    testCase.kind,
+    testCase.sourceKind,
+    testCase.matrix?.index,
+    testCase.contractDigest
+  ])
+}
+
 export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
   const baselineInventory = collectCasesFromRef(
     'rust-refactor-contract',
@@ -219,9 +242,22 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
     if (!targetById.has(testCase.id)) targetById.set(testCase.id, [])
     targetById.get(testCase.id).push(testCase)
   }
+  const targetByRelocationKey = new Map()
+  for (const testCase of targetInventory.cases) {
+    const key = contractRelocationKey(testCase)
+    if (!targetByRelocationKey.has(key)) targetByRelocationKey.set(key, [])
+    targetByRelocationKey.get(key).push(testCase)
+  }
+  const matchedTargetIds = new Set()
   const usedEvidence = new Set()
   const entries = baselineInventory.cases.map((source) => {
-    const targets = targetById.get(source.id) ?? []
+    let targets = targetById.get(source.id) ?? []
+    let relocated = false
+    if (!targets.length) {
+      targets = (targetByRelocationKey.get(contractRelocationKey(source)) ?? [])
+        .filter((target) => !matchedTargetIds.has(target.id))
+      relocated = targets.length > 0
+    }
     if (!targets.length) {
       return { source, status: 'removed-unapproved', target: null, proof: null }
     }
@@ -235,8 +271,18 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
       }
     }
     const target = targets[0]
-    if (target.sourceDigest === source.sourceDigest) {
-      return { source, status: 'preserved-exact', target: targetReference(target), proof: 'exact-source' }
+    matchedTargetIds.add(target.id)
+    if (target.contractDigest === source.contractDigest) {
+      const exactSource = target.sourceDigest === source.sourceDigest
+      return {
+        source,
+        status: 'preserved-exact',
+        target: targetReference(target),
+        proof: relocated
+          ? exactSource ? 'exact-source-relocated' : 'exact-case-relocated'
+          : exactSource ? 'exact-source' : 'exact-case-source',
+        ...(relocated ? { relocatedFrom: source.file } : {})
+      }
     }
     const record = evidenceBySourceId.get(source.id)
     if (!record) {
@@ -260,9 +306,8 @@ export function buildRustRefactorContractLedger(targetInventory, targetCommit) {
     'Rust refactor contract test evidence contains unused records.'
   )
 
-  const baselineIds = new Set(baselineInventory.cases.map(({ id }) => id))
   const added = targetInventory.cases
-    .filter(({ id }) => !baselineIds.has(id))
+    .filter(({ id }) => !matchedTargetIds.has(id))
     .map(targetReference)
 
   const surfaceEvidenceById = new Map()

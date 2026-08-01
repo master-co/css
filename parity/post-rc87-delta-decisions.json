@@ -59,15 +59,17 @@
           },
           {
             "file": "packages/next/tests/css-manifest-loader.test.ts",
-            "digest": "a73c83c099503afd74442ee2eab70fcb2a802fd4cfefee10163d13632bebff4d"
+            "digest": "3416ad19dfe0f78787a2b33555956ee955a1cdf73c034598edfe6fd65e4dc067"
           },
           {
-            "file": "packages/runtime/src/core.ts",
-            "digest": "96b6cebc60d7b634ef814741a67fe4edbef6363ec0b3d4ef938b0b4581a38cb3"
+            "file": "packages/runtime/src/hydration.ts",
+            "implementedFrom": "packages/runtime/src/core.ts",
+            "digest": "44bc1f07fd0c4b173cffd581d76c9049d1949405417ca7ad559a980458d88074"
           },
           {
-            "file": "packages/runtime/e2e/edge-cases.test.ts",
-            "digest": "d1d2a13bccd7c8b778df44053b2d5c00884a9db0e219584495017d1eca4719ac"
+            "file": "packages/runtime/e2e/hydration-edge-cases.test.ts",
+            "implementedFrom": "packages/runtime/e2e/edge-cases.test.ts",
+            "digest": "58559cb423a01e0766ecfaf572b7c5fe1cf8c876e09552bee23d55e1d8e7c11c"
           },
           {
             "file": "packages/vite/tests/plugins/manifest-loader.test.ts",
@@ -79,7 +81,7 @@
           },
           {
             "file": "packages/webpack/tests/plugin.test.ts",
-            "digest": "197ba37454b8f222218f6bd890d5deb493418a252fbf279dab54eec12c579d4c"
+            "digest": "c5ff44cd713a5aa21f4dc2fce8cb4aaadf736efbd7d98c52ff0bede53e942386"
           }
         ],
         "tests": [
@@ -154,32 +156,32 @@
             "digest": "7eea9812e7eb2a7bc70aab650cc29482dae932839a127ba516b7b53827084748"
           },
           {
-            "caseId": "rc87-430cf2445a3a99ba",
+            "caseId": "rc87-dd785f5a00080d1c",
             "runner": "playwright-or-vitest-e2e",
             "digest": "40c713c41d230220cf249eb8b1d6786b4f33b8579871ce716ed4406a042f1e76"
           },
           {
-            "caseId": "rc87-f1407d1b3d9cc16c",
+            "caseId": "rc87-82aab64164d5d4a8",
             "runner": "playwright-or-vitest-e2e",
             "digest": "2ed4cfb0fdbb4e7e3c4fd590b93f2b87649a1f0f782498e094c590fd552613db"
           },
           {
-            "caseId": "rc87-ce0313017f55ca44",
+            "caseId": "rc87-0f080221ec60651a",
             "runner": "playwright-or-vitest-e2e",
             "digest": "69ff6f4614ba1a53f6630d17720332f38956c60c3d9b23069f77f3bc8f639769"
           },
           {
-            "caseId": "rc87-798caf7c7abaa3b0",
+            "caseId": "rc87-81017bda3a0a433d",
             "runner": "playwright-or-vitest-e2e",
             "digest": "c44bee73397b53ef689ac4994a2b9e2221a91d9582bb0c8450128225f3aa4a0a"
           },
           {
-            "caseId": "rc87-dd824939f1033884",
+            "caseId": "rc87-90b45cbedb62f8ad",
             "runner": "playwright-or-vitest-e2e",
             "digest": "9e55cb2d82857e07d7cfa9026b9a08ffec0a13ba2f8c4e8a89fe7a62d9bb71cc"
           },
           {
-            "caseId": "rc87-140cb995e4c0676b",
+            "caseId": "rc87-ce29f729c5b6ac32",
             "runner": "playwright-or-vitest-e2e",
             "digest": "e256ef002195234e20283909b0510b38c017c5c846346a5db1db75a8eb91c3e5"
           },
@@ -189,7 +191,7 @@
             "digest": "d3e6830e3c6022e1d1d24eb297159eae4d437c9a5341840468445532ef932026"
           }
         ],
-        "digest": "ecfb0d91ab4095f714c5b7e1aa90c8ac5bf317df7ca496ebcedf7d8096849774"
+        "digest": "65bce5983f2a05fea6fe10339768d726eb6ac655fe6e9a1bd52eec8b8cbad640"
       },
       "invariants": [
         "modulepreload as=\"json\" HTML bytes remain unchanged.",
@@ -198,9 +200,9 @@
       ],
       "approval": {
         "approvedBy": "Aron <i@aron.tw>",
-        "approvedAt": "2026-07-28T12:14:27Z",
-        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
-        "scopeDigest": "4b5e8b044a591143bd152d7ec30ace41fcce508c3d4a2f97717ad21b3affabff"
+        "approvedAt": "2026-08-01T12:46:46Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "004cf73c481819fb9bea3064499b04789bfd8d96c9c3514d6b71809957d032f0"
       }
     }
   ]
