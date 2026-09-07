@@ -3,6 +3,7 @@ import type {
 } from '@master/css-binding/tooling'
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
+import { freezeToolingResult } from '../immutable'
 import { matchesLanguageServiceNativeDeclaration } from './master-css'
 import type {
   MasterCSSDocumentAnalysis,
@@ -29,7 +30,7 @@ interface BindingLanguageSession {
   dispose(): void
 }
 
-export interface LanguageSession {
+export interface LanguageSession extends Disposable {
   readonly binding: 'native' | 'wasm'
   analyzeDocument(request: MasterCSSDocumentAnalysisRequest): MasterCSSDocumentAnalysis
   formatDirectives(request: MasterCSSFormatDirectivesRequest): MasterCSSFormatDirectivesResult
@@ -53,13 +54,28 @@ function validate<T extends { version: number }>(value: T): T {
       message: `Expected Master CSS language batch version ${MASTER_CSS_LANGUAGE_BATCH_VERSION}, received ${String(value.version)}.`
     })
   }
-  return value
+  return freezeToolingResult(value)
 }
 
 export function bindLanguageSession(
   binding: LanguageSession['binding'],
   session: BindingLanguageSession
 ): LanguageSession {
+  let disposed = false
+  const assertActive = () => {
+    if (disposed) throw new MasterCSSError({
+      code: 'SESSION_DISPOSED',
+      domain: 'tooling',
+      message: 'The Master CSS language session has been disposed.'
+    })
+  }
+  const dispose = () => {
+    if (disposed) return
+    disposed = true
+    nativeSupportCache.clear()
+    completionIndexCache = undefined
+    session.dispose()
+  }
   const nativeSupportCache = new Map<string, boolean>()
   const collectNativeSupport = (classNames: string[]) => {
     const candidates = parse<MasterCSSNativeDeclarationCandidate[]>(
@@ -75,6 +91,7 @@ export function bindLanguageSession(
   return {
     binding,
     analyzeDocument(request) {
+      assertActive()
       const initial = validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
       const classNames = initial.classPositions.map(({ token }) => token)
       if (!classNames.length) return initial
@@ -82,15 +99,18 @@ export function bindLanguageSession(
       return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
     },
     formatDirectives(request) {
+      assertActive()
       return validate(parse<MasterCSSFormatDirectivesResult>(session.formatDirectives(request)))
     },
     classifyClassNames(classNames) {
+      assertActive()
       const values = [...classNames]
       return validate(parse<MasterCSSLanguageClassifications>(
         session.classifyClassNames(values, collectNativeSupport(values))
       ))
     },
     inspectClassName(className, mode) {
+      assertActive()
       const support = collectNativeSupport([className])
       if (!support.length && nativeSupportCache.has(className)) {
         support.push(nativeSupportCache.get(className) as boolean)
@@ -99,11 +119,19 @@ export function bindLanguageSession(
         session.inspectClassName(className, support, mode)
       ))
     },
-    completionIndex: () => completionIndexCache ||=
-      validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex())),
-    colorPresentation: (token) => validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token))),
-    colorTokens: (candidates) =>
-      validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(candidates))),
-    dispose: () => session.dispose()
+    completionIndex() {
+      assertActive()
+      return completionIndexCache ||= validate(parse<MasterCSSLanguageCompletionIndex>(session.completionIndex()))
+    },
+    colorPresentation(token) {
+      assertActive()
+      return validate(parse<MasterCSSLanguageColorPresentation>(session.colorPresentation(token)))
+    },
+    colorTokens(candidates) {
+      assertActive()
+      return validate(parse<MasterCSSLanguageColorTokens>(session.colorTokens(candidates)))
+    },
+    dispose,
+    [Symbol.dispose]: dispose
   }
 }

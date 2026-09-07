@@ -14,7 +14,7 @@ export default function parseHTML(html: string): {
   headElement: Element | null,
   styleElement: Element | null
 } {
-  const classes: string[] = []
+  const classes = new Set<string>()
   let htmlElement: Element | null = null
   let headElement: Element | null = null
   let styleElement: Element | null = null
@@ -43,8 +43,7 @@ export default function parseHTML(html: string): {
         .forEach((className) => {
           if (!className) return
           className = decodeHTML(className)
-          if (!classes.includes(className))
-            classes.push(className)
+          classes.add(className)
         })
     }
   })
@@ -54,7 +53,7 @@ export default function parseHTML(html: string): {
   }).end(html)
 
   return {
-    classes,
+    classes: [...classes],
     nodes: handler.root.childNodes,
     htmlElement,
     headElement,

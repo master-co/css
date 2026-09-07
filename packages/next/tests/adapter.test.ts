@@ -138,6 +138,18 @@ describe('renderNextBuildOutputs', () => {
       immutableHash: undefined
     })
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
+    const renderHTML = MasterCSSServerRenderer.prototype.renderHTML
+    let renderedPages = 0
+    vi.spyOn(MasterCSSServerRenderer.prototype, 'renderHTML').mockImplementation(function (this: MasterCSSServerRenderer, ...args) {
+      if (renderedPages++) {
+        const firstHTML = readFileSync(firstFile, 'utf-8')
+        expect(readMasterStyle(firstHTML)).toContain('.fg\\:red')
+        const asset = readHydrationManifestSource(firstHTML)
+        expect(asset).toBeDefined()
+        expect(existsSync(join(distDir, asset!.replace('/_next/', '')))).toBe(true)
+      }
+      return renderHTML.apply(this, args)
+    })
 
     await renderNextBuildOutputs(context)
 

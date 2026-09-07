@@ -10,8 +10,8 @@ import {
   getMasterCSSSemanticTokenScopeKeys,
   MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP
 } from '@master/css-tooling/language'
-import type { MasterCSSToolingSession } from '@master/css-tooling'
-import { createToolingSessionSync } from '@master/css-tooling/node'
+import type { MasterCSSLanguageSession } from '@master/css-tooling/language'
+import { createLanguageSessionSync } from '@master/css-tooling/language/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSLanguageServiceSettings } from './settings'
@@ -120,10 +120,10 @@ export interface MasterCSSShikiClassAttributeValueWrapperOptions {
 
 export interface MasterCSSShikiOptions {
   /**
-   * Reuse an existing Master CSS instance when the caller already owns a
-   * configured language engine.
+   * Reuse caller-owned language capabilities. Full tooling sessions also work;
+   * the transformer never disposes a supplied session.
    */
-  session?: MasterCSSToolingSession
+  session?: Pick<MasterCSSLanguageSession, 'analyzeDocument' | 'classifyClassNames'>
   /**
    * Class-position and manifest settings used when collecting embedded utilities.
    */
@@ -208,7 +208,7 @@ import {
 } from './shiki/languages'
 
 function createShikiSession(options: MasterCSSShikiOptions) {
-  return options.session || createToolingSessionSync({
+  return options.session || createLanguageSessionSync({
     manifest: options.manifest ?? options.settings?.manifest ?? defaultManifest
   })
 }
@@ -712,11 +712,14 @@ function analyzeMasterCSSShikiDocument(
           }
         : {})
     })
+    const classNames = [...new Set(classPositions.map(({ token }) => token))]
+    const semanticClasses = new Set(classNames.length
+      ? session.classifyClassNames(classNames).classes
+        .filter(({ kind }) => kind === 'semantic' || kind === 'pattern')
+        .map(({ className }) => className)
+      : [])
     const semanticUtilityStarts = new Set(classPositions
-      .filter(({ token }) => {
-        const kind = session.inspectClassName(token).kind
-        return kind === 'semantic' || kind === 'pattern'
-      })
+      .filter(({ token }) => semanticClasses.has(token))
       .map(({ range }) => range.start))
     return {
       classPositions: [...classPositions],
@@ -727,7 +730,7 @@ function analyzeMasterCSSShikiDocument(
       )
     }
   } finally {
-    if (!options.session) session.dispose()
+    if (!options.session) (session as MasterCSSLanguageSession).dispose()
   }
 }
 

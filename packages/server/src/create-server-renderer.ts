@@ -52,9 +52,9 @@ export class MasterCSSServerRenderer implements Disposable {
     options: MasterCSSHTMLDocumentOptions = {}
   ): MasterCSSHTMLRenderResult {
     this.assertActive()
-    const classNames = parseHTML(html).classes
-    const snapshot = classNames.length ? this.renderClassNames(classNames) : undefined
-    return renderHTMLWithSnapshot(html, classNames, snapshot, options)
+    const document = parseHTML(html)
+    const snapshot = document.classes.length ? this.renderClassNames(document.classes) : undefined
+    return renderHTMLWithSnapshot(html, document, snapshot, options)
   }
 
   createHTMLRenderSession(options: MasterCSSHTMLDocumentOptions = {}) {

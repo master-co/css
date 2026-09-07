@@ -18,3 +18,11 @@ test('renders a complete immutable HTML result', () => {
   expect(Object.isFrozen(result.invalidClassNames)).toBe(true)
   expect(Object.isFrozen(result.diagnostics)).toBe(true)
 })
+
+
+test('deduplicates decoded classes in first appearance order without changing HTML entities', () => {
+  const html = '<div class="fg:red mt:0&gt;div fg:red"></div><span class="mt:0>div bg:blue fg:red"></span>'
+  const result = renderHTML(html, { manifest: defaultManifest })
+  expect(result.classNames).toEqual(['fg:red', 'mt:0>div', 'bg:blue'])
+  expect(result.html).toContain(html)
+})

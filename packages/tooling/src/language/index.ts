@@ -1,12 +1,27 @@
 import type { MasterCSSBinding } from '@master/css-binding'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { createToolingSession } from '../tooling-session'
+import { createToolingBinding } from '@master/css-binding/tooling'
+import { bindLanguageSession, type LanguageSession } from './session'
 import type {
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
   MasterCSSFormatDirectivesRequest,
   MasterCSSFormatDirectivesResult
 } from './contracts'
+
+export type { LanguageSession as MasterCSSLanguageSession } from './session'
+
+/**
+ * Create a reusable language-only session using a native or Wasm binding.
+ * Results are immutable snapshots. Dispose the session when its owner is finished.
+ */
+export async function createLanguageSession(options: {
+  readonly manifest: MasterCSSManifest
+  readonly binding?: MasterCSSBinding
+}): Promise<LanguageSession> {
+  const binding = await createToolingBinding({ binding: options.binding })
+  return bindLanguageSession(binding.binding, await binding.createLanguageSession(options.manifest))
+}
 
 export {
   SEMANTIC_TOKEN_MODIFIERS,
@@ -73,7 +88,7 @@ export async function analyzeDocument(
     readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSDocumentAnalysis> {
-  const session = await createToolingSession(options)
+  const session = await createLanguageSession(options)
   try {
     return session.analyzeDocument(request)
   } finally {
@@ -89,7 +104,7 @@ export async function inspectClassName(
     readonly mode?: string
   }
 ) {
-  const session = await createToolingSession(options)
+  const session = await createLanguageSession(options)
   try {
     return session.inspectClassName(className, options.mode)
   } finally {
@@ -104,7 +119,7 @@ export async function formatDirectives(
     readonly binding?: MasterCSSBinding
   }
 ): Promise<MasterCSSFormatDirectivesResult> {
-  const session = await createToolingSession(options)
+  const session = await createLanguageSession(options)
   try {
     return session.formatDirectives(request)
   } finally {

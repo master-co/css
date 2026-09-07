@@ -32,7 +32,7 @@ nextConfig.turbopack.resolveAlias = {
 nextConfig.experimental = {
   ...nextConfig.experimental,
   staticGenerationMaxConcurrency: 1,
-  staticGenerationMinPagesPerWorker: 100
+  staticGenerationMinPagesPerWorker: 25
 }
 nextConfig.images = {
   ...nextConfig.images,

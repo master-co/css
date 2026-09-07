@@ -1,5 +1,5 @@
 import Code from '~/internal/components/Code'
-import { createPresetEngine } from '../common/preset-css'
+import { generatePresetCSS } from '../common/generate-preset-css'
 
 function normalizeClasses(classes: unknown) {
   const input = Array.isArray(classes) ? classes : [classes]
@@ -8,14 +8,7 @@ function normalizeClasses(classes: unknown) {
 
 const Class2CSS = (props: any) => {
   const { children: classes } = props
-  const css = createPresetEngine()
-  let generatedCSS: string
-  try {
-    css.ensureClassRules(normalizeClasses(classes))
-    generatedCSS = css.snapshot().text
-  } finally {
-    css.dispose()
-  }
+  const generatedCSS = generatePresetCSS(normalizeClasses(classes))
   return (
     <Code {...props} lang="css" beautify>{generatedCSS}</Code>
   )

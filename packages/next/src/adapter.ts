@@ -25,16 +25,6 @@ interface HTMLBuildOutput {
   source: 'static' | 'prerender-fallback'
 }
 
-interface RenderedHTMLBuildOutput {
-  output: HTMLBuildOutput
-  sourceHTML: string
-  renderedHTML: string
-  classes: string[]
-  cssBytes: number
-  hydrationManifestBytes: number
-  hydrationManifestFile?: string
-}
-
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
@@ -220,9 +210,8 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
       maxCachedClasses: Infinity
     })
     const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
-    const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
     const renderedOutputs: RenderedOutput[] = []
-    const hydrationManifestAssets = new Map<string, string>()
+    const hydrationManifestAssets = new Set<string>()
 
     for (const output of htmlOutputs) {
       const sourceHTML = await readFile(output.filePath, 'utf-8')
@@ -234,7 +223,11 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
         const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
         hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)
         hydrationManifestBytes = Buffer.byteLength(json)
-        hydrationManifestAssets.set(hydrationManifestFile, json)
+        if (!hydrationManifestAssets.has(hydrationManifestFile)) {
+          await mkdir(dirname(hydrationManifestFile), { recursive: true })
+          await writeFile(hydrationManifestFile, json)
+          hydrationManifestAssets.add(hydrationManifestFile)
+        }
       }
       const generatedCSS = rendered.cssText
       let renderedHTML = generatedCSS
@@ -246,31 +239,6 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
           toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
         )
       }
-      renderedHTMLOutputs.push({
-        output,
-        sourceHTML,
-        renderedHTML,
-        classes: [...rendered.classNames],
-        cssBytes: Buffer.byteLength(generatedCSS),
-        hydrationManifestBytes,
-        hydrationManifestFile
-      })
-    }
-
-    for (const [filePath, source] of hydrationManifestAssets) {
-      await mkdir(dirname(filePath), { recursive: true })
-      await writeFile(filePath, source)
-    }
-
-    for (const {
-      output,
-      sourceHTML,
-      renderedHTML,
-      classes,
-      cssBytes,
-      hydrationManifestBytes,
-      hydrationManifestFile
-    } of renderedHTMLOutputs) {
       const didRender = renderedHTML !== sourceHTML
 
       if (didRender) {
@@ -281,8 +249,8 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
         file: output.filePath,
         pathname: output.pathname,
         source: output.source,
-        classes,
-        cssBytes,
+        classes: [...rendered.classNames],
+        cssBytes: Buffer.byteLength(generatedCSS),
         hydrationManifestBytes,
         hydrationManifestFile,
         rendered: didRender

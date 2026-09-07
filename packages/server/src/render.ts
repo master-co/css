@@ -9,7 +9,7 @@ import {
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import { Element, Text, type ChildNode } from 'domhandler'
 import serialize from 'dom-serializer'
-import parseHTML from './parse-html'
+import type parseHTML from './parse-html'
 
 export type MasterCSSExternalHydrationManifestSource =
   | string
@@ -137,12 +137,11 @@ function result(
 
 export function renderHTMLWithSnapshot(
   html: string,
-  classNames: readonly string[],
+  context: ReturnType<typeof parseHTML>,
   snapshot: MasterCSSRenderSnapshot | undefined,
   options: MasterCSSHTMLDocumentOptions
 ) {
-  const context = parseHTML(html)
-  const { nodes, htmlElement } = context
+  const { nodes, htmlElement, classes: classNames } = context
   let { headElement, styleElement } = context
   const hydrationOption = options.hydrationManifest ?? 'return'
   const hydrationManifest = hydrationOption === false

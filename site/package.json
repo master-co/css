@@ -26,7 +26,7 @@
     "update:css-contract": "tsx scripts/verify-css-contract.ts --update",
     "test:dogfood": "playwright test --config tests/dogfood/playwright.config.ts",
     "test:dogfood:dev": "playwright test --config tests/dogfood/playwright.dev.config.ts",
-    "test:syntax": "tsx --test components/SyntaxTr.test.ts",
+    "test:syntax": "tsx --test components/SyntaxTr.test.ts common/generate-preset-css.test.ts",
     "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"
