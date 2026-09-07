@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Cover a fixed frame
+## Examples \{#examples\}
+### Cover a fixed frame \{#cover-a-fixed-frame\}
 Use `object-cover` when media should fill its frame while preserving its aspect ratio.
 ```html
 <!-- @MARK object-cover -->
@@ -16,21 +16,21 @@ Use `object-cover` when media should fill its frame while preserving its aspect 
   </Class2CSS>
 </details>
 
-### Contain the full media
+### Contain the full media \{#contain-the-full-media\}
 Use `object-contain` when the full image or video must remain visible inside the frame.
 ```html
 <!-- @MARK object-contain -->
 <img class="w:full aspect-ratio:1/1 object-contain" src="/images/logo.png" alt="Logo">
 ```
 
-### Disable object fitting
+### Disable object fitting \{#disable-object-fitting\}
 Use `object-fit:none` when the media should render at its intrinsic size within the content box.
 ```html
 <!-- @MARK object-fit:none -->
 <img class="object-fit:none" src="/images/icon.png" alt="Icon">
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <img class="object-cover:hover object-fit:none@print object-contain@sm" src="/images/photo.jpg" alt="">

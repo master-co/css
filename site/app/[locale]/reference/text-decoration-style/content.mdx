@@ -1,9 +1,9 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 {/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-decoration-style syntax */}
 
-## Examples
-### Use a wavy decoration
+## Examples \{#examples\}
+### Use a wavy decoration \{#use-a-wavy-decoration\}
 Use `text-decoration-style:wavy` for spelling, grammar, or annotation styles where a straight underline would be ambiguous.
 ```html
 <!-- @MARK text-decoration-style:wavy -->
@@ -19,7 +19,7 @@ Use `text-decoration-style:wavy` for spelling, grammar, or annotation styles whe
   </Class2CSS>
 </details>
 
-### Use dashed or dotted lines
+### Use dashed or dotted lines \{#use-dashed-or-dotted-lines\}
 Use dashed and dotted decoration styles for secondary links or subtle annotations.
 ```html
 <!-- @MARK text-decoration-style:dashed -->
@@ -28,7 +28,7 @@ Use dashed and dotted decoration styles for secondary links or subtle annotation
 </a>
 ```
 
-### Return to solid lines
+### Return to solid lines \{#return-to-solid-lines\}
 Use `text-decoration-style:solid` when a state should remove a more decorative style.
 ```html
 <!-- @MARK text-decoration-style:solid -->
@@ -37,7 +37,7 @@ Use `text-decoration-style:solid` when a state should remove a more decorative s
 </a>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <a class="text-decoration-style:wavy:hover text-decoration-style:solid@print text-decoration-style:dashed@sm">...</a>

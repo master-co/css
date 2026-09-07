@@ -1,9 +1,9 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 {/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document transform-box syntax */}
 
-## Examples
-### Choose the transform reference box
+## Examples \{#examples\}
+### Choose the transform reference box \{#choose-the-transform-reference-box\}
 Use `transform-box:*` to choose which box is used for transform calculations. This is most useful for SVG elements whose fill box, stroke box, and view box can differ.
 ```html
 <!-- @MARK transform-box:fill-box -->
@@ -19,7 +19,7 @@ Use `transform-box:*` to choose which box is used for transform calculations. Th
   </Class2CSS>
 </details>
 
-### Use the border box for HTML elements
+### Use the border box for HTML elements \{#use-the-border-box-for-html-elements\}
 For regular HTML elements, `border-box` makes the element border box the transform reference.
 ```html
 <!-- @MARK transform-box:border-box -->
@@ -28,7 +28,7 @@ For regular HTML elements, `border-box` makes the element border box the transfo
 </div>
 ```
 
-### Pair with transform origin
+### Pair with transform origin \{#pair-with-transform-origin\}
 `transform-box:*` changes the box; `transform-origin:*` chooses the point inside that box.
 ```html
 <svg viewBox="0 0 24 24">
@@ -36,7 +36,7 @@ For regular HTML elements, `border-box` makes the element border box the transfo
 </svg>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="transform-box:fill-box:hover transform-box:border-box@print transform-box:border-box@sm">...</div>

@@ -2,9 +2,11 @@ import highlightCode from '~/internal/utils/highlight-code'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'
+import React from 'react'
 import type { ShikiTransformer } from 'shiki/core'
 import { generateSyntaxTrDeclarations } from './syntax-tr-declarations'
 import { createSyntaxTrPlaceholderContext } from './syntax-tr-placeholders'
+import { syntaxAnchor } from '../reference/syntax'
 
 export default async function SyntaxTr({ value, children, previewSyntax }: any) {
   value = (Array.isArray(value) ? value[0] : value) as string
@@ -36,7 +38,7 @@ export default async function SyntaxTr({ value, children, previewSyntax }: any) 
     transformers: [transformerRestore]
   })
   return (
-    <tr key={value}>
+    <tr key={value} id={syntaxAnchor(value)} className="reference-syntax-row">
       <td className='white-space:nowrap'>
         {children}
         {toJsxRuntime(keyHast as any, { Fragment, jsxs, jsx })}

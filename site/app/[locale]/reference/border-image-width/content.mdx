@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Set the border image width
+## Basic usage \{#basic-usage\}
+### Set the border image width \{#set-the-border-image-width\}
 Use `border-image-width` to control how thick the painted border image is. It can be larger than the fallback `border-width`.
 <Demo $py={0}>
   <DemoPanel>
@@ -19,7 +19,7 @@ Use `border-image-width` to control how thick the painted border image is. It ca
 </div>
 ```
 
-### Use automatic width
+### Use automatic width \{#use-automatic-width\}
 Use `auto` to derive the width from the slice value when possible.
 ```html
 <!-- @MARK border-image-width:auto -->
@@ -28,7 +28,7 @@ Use `auto` to derive the width from the slice value when possible.
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="border-image-width:16:hover border-image-width:16@dark border-image-width:16@print border-image-width:16@sm">…</div>

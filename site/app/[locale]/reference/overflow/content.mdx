@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Hide overflowing content
+## Examples \{#examples\}
+### Hide overflowing content \{#hide-overflowing-content\}
 Use `overflow:hidden` when content should be clipped to the element box.
 ```html
 <!-- @MARK overflow:hidden --><!-- @MARK r:md -->
@@ -18,7 +18,7 @@ Use `overflow:hidden` when content should be clipped to the element box.
   </Class2CSS>
 </details>
 
-### Create a scroll container
+### Create a scroll container \{#create-a-scroll-container\}
 Use `overflow:auto` when scrollbars should appear only if content overflows. Use axis-specific utilities when only one direction should scroll.
 ```html
 <!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
@@ -32,7 +32,7 @@ Use `overflow:auto` when scrollbars should appear only if content overflows. Use
 </div>
 ```
 
-### Clip without scrolling
+### Clip without scrolling \{#clip-without-scrolling\}
 Use `overflow:clip` when content should be clipped without creating a scroll container.
 ```html
 <!-- @MARK overflow:clip -->
@@ -43,7 +43,7 @@ Use `overflow:clip` when content should be clipped without creating a scroll con
 
 Use `overflow:hidden` when you still need scroll-container behavior, clipping for border radius, or compatibility with patterns that depend on hidden overflow.
 
-### Truncate a single line
+### Truncate a single line \{#truncate-a-single-line\}
 Overflow is often paired with `white-space:nowrap` and `text-overflow:ellipsis` for one-line truncation.
 ```html
 <!-- @MARK min-w:0 --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-overflow:ellipsis -->
@@ -52,7 +52,7 @@ Overflow is often paired with `white-space:nowrap` and `text-overflow:ellipsis` 
 </span>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="overflow:hidden overflow:visible@print overflow:auto@sm">...</div>

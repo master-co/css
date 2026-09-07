@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Set column count
+## Basic usage \{#basic-usage\}
+### Set column count \{#set-column-count\}
 Use `mcss columns:value` to set the number of columns when creating a multi-column layout. The column width will automatically adjust to the column count.
 <Demo className="py:0!">
   <div className="gap:xl columns:1 w:full break-inside:avoid_:where(div) columns:3@sm">
@@ -44,7 +44,7 @@ Use `mcss columns:value` to set the number of columns when creating a multi-colu
 </div>
 ```
 
-### Flexible multi-column layout
+### Flexible multi-column layout \{#flexible-multi-column-layout\}
 Use `mcss columns:count|width` to set the minimum width of each column to `width` and the maximum number of columns to `count` columns when creating a flexible multi-column layout.
 <Demo className="py:0!">
   <div className="gap:xl columns:1 w:full break-inside:avoid_:where(div) columns:4|100px@sm">
@@ -83,7 +83,7 @@ Use `mcss columns:count|width` to set the minimum width of each column to `width
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="columns:5:hover columns:5@dark columns:5@print columns:5@sm">…</div>

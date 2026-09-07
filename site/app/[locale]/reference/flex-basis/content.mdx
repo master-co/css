@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set the starting size of a flex item
+## Examples \{#examples\}
+### Set the starting size of a flex item \{#set-the-starting-size-of-a-flex-item\}
 Use `flex-basis:*` to set the initial main-axis size before grow and shrink are applied.
 ```html
 <!-- @MARK flex --><!-- @MARK flex-basis:24x -->
@@ -19,28 +19,28 @@ Use `flex-basis:*` to set the initial main-axis size before grow and shrink are 
   </Class2CSS>
 </details>
 
-### Use content or parent-sized basis values
+### Use content or parent-sized basis values \{#use-content-or-parent-sized-basis-values\}
 Use `flex-basis:full`, `flex-basis:fit`, or `flex-basis:max` when the basis should follow a native sizing keyword.
 ```html
 <!-- @MARK flex-basis:full -->
 <section class="flex-basis:full">...</section>
 ```
 
-### Use container basis values
+### Use container basis values \{#use-container-basis-values\}
 Use `flex-basis:*` when flex item sizing should align with the shared container scale.
 ```html
 <!-- @MARK flex-basis:md -->
 <aside class="flex-basis:md flex-shrink:0">...</aside>
 ```
 
-### Prefer shorthand for complete flex behavior
+### Prefer shorthand for complete flex behavior \{#prefer-shorthand-for-complete-flex-behavior\}
 If the item needs grow, shrink, and basis at the same time, use [flex](/reference/flex).
 ```html
 <!-- @MARK flex:0|0|18x -->
 <aside class="flex:0|0|18x">...</aside>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="flex-basis:full flex-basis:auto@print flex-basis:24x@sm">...</div>

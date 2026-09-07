@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Choose the keyframes to run
+## Examples \{#examples\}
+### Choose the keyframes to run \{#choose-the-keyframes-to-run\}
 Use `animation-name:*` to select a named keyframes rule while controlling the other animation parts separately.
 ```html
 <!-- @MARK animation-name:fade -->
@@ -18,7 +18,7 @@ Use `animation-name:*` to select a named keyframes rule while controlling the ot
   </Class2CSS>
 </details>
 
-### Disable an animation
+### Disable an animation \{#disable-an-animation\}
 Use `animation-name:none` when the element should keep the rest of its animation settings but stop running keyframes in a specific condition.
 ```html
 <!-- @MARK animation-name:none@print -->
@@ -27,7 +27,7 @@ Use `animation-name:none` when the element should keep the rest of its animation
 </div>
 ```
 
-### Combine with timing longhands
+### Combine with timing longhands \{#combine-with-timing-longhands\}
 The name alone does not define how long the animation runs. Pair it with duration, timing, delay, iteration count, and fill mode as needed.
 ```html
 <span class="animation-duration:200ms animation-fill-mode:both animation-name:fade">
@@ -35,7 +35,7 @@ The name alone does not define how long the animation runs. Pair it with duratio
 </span>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="animation-name:fade:hover animation-name:none@print animation-name:fade@sm">...</div>

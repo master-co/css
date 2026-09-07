@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set a fixed height
+## Examples \{#examples\}
+### Set a fixed height \{#set-a-fixed-height\}
 Use `h:*` to set the CSS `height` property. Fixed heights are best for controls, media frames, skeletons, and areas with intentionally bounded content.
 ```html
 <!-- @MARK h:12x -->
@@ -18,7 +18,7 @@ Use `h:*` to set the CSS `height` property. Fixed heights are best for controls,
   </Class2CSS>
 </details>
 
-### Fill a parent height
+### Fill a parent height \{#fill-a-parent-height\}
 Use `h:full` when the parent has a definite height.
 ```html
 <!-- @MARK h:64x --><!-- @MARK h:full -->
@@ -29,7 +29,7 @@ Use `h:full` when the parent has a definite height.
 
 If the parent height is automatic, percentage heights such as `h:full` and `h:50%` may not resolve the way you expect. This is native CSS behavior.
 
-### Use viewport and intrinsic values
+### Use viewport and intrinsic values \{#use-viewport-and-intrinsic-values\}
 Use native CSS units for viewport-sized regions, and keywords when the content should define the block size.
 ```html
 <!-- @MARK min-h:100dvh -->
@@ -39,14 +39,14 @@ Use native CSS units for viewport-sized regions, and keywords when the content s
 <aside class="h:fit">...</aside>
 ```
 
-### Size both axes together
+### Size both axes together \{#size-both-axes-together\}
 For square icons, avatars, and controls, prefer [size](/reference/size) over repeating `w:*` and `h:*`.
 ```html
 <!-- @MARK size:10x -->
 <button class="size:10x round">...</button>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="h:10x:hover h:full@dark h:auto@print h:14x@sm">...</div>

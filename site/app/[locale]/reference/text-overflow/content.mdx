@@ -1,15 +1,15 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Clip overflowing inline text
+## Examples \{#examples\}
+### Clip overflowing inline text \{#clip-overflowing-inline-text\}
 Use `text-clip` when overflowing inline content should be cut off without an ellipsis.
 ```html
 <!-- @MARK text-clip -->
 <span class="text-clip">Long label</span>
 ```
 
-### Show an ellipsis
+### Show an ellipsis \{#show-an-ellipsis\}
 Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrained width.
 ```html
 <!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
@@ -27,7 +27,7 @@ Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrai
 
 `text-overflow` only changes the marker at the clipped edge. It does not create clipping by itself.
 
-### Use in flex rows
+### Use in flex rows \{#use-in-flex-rows\}
 In flex or grid children, add `min-w:0` to the shrinking text region so the ellipsis can actually engage.
 ```html
 <!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text-ellipsis -->
@@ -39,7 +39,7 @@ In flex or grid children, add `min-w:0` to the shrinking text region so the elli
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="text-clip text-clip@print text-ellipsis@sm">...</div>

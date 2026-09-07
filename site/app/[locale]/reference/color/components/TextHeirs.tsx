@@ -1,15 +1,14 @@
 import { Fragment } from 'react'
-import { manifestUtilities, utilityUsesVariableNamespace } from '~/site/utils/manifest-utilities'
+import { getVariableNamespacePublicKeys } from '~/site/utils/manifest-utilities'
 
-const utilities = manifestUtilities
+const keys = getVariableNamespacePublicKeys('color-text')
 
 export default () => <>
   {
-    utilities
-      .filter((utility) => utilityUsesVariableNamespace(utility, 'text'))
-      .map((utility, index, arr) =>
-        <Fragment key={utility.name}>
-          <code>{utility.name}</code>
+    keys
+      .map((key, index, arr) =>
+        <Fragment key={key}>
+          <code>{key}:</code>
           {index !== arr.length - 1 && ', '}
         </Fragment>
       )

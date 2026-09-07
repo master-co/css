@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Apply filter functions
+## Examples \{#examples\}
+### Apply filter functions \{#apply-filter-functions\}
 Use `filter:*` with functions such as `blur(...)`, `brightness(...)`, and `drop-shadow(...)` to apply CSS filters.
 ```html
 <!-- @MARK filter:blur(4px)|brightness(.8) -->
@@ -16,7 +16,7 @@ Use `filter:*` with functions such as `blur(...)`, `brightness(...)`, and `drop-
   </Class2CSS>
 </details>
 
-### Use drop shadow for transparent images
+### Use drop shadow for transparent images \{#use-drop-shadow-for-transparent-images\}
 Use `filter:drop-shadow(...)` when the shadow should follow the alpha shape of an image or SVG.
 ```html
 <!-- @MARK filter:drop-shadow(0|2px|4px|black/.2) -->
@@ -25,14 +25,14 @@ Use `filter:drop-shadow(...)` when the shadow should follow the alpha shape of a
 
 Use [box-shadow](/reference/box-shadow) for the element box instead.
 
-### Reset filters
+### Reset filters \{#reset-filters\}
 Use `filter:none` to remove filters at a breakpoint or state.
 ```html
 <!-- @MARK filter:none -->
 <img class="filter:none@print" src="..." alt="" />
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="filter:none filter:blur(4px):hover filter:none@print">...</div>

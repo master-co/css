@@ -2,6 +2,7 @@ import { readFile, writeFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolvePublicEnv } from '../utils/public-env.js'
+import { generateReference, renderDocumentMarkdown } from '../reference/build'
 
 const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().NEXT_PUBLIC_URL
@@ -22,6 +23,7 @@ export type Page = {
   description?: string
   /** LLM-oriented Markdown body. */
   body: string
+  markdownUrl?: string
 }
 
 type PageMetadata = {
@@ -107,12 +109,13 @@ export function renderLlmsIndex(pages: Page[], siteUrl = SITE_URL): string {
   const lines: string[] = []
   lines.push(`# ${PROJECT_NAME}`, '')
   lines.push(`> ${PROJECT_DESC}`, '')
+  lines.push(`Reference discovery: [structured index](${siteUrl}/reference/index.json). Individual Reference links below return Markdown with source revision, prerequisites and generated CSS.`, '')
   for (const sec of sortedSections) {
     const items = bySection.get(sec)!.sort((a, b) => a.url.localeCompare(b.url))
     lines.push(`## ${sectionTitle(sec)}`)
     for (const p of items) {
       const note = p.description ? `: ${p.description}` : ''
-      lines.push(`- [${p.title}](${siteUrl}${p.url})${note}`)
+      lines.push(`- [${p.title}](${siteUrl}${p.markdownUrl ?? p.url})${note}`)
     }
     lines.push('')
   }
@@ -188,7 +191,17 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
 
 export async function generate(siteRoot: string): Promise<{ index: string; full: string }> {
   const localeRoot = path.join(siteRoot, 'app', `[${'locale'}]`)
-  const pages = await loadPages(localeRoot)
+  const catalog = await generateReference(siteRoot)
+  const pages = (await loadPages(localeRoot)).filter(page => page.section !== 'reference')
+  const overview = pages.find(page => page.url === '/en/guide')
+  if (overview) {
+    const { guideOverviewMarkdown } = await import('../utils/guide-overview')
+    overview.body = guideOverviewMarkdown(JSON.parse(await readFile(path.join(siteRoot, '.categories/guide.json'), 'utf8')))
+  }
+  pages.push(...catalog.documents.map(doc => ({
+    file: doc.source, section: `reference / ${doc.kind}`, url: doc.url, markdownUrl: `${doc.url}.md`,
+    title: doc.title, description: doc.description, body: renderDocumentMarkdown(doc, catalog)
+  })))
   const index = renderLlmsIndex(pages)
   const full = renderLlmsFull(pages)
   const publicDir = path.join(siteRoot, 'public')

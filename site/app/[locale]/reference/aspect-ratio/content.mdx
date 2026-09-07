@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set a custom ratio
+## Examples \{#examples\}
+### Set a custom ratio \{#set-a-custom-ratio\}
 Use `aspect-ratio:<ratio>` to reserve a proportional box before media or content finishes loading.
 ```html
 <!-- @MARK aspect-ratio:4/3 --><!-- @MARK w:full -->
@@ -16,7 +16,7 @@ Use `aspect-ratio:<ratio>` to reserve a proportional box before media or content
   </Class2CSS>
 </details>
 
-### Use square and video shortcuts
+### Use square and video shortcuts \{#use-square-and-video-shortcuts\}
 Use `square` for `1 / 1` and `video` for a common widescreen media frame.
 ```html
 <!-- @MARK square -->
@@ -26,7 +26,7 @@ Use `square` for `1 / 1` and `video` for a common widescreen media frame.
 <iframe class="w:full video" src="..." title="Product walkthrough"></iframe>
 ```
 
-### Pair with one explicit axis
+### Pair with one explicit axis \{#pair-with-one-explicit-axis\}
 Aspect ratio needs at least one axis to be resolved by width, height, or content. The common pattern is a fluid width with an aspect ratio.
 ```html
 <!-- @MARK w:full --><!-- @MARK max-w:4xl --><!-- @MARK aspect-ratio:16/9 -->
@@ -37,20 +37,20 @@ Aspect ratio needs at least one axis to be resolved by width, height, or content
 
 If both width and height are fixed, the browser follows those dimensions and the ratio is only a preferred constraint.
 
-### Use the video shortcut
+### Use the video shortcut \{#use-the-video-shortcut\}
 Use `video` when you need the common `16 / 9` media frame.
 ```html
 <figure class="w:full video">...</figure>
 ```
 
-### Choose size for fixed squares
+### Choose size for fixed squares \{#choose-size-for-fixed-squares\}
 Use [size](/reference/size) for fixed square UI elements. Use `aspect-ratio:*` when at least one axis should remain fluid.
 ```html
 <!-- @MARK size:10x -->
 <button class="size:10x round">...</button>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="aspect-ratio:1/1 aspect-ratio:16/9@dark aspect-ratio:auto@print aspect-ratio:4/3@sm">...</div>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set the alpha threshold
+## Examples \{#examples\}
+### Set the alpha threshold \{#set-the-alpha-threshold\}
 Use `shape-image-threshold:*` with image-based shapes to decide which pixels participate in the shape.
 ```html
 <!-- @MARK shape-image-threshold:.5 -->
@@ -16,20 +16,20 @@ Use `shape-image-threshold:*` with image-based shapes to decide which pixels par
   </Class2CSS>
 </details>
 
-### Use lower thresholds for soft masks
+### Use lower thresholds for soft masks \{#use-lower-thresholds-for-soft-masks\}
 Lower thresholds include more semi-transparent pixels in the text wrap shape.
 ```html
 <!-- @MARK shape-image-threshold:.2 -->
 <img class="shape-image-threshold:.2" src="/images/photo.jpg" alt="">
 ```
 
-### Use with image shapes
+### Use with image shapes \{#use-with-image-shapes\}
 This property only matters for shapes that use an image source, such as `shape-outside:url(*)` or gradient-based shapes.
 ```html
 <img class="float:left shape-image-threshold:.5 shape-outside:url(/mask.png)" src="/images/photo.jpg" alt="">
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <img class="shape-image-threshold:.5:hover shape-image-threshold:0@print shape-image-threshold:.2@sm" src="/images/photo.jpg" alt="">

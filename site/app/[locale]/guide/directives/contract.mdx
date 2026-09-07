@@ -1,0 +1,505 @@
+## Overview [sr-only] \{#overview\}
+CSS directives are Master CSS instructions inside stylesheets. They are read by the compiler, scanner, and build integrations before browser-facing CSS is emitted.
+
+Directives do not behave like normal CSS rules. Consumed directives are removed from output CSS, while their effects are applied to generated CSS, source scanning, native CSS pruning, or root engine settings.
+
+```css name=index.css
+@import "@master/css";
+
+@settings {
+  root-size: 16;
+  base-unit: 4;
+  default-mode: light;
+  mode-trigger: media;
+  scope: #app;
+  important: false;
+}
+
+@reference "./theme.css";
+
+@safelist "opacity:1 bg:blue-60@dark";
+@blocklist "debug-*";
+
+@preserve native;
+```
+
+---
+
+## Entry markers \{#entry-markers\}
+Entry markers tell integrations where Master CSS should attach generated CSS.
+
+### `@master entry` \{#master-entry\}
+Marks the stylesheet as a lightweight Master CSS entry and inserts the generated CSS slot without loading the package stylesheet graph. Use it when a stylesheet should receive generated CSS but should not import the default `@master/css` stylesheet.
+
+```css
+@master entry;
+```
+
+### `@import "@master/css"` \{#import-mastercss\}
+Marks the stylesheet as a full Master CSS entry, loads the package stylesheet graph, and includes the default layer and base stylesheet behavior. This is the normal entry marker for app stylesheets.
+
+```css
+@import "@master/css";
+```
+
+Other directive families such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, and `@preserve native` are not entry markers by themselves.
+
+---
+
+## Reference context \{#reference-context\}
+### `@reference` \{#reference\}
+Use `@reference` to load another Master CSS stylesheet as compile-time context without including that stylesheet's CSS in the current output. This is useful in CSS Modules and SFC `<style>` blocks that need project tokens, component classes, utility definitions, or custom variants for `@compose` and `@variant`.
+
+```css name=Button.module.css
+@reference "../app.css";
+
+.button {
+  @compose btn;
+
+  @dark {
+    @compose bg:blue-60;
+  }
+}
+```
+
+Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
+
+```css name=app.css
+@import "@master/css";
+
+@components {
+  btn {
+    @compose inline-flex align-items:center px:md h:10x r:lg;
+  }
+}
+```
+
+`@reference` must be a top-level statement with one quoted CSS resource:
+
+```css
+@reference "./app.css";
+@reference "@master/css";
+@reference "@master/css-preset";
+```
+
+Relative references resolve from the stylesheet that declares them. Package references are limited to Master CSS package stylesheet entries. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
+
+(!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes that the loaded global entry has not already emitted.
+
+---
+
+## Project settings \{#project-settings\}
+### `@settings` \{#settings\}
+Use `@settings` for root engine settings that affect generated CSS.
+
+```css
+@settings {
+  root-size: 16;
+  base-unit: 4;
+  default-mode: light;
+  mode-trigger: media;
+  scope: #app;
+  important: false;
+}
+```
+
+| Setting | Effect |
+|---------|--------|
+| `root-size` | Controls numeric conversion to root-relative units such as `rem`. |
+| `base-unit` | Controls multiplier units such as `1x`, `2x`, and `4x`. |
+| `default-mode` | Sets the default mode name, or `none` when no mode should attach by default. |
+| `mode-trigger` | Selects how modes are emitted, such as `media`, `class`, or `host`. |
+| `scope` | Prefixes generated selectors with a root selector. |
+| `important` | Emits generated declarations with `!important` when enabled. |
+
+For token authoring, see [Theme Tokens](/guide/theme). For mode behavior, see [Variables and Modes](/guide/variables-and-modes).
+
+---
+
+## Theme and variants \{#theme-and-variants\}
+Theme directives define project tokens, modes, animations, and reusable variant names. They are manifest inputs, not regular stylesheet output.
+
+### `@theme` \{#theme\}
+Defines theme tokens and managed keyframes. Token names keep their leading `--`; Master CSS uses the name after `--` for namespace resolution.
+
+```css
+@theme {
+  --color-primary: #4f46e5;
+  --spacing-feature: 1.5rem;
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+```
+
+### `@theme <mode>` \{#theme-mode\}
+Defines mode-specific token values. Mode blocks can override regular theme tokens and add new mode names.
+
+```css
+@theme dark {
+  --color-panel: #111827;
+  --shadow-feature: 0 16px 40px rgb(0 0 0 / .36);
+}
+```
+
+### `@theme inline` \{#theme-inline\}
+Defines utility shorthands that are written directly into generated declarations instead of emitting CSS custom properties. Inline tokens cannot be mode-specific.
+
+```css
+@theme inline {
+  --color-brand: #4f46e5;
+  --spacing-feature: 1.5rem;
+}
+```
+
+### `@theme static` \{#theme-static\}
+Emits the token or managed keyframes as initial CSS resources instead of waiting for a matching class to use them. `inline` and `static` cannot be combined.
+
+```css
+@theme static {
+  --color-primary: #4f46e5;
+
+  @keyframes fade-in {
+    to { opacity: 1; }
+  }
+}
+```
+
+### `@custom-variant` \{#custom-variant\}
+Defines reusable condition variants. Use them as `@` suffixes, such as `animation:fade-in@motion-safe`. Selector aliases are built in; use selector suffixes in markup and nested selectors in CSS rules.
+
+```css
+@custom-variant motion-safe {
+  @media (prefers-reduced-motion: no-preference) {
+    @slot;
+  }
+}
+
+@custom-variant supports-backdrop {
+  @supports (backdrop-filter: blur(0)) {
+    @slot;
+  }
+}
+```
+
+For token authoring, see [Theme Tokens](/guide/theme). For mode behavior, see [Variables and Modes](/guide/variables-and-modes). For custom variant strategy, see [Conditional Queries](/guide/conditional-queries).
+
+---
+
+## Managed definitions \{#managed-definitions\}
+Managed definition directives create generated classes in the matching cascade layer. The first level inside each block is a bare class name, not a selector.
+
+### `@defaults` \{#defaults\}
+Defines managed classes in the `defaults` layer.
+
+```css
+@defaults {
+  prose {
+    @compose text:neutral leading:lg;
+  }
+}
+```
+
+### `@components` \{#components\}
+Defines managed component classes in the `components` layer.
+
+```css
+@components {
+  btn {
+    @compose inline-flex align-items:center justify-content:center;
+  }
+}
+```
+
+### `@utilities` \{#utilities\}
+Defines managed utility classes in the `utilities` layer. Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
+
+```css
+@utilities {
+  content-auto {
+    content-visibility: auto;
+  }
+
+  text-<left|center|right|start|end|justify> {
+    text-align: --value();
+  }
+
+  bg-<cover|contain|auto> {
+    background-size: --value();
+  }
+
+  bg-origin-<border=border-box|content=content-box|padding=padding-box> {
+    background-origin: --value();
+  }
+
+  font:<~font-size|number> {
+    font-size: --value();
+  }
+
+  font:<~font-family> {
+    font-family: --value();
+  }
+
+  bg:<color> {
+    background-color: --value();
+  }
+
+  user-select:<auto|none|text|all> {
+    -webkit-user-select: --value();
+    user-select: --value();
+  }
+
+  line-clamp:<number|none> {
+    -webkit-line-clamp: --value();
+  }
+
+  text-decoration:<~color-text|~color|*> {
+    -webkit-text-decoration: --value();
+    text-decoration: --value();
+  }
+
+  size:<~container|number|*> {
+    width: --value();
+    height: --value();
+  }
+
+  grid-cols:<number|*> {
+    display: grid;
+    grid-template-columns: repeat(--value(), minmax(0, 1fr));
+  }
+
+  grid-col-span:<number|*> {
+    grid-column: span --value()/span --value();
+  }
+}
+```
+
+Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be bare identifiers like `content-auto` or enum patterns like `text-<left|center|right>`.
+
+Bare entries without `:` are semantic utilities, including enum patterns. Semantic enum patterns stay on the semantic priority tier and still substitute `--value()` for the matched value. Entries containing `:` are dynamic colon entries and keep shorthand or normal priority inference from their declarations.
+
+Enum patterns require exactly one `<...>` segment with at least two pipe-separated values. Use `token=value` when the class token should emit a different CSS value, such as `bg-origin-<border=border-box|content=content-box|padding=padding-box>`. Unmapped entries emit the class token itself, so `text-<left|right>` behaves like `text-<left=left|right=right>`.
+
+Enum patterns do not define theme namespace patterns, so token and shorthand classes keep using the colon value pipeline:
+
+```txt
+font:sm
+font:16px
+m:sm|md
+m:sm|-md
+bg:#fff
+```
+
+Dynamic colon entries use `key:<source-list>` and keep the class syntax as `key:value`. Source entries can be theme namespaces with `~` or `=`, one raw value kind (`number`, `color`, or `image`), literal enum values, or `*` for raw-any values.
+
+```css
+@utilities {
+  font:<~font-size|number> {
+    font-size: --value();
+  }
+
+  bg:<color> {
+    background-color: --value();
+  }
+
+  line-clamp:<number|none> {
+    -webkit-line-clamp: --value();
+  }
+
+  text-decoration:<~color-text|~color|*> {
+    text-decoration: --value();
+  }
+
+  size:<~container|number|*> {
+    width: --value();
+    height: --value();
+  }
+}
+```
+
+`<~font-size|number>` supports `font:sm` through `--font-size-sm` and `font:16px` as a raw number. It does not create dash token classes such as `font-sm`. Bare numbers are emitted as written; use `4x` when you want Master CSS base-unit conversion to `rem`.
+
+`<color>` supports both the `~color` theme namespace and raw CSS color values. For example, `bg:<color>` behaves like `bg:<~color|color>`, so `bg:primary` can resolve `--color-primary` while `bg:#fff` remains a raw color. Use a specific namespace when raw colors should not be accepted, such as `text:<~color-text>`.
+
+Literal enum values can stand alone when at least two values are provided, such as `user-select:<auto|none|text|all>`, or combine with one raw kind, such as `line-clamp:<number|none>`. Enum values cannot be mixed with namespaces.
+
+`*` is for raw-any full-value wrappers, such as paired vendor declarations or shorthand values that should accept `var(...)`. It may be used alone, with namespace refs, or with one raw kind, as in `text-decoration:<~color-text|~color|*>`, `accent:<color|*>`, or `size:<~container|number|*>`. It cannot be mixed with enum values. A standalone `*` does not imply a color namespace; include `~color` or `color` when raw-any values should also resolve color tokens.
+
+`--value()` accepts no arguments and is only valid inside managed enum pattern or dynamic colon entry declarations. It represents a complete CSS value placeholder, so it may be reused in value slots such as `span --value()/span --value()` or inside CSS functions such as `repeat(--value(), minmax(0, 1fr))`. It cannot be joined into identifiers or function names, so forms such as `--value()-box` or `space---value()` should use enum mapping instead.
+
+For abstraction guidance, see [Global styles](/guide/global-styles#shared-vocabulary).
+
+---
+
+## Source boundaries \{#source-boundaries\}
+Integrations and CLI flows scan ordinary project sources with defaults. Use `@source` directives only when the stylesheet needs an explicit source exception, such as external content, shared workspace source, or a scoped native CSS pruning root.
+
+### `@source` \{#source\}
+Adds files that may contain classes to the stylesheet source set.
+
+```css
+@source "../content/**/*.mdx";
+```
+
+### `@source not` \{#source-not\}
+Removes files from the stylesheet source set.
+
+```css
+@source not "../content/drafts/**";
+```
+
+Multiple source directives are evaluated as one include set minus one exclude set:
+
+```txt
+(@source A ∪ @source B ∪ @source C) - (@source not X ∪ @source not Y)
+```
+
+For example, these directives scan content files and a shared UI package, then remove draft content and Storybook files:
+
+```css
+@source "../content/**/*.mdx";
+@source "../packages/ui/**/*.{ts,tsx}";
+
+@source not "../content/drafts/**";
+@source not "../packages/ui/**/*.stories.tsx";
+```
+
+Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
+
+For the scanning model, see [Scanning latent classes](/guide/scanning-latent-classes).
+
+---
+
+## Candidate policy \{#candidate-policy\}
+Use `@safelist` and `@blocklist` for direct class candidate policy.
+
+### `@safelist` \{#safelist\}
+`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
+
+```css
+@safelist "opacity:1 transform:translateY(-5px):hover bg:blue-60@dark";
+```
+
+### `@blocklist` \{#blocklist\}
+`@blocklist` removes candidates that broad scanning accepted by accident. CSS `@blocklist` values accept exact strings and wildcard patterns with `*` and `?`.
+
+```css
+@blocklist "debug-*";
+@blocklist "example-token";
+```
+
+Use these directives for explicit source-scanning exceptions, not as a replacement for complete class strings in source.
+
+---
+
+## Rule-local composition \{#rule-local-composition\}
+### `@compose` \{#compose\}
+Use `@compose` inside a style rule to lower an unquoted Master CSS class list into native declarations for the current selector.
+
+```css
+.card {
+  @compose grid gap:md p:lg r:xl shadow:md surface:raised b:1px|solid|base;
+}
+
+@components {
+  btn {
+    @compose inline-flex align-items:center justify-content:center px:md py:xs r:lg;
+
+    &:hover {
+      @compose bg:blue-60/.9;
+    }
+  }
+}
+```
+
+`@compose` accepts only unquoted class lists:
+
+```css
+.card {
+  @compose p:md r:lg;
+}
+
+.overlay {
+  @compose bg:transparent! bg:blue-60!@dark;
+}
+```
+
+The language-service formatter keeps `!` important markers attached to their class token, so `bg:transparent !` is formatted as `bg:transparent!`.
+
+Do not put quotes, grouped class syntax, or class tokens that need CSS quoted strings inside `@compose`. Use ordinary CSS declarations for declaration-like values, and use nested selectors or `@variant` blocks for grouped selector behavior:
+
+```css
+.empty-state::before {
+  @compose block size:12x r:full;
+  content: '';
+}
+
+.btn {
+  @compose text-center;
+  contain: content;
+
+  &:hover {
+    @variant sm {
+      @compose bg:blue-60;
+    }
+  }
+}
+```
+
+Top-level `@compose` is invalid because there is no selector context to receive the lowered declarations.
+
+Use `@compose` in these contexts:
+
+- Managed class definitions inside `@defaults`, `@components`, or `@utilities`.
+- Native style rules such as `.card { ... }`.
+- Nested selectors and nested native at-rules inside those style rules.
+- CSS Modules and SFC `<style>` blocks handled by build integrations.
+
+Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS pruning root.
+
+Composed declarations are merged by Master CSS rule priority. Native declarations follow normal source order: declarations after `@compose` override earlier composed declarations, and a later `@compose` can override earlier native declarations unless the earlier declaration is `!important`.
+
+---
+
+## Conditional blocks \{#conditional-blocks\}
+### `@variant` \{#variant\}
+Use `@variant` inside managed definitions or native style rules to share the current selector under a Master CSS condition.
+
+```css
+.notice {
+  @compose p:md r:lg;
+
+  @dark {
+    @compose bg:gray-90 fg:white;
+  }
+
+  @variant <sm {
+    @compose p:sm;
+  }
+}
+```
+
+Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@variant` for custom condition variants, custom modes such as `@variant chrisma`, breakpoint tokens, and raw Master CSS condition syntax such as `<sm`. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
+
+For selector states, write a nested selector directly. A selector can contain `@variant` inside it when it also needs a condition.
+
+---
+
+## Native CSS preservation \{#native-css-preservation\}
+### `@preserve native` \{#preserve-native\}
+Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS pruning.
+
+```css
+@import "@master/css";
+@preserve native;
+
+.injected-by-payment-widget {
+  color: blue;
+}
+```
+
+The stylesheet is still processed by Master CSS, but native class selector rules are preserved as written instead of being pruned against detected source usage.
+
+For the full native CSS pruning model, see [Native CSS pruning](/guide/native-css-pruning).

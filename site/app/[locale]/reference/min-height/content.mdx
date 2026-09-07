@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set a baseline height
+## Examples \{#examples\}
+### Set a baseline height \{#set-a-baseline-height\}
 Use `min-h:*` when content may grow but the region still needs a minimum block size.
 ```html
 <!-- @MARK min-h:48x -->
@@ -18,7 +18,7 @@ Use `min-h:*` when content may grow but the region still needs a minimum block s
   </Class2CSS>
 </details>
 
-### Build viewport sections
+### Build viewport sections \{#build-viewport-sections\}
 Use native viewport units for full-screen or near full-screen layouts.
 ```html
 <!-- @MARK min-h:100dvh -->
@@ -29,7 +29,7 @@ Use native viewport units for full-screen or near full-screen layouts.
 
 `100dvh` follows the dynamic viewport size on modern mobile browsers. Use `min-vh` when the legacy `100vh` value is the intended cap.
 
-### Let content define the final size
+### Let content define the final size \{#let-content-define-the-final-size\}
 Unlike `h:*`, a minimum height does not clip or force overflow by itself. It establishes a floor, then lets content expand the element.
 ```html
 <!-- @MARK min-h:32x --><!-- @MARK overflow:visible -->
@@ -38,7 +38,7 @@ Unlike `h:*`, a minimum height does not clip or force overflow by itself. It est
 </article>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="min-h:32x min-h:0@print min-h:100dvh@sm">...</div>

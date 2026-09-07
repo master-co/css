@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Let clicks pass through an overlay
+## Examples \{#examples\}
+### Let clicks pass through an overlay \{#let-clicks-pass-through-an-overlay\}
 Use `pointer-events:none` when an overlay is visual only and should not block the control beneath it.
 ```html
 <!-- @MARK pointer-events:none -->
@@ -19,14 +19,14 @@ Use `pointer-events:none` when an overlay is visual only and should not block th
   </Class2CSS>
 </details>
 
-### Use the untouchable alias
+### Use the untouchable alias \{#use-the-untouchable-alias\}
 `untouchable` is an alias for `pointer-events:none` and is useful for decorative icons and images.
 ```html
 <!-- @MARK untouchable -->
 <svg class="untouchable" aria-hidden="true">...</svg>
 ```
 
-### Restore pointer events on a child
+### Restore pointer events on a child \{#restore-pointer-events-on-a-child\}
 Combine a non-interactive parent with `pointer-events:auto` on a child that should still receive clicks.
 ```html
 <!-- @MARK pointer-events:auto -->
@@ -35,7 +35,7 @@ Combine a non-interactive parent with `pointer-events:auto` on a child that shou
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="pointer-events:none:hover pointer-events:auto@print pointer-events:auto@sm">...</div>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Block & Inline
+## Basic usage \{#basic-usage\}
+### Block & Inline \{#block--inline\}
 Use `block`, `inline`, and `inline-block` to set the flow of elements.
 <Demo $py={0}>
   <div className='p:xl bg:float'>
@@ -43,7 +43,7 @@ Use `block`, `inline`, and `inline-block` to set the flow of elements.
 
 import aron from '~/site/public/images/authors/aron.jpg'
 
-### Flex
+### Flex \{#flex\}
 Use `flex` to create a block-level flex container.
 <Demo>
   <div className="flex items-center gap:sm p:2x|5x r:10px bg:float">
@@ -64,7 +64,7 @@ Use `flex` to create a block-level flex container.
 </div>
 ```
 
-### Inline Flex
+### Inline Flex \{#inline-flex\}
 Use `inline-flex` to create an inline-level flex container.
 <Demo $py={0}>
   <div className='p:xl bg:float'>
@@ -90,7 +90,7 @@ Use `inline-flex` to create an inline-level flex container.
 </div>
 ```
 
-### Grid
+### Grid \{#grid\}
 Use `grid` to create a block-level grid container.
 <Demo>
   <div className="w:full">
@@ -111,7 +111,7 @@ Use `grid` to create a block-level grid container.
 </div>
 ```
 
-### Inline Grid
+### Inline Grid \{#inline-grid\}
 Use `inline-grid` to create a inline-level grid container.
 <Demo>
   <div className="flex gap:sm w:full">
@@ -144,7 +144,7 @@ Use `inline-grid` to create a inline-level grid container.
 </div>
 ```
 
-### Table
+### Table \{#table\}
 Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-row-group`, `table-column-group`, `table-header-group`, and `table-footer-group` to create elements that behave like their respective table elements.
 <Demo>
   <div className="table overflow:hidden w:80% b:1px|solid|slate-90 r:10px p:5x|1.875rem_:where(div)">
@@ -219,7 +219,7 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
 </div>
 ```
 
-### Contents
+### Contents \{#contents\}
 Use `contents` to make the element's children behave like direct children of the element's parent, ignoring the element itself.
 <Demo>
   <div className="flex gap:5x w:full">
@@ -242,7 +242,7 @@ Use `contents` to make the element's children behave like direct children of the
 </div>
 ```
 
-### Flow Root
+### Flow Root \{#flow-root\}
 Use `flow-root` to create a block-level element that establishes a new block formatting context.
 {<Demo $py={0}>
   <div className="w:full p:xl bg:float">
@@ -261,7 +261,7 @@ Use `flow-root` to create a block-level element that establishes a new block for
 Use flow-root to clear floats
 ```
 
-### List Item
+### List Item \{#list-item\}
 Use `list-item` to create a block that behave like a list item.
 <Demo>
   <div className="my:xs_:where(div)">
@@ -278,7 +278,7 @@ Use `list-item` to create a block that behave like a list item.
 </div>
 ```
 
-### Hidden
+### Hidden \{#hidden\}
 Use `hidden` to hide the element. The element is not rendered in the document.
 <Demo>
   <div className="flex gap:5x w:full flex:1_:where(div)">
@@ -295,7 +295,7 @@ Use `hidden` to hide the element. The element is not rendered in the document.
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="display:block:hover display:block@dark display:block@print display:block@sm">...</div>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Set a gradient source
+## Basic usage \{#basic-usage\}
+### Set a gradient source \{#set-a-gradient-source\}
 Use `border-image-source` to choose the image painted into the border. Pair it with [`border-image-slice`](/reference/border-image-slice), plus a visible border width and style.
 <Demo $py={0}>
   <DemoPanel>
@@ -20,14 +20,14 @@ Use `border-image-source` to choose the image painted into the border. Pair it w
 </div>
 ```
 
-### Use no source
+### Use no source \{#use-no-source\}
 When the source is `none`, the normal border style is displayed instead.
 ```html
 <!-- @MARK border-image-source:none -->
 <div class="b:16px|solid|blue-60 border-image-source:none">Fallback border</div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="border-image-source:linear-gradient(135deg,dodgerblue,hotpink):hover border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@dark border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@print border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@sm">…</div>

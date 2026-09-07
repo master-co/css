@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Create a section counter
+## Basic usage \{#basic-usage\}
+### Create a section counter \{#create-a-section-counter\}
 Use `counter-reset` to create a named counter and set its initial value. Regular counters default to `0`, so the first `counter-increment:section` produces `1`.
 <Demo $py={0}>
   <DemoPanel>
@@ -22,7 +22,7 @@ Use `counter-reset` to create a named counter and set its initial value. Regular
 </article>
 ```
 
-### Start from another number
+### Start from another number \{#start-from-another-number\}
 Add an integer after the counter name to choose its initial value.
 <Demo $py={0}>
   <DemoPanel>
@@ -40,7 +40,7 @@ Add an integer after the counter name to choose its initial value.
 </article>
 ```
 
-### Create a reversed counter
+### Create a reversed counter \{#create-a-reversed-counter\}
 Use `reversed()` when a counter should count down from the number of items. Adjust the step with [`counter-increment`](/reference/counter-increment).
 <Demo $py={0}>
   <DemoPanel>
@@ -68,7 +68,7 @@ Use `reversed()` when a counter should count down from the number of items. Adju
 </ol>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="counter-reset:section:hover counter-reset:section@dark counter-reset:section@print counter-reset:section@sm">…</div>

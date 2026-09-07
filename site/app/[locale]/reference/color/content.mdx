@@ -1,12 +1,14 @@
-## Overview [sr-only]
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
+
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### With opacity
+## Examples \{#examples\}
+### With opacity \{#with-opacity\}
 Add the suffix `/alpha` to change the opacity of any color.
 <Basic className="fg:blue-60/.15" />
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="fg:slate-10:hover fg:slate-10@dark fg:slate-10@print fg:slate-10@sm">...</div>
@@ -14,39 +16,20 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 
 ---
 
-## Customization
-### Use custom text colors
-Add a color to the text variable namespace.
-```css name=index.css
-@theme {
-  --color-text-primary: #000; /* [!code ++] */
-}
-```
-Apply the custom color:
+## Customization \{#customization\}
+### Use custom text colors \{#use-custom-text-colors\}
+Add a color to the `color-text` namespace, then compile the theme together with the class that consumes it.
+
+<ConfiguredExample source={'@theme { --color-text-primary: #000; }'} classes={['text:primary']} />
+
+The current preset exposes this namespace through <TextHeirs />. These consumers are derived from the public native namespaces, aliases and manifest utilities.
+
+Use `text:primary` for the contextual text color. Use [text fill color](/reference/text-fill-color) when you need the WebKit text fill property.
+
+To request a particular CSS variable explicitly, use a native variable reference:
+
 ```html
-<!-- @MARK text:primary -->
-<p class="text:primary"></p>
+<p class="fg:var(--color-blue)">Base blue token</p>
 ```
-Apply the defined `text-*` variables using the inherited rules <TextHeirs />.
-```html
-<!-- @MARK text:primary -->
-<html class="light">
-  <body class="text:primary"></body> <!-- [!code highlight] -->
-  <body class="text:primary">equals</body>
-  <body class="text:$text-primary">equals</body>
-</html>
-```
-(x) Use `text:color` for foreground color. Use [text fill color](/reference/text-fill-color) only when you need the WebKit text fill property.
-```html
-<p class="text-fill-color:pink">text fill property</p>
-```
-Besides inheriting the above rules, you can use `text-*` to access global text color variables in other syntax.
-```html
-<!-- @MARK stroke:text-primary -->
-<svg class="stroke:text-primary"></svg>
-```
-To escape inherited text colors, use `var(--color-blue)` to apply the base hue token instead of a text color token.
-```html
-<!-- @MARK fg:var(--color-blue) -->
-<p class="fg:blue">...</p>
-```
+
+<Class2CSS>{['fg:var(--color-blue)']}</Class2CSS>

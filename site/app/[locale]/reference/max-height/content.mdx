@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Cap a vertical region
+## Examples \{#examples\}
+### Cap a vertical region \{#cap-a-vertical-region\}
 Use `max-h:*` when content should stop growing past a limit.
 ```html
 <!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
@@ -18,14 +18,14 @@ Use `max-h:*` when content should stop growing past a limit.
   </Class2CSS>
 </details>
 
-### Keep media inside a frame
+### Keep media inside a frame \{#keep-media-inside-a-frame\}
 Use `max-h:*` with `object-contain` or `object-cover` when replaced media must stay within a visual frame.
 ```html
 <!-- @MARK max-h:48x --><!-- @MARK w:full -->
 <img class="w:full max-h:48x object-contain" src="..." alt="" />
 ```
 
-### Use viewport caps
+### Use viewport caps \{#use-viewport-caps\}
 Use `max-vh` or native viewport units when overlays and menus must stay within the visible viewport.
 ```html
 <!-- @MARK max-h:80dvh --><!-- @MARK overflow:auto -->
@@ -34,7 +34,7 @@ Use `max-vh` or native viewport units when overlays and menus must stay within t
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="max-h:none max-h:none@print max-h:3xs@sm">...</div>

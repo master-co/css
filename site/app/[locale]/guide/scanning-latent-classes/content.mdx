@@ -1,249 +1,29 @@
-## Overview [sr-only]
-Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before Master CSS has proved whether it is a valid utility, project-defined class, or native class from a pruned stylesheet.
+## Keep complete classes in source
 
-```txt
-source text
-  -> latent class candidates
-  -> validated classes
-  -> generated CSS
-```
+Static scanning reads source text; it does not run your application. When a component selects a status color, put each complete class in the source:
 
-The scanner does not run your app. It reads files as text, collects strings that may be classes, and lets the Master CSS engine decide which candidates can produce CSS.
-
-```html name=src/index.html
-<!-- @MARK card p:md bg:white shadow:md -->
-<article class="p:md bg:white shadow:md card">
-  <h2 class="font:lg font:semibold">Release notes</h2>
-</article>
-```
-
-The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active manifest. Valid classes generate CSS; invalid candidates are cached and ignored.
-
-```css name=generated.css
-@layer utilities {
-  .p\:md {
-    padding: 1rem
-  }
-
-  .shadow\:md {
-    box-shadow: var(--shadow-md)
-  }
-}
-```
-
-The same scanning model is used by build integrations and by Node tools that create `MasterCSSScanner` from `@master/css-tooling/scanner/node`.
-
----
-
-## Source boundaries
-Build integrations and CLI flows scan common source-like project files by default. Ordinary app files such as HTML, JavaScript, TypeScript, JSX, TSX, framework files, Markdown, MDX, and PHP should not need a broad `@source` directive or a matching test-file exclusion.
-
-Use `@source` and `@source not` only when a stylesheet needs an explicit exception, such as content outside the normal project scan, shared workspace source, or a scoped native CSS pruning root.
-
-```css name=index.css
-@import '@master/css';
-@source '../content/**/*.mdx';
-@source '../packages/ui/**/*.{ts,tsx}';
-@source not '../packages/ui/**/*.stories.tsx';
-```
-
-`@source` adds files that may contain classes. `@source not` removes files from that explicit source set. Multiple source directives are combined as `(source union) - (source not union)`.
-
-For exact stylesheet directive syntax, see [CSS directives](/guide/directives).
-
-In Vite, transformed modules are also fed to the scanner during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
-
----
-
-## Candidate scanning
-Scanning is intentionally broad. The scanner looks through markup, JSX, strings, template literals, object maps, and framework files for tokens that could be class names.
-
-```tsx name=src/Button.tsx
-const toneClasses = {
-  neutral: 'bg:white text:neutral',
-  destructive: 'bg:red-60 fg:white'
-}
-
-export function Button({ destructive }: { destructive?: boolean }) {
-  return (
-    <button className={`btn px:md r:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
-      Delete
-    </button>
-  )
-}
-```
-
-The scanner can see all complete class strings in this file:
-
-```txt
-bg:white
-text:neutral
-bg:red-60
-fg:white
-btn
-r:md
-px:md
-```
-
-It will also see unrelated words from source text. That is expected. Candidates only matter after validation.
-
-```tsx name=src/EmptyState.tsx
-export function EmptyState() {
-  return <p className="text:gray">No invoices found.</p>
-}
-```
-
-Words such as `function`, `return`, `No`, `invoices`, and `found` may be discovered as candidates, but they do not match valid Master CSS rules or known native classes, so they do not produce output.
-
----
-
-## Validation
-After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
-
-- It is a built-in utility, such as `block`, `fg:red-60`, or `grid-cols:3`.
-- It is defined by your project CSS entry and compiled into the manifest.
-- It matches a native class collected from a stylesheet that imports [`@master/css`](/guide/native-css-pruning).
-
-```css name=index.css
-@components {
-  btn {
-    @compose inline-flex items-center h:40px px:md r:md;
-  }
-
-  hero-title {
-    @compose m:0 font:5xl font:heavy text:neutral;
-  }
-}
-```
-
-```tsx name=src/Hero.tsx
-export function Hero() {
-  return (
-    <section className="grid gap:xl">
-      <h1 className="hero-title">Master CSS</h1>
-      <a className="btn bg:blue-60 fg:white" href="/docs">Read docs</a>
-    </section>
-  )
-}
-```
-
-`hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `fg:white` are validated through the utility engine.
-
-Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
-
----
-
-## Complete classes
-Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
-
-(x) Do not build class names from fragments.
-
-```tsx
-const className = 'bg:' + (error ? 'red-60' : 'green-60')
-```
-
-The complete strings `bg:red-60` and `bg:green-60` do not exist in source, so static rendering cannot reliably generate either rule.
-
-(o) Write complete class names.
-
-```tsx
+```js
 const className = error ? 'bg:red-60' : 'bg:green-60'
 ```
 
-For component variants, map dynamic inputs to complete class lists.
+Avoid assembling the utility from separate `bg:` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.
 
-(x) Avoid utility fragments in props.
+## Find why a style is missing
 
-```tsx
-function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-  return <span className={`px:xs r:full fg:white bg:${tone}`}>Status</span>
-}
-```
+1. Inspect the complete class against the active project manifest with the [class inspection tool](/reference/tools/mcp/mastercss_inspect_class).
+2. Confirm the source file is part of the scan. Ordinary app files use integration or CLI defaults; add `@source` only for an explicit exception.
+3. Check candidate policy when an otherwise valid class is absent. Use a bounded safelist for known classes that cannot appear in source.
+4. For a changing value, keep the class static and pass a CSS variable. For class names created only at runtime, choose the appropriate rendering mode.
 
-(o) Use a static variant map.
+See [Extraction](/reference/rules/extraction) for source boundaries and validation, and [runtime values](/reference/rules/extraction#runtime-values) for a complete example.
 
-```tsx
-const toneClasses = {
-  destructive: 'bg:red-60 fg:white',
-  confirmed: 'bg:green-60 fg:white',
-  neutral: 'bg:gray-10 fg:gray-90'
-}
+## Look up a rule
 
-function Badge({ tone }: { tone: keyof typeof toneClasses }) {
-  return <span className={`px:xs r:full ${toneClasses[tone]}`}>Status</span>
-}
-```
-
-This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
-
----
-
-## Runtime values
-When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
-
-```tsx
-function Headline({ size }: { size: string }) {
-  return (
-    <h1
-      className="font-size:$headline-size leading:1.1"
-      style={{ '--headline-size': size } as React.CSSProperties}
-    >
-      Launch notes
-    </h1>
-  )
-}
-```
-
-The class `font-size:$headline-size` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which is normal CSS.
-
-Use the same pattern for data-driven sizes, positions, and progress values.
-
-```tsx
-function Progress({ value }: { value: number }) {
-  return (
-    <div className="overflow:hidden h:4x r:full bg:gray-10">
-      <div
-        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
-        style={{ '--progress': `${value}%` } as React.CSSProperties}
-      />
-    </div>
-  )
-}
-```
-
-If the class name itself only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering). The browser runtime can observe the DOM and generate rules for classes that appear later.
-
----
-
-## Included and excluded classes
-Use `@safelist` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
-
-```css name=index.css
-@import '@master/css';
-@safelist 'opacity:1 transform:translateY(-5px):hover bg:blue-60@dark';
-```
-
-`@safelist` does not bypass validation. The class still needs to be a valid Master CSS class, a project-defined class from the compiled manifest, or a known native class from a pruned stylesheet.
-
-Use `@blocklist` when broad scanning finds tokens that look like valid classes but should not generate CSS.
-
-```css name=index.css
-@import '@master/css';
-@blocklist 'debug-*';
-@blocklist 'example-token';
-```
-
-Keep both lists small. The most reliable scanning path is still complete class strings in source.
-
----
-
-## Checklist
-- Put complete class names in scanned source.
-- Map variants to complete class strings.
-- Use CSS variables for runtime values.
-- Rely on integration or CLI defaults for ordinary app source files.
-- Add `@source` only for extra source roots or scoped pruning roots.
-- Use `@safelist` only for bounded classes the scanner cannot see.
-- Use `@blocklist` for real false positives.
-- Use runtime or progressive rendering for classes created after startup.
-- Import [`@master/css`](/guide/native-css-pruning) from stylesheet roots whose native CSS class rules should be pruned by usage.
+- <a id="overview"></a> [Overview](/reference/rules/extraction#overview)
+- <a id="source-boundaries"></a> [Source boundaries](/reference/rules/extraction#source-boundaries)
+- <a id="candidate-scanning"></a> [Candidate scanning](/reference/rules/extraction#candidate-scanning)
+- <a id="validation"></a> [Validation](/reference/rules/extraction#validation)
+- <a id="complete-classes"></a> [Complete classes](/reference/rules/extraction#complete-classes)
+- <a id="runtime-values"></a> [Runtime values](/reference/rules/extraction#runtime-values)
+- <a id="included-and-excluded-classes"></a> [Included and excluded classes](/reference/rules/extraction#included-and-excluded-classes)
+- <a id="checklist"></a> [Checklist](/reference/rules/extraction#checklist)

@@ -1,11 +1,11 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Basic usage
+## Examples \{#examples\}
+### Basic usage \{#basic-usage\}
 <BasicUsage />
 
-### Set the font family
+### Set the font family \{#set-the-font-family\}
 Set the typeface of an element using the `font-family:` syntax.
 <Demo $py={0}>
   <DemoPanel className="flex flex-col gap:xl">
@@ -20,19 +20,19 @@ Set the typeface of an element using the `font-family:` syntax.
 ```
 In practice, you wouldn't arbitrarily set the font family within the template; instead, you would unify your fonts through [custom fonts](#use-custom-fonts).
 
-### Apply fonts globally
+### Apply fonts globally \{#apply-fonts-globally\}
 Relying on the `font-family` inherited behavior, you can set the entire page font in `html <body>`.
 ```html
 <!-- @MARK font:sans -->
 <body class="font:sans">…</body>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="font:mono:hover font:mono@dark font:mono@print font:mono@sm">…</div>
 ```
-### Apply fonts to specified elements
+### Apply fonts to specified elements \{#apply-fonts-to-specified-elements\}
 Use the `mcss _:is(code,pre)` to select specified elements and apply the font.
 ```html
 <!-- @MARK font:mono_:is(code,pre) -->
@@ -41,7 +41,7 @@ Use the `mcss _:is(code,pre)` to select specified elements and apply the font.
 
 ---
 
-## Resolve whitespaces in the value
+## Resolve whitespaces in the value \{#resolve-whitespaces-in-the-value\}
 Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
 ```html
 <!-- @MARK font-family:'Open\00a0Sans' -->
@@ -63,8 +63,8 @@ Apply your custom fonts:
 
 ---
 
-## Customization
-### Use custom fonts
+## Customization \{#customization\}
+### Use custom fonts \{#use-custom-fonts\}
 Customize your font tokens by defining [theme tokens](/guide/theme). For example, add `Geist` as the general font and `Fira Code` as the code font.
 ```css name=index.css
 @theme {
@@ -79,7 +79,7 @@ Apply the defined `font-family` variables. For example, presetting the global fo
 ```
 Don't forget to add the [font faces](/guide/fonts#font-faces).
 
-### Google fonts
+### Google fonts \{#google-fonts\}
 The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
 ```html name=index.html
 <!DOCTYPE html>
@@ -92,7 +92,7 @@ The fastest way to declare custom font faces is through [Google Fonts](https://f
 </html>
 ```
 
-### Self-hosted fonts
+### Self-hosted fonts \{#self-hosted-fonts\}
 You can also self-host the fonts via native CSS, as usual.
 ```css name=styles/fonts.css
 @font-face {

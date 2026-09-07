@@ -1,9 +1,9 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 {/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document shape-margin values */}
 
-## Examples
-### Add space around a shape
+## Examples \{#examples\}
+### Add space around a shape \{#add-space-around-a-shape\}
 Use `shape-margin:*` with floated shapes so inline content does not sit directly on the shape boundary.
 ```html
 <!-- @MARK shape-margin:1rem -->
@@ -17,20 +17,20 @@ Use `shape-margin:*` with floated shapes so inline content does not sit directly
   </Class2CSS>
 </details>
 
-### Increase margin for large media
+### Increase margin for large media \{#increase-margin-for-large-media\}
 Use a larger shape margin when the floated media is visually heavy or the text column is narrow.
 ```html
 <!-- @MARK shape-margin:2rem -->
 <img class="float:left shape-margin:2rem shape-outside:circle(40px)" src="/images/photo.jpg" alt="Photo">
 ```
 
-### Pair with shape outside
+### Pair with shape outside \{#pair-with-shape-outside\}
 `shape-margin:*` only has an effect when the element participates in shape layout, usually with `float:*` and `shape-outside:*`.
 ```html
 <img class="float:left shape-margin:1rem shape-outside:circle(40px)" src="/images/avatar.jpg" alt="">
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <img class="shape-margin:1rem:hover shape-margin:0@print shape-margin:2rem@sm" src="/images/avatar.jpg" alt="">

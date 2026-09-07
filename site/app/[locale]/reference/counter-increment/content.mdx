@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Number sections
+## Basic usage \{#basic-usage\}
+### Number sections \{#number-sections\}
 Use `counter-increment` to advance a named counter on each matching element. The counter is usually created with [`counter-reset`](/reference/counter-reset) and displayed with [`content`](/reference/content).
 <Demo $py={0}>
   <DemoPanel>
@@ -33,7 +33,7 @@ Use `counter-increment` to advance a named counter on each matching element. The
 </article>
 ```
 
-### Count backward
+### Count backward \{#count-backward\}
 Pass a negative integer to decrease a counter. Here the first generated value is `10` because the counter starts at `11` and decrements before it is displayed.
 <Demo $py={0}>
   <DemoPanel>
@@ -61,7 +61,7 @@ Pass a negative integer to decrease a counter. Here the first generated value is
 </ol>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="counter-increment:section:hover counter-increment:section@dark counter-increment:section@print counter-increment:section@sm">…</div>

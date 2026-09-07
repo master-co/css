@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set left-to-right direction
+## Examples \{#examples\}
+### Set left-to-right direction \{#set-left-to-right-direction\}
 Use `direction:ltr` for content that should flow left to right regardless of the surrounding document direction.
 ```html
 <!-- @MARK direction:ltr -->
@@ -16,14 +16,14 @@ Use `direction:ltr` for content that should flow left to right regardless of the
   </Class2CSS>
 </details>
 
-### Set right-to-left direction
+### Set right-to-left direction \{#set-right-to-left-direction\}
 Use `direction:rtl` for right-to-left content embedded in a left-to-right page.
 ```html
 <!-- @MARK direction:rtl -->
 <p class="direction:rtl">Right-to-left text</p>
 ```
 
-### Prefer semantic document direction
+### Prefer semantic document direction \{#prefer-semantic-document-direction\}
 Use the `dir` attribute for user content and document-level language direction. Use the utility for localized component exceptions.
 ```html
 <section dir="rtl">
@@ -31,7 +31,7 @@ Use the `dir` attribute for user content and document-level language direction. 
 </section>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <p class="direction:ltr@print direction:rtl@sm">...</p>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Force a snap stop
+## Examples \{#examples\}
+### Force a snap stop \{#force-a-snap-stop\}
 Use `snap-always` on an important snap item when fast scrolling should not skip over it.
 ```html
 <!-- @MARK snap-always -->
@@ -18,7 +18,7 @@ Use `snap-always` on an important snap item when fast scrolling should not skip 
   </Class2CSS>
 </details>
 
-### Keep normal scroll momentum
+### Keep normal scroll momentum \{#keep-normal-scroll-momentum\}
 Use `snap-normal` for ordinary items where the browser can skip a snap point during fast scrolling.
 ```html
 <!-- @MARK snap-normal -->
@@ -27,7 +27,7 @@ Use `snap-normal` for ordinary items where the browser can skip a snap point dur
 </section>
 ```
 
-### Use sparingly
+### Use sparingly \{#use-sparingly\}
 Reserve `always` for onboarding steps, paged experiences, or essential panels. Too many forced stops can make scroll feel heavy.
 ```html
 <section class="snap-always snap-start">
@@ -35,7 +35,7 @@ Reserve `always` for onboarding steps, paged experiences, or essential panels. T
 </section>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <section class="snap-normal snap-normal@print snap-always@sm">...</section>

@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { readFile } from 'node:fs/promises'
+import { extractSearchNodesFromMdx } from 'internal/utils/search-pages'
+import { guideOverviewMarkdown, guideOverviewSections } from '../utils/guide-overview'
 import {
   cleanMdx,
   deriveTitle,
@@ -42,6 +45,21 @@ const fixture: Page[] = [
 test('deriveTitle prefers the first heading over the route segment', () => {
   assert.equal(deriveTitle('# Hello World\nrest', 'fallback'), 'Hello World')
   assert.equal(deriveTitle('## Subhead\nbody', 'fallback'), 'Subhead')
+})
+
+test('Guide overview keeps its category anchors and publishes the same entries to search and Markdown', async () => {
+  const categories = JSON.parse(await readFile(new URL('../.categories/guide.json', import.meta.url), 'utf8'))
+  const sections = guideOverviewSections(categories)
+  const markdown = guideOverviewMarkdown(categories)
+  const nodes = extractSearchNodesFromMdx(markdown)
+  assert.deepEqual(nodes.filter(node => node.tag === 'h2').map(node => node.id), [
+    'getting-started', 'agentic-workflows', 'syntax-tutorial', 'authoring', 'fundamentals', 'design-foundations', 'build--delivery'
+  ])
+  for (const section of sections) for (const entry of section.entries) assert.ok(markdown.includes(`](${entry.url})`), entry.url)
+  const searchPages = JSON.parse(await readFile(new URL('../public/search/en.json', import.meta.url), 'utf8'))
+  assert.deepEqual(searchPages.find((page: { url: string }) => page.url === '/guide').nodes, nodes)
+  const source = await readFile(new URL('../app/[locale]/guide/content.mdx', import.meta.url), 'utf8')
+  assert.doesNotMatch(source + markdown, /Get ready for the journey|Try Master CSS online|Join our community|Use documentation/)
 })
 
 test('deriveTitle strips trailing [sr-only] / {.cls} markers from MDX headings', () => {

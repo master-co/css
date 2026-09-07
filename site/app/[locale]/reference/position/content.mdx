@@ -1,11 +1,11 @@
 import { users } from 'internal/data/users'
 import clsx from 'clsx'
 
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Positioning elements as static
+## Examples \{#examples\}
+### Positioning elements as static \{#positioning-elements-as-static\}
 Use `static` to position an element according to the normal document flow. HTML elements are static by default.
 <Demo className="pb:15x">
   <code className="box-perspective-pink static p:5x">
@@ -21,7 +21,7 @@ Use `static` to position an element according to the normal document flow. HTML 
 </div>
 ```
 
-### Positioning elements as relative
+### Positioning elements as relative \{#positioning-elements-as-relative\}
 Use `rel` to keep an element in the normal document flow while offsetting it relative to itself with top, right, bottom, and left values.
 <Demo className="pb:15x">
   <div className="bg:stripe">
@@ -37,7 +37,7 @@ Use `rel` to keep an element in the normal document flow while offsetting it rel
 </div>
 ```
 
-### Positioning elements as absolute
+### Positioning elements as absolute \{#positioning-elements-as-absolute\}
 Use `abs` to remove an element from the normal document flow and position it relative to its closest positioned ancestor.
 <Demo>
   <code className="box rel p:2xl! bg:stripe">
@@ -54,7 +54,7 @@ Use `abs` to remove an element from the normal document flow and position it rel
 </div>
 ```
 
-### Positioning elements as fixed
+### Positioning elements as fixed \{#positioning-elements-as-fixed\}
 Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
 <Demo>
   <div className="box overflow:auto align-items:initial! justify-content:initial! w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
@@ -100,7 +100,7 @@ Use `fixed` to remove an element from the normal document flow and position it r
 </div>
 ```
 
-### Positioning elements as sticky
+### Positioning elements as sticky \{#positioning-elements-as-sticky\}
 Use `sticky` to position an element based on scroll position. It behaves like a relatively positioned element until a given offset is reached, then sticks to that offset.
 <Demo>
   <div className="box block! overflow:auto w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
@@ -136,7 +136,7 @@ Use `sticky` to position an element based on scroll position. It behaves like a 
 </ul>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="rel:hover rel@dark rel@print rel@sm">...</div>

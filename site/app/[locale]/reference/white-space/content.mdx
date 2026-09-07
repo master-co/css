@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Keep text on one line
+## Examples \{#examples\}
+### Keep text on one line \{#keep-text-on-one-line\}
 Use `white-space:nowrap` when inline text should not wrap. Pair it with overflow handling when the container can become narrow.
 ```html
 <!-- @MARK white-space:nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
@@ -18,7 +18,7 @@ Use `white-space:nowrap` when inline text should not wrap. Pair it with overflow
   </Class2CSS>
 </details>
 
-### Preserve authored line breaks
+### Preserve authored line breaks \{#preserve-authored-line-breaks\}
 Use `white-space:pre-line` to preserve line breaks while still collapsing runs of spaces.
 ```html
 <!-- @MARK white-space:pre-line -->
@@ -28,14 +28,14 @@ Use `white-space:pre-line` to preserve line breaks while still collapsing runs o
 </p>
 ```
 
-### Preserve spaces and wrapping
+### Preserve spaces and wrapping \{#preserve-spaces-and-wrapping\}
 Use `white-space:pre-wrap` or `break-spaces` when user-authored spacing should remain visible.
 ```html
 <!-- @MARK break-spaces -->
 <code class="break-spaces">token    value</code>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="white-space:normal break-spaces@print white-space:nowrap@sm">...</div>

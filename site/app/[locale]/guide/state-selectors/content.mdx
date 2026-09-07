@@ -1,460 +1,61 @@
-import furnitures from 'internal/data/furnitures'
-import animals from 'internal/data/animals'
+## Start with the element that owns the state
 
-## Overview [sr-only]
-
-```html
-<!-- @MARK :hover -->
-<div class="fg:blue-60:hover"></div>
-<!-- @MARK :invalid -->
-<input class="border:red:invalid" />
-<!-- @MARK [open] -->
-<details class="bg:white[open]" open></details>
-```
-State selectors let one declaration apply only when a selector matches. Append the selector after the declaration value:
-
-```txt
-property:value<selector>
-```
-
-Common examples include interaction states such as `:hover`, validation states such as `:invalid`, and attributes such as `[disabled]` or `[open]`.
+CSS selectors decide which element receives a declaration. To change a button's text color while it is hovered, append `:hover` to the color class:
 
 ```html
-<!-- @MARK :hover --><!-- @MARK :active -->
-<h2 class="font:lg font:2xl:hover font:3xl:active …">
-```
-Selectors can be stacked when the CSS selector itself needs more detail.
-```html
-<!-- @MARK :hover:not(.active) -->
-<div class="bg:blue-20:hover:not(.active) …">
-```
-If you also need a breakpoint, mode, or other condition, put the [conditional query](/guide/conditional-queries) after the selector.
-
-```html
-<!-- @MARK :hover@md -->
-<button class="bg:blue-60:hover@md">Save</button>
+<button class="fg:blue-60:hover">Save</button>
 ```
 
-For readability, Master CSS includes built-in selector aliases for selectors that appear often.
-```html
-<div class="mt:sm:first"><!-- [!code highlight] -->
-<div class="mt:sm:first-child">
-<div class="mt:sm:odd"><!-- [!code highlight] -->
-<div class="mt:sm:nth-child(2n)">
-<div class="mt:sm:rtl"><!-- [!code highlight] -->
-<div class="mt:sm:dir(rtl)">
-```
-Write longer project-specific selectors directly.
-```html
-<div class="font:semibold_:is(h1,h2,h3,h4,h5,h6)"><!-- [!code highlight] -->
-```
+<Class2CSS>{['fg:blue-60:hover']}</Class2CSS>
 
----
+First inspect the selector in the output. It should target the same button that owns the class. The [selector overview](/reference/rules/selectors#basic-selectors) maps native selector forms to their targets.
 
-## Basic selectors
-Master CSS accepts native selector syntax. The selector is relative to the element that owns the class unless a combinator points to another element.
+## Choose the target before combining selectors
 
-| Selector              | Description                                           | Preview CSS                               |
-|-----------------------|-------------------------------------------------------|-------------------------------------------|
-| `*`                   | Universal selector                                    | `css * { margin: 0; }`                    |
-| `element`             | Type selector                                         | `css p { color: red; }`                   |
-| `.class`              | Class selector `css .box { padding: 1rem; }`             |
-| `#id`                 | ID selector                                           | `css #header { background: blue; }`       |
-| `[attribute]`         | Attribute selector                                    | `css [disabled] { opacity: 0.5; }`        |
-| `:pseudo-class`       | Pseudo-class selector                                 | `css a:hover { color: blue; }`            |
-| `::pseudo-element`    | Pseudo-element selector                               | `css p::first-letter { font-size: 2em; }` |
+1. Identify the element that owns the state and the element that should receive the style.
+2. Check one selector before adding a combinator or a selector group.
+3. Test the actual interaction. Hover styling alone does not provide keyboard focus feedback or disabled behavior.
+4. When the style also needs a breakpoint, place its [condition after the selector](/reference/rules/conditions#composition).
 
-### `*` — Universal
-Use `*` as a wildcard. In `>*`, every direct child matches.
-```html
-<!-- @MARK * -->
-<div class="bg:blue-60>*">
-  <div>hit</div>
-  <div>hit</div>
-  ...
-</div>
-```
+Use the [Selectors reference](/reference/rules/selectors) to look up pseudo-classes, attributes, combinators and aliases.
 
-### `element`
-Use a type selector to target elements by tag name.
-```html
-<!-- @MARK span -->
-<div class="bg:blue-60>span">
-  <span>hit</span>
-</div>
-```
-(i) If a raw type selector is hard to read or conflicts with nearby syntax, wrap it with `:is()` or `:where()`.
-```html
-<!-- @MARK :is(span) -->
-<span class="bg:blue-60:is(span)"></span>
-```
+## Look up a rule
 
-### `.class`
-a application as class custom for selector state, such Use `.active`, `.selected`, or `.expanded`.
-```html
-<!-- @MARK .active -->
-<div class="bg:blue-60.active active">...</div>
-```
-
-### `#id`
-Use an ID selector when the state is tied to a unique element.
-```html
-<!-- @MARK #nav -->
-<nav id="nav" class="bg:blue-60#nav">...</nav>
-```
-
-### `[attribute]`
-Use attribute selectors for DOM state that already lives in markup, such as `[disabled]`, `[open]`, `aria-*`, and `data-*`.
-```html
-<!-- @MARK [disabled] -->
-<button class="bg:blue-60[disabled]" disabled>Submit</button>
-```
-
-### `:pseudo-class`
-Use pseudo-classes for browser-managed states.
-```html
-<!-- @MARK :hover -->
-<button class="bg:blue-60:hover">Submit</button>
-```
-
-### `::pseudo-element`
-Use pseudo-elements such as `::before` and `::after` when the style should target generated content.
-```html
-<!-- @MARK ::before -->
-<div class="content:'“'::before">quotes</div>
-```
-
----
-
-## Combinators
-Combinators target elements by their relationship to the element that owns the class. Use them when the declaration should style a child, sibling, or descendant instead of the element itself.
-
-| Selector          | Description               | Preview CSS                 |
-|-------------------|---------------------------|-----------------------------|
-| `A B`             | Descendant selector (`_`) | `css nav a { color: white; }`   |
-| `A > B`           | Child selector            | `css ul > li { list-style: none; }` |
-| `A + B`           | Adjacent sibling selector | `css h1 + p { margin-top: 0; }` |
-| `A ~ B`           | General sibling selector  | `css h1 ~ p { color: gray; }`   |
-
-### `_` — Descendant
-Use `_` as the descendant combinator. It stands in for the CSS space, because spaces split class names in HTML.
-```html
-<!-- @MARK _ -->
-<div class="bg:blue-60_div">
-  <div>hit</div>
-  <div>hit
-    <div>hit
-      <div>hit</div>
-    </div>
-  </div>
-</div>
-```
-
-### `>` — Child
-Use `>` when only direct children should match.
-```html
-<!-- @MARK >div -->
-<div class="bg:blue-60>div">
-  <div>hit</div>
-</div>
-```
-
-### `+` — Adjacent sibling
-Use `+` to style the next sibling when it appears immediately after the current element.
-```html
-<!-- @MARK +div -->
-<div class="bg:blue-60+div"></div>
-<div>hit</div>
-```
-
-### `~` — General sibling
-Use `~` to style later siblings that share the same parent.
-```html
-<!-- @MARK ~div -->
-<div class="bg:blue-60~div"></div>
-<div>hit</div>
-<div>hit</div>
-<div>hit</div>
-```
-
----
-
-## Selector groups
-Use `,` when the same declaration should apply to several selectors.
-```html
-<!-- @MARK , -->
-<div class="content:'“'::before,::after">quotes</div>
-```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {[`content:'“'::before,::after`]}
-  </Class2CSS>
-</details>
-Selector groups also work with combinators. In this example, the declaration applies to direct `div` and `span` children.
-```html
-<!-- @MARK , -->
-<div class="block>div,>span">hit</div>
-```
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['block>div,>span']}
-  </Class2CSS>
-</details>
-
----
-
-## Pseudo-classes
-### `:hover`, `:active`, `:focus`
-Use interaction pseudo-classes to give controls feedback as people hover, press, focus, or navigate with a keyboard.
-
-(click) Try clicking the button to see states change
-<Demo>
-    <button className="inline-flex items-center h:10x px:md r:sm font:medium font:sm bg:blue-60 fg:white bg:blue-70:hover bg:blue-80:active">Submit</button>
-</Demo>
-```html
-<!-- @MARK :hover --><!-- @MARK :active -->
-<button class="bg:blue-60 fg:white bg:blue-70:hover bg:blue-80:active">Submit</button>
-```
-
-Use `:focus-visible` for keyboard focus rings when you want to avoid showing the focus style after every pointer click.
-```html
-<!-- @MARK :focus-visible -->
-<button class="outline:2px|solid|blue:focus-visible">Submit</button>
-```
-
-### `:first`, `:last`, `:odd`, `:even`
-Use structural shorthands such as `:first`, `:last`, `:odd`, and `:even` to style list items by position. Write native selectors such as `:nth-child(N)` directly when they are clearer.
-<Demo $py={0}>
-    <DemoPanel $p={0} className="w:full max-w:90x">
-        <ul className="m:0 px:0 py:lg list-style:none">
-            {furnitures.map((furniture, index) =>
-                <li className="flex items-center gap:sm my:0 px:lg bb:1px|solid|base bb:0:last surface:muted:even" key={index}>
-                    <img className="round object-cover" src={furniture.url} width="56" height="56" alt="avatar" quality={'0'} />
-                    <div className="flex flex-col flex:1 py:xs">
-                        <div className="flex items-center">
-                            <div className="text:sm capitalize text:neutral">{furniture.name}</div>
-                        </div>
-                        <div className="m:0 text:xs text:gray">{furniture.intro}</div>
-                    </div>
-                </li>
-            )}
-        </ul>
-    </DemoPanel>
-</Demo>
-```html
-<ul class="…">
-  <!-- @MARK :even --><!-- @MARK :even -->
-  <li class="bg:gray-90:even@dark bg:slate-5:even@light …">…</li>
-</ul>
-```
-
-### `:valid`, `:invalid`, `:required`
-Use form validation pseudo-classes to reflect native validity without writing JavaScript state.
-
-(type) Try typing `co` as a valid email address
-<Demo>
-    <input type="email" className="h:12x max-w:75x px:md b:1px|solid|base r:md outline:0 font:sm surface:raised b:green:valid b:red:invalid" defaultValue="aron@master." />
-</Demo>
-```html
-<!-- @MARK :invalid --><!-- @MARK :invalid -->
-<input class="b:1px|solid b:green:valid b:red:invalid …" type="email" />
-```
-
-### `:disabled`
-Use `:disabled` for controls that cannot be interacted with.
-```html
-<!-- @MARK :disabled -->
-<button class="opacity:.5:disabled" disabled>Submit</button>
-```
-
-### `:checked`, `:indeterminate`
-Use `:checked` and `:indeterminate` for checkboxes, radio buttons, switches, and custom controls backed by native inputs.
-<Demo>
-    <input type="checkbox" className="size:5x b:1px|solid|base r:sm appearance:none bg:blue-60:checked" defaultChecked />
-</Demo>
-```html
-<!-- @MARK :checked -->
-<input class="bg:blue-60:checked …" type="checkbox" checked />
-```
-
-### `:rtl`, `:ltr`
-Use `:rtl` and `:ltr` to react to text direction. They map to `:dir(rtl)` and `:dir(ltr)`.
-```html
-<!-- @MARK :rtl -->
-<div class="mr:xs:rtl">...</div>
-```
-
-### `:has()`
-Use `:has()` when the current element should change because it contains a matching child or descendant.
-```html
-<!-- @MARK :has(.active) -->
-<div class="bg:blue-60:has(.active)">
-  <div>Item 1</div>
-  <div class="active">Item 2</div>
-  <div>Item 3</div>
-</div>
-```
-
-### `:not()`
-Use `:not()` to exclude a selector from the match.
-```html
-<!-- @MARK :not(.active) -->
-<div class="fg:green-60:not(.active) active">...</div>
-```
-
-### `:of()`
-`:of()` is the only proprietary selector introduced by Master CSS. It lets the current element respond to a parent, ancestor, or previous sibling. Use native selectors first when they can express the relationship; use `:of()` when you need to style the current element from outside-in context.
-
-(i) Style the element when an ancestor matches.
-```html
-<!-- @MARK active -->
-<div class="active">
-  <div>
-    <!-- @MARK :of(.active) -->
-    <div class="hidden:of(.active)">hidden</div>
-  </div>
-</div>
-```
-(i) Style the element when its parent matches.
-```html
-<!-- @MARK active -->
-<div class="active">
-  <!-- @MARK :of(.active>) -->
-  <div class="hidden:of(.active>)">hidden</div>
-</div>
-```
-(i) Style the element when its previous adjacent sibling matches.
-```html
-<!-- @MARK active -->
-<div class="active"></div>
-<!-- @MARK :of(.active+) -->
-<div class="hidden:of(.active+)">hidden</div>
-```
-(i) Style the element when one of its preceding siblings matches.
-```html
-<!-- @MARK active -->
-<div class="active"></div>
-<div></div>
-<!-- @MARK :of(.active~) -->
-<div class="hidden:of(.active~)">hidden</div>
-```
-(x) Do not put combinators or pseudo-elements before `:of()`.
-```html
-<div class="hidden_div::before:of(.active)">hidden</div>
-```
-
----
-
-## Pseudo-elements
-### `::before`, `::after`
-Use `::before` and `::after` to style generated content attached to the element.
-<Demo $py={0}>
-    <DemoPanel>
-        <q className="italic font:lg font:medium text:neutral">Be the change you wish to see in the world.</q>
-    </DemoPanel>
-</Demo>
-```html
-<!-- @MARK ::before --><!-- @MARK ::after -->
-<div class="content:close-quote::after content:open-quote::before …">
-  Be the change you wish to see in the world.
-</div>
-```
-
-### `::scrollbar`
-Style common scrollbar surfaces with `::scrollbar`, `::scrollbar-thumb`, and `::scrollbar-track` shorthands. Write native vendor selectors such as `::-webkit-scrollbar-corner` directly for less common parts.
-
-(hover) Try scrolling horizontally and interact with the scroll bar
-<Demo $py={0} $px={0}>
-    <div className="overflow-x:auto p:xl size:0.375rem::scrollbar bg:neutral-50/.2::scrollbar-thumb">
-        <div className='flex w:max'>
-            {animals.map((animal) =>
-                <div key={animal.name}>
-                    <Image src={animal.url} width={128} height={128} alt={animal.name} />
-                </div>
-            )}
-        </div>
-    </div>
-</Demo>
-```html
-<!-- @MARK scrollbar --><!-- @MARK ::scrollbar-thumb -->
-<div class="overflow-x:auto size:0.375rem::scrollbar bg:neutral-50/.2::scrollbar-thumb …">
-```
-
----
-
-## Attribute selectors
-### `[open]`
-Use `[open]` to style a `<details>` element while it is expanded.
-```html
-<!-- @MARK [open] -->
-<details class="bg:white[open]" open>
-  <summary>Details</summary>
-  <p>Details content goes here.</p>
-</details>
-```
-
-### `[aria-<key>=<value>]`
-Use [ARIA](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA) attributes when accessible state is already present in the DOM.
-```html
-<!-- @MARK [aria-checked] -->
-<div class="bg:blue-60[aria-checked=true]" aria-checked="true">...</div>
-```
-
-### `[data-<key>=<value>]`
-Use `data-*` attributes for component state that is not covered by native attributes or ARIA.
-```html
-<!-- @MARK [data-active] -->
-<div class="bg:blue-60[data-active]" data-active>...</div>
-```
-
-### `[<attr>=<value>]`
-Match an exact attribute value.
-```html
-<!-- @MARK [type=checkbox] -->
-<input class="b:blue[type=checkbox]" type="checkbox" />
-```
-
-### `[<attr>^=<value>]`
-Match values that start with a specific string.
-
-(i) Links that start with `http`.
-<Demo>
-    <a className="{content:'↗';ml:3xs}[href^=http]::after" href="https://css.master.co" target="_blank">External</a>
-</Demo>
-```html
-<!-- @MARK [href^=http] -->
-<a class="content:'↗'[href^=http]::after" href="https://…">External</a>
-```
-
-### `[<attr>$=<value>]`
-Match values that end with a specific string.
-<Demo>
-    <a className="{content:'⬇';ml:3xs}[href$='.pdf']::after" href="https://….pdf">PDF</a>
-</Demo>
-```html
-<!-- @MARK [href$='.pdf'] -->
-<a class="content:'⬇'[href$='.pdf']::after" href="https://….pdf">PDF</a>
-```
-
-### `[<attr>*=<value>]`
-Match values that contain a specific string.
-```html
-<!-- @MARK [title*=master] -->
-<div class="bg:blue-60[title*=master]" title="mastercss">...</div>
-```
-
-### `[<attr>|=<value>]`
-Match a value exactly or followed by a hyphen, which is common for language codes.
-```html
-<!-- @MARK [lang|=en] -->
-<div class="bg:blue-60[lang|=en]" lang="en-US">...</div>
-```
-
-### `[<attr>~=<value>]`
-Match one word inside a whitespace-separated attribute value.
-```html
-<!-- @MARK [title~=css] -->
-<div class="bg:blue-60[title~=css]" title="master css">...</div>
-```
+- <a id="overview"></a> [Overview](/reference/rules/selectors#overview)
+- <a id="basic-selectors"></a> [Basic selectors](/reference/rules/selectors#basic-selectors)
+- <a id="--universal"></a> [* — Universal](/reference/rules/selectors#--universal)
+- <a id="element"></a> [element](/reference/rules/selectors#element)
+- <a id="class"></a> [.class](/reference/rules/selectors#class)
+- <a id="id"></a> [#id](/reference/rules/selectors#id)
+- <a id="attribute"></a> [&#91;attribute&#93;](/reference/rules/selectors#attribute)
+- <a id="pseudo-class"></a> [:pseudo-class](/reference/rules/selectors#pseudo-class)
+- <a id="pseudo-element"></a> [::pseudo-element](/reference/rules/selectors#pseudo-element)
+- <a id="combinators"></a> [Combinators](/reference/rules/selectors#combinators)
+- <a id="_--descendant"></a> [_ — Descendant](/reference/rules/selectors#_--descendant)
+- <a id="--child"></a> [&gt; — Child](/reference/rules/selectors#--child)
+- <a id="--adjacent-sibling"></a> [+ — Adjacent sibling](/reference/rules/selectors#--adjacent-sibling)
+- <a id="--general-sibling"></a> [~ — General sibling](/reference/rules/selectors#--general-sibling)
+- <a id="selector-groups"></a> [Selector groups](/reference/rules/selectors#selector-groups)
+- <a id="pseudo-classes"></a> [Pseudo-classes](/reference/rules/selectors#pseudo-classes)
+- <a id="hover--active--focus"></a> [:hover , :active , :focus](/reference/rules/selectors#hover--active--focus)
+- <a id="first--last--odd--even"></a> [:first , :last , :odd , :even](/reference/rules/selectors#first--last--odd--even)
+- <a id="valid--invalid--required"></a> [:valid , :invalid , :required](/reference/rules/selectors#valid--invalid--required)
+- <a id="disabled"></a> [:disabled](/reference/rules/selectors#disabled)
+- <a id="checked--indeterminate"></a> [:checked , :indeterminate](/reference/rules/selectors#checked--indeterminate)
+- <a id="rtl--ltr"></a> [:rtl , :ltr](/reference/rules/selectors#rtl--ltr)
+- <a id="has"></a> [:has()](/reference/rules/selectors#has)
+- <a id="not"></a> [:not()](/reference/rules/selectors#not)
+- <a id="of"></a> [:of()](/reference/rules/selectors#of)
+- <a id="pseudo-elements"></a> [Pseudo-elements](/reference/rules/selectors#pseudo-elements)
+- <a id="before--after"></a> [::before , ::after](/reference/rules/selectors#before--after)
+- <a id="scrollbar"></a> [::scrollbar](/reference/rules/selectors#scrollbar)
+- <a id="attribute-selectors"></a> [Attribute selectors](/reference/rules/selectors#attribute-selectors)
+- <a id="open"></a> [&#91;open&#93;](/reference/rules/selectors#open)
+- <a id="aria-keyvalue"></a> [&#91;aria-&lt;key&gt;=&lt;value&gt;&#93;](/reference/rules/selectors#aria-keyvalue)
+- <a id="data-keyvalue"></a> [&#91;data-&lt;key&gt;=&lt;value&gt;&#93;](/reference/rules/selectors#data-keyvalue)
+- <a id="attrvalue"></a> [&#91;&lt;attr&gt;=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue)
+- <a id="attrvalue-1"></a> [&#91;&lt;attr&gt;^=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue-1)
+- <a id="attrvalue-2"></a> [&#91;&lt;attr&gt;$=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue-2)
+- <a id="attrvalue-3"></a> [&#91;&lt;attr&gt;*=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue-3)
+- <a id="attrvalue-4"></a> [&#91;&lt;attr&gt;|=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue-4)
+- <a id="attrvalue-5"></a> [&#91;&lt;attr&gt;~=&lt;value&gt;&#93;](/reference/rules/selectors#attrvalue-5)

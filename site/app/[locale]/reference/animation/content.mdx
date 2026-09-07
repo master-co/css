@@ -1,10 +1,10 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview />
 
-## Basic usage
+## Basic usage \{#basic-usage\}
 Use `animate:*` to apply a named animation token from the `animate` namespace. Use the native `animation:*` shorthand when you want to write the keyframe name, duration, easing, fill mode, and other animation parts together.
 
-### Ping indicator
+### Ping indicator \{#ping-indicator\}
 Use the `ping` animation to indicate that the shop is open.
 <Demo $py={0}>
   <div className="app-panel rel">
@@ -27,7 +27,7 @@ Use the `ping` animation to indicate that the shop is open.
 </svg>
 ```
 
-### Rotate indicator
+### Rotate indicator \{#rotate-indicator\}
 Use the counterclockwise `rotate` animation to indicate that data is being restored.
 <Demo>
   <div className="app-float">
@@ -58,8 +58,8 @@ Use the counterclockwise `rotate` animation to indicate that data is being resto
 
 ---
 
-## Advanced usage
-### Loading spinner
+## Advanced usage \{#advanced-usage\}
+### Loading spinner \{#loading-spinner\}
 Use the `fade` animation on SVG paths with regular delays to create a loading spinner.
 <Demo>
   <div className="app-float">
@@ -90,7 +90,7 @@ Use the `fade` animation on SVG paths with regular delays to create a loading sp
 </svg>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="animate:fade:hover animate:fade@dark animate:fade@print animate:fade@sm">…</div>
@@ -98,9 +98,9 @@ Apply styles based on different states using [selectors](/guide/state-selectors)
 
 ---
 
-## Customization
+## Customization \{#customization\}
 import AnimationsOverview from '~/site/app/[locale]/guide/motion/components/AnimationsOverview.mdx'
 
-### Add your animations
+### Add your animations \{#add-your-animations\}
 Customize managed CSS animations with [`@theme` keyframes](/guide/motion#customize-motion-tokens).
 <AnimationsOverview />

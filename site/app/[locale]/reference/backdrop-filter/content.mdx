@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Blur content behind an element
+## Examples \{#examples\}
+### Blur content behind an element \{#blur-content-behind-an-element\}
 Use `backdrop-filter:blur(...)` to apply a backdrop filter to pixels behind the element.
 ```html
 <!-- @MARK bg:white/.72 --><!-- @MARK backdrop-filter:blur(12px) -->
@@ -18,21 +18,21 @@ Use `backdrop-filter:blur(...)` to apply a backdrop filter to pixels behind the 
   </Class2CSS>
 </details>
 
-### Combine with translucent backgrounds
+### Combine with translucent backgrounds \{#combine-with-translucent-backgrounds\}
 Backdrop filters are only visible when the element lets the backdrop show through, usually with an alpha background.
 ```html
 <!-- @MARK bg:white/.64 --><!-- @MARK backdrop-filter:saturate(1.5) -->
 <div class="bg:white/.64 backdrop-filter:saturate(1.5)">...</div>
 ```
 
-### Reset backdrop filters
+### Reset backdrop filters \{#reset-backdrop-filters\}
 Use `backdrop-filter:none` to disable a backdrop filter.
 ```html
 <!-- @MARK backdrop-filter:none -->
 <div class="backdrop-filter:none@print">...</div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="backdrop-filter:none backdrop-filter:none@print backdrop-filter:blur(12px)@sm">...</div>

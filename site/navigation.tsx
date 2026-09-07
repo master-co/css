@@ -8,7 +8,7 @@ const discussionsURL = `${repositoryURL}/discussions`
 
 export const primaryNavs = [
   { name: 'Guide', href: '/guide', Icon: IconCompass },
-  { name: 'Reference', fullName: 'API Reference', href: '/reference', Icon: IconFileText },
+  { name: 'Reference', fullName: 'Reference', href: '/reference', Icon: IconFileText },
   { name: 'Blog', href: '/blog', Icon: IconWriting },
   { name: 'Play', href: '/play', Icon: IconSourceCode },
 ] satisfies AppNavItem[]
@@ -32,7 +32,7 @@ export const footerNavGroups = [
       { name: 'Guide', href: '/guide' },
       { name: 'Getting Started', href: '/guide/introduction' },
       { name: 'Installation', href: '/guide/installation' },
-      { name: 'API Reference', href: '/reference' },
+      { name: 'Reference', href: '/reference' },
     ]
   },
   {

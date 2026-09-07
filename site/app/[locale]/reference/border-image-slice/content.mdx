@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Slice the source image
+## Basic usage \{#basic-usage\}
+### Slice the source image \{#slice-the-source-image\}
 Use `border-image-slice` to divide the source image into corners, edges, and a center region. The center is discarded unless `fill` is included.
 <Demo $py={0}>
   <DemoPanel>
@@ -20,7 +20,7 @@ Use `border-image-slice` to divide the source image into corners, edges, and a c
 </div>
 ```
 
-### Preserve the center with fill
+### Preserve the center with fill \{#preserve-the-center-with-fill\}
 Use `fill` when the middle region of the source should be painted like a background.
 ```html
 <!-- @MARK border-image-slice:30|fill -->
@@ -29,7 +29,7 @@ Use `fill` when the middle region of the source should be painted like a backgro
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="border-image-slice:30:hover border-image-slice:30@dark border-image-slice:30@print border-image-slice:30@sm">…</div>

@@ -1,121 +1,46 @@
-## Overview [sr-only]
-<Overview />
-```html
-<div class="transition:transform|.2s transform:scale(1.1):hover">
-  <img class="untouchable" … />
-  <div class="abs inset:0 h:fit m:auto mix-blend-mode:overlay animation:flash|3s|infinite">
-    <h1 class="font:7vw font:heavy text-center fg:white font:5xl@xs">
-      Hello, World!
-    </h1>
-  </div>
-</div>
-```
-Master CSS classes are CSS declarations written directly in markup. Read each class from left to right: start with the style you want, then add optional [state selectors](/guide/state-selectors) and optional [conditional queries](/guide/conditional-queries).
+## Write one declaration
+
+Start with the CSS property you need. For a button with space around its label, add a padding class:
 
 ```html
-<!-- @MARK fg:white --><!-- @MARK :hover --><!-- @MARK @md -->
-<button class="fg:white:hover@md">Save</button>
+<button class="p:md">Save</button>
 ```
 
-The examples in this guide start with explicit CSS-like declarations, then show how to shorten them with utilities, shorthands, abbreviations, variables, and explicit units. Common native properties such as spacing, sizing, radius, color, and timing can still use Master CSS tokens and multiplier units, while rare CSS properties can use valid native declaration syntax directly. When you are learning a new class, write the explicit form first. Once the output is clear, use the shorter form that still reads well to your team.
+<Class2CSS>{['p:md']}</Class2CSS>
 
----
+The [padding reference](/reference/padding) shows the full property name, shorter forms and current token values. Read the generated declaration first; then choose the form your team finds clearest.
 
-## Basic syntax
-### Utilities
-<Utilities />
+## Add behavior in small steps
 
-### Multi-style shorthands
-<MultiStyleShorthands />
+1. Confirm the unqualified class produces the intended declaration.
+2. Add a [state selector](/guide/state-selectors) when the change depends on interaction.
+3. Add a [condition](/guide/conditional-queries) when the change depends on the viewport, container or mode.
+4. Inspect the full combination in your project when its values depend on custom settings.
 
-### Ambiguous shorthands
-<AmbiguousShorthands />
+Use [Declarations & values](/reference/rules/declarations) to check accepted forms, units and native property fallback.
 
-### Motion longhands
-<SymbolShorthands />
+## Look up a rule
 
-### Property abbreviations
-<Abbreviations />
-
-### Native declaration fallback
-<ArbitraryProperties />
-
-### Variable properties
-<Variables />
-
-### Group
-<GroupSyntax />
-
-### Important
-<Important />
-
----
-
-## Values
-### Decimal
-<Decimal />
-
-### Negative
-<Negative />
-
-### Hexadecimal color
-Change the text color of an element using the hexadecimal color code.
-<Demo>
-  <div className="font:56px font:heavy fg:#175fe9">Aa</div>
-</Demo>
-```html
-<!-- @MARK fg:#175fe9 -->
-<p class="fg:#175fe9">Aa</p>
-```
-
-### Variable alias
-<Tokens />
-
----
-
-## Units
-<Units />
-
-### Unit conversion
-<UnitConversion />
-
-### Unit sensing
-<UnitSensing />
-
-### Multiplier units
-<MultiplierUnits />
-
----
-
-## Functions
-<Functions />
-
-### rgb(), hsl(), oklch(), ...
-Change the text color of an element using color functions like `rgb()`, `hsl()`, `oklch()`, and others.
-<Demo>
-  <div className="font:56px font:heavy fg:rgb(23,95,233)">Aa</div>
-</Demo>
-```html
-<!-- @MARK fg:rgb(23,95,233) -->
-<p class="fg:rgb(23,95,233)">Aa</p>
-```
-
----
-
-## Combine with states and queries
-After the declaration itself is clear, you can attach selectors and conditions without changing the declaration syntax.
-
-```html
-<!-- @MARK bg:blue-60 --><!-- @MARK bg:blue-70:hover@md --><!-- @MARK transition:background-color|.2s -->
-<button class="bg:blue-60 transition:background-color|.2s bg:blue-70:hover@md">
-  Save
-</button>
-```
-
-This means:
-
-- `bg:blue-60` applies by default.
-- `bg:blue-70:hover@md` applies only when the button is hovered and the viewport matches `@md`.
-- `transition:background-color|.2s` adds a `background-color` transition.
-
-The rest of the syntax tutorial builds on this model: declarations first, then selectors, then queries.
+- <a id="overview"></a> [Overview](/reference/rules/declarations#overview)
+- <a id="basic-syntax"></a> [Basic syntax](/reference/rules/declarations#basic-syntax)
+- <a id="utilities"></a> [Utilities](/reference/rules/declarations#utilities)
+- <a id="multi-style-shorthands"></a> [Multi-style shorthands](/reference/rules/declarations#multi-style-shorthands)
+- <a id="ambiguous-shorthands"></a> [Ambiguous shorthands](/reference/rules/declarations#ambiguous-shorthands)
+- <a id="motion-longhands"></a> [Motion longhands](/reference/rules/declarations#motion-longhands)
+- <a id="property-abbreviations"></a> [Property abbreviations](/reference/rules/declarations#property-abbreviations)
+- <a id="native-declaration-fallback"></a> [Native declaration fallback](/reference/rules/declarations#native-declaration-fallback)
+- <a id="variable-properties"></a> [Variable properties](/reference/rules/declarations#variable-properties)
+- <a id="group"></a> [Group](/reference/rules/declarations#group)
+- <a id="important"></a> [Important](/reference/rules/declarations#important)
+- <a id="values"></a> [Values](/reference/rules/declarations#values)
+- <a id="decimal"></a> [Decimal](/reference/rules/declarations#decimal)
+- <a id="negative"></a> [Negative](/reference/rules/declarations#negative)
+- <a id="hexadecimal-color"></a> [Hexadecimal color](/reference/rules/declarations#hexadecimal-color)
+- <a id="variable-alias"></a> [Variable alias](/reference/rules/declarations#variable-alias)
+- <a id="units"></a> [Units](/reference/rules/declarations#units)
+- <a id="unit-conversion"></a> [Unit conversion](/reference/rules/declarations#unit-conversion)
+- <a id="unit-sensing"></a> [Unit sensing](/reference/rules/declarations#unit-sensing)
+- <a id="multiplier-units"></a> [Multiplier units](/reference/rules/declarations#multiplier-units)
+- <a id="functions"></a> [Functions](/reference/rules/declarations#functions)
+- <a id="rgb-hsl-oklch-"></a> [rgb(), hsl(), oklch(), ...](/reference/rules/declarations#rgb-hsl-oklch-)
+- <a id="combine-with-states-and-queries"></a> [Combine with states and queries](/reference/rules/declarations#combine-with-states-and-queries)

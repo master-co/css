@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Loop animation
+## Examples \{#examples\}
+### Loop animation \{#loop-animation\}
 Use `animation-iteration-count:infinite` when an animation should repeat until the state changes.
 ```html
 <!-- @MARK animation-iteration-count:infinite -->
@@ -18,7 +18,7 @@ Use `animation-iteration-count:infinite` when an animation should repeat until t
   </Class2CSS>
 </details>
 
-### Specify N iterations
+### Specify N iterations \{#specify-n-iterations\}
 Use a number for one-shot or limited loops. Decimal values are valid when you need an animation to stop partway through a cycle.
 ```html
 <!-- @MARK animation-iteration-count:3 -->
@@ -27,7 +27,7 @@ Use a number for one-shot or limited loops. Decimal values are valid when you ne
 </div>
 ```
 
-### Pair with fill mode
+### Pair with fill mode \{#pair-with-fill-mode\}
 When the last iteration should leave the element in its final state, combine the count with `animation-fill-mode:forwards` or `animation-fill-mode:both`.
 ```html
 <div class="animation-fill-mode:both animation-iteration-count:1 animation-name:fade">
@@ -35,7 +35,7 @@ When the last iteration should leave the element in its final state, combine the
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="animation-iteration-count:infinite:hover animation-iteration-count:1@print animation-iteration-count:3@sm">...</div>

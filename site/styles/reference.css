@@ -1,0 +1,19 @@
+@layer components {
+  .reference-meta { margin-block: 1.5rem 2rem; padding-block: 1rem; border-block: 1px solid var(--color-line-subtle); }
+  .reference-meta p { margin-block: .75rem; }
+  .reference-aliases { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }
+  .reference-document pre { max-width: 100%; overflow-x: auto; }
+  .reference-document code { overflow-wrap: anywhere; }
+  .reference-syntax-row:target { outline: 2px solid var(--color-blue); outline-offset: -2px; }
+  @media (width < 48rem) {
+    .reference-document .doc-table:has(.reference-syntax-row) { overflow: visible; }
+    .reference-document table:has(.reference-syntax-row) { display: block; width: 100%; }
+    .reference-document table:has(.reference-syntax-row) thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .reference-document table:has(.reference-syntax-row) tbody { display: block; }
+    .reference-document table:has(.reference-syntax-row) :is(tbody, tr, td, th) { contain: none; }
+    .reference-syntax-row { display: flex; flex-direction: column; border-bottom: 1px solid var(--color-line-subtle); padding-block: .75rem; }
+    .reference-syntax-row td { display: block; border: 0; padding: .375rem .5rem; white-space: normal; }
+    .reference-syntax-row :is(code, pre) { white-space: pre-wrap; overflow-wrap: anywhere; }
+  }
+}

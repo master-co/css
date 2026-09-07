@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Disable browser gestures on a custom surface
+## Examples \{#examples\}
+### Disable browser gestures on a custom surface \{#disable-browser-gestures-on-a-custom-surface\}
 Use `touch-action:none` for canvases or drag surfaces that handle their own touch gestures.
 ```html
 <!-- @MARK touch-action:none -->
@@ -18,7 +18,7 @@ Use `touch-action:none` for canvases or drag surfaces that handle their own touc
   </Class2CSS>
 </details>
 
-### Allow vertical scrolling
+### Allow vertical scrolling \{#allow-vertical-scrolling\}
 Use `touch-action:pan-y` for horizontal carousels so the page can still scroll vertically.
 ```html
 <!-- @MARK touch-action:pan-y -->
@@ -27,7 +27,7 @@ Use `touch-action:pan-y` for horizontal carousels so the page can still scroll v
 </div>
 ```
 
-### Optimize tap controls
+### Optimize tap controls \{#optimize-tap-controls\}
 Use `touch-action:manipulation` on buttons and links when the element only needs tap and click behavior.
 ```html
 <!-- @MARK touch-action:manipulation -->
@@ -36,7 +36,7 @@ Use `touch-action:manipulation` on buttons and links when the element only needs
 </button>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="touch-action:none:hover touch-action:auto@print touch-action:pan-y@sm">...</div>

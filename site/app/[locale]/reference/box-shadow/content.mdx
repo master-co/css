@@ -1,10 +1,10 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
 ---
 
-## Basic usage
-### Use shadow tokens
+## Basic usage \{#basic-usage\}
+### Use shadow tokens \{#use-shadow-tokens\}
 Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defined separately for light and dark modes, so the class name stays the same while the active theme changes the `box-shadow` value.
 ```html
 <!-- @MARK shadow:md -->
@@ -20,7 +20,7 @@ Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defi
   </Class2CSS>
 </details>
 
-### Use raw values
+### Use raw values \{#use-raw-values\}
 Use raw values when a shadow does not belong in the shared scale. Raw values are literal; they do not automatically adapt between light and dark modes.
 
 ```html
@@ -28,20 +28,20 @@ Use raw values when a shadow does not belong in the shared scale. Raw values are
 <div class="shadow:0|1px|2px|black/.12,0|4px|8px|black/.08">...</div>
 ```
 
-### Use inset shadows
+### Use inset shadows \{#use-inset-shadows\}
 Use `shadow:inset|...` when the shadow should render inside the element.
 ```html
 <!-- @MARK shadow:inset|0|1px|2px|black/.12 -->
 <div class="shadow:inset|0|1px|2px|black/.12">...</div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="shadow:sm shadow:md:hover shadow:none@print">...</div>
 ```
 
-### Customize mode-specific tokens
+### Customize mode-specific tokens \{#customize-mode-specific-tokens\}
 Override the same preset `shadow-*` key in `@theme light` and `@theme dark` when an elevation decision should adapt across modes.
 
 ```css name=index.css

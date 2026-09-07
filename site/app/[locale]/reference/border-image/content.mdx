@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Draw a gradient border image
+## Basic usage \{#basic-usage\}
+### Draw a gradient border image \{#draw-a-gradient-border-image\}
 Use `border-image` to set the source, slice, optional width, outset, and repeat behavior in one declaration. Keep a regular border width and style as a fallback.
 <Demo $py={0}>
   <DemoPanel>
@@ -20,7 +20,7 @@ Use `border-image` to set the source, slice, optional width, outset, and repeat 
 </div>
 ```
 
-### Include width and repeat
+### Include width and repeat \{#include-width-and-repeat\}
 The shorthand can also include border image width after `/` and repeat behavior after `|`.
 ```html
 <!-- @MARK border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round -->
@@ -29,7 +29,7 @@ The shorthand can also include border image width after `/` and repeat behavior 
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="border-image:linear-gradient(45deg,dodgerblue,hotpink)|30:hover border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@dark border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@print border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@sm">…</div>

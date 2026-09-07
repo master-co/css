@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set keyframe easing
+## Examples \{#examples\}
+### Set keyframe easing \{#set-keyframe-easing\}
 Use `animation-timing-function:*` to control how keyframes progress between each keyframe stop.
 ```html
 <!-- @MARK animation-timing-function:ease-out -->
@@ -18,7 +18,7 @@ Use `animation-timing-function:*` to control how keyframes progress between each
   </Class2CSS>
 </details>
 
-### Use linear timing for rotation
+### Use linear timing for rotation \{#use-linear-timing-for-rotation\}
 Continuous indicators usually need `linear` so the motion does not speed up and slow down every cycle.
 ```html
 <!-- @MARK animation-timing-function:linear -->
@@ -27,7 +27,7 @@ Continuous indicators usually need `linear` so the motion does not speed up and 
 </svg>
 ```
 
-### Match easing to intent
+### Match easing to intent \{#match-easing-to-intent\}
 Use `ease-out` for entrance motion and `ease-in` for exit motion. Prefer `linear` for clocks, progress, and loading rotation.
 ```html
 <!-- @MARK animation-timing-function:ease-in -->
@@ -36,7 +36,7 @@ Use `ease-out` for entrance motion and `ease-in` for exit motion. Prefer `linear
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="animation-timing-function:ease-out:hover animation-timing-function:ease-in@print animation-timing-function:linear@sm">...</div>

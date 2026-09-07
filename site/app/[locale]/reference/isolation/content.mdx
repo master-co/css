@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Create a stacking context
+## Examples \{#examples\}
+### Create a stacking context \{#create-a-stacking-context\}
 Use `isolate` when a component's blending, z-index, or effects should be contained inside its own stacking context.
 ```html
 <!-- @MARK isolate -->
@@ -18,7 +18,7 @@ Use `isolate` when a component's blending, z-index, or effects should be contain
   </Class2CSS>
 </details>
 
-### Return to automatic isolation
+### Return to automatic isolation \{#return-to-automatic-isolation\}
 Use `isolation:auto` when a variant should let the browser use normal stacking behavior.
 ```html
 <!-- @MARK isolation:auto -->
@@ -27,7 +27,7 @@ Use `isolation:auto` when a variant should let the browser use normal stacking b
 </section>
 ```
 
-### Protect layered components
+### Protect layered components \{#protect-layered-components\}
 Isolation is useful for cards, modals, and previews that use blend modes or negative z-index children.
 ```html
 <article class="rel isolate">
@@ -35,7 +35,7 @@ Isolation is useful for cards, modals, and previews that use blend modes or nega
 </article>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="isolate:hover isolation:auto@print isolation:auto@sm">...</div>

@@ -1,9 +1,9 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 {/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document content value forms */}
 
-## Basic usage
-### Add indicators for external links
+## Basic usage \{#basic-usage\}
+### Add indicators for external links \{#add-indicators-for-external-links\}
 The most typical example is using a pseudo-element to add an indicator ` ↗` after external links.
 <Demo $py={0}>
   <DemoPanel>
@@ -17,7 +17,7 @@ The most typical example is using a pseudo-element to add an indicator ` ↗` af
 </article>
 ```
 
-### Resolve whitespaces in the value
+### Resolve whitespaces in the value \{#resolve-whitespaces-in-the-value\}
 Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
 ```html
 <a class="content:'\00a0↗'::after">…</a>
@@ -36,7 +36,7 @@ Apply your custom content:
 <a class="content:var(--content-external)::after">…</a>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="content:normal:hover content:normal@dark content:normal@print content:normal@sm">…</div>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Use antialiased text
+## Examples \{#examples\}
+### Use antialiased text \{#use-antialiased-text\}
 Use `font-antialiased` when display text should use grayscale antialiasing.
 ```html
 <!-- @MARK font-antialiased -->
@@ -16,7 +16,7 @@ Use `font-antialiased` when display text should use grayscale antialiasing.
   </Class2CSS>
 </details>
 
-### Restore subpixel antialiasing
+### Restore subpixel antialiasing \{#restore-subpixel-antialiasing\}
 Use `font-subpixel-antialiased` when you want to return to the platform default smoothing behavior.
 ```html
 <!-- @MARK font-subpixel-antialiased -->
@@ -25,13 +25,13 @@ Use `font-subpixel-antialiased` when you want to return to the platform default 
 </p>
 ```
 
-### Use sparingly
+### Use sparingly \{#use-sparingly\}
 Font smoothing is platform-specific. Prefer testing it on the actual surfaces where the text will appear.
 ```html
 <h2 class="font-antialiased">Large heading</h2>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <p class="font-antialiased:hover font-subpixel-antialiased@print font-subpixel-antialiased@sm">...</p>

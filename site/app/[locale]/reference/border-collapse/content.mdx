@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Collapse table borders
+## Examples \{#examples\}
+### Collapse table borders \{#collapse-table-borders\}
 Use `border-collapse:collapse` when adjacent table cell borders should merge into a single border.
 ```html
 <!-- @MARK border-collapse:collapse -->
@@ -18,7 +18,7 @@ Use `border-collapse:collapse` when adjacent table cell borders should merge int
   </Class2CSS>
 </details>
 
-### Separate table borders
+### Separate table borders \{#separate-table-borders\}
 Use `border-collapse:separate` when cells need their own border boxes and spacing.
 ```html
 <!-- @MARK border-collapse:separate -->
@@ -27,7 +27,7 @@ Use `border-collapse:separate` when cells need their own border boxes and spacin
 </table>
 ```
 
-### Match border spacing to the mode
+### Match border spacing to the mode \{#match-border-spacing-to-the-mode\}
 Collapsed borders ignore `border-spacing`. Use separate borders when spacing between cells is part of the design.
 ```html
 <table class="border-collapse:separate border-spacing:xs">
@@ -35,7 +35,7 @@ Collapsed borders ignore `border-spacing`. Use separate borders when spacing bet
 </table>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <table class="border-collapse:collapse border-collapse:collapse@print border-collapse:separate@sm">...</table>

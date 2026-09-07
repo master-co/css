@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Delay a transition
+## Examples \{#examples\}
+### Delay a transition \{#delay-a-transition\}
 Use `transition-delay:*` to wait before a transition starts. This is useful for staggered affordances and hover details that should not flash immediately.
 ```html
 <!-- @MARK transition-delay:75ms -->
@@ -18,7 +18,7 @@ Use `transition-delay:*` to wait before a transition starts. This is useful for 
   </Class2CSS>
 </details>
 
-### Stagger sibling elements
+### Stagger sibling elements \{#stagger-sibling-elements\}
 Apply different delays to related elements while keeping the same duration and easing.
 ```html
 <!-- @MARK transition-delay:150ms -->
@@ -28,7 +28,7 @@ Apply different delays to related elements while keeping the same duration and e
 </div>
 ```
 
-### Use duration tokens
+### Use duration tokens \{#use-duration-tokens\}
 Define `duration-*` tokens when the same delay appears across several interactions.
 
 ```css name=index.css
@@ -41,7 +41,7 @@ Define `duration-*` tokens when the same delay appears across several interactio
 <button class="transition:opacity|fast|smooth transition-delay:short">...</button>
 ```
 
-### Reset delay at breakpoints
+### Reset delay at breakpoints \{#reset-delay-at-breakpoints\}
 Remove a delay when the same UI becomes dense or task-focused at a larger viewport.
 ```html
 <!-- @MARK transition-delay:0ms@sm -->
@@ -50,7 +50,7 @@ Remove a delay when the same UI becomes dense or task-focused at a larger viewpo
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="transition-delay:75ms:hover transition-delay:0ms@print transition-delay:0ms@sm">...</div>

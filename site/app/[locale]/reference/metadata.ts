@@ -1,8 +1,8 @@
 import define from 'internal/utils/metadata'
 
 const metadata = define({
-  title: 'API Reference',
-  description: 'This section provides detailed reference documentation for working with Master CSS.',
+  title: 'Reference',
+  description: 'The language and tool reference for writing, understanding and reviewing Master CSS.',
   category: 'Overview',
   fileURL: import.meta.url
 })

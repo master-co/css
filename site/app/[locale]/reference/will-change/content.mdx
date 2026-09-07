@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Hint an upcoming transform
+## Examples \{#examples\}
+### Hint an upcoming transform \{#hint-an-upcoming-transform\}
 Use `will-change:*` sparingly to tell the browser that a property is likely to change soon.
 ```html
 <!-- @MARK will-change:transform -->
@@ -18,7 +18,7 @@ Use `will-change:*` sparingly to tell the browser that a property is likely to c
   </Class2CSS>
 </details>
 
-### Hint opacity changes
+### Hint opacity changes \{#hint-opacity-changes\}
 Use `will-change:opacity` for elements that fade frequently, such as popovers or temporary overlays.
 ```html
 <!-- @MARK will-change:opacity -->
@@ -27,7 +27,7 @@ Use `will-change:opacity` for elements that fade frequently, such as popovers or
 </div>
 ```
 
-### Reset when the hint is no longer useful
+### Reset when the hint is no longer useful \{#reset-when-the-hint-is-no-longer-useful\}
 Do not leave `will-change` on large parts of the page by default. Reset it with `will-change:auto` when the element returns to a static state.
 ```html
 <!-- @MARK will-change:auto -->
@@ -36,7 +36,7 @@ Do not leave `will-change` on large parts of the page by default. Reset it with 
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="will-change:transform:hover will-change:auto@print will-change:opacity@sm">...</div>

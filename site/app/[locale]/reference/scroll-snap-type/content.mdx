@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Snap on the horizontal axis
+## Examples \{#examples\}
+### Snap on the horizontal axis \{#snap-on-the-horizontal-axis\}
 Use `snap-x` on a horizontal scroll container. Add snap alignment to the children.
 ```html
 <!-- @MARK snap-x -->
@@ -18,7 +18,7 @@ Use `snap-x` on a horizontal scroll container. Add snap alignment to the childre
   </Class2CSS>
 </details>
 
-### Require a snap point
+### Require a snap point \{#require-a-snap-point\}
 Use `scroll-snap-type:*|mandatory` when the container must settle on a snap point after scrolling.
 ```html
 <!-- @MARK scroll-snap-type:y|mandatory -->
@@ -27,7 +27,7 @@ Use `scroll-snap-type:*|mandatory` when the container must settle on a snap poin
 </div>
 ```
 
-### Allow nearby snap points
+### Allow nearby snap points \{#allow-nearby-snap-points\}
 Use `proximity` when snapping should help alignment without taking over every scroll gesture.
 ```html
 <!-- @MARK scroll-snap-type:x|proximity -->
@@ -36,7 +36,7 @@ Use `proximity` when snapping should help alignment without taking over every sc
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="snap-x scroll-snap-type:none@print scroll-snap-type:y|mandatory@sm">...</div>

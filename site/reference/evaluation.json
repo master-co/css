@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "status": "pending-human-and-agent-study",
+  "workflows": ["html-browser", "markdown-index"],
+  "record": ["model", "modelVersion", "tools", "retrievedUrls", "answer", "changes", "behaviorChecks", "durationSeconds", "failureReason"],
+  "tasks": [
+    {"id":"opacity", "prompt":"Make the whole element half transparent. Explain whether this disables a button.", "documents":["opacity"], "expectedClasses":["opacity:.5"], "checks":["opacity is 0.5", "does not imply disabled interaction"]},
+    {"id":"alpha", "prompt":"Make only the blue background translucent while keeping child text opaque.", "documents":["opacity","background-color"], "expectedClasses":["bg:blue-60/.12"], "checks":["uses color alpha", "does not apply element opacity"]},
+    {"id":"logical-start", "prompt":"Add medium padding only at the inline start, including a vertical writing mode.", "documents":["padding"], "expectedClasses":["pxs:md"], "checks":["emits padding-inline-start", "does not equate inline-start with left in every writing mode"]},
+    {"id":"logical-pair", "prompt":"Give a button medium inline padding and small block padding.", "documents":["padding","tokens/spacing"], "expectedClasses":["px:md","py:sm"], "checks":["emits logical properties", "identifies active spacing namespace"]},
+    {"id":"shorthand", "prompt":"Write padding with medium vertical and large horizontal values.", "documents":["padding"], "expectedClasses":["p:md|lg"], "checks":["preserves the vertical/horizontal order of CSS padding shorthand", "uses two token references"]},
+    {"id":"composition", "prompt":"Review fg:red:hover@sm. State its conditions, dependencies and what cannot be inferred from the class alone.", "documents":["rules/conditions","rules/modes","rules/layers"], "expectedClasses":["fg:red:hover@sm"], "checks":["hover selector", "default width threshold 52.125rem", "light and dark red dependencies", "project settings and cascade may alter result"]},
+    {"id":"configured-token", "prompt":"Add a project spacing-card token of 1.5rem and use it for padding. Validate the configuration with its class.", "documents":["rules/modes"], "expectedClasses":["p:card"], "configuration":"@theme { --spacing-card: 1.5rem; }", "checks":["compiles the full configuration", "emits --spacing-card and padding reference"]},
+    {"id":"extraction", "prompt":"A dynamically assembled class produces no CSS. Explain the source and candidate checks before suggesting a fix.", "documents":["rules/extraction"], "checks":["checks included source boundaries", "checks complete class candidates", "uses project-aware validation"]},
+    {"id":"layers", "prompt":"An inspected utility snapshot has layer blocks but no layer order statement. Explain what the project must load.", "documents":["rules/layers","rules/conditions"], "checks":["base stylesheet owns the stable layer statement", "does not invent a runtime layer-order insertion"]},
+    {"id":"token-review", "prompt":"Review the claim that p:md always means 1rem in every project.", "documents":["padding","tokens/spacing"], "checks":["rejects unconditional fixed-value claim", "distinguishes current preset from project overrides"]},
+    {"id":"cli-inspection", "prompt":"Find the CLI command that checks specified classes and includes generated CSS in its report.", "documents":["tools/cli/inspect"], "checks":["uses master-css inspect", "uses advertised --classes and --include-css flags", "checks diagnostics and exit behavior"]},
+    {"id":"mcp-review", "prompt":"Review an agent workflow that applies lint fixes directly. Describe the required preview and apply contract without writing files.", "documents":["tools/mcp/mastercss_preview_fixes","tools/mcp/mastercss_apply_preview"], "checks":["preview token and finite lifetime", "file hash and containment validation", "review before explicit apply", "does not call apply in this task"]}
+  ]
+}

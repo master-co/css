@@ -2,7 +2,6 @@ const syntaxes = [
   'flex-basis:full',
   'flex-basis:fit',
   'flex-basis:max',
-  'flex-basis:max',
   'flex-basis:3xs',
   'flex-basis:2xs',
   'flex-basis:xs',

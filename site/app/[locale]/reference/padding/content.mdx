@@ -1,8 +1,37 @@
-## Overview [sr-only]
+import TokenValues from '~/site/reference/TokenValues'
+
+## Quick answer \{#quick-answer\}
+Use `p:md` for padding on every side. The value comes from the active spacing namespace.
+
+```html
+<button class="p:md">Save</button>
+```
+
+<Class2CSS>{['p:md']}</Class2CSS>
+
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Add padding on every side
+## Values and tokens \{#values-and-tokens\}
+Current preset examples:
+<TokenValues namespace="spacing" keys={['sm', 'md', 'lg']} />
+
+Project theme declarations can override these values. See the complete [spacing namespace](/reference/tokens/spacing).
+
+`px` and `py` refer to inline and block directions. Their physical direction depends on writing mode; they are not always horizontal and vertical.
+
+## Examples \{#examples\}
+### Combine values and logical sides \{#multiple-values\}
+Separate shorthand values with `|`. Use `pxs:*` when only the inline-start side needs padding.
+
+```html
+<div class="p:md|lg">Two spacing values</div>
+<div class="pxs:md">Inline-start padding</div>
+```
+
+<Class2CSS>{['p:md|lg', 'pxs:md']}</Class2CSS>
+
+### Add padding on every side \{#add-padding-on-every-side\}
 Use `p:*` to create space inside an element on all four sides. Padding is part of the element box, so backgrounds and borders include the padded area.
 ```html
 <!-- @MARK p:md -->
@@ -18,7 +47,7 @@ Use `p:*` to create space inside an element on all four sides. Padding is part o
   </Class2CSS>
 </details>
 
-### Set one side
+### Set one side \{#set-one-side\}
 Use `pt:*`, `pr:*`, `pb:*`, and `pl:*` when only one physical side needs spacing.
 ```html
 <!-- @MARK pt:lg --><!-- @MARK pr:md --><!-- @MARK pb:xl --><!-- @MARK pl:md -->
@@ -29,7 +58,9 @@ Use `pt:*`, `pr:*`, `pb:*`, and `pl:*` when only one physical side needs spacing
 
 Physical sides are useful for fixed component anatomy. For bidirectional layouts, check whether the design needs logical CSS properties before relying on left and right.
 
-### Set horizontal or vertical padding
+<a id="set-horizontal-or-vertical-padding"></a>
+
+### Set inline or block padding \{#set-inline-or-block-padding\}
 Use `px:*` for inline padding and `py:*` for block padding. This is the common pattern for buttons, cards, fields, and page gutters.
 ```html
 <!-- @MARK px:md --><!-- @MARK py:sm -->
@@ -38,7 +69,7 @@ Use `px:*` for inline padding and `py:*` for block padding. This is the common p
 </button>
 ```
 
-Use `p:0` to remove inherited or component-level padding at a breakpoint or state.
+Use `p:0` to override component-level padding at a breakpoint or state.
 ```html
 <!-- @MARK p:0@sm -->
 <section class="p:md p:0@sm">
@@ -46,7 +77,7 @@ Use `p:0` to remove inherited or component-level padding at a breakpoint or stat
 </section>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="p:sm:hover p:lg@dark p:0@print p:md@sm">...</div>

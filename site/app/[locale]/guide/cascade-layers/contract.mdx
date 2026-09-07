@@ -1,0 +1,261 @@
+## How layers control the cascade [sr-only] \{#how-layers-control-the-cascade\}
+CSS cascade layers let a stylesheet decide which groups of rules should win before selector specificity is compared. Master CSS uses that native model as the backbone of its output, so utilities, project styles, presets, variables, and resets can coexist without turning every override into a specificity contest.
+
+The default `@master/css/base.css` stylesheet declares the layer order:
+
+```css
+@layer theme, base, defaults, components, utilities;
+```
+
+Layers declared later have higher priority for normal declarations. In Master CSS, the practical order is:
+
+```txt
+utilities > components > defaults > base > theme
+```
+
+<LayersDefault />
+
+Generated CSS emits rules into those layer blocks. Native style rules that use `@compose` or `@variant` lower to ordinary CSS in the stylesheet that contains them. This order is intentional: foundation rules go early, product vocabulary goes in the middle, and one-off utility decisions stay late enough to override project styles when markup asks for it.
+
+---
+
+## The five layers \{#the-five-layers\}
+### Base \{#base\}
+Use `base` for low-level resets and normalization. This layer should make the browser environment predictable, not express a brand or component design.
+
+Rules enter the base layer through `@base` syntax or regular CSS written inside `@layer base`.
+
+### Theme \{#theme\}
+Use `theme` for generated CSS custom properties. Tokens defined in `@theme` are emitted here only when a generated rule references them.
+
+Theme rules are intentionally early: they provide values that later layers consume, but they should not compete with layout, color, or component declarations directly.
+
+### Defaults \{#defaults\}
+Use `defaults` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
+
+Rules enter the defaults layer through `@default` syntax or `@defaults` managed definitions. Because defaults sit before `components` and `utilities`, components and utilities can still override it without `!important`.
+
+### Components \{#components\}
+Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write these managed class definitions in `@components`.
+
+```css name=index.css
+@components {
+  btn {
+    @compose inline-flex;
+    background-color: var(--color-primary);
+  }
+}
+```
+
+The compiler converts these definitions into static manifest utilities with `layer: 'components'`. They remain on-demand: defining `.btn` does not emit CSS until `btn` is used or scanned from source.
+
+### Utilities \{#utilities\}
+Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@variant` blocks.
+
+```css name=index.css
+@utilities {
+  flow {
+    @compose grid gap:md;
+  }
+
+  content-auto {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 32rem;
+  }
+}
+```
+
+Utilities is the final layer, so utility classes can intentionally override component styles from markup.
+
+---
+
+## A complete flow \{#a-complete-flow\}
+This example touches every generated layer. The project CSS entry defines theme variables and a component, while the markup uses base, defaults, and utilities.
+
+```css name=index.css
+@theme light {
+  --color-primary: #000000;
+}
+
+@theme dark {
+  --color-primary: #ffffff;
+}
+
+@components {
+  btn {
+    @compose inline-flex;
+    background-color: var(--color-primary);
+  }
+}
+```
+
+<Code lang="html" name="hero.html">{require('./tests/overview/template.html?raw')}</Code>
+
+<details>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/overview/generated.css?raw')}</Code>
+</details>
+
+Notice the shape of the output:
+
+- `@master/css/base.css` defines the global layer order once.
+- Theme variables are emitted in `@layer theme`.
+- The `.btn` definition is emitted in `@layer components`.
+- `flex` and `animation:fade|1s` are emitted in `@layer utilities`.
+- `@keyframes` are emitted at the top level, outside cascade layers.
+
+---
+
+## Base is for normalization \{#base-is-for-normalization\}
+Put reset-style rules in the base layer when they should sit below every design decision.
+
+(i) Add base rules in the stylesheet your app loads when the reset is part of the application shell.
+
+```css name=globals.css
+@layer base {
+  ul {
+    list-style: none;
+  }
+}
+```
+
+You can also use `@base` from markup:
+
+<Code lang="html">{require('./tests/adding-base-styles/template.html?raw')}</Code>
+
+<details>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/adding-base-styles/generated.css?raw')}</Code>
+</details>
+
+In most projects, import the default `@master/css` stylesheet; it includes [base styles](/guide/global-styles#base-layer) in the base layer.
+
+---
+
+## Defaults are for broad defaults \{#defaults-are-for-broad-defaults\}
+Put brand or content defaults in the defaults layer when they should apply across selected descendants but still remain easy to override.
+
+<Code lang="html">{require('./tests/adding-default-styles/template.html?raw')}</Code>
+
+<details>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/adding-default-styles/generated.css?raw')}</Code>
+</details>
+
+(x) Do not put brand defaults into the base layer.
+
+```html
+<!-- @MARK font:mono_:is(code,pre)@base -->
+<body class="font:mono_:is(code,pre)@base">…</body>
+```
+
+Base should normalize. Defaults should express broad design defaults.
+
+---
+
+## Utilities can override components \{#utilities-can-override-components\}
+Layer order is checked before selector specificity. That means a utility can override a component style even when the component style comes from a named component.
+
+For example, `.btn` defines `display: inline-flex` in the components layer. Adding `flex` in markup moves the final `display` decision to the utilities layer.
+
+```html
+<!-- @MARK btn flex -->
+<button class="btn flex">Submit</button>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  ```css
+  @layer components {
+    .btn {
+      display: inline-flex;
+      …
+    }
+  }
+
+  @layer utilities {
+    .flex {
+      display: flex;
+    }
+  }
+  ```
+</details>
+
+Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
+
+---
+
+## Defaults stay below local decisions \{#summary\}
+Defaults rules are useful for descendants because they can establish defaults without blocking local classes.
+
+For example, set paragraph text to `1rem` across an article, then override one paragraph with `text:1.5rem`.
+
+<Code lang="html">{require('./tests/overriding-default-styles/template.html?raw')}</Code>
+
+<details>
+  <summary>Generated CSS</summary>
+  <Code lang="css" beautify>{require('./tests/overriding-default-styles/generated.css?raw')}</Code>
+</details>
+
+This is the reason defaults sit before components and utilities: defaults should be broad, but final element-level decisions should stay close to the element.
+
+---
+
+## Writing regular CSS
+Regular CSS outside `@layer` follows the native cascade outside Master CSS's layer model. If you want a rule to participate in the same priority system, place it in the layer that matches its responsibility.
+
+```css name=app.css
+@layer defaults {
+  article :is(h1, h2, h3) {
+    font-weight: 700;
+  }
+}
+
+@layer components {
+  .card {
+    border-radius: .75rem;
+  }
+}
+```
+
+Native `@layer` is never compiler-managed. For on-demand managed definitions, use the explicit directive forms:
+
+```css name=index.css
+@utilities {
+  content-auto {
+    content-visibility: auto;
+  }
+}
+
+@components {
+  card {
+    @compose block;
+    border-radius: .75rem;
+  }
+}
+```
+
+Native style rules can still compose Master CSS utilities when the rule should remain ordinary stylesheet output:
+
+```css name=app.css
+.card {
+  @compose block p:md;
+
+  @dark {
+    @compose bg:neutral-90;
+  }
+}
+```
+
+---
+
+## Summary
+Cascade layers are the contract that makes Master CSS predictable:
+
+1. `base` normalizes the platform.
+1. `theme` provides generated variables.
+1. `defaults` sets broad defaults.
+1. `components` holds project vocabulary from CSS-defined component classes.
+1. `utilities` holds utilities and final local adjustments.
+
+When declarations conflict, solve the problem by choosing the correct layer first. Reach for specificity or `!important` only when you are intentionally integrating with CSS that sits outside this layer model.

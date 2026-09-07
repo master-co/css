@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Remove default styling
+## Examples \{#examples\}
+### Remove default styling \{#remove-default-styling\}
 Use `appearance:none` to remove the browser's native control styling before applying your own visual treatment.
 <Demo>
   <select className="bg:revert appearance:none">
@@ -25,7 +25,7 @@ Use `appearance:none` to remove the browser's native control styling before appl
   </Class2CSS>
 </details>
 
-### Restore native appearance
+### Restore native appearance \{#restore-native-appearance\}
 Use `appearance:auto` when a variant should return to the platform control instead of the custom one.
 ```html
 <!-- @MARK appearance:auto -->
@@ -34,7 +34,7 @@ Use `appearance:auto` when a variant should return to the platform control inste
 </select>
 ```
 
-### Keep semantics intact
+### Keep semantics intact \{#keep-semantics-intact\}
 `appearance:none` only changes rendering. Keep using the correct form element and accessible label.
 ```html
 <label>
@@ -45,7 +45,7 @@ Use `appearance:auto` when a variant should return to the platform control inste
 </label>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <select class="appearance:none:hover appearance:auto@print appearance:auto@sm">...</select>

@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Set the text caret color
+## Examples \{#examples\}
+### Set the text caret color \{#set-the-text-caret-color\}
 Use `caret-color:*` to change the insertion caret color in inputs and editable text.
 <InteractingIndicator>Focus on input to see the cursor color</InteractingIndicator>
 
@@ -21,14 +21,14 @@ Use `caret-color:*` to change the insertion caret color in inputs and editable t
   </Class2CSS>
 </details>
 
-### Use the current text color
+### Use the current text color \{#use-the-current-text-color\}
 Use `caret-color:current` when the caret should follow the foreground color.
 ```html
 <!-- @MARK caret-color:current -->
 <input class="fg:blue-60 caret-color:current" value="Editable value">
 ```
 
-### Hide the caret intentionally
+### Hide the caret intentionally \{#hide-the-caret-intentionally\}
 Use `caret-color:transparent` only for custom editing surfaces that draw their own caret.
 ```html
 <!-- @MARK caret-color:transparent -->
@@ -37,7 +37,7 @@ Use `caret-color:transparent` only for custom editing surfaces that draw their o
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <input class="caret-color:blue-60:focus caret-color:current@print caret-color:current@sm">

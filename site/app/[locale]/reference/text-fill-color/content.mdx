@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Examples
-### Fill text with a color
+## Examples \{#examples\}
+### Fill text with a color \{#fill-text-with-a-color\}
 Use `text-fill-color:*` to set the WebKit text fill color directly.
 ```html
 <!-- @MARK text-fill-color:blue-60 -->
@@ -18,7 +18,7 @@ Use `text-fill-color:*` to set the WebKit text fill color directly.
   </Class2CSS>
 </details>
 
-### Make text fill transparent
+### Make text fill transparent \{#make-text-fill-transparent\}
 Use `text-fill-color:transparent` when the visible text should come from a background clip, stroke, or layered effect.
 ```html
 <!-- @MARK text-fill-color:transparent -->
@@ -27,14 +27,14 @@ Use `text-fill-color:transparent` when the visible text should come from a backg
 </h2>
 ```
 
-### Use the current color
+### Use the current color \{#use-the-current-color\}
 Use `text-fill-color:currentColor` when the fill should follow `color`.
 ```html
 <!-- @MARK text-fill-color:currentColor -->
 <span class="fg:blue-60 text-fill-color:currentColor">Current color</span>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <span class="text-fill-color:blue-60:hover text-fill-color:currentColor@print text-fill-color:currentColor@sm">...</span>

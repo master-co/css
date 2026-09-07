@@ -2,3 +2,6 @@
 @import '../../internal/styles/main.css';
 @import '../styles/base.css';
 @import '../styles/btn.css';
+@import '../styles/reference.css';
+@import '../styles/documentation-index.css';
+@import '../../internal/styles/documentation-search.css';

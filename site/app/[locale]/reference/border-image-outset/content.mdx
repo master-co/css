@@ -1,8 +1,8 @@
-## Overview [sr-only]
+## Overview [sr-only] \{#overview\}
 <Overview/>
 
-## Basic usage
-### Extend the border image outside the box
+## Basic usage \{#basic-usage\}
+### Extend the border image outside the box \{#extend-the-border-image-outside-the-box\}
 Use `border-image-outset` to paint the border image beyond the element's border box. The outset area does not create extra layout space.
 <Demo $py={0}>
   <DemoPanel>
@@ -19,7 +19,7 @@ Use `border-image-outset` to paint the border image beyond the element's border 
 </div>
 ```
 
-### Use separate vertical and horizontal values
+### Use separate vertical and horizontal values \{#use-separate-vertical-and-horizontal-values\}
 ```html
 <!-- @MARK border-image-outset:8|16 -->
 <div class="b:12px|solid|transparent border-image-outset:8|16 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
@@ -27,7 +27,7 @@ Use `border-image-outset` to paint the border image beyond the element's border 
 </div>
 ```
 
-### Apply conditionally
+### Apply conditionally \{#apply-conditionally\}
 Apply styles based on different states using [selectors](/guide/state-selectors) and [conditional queries](/guide/conditional-queries).
 ```html
 <div class="border-image-outset:8:hover border-image-outset:8@dark border-image-outset:8@print border-image-outset:8@sm">…</div>
