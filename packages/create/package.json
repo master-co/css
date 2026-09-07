@@ -50,6 +50,6 @@
   },
   "dependencies": {
     "@master/css-schema": "workspace:*",
-    "commander": "^14.0.3"
+    "commander": "^15.0.0"
   }
 }

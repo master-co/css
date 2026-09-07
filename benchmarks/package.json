@@ -28,7 +28,7 @@
     "snapshot:tailwind-static-comparison": "node tailwind-static-comparison/update-snapshot.mjs"
   },
   "dependencies": {
-    "cheerio": "0.22.0"
+    "cheerio": "1.2.0"
   },
   "devDependencies": {
     "@master/css": "workspace:^",
@@ -40,14 +40,14 @@
     "@master/css-tooling": "workspace:^",
     "@master/css-server": "workspace:^",
     "@master/css-vite": "workspace:^",
-    "@playwright/test": "1.61.0",
-    "@tailwindcss/cli": "^4.3.1",
-    "@tailwindcss/vite": "^4.3.1",
-    "@types/css-tree": "^2.3.11",
+    "@playwright/test": "1.63.0",
+    "@tailwindcss/cli": "^4.3.3",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/css-tree": "^3.2.0",
     "css-tree": "^3.2.1",
     "fast-glob": "^3.3.3",
-    "tailwindcss": "^4.3.1",
-    "tsx": "^4.22.4",
-    "vite": "^8.0.16"
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.13",
+    "vite": "^8.2.2"
   }
 }

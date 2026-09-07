@@ -6,7 +6,7 @@ export default function waitForDataMatch(child: Subprocess, doesDataMatch: (data
     const cleanup = () => {
       child?.stdout?.off('data', handler)
       child?.stderr?.off('data', handler)
-      child?.off('exit', exitHandler)
+      child.nodeChildProcess.off('exit', exitHandler)
     }
     const handler = (data: unknown) => {
       const strippedData = stripAnsi(String(data))
@@ -21,7 +21,7 @@ export default function waitForDataMatch(child: Subprocess, doesDataMatch: (data
     }
     child?.stdout?.on('data', handler)
     child?.stderr?.on('data', handler)
-    child?.once('exit', exitHandler)
+    child.nodeChildProcess.once('exit', exitHandler)
     onReady?.()
   })
 }

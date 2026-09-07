@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { collectEnvironment, collectPackageVersions } from '../shared/environment'
 import { validateFixtures } from '../shared/fixtures'
@@ -146,7 +146,9 @@ function getBuildRounds() {
 }
 
 describe('build performance', () => {
-  bench('write build performance report', async () => {
-    await writeBuildPerformanceReportOnce()
-  }, benchOptions)
+  test('write build performance report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write build performance report', async () => {
+      await writeBuildPerformanceReportOnce()
+    }).run(benchOptions)
+  })
 })

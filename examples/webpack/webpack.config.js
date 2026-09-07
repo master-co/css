@@ -7,6 +7,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 
 export default {
   entry: './src/index.js',
+  // Exercise package exports instead of the monorepo's TypeScript source aliases.
+  resolve: { tsconfig: false },
   output: {
     filename: '[name].js',
     chunkFilename: '[name].js',

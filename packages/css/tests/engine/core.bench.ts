@@ -1,4 +1,4 @@
-import { afterAll, bench, describe } from 'vitest'
+import { afterAll, test, describe } from 'vitest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { UtilityType } from '@master/css-schema/utility-type'
@@ -25,7 +25,8 @@ const runtimeClassNames = [
   'flex@sm'
 ]
 
-const benchOptions = { time: 500, warmupTime: 100 }
+// Use time budgets even when one iteration creates 100 native sessions.
+const benchOptions = { time: 500, warmupTime: 100, iterations: 1, warmupIterations: 1 }
 let sink = 0
 
 function createPatternBenchmarkManifest(separator: '-' | '_'): MasterCSSManifest {
@@ -63,39 +64,49 @@ describe('Rust engine session hot paths', () => {
     fallback.dispose()
   })
 
-  bench('batch ensure and delete representative runtime classes', () => {
-    sink = engine.ensureClassRules(runtimeClassNames).mutations.length
-    sink += engine.snapshot().text.length
-    sink += engine.deleteClassRules(runtimeClassNames).mutations.length
-  }, benchOptions)
+  test('batch ensure and delete representative runtime classes', async ({ bench }) => {
+    await bench('batch ensure and delete representative runtime classes', () => {
+      sink = engine.ensureClassRules(runtimeClassNames).mutations.length
+      sink += engine.snapshot().text.length
+      sink += engine.deleteClassRules(runtimeClassNames).mutations.length
+    }).run(benchOptions)
+  })
 
-  bench('inspect representative runtime classes', () => {
-    let total = 0
-    for (let index = 0; index < 1_000; index++) {
-      total += engine.inspect(runtimeClassNames[index % runtimeClassNames.length]).rules.length
-    }
-    sink = total
-  }, benchOptions)
+  test('inspect representative runtime classes', async ({ bench }) => {
+    await bench('inspect representative runtime classes', () => {
+      let total = 0
+      for (let index = 0; index < 1_000; index++) {
+        total += engine.inspect(runtimeClassNames[index % runtimeClassNames.length]).rules.length
+      }
+      sink = total
+    }).run(benchOptions)
+  })
 
-  bench('create native sessions from the default manifest', () => {
-    let total = 0
-    for (let index = 0; index < 100; index++) {
-      const session = createEngineSync({ manifest: defaultManifest })
-      total += session.snapshot().rules.length
-      session.dispose()
-    }
-    sink = total
-  }, benchOptions)
+  test('create native sessions from the default manifest', async ({ bench }) => {
+    await bench('create native sessions from the default manifest', () => {
+      let total = 0
+      for (let index = 0; index < 100; index++) {
+        const session = createEngineSync({ manifest: defaultManifest })
+        total += session.snapshot().rules.length
+        session.dispose()
+      }
+      sink = total
+    }).run(benchOptions)
+  })
 
-  bench('match indexed pattern utilities in one FFI batch', () => {
-    sink = indexed.ensureClassRules(indexedClassNames).mutations.length
-    indexed.deleteClassRules(indexedClassNames)
-  }, benchOptions)
+  test('match indexed pattern utilities in one FFI batch', async ({ bench }) => {
+    await bench('match indexed pattern utilities in one FFI batch', () => {
+      sink = indexed.ensureClassRules(indexedClassNames).mutations.length
+      indexed.deleteClassRules(indexedClassNames)
+    }).run(benchOptions)
+  })
 
-  bench('match fallback pattern utilities in one FFI batch', () => {
-    sink = fallback.ensureClassRules(fallbackClassNames).mutations.length
-    fallback.deleteClassRules(fallbackClassNames)
-  }, benchOptions)
+  test('match fallback pattern utilities in one FFI batch', async ({ bench }) => {
+    await bench('match fallback pattern utilities in one FFI batch', () => {
+      sink = fallback.ensureClassRules(fallbackClassNames).mutations.length
+      fallback.deleteClassRules(fallbackClassNames)
+    }).run(benchOptions)
+  })
 })
 
 void sink

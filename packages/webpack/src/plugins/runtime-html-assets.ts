@@ -19,7 +19,7 @@ function escapeAttributeValue(value: string) {
 function hasTagWithHref(html: string, tagName: string, href: string) {
   const quotedHref = escapeRegExp(href)
   return new RegExp(
-    String.raw`<${tagName}\b(?=[^>]*\bhref=(?:"${quotedHref}"|'${quotedHref}'))[^>]*>`,
+    String.raw`<${tagName}\b(?=[^>]*\bhref\s*=\s*(?:"${quotedHref}"|'${quotedHref}'|${quotedHref}(?=[\s>])))[^>]*>`,
     'i'
   ).test(html)
 }
@@ -27,7 +27,7 @@ function hasTagWithHref(html: string, tagName: string, href: string) {
 function hasScriptWithSrc(html: string, src: string) {
   const quotedSrc = escapeRegExp(src)
   return new RegExp(
-    String.raw`<script\b(?=[^>]*\bsrc=(?:"${quotedSrc}"|'${quotedSrc}'))[^>]*>`,
+    String.raw`<script\b(?=[^>]*\bsrc\s*=\s*(?:"${quotedSrc}"|'${quotedSrc}'|${quotedSrc}(?=[\s>])))[^>]*>`,
     'i'
   ).test(html)
 }

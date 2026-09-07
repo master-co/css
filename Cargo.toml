@@ -31,26 +31,27 @@ publish = false
 
 [workspace.dependencies]
 cssparser = "0.37.0"
-napi = { version = "3.6.1", default-features = false, features = ["napi8", "serde-json"] }
-napi-build = "2.3.2"
-napi-derive = "3.4.0"
+napi = { version = "3.12.2", default-features = false, features = ["napi8", "serde-json"] }
+napi-build = "2.4.1"
+napi-derive = "3.6.3"
 htmlparser = "0.2.1"
+# Must match lightningcss so the compiler Wasm binding enables its wasm_js backend.
 getrandom = "0.3.4"
 lightningcss = { version = "1.0.0-alpha.72", default-features = false, features = ["visitor"] }
-oxc_allocator = "0.141.0"
-oxc_ast = "0.141.0"
-oxc_ast_visit = "0.141.0"
-oxc_parser = { version = "0.141.0", default-features = false }
-oxc_span = "0.141.0"
-oxc_syntax = "0.141.0"
+oxc_allocator = "0.148.0"
+oxc_ast = "0.148.0"
+oxc_ast_visit = "0.148.0"
+oxc_parser = { version = "0.148.0", default-features = false }
+oxc_span = "0.148.0"
+oxc_syntax = "0.148.0"
 regex = "1.13.1"
 serde = { version = "1.0.229", features = ["derive"] }
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
-sha2 = "0.10.9"
+sha2 = "0.11.0"
 serde-wasm-bindgen = "0.6.5"
-thiserror = "2.0.19"
-wasm-bindgen = "0.2.126"
-wasm-bindgen-cli-support = "0.2.126"
+thiserror = "2.0.20"
+wasm-bindgen = "0.2.128"
+wasm-bindgen-cli-support = "0.2.128"
 
 [profile.release]
 lto = "thin"

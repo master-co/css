@@ -9,6 +9,6 @@
     "generate": "nuxi generate"
   },
   "devDependencies": {
-    "nuxt": "latest"
+    "nuxt": "4.5.2"
   }
 }

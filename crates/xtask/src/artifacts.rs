@@ -172,7 +172,11 @@ pub(crate) fn artifact_checksum(
     Ok(ArtifactChecksum {
         path: manifest_path,
         bytes,
-        sha256: format!("{:x}", hasher.finalize()),
+        sha256: hasher
+            .finalize()
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect(),
     })
 }
 

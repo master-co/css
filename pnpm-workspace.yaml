@@ -46,8 +46,24 @@ minimumReleaseAgeExclude:
   - '@typescript/typescript-win32-x64@7.0.2'
   - typescript@7.0.2
   - rolldown-plugin-dts@0.27.4
+  - '@tanstack/history@1.162.2'
+  - '@tanstack/react-router@1.170.33'
+  - '@tanstack/react-start-client@1.168.31'
+  - '@tanstack/react-start-rsc@0.1.49'
+  - '@tanstack/react-start-server@1.167.38'
+  - '@tanstack/react-start@1.168.50'
+  - '@tanstack/router-core@1.171.28'
+  - '@tanstack/router-generator@1.167.34'
+  - '@tanstack/router-plugin@1.168.36'
+  - '@tanstack/start-client-core@1.170.28'
+  - '@tanstack/start-plugin-core@1.171.40'
+  - '@tanstack/start-server-core@1.169.32'
+  - '@tanstack/start-storage-context@1.167.30'
 
 overrides:
+  # Upstream pins currently retain vulnerable releases within these major lines.
+  dompurify@>=3.0.0 <3.4.13: 3.4.13
+  qs@>=6.0.0 <6.16.0: 6.16.0
   rolldown-plugin-dts: 0.27.4
 
 supportedArchitectures:

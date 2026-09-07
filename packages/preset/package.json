@@ -63,6 +63,6 @@
   },
   "devDependencies": {
     "@master/css-binding": "workspace:*",
-    "tsx": "^4.22.4"
+    "tsx": "^4.23.13"
   }
 }

@@ -1,4 +1,5 @@
 import { defineNuxtModule, addServerPlugin, createResolver, addPlugin, setGlobalHead } from '@nuxt/kit'
+import type { NuxtModule } from '@nuxt/schema'
 import { mkdirSync, realpathSync, writeFileSync } from 'node:fs'
 import { dirname, resolve as resolvePath } from 'node:path'
 import { pathToFileURL } from 'node:url'
@@ -200,7 +201,7 @@ function RuntimeVirtualModulesPlugin(publicManifestHref: string, projectDir: str
   }
 }
 
-export const masterCSSNuxtModule = defineNuxtModule<MasterCSSNuxtModuleOptions>({
+export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defineNuxtModule<MasterCSSNuxtModuleOptions>({
   meta: {
     name,
     configKey: 'mastercss'

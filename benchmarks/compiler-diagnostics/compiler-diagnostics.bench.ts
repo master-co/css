@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { staticFixtureIds } from '../fixtures/static'
 import {
@@ -185,7 +185,9 @@ function toMetricDescription(id: string) {
 }
 
 describe('compiler diagnostics', () => {
-  bench('write compiler diagnostics report', async () => {
-    await writeCompilerDiagnosticsReportOnce()
-  }, benchOptions)
+  test('write compiler diagnostics report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write compiler diagnostics report', async () => {
+      await writeCompilerDiagnosticsReportOnce()
+    }).run(benchOptions)
+  })
 })

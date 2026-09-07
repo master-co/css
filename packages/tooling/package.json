@@ -119,8 +119,8 @@
     "consola": "^3.4.2",
     "css-tree": "^3.2.1",
     "defu": "^6.1.7",
-    "mdn-data": "^2.28.1",
-    "minimatch": "^10.2.5"
+    "mdn-data": "^2.35.0",
+    "minimatch": "^10.2.6"
   },
   "peerDependencies": {
     "svelte": ">=4",
@@ -135,8 +135,8 @@
     }
   },
   "devDependencies": {
-    "@types/css-tree": "^2.3.11",
-    "svelte": "^5.56.3",
-    "vue": "^3.5.38"
+    "@types/css-tree": "^3.2.0",
+    "svelte": "^5.57.0",
+    "vue": "^3.5.42"
   }
 }

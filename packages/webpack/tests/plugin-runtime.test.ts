@@ -760,15 +760,15 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect(html).toContain('<script type="module" src="runtime.mjs"></script></body>')
   })
 
-  test('does not duplicate runtime script or preload tags', () => {
+  test.each(['"', "'", ''])('does not duplicate runtime script or preload tags with %j quotes', (quote) => {
     const plugin = makePlugin({ mode: 'runtime' })
     ;(plugin as any).manifestJSONAssets.set('master-css-manifest.12345678.json', '{}')
     const source = [
       '<html><head>',
-      '<link rel="preload" as="script" href="runtime.js">',
-      '<link rel="modulepreload" as="json" crossorigin href="master-css-manifest.12345678.json">',
+      `<link rel="preload" as="script" href=${quote}runtime.js${quote}>`,
+      `<link rel="modulepreload" as="json" crossorigin href=${quote}master-css-manifest.12345678.json${quote}>`,
       '</head><body>',
-      '<script defer src="runtime.js"></script>',
+      `<script defer src=${quote}runtime.js${quote}></script>`,
       '</body></html>'
     ].join('')
     const assets = {
@@ -786,8 +786,6 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     compilation.hooks.processAssets.call(assets)
 
     const html = assets['index.html'].source()
-    expect(html.match(/href="runtime\.js"/g)).toHaveLength(1)
-    expect(html.match(/href="master-css-manifest\.12345678\.json"/g)).toHaveLength(1)
-    expect(html.match(/src="runtime\.js"/g)).toHaveLength(1)
+    expect(html).toBe(source)
   })
 })

@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import * as ts from 'typescript6'
 import {
   createStagedExtension,
   getCurrentTarget,
@@ -204,13 +205,34 @@ test('extension bundle includes workspace language server resolution fallback', 
 
 test('extension bundle reuses one Master CSS output channel for the language client', () => {
   const source = readFileSync(extensionPath, 'utf8')
-  const masterCSSOutputChannelCalls = source.match(/\.createOutputChannel\((?:`Master CSS`|"Master CSS"|'Master CSS')/g) ?? []
-  const languageClientConstruction = source.match(
-    /new\s+[A-Za-z_$][\w$]*\.LanguageClient\(\s*(?:`masterCSS`|"masterCSS"|'masterCSS')\s*,\s*(?:`Master CSS`|"Master CSS"|'Master CSS')[\s\S]*?\}\)/
-  )?.[0]
-
-  expect(masterCSSOutputChannelCalls).toHaveLength(1)
-  expect(languageClientConstruction).toContain('outputChannel:')
+  const ast = ts.createSourceFile(extensionPath, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.JS)
+  const bindings = new Map()
+  const channelCalls = []
+  let clientOptions
+  function visit(node) {
+    if (ts.isVariableDeclaration(node) && ts.isIdentifier(node.name) && node.initializer) {
+      bindings.set(node.name.text, node.initializer)
+    } else if (ts.isBinaryExpression(node) && node.operatorToken.kind === ts.SyntaxKind.EqualsToken
+      && ts.isIdentifier(node.left)) {
+      bindings.set(node.left.text, node.right)
+    }
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression)
+      && node.expression.name.text === 'createOutputChannel' && node.arguments[0]?.text === 'Master CSS') {
+      channelCalls.push(node)
+    }
+    if (ts.isNewExpression(node) && ts.isPropertyAccessExpression(node.expression)
+      && node.expression.name.text === 'LanguageClient' && node.arguments?.[0]?.text === 'masterCSS') {
+      clientOptions = node.arguments[3]
+    }
+    ts.forEachChild(node, visit)
+  }
+  visit(ast)
+  const resolveBinding = (node) => node && ts.isIdentifier(node) ? bindings.get(node.text) : node
+  const options = resolveBinding(clientOptions)
+  expect(options && ts.isObjectLiteralExpression(options)).toBe(true)
+  const outputChannel = options.properties.find((property) => property.name?.getText(ast) === 'outputChannel')
+  expect(channelCalls).toHaveLength(1)
+  expect(resolveBinding(outputChannel?.initializer ?? outputChannel?.name)).toBe(channelCalls[0])
 })
 
 test('server bundle does not retain removed TypeScript semantic bindings', () => {

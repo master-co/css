@@ -1,4 +1,4 @@
-import cheerio from 'cheerio'
+import { load } from 'cheerio'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -102,7 +102,7 @@ export function printSnapshotSummary(snapshot: DocsPageCSSSizeSnapshot) {
 
 async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
   const page = await fetchResource(input.url)
-  const $ = cheerio.load(page.text)
+  const $ = load(page.text)
   const inlineAssets = $('style')
     .map((_: number, element: any) => {
       const text = $(element).text()

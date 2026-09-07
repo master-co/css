@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { analyzeCSSStructure, createCSSStructureSamples, cssStructureMetrics } from '../shared/css-structure'
 import { collectEnvironment, collectPackageVersions } from '../shared/environment'
@@ -102,7 +102,9 @@ async function createCSSStructureReport(): Promise<BenchmarkReport> {
 }
 
 describe('css structure', () => {
-  bench('write CSS structure report', async () => {
-    await writeCSSStructureReportOnce()
-  }, benchOptions)
+  test('write CSS structure report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write CSS structure report', async () => {
+      await writeCSSStructureReportOnce()
+    }).run(benchOptions)
+  })
 })

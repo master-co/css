@@ -1,5 +1,5 @@
 import { chromium, type Browser } from '@playwright/test'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import {
   browserCostCacheModes,
@@ -207,7 +207,9 @@ function getBrowserCostWarmupRounds() {
 }
 
 describe('browser CSS cost', () => {
-  bench('write browser CSS cost report', async () => {
-    await writeBrowserCSSCostReportOnce()
-  }, benchOptions)
+  test('write browser CSS cost report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write browser CSS cost report', async () => {
+      await writeBrowserCSSCostReportOnce()
+    }).run(benchOptions)
+  })
 })

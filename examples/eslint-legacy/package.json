@@ -5,8 +5,8 @@
     "lint": "eslint \"*.html\""
   },
   "devDependencies": {
-    "@angular-eslint/template-parser": "^21.4.0",
-    "eslint": "^10.5.0",
+    "@angular-eslint/template-parser": "^22.2.0",
+    "eslint": "^10.10.0",
     "@master/eslint-config-css": "workspace:^"
   }
 }

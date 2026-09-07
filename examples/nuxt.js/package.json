@@ -12,9 +12,9 @@
     "@master/css-nuxt": "workspace:^"
   },
   "devDependencies": {
-    "@types/node": "^25.9.4",
-    "nuxt": "^4.4.8",
-    "vue": "^3.5.38",
-    "vue-router": "^5.1.0"
+    "@types/node": "^24.13.3",
+    "nuxt": "^4.5.2",
+    "vue": "^3.5.42",
+    "vue-router": "^5.3.1"
   }
 }

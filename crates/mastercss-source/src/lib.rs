@@ -6,7 +6,7 @@ use std::path::Path;
 use htmlparser::{Token, Tokenizer};
 use oxc_allocator::Allocator;
 use oxc_ast::ast::{
-    CallExpression, Directive, ExportAllDeclaration, ExportNamedDeclaration, Expression,
+    CallExpression, Directive, ExportAllDeclaration, ExportFromDeclaration, Expression,
     ImportDeclaration, ImportExpression, StringLiteral, TemplateLiteral,
 };
 use oxc_ast_visit::{Visit, walk};
@@ -324,11 +324,7 @@ impl<'a> Visit<'a> for ClassCandidateVisitor {
 
     fn visit_export_all_declaration(&mut self, _declaration: &ExportAllDeclaration<'a>) {}
 
-    fn visit_export_named_declaration(&mut self, declaration: &ExportNamedDeclaration<'a>) {
-        if declaration.source.is_none() {
-            walk::walk_export_named_declaration(self, declaration);
-        }
-    }
+    fn visit_export_from_declaration(&mut self, _declaration: &ExportFromDeclaration<'a>) {}
 
     fn visit_call_expression(&mut self, expression: &CallExpression<'a>) {
         if matches!(
@@ -732,13 +728,16 @@ mod tests {
             'use client'
             import React from 'react'
             export { helper } from 'pkg'
+            export { helper as "p:4x" } from 'mx:auto'
+            export * from 'hidden'
             async function load() { await import('lazy-module') }
             const fs = require('fs')
             const classes = 'block fg:red'
+            export const exportedClasses = 'flex'
         "#;
         assert_eq!(
             extract_oxc_classes("component.tsx", source),
-            vec!["block", "fg:red"]
+            vec!["block", "fg:red", "flex"]
         );
     }
 

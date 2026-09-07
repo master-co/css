@@ -68,7 +68,8 @@ class EmitFixtureAssetsPlugin {
 
 function runWebpack(config: webpack.Configuration) {
   return new Promise<void>((resolve, reject) => {
-    webpack(config, (error, stats) => {
+    // Test published exports without inheriting the monorepo's source aliases.
+    webpack({ ...config, resolve: { ...config.resolve, tsconfig: false } }, (error, stats) => {
       if (error) {
         reject(error)
         return
@@ -159,11 +160,6 @@ describe('Webpack runtime mode', () => {
         ]
       })
 
-      const html = readFileSync(join(dist, 'index.html'), 'utf-8')
-      expect(html).toContain('<link rel="preload" as="script" href="./master-css-runtime.js">')
-      expect(html).toContain('<link rel="modulepreload" as="json" crossorigin href="./master-css-manifest.')
-      expect(html).toContain('<script defer src="./master-css-runtime.js"></script></body>')
-
       const served = await serveDirectory(dist)
       server = served.server
       browser = await chromium.launch()
@@ -171,6 +167,8 @@ describe('Webpack runtime mode', () => {
       await page.goto(served.url)
       await page.waitForSelector('#probe')
       await page.waitForFunction(() => getComputedStyle(document.getElementById('probe')!).display === 'block')
+      expect(await page.locator('script[defer][src="./master-css-runtime.js"]').count()).toBe(1)
+      expect(await page.locator('link[rel="preload"][href="./master-css-runtime.js"]').count()).toBe(1)
 
       const state = await page.evaluate(() => {
         const globalCSS = document.head.querySelector('link[rel="stylesheet"]')

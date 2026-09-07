@@ -308,7 +308,7 @@ jobs:
             -e TARGET_PACKAGE \
             -v "$PWD:/workspace" \
             -w /workspace \
-            rust:1.97-alpine \
+            rust:1.98.1-alpine \
             sh -ec '
               apk add --no-cache build-base nodejs npm
               RUSTFLAGS="-C target-feature=-crt-static" \

@@ -47,11 +47,11 @@
     "provenance": true
   },
   "peerDependencies": {
-    "sv": "^0.16.1"
+    "sv": "^0.17.0"
   },
   "devDependencies": {
-    "@sveltejs/sv-utils": "0.3.0",
-    "sv": "^0.16.1",
-    "svelte": "^5.56.3"
+    "@sveltejs/sv-utils": "0.3.3",
+    "sv": "^0.17.0",
+    "svelte": "^5.57.0"
   }
 }

@@ -50,20 +50,20 @@
     "@master/css-compiler": "workspace:*",
     "@master/css-tooling": "workspace:*",
     "@master/css-preset": "workspace:*",
-    "@typescript-eslint/utils": "^8.61.1",
-    "typescript-eslint": "^8.61.1"
+    "@typescript-eslint/utils": "^8.69.0",
+    "typescript-eslint": "^8.69.0"
   },
   "devDependencies": {
-    "@angular-eslint/template-parser": "^21.4.0",
+    "@angular-eslint/template-parser": "^22.2.0",
     "@master/css-internal": "workspace:*",
     "@master/css-schema": "workspace:*",
-    "@angular/compiler": "^21.2.17",
-    "@typescript-eslint/rule-tester": "^8.61.1",
-    "eslint": "^10.5.0",
+    "@angular/compiler": "^22.1.5",
+    "@typescript-eslint/rule-tester": "^8.69.0",
+    "eslint": "^10.10.0",
     "eslint-mdx": "^3.8.1",
     "eslint-plugin-markdown": "^5.1.0",
     "eslint-plugin-mdx": "^3.8.1",
-    "svelte-eslint-parser": "^1.8.0",
+    "svelte-eslint-parser": "^1.8.1",
     "ts-node": "^10.9.2",
     "vue-eslint-parser": "^10.4.1"
   }

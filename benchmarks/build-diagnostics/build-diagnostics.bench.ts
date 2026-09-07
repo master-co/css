@@ -1,6 +1,6 @@
 import { resolve } from 'node:path'
 import { readFile } from 'node:fs/promises'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkFixtures } from '../fixtures/manifest'
 import { staticFixtureIds } from '../fixtures/static'
 import {
@@ -252,7 +252,9 @@ function getDiagnosticRounds() {
 }
 
 describe('build diagnostics', () => {
-  bench('write build diagnostics report', async () => {
-    await writeBuildDiagnosticsReportOnce()
-  }, benchOptions)
+  test('write build diagnostics report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write build diagnostics report', async () => {
+      await writeBuildDiagnosticsReportOnce()
+    }).run(benchOptions)
+  })
 })

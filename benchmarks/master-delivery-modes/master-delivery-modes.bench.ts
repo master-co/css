@@ -1,5 +1,5 @@
 import { resolve } from 'node:path'
-import { bench, describe } from 'vitest'
+import { test, describe } from 'vitest'
 import { benchmarkRoot, runCommand } from '../shared/runner'
 
 const benchOptions = {
@@ -38,7 +38,9 @@ async function writeMasterDeliveryModeReportOnce() {
 }
 
 describe('Master delivery modes', () => {
-  bench('write Master delivery modes report', async () => {
-    await writeMasterDeliveryModeReportOnce()
-  }, benchOptions)
+  test('write Master delivery modes report', { timeout: 900_000 }, async ({ bench }) => {
+    await bench('write Master delivery modes report', async () => {
+      await writeMasterDeliveryModeReportOnce()
+    }).run(benchOptions)
+  })
 })

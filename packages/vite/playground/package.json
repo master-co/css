@@ -11,7 +11,7 @@
   "devDependencies": {
     "@master/css-internal": "workspace:^",
     "typescript": "^7.0.2",
-    "vite": "^8.0.10"
+    "vite": "^8.2.2"
   },
   "dependencies": {
     "@master/css": "workspace:^"

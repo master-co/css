@@ -1,16 +1,11 @@
-import { createInertiaApp } from '@inertiajs/react';
+import { createInertiaApp, type ResolvedComponent } from '@inertiajs/react';
 import createServer from '@inertiajs/react/server';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
-import { type ComponentType, type ReactNode } from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { type RouteName, route } from 'ziggy-js';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
-type LayoutFunction = (page: ReactNode) => ReactNode;
-type LayoutComponent = ComponentType<{ children: ReactNode }>;
-type InertiaPage = ComponentType<any> & {
-  layout?: LayoutComponent | LayoutComponent[] | LayoutFunction | ((props: any) => any);
-};
+type InertiaPage = ResolvedComponent;
 const pages = import.meta.glob<InertiaPage>('./pages/**/*.tsx');
 
 createServer((page) =>
@@ -22,7 +17,7 @@ createServer((page) =>
     setup: ({ App, props }) => {
       /* eslint-disable */
       // @ts-expect-error
-      global.route<RouteName> = (name, params, absolute) =>
+      global.route = (name: RouteName, params, absolute) =>
         route(name, params as any, absolute, {
           // @ts-expect-error
           ...page.props.ziggy,

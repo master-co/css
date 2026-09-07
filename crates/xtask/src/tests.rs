@@ -27,6 +27,21 @@ fn atomically_replaces_staged_artifacts() {
 }
 
 #[test]
+fn formats_artifact_sha256_as_zero_padded_lowercase_hex() {
+    let root = temporary_directory("checksum");
+    fs::create_dir_all(&root).unwrap();
+    let path = root.join("artifact");
+    fs::write(&path, "abc").unwrap();
+    let checksum = artifact_checksum(&path, "artifact".to_string()).unwrap();
+    assert_eq!(checksum.bytes, 3);
+    assert_eq!(
+        checksum.sha256,
+        "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad"
+    );
+    fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
 fn assembles_all_native_packages_and_writes_stable_checksums() {
     let root = temporary_directory("native-release");
     fs::create_dir_all(&root).unwrap();
