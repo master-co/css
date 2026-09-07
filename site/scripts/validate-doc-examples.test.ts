@@ -12,7 +12,7 @@ import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'js
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
-const docSections = new Set(['blog', 'guide', 'messages', 'reference'])
+const docSections = new Set(['blog', 'guide', 'reference'])
 const visibleSourceFiles = [
   'app/examples/layout-system/page.tsx'
 ]

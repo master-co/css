@@ -4,11 +4,11 @@ These instructions apply to the `site/` workspace. They extend the repository ro
 
 ## Responsibility
 
-The `site` workspace owns the public Master CSS documentation site, examples rendered inside docs, user-facing guide/message content, and site-specific visual demo implementation.
+The `site` workspace owns the public Master CSS documentation site, examples rendered inside docs, user-facing guide content, and site-specific visual demo implementation.
 
 ## Owns
 
-- Public guide and message pages under `site/app/[locale]`.
+- Public guide pages under `site/app/[locale]`.
 - Documentation copy, code examples, generated CSS examples, and interactive demos.
 - Site-local components, assets, dictionaries, category metadata, and docs verification scripts.
 - Cloudflare/Next site build configuration.
@@ -23,7 +23,6 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 ## Key Files And Patterns
 
 - Guide pages: `site/app/[locale]/guide/<slug>/{metadata.ts,page.tsx,content.mdx}` plus optional `components/`.
-- Message pages: `site/app/[locale]/messages/<slug>/{metadata.ts,page.tsx,content.mdx}`.
 - Example iframe pages: `site/app/[locale]/examples/<slug>/`.
 - Demo images: `site/assets/images/<guide-or-feature>/`.
 - Category data is generated; run `pnpm --filter site prepare-app` when adding or renaming pages.
@@ -40,7 +39,7 @@ The `site` workspace owns the public Master CSS documentation site, examples ren
 ## Safe Changes
 
 - Content-only docs updates verified against source/tests.
-- Guide/message page additions using the established page shape.
+- Guide page additions using the established page shape.
 - Local demo components that follow existing site primitives.
 - Data-driven token overview tables using existing helpers.
 
@@ -73,8 +72,6 @@ components/
 - `page.tsx` uses `createPage`, `internal/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
 - `content.mdx` contains guide copy, code examples, generated CSS examples, and imported local demos.
 - `components/` contains interactive demos and guide-local presentational components.
-
-Message pages use the same file shape under `site/app/[locale]/messages/<slug>/`. Use them for console errors, warnings, diagnostics, and runtime/build messages that need user-facing explanation. Each message page should explain the exact or representative message, why it appears, the smallest fix, and when it can be ignored. When adding a new emitted error or warning, prefer a stable `/messages/<slug>` URL and add/update the matching page in the same change.
 
 For the View Transitions guide: route slug is `/guide/view-transitions`, title is `View Transitions`, category is `Fundamentals`, and references to the platform feature should use `View Transition API`.
 

@@ -32,12 +32,6 @@ const units = {
       'Accessibility'
     ]
   },
-  messages: {
-    categories: [
-      'Errors',
-      'Warnings',
-    ]
-  },
   blog: {
     categories: [
       'Major',

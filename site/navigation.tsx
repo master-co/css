@@ -40,7 +40,6 @@ export const footerNavGroups = [
     links: [
       { name: 'Play', href: '/play' },
       { name: 'Blog', href: '/blog' },
-      { name: 'Console Messages', href: '/messages' },
       { name: 'Design System', href: '/design-system' },
     ]
   },
