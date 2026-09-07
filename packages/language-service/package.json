@@ -25,7 +25,7 @@
     "@master/css-tooling": "workspace:*",
     "colorjs.io": "^0.6.1",
     "defu": "^6.1.7",
-    "js-beautify": "^1.15.4",
+    "js-beautify": "^2.0.3",
     "minimatch": "^10.2.5",
     "vscode-languageserver-protocol": "^3.18.0",
     "vscode-languageserver-textdocument": "^1.0.12"
@@ -33,8 +33,9 @@
   "devDependencies": {
     "@angular-eslint/template-parser": "^21.4.0",
     "@master/eslint-config-css": "workspace:*",
-    "@typescript-eslint/parser": "^8.61.1",
+    "@types/js-beautify": "^1.14.3",
     "@types/vscode": "^1.125.0",
+    "@typescript-eslint/parser": "^8.61.1",
     "shiki": "^4.2.0",
     "vscode-languageserver": "^10.0.0"
   },
