@@ -1,16 +1,16 @@
 {
-  "name": "@master/css.next-playground",
+  "name": "@master/css-next-playground",
   "version": "0.0.0",
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "pnpm --dir .. build && next dev",
-    "build": "pnpm --dir .. build && next build",
-    "start": "next start"
+    "dev": "pnpm --dir .. build && pnpm exec next dev",
+    "build": "pnpm --dir .. build && pnpm exec next build",
+    "start": "pnpm exec next start"
   },
   "dependencies": {
-    "@master/css-integration": "workspace:^",
-    "next": "^16.2.4",
+    "@master/css-internal": "workspace:^",
+    "next": "^16.2.10",
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },

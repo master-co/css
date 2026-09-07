@@ -13,22 +13,16 @@
   },
   "references": [
     {
-      "path": "../facade/tsconfig.typecheck.json"
+      "path": "../css/tsconfig.typecheck.json"
     },
     {
-      "path": "../diagnostics/tsconfig.typecheck.json"
+      "path": "../compiler/tsconfig.typecheck.json"
     },
     {
-      "path": "../lexer/tsconfig.typecheck.json"
+      "path": "../tooling/tsconfig.typecheck.json"
     },
     {
-      "path": "../project/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../scanner/tsconfig.typecheck.json"
-    },
-    {
-      "path": "../stylesheet/tsconfig.typecheck.json"
+      "path": "../binding/tsconfig.typecheck.json"
     }
   ],
   "include": [

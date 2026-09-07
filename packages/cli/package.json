@@ -5,9 +5,12 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "cargo xtask build-native && vitest"
   },
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "license": "MIT",
   "description": "Master CSS CLI",
   "author": "Aoyue Design LLC.",
@@ -26,7 +29,11 @@
     "css",
     "mastercss"
   ],
-  "bin": "./dist/bin/index.js",
+  "bin": {
+    "master-css": "./dist/bin/index.js"
+  },
+  "exports": {},
+  "sideEffects": false,
   "files": [
     "dist"
   ],
@@ -35,19 +42,14 @@
     "provenance": true
   },
   "dependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-diagnostics": "workspace:^",
-    "@master/css-lexer": "workspace:^",
-    "@master/css-language": "workspace:^",
-    "@master/css-lint": "workspace:^",
-    "@master/css-project": "workspace:^",
-    "@master/css-scanner": "workspace:^",
-    "@master/css-stylesheet": "workspace:^",
-    "@master/css-validator": "workspace:^",
+    "@master/css": "workspace:*",
+    "@master/css-compiler": "workspace:*",
+    "@master/css-preset": "workspace:*",
+    "@master/css-schema": "workspace:*",
+    "@master/css-tooling": "workspace:*",
     "bytes": "^3.1.2",
     "chokidar": "^5.0.0",
     "commander": "^14.0.3",
-    "consola": "^3.4.2",
     "fast-glob": "^3.3.3"
   },
   "devDependencies": {

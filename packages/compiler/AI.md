@@ -2,38 +2,48 @@
 
 ## Responsibility
 
-`@master/css-compiler` is the canonical CSS source compiler for Master CSS. It parses Master CSS stylesheet directives and native CSS, resolves CSS import graphs, detects project entry markers, parses standalone extraction directives, and lowers CSS-first authoring into `MasterCSSManifest` values.
+`@master/css-compiler` is the consolidated TypeScript host for the canonical Rust compiler and project crates. It owns compiler sessions, project resolution, managed stylesheet composition, and complete project inspection orchestration.
 
 ## Owns
 
 - CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities`.
-- CSS import graph resolution through `compileCSSFile()`.
+- Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
 - Shared directive data and dependency reporting for lower-level consumers.
+- Project entry discovery, manifest loading, sync loading, and workspace package resolution under `./project`.
+- Managed stylesheet registration, extraction policy, native CSS pruning, and generated CSS composition under `./stylesheet`.
+- Complete project inspection reports under `./diagnostics`.
 
 ## Does Not Own
 
 - Runtime class execution; use the manifest-driven engine.
-- Project entry discovery; use `@master/css-project`.
 - Build or framework lifecycle behavior.
 - PostCSS reintroduction.
 - Unrelated `.css` source scanning for class usage.
 
 ## Public Surface
 
-- Root compiler APIs.
-- `./browser` APIs.
-- Manifest APIs used by project loading and integrations.
+- Universal root async compiler sessions.
+- Native-only `./node` sync session.
+- Async Node project APIs under `./project` and sync variants under `./project/sync`.
+- Node stylesheet orchestration under `./stylesheet`.
+- Wasm-only stylesheet compilation under `./stylesheet/browser`.
+- Node project inspection under `./diagnostics`.
 
 ## Key Files
 
-- `src/core.ts`
 - `src/index.ts`
-- `src/master-css-manifest.ts`
-- `src/lower-css-directives.ts`
-- `src/css-transform.ts`
-- `src/native-declaration.ts`
+- `src/session.ts`
+- `src/node.ts`
+- `src/browser.ts`
+- `src/project/*`
+- `src/stylesheet/*`
+- `src/stylesheet/types.ts`
+- `src/diagnostics/index.ts`
+- `crates/mastercss-compiler/src/directives.rs`
+- `crates/mastercss-compiler/src/manifest/*`
+- `crates/mastercss-compiler/src/lower/*`
 
 ## Risk Areas
 
@@ -55,6 +65,8 @@
 - Moving engine matching or runtime behavior here.
 - Expanding directive syntax without tests and directive guide updates.
 - Scanning unrelated CSS files for class usage in this package.
+- Adding a TypeScript directive/parser/lowering/CSS transform fallback.
+- Reintroducing separate public project, stylesheet, or diagnostics packages.
 
 ## Validation
 

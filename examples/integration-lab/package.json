@@ -7,8 +7,8 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "@master/css.vite": "workspace:^",
-    "@master/css.webpack": "workspace:^",
+    "@master/css-vite": "workspace:^",
+    "@master/css-webpack": "workspace:^",
     "@tanstack/react-router": "^1.170.16",
     "@tanstack/react-start": "^1.168.26",
     "react": "^19.2.7",

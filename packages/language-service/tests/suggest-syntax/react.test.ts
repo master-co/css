@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import { Position } from 'vscode-languageserver-textdocument'
-import CSSLanguageService from '../../src/core'
+import CSSLanguageService from '../helpers/rc87-language-service'
 import createDoc from '../../src/utils/create-doc'
 
 const languageService = new CSSLanguageService()
@@ -37,3 +37,4 @@ it.concurrent('types inside spaced jsx attribute assignment', () => {
   })
   expect(completionItems?.find(({ label }) => label === 'block')).toBeDefined()
 })
+

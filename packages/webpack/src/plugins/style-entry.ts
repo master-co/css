@@ -2,8 +2,8 @@ import { fileURLToPath } from 'node:url'
 import type { Compiler } from 'webpack'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
-function resolveStyleCSSLoaderPath() {
-  return fileURLToPath(new URL('../style-css-loader.js', import.meta.url))
+function resolveStylesheetLoaderPath() {
+  return fileURLToPath(new URL('../stylesheet-loader.js', import.meta.url))
 }
 
 export default function StyleEntryPlugin(context: MasterCSSWebpackContext): WebpackSubPlugin {
@@ -14,7 +14,7 @@ export default function StyleEntryPlugin(context: MasterCSSWebpackContext): Webp
         enforce: 'pre',
         use: [
           {
-            loader: resolveStyleCSSLoaderPath(),
+            loader: resolveStylesheetLoaderPath(),
             options: {
               virtualCSSImportModuleId: context.virtualCSSImportModuleId
             }

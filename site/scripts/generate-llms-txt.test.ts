@@ -115,12 +115,12 @@ test('renderLlmsIndex emits H1 + summary + per-section H2 with links', () => {
 })
 
 test('renderLlmsIndex sorts sections alphabetically and pages by url', () => {
-  const out = renderLlmsIndex(fixture)
+  const out = renderLlmsIndex(fixture, 'https://example.test')
   const guideIdx = out.indexOf('## Guide')
   const refIdx = out.indexOf('## Reference')
   assert.ok(guideIdx > 0 && refIdx > guideIdx)
   const colorsIdx = out.indexOf('Colors')
-  const guideTopIdx = out.indexOf('](https://rc.css.master.co/en/guide)')
+  const guideTopIdx = out.indexOf('](https://example.test/en/guide)')
   assert.ok(guideTopIdx > 0 && guideTopIdx < colorsIdx)
 })
 

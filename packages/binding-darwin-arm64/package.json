@@ -1,0 +1,12 @@
+{
+  "name": "@master/css-binding-darwin-arm64",
+  "type": "commonjs",
+  "engines": { "node": "^24" },
+  "license": "MIT",
+  "description": "Master CSS native binding for macOS ARM64.",
+  "exports": { ".": "./mastercss.node" },
+  "os": ["darwin"],
+  "cpu": ["arm64"],
+  "files": ["mastercss.node", "mcss"],
+  "publishConfig": { "access": "public", "provenance": true }
+}

@@ -11,12 +11,13 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "@master/css.vite": "workspace:^",
+    "@master/css-vite": "workspace:^",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",
+    "@master/eslint-config-css": "workspace:^",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.61.1",

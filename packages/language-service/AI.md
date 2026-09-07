@@ -8,7 +8,7 @@
 
 - Language service settings and feature gating.
 - Completion, hover/generated CSS previews, colors, and color presentations.
-- `TextDocument` methods that delegate class-position and semantic token primitives to `@master/css-language`.
+- `TextDocument` methods that delegate class-position and semantic token primitives to `@master/css-tooling/language`.
 - Thin wrappers around editor-neutral language primitives.
 
 ## Does Not Own
@@ -16,19 +16,23 @@
 - Engine syntax behavior.
 - LSP capabilities and workspace lifecycle.
 - Browser helpers, Shiki helpers, TextMate grammar ownership, semantic tokenizer ownership, or class-position scanner ownership.
-- Raw class-list parsing and unescape behavior; that flows through `@master/css-language` from `@master/css-lexer`.
+- Raw class-list parsing and unescape behavior; that flows through `@master/css-tooling/language` from `@master/css-tooling/lexer`.
 - Diagnostics without language-server coordination.
 
 ## Public Surface
 
-- `CSSLanguageService`
-- `settings`
+- `MasterCSSLanguageService`
+- `defaultLanguageServiceSettings`
 - Feature functions and common constants
 - `./common`
+- `./shiki` and the TextMate grammar asset
 
 ## Key Files
 
 - `src/core.ts`
+- `src/shiki.ts`
+- `src/shiki/hast.ts`
+- `src/shiki/languages.ts`
 - `src/settings.ts`
 - `src/features/*`
 - `src/utils/query-syntax-completions.ts`
@@ -67,4 +71,4 @@ pnpm --filter @master/css-language-service type-check
 pnpm --filter @master/css-language-service build
 ```
 
-Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.
+Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-semantic-tokens.test.ts`, `tests/render-css-semantic-tokens.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.

@@ -1,5 +1,6 @@
-import { render } from '@master/css-server'
-import type { MasterCSSManifest } from '@master/css'
+import { createServerRenderer, renderHTML } from '@master/css-server'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MiddlewareHandler } from 'astro'
 
 const BODYLESS_STATUSES = new Set([204, 205, 304])
@@ -22,11 +23,24 @@ export async function renderResponse(response: Response, manifest: MasterCSSMani
   if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
     return response
   }
-  return createResponse(response, render(await response.text(), manifest, { hydrationManifest: 'inject' }).html)
+  const rendered = renderHTML(await response.text(), {
+    manifest,
+    hydrationManifest: 'inject'
+  })
+  return createResponse(response, rendered.html)
 }
 
-export function createMasterCSSMiddleware(manifest: MasterCSSManifest): MiddlewareHandler {
+export function createMasterCSSMiddleware(
+  manifest: MasterCSSManifest,
+  emittedGlobals: MasterCSSEmittedGlobals = {}
+): MiddlewareHandler {
+  const renderer = createServerRenderer({ manifest, emittedGlobals })
   return async (_context, next) => {
-    return await renderResponse(await next(), manifest)
+    const response = await next()
+    if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
+      return response
+    }
+    const rendered = renderer.renderHTML(await response.text(), { hydrationManifest: 'inject' })
+    return createResponse(response, rendered.html)
   }
 }

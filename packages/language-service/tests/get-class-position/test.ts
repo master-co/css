@@ -1,6 +1,6 @@
 import { test, expect } from 'vitest'
-import { Settings } from '../../src'
-import CSSLanguageService from '../../src/core'
+import type { Settings } from '../helpers/rc87-language-service'
+import CSSLanguageService from '../helpers/rc87-language-service'
 import createDoc, { languageIdOfExt } from '../../src/utils/create-doc'
 
 export const expectClassPosition = (target: string, contents: string[], ext: keyof typeof languageIdOfExt = 'html', settings?: Settings) => {
@@ -105,3 +105,4 @@ test.concurrent('nested strings and literals', () => {
   const contents = [`export default () => <div className={'block `, target, `'}>hello world</div>`]
   expectClassPosition(target, contents, 'tsx')
 })
+

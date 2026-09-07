@@ -28,3 +28,4 @@ describe.concurrent('object', () => {
     expectClassPosition(target, contents, 'js', { classDeclarations: ['classes'] })
   })
 })
+

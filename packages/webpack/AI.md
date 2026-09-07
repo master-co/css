@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.webpack`
+# AI Notes For `@master/css-webpack`
 
 ## Responsibility
 
-`@master/css.webpack` provides a Webpack integration plugin based on `CSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
+`@master/css-webpack` provides a Webpack integration plugin based on `MasterCSSScanner`, `webpack-virtual-modules`, and build-tool runtime injection.
 
 ## Owns
 
@@ -28,7 +28,7 @@
 - `src/plugin.ts`
 - `src/options.ts`
 - `src/runtime.ts`
-- `src/style-css-loader.ts`
+- `src/stylesheet-loader.ts`
 - `src/plugins/*`
 
 ## Risk Areas
@@ -50,17 +50,17 @@
 ## Dangerous Changes
 
 - Duplicating scanner logic here.
-- Replacing `CSSScanner` as the source of extraction behavior.
+- Replacing `MasterCSSScanner` as the source of extraction behavior.
 - Changing virtual module id behavior casually.
 - Injecting runtime through app source rewrites instead of Webpack asset/entry orchestration.
 
 ## Validation
 
 ```sh
-pnpm --filter @master/css.webpack test
-pnpm --filter @master/css.webpack lint
-pnpm --filter @master/css.webpack type-check
-pnpm --filter @master/css.webpack build
+pnpm --filter @master/css-webpack test
+pnpm --filter @master/css-webpack lint
+pnpm --filter @master/css-webpack type-check
+pnpm --filter @master/css-webpack build
 ```
 
 Run the Webpack example build when plugin behavior changes.

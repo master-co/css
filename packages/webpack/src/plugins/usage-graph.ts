@@ -40,6 +40,7 @@ export default function UsageGraphPlugin(context: MasterCSSWebpackContext): Webp
 
         compilation.hooks.finishModules.tapPromise(context.name, async () => {
           if (!pendingByPath.size) return
+          await context.init()
           const entries = Array.from(pendingByPath.entries())
           pendingByPath.clear()
           await context.processModuleContents(entries, context.isGeneratedCSSModulePath)

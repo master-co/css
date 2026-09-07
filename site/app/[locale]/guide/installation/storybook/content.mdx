@@ -29,7 +29,7 @@ const config: StorybookConfig = {
   framework: '@storybook/react-vite',
   async viteFinal(config) {
     const { mergeConfig } = await import('vite')
-    const { default: masterCSS } = await import('@master/css.vite')
+    const { default: masterCSS } = await import('@master/css-vite')
 
     return mergeConfig(config, {
       plugins: [

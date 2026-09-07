@@ -92,7 +92,7 @@ Progressive rendering can externalize the page hydration manifest:
 
 (x) Do not add a preload hint for this JSON file.
 
-The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let the runtime import it when hydration starts. If that import fails or the data is invalid, the runtime rebuilds from connected DOM classes.
+The page hydration manifest is runtime handoff data. It lets the runtime adopt the rules that already exist in `style#master-css`, but it is not required for the browser to paint the first screen. Let the runtime import it when hydration starts. If a referenced manifest cannot be imported or validated, startup rejects with `INVALID_HYDRATION_MANIFEST`; if a loaded manifest does not match the style block, the runtime warns and rebuilds from connected DOM classes.
 
 This is different from runtime project manifests. A runtime-only page needs its project manifest before it can interpret classes. A progressive page already has the first-response rules in `style#master-css`, so its page hydration manifest only describes CSS that was already rendered into that one HTML response.
 

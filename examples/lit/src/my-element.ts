@@ -2,8 +2,8 @@ import { LitElement, css, html } from 'lit'
 import { customElement, property } from 'lit/decorators.js'
 import masterLogo from './assets/master.svg'
 import litLogo from './assets/lit.svg'
-import { cssRuntime } from '@master/css-runtime'
-import type CSSRuntime from '@master/css-runtime'
+import { withMasterCSSRuntime } from '@master/css-runtime'
+import type { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
@@ -14,10 +14,10 @@ import emittedGlobals from 'virtual:master-css-emitted-globals'
  * @csspart button - The button
  */
 @customElement('my-element')
-@cssRuntime({ manifest, emittedGlobals })
+@withMasterCSSRuntime({ manifest, emittedGlobals })
 export class MyElement extends LitElement {
 
-    cssRuntime?: CSSRuntime
+    masterCSSRuntime?: MasterCSSRuntime
 
     /**
      * Copy for the read the docs hint.

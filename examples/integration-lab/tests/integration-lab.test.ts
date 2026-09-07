@@ -115,7 +115,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
       "import { dirname, join } from 'node:path'",
       "import { fileURLToPath } from 'node:url'",
       "import { rspack } from '@rspack/core'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -175,7 +175,7 @@ function createRsbuildFixture(mode: 'runtime' | 'static') {
       "import { fileURLToPath } from 'node:url'",
       "import { defineConfig } from '@rsbuild/core'",
       "import { pluginReact } from '@rsbuild/plugin-react'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -221,7 +221,7 @@ function createTanStackStartFixture() {
       "import { defineConfig } from 'vite'",
       "import { tanstackStart } from '@tanstack/react-start/plugin/vite'",
       "import react from '@vitejs/plugin-react'",
-      "import masterCSS from '@master/css.vite'",
+      "import masterCSS from '@master/css-vite'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -310,7 +310,7 @@ function createTanStackStartRsbuildFixture() {
       "import { fileURLToPath } from 'node:url'",
       "import { defineConfig } from '@rsbuild/core'",
       "import { tanstackStart } from '@tanstack/react-start/plugin/rsbuild'",
-      "import MasterCSSPlugin from '@master/css.webpack'",
+      "import MasterCSSPlugin from '@master/css-webpack'",
       '',
       'const root = dirname(fileURLToPath(import.meta.url))',
       '',
@@ -450,7 +450,7 @@ describe('integration lab package', () => {
   })
 })
 
-describe('@master/css.webpack with Rspack', () => {
+describe('@master/css-webpack with Rspack', () => {
   test.each(['static', 'runtime'] as const)('builds a raw Rspack app in %s mode', async (mode) => {
     const root = createRspackFixture(mode)
     try {
@@ -473,7 +473,7 @@ describe('@master/css.webpack with Rspack', () => {
   })
 })
 
-describe('@master/css.webpack with Rsbuild', () => {
+describe('@master/css-webpack with Rsbuild', () => {
   test.each(['static', 'runtime'] as const)('builds an Rsbuild React app in %s mode', async (mode) => {
     const root = createRsbuildFixture(mode)
     try {
@@ -496,7 +496,7 @@ describe('@master/css.webpack with Rsbuild', () => {
   })
 })
 
-describe('TanStack Start with @master/css.vite', () => {
+describe('TanStack Start with @master/css-vite', () => {
   test('builds the Vite variant with managed CSS and SSR output', async () => {
     const root = createTanStackStartFixture()
     try {
@@ -537,7 +537,7 @@ describe('TanStack Start with @master/css.vite', () => {
   }, 30000)
 })
 
-describe('TanStack Start with Rsbuild and @master/css.webpack', () => {
+describe('TanStack Start with Rsbuild and @master/css-webpack', () => {
   test('builds the Rsbuild variant with managed CSS and SSR output', async () => {
     const root = createTanStackStartRsbuildFixture()
     try {

@@ -13,24 +13,57 @@ test('selectors', async ({ page }) => {
   const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
   await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
   await init(page, generatedCSS, manifest, 'auto')
-  expect((await page.evaluate(() => globalThis.masterCSSRuntime.rules)).map(({ name }) => name)).toEqual(['utilities', 'theme'])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after'))).toMatchObject({
-    selectorNodes: [
-      { raw: '::before', type: 'pseudo-element', value: 'before' },
-      { raw: ',', type: 'separator', value: ',' },
-      { raw: '::after', type: 'pseudo-element', value: 'after' },
-    ],
-  })
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
+  expect((await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.rules)).map(({ name }) => name)).toEqual(['theme', 'utilities'])
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.selectorText))
     .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after')
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.text))
     .toBe('.block\\:\\:before\\,\\:\\:after::before,.block\\:\\:before\\,\\:\\:after::after{display:block}')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'block::before,::after')?.native?.cssText))
     .toBe('.block\\:\\:before\\,\\:\\:after::before, .block\\:\\:before\\,\\:\\:after::after { display: block; }')
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.text))
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb{display:none}')
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((rule) => rule.name === 'hidden::slider-thumb')?.native?.cssText))
     .toBe('.hidden\\:\\:slider-thumb::-webkit-slider-thumb { display: none; }')
+
+  await page.evaluate(() => {
+    const baseHost = document.createElement('div')
+    baseHost.className = 'block_button@base'
+    baseHost.innerHTML = '<button id="selectorless-base-descendant">Base descendant</button>'
+
+    const defaultsHost = document.createElement('div')
+    defaultsHost.id = 'selectorless-default-host'
+    defaultsHost.className = '{flex;rel}_:is(h4,.app-nav)@default'
+    defaultsHost.innerHTML = '<h4 id="selectorless-default-descendant">Default descendant</h4>'
+
+    document.body.append(baseHost, defaultsHost)
+  })
+
+  await expect.poll(() => page.evaluate(() => ({
+    base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
+    defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.find(
+      (rule) => rule.name === '{flex;rel}_:is(h4,.app-nav)@default'
+    )?.text
+  }))).toEqual({
+    base: '.block_button\\@base button{display:block}',
+    defaults: '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex;position:relative}'
+  })
+
+  expect(await page.evaluate(() => {
+    const hostStyle = getComputedStyle(document.getElementById('selectorless-default-host')!)
+    const baseDescendantStyle = getComputedStyle(document.getElementById('selectorless-base-descendant')!)
+    const defaultDescendantStyle = getComputedStyle(document.getElementById('selectorless-default-descendant')!)
+    return {
+      baseDescendantDisplay: baseDescendantStyle.display,
+      defaultDescendantDisplay: defaultDescendantStyle.display,
+      defaultDescendantPosition: defaultDescendantStyle.position,
+      hostDisplay: hostStyle.display
+    }
+  })).toEqual({
+    baseDescendantDisplay: 'block',
+    defaultDescendantDisplay: 'flex',
+    defaultDescendantPosition: 'relative',
+    hostDisplay: 'block'
+  })
 })

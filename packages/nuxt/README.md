@@ -20,11 +20,11 @@
       <img alt="NPM Version" src="https://img.shields.io/github/v/release/master-co/css?include_prereleases&color=f6f7f8&label=&style=for-the-badge&logo=github">
     </picture>
   </a>
-  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css.nuxt">
+  <a aria-label="NPM Package" href="https://www.npmjs.com/package/@master/css-nuxt">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=212022&label=%20&logo=npm&style=for-the-badge">
-      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
-      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css.nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/npm/dm/@master/css-nuxt?color=212022&label=%20&logo=npm&style=for-the-badge">
+      <source media="(prefers-color-scheme: light)" srcset="https://img.shields.io/npm/dm/@master/css-nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
+      <img alt="NPM package ( download / month )" src="https://img.shields.io/npm/dm/@master/css-nuxt?color=f6f7f8&label=%20&logo=npm&style=for-the-badge">
     </picture>
   </a>
   <a aria-label="Discord Community" href="https://discord.gg/sZNKpAAAw6">
@@ -55,7 +55,7 @@
 ## Installation
 
 ```bash
-npm install @master/css.nuxt
+npm install @master/css-nuxt
 ```
 
 ## Usage
@@ -63,7 +63,7 @@ npm install @master/css.nuxt
 ```ts
 export default defineNuxtConfig({
   modules: [
-    '@master/css.nuxt'
+    '@master/css-nuxt'
   ]
 })
 ```
@@ -78,16 +78,16 @@ Import the default stylesheet from a global Vue style block:
 
 The default `progressive` mode integrates Nuxt SSR, SSG, ISR, and Hybrid rendering strategies through Nitro, automatically loading custom configuration.
 
-In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. `injectRuntime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
+In `mode: 'runtime'`, the module publishes a stable manifest JSON asset and modulepreloads it from the Nuxt document head when it also injects the client runtime plugin. `runtime: false` disables both automatic runtime injection and the manifest JSON modulepreload.
 
 ## Options
 
-The module options extend `@master/css.vite` options.
+The module options extend `@master/css-vite` options.
 
 ```ts
 export default defineNuxtConfig({
   modules: [
-    ['@master/css.nuxt', {
+    ['@master/css-nuxt', {
       mode: 'progressive'
     }]
   ]
@@ -98,9 +98,9 @@ Default options:
 
 | Option | Default | Description |
 | --- | --- | --- |
+| `enabled` | `true` | Enables the module. |
 | `mode` | `'progressive'` | Nuxt defaults to progressive rendering. |
-| `scanner` | `undefined` | Scanner options passed through to the shared Vite pipeline. |
-| `injectRuntime` | `true` | Injects the browser runtime when the selected mode needs it. |
-| `avoidFOUC` | `true` | Adds runtime-mode FOUC protection. |
+| `scanner` | `{}` | Scanner configuration passed through to the shared Vite pipeline. |
+| `runtime` | `{ enabled: true, avoidFOUC: true }` | Controls runtime injection and FOUC protection. |
 
 See the [Nuxt installation guide](https://rc.css.master.co/guide/installation/nuxtjs) for a full project setup.

@@ -68,11 +68,12 @@ npm install @master/css-runtime
 Initialize the runtime with the project manifest and emitted global CSS state provided by an official integration:
 
 ```js
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-CSSRuntime.create({ manifest, emittedGlobals }).observe()
+const cssRuntime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
+cssRuntime.observe()
 ```
 
 ## CDN IIFE
@@ -86,67 +87,52 @@ Use the CDN runtime when a page only needs the default preset and zero configura
 <script src="https://cdn.master.co/css-runtime@rc"></script>
 ```
 
-The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json`, and the browser must support JSON modules and import attributes. It does not read global options or custom manifests. Use ESM `CSSRuntime.create({ manifest, emittedGlobals }).observe()` for custom theme tokens, utilities, modes, emitted globals, or hydration inputs.
+The IIFE imports `default-manifest.json` next to the runtime script as a JSON module, starts automatically, and registers the document runtime as `globalThis.masterCSSRuntime`. The CDN must serve the manifest with `application/json`, and the browser must support JSON modules and import attributes. It does not read global options or custom manifests. Use ESM `await MasterCSSRuntime.start({ manifest, emittedGlobals })` for custom inputs.
 
 ## API
 
-### `CSSRuntime`
+### `MasterCSSRuntime`
 
 ```ts
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 
-const cssRuntime = CSSRuntime.create({ manifest })
+const cssRuntime = await MasterCSSRuntime.start({ manifest })
 cssRuntime.observe()
 ```
 
-`CSSRuntime` runs in the browser and extends the manifest-driven `MasterCSS` engine. Use `CSSRuntime.create({ manifest })` when the runtime should reuse an existing runtime for the same root.
+`MasterCSSRuntime` is the DOM/CSSOM host around a Rust/Wasm engine session. Public state is available only through `snapshot()` and the readonly global facade.
 
 | API | Type | Description |
 | --- | --- | --- |
-| `CSSRuntime.instances` | `WeakMap<Document \| ShadowRoot, CSSRuntime>` | Runtime instances keyed by root. |
-| `CSSRuntime.create(options)` | `CSSRuntime` | Creates or reuses a registered runtime for `options.root`. |
-| `cssRuntime.root` | `Document \| ShadowRoot` | Observed root. |
-| `cssRuntime.host` | `Element` | Root host, usually `root.host` or `document.documentElement`. |
-| `cssRuntime.container` | `HTMLElement \| ShadowRoot` | Container for `style#master-css`. |
-| `cssRuntime.observing` | `boolean` | `true` after `observe()`, `false` after `disconnect()`. |
-| `cssRuntime.classCounts` | `Map<string, number>` | Active DOM class usage counts. This is the source of truth for observed DOM usage. |
-| `cssRuntime.classUtilities` | `Map<string, Utility[]>` | Generated rule cache. It can include retained mutation rules that are no longer active in the DOM. |
-| `cssRuntime.retainedClassNames` | `Set<string>` | Mutation-removed class names whose generated rules are temporarily retained in CSSOM. |
-| `register()` | `this` | Registers this runtime in `CSSRuntime.instances`. |
-| `unregister()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
-| `needsHydrationManifest()` | `boolean` | Returns `true` when an external hydration manifest should be loaded before observation. |
-| `loadHydrationManifest()` | `Promise<this>` | Reads inline hydration data or imports the external hydration manifest URL from `style#master-css`. |
-| `setHydrationManifest(manifest?)` | `this` | Sets the hydration manifest used by progressive hydration. |
+| `MasterCSSRuntime.start(options)` | `Promise<MasterCSSRuntime>` | Initializes or reuses the runtime for `options.root`; `manifest` is required. |
 | `observe()` | `this` | Observes class attribute changes. |
-| `ensureClassRules(...classNames)` | `this` | Synchronously ensures generated rules exist for class names. Use this to warm rules before DOM insertion. |
-| `deleteClassRules(...classNames)` | `void` | Synchronously deletes generated rules for class names. |
-| `flushRetainedClassRules()` | `number` | Synchronously removes retained mutation rules that are no longer active and returns the removed class count. |
-| `disconnect()` | `this \| undefined` | Cancels observation. |
-| `refresh(manifest?)` | `this` | Refreshes with a complete `MasterCSSManifest`. |
-| `reset()` | `this` | Clears rules and styles. |
-| `destroy()` | `this` | Removes this runtime from `CSSRuntime.instances`. |
-
-MutationObserver additions update `classCounts` immediately. Existing and retained generated rules are reused immediately, while first-time rules discovered by the observer are batched into the next pre-paint flush. MutationObserver removals also update `classCounts` immediately, but generated CSS rules may be retained briefly to avoid CSSOM deletion during interaction-heavy updates. Re-adding a retained class reuses the existing generated rule. Direct `cssRuntime.ensureClassRules(...)`, `cssRuntime.deleteClassRules(...)`, `refresh()`, `disconnect()`, and `destroy()` stay synchronous.
+| `disconnect()` | `this` | Stops observation and clears non-hydrated runtime state. |
+| `refresh(manifest)` | `this` | Replaces the complete manifest. |
+| `ensureClassRules(classNames)` | `MasterCSSEngineTransition` | Ensures rules for a readonly class-name collection. |
+| `deleteClassRules(classNames)` | `MasterCSSEngineTransition` | Deletes rules for a readonly class-name collection. |
+| `snapshot()` | `MasterCSSRuntimeSnapshot` | Returns frozen class rules, usage counts, layers, CSS text, binding, and hydration state. |
+| `dispose()` | `void` | Idempotently releases observation, CSSOM state, and the binding session. |
 
 ### Progressive Hydration
 
 ```ts
-import CSSRuntime from '@master/css-runtime'
+import { MasterCSSRuntime } from '@master/css-runtime'
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 
-const cssRuntime = CSSRuntime.create({
+const cssRuntime = await MasterCSSRuntime.start({
   manifest,
   emittedGlobals,
 })
-if (cssRuntime.needsHydrationManifest()) {
-  await cssRuntime.loadHydrationManifest()
-}
 cssRuntime.observe()
 ```
 
-`emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS.
+`start()` resolves explicit, inline, or external hydration data before returning. `emittedGlobals` tells the runtime which variables and keyframes were already emitted by the project CSS entry, so future dynamic classes can reuse them without inserting duplicate global CSS. These counts are cumulative for the lifetime of the runtime and cannot be unregistered.
+
+Concurrent `start()` calls for the same root share one startup. The first call's manifest, binding, timeout, and diagnostic callback remain authoritative; pending `emittedGlobals` counts are added together, and the last explicitly provided hydration manifest is used. Every caller resolves to the same fully coordinated runtime.
+
+`globalThis.MasterCSSRuntime` keeps the constructor name and `globalThis.masterCSSRuntime` exposes the readonly facade.
 
 ## Related docs
 

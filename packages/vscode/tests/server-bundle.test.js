@@ -16,8 +16,8 @@ const packageDir = resolve(here, '..')
 const distDir = resolve(packageDir, 'dist')
 const serverPath = resolve(distDir, 'server.min.js')
 const extensionPath = resolve(distDir, 'extension.min.js')
-const sourceGrammarPath = './node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
-const stagedGrammarPath = './dist/node_modules/@master/css-language/syntaxes/master-css.tmLanguage.json'
+const sourceGrammarPath = './node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
+const stagedGrammarPath = './dist/node_modules/@master/css-language-service/syntaxes/master-css.tmLanguage.json'
 
 function readPackageJSON(path = resolve(packageDir, 'package.json')) {
   return JSON.parse(readFileSync(path, 'utf8'))
@@ -34,6 +34,10 @@ function encode(message) {
 function createLanguageServer(options = {}) {
   const child = spawn(process.execPath, [options.serverPath ?? serverPath, '--stdio'], {
     cwd: options.cwd ?? packageDir,
+    env: {
+      ...process.env,
+      NODE_PATH: ''
+    },
     stdio: ['pipe', 'pipe', 'pipe']
   })
   let closed = false
@@ -169,6 +173,14 @@ function expectStagedRuntimePackages({ stagingDir, files }, runtimePackages) {
   }
 }
 
+function expectCurrentNativeArtifacts(stagingDir, target) {
+  const packageName = getRuntimePackagesForTarget(target)[0]
+  const packagePath = join(stagingDir, 'dist', 'node_modules', ...packageName.split('/'))
+  const executableName = target.startsWith('win32-') ? 'mcss.exe' : 'mcss'
+  expect(statSync(join(packagePath, 'mastercss.node')).isFile()).toBe(true)
+  expect(statSync(join(packagePath, executableName)).isFile()).toBe(true)
+}
+
 test('build emits the server bundle', () => {
   expect(statSync(serverPath).isFile()).toBe(true)
 })
@@ -201,19 +213,41 @@ test('extension bundle reuses one Master CSS output channel for the language cli
   expect(languageClientConstruction).toContain('outputChannel:')
 })
 
-test('server bundle keeps expected native runtime imports external', () => {
+test('server bundle does not retain removed TypeScript semantic bindings', () => {
   const source = readFileSync(serverPath, 'utf8')
   const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
-  const nativeRuntimeImports = imports.filter((specifier) =>
+  const legacySemanticImports = imports.filter((specifier) =>
     /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
   )
 
-  expect(nativeRuntimeImports.sort()).toEqual(['lightningcss', 'oxc-parser'])
+  expect(legacySemanticImports).toEqual([])
+})
+
+test('records the rc.87 native semantic import externalization divergence', () => {
+  const source = readFileSync(serverPath, 'utf8')
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+  const legacySemanticImports = imports.filter((specifier) =>
+    /^(?:lightningcss(?:-.+)?|oxc-(?:parser|resolver|transform)|@oxc-(?:parser|resolver|transform)\/)/.test(specifier)
+  )
+
+  expect(legacySemanticImports).toEqual([])
+})
+
+test('server bundle embeds referenced MDN JSON modules', () => {
+  const source = readFileSync(serverPath, 'utf8')
+  const imports = [...source.matchAll(/\bfrom\s*["']([^"']+)["']/g)].map((match) => match[1])
+
+  expect(imports.filter((specifier) => specifier.startsWith('mdn-data/'))).toEqual([])
+  expect(source).not.toContain('../data/patch.json')
+  expect(source).not.toContain('mdn-data/css/')
+  expect(source).toContain('repeating-linear-gradient()')
+  expect(source).toContain(':first-child')
 })
 
 test('staged extension includes runtime packages for the current target', async () => {
-  await withStagedExtension(({ stagingDir, files }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
+  await withStagedExtension(({ stagingDir, files, target }, { getCurrentTarget, getRuntimePackagesForTarget }) => {
     expectStagedRuntimePackages({ stagingDir, files }, getRuntimePackagesForTarget(getCurrentTarget()))
+    expectCurrentNativeArtifacts(stagingDir, target)
   })
 })
 
@@ -305,7 +339,41 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server starts and shuts down', async () => {
+test('staged language server starts without workspace node_modules and shuts down', async () => {
+  await withStagedExtension(async ({ stagingDir }) => {
+    const server = createLanguageServer({
+      cwd: stagingDir,
+      serverPath: resolve(stagingDir, 'dist', 'server.min.js')
+    })
+
+    try {
+      const result = await server.request('initialize', {
+        processId: null,
+        rootUri: null,
+        capabilities: {
+          workspace: {
+            workspaceFolders: true
+          }
+        },
+        workspaceFolders: []
+      })
+
+      expect(result.capabilities?.textDocumentSync).toBeTruthy()
+      expect(result.capabilities?.hoverProvider).toBe(true)
+
+      await server.request('shutdown', null)
+      server.notify('exit')
+      await expect(server.closed()).resolves.toBe(0)
+
+      expect(server.stderr()).not.toContain('Cannot find module')
+      expect(server.stderr()).not.toContain('Cannot find package')
+    } finally {
+      await server.dispose()
+    }
+  })
+})
+
+test('proves the rc.87 staged language server lifecycle without workspace node_modules', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,

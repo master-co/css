@@ -1,16 +1,48 @@
+Progressive rendering starts with two matching page artifacts: `style#master-css` contains the CSS needed for the first paint, and a page hydration manifest describes those generated rules so the runtime can adopt them. The page hydration manifest is not the project manifest imported from `virtual:master-css-manifest`.
+
+The runtime can discover page hydration data from either an inline `script#master-css-hydration-manifest` or the URL in `style#master-css[data-master-css-hydration-manifest]`. Explicit `hydrationManifest` startup options take precedence over both.
+
 ## Causes [sr-only]
 ### Why this error occurred
 
-1. The server's compiled project manifest does not match the client's.
-2. The server's version does not match the client's.
+The runtime reports `INVALID_HYDRATION_MANIFEST` and rejects startup when referenced hydration data cannot be trusted. Common causes include:
+
+1. The external JSON URL returns an error, redirects to a non-JSON response, or cannot be imported.
+2. The inline or external payload is not valid JSON, does not use hydration manifest version `1`, or omits the `rules` or `resourceOrder` arrays.
+3. An explicit `hydrationManifest` option uses an unsupported shape or version.
+4. HTML, CSS, and hydration JSON came from different builds because a deploy or cache update was not atomic.
+
+A related progressive hydration warning occurs when the manifest is missing, empty, or does not match the generated rules or native CSS in `style#master-css`. In that case the runtime cannot adopt the pre-rendered rules and rebuilds the stylesheet from connected DOM classes.
 
 ---
 
 ## Solutions
-### Import the same manifest
-```ts name=server.ts
+### Keep page artifacts from the same build
+
+Use the HTML, generated CSS, and hydration JSON produced by the same official integration build. Do not hand-edit or combine these artifacts across releases. Deploy them atomically and invalidate stale HTML or JSON caches together.
+
+For an external manifest, preserve the generated pointer on the pre-rendered style:
+
+```html
+<style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
+```
+
+Confirm that the URL returns the generated version `1` JSON artifact. If it is cross-origin, it must also be importable under the page's CORS and content security policies.
+
+### Keep project configuration consistent
+
+The server renderer, static build, and client runtime must use the same compiled project manifest. With an official integration, import the canonical project input from `virtual:master-css-manifest` instead of constructing separate server and client configurations.
+
+```ts
 import manifest from 'virtual:master-css-manifest'
 ```
-```ts name=client.ts
-import manifest from 'virtual:master-css-manifest'
-```
+
+Rebuild all page artifacts after tokens, modes, components, utilities, variants, package versions, or the CSS entry graph changes.
+
+### Check the recovery result
+
+When the runtime warns that progressive hydration requires a matching manifest, it removes the incompatible pre-rendered style and rebuilds `style#master-css` from connected DOM classes. Styling can recover, but the page no longer benefits from adopting its pre-rendered rules, so repeated warnings should be fixed.
+
+An `INVALID_HYDRATION_MANIFEST` load or validation failure is stricter: runtime startup rejects, reports the structured diagnostic through `onDiagnostic` when provided, and unhides the document root. Fix the referenced artifact or URL before retrying startup.
+
+Pages with no generated Master CSS rules do not need a page hydration manifest pointer. Runtime-only pages also start without progressive hydration artifacts by design.

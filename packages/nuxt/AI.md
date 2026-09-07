@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.nuxt`
+# AI Notes For `@master/css-nuxt`
 
 ## Responsibility
 
-`@master/css.nuxt` wires Master CSS into Nuxt, Vite, Nitro, client runtime, and server pre-render workflows.
+`@master/css-nuxt` wires Master CSS into Nuxt, Vite, Nitro, client runtime, and server pre-render workflows.
 
 ## Owns
 
@@ -13,7 +13,7 @@
 ## Does Not Own
 
 - Vite mode semantics.
-- Vue SFC extraction; `@master/css-source` handles source parsing through scanner auto adapters.
+- Vue SFC extraction; `@master/css-tooling/source` handles source parsing through scanner auto adapters.
 - Core runtime, server, scanner, or CSS generation behavior.
 
 ## Public Surface
@@ -50,7 +50,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css.nuxt test
-pnpm --filter @master/css.nuxt lint
-pnpm --filter @master/css.nuxt build
+pnpm --filter @master/css-nuxt test
+pnpm --filter @master/css-nuxt lint
+pnpm --filter @master/css-nuxt build
 ```

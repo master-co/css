@@ -1,6 +1,6 @@
 import type { Plugin } from 'vite'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
 import { getScanner } from '../utils/scanner-context'
 
@@ -15,7 +15,7 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
   return { source: nextSource, replaced }
 }
 
-export default function StyleEntryBuildPlugin(_options: PluginOptions, context: PluginContext): Plugin {
+export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return {
     name: 'master-css:style-entry:build',
     enforce: 'pre',

@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { DEV_RUNTIME_ENTRY_ID } from '../../src/common'
 import RuntimePreloadPlugin from '../../src/plugins/runtime-preload'
+import { RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID } from '@master/css-internal/runtime-bootstrap'
 
 describe('RuntimePreloadPlugin', () => {
   it('injects a dev modulepreload link for the runtime entry', () => {
@@ -41,8 +42,13 @@ describe('RuntimePreloadPlugin', () => {
             fileName: 'assets/index.C2zmEykZ.js',
             moduleIds: [
               '/repo/app/src/main.ts',
-              '/repo/packages/vite/src/runtime.ts'
+              RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
             ]
+          },
+          'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm': {
+            type: 'asset',
+            fileName: 'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm',
+            name: 'mastercss_binding_wasm_engine_bg.wasm'
           }
         }
       }
@@ -55,6 +61,17 @@ describe('RuntimePreloadPlugin', () => {
           rel: 'modulepreload',
           crossorigin: '',
           href: '/assets/index.C2zmEykZ.js'
+        },
+        injectTo: 'head-prepend'
+      },
+      {
+        tag: 'link',
+        attrs: {
+          rel: 'preload',
+          as: 'fetch',
+          type: 'application/wasm',
+          crossorigin: '',
+          href: '/assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm'
         },
         injectTo: 'head-prepend'
       }
@@ -78,12 +95,30 @@ describe('RuntimePreloadPlugin', () => {
             type: 'chunk',
             fileName: 'assets/index.C2zmEykZ.js',
             moduleIds: [
-              '/repo/packages/vite/src/runtime.ts'
+              RESOLVED_MASTER_CSS_RUNTIME_BOOTSTRAP_ID
             ]
           }
         }
       }
     )
+
+    expect(result).toBeUndefined()
+  })
+
+  it('does not inject a duplicate runtime Wasm preload link', () => {
+    const plugin = RuntimePreloadPlugin({ config: { base: '/' } } as never)
+    const href = '/assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm'
+    const html = `<html><head><link rel="preload" as="fetch" type="application/wasm" crossorigin href="${href}"></head></html>`
+    const result = (plugin.transformIndexHtml as any).handler.call({}, html, {
+      path: '/index.html',
+      bundle: {
+        'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm': {
+          type: 'asset',
+          fileName: 'assets/mastercss_binding_wasm_engine_bg.D4cafe.wasm',
+          name: 'mastercss_binding_wasm_engine_bg.wasm'
+        }
+      }
+    })
 
     expect(result).toBeUndefined()
   })

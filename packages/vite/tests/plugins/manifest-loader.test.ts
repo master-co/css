@@ -2,10 +2,11 @@ import { describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import CSSScanner from '@master/css-scanner'
+import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-internal/project'
 import ManifestLoaderPlugin from '../../src/plugins/manifest-loader'
-import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-integration/manifest-module'
-import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-integration/node'
+import { MASTER_CSS_MANIFEST_QUERY } from '@master/css-internal/manifest-module'
+import { fromResolvedMasterCSSManifestId, toResolvedMasterCSSManifestId } from '@master/css-internal/node'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/manifest-virtual-module')
 
@@ -23,7 +24,7 @@ async function createContext(root = FIXTURE_DIR) {
         }
       }
     },
-    scanner: new CSSScanner({}, root)
+    scanner: new MasterCSSScanner({ manifest: defaultBuildManifest }, root)
   } as any
   await context.scanner.init()
   return context
@@ -139,7 +140,8 @@ describe('ManifestLoaderPlugin', () => {
     }))
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
     expect(code).toContain(`new Function('specifier', "return import(specifier, { with: { type: 'json' } })")`)
-    expect(code).toContain(`await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href)`)
+    expect(code).toContain(`masterCSSManifest = (await loadMasterCSSManifestModule(masterCSSManifestSpecifier)).default;`)
+    expect(code).toContain('const response = await fetch(masterCSSManifestSpecifier)')
     expect(code).not.toContain('#456')
   })
 
@@ -163,7 +165,7 @@ describe('ManifestLoaderPlugin', () => {
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_query_manifest_ref;')
     expect(code).toContain('loadMasterCSSManifestFromFile')
     expect(code).toContain(`with: { type: 'json' }`)
-    expect(code).not.toContain('fetch(')
+    expect(code).toContain('const response = await fetch(specifier)')
     expect(code).not.toContain(`import { readFile } from 'node:fs/promises';`)
     expect(code).not.toContain('#456')
   })

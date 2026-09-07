@@ -1,8 +1,8 @@
-# AI Notes For `@master/css.astro`
+# AI Notes For `@master/css-astro`
 
 ## Responsibility
 
-`@master/css.astro` adapts Master CSS to Astro. It wraps `@master/css.vite`, injects runtime code for runtime and progressive modes, and registers Astro middleware for pre-render and progressive server rendering.
+`@master/css-astro` adapts Master CSS to Astro. It wraps `@master/css-vite`, injects runtime code for runtime and progressive modes, and registers Astro middleware for pre-render and progressive server rendering.
 
 ## Owns
 
@@ -12,9 +12,9 @@
 
 ## Does Not Own
 
-- Vite mode semantics; keep behavior aligned with `@master/css.vite`.
+- Vite mode semantics; keep behavior aligned with `@master/css-vite`.
 - Core runtime behavior, CSS generation, scanning, or server rendering.
-- Astro source extraction implementation; `@master/css-source` owns it.
+- Astro source extraction implementation; `@master/css-tooling/source` owns it.
 - Duplicate Vite HTML pre-render behavior unless duplicate style injection is handled.
 
 ## Public Surface
@@ -47,15 +47,15 @@
 
 - Re-enabling Vite HTML pre-render plugin for Astro progressive/pre-render without duplicate-style handling.
 - Changing runtime, scanner, server, or CSS generation behavior in this package.
-- Diverging mode defaults from `@master/css.vite`.
+- Diverging mode defaults from `@master/css-vite`.
 
 ## Validation
 
 ```sh
-pnpm --filter @master/css.astro test
-pnpm --filter @master/css.astro lint
-pnpm --filter @master/css.astro type-check
-pnpm --filter @master/css.astro build
+pnpm --filter @master/css-astro test
+pnpm --filter @master/css-astro lint
+pnpm --filter @master/css-astro type-check
+pnpm --filter @master/css-astro build
 ```
 
 Validate with an Astro example when Astro rendering behavior changes.

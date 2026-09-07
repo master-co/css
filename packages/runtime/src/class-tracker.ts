@@ -45,11 +45,12 @@ export default class RuntimeClassTracker {
     return connectedNames
   }
 
-  collectMutations(records: MutationRecord[]) {
+  collectMutations(records: MutationRecord[], root: Document | ShadowRoot) {
     const deltaCounts: ClassDeltaMap = new Map()
     const nodeCounts = new Map<Element, number>()
     const attrRecords = new Set<Element>()
     const visited = new WeakSet<Element>()
+    const belongsToRoot = (node: Node) => node.getRootNode() === root
 
     const updateNodeCount = (el: Element, delta: number) => {
       const nextCount = (nodeCounts.get(el) || 0) + delta
@@ -63,10 +64,10 @@ export default class RuntimeClassTracker {
     for (const record of records) {
       if (record.type === 'childList') {
         for (const node of record.addedNodes) {
-          if (node instanceof Element && node.isConnected) updateNodeCount(node, 1)
+          if (node instanceof Element && belongsToRoot(node)) updateNodeCount(node, 1)
         }
         for (const node of record.removedNodes) {
-          if (node instanceof Element && !node.isConnected) updateNodeCount(node, -1)
+          if (node instanceof Element && !belongsToRoot(node)) updateNodeCount(node, -1)
         }
       } else if (record.type === 'attributes' && record.attributeName === 'class') {
         const target = record.target
@@ -77,13 +78,15 @@ export default class RuntimeClassTracker {
     for (const [node, count] of nodeCounts) {
       if (count > 0) {
         traverseElementSubtree(node, visited, (el) => this.diffElement(el, deltaCounts))
-      } else if (count < 0 && !node.isConnected) {
+      } else if (count < 0 && !belongsToRoot(node)) {
         traverseElementSubtree(node, visited, (el) => this.removeElement(el, deltaCounts))
       }
     }
 
     for (const el of attrRecords) {
-      if (!visited.has(el)) this.diffElement(el, deltaCounts)
+      if (visited.has(el)) continue
+      if (belongsToRoot(el)) this.diffElement(el, deltaCounts)
+      else this.removeElement(el, deltaCounts)
     }
 
     return deltaCounts

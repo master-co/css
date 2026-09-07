@@ -2,13 +2,14 @@
 
 ## Responsibility
 
-`@master/css-cli` exposes the package-name binary for command-line scan and extraction workflows.
+`@master/css-cli` exposes the `master-css` binary with explicit `generate`, `lint`,
+and `inspect` commands.
 
 ## Owns
 
-- CLI argument handling.
-- Watch command lifecycle.
-- CLI logging and generated CSS stdout/file output orchestration.
+- CLI argument handling and stable versioned output.
+- `generate --watch` lifecycle.
+- Diagnostics on stderr and result data on stdout.
 
 ## Does Not Own
 
@@ -19,7 +20,8 @@
 
 ## Public Surface
 
-- Binary: `@master/css-cli`.
+- Binary: `master-css`.
+- Commands: `generate`, `lint`, and `inspect`.
 - Internal command runner from `src/core.ts`.
 - No public `extract`, `scan`, `render`, `mcss`, or `mastercss` aliases.
 
@@ -27,11 +29,13 @@
 
 - `src/core.ts`
 - `src/bin/index.ts`
-- `src/scan.ts`
+- `src/generate.ts`
+- `src/lint.ts`
+- `src/inspect.ts`
 
 ## Risk Areas
 
-- Root `--watch` event lifecycle.
+- `generate --watch` event lifecycle.
 - Manifest path loading.
 - Cross-platform glob behavior.
 - Respecting `--no-export` when output paths are configured.

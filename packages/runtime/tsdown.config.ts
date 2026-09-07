@@ -1,4 +1,20 @@
+import { fileURLToPath } from 'node:url'
 import { defineConfig } from 'tsdown'
+
+const browserBindingLoader = {
+  name: 'browser-binding-loader',
+  resolveId: {
+    order: 'pre' as const,
+    handler(source: string) {
+      if (source === '@master/css-binding/engine') {
+        return fileURLToPath(new URL(
+          '../binding/src/engine-binding-browser.ts',
+          import.meta.url
+        ))
+      }
+    }
+  }
+}
 
 export default defineConfig([
   {
@@ -9,6 +25,11 @@ export default defineConfig([
     fixedExtension: false,
     dts: {
       emitDtsOnly: true
+    },
+    deps: {
+      dts: {
+        neverBundle: [/^[^./]/, /^\.{1,2}\//]
+      }
     },
     copy: {
       from: '../preset/src/default-manifest.json',
@@ -22,18 +43,7 @@ export default defineConfig([
     platform: 'browser',
     tsconfig: './tsconfig.prod.json',
     dts: false,
-    outputOptions: {
-      entryFileNames: '[name].js',
-      codeSplitting: false
-    }
-  },
-  {
-    entry: {
-      'index.development': 'src/index.development.ts'
-    },
-    platform: 'browser',
-    tsconfig: './tsconfig.prod.json',
-    dts: false,
+    plugins: [browserBindingLoader],
     outputOptions: {
       entryFileNames: '[name].js',
       codeSplitting: false
@@ -44,8 +54,12 @@ export default defineConfig([
       'global.min': 'src/global.min.ts'
     },
     platform: 'browser',
+    define: {
+      'import.meta.url': '(document.currentScript?.src || globalThis.location.href)'
+    },
     tsconfig: './tsconfig.prod.json',
     dts: false,
+    plugins: [browserBindingLoader],
     deps: {
       alwaysBundle: [/^[^./]/],
       onlyBundle: false

@@ -1,9 +1,6 @@
-import css from '@master/eslint-plugin-css'
+import { masterCSS } from '@master/eslint-plugin-css'
 import type { Linter } from 'eslint'
 
-const recommended: Linter.Config[] = [
-  css.configs.recommended,
-  css.configs.stylesheet
-]
+export const recommended: Linter.Config[] = masterCSS.configs.recommended
 
 export default recommended

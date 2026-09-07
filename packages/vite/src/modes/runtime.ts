@@ -3,10 +3,10 @@ import InjectRuntimePlugin, { InjectRuntimeServePlugin } from '../plugins/inject
 import ManifestPreloadPlugin from '../plugins/manifest-preload'
 import RuntimePreloadPlugin from '../plugins/runtime-preload'
 import AvoidFOUCPlugin from '../plugins/avoid-fouc'
-import { PluginContext } from '../core'
-import { PluginOptions } from '../options'
+import { MasterCSSVitePluginContext } from '../core'
+import { ResolvedMasterCSSVitePluginOptions } from '../options'
 
-export default function RuntimeMode(options: PluginOptions, context: PluginContext): Plugin[] {
+export default function RuntimeMode(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin[] {
   const plugins: Plugin[] = []
   if (options.injectRuntime) {
     plugins.push(InjectRuntimePlugin(options))

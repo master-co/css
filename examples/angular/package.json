@@ -24,6 +24,7 @@
     "@master/css": "workspace:^",
     "@master/css-preset": "workspace:^",
     "@master/css-runtime": "workspace:^",
+    "@master/css-schema": "workspace:^",
     "@master/css-server": "workspace:^",
     "express": "^5.2.1",
     "rxjs": "~7.8.2",
@@ -43,6 +44,6 @@
     "karma-coverage": "~2.2.1",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.2.0",
-    "typescript": "^7.0.2"
+    "typescript": "^6.0.3"
   }
 }

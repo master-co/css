@@ -242,6 +242,7 @@ function resolveBuildArgs(tool: StaticBuildTool) {
   if (tool.command === 'master-cli') {
     return [
       resolveBenchmarkPackageFile('@master/css-cli', 'dist/bin/index.js'),
+      'generate',
       'index.html',
       '-o',
       'dist/output.css',
@@ -274,7 +275,7 @@ function resolveBuildArgs(tool: StaticBuildTool) {
 
 function renderViteConfig(tool: StaticBuildTool) {
   const pluginImport = tool.command === 'master-vite'
-    ? 'import masterCSS from "@master/css.vite"'
+    ? 'import masterCSS from "@master/css-vite"'
     : 'import tailwindcss from "@tailwindcss/vite"'
   const plugin = tool.command === 'master-vite'
     ? "masterCSS({ mode: 'static' })"

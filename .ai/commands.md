@@ -17,10 +17,16 @@ pnpm type-check:refs
 pnpm type-check:affected
 pnpm type-check:clean
 pnpm commit-check
+pnpm check:ai-context
+pnpm test:ai-context
 pnpm submodules
 ```
 
 `pnpm check` runs commit check, build, and package test/lint/type-check scripts.
+
+`pnpm check:ai-context` enforces production, support-code, and AI-context line/byte
+budgets. Generated files need an explicit marker; exceptional static data needs a
+bounded entry in `.ai/context/source-budget.json`.
 
 Run site orchestration from the repository root (`/Users/aron/master/css`). Use `pnpm dev:site` for normal site development, `pnpm dev:site:clean` when Next's local cache needs to be reset, and `pnpm build:site` for a full site build after package dist warm-up.
 
@@ -61,51 +67,48 @@ pnpm --filter site type-check
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-scanner test
-pnpm --filter @master/css.vite test
-pnpm --filter @master/css-language test
+pnpm --filter @master/css-tooling test
+pnpm --filter @master/css-compiler test
+pnpm --filter @master/css-vite test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
 pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 
 ## Benchmark Commands
 
 ```sh
-pnpm --filter @master/css-engine bench
+pnpm --filter @master/css bench
 pnpm --filter @master/css-runtime bench
 ```
 
-Use `pnpm --filter @master/css-engine bench` for engine matching, generation, parsing, priority, layer insertion, and manifest compilation/cache work.
+Use `pnpm --filter @master/css bench` for engine session startup and execution. Rust engine benchmarks remain authoritative for matching, parsing, priority, layer insertion, and resource behavior.
 
 Use `pnpm --filter @master/css-runtime bench` for browser runtime CPU, DOM scan, mutation tracking, hydration, CSSOM insertion/deletion, or global bundle work. Run `pnpm --filter @master/css-runtime e2e` as the browser correctness check for runtime and hydration changes; add a targeted browser benchmark when CPU or CSSOM behavior is part of the change.
 
-The `Benchmark` GitHub Actions workflow runs on `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
+The `Benchmark` GitHub Actions workflow runs on relevant benchmark, Rust core, CSS execution, tooling, preset, runtime, schema, shared-build, and workspace configuration changes pushed to `main`, `alpha`, `beta`, `rc`, and `canary`, plus manual `workflow_dispatch`. It uploads package-scoped benchmark artifacts and compares against the latest 50 matching artifacts per branch and package. Do not commit benchmark history files to the repo.
 
 For bundle reports, build first and measure the changed artifacts on the same machine:
 
 ```sh
-pnpm --filter @master/css-engine build
+pnpm --filter @master/css build
 pnpm --filter @master/css-runtime build
-wc -c packages/engine/dist/core.js packages/runtime/dist/global.min.js
+wc -c packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js
 wc -c packages/runtime/dist/default-manifest.json
-gzip -c packages/engine/dist/core.js | wc -c
-brotli -c packages/engine/dist/core.js | wc -c
+gzip -c packages/css/dist/engine/bound-engine.js | wc -c
+brotli -c packages/css/dist/engine/bound-engine.js | wc -c
 gzip -c packages/runtime/dist/global.min.js | wc -c
 brotli -c packages/runtime/dist/global.min.js | wc -c
 gzip -c packages/runtime/dist/default-manifest.json | wc -c
 brotli -c packages/runtime/dist/default-manifest.json | wc -c
-shasum -a 256 packages/engine/dist/core.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
+shasum -a 256 packages/css/dist/engine/bound-engine.js packages/runtime/dist/global.min.js packages/runtime/dist/default-manifest.json
 ```
 
 ## CI Equivalents
 
-- Test workflow: install dependencies, `pnpm run build`, then `pnpm run test`
-- Lint workflow: install dependencies, `pnpm run build`, then `pnpm run lint`
-- Type-check workflow: install dependencies, `pnpm run build`, then `pnpm run type-check`
-- E2E workflow: install dependencies, Playwright install, `pnpm run build`, then `pnpm e2e`
-- Example check: install dependencies, `pnpm build`, reinstall, then `pnpm build:examples`
-- Release workflow: wait for validation jobs, install release tooling, `pnpm run build`, then `pnpm exec semantic-release`
-- Fork and Dependabot pull requests do not receive the private submodule token; validation jobs fail before checkout with an explicit message instead of running untrusted code with secrets.
+- Linux quality: install dependencies, audit site translations, install the Chromium headless shell, run package `test`, `lint`, and `type-check` tasks together, then build examples. Pull requests use Turbo's `--affected`; scheduled and manual CI run every task.
+- Windows compatibility: install dependencies and the Chromium headless shell, then run affected package tests and example builds with concurrency limited to four. macOS does not run because Linux covers the POSIX web toolchain surface while Windows retains distinct path and process coverage.
+- E2E: install dependencies plus Chromium headless shell and Firefox, then run package E2E tasks serially through Turbo. Pull requests and releases use `--affected`; scheduled and manual CI run every E2E task.
+- Release: wait for all validation jobs, restore the Linux build cache, run `pnpm build` as an integrity check, then execute `pnpm exec semantic-release`. On `rc`, deploy the site or publish editor extensions only when their Turbo build graph is affected.
+- Fork and Dependabot pull requests do not receive the private submodule token; preflight skips the validation jobs and the single `CI / required` check fails with an explicit message.

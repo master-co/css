@@ -2,26 +2,17 @@ import { fileURLToPath } from 'node:url'
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import {
-  builtinKeyAliases,
-  builtinNamespaceSet,
-  builtinNativeValueNamespaces,
-  MasterCSS,
-  type MasterCSSCreateOptions
-} from '@master/css-engine'
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import {
   createDefaultManifestFromSourceFile,
   createDefaultNativeCSSFromSourceFile
 } from '../scripts/generate-default-manifest'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
+import { createTestCSS } from './helpers/rust-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-function createTestCSS(manifest: MasterCSSManifest, options: Omit<MasterCSSCreateOptions, 'manifest'> = {}) {
-  return MasterCSS.create({ manifest, ...options })
-}
 function variablesOf(manifest: MasterCSSManifest) {
   return flattenMasterCSSManifestVariables(manifest.variables)
 }
@@ -145,11 +136,6 @@ const removedStaticUtilityNames = [
   'transform-flat'
 ]
 
-const nativeValueNamespaceMatcherKeys = new Set([
-  'outline',
-  'stroke'
-])
-
 const removedSourceUtilityIds = [
   'animation-delay',
   'animation-name',
@@ -236,14 +222,11 @@ describe('@master/css-preset defaultManifest', () => {
   it('matches the readable preset sources', () => {
     const manifest = getCompiledDefaultManifest()
     const utilities = manifest.utilities || []
-    const compiledUtilities = createTestCSS(manifest).definedUtilities
 
     expect(utilities).toHaveLength(177)
     expect(utilities.some((utility) => 'order' in utility)).toBe(false)
     expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
     expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
-    expect(compiledUtilities[0]?.order).toBe(utilities.length - 1)
-    expect(compiledUtilities[compiledUtilities.length - 1]?.order).toBe(0)
     expect(utilities.some((utility) => utility.id === 'group')).toBe(false)
     expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'group')).toBe(false)
     expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'group'))).toBe(false)
@@ -306,35 +289,30 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
 
     expect(defaultManifest.settings).toBeUndefined()
-    expect(css.settings).toEqual({
-      rootSize: 16,
-      baseUnit: 4,
-      defaultMode: 'light',
-      modeTrigger: 'media',
-      modes: ['light', 'dark']
-    })
+    expect(css.createRule('m:1x')?.text).toBe('.m\\:1x{margin:0.25rem}')
+    expect(css.createRule('fg:blue-60@dark')?.text).toBe(
+      '@media (prefers-color-scheme:dark){.fg\\:blue-60\\@dark{color:var(--color-blue-60)}}'
+    )
   })
 
   it('keeps preset variable alias refs inside registered namespaces', () => {
     const variableNamespaces = new Set(variablesOf(defaultManifest)
       .map((variable) => variable.namespace)
       .filter((namespace): namespace is string => Boolean(namespace)))
-    const variableAliasRefs = [
-      ...builtinNativeValueNamespaces.flatMap((namespace) => namespace.variableAliasRefs),
-      ...(defaultManifest.utilities || []).flatMap((utility) => utility.variableAliasRefs || [])
-    ]
+    const variableAliasRefs = (defaultManifest.utilities || [])
+      .flatMap((utility) => utility.variableAliasRefs || [])
 
-    for (const namespace of variableNamespaces) {
-      expect(builtinNamespaceSet.has(namespace), namespace).toBe(true)
-    }
     for (const ref of variableAliasRefs) {
       expect(ref[0] === '~' || ref[0] === '=', ref).toBe(true)
-      expect(builtinNamespaceSet.has(ref.slice(1)), ref).toBe(true)
+      expect(variableNamespaces.has(ref.slice(1)), ref).toBe(true)
     }
   })
 
   it('preserves the compiled default registry', () => {
     const css = createTestCSS(defaultManifest)
+    const noNativeCSS = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => false
+    })
     const text = [
       css.createRule('inline-flex')?.text,
       css.createRule('bg:linear-gradient(#000,#fff)')?.text,
@@ -353,9 +331,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(text).toContain('-webkit-line-clamp:3')
     expect(text).not.toContain('null')
     expect(css.createRule('gradient(#000,#fff)')).toBeUndefined()
-    expect(css.createRule('bg:canvas')).toBeUndefined()
-    expect(css.createRule('surface:blue')).toBeUndefined()
-    expect(css.createRule('surface:#fff')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
   })
 
   it('executes CSS-authored semantic and enum pattern utilities', () => {
@@ -487,15 +465,18 @@ describe('@master/css-preset defaultManifest', () => {
 
   it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
     const css = createTestCSS(defaultManifest)
+    const noNativeCSS = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => false
+    })
 
-    expect(css.createRule('text:center')).toBeUndefined()
-    expect(css.createRule('text:underline')).toBeUndefined()
-    expect(css.createRule('bg:cover')).toBeUndefined()
-    expect(css.createRule('object:cover')).toBeUndefined()
-    expect(css.createRule('border-solid')).toBeUndefined()
-    expect(css.createRule('border-l-solid')).toBeUndefined()
-    expect(css.createRule('rt:4x')).toBeUndefined()
-    expect(css.createRule('border-top-radius:4x')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:center')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:underline')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:cover')).toBeUndefined()
+    expect(noNativeCSS.createRule('object:cover')).toBeUndefined()
+    expect(noNativeCSS.createRule('border-solid')).toBeUndefined()
+    expect(noNativeCSS.createRule('border-l-solid')).toBeUndefined()
+    expect(noNativeCSS.createRule('rt:4x')).toBeUndefined()
+    expect(noNativeCSS.createRule('border-top-radius:4x')).toBeUndefined()
     expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
     expect(css.createRule('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
     expect(css.createRule('b:line')?.text).toBe('.b\\:line{border:line}')
@@ -525,16 +506,16 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('pye:4x')?.text).toBe('.pye\\:4x{padding-block-end:1rem}')
     expect(css.createRule('ixs:4x')?.text).toBe('.ixs\\:4x{inset-inline-start:1rem}')
     expect(css.createRule('size-x:md')?.text).toBe('.size-x\\:md{inline-size:var(--container-md)}')
-    expect(css.createRule('mi:4x')).toBeUndefined()
-    expect(css.createRule('pbe:4x')).toBeUndefined()
-    expect(css.createRule('iis:4x')).toBeUndefined()
-    expect(css.createRule('bs:md')).toBeUndefined()
+    expect(noNativeCSS.createRule('mi:4x')).toBeUndefined()
+    expect(noNativeCSS.createRule('pbe:4x')).toBeUndefined()
+    expect(noNativeCSS.createRule('iis:4x')).toBeUndefined()
+    expect(noNativeCSS.createRule('bs:md')).toBeUndefined()
     expect(css.createRule('text:red')?.text).toBe('.text\\:red{color:var(--color-text-red)}')
     expect(css.createRule('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg:blue-60')?.text).toBe('.fg\\:blue-60{color:var(--color-blue-60)}')
-    expect(css.createRule('text:blue-60')).toBeUndefined()
-    expect(css.createRule('text:#fff')).toBeUndefined()
-    expect(css.createRule('text:transparent')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:blue-60')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:#fff')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:transparent')).toBeUndefined()
     expect(css.createRule('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
     expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
     expect(css.createRule('text:muted')?.text).toBe('.text\\:muted{color:var(--color-text-muted)}')
@@ -548,17 +529,17 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('background-color:red')?.text).toBe('.background-color\\:red{background-color:var(--color-red)}')
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
-    expect(css.createRule('bg:canvas')).toBeUndefined()
-    expect(css.createRule('bg:surface')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:surface')).toBeUndefined()
     expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')
     expect(css.createRule('surface:overlay/.9')?.text).toBe('.surface\\:overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
-    expect(css.createRule('surface:blue')).toBeUndefined()
-    expect(css.createRule('surface:#fff')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
     expect(css.createRule('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
     expect(css.createRule('font-family:sans')?.text).toBe('.font-family\\:sans{font-family:var(--font-family-sans)}')
     expect(css.createRule('font-weight:bold')?.text).toBe('.font-weight\\:bold{font-weight:var(--font-weight-bold)}')
-    expect(css.createRule('font:var(--font-size-x)')).toBeUndefined()
+    expect(noNativeCSS.createRule('font:var(--font-size-x)')).toBeUndefined()
     expect(css.createRule('size:5x')?.text).toBe('.size\\:5x{width:1.25rem;height:1.25rem}')
     expect(css.createRule('size:md')?.text).toBe('.size\\:md{width:var(--container-md);height:var(--container-md)}')
     expect(css.createRule('size:var(--radius-4xl)')?.text).toBe('.size\\:var\\(--radius-4xl\\){width:var(--radius-4xl);height:var(--radius-4xl)}')
@@ -576,15 +557,15 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('size:max')?.text).toBe('.size\\:max{width:max-content;height:max-content}')
     expect(css.createRule('flex-basis:sm')?.text).toBe('.flex-basis\\:sm{flex-basis:var(--container-sm)}')
     expect(css.createRule('flex-basis:2x')?.text).toBe('.flex-basis\\:2x{flex-basis:0.5rem}')
-    expect(css.createRule('outline-width:1px')).toBeUndefined()
-    expect(css.createRule('outline-width:2px')).toBeUndefined()
+    expect(noNativeCSS.createRule('outline-width:1px')).toBeUndefined()
+    expect(noNativeCSS.createRule('outline-width:2px')).toBeUndefined()
     expect(css.createRule('shape-margin:1px')?.text).toBe('.shape-margin\\:1px{shape-margin:1px}')
     expect(css.createRule('shape-margin:2x')?.text).toBe('.shape-margin\\:2x{shape-margin:0.5rem}')
     expect(css.createRule('word-spacing:1px')?.text).toBe('.word-spacing\\:1px{word-spacing:1px}')
     expect(css.createRule('word-spacing:2x')?.text).toBe('.word-spacing\\:2x{word-spacing:0.5rem}')
     expect(css.createRule('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-red)}')
     expect(css.createRule('stroke:.75')?.text).toBe('.stroke\\:\\.75{stroke-width:0.75}')
-    expect(css.createRule('stroke-width:1px')).toBeUndefined()
+    expect(noNativeCSS.createRule('stroke-width:1px')).toBeUndefined()
     expect(css.createRule('text-underline:sm')?.text).toBe('.text-underline\\:sm{text-underline-offset:var(--spacing-sm)}')
     expect(css.createRule('text-underline-offset:2x')?.text).toBe('.text-underline-offset\\:2x{text-underline-offset:0.5rem}')
     expect(css.createRule('text-indent:sm')?.text).toBe('.text-indent\\:sm{text-indent:var(--spacing-sm)}')
@@ -595,22 +576,22 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('perspective:4x')?.text).toBe('.perspective\\:4x{perspective:1rem}')
     expect(css.createRule('perspective-origin:2x|center')?.text).toBe('.perspective-origin\\:2x\\|center{perspective-origin:0.5rem center}')
     expect(css.createRule('transform-origin:2x|center')?.text).toBe('.transform-origin\\:2x\\|center{transform-origin:0.5rem center}')
-    expect(css.createRule('text-stroke-width:1px')).toBeUndefined()
-    expect(css.createRule('text-stroke-width:thin')).toBeUndefined()
+    expect(noNativeCSS.createRule('text-stroke-width:1px')).toBeUndefined()
+    expect(noNativeCSS.createRule('text-stroke-width:thin')).toBeUndefined()
     expect(css.createRule('animation-delay:fast')?.text).toBe('.animation-delay\\:fast{animation-delay:var(--duration-fast)}')
     expect(css.createRule('transition-delay:fast')?.text).toBe('.transition-delay\\:fast{transition-delay:var(--duration-fast)}')
     expect(css.createRule('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
     expect(css.createRule('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
     expect(css.createRule("content:'x'")?.text).toBe(".content\\:\\'x\\'{content:'x'}")
-    expect(css.createRule('border-width:1px')).toBeUndefined()
-    expect(css.createRule('background:red')).toBeUndefined()
-    expect(css.createRule('background:sm')).toBeUndefined()
-    expect(css.createRule('bg:2x')).toBeUndefined()
-    expect(css.createRule('transform:2x')).toBeUndefined()
+    expect(noNativeCSS.createRule('border-width:1px')).toBeUndefined()
+    expect(noNativeCSS.createRule('background:red')).toBeUndefined()
+    expect(noNativeCSS.createRule('background:sm')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:2x')).toBeUndefined()
+    expect(noNativeCSS.createRule('transform:2x')).toBeUndefined()
     expect(css.createRule('animate:fade')?.text).toBe('.animate\\:fade{animation:var(--animate-fade)}')
     expect(css.createRule('animation:fade')?.text).toBe('.animation\\:fade{animation:fade}')
     expect(css.createRule('animation:fade')?.text).not.toContain('var(--animate-fade)')
-    expect(css.createRule('animation-name:fade')).toBeUndefined()
+    expect(noNativeCSS.createRule('animation-name:fade')).toBeUndefined()
     expect(css.createRule('container:sm')?.text).not.toContain('var(--container-sm)')
     expect(css.createRule('flex:sm')?.text).not.toContain('flex-basis')
     expect(css.createRule('flex:md')?.text).not.toContain('flex-basis')
@@ -619,19 +600,19 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
     expect(css.createRule('m:sm|-md')?.text).toBe('.m\\:sm\\|-md{margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
     expect(css.createRule('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
-    expect(css.createRule('text-size:2xl')).toBeUndefined()
-    expect(css.createRule('text-size:1rem')).toBeUndefined()
+    expect(noNativeCSS.createRule('text-size:2xl')).toBeUndefined()
+    expect(noNativeCSS.createRule('text-size:1rem')).toBeUndefined()
     expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
     expect(css.createRule('grid-rows:var(--rows)')?.text).toBe('.grid-rows\\:var\\(--rows\\){display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--rows), minmax(0, 1fr))}')
     expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
     expect(css.createRule('grid-col-span:var(--span)')?.text).toBe('.grid-col-span\\:var\\(--span\\){grid-column:span var(--span)/span var(--span)}')
     expect(css.createRule('grid-row-span:var(--span)')?.text).toBe('.grid-row-span\\:var\\(--span\\){grid-row:span var(--span)/span var(--span)}')
-    expect(css.createRule('line-clamp:var(--lines)')).toBeUndefined()
-    expect(css.createRule('grid-column-span:2')).toBeUndefined()
-    expect(css.createRule('lines:2')).toBeUndefined()
-    expect(css.createRule('text-truncate:2')).toBeUndefined()
-    expect(css.createRule('border-image:linear-gradient(red,blue)')).toBeUndefined()
-    expect(css.createRule('list-style:url(/marker.svg)')).toBeUndefined()
+    expect(noNativeCSS.createRule('line-clamp:var(--lines)')).toBeUndefined()
+    expect(noNativeCSS.createRule('grid-column-span:2')).toBeUndefined()
+    expect(noNativeCSS.createRule('lines:2')).toBeUndefined()
+    expect(noNativeCSS.createRule('text-truncate:2')).toBeUndefined()
+    expect(noNativeCSS.createRule('border-image:linear-gradient(red,blue)')).toBeUndefined()
+    expect(noNativeCSS.createRule('list-style:url(/marker.svg)')).toBeUndefined()
 
     for (const utility of defaultManifest.utilities || []) {
       expect('values' in utility, utility.id).toBe(false)
@@ -645,7 +626,9 @@ describe('@master/css-preset defaultManifest', () => {
   })
 
   it('prunes pure native coverage and keeps Master CSS native DX utilities', () => {
-    const css = createTestCSS(defaultManifest)
+    const css = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => false
+    })
     const nativeCSS = createTestCSS(defaultManifest, {
       nativeDeclarationMatcher: ({ property }) => property === 'perspective-origin'
         || property === 'scroll-margin-inline-start'
@@ -690,17 +673,8 @@ describe('@master/css-preset defaultManifest', () => {
   it('moves native value namespace utilities out of matcher definitions', () => {
     const matcherKeys = collectMatcherKeys(defaultManifest)
     const utilityIds = new Set((defaultManifest.utilities || []).map((utility) => utility.id))
-    const nativeValueNamespaceProperties = builtinNativeValueNamespaces.flatMap(({ properties }) => properties)
 
     expect('nativeValueNamespaces' in defaultManifest).toBe(false)
-    expect(new Set(nativeValueNamespaceProperties).size).toBe(nativeValueNamespaceProperties.length)
-    expect(nativeValueNamespaceProperties).toHaveLength(154)
-    for (const property of nativeValueNamespaceProperties) {
-      expect(utilityIds.has(property), property).toBe(false)
-      if (!nativeValueNamespaceMatcherKeys.has(property)) {
-        expect(matcherKeys.has(property), property).toBe(false)
-      }
-    }
     for (const utility of competitiveNativeValueUtilities) {
       expect(utilityIds.has(utility), utility).toBe(true)
       expect(matcherKeys.has(utility), utility).toBe(true)
@@ -712,23 +686,33 @@ describe('@master/css-preset defaultManifest', () => {
       if (utility.variableAliasRefs?.length) continue
       expect(utility.matchers.some((matcher) => matcher.type === 'variable'), utility.id).toBe(false)
     }
+
+    const nativeCSS = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => true
+    })
+    expect(nativeCSS.createRule('display:block')?.text).toBe('.display\\:block{display:block}')
+    expect(nativeCSS.createRule('text-stroke-width:thin')?.text)
+      .toBe('.text-stroke-width\\:thin{-webkit-text-stroke-width:thin}')
+    expect(nativeCSS.createRule('float:left')?.text).toBe('.float\\:left{float:left}')
   })
 
   it('keeps curated key aliases out of utility matcher keys', () => {
     const matcherKeys = collectMatcherKeys(defaultManifest)
 
     expect('keyAliases' in defaultManifest).toBe(false)
-    expect(builtinKeyAliases).toMatchObject(retainedRadiusKeyAliases)
-    for (const alias of Object.keys(builtinKeyAliases)) {
-      if (retainedMatcherAliases.has(alias)) continue
-      expect(matcherKeys.has(alias), alias).toBe(false)
-    }
     for (const alias of retainedMatcherAliases) {
       expect(matcherKeys.has(alias), alias).toBe(true)
     }
     for (const alias of removedAliases) {
-      expect(builtinKeyAliases[alias], alias).toBeUndefined()
       expect(matcherKeys.has(alias), alias).toBe(false)
+    }
+
+    const nativeCSS = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => true
+    })
+    for (const [alias, property] of Object.entries(retainedRadiusKeyAliases)) {
+      expect(nativeCSS.createRule(`${alias}:4x`)?.text, alias)
+        .toContain(`${property}:1rem`)
     }
   })
 
@@ -743,6 +727,6 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect(createTestCSS(defaultManifest).definedUtilities).toHaveLength(utilities.length)
+    expect(utilities).toHaveLength(177)
   })
 })

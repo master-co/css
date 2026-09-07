@@ -1,9 +1,10 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
-import { afterEach, describe, expect, it } from 'vitest'
+import { basename, join } from 'node:path'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
+import { MasterCSSServerRenderer } from '@master/css-server'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
@@ -18,8 +19,14 @@ function createFixtureDir() {
   return fixtureDir
 }
 
-function createBuildContext(projectDir: string, htmlFile: string): BuildCompleteContext {
+function createBuildContext(
+  projectDir: string,
+  htmlFile: string,
+  options: { id?: string, output?: 'export', pathname?: string } = {}
+): BuildCompleteContext {
   const distDir = join(projectDir, '.next')
+  const id = options.id ?? 'index'
+  const pathname = options.pathname ?? '/'
   return {
     projectDir,
     repoRoot: projectDir,
@@ -36,7 +43,7 @@ function createBuildContext(projectDir: string, htmlFile: string): BuildComplete
       shouldNormalizeNextData: false,
       rsc: {}
     },
-    config: {},
+    config: options.output ? { output: options.output } : {},
     outputs: {
       pages: [],
       middleware: undefined,
@@ -45,10 +52,10 @@ function createBuildContext(projectDir: string, htmlFile: string): BuildComplete
       appRoutes: [],
       staticFiles: [
         {
-          id: 'index',
+          id,
           type: 'STATIC_FILE',
           filePath: htmlFile,
-          pathname: '/',
+          pathname,
           immutableHash: undefined
         },
         {
@@ -63,7 +70,7 @@ function createBuildContext(projectDir: string, htmlFile: string): BuildComplete
         {
           id: 'fallback',
           type: 'PRERENDER',
-          parentOutputId: 'index',
+          parentOutputId: id,
           groupId: 0,
           pathname: '/',
           fallback: {
@@ -94,6 +101,7 @@ function toPosixPath(path: string) {
 }
 
 afterEach(() => {
+  vi.restoreAllMocks()
   if (fixtureDir) {
     rmSync(fixtureDir, { recursive: true, force: true })
     fixtureDir = undefined
@@ -101,6 +109,59 @@ afterEach(() => {
 })
 
 describe('renderNextBuildOutputs', () => {
+  it('disposes the build renderer after materializing its output', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
+
+    await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
+  it('shares one build renderer without leaking rules between HTML outputs', async () => {
+    const projectDir = createFixtureDir()
+    const distDir = join(projectDir, '.next')
+    const firstFile = join(distDir, 'server/app/first.html')
+    const secondFile = join(distDir, 'server/app/second.html')
+    mkdirSync(join(distDir, 'server/app'), { recursive: true })
+    writeFileSync(firstFile, '<!doctype html><html><head></head><body><h1 class="fg:red">First</h1></body></html>')
+    writeFileSync(secondFile, '<!doctype html><html><head></head><body><h1 class="fg:blue">Second</h1></body></html>')
+    const context = createBuildContext(projectDir, firstFile)
+    context.outputs.staticFiles.push({
+      id: 'second',
+      type: context.outputs.staticFiles[0].type,
+      filePath: secondFile,
+      pathname: '/second',
+      immutableHash: undefined
+    })
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
+
+    await renderNextBuildOutputs(context)
+
+    const firstHTML = readFileSync(firstFile, 'utf-8')
+    const secondHTML = readFileSync(secondFile, 'utf-8')
+    expect(readMasterStyle(firstHTML)).toContain('.fg\\:red')
+    expect(readMasterStyle(firstHTML)).not.toContain('.fg\\:blue')
+    expect(readMasterStyle(secondHTML)).toContain('.fg\\:blue')
+    expect(readMasterStyle(secondHTML)).not.toContain('.fg\\:red')
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
+  it('disposes the build renderer when an output fails', async () => {
+    const projectDir = createFixtureDir()
+    const missingFile = join(projectDir, '.next/server/app/missing.html')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
+
+    await expect(renderNextBuildOutputs(
+      createBuildContext(projectDir, missingFile)
+    )).rejects.toThrow()
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
   it('renders Master CSS into static HTML outputs once', async () => {
     const projectDir = createFixtureDir()
     const distDir = join(projectDir, '.next')
@@ -132,6 +193,85 @@ describe('renderNextBuildOutputs', () => {
     const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
     expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font:40px', 'fg:red']))
     expect(hydrationManifest.rules).toHaveLength(2)
+  })
+
+  it('does not duplicate globals already emitted by project CSS entries', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    const entryFile = join(projectDir, 'app/globals.css')
+    mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryFile, [
+      '@master entry;',
+      '@theme { --color-primary: #123456; }',
+      '.host { color: var(--color-primary); }'
+    ].join('\n'))
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:primary">Hello</h1></body></html>')
+
+    await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+
+    const style = readMasterStyle(readFileSync(htmlFile, 'utf-8'))
+    expect(style).toContain('.fg\\:primary{color:var(--color-primary)}')
+    expect(style).not.toContain('--color-primary:')
+  })
+
+  it('writes static export hydration manifests into the default export root', async () => {
+    const projectDir = createFixtureDir()
+    const exportDir = join(projectDir, 'out')
+    const htmlFile = join(exportDir, 'guides/getting-started.html')
+    mkdirSync(join(exportDir, 'guides'), { recursive: true })
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+
+    const outputs = await renderNextBuildOutputs(
+      createBuildContext(projectDir, htmlFile, {
+        id: '/guides/getting-started.html',
+        output: 'export',
+        pathname: '/guides/getting-started'
+      })
+    )
+    const html = readFileSync(htmlFile, 'utf-8')
+    const hydrationManifestFile = outputs[0].hydrationManifestFile
+    if (!hydrationManifestFile) throw new Error('Expected a static export hydration manifest file.')
+
+    expect(toPosixPath(hydrationManifestFile)).toMatch(/\/out\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+    expect(existsSync(hydrationManifestFile)).toBe(true)
+    expect(existsSync(join(projectDir, '.next/static/master-css/hydration'))).toBe(false)
+    expect(readHydrationManifestSource(html)).toBe(`/_next/static/master-css/hydration/${basename(hydrationManifestFile)}`)
+  })
+
+  it('derives a custom static export root from nested output metadata', async () => {
+    const projectDir = createFixtureDir()
+    const exportDir = join(projectDir, 'custom-export')
+    const htmlFile = join(exportDir, 'nested/index.html')
+    mkdirSync(join(exportDir, 'nested'), { recursive: true })
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+
+    const outputs = await renderNextBuildOutputs(
+      createBuildContext(projectDir, htmlFile, {
+        id: '/nested/index.html',
+        output: 'export',
+        pathname: '/nested/'
+      })
+    )
+    const hydrationManifestFile = outputs[0].hydrationManifestFile
+    if (!hydrationManifestFile) throw new Error('Expected a custom export hydration manifest file.')
+
+    expect(toPosixPath(hydrationManifestFile)).toContain('/custom-export/_next/static/master-css/hydration/')
+    expect(existsSync(hydrationManifestFile)).toBe(true)
+  })
+
+  it('fails when static export output metadata cannot identify the export root', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, 'out/index.html')
+    mkdirSync(join(projectDir, 'out'), { recursive: true })
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+
+    await expect(renderNextBuildOutputs(
+      createBuildContext(projectDir, htmlFile, {
+        id: '/nested/index.html',
+        output: 'export'
+      })
+    )).rejects.toThrow('Cannot resolve the static export root')
   })
 
   it('does not write empty Master CSS for non-Master classes', async () => {

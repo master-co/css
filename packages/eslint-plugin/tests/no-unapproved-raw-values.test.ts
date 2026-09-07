@@ -1,4 +1,4 @@
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import { expect, test } from 'vitest'
 import plugin from '../src/plugin'
 import recommended from '../src/configs/recommended'

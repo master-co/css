@@ -1,19 +1,23 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
-import { isCSSManifestRequest } from '@master/css-project/entries'
-import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
+import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
 import {
   isMasterCSSManifestRequest,
   stripMasterCSSManifestQuery
-} from '@master/css-integration/manifest-module'
+} from '@master/css-internal/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
   toVirtualCSSManifestAssetPath,
   toVirtualCSSManifestModulePath
-} from '@master/css-integration/node'
-import { toUniversalManifestFacadeModule } from '@master/css-integration/manifest-facade'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+} from '@master/css-internal/node'
+import { toUniversalManifestFacadeModule } from '@master/css-internal/manifest-facade'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+import {
+  defaultBuildManifest,
+  isManifestStylesheetRequest
+} from '@master/css-internal/project'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 
 const MASTER_CSS_MANIFEST_IMPORT_PATTERN = /(\bimport\s+(?:[^'"]*?\s+from\s*)?|\bexport\s+[^'"]*?\s+from\s*|\bimport\s*\(\s*)(['"])([^'"]+)\2/g
 
@@ -65,21 +69,25 @@ function resolveRequest(context: LoaderContext, request: string) {
 }
 
 function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
-  if (!isCSSManifestRequest(manifestPath)) {
+  if (!isManifestStylesheetRequest(manifestPath)) {
     throw new TypeError('Master CSS manifest queries only support CSS entry files.')
   }
 
   const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
   const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
   const virtualManifestAssetPath = toVirtualCSSManifestAssetPath(projectDir, manifestPath)
-  const dependencies = new Set(collectStyleCSSDependencies(manifestPath, undefined, projectDir))
+  const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, { projectDir }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
   }
-  const result = loadManifestJSONSync(manifestPath)
+  const result = compileProjectManifestSync({
+    root: projectDir,
+    entries: [manifestPath],
+    baseManifest: defaultBuildManifest
+  })
   ensureVirtualModulePackageJSONPath(projectDir)
   mkdirSync(dirname(virtualManifestPath), { recursive: true })
-  writeFileSync(virtualManifestAssetPath, result.json)
+  writeFileSync(virtualManifestAssetPath, serializeMasterCSSManifest(result.manifest))
   writeFileSync(
     virtualManifestPath,
     toUniversalManifestFacadeModule(
@@ -118,7 +126,7 @@ async function transformManifestImports(context: LoaderContext, source: string) 
 export default function masterCSSManifestImportLoader(this: LoaderContext, source: string) {
   const callback = this.async?.()
   if (!callback) {
-    throw new Error('[@master/css.next] CSS manifest import loader requires an async loader context.')
+    throw new Error('[@master/css-next] CSS manifest import loader requires an async loader context.')
   }
 
   transformManifestImports(this, source)

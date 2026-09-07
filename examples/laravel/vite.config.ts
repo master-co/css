@@ -1,5 +1,5 @@
 import react from '@vitejs/plugin-react';
-import masterCSS from '@master/css.vite';
+import masterCSS from '@master/css-vite';
 import laravel from 'laravel-vite-plugin';
 import { resolve } from 'node:path';
 import { defineConfig } from 'vite';

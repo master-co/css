@@ -6,7 +6,7 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 
 test('recommended config autofixes cross-rule class lists to a stable result', async () => {
   const overrideConfig = [
-    plugin.configs.recommended,
+    ...plugin.configs.recommended,
     {
       settings: {
         '@master/css': {
@@ -51,7 +51,7 @@ test('recommended config autofixes cross-rule class lists to a stable result', a
 
 test('recommended config autofixes mdx fenced examples', async () => {
   const overrideConfig = [
-    plugin.configs.recommended,
+    ...plugin.configs.recommended,
     {
       files: ['**/*.mdx'],
       languageOptions: {

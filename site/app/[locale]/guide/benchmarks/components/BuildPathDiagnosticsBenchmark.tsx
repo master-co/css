@@ -144,7 +144,7 @@ function createCLIItems(result = getPrimaryResult()): BenchmarkBarItem[] {
 function createViteItems(result = getPrimaryResult()): BenchmarkBarItem[] {
   return [
     createItem('vite-overhead', 'Master Vite command overhead', result.vite.startup, 'vite-master-command-overhead-ms', 'blue'),
-    createItem('vite-import', '@master/css.vite import probe', result.vite.startup, 'master-vite-import-ms', 'cyan'),
+    createItem('vite-import', '@master/css-vite import probe', result.vite.startup, 'master-vite-import-ms', 'cyan'),
     createItem('vite-core-import', 'Vite core module import probe', result.vite.startup, 'master-vite-core-module-import-ms', 'yellow'),
     createItem('vite-scanner-init', 'Vite scanner init', result.vite.startup, 'vite-master-scanner-init-ms', 'green'),
     createItem('vite-bundle-extraction', 'Vite bundle CSS extraction', result.vite.build, 'vite-master-generate-bundle-ms', 'red')

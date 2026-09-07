@@ -28,8 +28,8 @@ async function waitForRuntimeRuleFlush(page: Page) {
 
 async function expectNoAnimation(page: Page, name: string) {
   await waitForRuntimeRemovalFlush(page)
-  await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).not.toContain(`@keyframes ${name}{`)
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).not.toContain(`@keyframes ${name}{`)
 }
 
 test('expects the animate token output', async ({ page }) => {
@@ -42,7 +42,7 @@ test('expects the animate token output', async ({ page }) => {
   })
   await waitForRuntimeRuleFlush(page)
 
-  const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  const cssText = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(cssText).toContain('--animate-fade:fade 1s infinite')
   expect(cssText).toContain('.animate\\:fade{animation:var(--animate-fade)}')
   expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
@@ -62,7 +62,7 @@ test('expects the animation output', async ({ page }) => {
     document.body.append(p)
   })
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)).toContain('.animation\\:fade\\|1s{animation:fade 1s}')
   await page.evaluate(() => {
     const p = document.getElementById('mp')
     p?.classList.add(
@@ -79,7 +79,7 @@ test('expects the animation output', async ({ page }) => {
     )
   })
   await waitForRuntimeRuleFlush(page)
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.animationsNonLayer.tokenCounts))).toMatchObject({
     fade: 1,
     flash: 1,
     float: 1,
@@ -90,10 +90,10 @@ test('expects the animation output', async ({ page }) => {
     rotate: 1,
     shake: 1,
   })
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toMatchObject({
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.animationsNonLayer.tokenCounts))).toMatchObject({
     zoom: 2,
   })
-  const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  const cssText = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
   expectAnimation(cssText, 'flash', ['opacity:1', 'opacity:0'])
   expectAnimation(cssText, 'float', ['transform:none', 'transform:translateY(-1.25rem)'])
@@ -160,16 +160,16 @@ test('expects the animation output', async ({ page }) => {
     p?.classList.remove('animation:zoom|1s')
   })
   await waitForRuntimeRemovalFlush(page)
-  await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
-  expectAnimation(await page.evaluate(() => globalThis.masterCSSRuntime.text), 'zoom', ['transform:scale(0)', 'transform:none'])
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.animationsNonLayer.tokenCounts))).toEqual({ zoom: 1 })
+  expectAnimation(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text), 'zoom', ['transform:scale(0)', 'transform:none'])
   await page.evaluate(() => {
     const p = document.getElementById('mp')
     p?.classList.remove('{animation:zoom|1s;f:16}')
   })
 
   await waitForRuntimeRemovalFlush(page)
-  await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.animationsNonLayer.tokenCounts))).toEqual({})
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.animationsNonLayer.tokenCounts))).toEqual({})
   await expectNoAnimation(page, 'zoom')
 })

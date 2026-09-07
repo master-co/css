@@ -9,10 +9,11 @@ Default read order:
 1. `AGENTS.md`
 2. `.ai/context/index.md`
 3. `.ai/context/package-routing.md` when paths, packages, or a diff are known
-4. The affected package `package.json`
-5. The affected package-local `AI.md`, if present
-6. The task-specific `.ai/context/*.md` pack
-7. Existing source and tests near the behavior being changed
+4. `.ai/context/rust-routing.md` when `crates/**`, bindings, codegen, or parity are involved
+5. The affected package `package.json` or crate `Cargo.toml`
+6. The affected package/crate-local `AI.md`, if present
+7. The task-specific `.ai/context/*.md` pack
+8. Existing source and tests near the behavior being changed
 
 Do not read all `.ai/` files by default. Do not modify high-risk parser, compiler, runtime, extraction, language, ESLint, package-boundary, or CSS output behavior using only a short context pack; follow `.ai/context/accuracy-guardrails.md` and escalate to deeper references.
 
@@ -34,23 +35,23 @@ Preserve dependency direction:
 
 ```txt
 shared / external data
-  -> @master/css-schema / @master/css-lexer
-  -> @master/css-source
-  -> @master/css-engine / @master/css-preset / @master/css-integration
-  -> @master/css-compiler / @master/css-project
-  -> validator / server / scanner / runtime / language / language-service / stylesheet
+  -> @master/css-schema / native and Wasm artifact loaders / @master/css-preset
+  -> @master/css / @master/css-tooling
+  -> @master/css-compiler
+  -> server / runtime / language-service
   -> build plugins / CLI / ESLint / language-server
   -> framework integrations / VS Code / examples / site
 ```
 
-Do not make engine depend on compiler, integrations, runtime, server, scanner, language service, ESLint, examples, or site. `@master/css` is a public facade over engine and preset exports; keep behavior in the owning lower package.
+Rust is the single semantic source. `@master/css` owns the public Manifest v1 execution surface, `@master/css-compiler` owns compiler/project/stylesheet/inspection orchestration, and `@master/css-tooling` owns lexer/source/scanner/validator/lint/language sessions. TypeScript supplies platform loading, filesystem and package resolution, editor adaptation, and host capability callbacks; it must not implement semantic fallbacks.
 
-When cycle pressure appears, extract dependency-light contracts into `@master/css-schema`, dependency-free lexical scanners into `@master/css-lexer`, source class candidate extraction into `@master/css-source`, or adapter-neutral integration protocol into `@master/css-integration`.
+Do not make `@master/css` depend on compiler, tooling, integrations, runtime, server, language service, ESLint, examples, or site. Do not make tooling depend on compiler, language service, build adapters, or editor hosts. When cycle pressure appears, move dependency-light contracts into `@master/css-schema`, semantic operations into the owning Rust crate, compiler orchestration into `@master/css-compiler`, or editor-neutral operations into `@master/css-tooling`. `@master/css-internal` is repository-private, bundled into official consumers, and is not a public third-party adapter SPI or a generic shared utility package.
 
 ## Before Editing
 
 - Identify the affected package and read its `package.json`.
 - Use `.ai/context/package-routing.md` when the task names paths, packages, or a diff.
+- Use `.ai/context/rust-routing.md` before changing Rust crates, bindings, codegen, or parity evidence.
 - Read the affected package-local `AI.md`, if present.
 - Read the relevant task pack from `.ai/context/`.
 - Inspect existing source, tests, fixtures, and downstream consumers before designing a change.
@@ -86,6 +87,7 @@ Breaking changes in refactor work must be intentional and visible: list public A
 - Keep public exports deliberate.
 - Do not reduce correctness just to make tests pass.
 - Do not guess when modifying parser, compiler, renderer, selector, at-rule, variable, mode, priority, cascade, runtime, extraction, language, or ESLint behavior.
+- Keep production source at or below 800 lines/64 KiB and tests, scripts, and benchmarks at or below 1,000 lines/96 KiB. AI context files stay at or below 400 lines/48 KiB. Generated sources and bounded exceptions are governed by `.ai/context/source-budget.json`; run `pnpm run check:ai-context` after structural work.
 
 ## Testing Policy
 

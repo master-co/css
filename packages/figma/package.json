@@ -1,9 +1,11 @@
 {
-  "name": "@master/css.figma",
+  "name": "@master/css-figma",
   "version": "1.0.0",
   "description": "Figma plugin for Master CSS variables and modes",
-  "main": "./dist/plugin.min.js",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "pnpm build:plugin & pnpm build:ui",
     "build:plugin": "tsdown",
@@ -21,6 +23,12 @@
     "url": "https://github.com/master-co/css.git",
     "directory": "packages/figma"
   },
+  "exports": {},
+  "files": [
+    "dist",
+    "out",
+    "manifest.json"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true
@@ -28,7 +36,7 @@
   "devDependencies": {
     "@figma/eslint-plugin-figma-plugins": "^1.0.0",
     "@figma/plugin-typings": "^1.129.0",
-    "@master/css": "workspace:^",
+    "@master/css": "workspace:*",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.2",

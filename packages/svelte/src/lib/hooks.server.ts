@@ -1,19 +1,13 @@
-/// <reference types="@master/css-integration/client" />
+/// <reference types="@master/css/client" />
 
 import manifest from 'virtual:master-css-manifest'
 import emittedGlobals from 'virtual:master-css-emitted-globals'
 import { createMasterCSSHandle } from './server.js'
 
 export {
-  collectMasterCSSClasses,
-  createMasterCSSChunkRenderer,
-  createMasterCSSHandle,
-  createMasterCSSStaticHydrationManifestWriter,
-  injectMasterStyle
+  createMasterCSSHandle
 } from './server.js'
 export type {
-  MasterCSSStaticHydrationManifestWriterOptions,
-  MasterCSSSvelteChunkRendererOptions,
   MasterCSSSvelteHandleOptions,
   MasterCSSSvelteHydrationManifestOption
 } from './server.js'
@@ -21,4 +15,3 @@ export type {
 const handle = createMasterCSSHandle({ manifest, emittedGlobals })
 
 export { handle }
-export default handle

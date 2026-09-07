@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import { Client } from '@modelcontextprotocol/sdk/client/index.js'
@@ -10,7 +10,7 @@ import { createMasterCSSMCPServer } from '../src/server'
 const tempDirs: string[] = []
 
 function createTempDir(prefix: string) {
-  const dir = mkdtempSync(join(tmpdir(), prefix))
+  const dir = realpathSync(mkdtempSync(join(tmpdir(), prefix)))
   tempDirs.push(dir)
   return dir
 }
@@ -23,7 +23,8 @@ function createContributorFixture() {
   const root = createTempDir('master-css-mcp-contributor-')
   mkdirSync(join(root, '.ai/context'), { recursive: true })
   mkdirSync(join(root, '.github/prompts'), { recursive: true })
-  mkdirSync(join(root, 'packages/engine'), { recursive: true })
+  mkdirSync(join(root, 'crates/mastercss-engine/src'), { recursive: true })
+  mkdirSync(join(root, 'packages/css'), { recursive: true })
   mkdirSync(join(root, 'packages/runtime'), { recursive: true })
   mkdirSync(join(root, 'packages/mcp'), { recursive: true })
   mkdirSync(join(root, 'packages/create'), { recursive: true })
@@ -32,17 +33,18 @@ function createContributorFixture() {
   writeFileSync(join(root, 'AGENTS.md'), 'Read .ai/context/index.md')
   writeFileSync(join(root, '.ai/context/index.md'), '# Context Pack Index')
   writeFileSync(join(root, '.ai/context/package-routing.md'), '# Package Routing Pack')
+  writeFileSync(join(root, '.ai/context/rust-routing.md'), '# Rust Routing Pack')
   writeFileSync(join(root, '.ai/context/docs.md'), '# Docs Pack')
   writeFileSync(join(root, '.github/prompts/fix-bug.prompt.md'), '# Fix Bug')
   writeJSON(join(root, 'package.json'), {
     name: 'master-css-repo',
     private: true,
     scripts: {
-      'test:docs-consistency': 'node --test .ai/scripts/validate-doc-consistency.test.js'
+      'check:ai-context': 'node scripts/check-ai-context.mjs'
     }
   })
-  writeJSON(join(root, 'packages/engine/package.json'), {
-    name: '@master/css-engine',
+  writeJSON(join(root, 'packages/css/package.json'), {
+    name: '@master/css',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
@@ -50,7 +52,11 @@ function createContributorFixture() {
       'type-check': 'tsc -b tsconfig.typecheck.json'
     }
   })
-  writeFileSync(join(root, 'packages/engine/AI.md'), '# AI Notes For `@master/css-engine`')
+  writeFileSync(join(root, 'packages/css/AI.md'), '# AI Notes For `@master/css`')
+  writeFileSync(join(root, 'Cargo.toml'), '[workspace]\nmembers = ["crates/mastercss-engine"]\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/Cargo.toml'), '[package]\nname = "mastercss-engine"\nversion = "0.0.0"\n')
+  writeFileSync(join(root, 'crates/mastercss-engine/AI.md'), '# AI Notes For `mastercss-engine`')
+  writeFileSync(join(root, 'crates/mastercss-engine/src/session.rs'), 'pub struct EngineSession;\n')
   writeJSON(join(root, 'packages/runtime/package.json'), {
     name: '@master/css-runtime',
     scripts: {
@@ -59,7 +65,7 @@ function createContributorFixture() {
       test: 'vitest'
     },
     dependencies: {
-      '@master/css-engine': 'workspace:^'
+      '@master/css': 'workspace:^'
     }
   })
   writeFileSync(join(root, 'packages/runtime/AI.md'), '# AI Notes For `@master/css-runtime`')
@@ -83,14 +89,14 @@ function createContributorFixture() {
   })
   writeFileSync(join(root, 'packages/create/AI.md'), '# AI Notes For `@master/create-css`')
   writeJSON(join(root, 'packages/css-sv/package.json'), {
-    name: '@master/css-sv',
+    name: '@master/css-svelte-addon',
     scripts: {
       build: 'tsdown',
       lint: 'eslint',
       test: 'vitest'
     }
   })
-  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-sv`')
+  writeFileSync(join(root, 'packages/css-sv/AI.md'), '# AI Notes For `@master/css-svelte-addon`')
   writeJSON(join(root, 'site/package.json'), {
     name: 'site',
     private: true,
@@ -107,7 +113,7 @@ async function connect(root: string) {
   const client = new Client({ name: 'master-css-mcp-test', version: '0.0.0' }, { capabilities: {} })
   const [clientTransport, serverTransport] = InMemoryTransport.createLinkedPair()
   await Promise.all([
-    instance.server.connect(serverTransport),
+    instance.connect(serverTransport),
     client.connect(clientTransport)
   ])
   return {
@@ -115,7 +121,7 @@ async function connect(root: string) {
     instance,
     async close() {
       await client.close()
-      await instance.server.close()
+      await instance.dispose()
     }
   }
 }
@@ -190,6 +196,32 @@ describe('@master/css-mcp', () => {
       }))
       expect(rendered.classes).toEqual(['block'])
       expect(rendered.css.text).toContain('display:block')
+
+      const renderedNative = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_render_css',
+        arguments: {
+          classList: 'block field-sizing:content display:banana'
+        }
+      }))
+      expect(renderedNative.invalid).toEqual(['display:banana'])
+      expect(renderedNative.css.text).toContain('.block{display:block}')
+      expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
+      expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
+
+      const suggestions = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_suggest_syntax',
+        arguments: {
+          content: '<div class="block"></div>',
+          filePath: 'index.html',
+          position: { line: 0, character: 13 },
+          limit: 200
+        }
+      }))
+      expect(suggestions.total).toBeGreaterThan(0)
+      expect(suggestions.completions).toEqual(expect.arrayContaining([
+        expect.objectContaining({ label: 'block' })
+      ]))
+      expect(suggestions.hover.contents.value).toContain('display: block')
     } finally {
       await connection.close()
     }
@@ -203,7 +235,7 @@ describe('@master/css-mcp', () => {
         '@master/css': 'workspace:^',
         '@master/css-cli': 'workspace:^',
         '@master/create-css': 'workspace:^',
-        '@master/css-sv': 'workspace:^',
+        '@master/css-svelte-addon': 'workspace:^',
         '@master/eslint-config-css': 'workspace:^'
       },
       scripts: {
@@ -233,12 +265,12 @@ describe('@master/css-mcp', () => {
       }))
       expect(audit.packages.declared).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' }),
+        expect.objectContaining({ name: '@master/css-svelte-addon' }),
         expect.objectContaining({ name: '@master/eslint-config-css' })
       ]))
       expect(audit.packages.setup).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: '@master/create-css' }),
-        expect.objectContaining({ name: '@master/css-sv' })
+        expect.objectContaining({ name: '@master/css-svelte-addon' })
       ]))
       expect(audit.summary.setupPackages).toBe(2)
       expect(audit.integrations).toEqual(expect.arrayContaining([
@@ -253,7 +285,7 @@ describe('@master/css-mcp', () => {
         .filter((integration: { type: string }) => integration.type === 'package')
         .map((integration: { name: string }) => integration.name)
       expect(integrationPackageNames).not.toContain('@master/create-css')
-      expect(integrationPackageNames).not.toContain('@master/css-sv')
+      expect(integrationPackageNames).not.toContain('@master/css-svelte-addon')
 
       const directives = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_inspect_directives',
@@ -291,6 +323,25 @@ describe('@master/css-mcp', () => {
       expect(trace.reason).toBe('generated')
       expect(trace.detected).toBe(true)
       expect(trace.inspection.valid).toBe(true)
+
+      const inspected = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_inspect_class',
+        arguments: {
+          className: 'block',
+          mode: 'dark'
+        }
+      }))
+      expect(inspected).toMatchObject({
+        className: 'block',
+        mode: 'dark',
+        valid: true,
+        base: 'block',
+        suffix: '',
+        matcherTypes: ['static']
+      })
+      expect(inspected.rules).toHaveLength(1)
+      expect(inspected.rules[0].text).toContain('@media (prefers-color-scheme:dark)')
+      expect(inspected.css).toBe(inspected.rules.map((rule: { text: string }) => rule.text).join(''))
 
       const extracted = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_extract_classes',
@@ -330,6 +381,21 @@ describe('@master/css-mcp', () => {
       expect(compare.summary.changed).toBe(true)
       expect(compare.classes.added).toEqual(['inline'])
       expect(compare.rules.added.length).toBeGreaterThan(0)
+
+      const nativeCompare = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_css_compare',
+        arguments: {
+          beforeClassList: 'block display:banana',
+          afterClassList: 'block field-sizing:content'
+        }
+      }))
+      expect(nativeCompare.invalid).toEqual({
+        before: ['display:banana'],
+        after: [],
+        added: [],
+        removed: ['display:banana']
+      })
+      expect(nativeCompare.css.after.text).toContain('field-sizing:content')
     } finally {
       await connection.close()
     }
@@ -385,8 +451,8 @@ describe('@master/css-mcp', () => {
         arguments: {
           task: 'fix generated css output regression',
           paths: [
-            'packages/engine/src/core.ts',
-            'packages/engine/tests/core.test.ts'
+            'packages/css/src/engine/bound-engine.ts',
+            'packages/css/tests/engine/rust-engine.test.ts'
           ]
         }
       }))
@@ -395,9 +461,9 @@ describe('@master/css-mcp', () => {
       expect(report.audience).toBe('master-css-repository-contributors')
       expect(report.status).toBe('loaded')
       expect(report.affectedPackages).toContainEqual(expect.objectContaining({
-        name: '@master/css-engine',
-        path: 'packages/engine',
-        aiNotes: 'packages/engine/AI.md'
+        name: '@master/css',
+        path: 'packages/css',
+        aiNotes: 'packages/css/AI.md'
       }))
       expect(report.context.files).toEqual(expect.arrayContaining([
         'AGENTS.md',
@@ -406,18 +472,18 @@ describe('@master/css-mcp', () => {
         '.ai/context/css-output.md',
         '.ai/context/testing.md',
         '.ai/context/accuracy-guardrails.md',
-        'packages/engine/package.json',
-        'packages/engine/AI.md'
+        'packages/css/package.json',
+        'packages/css/AI.md'
       ]))
       expect(report.risks).toContainEqual(expect.objectContaining({
         id: 'css-output',
         severity: 'high'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine test'
+        command: 'pnpm --filter @master/css test'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm --filter @master/css-engine lint'
+        command: 'pnpm --filter @master/css lint'
       }))
     } finally {
       await connection.close()
@@ -459,15 +525,69 @@ describe('@master/css-mcp', () => {
       const graph = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_package_graph',
         arguments: {
-          packageName: '@master/css-engine'
+          packageName: '@master/css'
         }
       }))
       expect(graph.packages).toEqual([
         expect.objectContaining({
-          name: '@master/css-engine',
+          name: '@master/css',
           dependents: ['@master/css-runtime']
         })
       ])
+    } finally {
+      await connection.close()
+    }
+  })
+
+  it('routes Rust crates to Cargo context, risk packs, and scoped validation', async () => {
+    const root = createContributorFixture()
+    const connection = await connect(root)
+    try {
+      const report = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_repo_context',
+        arguments: {
+          task: 'refactor Rust engine session lifecycle',
+          paths: ['crates/mastercss-engine/src/session.rs']
+        }
+      }))
+
+      expect(report.status).toBe('loaded')
+      expect(report.affectedPackages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        path: 'crates/mastercss-engine',
+        kind: 'crate',
+        cargoManifest: 'crates/mastercss-engine/Cargo.toml',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(report.context.files).toEqual(expect.arrayContaining([
+        '.ai/context/rust-routing.md',
+        '.ai/context/testing.md',
+        '.ai/context/css-output.md',
+        '.ai/context/accuracy-guardrails.md',
+        'Cargo.toml',
+        'crates/mastercss-engine/Cargo.toml',
+        'crates/mastercss-engine/AI.md'
+      ]))
+      expect(report.risks).toContainEqual(expect.objectContaining({
+        id: 'css-output',
+        severity: 'high'
+      }))
+      expect(report.validation.commands).toEqual(expect.arrayContaining([
+        expect.objectContaining({ command: 'cargo test -p mastercss-engine' }),
+        expect.objectContaining({ command: 'cargo clippy -p mastercss-engine --all-targets --all-features -- -D warnings' }),
+        expect.objectContaining({ command: 'cargo xtask parity' })
+      ]))
+
+      const graph = parseToolJSON(await connection.client.callTool({
+        name: 'mastercss_package_graph',
+        arguments: { packageName: 'mastercss-engine' }
+      }))
+      expect(graph.packages).toContainEqual(expect.objectContaining({
+        name: 'mastercss-engine',
+        kind: 'crate',
+        aiNotes: 'crates/mastercss-engine/AI.md'
+      }))
+      expect(graph.summary.crates).toBe(1)
     } finally {
       await connection.close()
     }
@@ -495,7 +615,7 @@ describe('@master/css-mcp', () => {
           aiNotes: 'packages/create/AI.md'
         }),
         expect.objectContaining({
-          name: '@master/css-sv',
+          name: '@master/css-svelte-addon',
           path: 'packages/css-sv',
           aiNotes: 'packages/css-sv/AI.md'
         })
@@ -516,10 +636,10 @@ describe('@master/css-mcp', () => {
           command: 'pnpm --filter @master/create-css lint'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv test'
+          command: 'pnpm --filter @master/css-svelte-addon test'
         }),
         expect.objectContaining({
-          command: 'pnpm --filter @master/css-sv lint'
+          command: 'pnpm --filter @master/css-svelte-addon lint'
         })
       ]))
     } finally {
@@ -600,7 +720,7 @@ describe('@master/css-mcp', () => {
         severity: 'info'
       }))
       expect(report.validation.commands).toContainEqual(expect.objectContaining({
-        command: 'pnpm run test:docs-consistency'
+        command: 'pnpm run check:ai-context'
       }))
     } finally {
       await connection.close()
@@ -719,7 +839,7 @@ describe('@master/css-mcp', () => {
       }))
 
       expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
+      expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
       expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
@@ -749,9 +869,9 @@ describe('@master/css-mcp', () => {
       }))
 
       expect(report.version).toBe(1)
-      expect(report.root).toBe(connection.instance.context.root)
+      expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
-      expect(report.files[0].filePath).toBe(resolve(connection.instance.context.root, 'src/Component.tsx'))
+      expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))
       expect(report.files[0].languageId).toBe('typescriptreact')
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
         code: 'invalid-class-order'

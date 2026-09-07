@@ -36,7 +36,7 @@ describe('ManifestVirtualModulePlugin', () => {
   it('loads the default virtual manifest from the managed CSS entry', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context, viteConfig } = createContext(root)
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
 
     const code = await (plugin.load as any).call({}, RESOLVED_VIRTUAL_MANIFEST_ID)
     const manifestEntryPath = path.join(root, 'app.css')
@@ -60,7 +60,7 @@ describe('ManifestVirtualModulePlugin', () => {
         '}'
       ].join('\n'))
       const { context, viteConfig } = createContext(root)
-      const plugin = ManifestVirtualModulePlugin({}, context)
+      const plugin = ManifestVirtualModulePlugin(context)
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, RESOLVED_VIRTUAL_MANIFEST_ID))
@@ -88,7 +88,7 @@ describe('ManifestVirtualModulePlugin', () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context } = createContext(root)
     context.config.command = 'build'
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
     const emitFile = vi.fn(() => 'master_css_manifest_ref')
 
     const code = await (plugin.load as any).call({ emitFile }, RESOLVED_VIRTUAL_MANIFEST_ID)
@@ -100,7 +100,8 @@ describe('ManifestVirtualModulePlugin', () => {
     }))
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_manifest_ref;')
     expect(code).toContain(`new Function('specifier', "return import(specifier, { with: { type: 'json' } })")`)
-    expect(code).toContain(`await loadMasterCSSManifestModule(typeof masterCSSManifestURL === 'string' ? masterCSSManifestURL : masterCSSManifestURL.href)`)
+    expect(code).toContain(`masterCSSManifest = (await loadMasterCSSManifestModule(masterCSSManifestSpecifier)).default;`)
+    expect(code).toContain('const response = await fetch(masterCSSManifestSpecifier)')
     expect(code).not.toContain('font-weight-bold')
     expect(context.defaultManifestAssetReferenceId).toBe('master_css_manifest_ref')
     expect(context.defaultManifestAssetSource).toContain('"version":1')
@@ -110,7 +111,7 @@ describe('ManifestVirtualModulePlugin', () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context, viteConfig } = createContext(root)
     context.config.command = 'build'
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
 
     await (plugin.buildStart as any).call({})
 
@@ -122,7 +123,7 @@ describe('ManifestVirtualModulePlugin', () => {
     const { context } = createContext(root)
     context.config.command = 'build'
     context.config.build.ssr = true
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
     const emitFile = vi.fn(() => 'master_css_manifest_ref')
 
     const code = await (plugin.load as any).call({ emitFile }, RESOLVED_VIRTUAL_MANIFEST_ID)
@@ -130,7 +131,7 @@ describe('ManifestVirtualModulePlugin', () => {
     expect(code).toContain('const masterCSSManifestURL = import.meta.ROLLUP_FILE_URL_master_css_manifest_ref;')
     expect(code).toContain('loadMasterCSSManifestFromFile')
     expect(code).toContain(`with: { type: 'json' }`)
-    expect(code).not.toContain('fetch(')
+    expect(code).toContain('const response = await fetch(specifier)')
     expect(code).not.toContain(`import { readFile } from 'node:fs/promises';`)
     expect(code).not.toContain('font-weight-bold')
     expect(context.defaultManifestAssetReferenceId).toBeUndefined()
@@ -140,7 +141,7 @@ describe('ManifestVirtualModulePlugin', () => {
   it('handles unimported CSS manifest changes through CSS HMR only', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context } = createContext(root)
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
     const buttonManifestPath = path.join(root, 'styles/button.css')
     const module = { importers: new Set() }
     const invalidateModule = vi.fn()
@@ -166,7 +167,7 @@ describe('ManifestVirtualModulePlugin', () => {
   it('updates the default virtual manifest module through HMR when imported', async () => {
     const root = path.join(FIXTURE_DIR, 'css-only')
     const { context } = createContext(root)
-    const plugin = ManifestVirtualModulePlugin({}, context)
+    const plugin = ManifestVirtualModulePlugin(context)
     const importer = {}
     const module = { importers: new Set([importer]) }
     const invalidateModule = vi.fn()

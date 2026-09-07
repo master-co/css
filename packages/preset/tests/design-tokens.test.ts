@@ -1,17 +1,13 @@
 import { describe, expect, test } from 'vitest'
-import { MasterCSS } from '@master/css-engine'
 import defaultManifestJSON from '../src/default-manifest.json' with { type: 'json' }
 import {
   flattenMasterCSSManifestVariables,
   groupMasterCSSManifestVariables,
   type MasterCSSManifest
 } from '@master/css-schema/manifest'
+import { createTestCSS } from './helpers/rust-engine'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-
-function createTestCSS(manifest: MasterCSSManifest) {
-  return MasterCSS.create({ manifest })
-}
 
 function findVariable(name: string) {
   return flattenMasterCSSManifestVariables(defaultManifest.variables).find((variable) => variable.name === name)
@@ -357,6 +353,9 @@ describe.concurrent('@master/css-preset design token parity', () => {
 
   test('executes built-in registry records with foundation role tokens only', () => {
     const css = createTestCSS(defaultManifest)
+    const noNativeCSS = createTestCSS(defaultManifest, {
+      nativeDeclarationMatcher: () => false
+    })
 
     expect(css.createRule('font:sans')?.text).toContain('font-family:var(--font-family-sans)')
     expect(css.createRule('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
@@ -367,8 +366,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
     expect(css.createRule('text:link')?.text).toBe('.text\\:link{color:var(--color-text-link)}')
     expect(css.createRule('text:link-hover')?.text).toBe('.text\\:link-hover{color:var(--color-text-link-hover)}')
-    expect(css.createRule('bg:line')).toBeUndefined()
-    expect(css.createRule('bg:base')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:line')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:base')).toBeUndefined()
     expect(css.createRule('fg:muted')?.text).toBe('.fg\\:muted{color:var(--color-text-muted)}')
     expect(css.createRule('b:base')?.text).toBe('.b\\:base{border-color:var(--color-line-base)}')
     expect(css.createRule('b:1px|solid|base')?.text).toBe('.b\\:1px\\|solid\\|base{border:1px solid var(--color-line-base)}')
@@ -385,8 +384,8 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('transition-timing-function:smooth')?.text).toContain('transition-timing-function:var(--easing-smooth)')
     expect(css.createRule('bg:blue')?.text).toContain('background-color:var(--color-blue)')
     expect(css.createRule('bg:pink')?.text).toContain('background-color:var(--color-pink)')
-    expect(css.createRule('bg:canvas')).toBeUndefined()
-    expect(css.createRule('bg:surface')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:surface')).toBeUndefined()
     expect(css.createRule('bg:surface-base')?.text).toBe('.bg\\:surface-base{background-color:var(--color-surface-base)}')
     expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')
     expect(css.createRule('surface:muted')?.text).toBe('.surface\\:muted{background-color:var(--color-surface-muted)}')
@@ -394,18 +393,18 @@ describe.concurrent('@master/css-preset design token parity', () => {
     expect(css.createRule('surface:overlay')?.text).toBe('.surface\\:overlay{background-color:var(--color-surface-overlay)}')
     expect(css.createRule('surface:inverse')?.text).toBe('.surface\\:inverse{background-color:var(--color-surface-inverse)}')
     expect(css.createRule('surface:overlay/.9')?.text).toBe('.surface\\:overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
-    expect(css.createRule('surface:blue')).toBeUndefined()
-    expect(css.createRule('surface:#fff')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
+    expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
     expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-red)}')
     expect(css.createRule('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg:blue-60')?.text).toBe('.fg\\:blue-60{color:var(--color-blue-60)}')
-    expect(css.createRule('text:blue-60')).toBeUndefined()
+    expect(noNativeCSS.createRule('text:blue-60')).toBeUndefined()
     expect(css.createRule('text-fill-color:text-pink')?.text).toBe('.text-fill-color\\:text-pink{-webkit-text-fill-color:var(--color-text-pink)}')
     expect(css.createRule('animate:fade')?.text).toContain('animation:var(--animate-fade)')
-    expect(css.createRule('bg:accent')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:accent')).toBeUndefined()
     expect(css.createRule('fg:on-blue')?.text).not.toContain('var(--color-on-blue)')
     expect(css.createRule('b:line-blue')?.text).not.toContain('var(--color-line-blue)')
-    expect(css.createRule('bg:blue-surface')).toBeUndefined()
+    expect(noNativeCSS.createRule('bg:blue-surface')).toBeUndefined()
     expect(css.text).not.toContain('null')
   })
 

@@ -3,15 +3,15 @@ import resolveContext from '../utils/resolve-context'
 import resolveComposeDirectiveClassNodes from '../utils/resolve-compose-directive-class-nodes'
 import createRule from '../create-rule'
 import {
-  createCanonicalClassesReport,
-  createCanonicalComposeDirectiveReport,
   defaultCanonicalClassNameOptions,
   type CanonicalClassNameOptions
-} from '@master/css-lint'
+} from '@master/css-tooling/lint'
+import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
 import type { ResolvedClassNode } from '../utils/resolve-class-node'
 import type { ResolvedComposeDirectiveClassNode } from '../utils/resolve-compose-directive-class-nodes'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'prefer-canonical-classes',
@@ -42,18 +42,18 @@ export default createRule({
   },
   defaultOptions: [defaultCanonicalClassNameOptions],
   create(context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     const options = {
       ...defaultCanonicalClassNameOptions,
       ...((context.options[0] || {}) as Partial<CanonicalClassNameOptions>)
     }
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
-        css,
+        tooling,
         ruleId: 'prefer-canonical-classes',
         ruleOptions: options
-      })
+      }), release)
     }
 
     const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {
@@ -61,7 +61,11 @@ export default createRule({
         context,
         node,
         { raw, start, end, unescape, classNodes, classValues, nodes: [], value: raw },
-        createCanonicalClassesReport(raw, css, { ...options, unescape }).diagnostics
+        createMasterCSSLintDiagnostics(
+          tooling.analyzeLintClassList(raw, classValues, {
+            canonicalOptions: options
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
+        )
       )
     }
 
@@ -70,7 +74,12 @@ export default createRule({
         context,
         node,
         classNode,
-        createCanonicalComposeDirectiveReport(classNode.raw, css, options).diagnostics,
+        createMasterCSSLintDiagnostics(
+          tooling.analyzeLintClassList(classNode.raw, classNode.classValues, {
+            canonicalOptions: options,
+            composeDirective: true
+          }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
+        ),
         {
           getFix(_, fix) {
             if (fix.scope !== 'directive') {
@@ -92,20 +101,20 @@ export default createRule({
       )
     }
 
-    const visitors = defineVisitors({ context, settings }, reportCanonicalClassList)
+    const visitors = defineVisitors({ context, settings, tooling }, reportCanonicalClassList)
     const visitProgram = visitors.Program
 
-    return {
+    return withContextRelease({
       ...visitors,
       Program(node) {
         if (typeof visitProgram === 'function') {
           visitProgram(node)
         }
-        for (const classNode of resolveComposeDirectiveClassNodes(context)) {
+        for (const classNode of resolveComposeDirectiveClassNodes(context, tooling)) {
           reportCanonicalComposeDirective(node, classNode)
         }
       }
-    }
+    }, release)
   }
 })
 

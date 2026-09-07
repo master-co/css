@@ -1,6 +1,9 @@
 {
   "name": "@master/css-runtime",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown",
     "bench": "node scripts/benchmark-runtime.js",
@@ -33,38 +36,30 @@
     "cdn"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
-  "module": "./dist/index.js",
   "browser": "./dist/global.min.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": {
-        "development": "./dist/index.development.js",
-        "default": "./dist/index.js"
-      },
+      "import": "./dist/index.js",
       "default": "./dist/index.js"
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "artifacts"
   ],
   "publishConfig": {
     "access": "public",
     "provenance": true
   },
   "dependencies": {
-    "@master/css-engine": "workspace:^",
-    "@master/css-preset": "workspace:^",
-    "@master/css-schema": "workspace:^"
+    "@master/css": "workspace:*",
+    "@master/css-binding": "workspace:*",
+    "@master/css-schema": "workspace:*"
   },
   "devDependencies": {
-    "@master/css": "workspace:^",
-    "@master/css-compiler": "workspace:^",
-    "@master/css-integration": "workspace:^",
+    "@master/css-preset": "workspace:*",
     "@playwright/test": "1.61.0"
   }
 }

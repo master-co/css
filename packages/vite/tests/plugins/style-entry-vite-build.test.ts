@@ -9,7 +9,7 @@ interface BuildCSSFixtureOptions {
   plugins?: PluginOption[]
   prefix?: string
   setup?: (root: string) => void
-  styleCSS: string
+  stylesheet: string
 }
 
 async function buildCSSFixture({
@@ -17,7 +17,7 @@ async function buildCSSFixture({
   plugins = [masterCSS()],
   prefix = 'master-css-vite-style-entry-',
   setup,
-  styleCSS
+  stylesheet
 }: BuildCSSFixtureOptions) {
   const tmpRoot = join(process.cwd(), 'tmp')
   mkdirSync(tmpRoot, { recursive: true })
@@ -30,7 +30,7 @@ async function buildCSSFixture({
       '<script type="module" src="/src/main.ts"></script>'
     ].join('\n'))
     writeFileSync(join(root, 'src/main.ts'), 'import "./style.css"\n')
-    writeFileSync(join(root, 'src/style.css'), styleCSS)
+    writeFileSync(join(root, 'src/style.css'), stylesheet)
     setup?.(root)
 
     await build({
@@ -70,7 +70,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
         masterCSS({ mode: 'static' })
       ],
       prefix: 'master-css-vite-import-order-',
-      styleCSS: [
+      stylesheet: [
         '@import "@master/css";',
         '@import "fake-font/index.css";',
         '',
@@ -96,7 +96,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
   test('default runtime mode emits preset base CSS for the root Master CSS import', async () => {
     const css = await buildCSSFixture({
       appClass: 'block',
-      styleCSS: [
+      stylesheet: [
         '@import "@master/css";',
         '',
         'body { margin: 0; }'
@@ -116,7 +116,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
       plugins: [
         masterCSS({ mode })
       ],
-      styleCSS: [
+      stylesheet: [
         '@import "@master/css";',
         '',
         'body { margin: 0; }'
@@ -136,7 +136,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
       plugins: [
         masterCSS({ mode: 'static' })
       ],
-      styleCSS: [
+      stylesheet: [
         '@import "@master/css";',
         '',
         'body { margin: 0; }'
@@ -151,7 +151,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
 
   test('default runtime mode lets Vite expand the explicit base.css subpath import', async () => {
     const css = await buildCSSFixture({
-      styleCSS: [
+      stylesheet: [
         '@import "@master/css/base.css";',
         '',
         'body { margin: 0; }'

@@ -8,9 +8,11 @@ const __dirname = dirname(__filename)
 const RUNTIME_ASSET_BASE_URL = 'http://master-css-runtime.test'
 const RUNTIME_SCRIPT_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc`
 const DEFAULT_MANIFEST_URL = `${RUNTIME_ASSET_BASE_URL}/css-runtime@rc/default-manifest.json`
+const RUNTIME_WASM_URL = `${RUNTIME_ASSET_BASE_URL}/artifacts/mastercss_binding_wasm_engine_bg.wasm`
 
 type RuntimeAssetRouteOptions = {
   onDefaultManifestRequest?: () => void
+  onWasmRequest?: () => void
 }
 
 async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions = {}) {
@@ -30,20 +32,35 @@ async function routeRuntimeAssets(page: Page, options: RuntimeAssetRouteOptions 
       body: readFileSync(resolve(__dirname, '../dist/default-manifest.json'), 'utf8')
     })
   })
+  await page.route(RUNTIME_WASM_URL, (route) => {
+    options.onWasmRequest?.()
+    route.fulfill({
+      contentType: 'application/wasm',
+      headers: {
+        'access-control-allow-origin': '*'
+      },
+      body: readFileSync(resolve(__dirname, '../artifacts/mastercss_binding_wasm_engine_bg.wasm'))
+    })
+  })
 }
 
 async function startGlobalRuntime(page: Page) {
   await routeRuntimeAssets(page)
   await page.addScriptTag({ url: RUNTIME_SCRIPT_URL })
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+  await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 }
 
 test('uses split bundled preset manifest', async ({ page }) => {
   await startGlobalRuntime(page)
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('color-white'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  const snapshot = await page.evaluate(() => {
+    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold', 'fg:white'])
+    return globalThis.masterCSSRuntime!.snapshot()
+  })
+  expect(snapshot.cssText).toContain('--font-weight-bold:700')
+  expect(snapshot.cssText).toContain('.fg\\:white{color:oklch(100% 0 none)}')
+  expect(snapshot.classRules['font:bold']?.rules).not.toHaveLength(0)
+  expect(snapshot.classRules['fg:white']?.rules).not.toHaveLength(0)
 })
 
 test('uses modulepreloaded default manifest', async ({ page }) => {
@@ -61,21 +78,28 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
     }
   })
 
-  await page.setContent(`
-    <!doctype html>
-    <html hidden>
-    <head>
-      <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
-      <script src="${RUNTIME_SCRIPT_URL}"></script>
-    </head>
-    <body></body>
-    </html>
-  `)
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime?.observing)
+  await page.route(`${RUNTIME_ASSET_BASE_URL}/`, (route) => route.fulfill({
+    contentType: 'text/html',
+    body: `
+      <!doctype html>
+      <html hidden>
+      <head>
+        <link rel="modulepreload" as="json" crossorigin href="${DEFAULT_MANIFEST_URL}">
+        <script src="${RUNTIME_SCRIPT_URL}"></script>
+      </head>
+      <body></body>
+      </html>
+    `
+  }))
+  await page.goto(`${RUNTIME_ASSET_BASE_URL}/`)
+  await page.waitForFunction(() => globalThis.masterCSSRuntime?.snapshot().observing)
 
   expect(defaultManifestRequests).toBe(1)
   expect(consoleMessages).toEqual([])
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  expect(await page.evaluate(() => {
+    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold'])
+    return globalThis.masterCSSRuntime!.snapshot().cssText
+  })).toContain('--font-weight-bold:700')
 })
 
 test('ignores global manifest override', async ({ page }) => {
@@ -90,7 +114,54 @@ test('ignores global manifest override', async ({ page }) => {
   }, { manifest })
   await startGlobalRuntime(page)
 
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('primary'))).toBeUndefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.variables.get('font-weight-bold'))).toBeDefined()
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.manifest.version)).toBe(1)
+  const snapshot = await page.evaluate(() => {
+    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold'])
+    return globalThis.masterCSSRuntime!.snapshot()
+  })
+  expect(snapshot.cssText).toContain('--font-weight-bold:700')
+  expect(snapshot.cssText).not.toContain('--primary:#000000')
+})
+
+test('fails open when a cross-origin Wasm request is blocked', async ({ page }) => {
+  const consumerURL = 'http://master-css-consumer.test/'
+  let wasmRequests = 0
+  await routeRuntimeAssets(page)
+  await page.unroute(RUNTIME_WASM_URL)
+  await page.route(RUNTIME_WASM_URL, (route) => {
+    wasmRequests++
+    route.abort()
+  })
+  await page.route(consumerURL, route => route.fulfill({
+    contentType: 'text/html',
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
+  }))
+
+  await page.goto(consumerURL)
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
+
+  expect(wasmRequests).toBe(1)
+  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
+})
+
+test('fails open when strict CSP disallows Wasm compilation', async ({ page }) => {
+  const consumerURL = 'http://master-css-csp-consumer.test/'
+  let wasmRequests = 0
+  await routeRuntimeAssets(page, {
+    onWasmRequest: () => {
+      wasmRequests++
+    }
+  })
+  await page.route(consumerURL, route => route.fulfill({
+    contentType: 'text/html',
+    headers: {
+      'content-security-policy': `default-src 'none'; script-src ${RUNTIME_ASSET_BASE_URL}; connect-src ${RUNTIME_ASSET_BASE_URL}`
+    },
+    body: `<!doctype html><html hidden><head><script src="${RUNTIME_SCRIPT_URL}"></script></head><body></body></html>`
+  }))
+
+  await page.goto(consumerURL)
+  await expect.poll(() => page.evaluate(() => document.documentElement.hasAttribute('hidden'))).toBe(false)
+
+  expect(wasmRequests).toBe(1)
+  expect(await page.evaluate(() => Boolean(globalThis.masterCSSRuntime))).toBe(false)
 })

@@ -1,6 +1,6 @@
-import CSSLanguageService from '../../src/core'
+import CSSLanguageService from '../helpers/rc87-language-service'
 import createDoc from '../../src/utils/create-doc'
-import { Settings } from '../../src/settings'
+import type { Settings } from '../helpers/rc87-language-service'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const defaultPresetManifest = createPresetManifest()
@@ -53,3 +53,4 @@ export const hint = (target: string, settings: Settings = {}) => {
   hintCache.set(target, completionItems)
   return completionItems
 }
+

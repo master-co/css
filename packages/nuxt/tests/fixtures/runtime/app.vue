@@ -1,7 +1,7 @@
 <template>
   <div class="box">
     basic
-    <span id="probe" class="box block">probe</span>
+    <span id="probe" class="box block fg:host">probe</span>
   </div>
 </template>
 

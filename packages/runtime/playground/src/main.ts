@@ -1,9 +1,10 @@
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import CSSRuntime, { type MasterCSSManifest } from '../../src'
+import { MasterCSSRuntime } from '../../src'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
-// CSSRuntime.create({
+// const cssRuntime = await MasterCSSRuntime.start({
 //     manifest: {
 //         version: 1,
 //         utilities: [
@@ -17,7 +18,8 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 //         }
 //         ]
 //     }
-// }).observe()
+// })
+// cssRuntime.observe()
 
 // const createElement = (name: string) => {
 //     const el = document.createElement('div')
@@ -45,8 +47,9 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 /* iframe test */
 const iframe = document.querySelector('iframe')
 if (iframe?.contentDocument) {
-  CSSRuntime.create({
+  const cssRuntime = await MasterCSSRuntime.start({
     root: iframe.contentDocument,
     manifest: defaultManifest
-  }).observe()
+  })
+  cssRuntime.observe()
 }

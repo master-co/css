@@ -21,3 +21,4 @@ test.concurrent('styled invoked', () => {
   const contents = ['const Button = styled.button("class-a ', target, '")']
   expectClassPosition(target, contents, 'tsx')
 })
+

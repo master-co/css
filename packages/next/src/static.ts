@@ -1,20 +1,23 @@
-import CSSScanner, { type ScannerOptions } from '@master/css-scanner'
-import defaultScannerOptions from '@master/css-scanner/options'
 import {
-  createStyleCSSHostSource,
-  createExtractedCSS as createStylesheetStaticCSS,
-  isMasterCSSPackageStyleFile,
-  isStyleCSSRequest,
-  removeMasterStyleDirectives,
-  resolveMasterStyleSource,
-  registerStyleCSSSource,
-  type StyleCSSSources
-} from '@master/css-stylesheet'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
+  defaultScannerOptions,
+  MasterCSSScanner,
+  type MasterCSSScannerOptions,
+  type MasterCSSScannerConfiguration
+} from '@master/css-tooling/scanner/node'
+import { defaultBuildManifest } from '@master/css-internal/project'
+import {
+  createStylesheetCollection,
+  type MasterCSSStylesheetCollection
+} from '@master/css-compiler/stylesheet'
+import {
+  composeStylesheetHostSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
+import { discoverManifestEntries } from '@master/css-compiler/project'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { existsSync, readFileSync } from 'node:fs'
 import { dirname, relative, resolve } from 'node:path'
-import { resolveOptions, type Options, type ResolvedOptions } from './options'
+import { resolveOptions, type MasterCSSNextOptions, type ResolvedMasterCSSNextOptions } from './options'
 
 const STATE_VERSION = 2
 const DEFAULT_STATIC_OUTPUT = '.master/next.css'
@@ -27,15 +30,15 @@ export interface StaticState {
   outputPath: string
   scanLogPath: string
   options: {
-    scannerOptions: ScannerOptions
+    scanner: MasterCSSScannerConfiguration
     debug: boolean
   }
 }
 
 interface StaticSession {
-  scanner: CSSScanner
-  styleCSSSources: StyleCSSSources
-  ready: Promise<CSSScanner>
+  scanner: MasterCSSScanner
+  stylesheets: MasterCSSStylesheetCollection
+  ready: Promise<MasterCSSScanner>
   write: () => Promise<void>
 }
 
@@ -52,16 +55,17 @@ function getSessions() {
   return globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ ??= new Map()
 }
 
-function resolveScannerOptions(options: ResolvedOptions): ScannerOptions {
+function resolveScannerOptions(options: ResolvedMasterCSSNextOptions): MasterCSSScannerOptions {
   const exclude = [
     ...(defaultScannerOptions.exclude || []),
     '**/node_modules/**',
-    ...(options.scannerOptions.exclude || [])
+    ...(options.scanner.exclude || [])
   ]
   return {
-    ...options.scannerOptions,
+    manifest: defaultBuildManifest,
+    ...options.scanner,
     exclude: [...new Set(exclude)],
-    verbose: options.scannerOptions.verbose ?? (options.debug ? 1 : 0)
+    verbose: options.scanner.verbose ?? (options.debug ? 1 : 0)
   }
 }
 
@@ -75,37 +79,41 @@ function toCSSImportPath(fromFile: string, toFile: string) {
 
 export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string) {
   const state = readStaticState(statePath)
-  if (!isStyleCSSRequest(resourcePath)) return source
-  if (!resolveMasterStyleSource(resourcePath, source, state.projectDir)) return source
-  if (isMasterCSSPackageStyleFile(resourcePath, state.projectDir)) {
-    return removeMasterStyleDirectives(source).code
+  const resolution = resolveStylesheetSync(resourcePath, source, {
+    projectDir: state.projectDir
+  })
+  if (!resolution || (resolution.kind !== 'entry' && resolution.kind !== 'master-package-entry')) return source
+  if (resolution.kind === 'master-package-entry') {
+    return resolution.outputSource
   }
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
-  await registerStyleCSSSource(session.scanner, session.styleCSSSources, resourcePath, source, {
+  await session.stylesheets.register(session.scanner, resourcePath, source, {
+    baseManifest: session.scanner.css.manifest,
     projectDir: state.projectDir
   })
   syncScannerResetDependencies(session)
   await session.write()
-  return createStyleCSSHostSource(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
+  return composeStylesheetHostSync(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
 
 async function createStaticCSS(projectDir: string, session: StaticSession) {
-  return createStylesheetStaticCSS({
+  return (await session.stylesheets.compose({
     scanner: session.scanner,
-    styleCSSSources: session.styleCSSSources,
+    baseManifest: session.scanner.css.manifest,
     projectDir
-  })
+  })).css
 }
 
-async function registerStyleCSSEntries(projectDir: string, session: StaticSession) {
-  session.styleCSSSources.clear()
-  for (const entry of await findCSSManifestEntryFiles(projectDir)) {
-    await registerStyleCSSSource(session.scanner, session.styleCSSSources, entry, await readFile(entry, 'utf8'), {
+async function registerStylesheetEntries(projectDir: string, session: StaticSession) {
+  session.stylesheets.clear()
+  for (const entry of await discoverManifestEntries({ root: projectDir })) {
+    await session.stylesheets.register(session.scanner, entry, await readFile(entry, 'utf8'), {
+      baseManifest: session.scanner.css.manifest,
       projectDir
     })
   }
@@ -113,7 +121,7 @@ async function registerStyleCSSEntries(projectDir: string, session: StaticSessio
 }
 
 function getStyleDependencyPaths(session: StaticSession) {
-  return Array.from(session.styleCSSSources.values()).flatMap((source) => source.dependencies)
+  return session.stylesheets.snapshot().dependencies
 }
 
 function syncScannerResetDependencies(session: StaticSession) {
@@ -133,9 +141,9 @@ async function writeStaticCSS(outputPath: string, cssText: string) {
   return true
 }
 
-function createSession(projectDir: string, outputPath: string, options: ResolvedOptions): StaticSession {
-  const scanner = new CSSScanner(resolveScannerOptions(options), projectDir)
-  const styleCSSSources: StyleCSSSources = new Map()
+function createSession(projectDir: string, outputPath: string, options: ResolvedMasterCSSNextOptions): StaticSession {
+  const scanner = new MasterCSSScanner(resolveScannerOptions(options), projectDir)
+  const stylesheets = createStylesheetCollection()
   let writeChain = Promise.resolve()
   let session: StaticSession
   const write = () => {
@@ -145,14 +153,14 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
         await writeStaticCSS(outputPath, cssText)
       })
       .catch((error: unknown) => {
-        console.error('[@master/css.next] failed to write static CSS:', error)
+        console.error('[@master/css-next] failed to write static CSS:', error)
       })
     return writeChain
   }
   const ready = scanner
     .init()
     .then(async () => {
-      await registerStyleCSSEntries(projectDir, session)
+      await registerStylesheetEntries(projectDir, session)
       await write()
       return scanner
     })
@@ -163,7 +171,7 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
 
   session = {
     scanner,
-    styleCSSSources,
+    stylesheets,
     ready,
     write
   }
@@ -188,7 +196,7 @@ export async function writeStaticState(
   outputPath: string,
   statePath: string,
   scanLogPath: string,
-  options: ResolvedOptions
+  options: ResolvedMasterCSSNextOptions
 ) {
   const state: StaticState = {
     version: STATE_VERSION,
@@ -196,7 +204,7 @@ export async function writeStaticState(
     outputPath,
     scanLogPath,
     options: {
-      scannerOptions: resolveScannerOptions(options),
+      scanner: resolveScannerOptions(options),
       debug: options.debug
     }
   }
@@ -217,12 +225,12 @@ export async function addStaticCSSDependencies(statePath: string, addDependency?
   const state = readStaticState(statePath)
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
   addDependency(state.outputPath)
-  for (const styleSource of session.styleCSSSources.values()) {
+  for (const styleSource of session.stylesheets.snapshot().sources) {
     for (const dependency of styleSource.dependencies) {
       addDependency(dependency)
     }
@@ -232,7 +240,7 @@ export async function addStaticCSSDependencies(statePath: string, addDependency?
 export async function getOrCreateStaticSession(
   projectDir: string,
   outputPath: string,
-  options: ResolvedOptions
+  options: ResolvedMasterCSSNextOptions
 ) {
   const key = `${projectDir}\0${outputPath}`
   const sessions = getSessions()
@@ -245,7 +253,7 @@ export async function getOrCreateStaticSession(
   return session
 }
 
-export async function prepareNextStatic(rawOptions: Options = {}, setupOptions: PrepareNextStaticOptions = {}) {
+export async function prepareNextStatic(rawOptions: MasterCSSNextOptions = {}, setupOptions: PrepareNextStaticOptions = {}) {
   const options = resolveOptions(rawOptions)
   if (options.mode !== 'static') return
 
@@ -278,7 +286,7 @@ export async function scanStaticModule(statePath: string, resourcePath: string, 
   const state = readStaticState(statePath)
   const options = resolveOptions({
     mode: 'static',
-    scannerOptions: state.options.scannerOptions,
+    scanner: state.options.scanner,
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)

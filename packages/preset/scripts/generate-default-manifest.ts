@@ -1,8 +1,11 @@
-import { writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { MasterCSS } from '@master/css-engine'
-import { normalizeMasterCSSManifestForJSON, stringifyMasterCSSManifestJSON } from '@master/css-schema/manifest-json'
+import {
+  createCompilerBindingSessionSync,
+  type MasterCSSCompilerBindingSession
+} from '@master/css-binding/compiler/node'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -10,60 +13,85 @@ const packageRoot = resolve(__dirname, '..')
 const sourceFile = resolve(packageRoot, 'src/index.css')
 const manifestOutputFile = resolve(packageRoot, 'src/default-manifest.json')
 const nativeCSSOutputFile = resolve(packageRoot, 'src/default-native.css')
-const defaultEngineSettings = MasterCSS.create({ manifest: { version: 1 } }).settings
-const { compileCSSManifestFile } = await import(new URL('../../compiler/src/index.ts', import.meta.url).href) as typeof import('@master/css-compiler')
-function clone<T>(value: T): T {
-  return JSON.parse(JSON.stringify(value)) as T
+
+interface CompiledDefaultPresetManifest {
+  manifest: MasterCSSManifest
+  json: string
+  nativeCSS: string
 }
 
-function isDefaultSettingValue(value: unknown, defaultValue: unknown) {
-  if (Array.isArray(value) && Array.isArray(defaultValue)) {
-    return value.length === defaultValue.length
-      && value.every((item, index) => item === defaultValue[index])
+function resolvePresetStylesheet(
+  entryFile: string,
+  compiler: MasterCSSCompilerBindingSession
+) {
+  const entry = resolve(entryFile)
+  const files: Record<string, string> = {}
+  const edges: { from: string, specifier: string, resolved: string }[] = []
+  const visited = new Set<string>()
+
+  const visit = (file: string) => {
+    const absoluteFile = resolve(file)
+    if (visited.has(absoluteFile)) return
+    if (!existsSync(absoluteFile)) throw new Error(`Preset CSS file not found: ${absoluteFile}`)
+    visited.add(absoluteFile)
+    const source = readFileSync(absoluteFile, 'utf8')
+    files[absoluteFile] = source
+    const analysis = compiler.analyzeCSSDependencies(source)
+    for (const statement of analysis.imports) {
+      if (!statement.source.startsWith('./') && !statement.source.startsWith('../')) continue
+      const importedFile = resolve(dirname(absoluteFile), statement.source)
+      edges.push({
+        from: absoluteFile,
+        specifier: statement.source,
+        resolved: importedFile
+      })
+      visit(importedFile)
+    }
   }
-  return value === defaultValue
-}
 
-function createDefaultManifestSettings(settings: MasterCSSManifest['settings']): MasterCSSManifest['settings'] {
-  if (!settings) return
-  const entries = Object.entries(settings).filter(([key, value]) =>
-    !isDefaultSettingValue(value, defaultEngineSettings[key as keyof typeof defaultEngineSettings])
-  )
-  return entries.length ? Object.fromEntries(entries) as MasterCSSManifest['settings'] : undefined
-}
-
-export function createDefaultManifest(cssManifest: MasterCSSManifest): MasterCSSManifest {
-  const settings = createDefaultManifestSettings(cssManifest.settings)
-  return normalizeMasterCSSManifestForJSON({
-    version: 1,
-    ...(settings ? { settings } : {}),
-    ...(cssManifest.variables ? { variables: clone(cssManifest.variables) } : {}),
-    ...(cssManifest.animations ? { animations: clone(cssManifest.animations) } : {}),
-    ...(cssManifest.variants ? { variants: clone(cssManifest.variants) } : {}),
-    ...(cssManifest.conditions ? { conditions: clone(cssManifest.conditions) } : {}),
-    ...(cssManifest.breakpointConditions ? { breakpointConditions: clone(cssManifest.breakpointConditions) } : {}),
-    ...(cssManifest.containerConditions ? { containerConditions: clone(cssManifest.containerConditions) } : {}),
-    ...(cssManifest.selectors ? { selectors: clone(cssManifest.selectors) } : {}),
-    ...(cssManifest.utilities ? { utilities: clone(cssManifest.utilities) } : {})
+  visit(entry)
+  return compiler.resolveCSSImportGraph({
+    entry,
+    files,
+    edges
   })
 }
 
+function compileDefaultPresetManifest(file: string): CompiledDefaultPresetManifest {
+  using compiler = createCompilerBindingSessionSync()
+  const source = resolvePresetStylesheet(file, compiler).source
+  const directives = compiler.compileCSSDirectives(source, {
+    from: file,
+    preserveNativeCSS: true
+  })
+  const compiled = compiler.compileDefaultPresetManifest({
+    manifestInput: directives.manifestInput,
+    styleDefinitions: directives.styleDefinitions || []
+  })
+  return {
+    ...compiled,
+    nativeCSS: directives.nativeCSS
+  }
+}
+
 export function createDefaultManifestFromSourceFile(file = sourceFile) {
-  return createDefaultManifest(compileCSSManifestFile(file).manifest)
+  return compileDefaultPresetManifest(file).manifest
+}
+
+export function createDefaultManifestJSONFromSourceFile(file = sourceFile) {
+  return compileDefaultPresetManifest(file).json
 }
 
 export function createDefaultNativeCSSFromSourceFile(file = sourceFile) {
-  return compileCSSManifestFile(file, {
-    preserveNativeCSS: true
-  }).directives.nativeCSS
+  return compileDefaultPresetManifest(file).nativeCSS
 }
 
 export function createDefaultManifestJSON(manifest: MasterCSSManifest) {
-  return stringifyMasterCSSManifestJSON(manifest)
+  return serializeMasterCSSManifest(manifest)
 }
 
 export function writeDefaultManifest(file = manifestOutputFile) {
-  writeFileSync(file, createDefaultManifestJSON(createDefaultManifestFromSourceFile()))
+  writeFileSync(file, createDefaultManifestJSONFromSourceFile())
 }
 
 export function writeDefaultNativeCSS(file = nativeCSSOutputFile) {

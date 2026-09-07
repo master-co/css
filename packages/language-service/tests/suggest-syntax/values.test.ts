@@ -3,10 +3,8 @@ import dedent from 'ts-dedent'
 import { hint } from './helper'
 import { CompletionItemKind } from 'vscode-languageserver-protocol'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
-import CSSLanguageService from '../../src/core'
+import CSSLanguageService from '../helpers/rc87-language-service'
 import createDoc from '../../src/utils/create-doc'
-
-test.todo('convert any color spaces to RGB and hint correctly')
 
 function cssComposeHint(target: string, settings: ConstructorParameters<typeof CSSLanguageService>[0] = {}) {
   const contents = ['.btn { @compose ', target, '; }']
@@ -89,7 +87,9 @@ describe.concurrent('retype on no hints', () => {
 
 describe.concurrent('negative values', () => {
   it.concurrent('should hint negative values', () => expect(hint('font:')?.map(({ label }) => label)).not.toContain('-bold'))
-  test.todo('types - to hint number values')
+  test('types - to hint number values', () => {
+    expect(hint('w:-')?.map(({ label }) => label)).toEqual(expect.arrayContaining(['-sm', '-md']))
+  })
 })
 
 describe.concurrent('key aliases', () => {
@@ -241,5 +241,14 @@ describe.concurrent('sorting', () => {
 })
 
 describe.concurrent('functions', () => {
-  test.todo('fucntions')
+  test('functions', () => {
+    expect(hint('filter:')?.find(({ label }) => label === 'blur()')).toMatchObject({
+      label: 'blur()',
+      detail: 'filter: blur()',
+      kind: CompletionItemKind.Function,
+      insertText: 'blur($0)',
+      insertTextFormat: 2,
+      sortText: 'cccccblur()'
+    })
+  })
 })

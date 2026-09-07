@@ -1,12 +1,28 @@
 import path from 'path'
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node'
 import { commands, Disposable, EventEmitter, ExtensionContext, languages, ProgressLocation, Range, SemanticTokens, SemanticTokensLegend, TextEdit, window, workspace, type CancellationToken, type FormattingOptions, type LogOutputChannel, type Position, type ProviderResult, type TextDocument } from 'vscode'
-import { ACTIVE_SEMANTIC_TOKENS_REQUEST, DOCUMENT_SEMANTIC_TOKENS_REQUEST, settings, type Settings } from '@master/css-language-server'
-import { applyMasterCSSDirectiveFormatEdits, formatMasterCSSDirectives, SEMANTIC_TOKENS_LEGEND } from '@master/css-language'
-import { isCompatibleMasterCSSPackageVersion, resolveMasterCSSWorkspacePackages } from '@master/css-project/workspace'
+import {
+  ACTIVE_SEMANTIC_TOKENS_REQUEST,
+  DOCUMENT_SEMANTIC_TOKENS_REQUEST,
+  defaultLanguageServerSettings,
+  type MasterCSSLanguageServerSettings
+} from '@master/css-language-server'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import {
+  createToolingSession,
+  type MasterCSSToolingSession
+} from '@master/css-tooling'
+import { SEMANTIC_TOKENS_LEGEND } from '@master/css-tooling/language'
+import {
+  isCompatibleMasterCSSPackageVersion,
+  resolveMasterCSSWorkspacePackages
+} from '@master/css-internal/workspace'
 
 let client: LanguageClient
 let outputChannel: LogOutputChannel
+const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+let directiveLanguageSession: Promise<MasterCSSToolingSession> | undefined
 
 const disposables: Disposable[] = []
 
@@ -19,11 +35,11 @@ const CSS_SEMANTIC_TOKEN_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 const CSS_FORMAT_LANGUAGE_IDS = new Set(['css', 'scss', 'less'])
 let formattingDelegationDepth = 0
 
-function getMasterCSSSettings(): Partial<Settings> {
+function getMasterCSSSettings(): Partial<MasterCSSLanguageServerSettings> {
   const configuration = workspace.getConfiguration('masterCSS')
-  const result: Partial<Settings> = {}
+  const result: Partial<MasterCSSLanguageServerSettings> = {}
   const writableResult = result as Record<string, unknown>
-  for (const optionName in settings) {
+  for (const optionName in defaultLanguageServerSettings) {
     const value = configuration.get(optionName)
     if (value !== undefined) {
       writableResult[optionName] = value
@@ -33,7 +49,9 @@ function getMasterCSSSettings(): Partial<Settings> {
 }
 
 function getIncludedLanguages() {
-  return getMasterCSSSettings().includedLanguages ?? settings.includedLanguages ?? []
+  return getMasterCSSSettings().includedLanguages
+    ?? defaultLanguageServerSettings.includedLanguages
+    ?? []
 }
 
 function log(message: string) {
@@ -66,7 +84,7 @@ function resolveWorkspaceServerModule(context: ExtensionContext, bundledServerMo
     const languageServer = resolution.languageServer
     if (!languageServer) {
       log(`Using bundled language server because ${workspaceFolder.uri.fsPath} does not resolve @master/css-language-server/server.`)
-      resolution.errors.forEach(({ name, message }) => log(`Workspace package resolution warning for ${name}: ${message}`))
+      resolution.errors.forEach(({ name, message }) => log(`MasterCSSWorkspace package resolution warning for ${name}: ${message}`))
       return bundledServerModule
     }
     if (!isCompatibleMasterCSSPackageVersion(languageServer.version, bundledVersion)) {
@@ -87,7 +105,7 @@ function resolveWorkspaceServerModule(context: ExtensionContext, bundledServerMo
   return bundledServerModule
 }
 
-function getEmbeddedSyntaxHighlighting(): NonNullable<Settings['embeddedSyntaxHighlighting']> {
+function getEmbeddedSyntaxHighlighting(): NonNullable<MasterCSSLanguageServerSettings['embeddedSyntaxHighlighting']> {
   const mode = getMasterCSSSettings().embeddedSyntaxHighlighting
   return mode === 'always' || mode === 'off' ? mode : 'active'
 }
@@ -126,11 +144,18 @@ function applyTextEdits(document: TextDocument, edits: readonly TextEdit[]) {
     }, document.getText())
 }
 
-function formatDirectiveText(text: string) {
-  return applyMasterCSSDirectiveFormatEdits(text, formatMasterCSSDirectives(text))
+function getDirectiveLanguageSession() {
+  return directiveLanguageSession ??= createToolingSession({ manifest: defaultManifest })
 }
 
-function createDirectiveTextEdits(document: TextDocument, range?: Range) {
+async function formatDirectiveText(text: string) {
+  const session = await getDirectiveLanguageSession()
+  return [...session.formatDirectives({ source: text }).edits]
+    .sort((a, b) => b.range.start - a.range.start)
+    .reduce((source, edit) => source.slice(0, edit.range.start) + edit.text + source.slice(edit.range.end), text)
+}
+
+async function createDirectiveTextEdits(document: TextDocument, range?: Range) {
   const source = document.getText()
   const offsetRange = range
     ? {
@@ -138,9 +163,10 @@ function createDirectiveTextEdits(document: TextDocument, range?: Range) {
       end: document.offsetAt(range.end)
     }
     : undefined
-  return formatMasterCSSDirectives(source, { range: offsetRange }).map((edit) => TextEdit.replace(
-    new Range(document.positionAt(edit.start), document.positionAt(edit.end)),
-    edit.newText
+  const session = await getDirectiveLanguageSession()
+  return session.formatDirectives({ source, range: offsetRange }).edits.map((edit) => TextEdit.replace(
+    new Range(document.positionAt(edit.range.start), document.positionAt(edit.range.end)),
+    edit.text
   ))
 }
 
@@ -166,7 +192,7 @@ async function provideDocumentFormattingEdits(
   const delegatedEdits = await getDelegatedDocumentFormattingEdits(document, options)
   if (token.isCancellationRequested) return []
   const nativeFormattedText = delegatedEdits.length ? applyTextEdits(document, delegatedEdits) : document.getText()
-  const formattedText = formatDirectiveText(nativeFormattedText)
+  const formattedText = await formatDirectiveText(nativeFormattedText)
   if (formattedText === document.getText()) return []
   return [TextEdit.replace(getFullDocumentRange(document), formattedText)]
 }
@@ -181,7 +207,7 @@ async function provideDocumentRangeFormattingEdits(
   if (formattingDelegationDepth) return []
   if (!getMasterCSSSettings().formatDirectives) return []
   if (!isCSSFormattingDocument(document)) return await next(document, range, options, token) ?? []
-  return createDirectiveTextEdits(document, range)
+  return await createDirectiveTextEdits(document, range)
 }
 
 function createSemanticTokensFeature(client: LanguageClient, clientStarted: Thenable<void>, documentSelector: DocumentSelector) {
@@ -370,12 +396,18 @@ export function activate(context: ExtensionContext) {
 
   context.subscriptions.push(
     semanticTokensFeature,
+    {
+      dispose() {
+        void directiveLanguageSession?.then((session) => session.dispose())
+        directiveLanguageSession = undefined
+      }
+    },
     commands.registerCommand('masterCSS.restart', restart),
     client.onRequest('masterCSS/restart', restart),
     workspace.onDidChangeConfiguration(async (event) => {
       const affectedProperties: string[] = []
       let shouldRestart = false
-      for (const optionName in settings) {
+      for (const optionName in defaultLanguageServerSettings) {
         const property = `masterCSS.${optionName}`
         if (event.affectsConfiguration(property)) {
           affectedProperties.push(property)

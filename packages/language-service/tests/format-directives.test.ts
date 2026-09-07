@@ -1,5 +1,5 @@
 import { expect, test } from 'vitest'
-import CSSLanguageService from '../src/core'
+import CSSLanguageService from './helpers/rc87-language-service'
 import createDoc from '../src/utils/create-doc'
 import type { TextEdit } from 'vscode-languageserver-protocol'
 
@@ -54,6 +54,13 @@ test.concurrent('formats CSS-family SFC style blocks only', () => {
     '.card { @compose fg:red!@sm; }',
     '</style>'
   ].join('\n'))
+})
+
+test.concurrent('locates SFC style content after matching attribute text', () => {
+  const directive = '.btn { @compose bg:transparent !; }'
+  const source = `<style data-source="${directive}">${directive}</style>`
+  expect(format('vue', source))
+    .toBe(`<style data-source="${directive}">.btn { @compose bg:transparent!; }</style>`)
 })
 
 test.concurrent('formats safelist quoted class lists', () => {

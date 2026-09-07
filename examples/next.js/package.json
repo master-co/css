@@ -10,20 +10,20 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "next": "^16.2.9",
+    "next": "^16.2.10",
     "react": "^19.2.7",
     "react-dom": "^19.2.7"
   },
   "devDependencies": {
     "@eslint/compat": "^2.1.0",
     "@master/css-cli": "workspace:^",
-    "@master/css.next": "workspace:^",
-    "@master/eslint-config-css": "workspace:^",
+    "@master/css-next": "workspace:^",
     "@types/node": "^25.9.4",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
     "eslint": "^10.5.0",
-    "eslint-config-next": "^16.2.9",
-    "typescript": "^7.0.2"
+    "eslint-config-next": "^16.2.10",
+    "typescript": "^7.0.2",
+    "@master/eslint-config-css": "workspace:^"
   }
 }

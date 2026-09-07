@@ -68,12 +68,14 @@ npm install @master/css-language-service
 ## Usage
 
 ```js
-import CSSLanguageService from '@master/css-language-service'
+import { MasterCSSLanguageService } from '@master/css-language-service'
+import { createToolingSession } from '@master/css-tooling'
 
-const languageService = new CSSLanguageService(customSettings)
+const session = await createToolingSession({ manifest })
+const languageService = new MasterCSSLanguageService(customSettings, { session })
 ```
 
-`CSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around the editor-neutral primitives in `@master/css-language`.
+`MasterCSSLanguageService` provides stateful completion, hover, color, color presentation, and semantic token features around one manifest-scoped tooling session. Dispose the service when the editor workspace closes.
 
 ### Semantic tokens
 
@@ -108,7 +110,7 @@ const edits = languageService.formatDirectives(textDocument, range)
 ## Settings
 
 ```js
-import { settings } from '@master/css-language-service'
+import { defaultLanguageServiceSettings } from '@master/css-language-service'
 ```
 
 | Setting | Type | Default | Description |
@@ -126,4 +128,4 @@ import { settings } from '@master/css-language-service'
 | `formatDirectives` | `boolean` | `true` | Enables Master CSS directive formatting. |
 | `embeddedSyntaxHighlighting` | `'active' \| 'always' \| 'off'` | `'active'` | Controls embedded semantic token highlighting. |
 
-Use `@master/css-language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.
+Use `@master/css-tooling/language` directly for browser helpers, Shiki integration, TextMate grammar assets, and raw class-position scanning.

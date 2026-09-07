@@ -5,7 +5,7 @@ Use the [installation integrations](/guide/installation/integrations) to add the
 
 The Master CSS VS Code extension and the VS Code ESLint extension are complementary. Master CSS provides completion, hover, color tools, highlighting, directive diagnostics, manifest diagnostics, and directive formatting. ESLint provides `sort-classes`, `prefer-canonical-classes`, `no-conflicting-classes`, `no-invalid-classes`, and opt-in raw-value policy diagnostics, so the Master CSS extension does not duplicate these warnings by default.
 
-For scripts, CI probes, and other tools that need a Master CSS native machine interface without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
+For scripts, CI probes, and other tools that need machine-readable Master CSS diagnostics without loading an ESLint parser stack, use `npx @master/css-cli lint --format json`. Treat it as a preflight diagnostics surface; keep `eslint .` as the normal human development and CI lint command for JavaScript and framework projects.
 
 When an AI client supports tool calls, the [Master CSS MCP server](/guide/mcp-server) can run the same lint policy through `mastercss_lint_project` and preview safe fixes. ESLint should still remain the default human development and CI lint workflow for JavaScript and framework projects.
 
@@ -18,10 +18,10 @@ The recommended config enables the canonical rule set:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 ```
 
@@ -74,10 +74,10 @@ Enable `disallowUnknownClass` when the project should only use classes known to 
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-invalid-classes': ['error', {
@@ -148,10 +148,10 @@ Standalone CSS files are checked by the default `@master/eslint-config-css` expo
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 ```
 
@@ -173,10 +173,10 @@ Disable one family when a team wants a more literal authoring style:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
@@ -235,10 +235,10 @@ Customize settings under the `@master/css` settings key:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     settings: {
       '@master/css': {
@@ -258,10 +258,10 @@ Use the recommended config for most projects:
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 ```
 
@@ -269,10 +269,10 @@ Use stricter validation when the team wants every class to come from Master CSS 
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-invalid-classes': ['error', {
@@ -287,10 +287,10 @@ Customize canonicalization when a team wants to keep one class family literal wh
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
@@ -307,10 +307,10 @@ Enable raw value policy when the team wants token-backed utilities to use tokens
 
 ```js name=eslint.config.js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-unapproved-raw-values': ['warn', {

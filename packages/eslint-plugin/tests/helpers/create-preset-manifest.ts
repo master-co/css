@@ -1,6 +1,6 @@
 import type { MasterCSSManifest } from '@master/css'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import UtilityType from '@master/css-schema/utility-type'
+import { UtilityType } from '@master/css-schema/utility-type'
 import {
   flattenMasterCSSManifestVariables,
   groupMasterCSSManifestVariables,

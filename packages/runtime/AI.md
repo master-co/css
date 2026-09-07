@@ -4,7 +4,7 @@
 
 `@master/css-runtime` runs Master CSS in the browser. It observes DOM class changes, creates or hydrates `style#master-css`, tracks class usage counts, registers emittedGlobals global CSS counts, and inserts/removes native CSS rules.
 
-`CSSRuntime` directly extends `MasterCSS`; any value-level logic added to runtime source, engine core, engine root value exports, schema value constants, preset manifest loading, or other runtime-imported modules can enter the browser runtime bundle.
+`MasterCSSRuntime` hosts a Rust `@master/css-binding-wasm-engine` session. Any feature added to the runtime Wasm surface, runtime source, schema value constants, preset manifest loading, or other runtime-imported modules can enter the browser runtime bundle.
 
 Runtime does not expose a global event bus or tooling observer API. Third-party class observation should use DOM `MutationObserver` or explicit public runtime state. Development debug helpers are internal and must remain development-only.
 
@@ -12,7 +12,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 
 - Browser runtime lifecycle.
 - DOM observation and class tracking.
-- Runtime layer state and native stylesheet insertion/deletion.
+- DOM-facing layer state and native stylesheet insertion/deletion from Rust transition/resource IR.
 - Hydration of pre-rendered CSS rules.
 - Global runtime bundle and registration behavior.
 - Internal development-only runtime debugging.
@@ -27,17 +27,25 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 
 ## Public Surface
 
-- `CSSRuntime`
-- `CSSRuntime.create({ manifest, root, emittedGlobals, hydrationManifest })`
-- `CSSRuntime#loadHydrationManifest()`
-- `CSSRuntime#observe()`
-- `RuntimeUtilityLayer`
-- Runtime types
-- Global `MasterCSSRuntime` and `masterCSSRuntime` behavior
+- `MasterCSSRuntime`
+- `MasterCSSRuntime.start({ manifest, root, emittedGlobals, hydrationManifest })`
+- `observe()`, `disconnect()`, `refresh()`, immutable `snapshot()`
+- readonly-array rule ensure/delete methods
+- `dispose()` / `Symbol.dispose`
+- `withMasterCSSRuntime`
+- readonly global `MasterCSSRuntime` and `masterCSSRuntime` facades
+
+Mutable registries, DOM nodes, layers, and binding sessions are internal.
 
 ## Key Files
 
 - `src/core.ts`
+- `src/host.ts`
+- `src/hydration.ts`
+- `src/mutation.ts`
+- `src/retention-config.ts`
+- `src/startup.ts`
+- `src/types.ts`
 - `src/class-tracker.ts`
 - `src/layer.ts`
 - `src/utility-layer.ts`
@@ -55,6 +63,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 - ShadowRoot versus Document behavior.
 - Native `CSSStyleSheet` insertion indexes.
 - Engine core growth that is not required for runtime execution.
+- Compiler/tooling Wasm accidentally entering the runtime bundle.
 - Accidental growth of runtime-covered value dependencies that are neither runtime core nor intentional observability.
 
 ## Safe Changes
@@ -70,7 +79,7 @@ Runtime does not expose a global event bus or tooling observer API. Third-party 
 - Removing class count tracking or hydration error checks.
 - Changing FOUC behavior without integration validation.
 - Changing global names `MasterCSSRuntime` or `masterCSSRuntime` casually.
-- Accepting tooling-only methods on `CSSRuntime` via `MasterCSS` inheritance.
+- Adding tooling-only operations to `MasterCSSRuntime` or the Wasm engine.
 - Treating build-time-only config imports or tooling helpers as browser runtime dependencies.
 - Adding global event buses or tooling observer APIs to runtime.
 

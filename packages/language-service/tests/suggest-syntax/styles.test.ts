@@ -1,7 +1,7 @@
 import { test, it, expect, describe } from 'vitest'
 import dedent from 'ts-dedent'
 import { hint } from './helper'
-import { Settings } from '../../src'
+import type { Settings } from '../helpers/rc87-language-service'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings: Settings = {
@@ -33,3 +33,4 @@ it.concurrent('info', () => expect(hint('b', settings)?.find(({ label }) => labe
   }
 }))
 it.concurrent('types btn: and should not hint', () => expect(hint('btn:', settings)).toBe(undefined))
+

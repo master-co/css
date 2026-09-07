@@ -17,7 +17,7 @@ const cliFilepath = resolve(__dirname, '../src/bin/index.ts')
 const tsconfigPath = resolve(__dirname, '../../../tsconfig.json')
 const tsxLoaderURL = pathToFileURL(createRequire(import.meta.url).resolve('tsx')).href
 
-function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) {
+function runCLI(args: string[], options: { cwd?: string, input?: string, env?: NodeJS.ProcessEnv } = {}) {
   return execFileSync(process.execPath, ['--import', tsxLoaderURL, cliFilepath, ...args], {
     encoding: 'utf8',
     input: options.input,
@@ -25,6 +25,7 @@ function runCLI(args: string[], options: { cwd?: string, input?: string } = {}) 
     cwd: options.cwd,
     env: {
       ...process.env,
+      ...options.env,
       TSX_TSCONFIG_PATH: tsconfigPath
     }
   })
@@ -40,26 +41,43 @@ function runFailedCLI(args: string[], options: { cwd?: string, input?: string } 
 }
 
 describe('root command', () => {
-  it('shows scan options and the lint subcommand', () => {
+  it('generates CSS only through the explicit generate command', () => {
+    const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
+    try {
+      fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@theme { --color-brand: red; }')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:brand"></div>')
+      const output = runCLI(['generate', '--no-export'], { cwd })
+      expect(output).toContain('.block{display:block}')
+      expect(output).toContain('.fg\\:brand{color:var(--color-brand)}')
+      expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
+    } finally {
+      fs.rmSync(cwd, { recursive: true, force: true })
+    }
+  })
+
+  it('shows only the three explicit commands', () => {
     const output = runCLI(['--help'])
-    expect(output).toContain('Usage: @master/css-cli [options] [command] [source paths...]')
-    expect(output).toContain('-w, --watch')
-    expect(output).toContain('--no-export')
+    expect(output).toContain('Usage: master-css [options] [command]')
     expect(output).toContain('Commands:')
+    expect(output).toContain('generate')
     expect(output).toContain('lint')
     expect(output).toContain('inspect')
-    expect(output).not.toContain('extract [options]')
-    expect(output).not.toContain('render [options]')
+    const generateHelp = runCLI(['generate', '--help'])
+    expect(generateHelp).toContain('-w, --watch')
+    expect(generateHelp).toContain('--no-export')
   })
 
-  it.each(['extract', 'render', 'scan'])('rejects removed %s command', (command) => {
+  it.each(['extract', 'render', 'scan'])('has no compatibility command for %s', (command) => {
     const error = runFailedCLI([command])
     expect(error.status).toBe(1)
-    expect(String(error.stderr)).toContain(`The "${command}" command was removed.`)
+    expect(String(error.stderr)).toContain(`unknown command '${command}'`)
+    expect(String(error.stderr)).not.toContain('was removed')
   })
 
-  it('publishes only the package-name binary', () => {
-    expect(pkg.bin).toBe('./dist/bin/index.js')
+  it('publishes only the master-css binary', () => {
+    expect(pkg.bin).toEqual({
+      'master-css': './dist/bin/index.js'
+    })
   })
 })
 

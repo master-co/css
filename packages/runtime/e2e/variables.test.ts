@@ -48,7 +48,7 @@ async function waitForRuntimeRuleFlush(page: Page) {
 }
 
 async function flushRetainedClassRules(page: Page) {
-  await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules())
 }
 
 test('expects the variable output', async ({ page }) => {
@@ -60,7 +60,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRuleFlush(page)
   expectLayers(
-    await page.evaluate(() => globalThis.masterCSSRuntime.text),
+    await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text),
     {
       theme: ':root{--color-first:#111111}.light{color-scheme:light;--color-first:#333333}.dark{color-scheme:dark;--color-first:#222222}',
       utilities: '.bg\\:first{background-color:var(--color-first)}'
@@ -78,7 +78,7 @@ test('expects the variable output', async ({ page }) => {
     )
   })
   await waitForRuntimeRuleFlush(page)
-  let text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  let text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
   expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
   expect(text).toContain('.bg\\:second{background-color:var(--color-second)}')
@@ -99,7 +99,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
   expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
@@ -108,7 +108,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).not.toMatch(/:root\{[^}]*--color-third:#666666[^}]*\}/)
   expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
 
@@ -117,7 +117,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).not.toMatch(/:root\{[^}]*--color-fourth:#888888[^}]*\}/)
   expect(text).not.toMatch(/\.dark\{[^}]*--color-fourth:#999999[^}]*\}/)
   expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fourth:#000000[^}]*\}/)
@@ -129,7 +129,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).not.toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
   expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
@@ -138,7 +138,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).not.toMatch(/:root\{[^}]*--color-first:#111111[^}]*\}/)
   expect(text).not.toMatch(/\.dark\{[^}]*--color-first:#222222[^}]*\}/)
   expect(text).not.toMatch(/\.light, :root\{[^}]*--color-first:#333333[^}]*\}/)
@@ -148,7 +148,7 @@ test('expects the variable output', async ({ page }) => {
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
-  text = await page.evaluate(() => globalThis.masterCSSRuntime.text)
+  text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expectLayers(text, {})
 })
 
@@ -166,7 +166,7 @@ test('sets native color-scheme on local class-triggered mode islands', async ({ 
     })
     return {
       colorScheme: getComputedStyle(element).colorScheme,
-      text: globalThis.masterCSSRuntime.text
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
 

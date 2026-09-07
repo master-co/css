@@ -41,6 +41,15 @@ jsxTester.run('vue sort classes', rule, {
       }
     },
     {
+      code: `<template><div :class="'m:2x bg:black p:2x fg:white font:1.5rem'">Static bound class</div></template>`,
+      output: `<template><div :class="'m:2x p:2x font:1.5rem bg:black fg:white'">Static bound class</div></template>`,
+      errors: [{ messageId: 'invalidClassOrder' }],
+      filename: 'test.vue',
+      languageOptions: {
+        parser: await import('vue-eslint-parser')
+      }
+    },
+    {
       code: `<template><div v-bind:class="{'m:2x bg:black p:2x fg:white font:1.5rem': true}">:)...</div></template>`,
       output: `<template><div v-bind:class="{'m:2x p:2x font:1.5rem bg:black fg:white': true}">:)...</div></template>`,
       errors: [{ messageId: 'invalidClassOrder' }],

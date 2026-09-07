@@ -91,7 +91,8 @@ describe('css manifest loader', () => {
     expect(source).toContain('/_next/static/media/master-css-manifest.')
     expect(source).toContain('loadMasterCSSManifestFromImport')
     expect(source).toContain(`with: { type: 'json' }`)
-    expect(source).not.toContain('fetch(')
+    expect(source).toContain(`if (error?.name !== 'SyntaxError') throw error;`)
+    expect(source).toContain('const response = await fetch(specifier)')
     expect(source).not.toContain('#123')
     expect(assetFile).toBeTruthy()
     expect(readFileSync(join(assetDir, assetFile || ''), 'utf8')).toContain('#123')
@@ -191,6 +192,31 @@ describe('css manifest loader', () => {
     expect(source).not.toContain('ignored')
     expect(dependencies).toContain(entryPath)
     expect(dependencies).not.toContain(preserveOnlyPath)
+  })
+
+  it('loads emitted globals from project CSS entry files', async () => {
+    const projectDir = createFixtureDir()
+    const entryPath = join(projectDir, 'app/globals.css')
+    const dependencies: string[] = []
+    mkdirSync(join(projectDir, 'app'), { recursive: true })
+    writeFileSync(entryPath, [
+      '@master entry;',
+      '@theme { --color-primary: #123; }',
+      '@keyframes fade { to { opacity: 0; } }',
+      '.host { color: var(--color-primary); animation: fade 1s; }'
+    ].join('\n'))
+
+    const source = await runManifestLoader({
+      resourcePath: join(projectDir, 'node_modules/.master-css/master-css-emitted-globals.js'),
+      rootContext: projectDir,
+      getOptions: () => ({ emittedGlobals: true }),
+      addDependency: (dependency: string) => dependencies.push(dependency)
+    })
+    const emittedGlobals = JSON.parse(source.replace(/^export default /, '').replace(/;$/, ''))
+
+    expect(emittedGlobals.variables['color-primary']).toBe(1)
+    expect(emittedGlobals.animations.fade).toBe(1)
+    expect(dependencies).toContain(entryPath)
   })
 
   it('keeps virtual manifest dependencies registered after invalid CSS and recovers on the next run', async () => {

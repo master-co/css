@@ -1,163 +1,140 @@
 import {
-  defaultCSSLanguageRuntime,
-  getClassPositions,
-  type CSSLanguageRuntime,
-  type MasterCSS,
-  type ClassPosition,
-  ClassPositionCache
-} from '@master/css-language'
+  type MasterCSSLanguageClassPosition,
+  type MasterCSSToolingSession
+} from '@master/css-tooling'
 import { defu } from 'defu'
-import EventEmitter from 'node:events'
-import type { Position } from 'vscode-languageserver-protocol'
-import settings, { type Settings } from './settings'
 import { minimatch } from 'minimatch'
+import type { Position } from 'vscode-languageserver-protocol'
+import type { TextDocument } from 'vscode-languageserver-textdocument'
+import {
+  defaultLanguageServiceSettings,
+  type MasterCSSLanguageServiceSettings
+} from './settings'
 import inspectSyntax from './features/inspect-syntax'
 import renderSyntaxColors from './features/render-syntax-colors'
 import editSyntaxColors from './features/edit-syntax-colors'
 import formatDirectives from './features/format-directives'
 import renderSemanticTokens, { renderSemanticTokensAtPosition } from './features/render-semantic-tokens'
 import suggestSyntax from './features/suggest-syntax'
-import { TextDocument } from 'vscode-languageserver-textdocument'
-import { createCompletionIndex, type CompletionIndex } from './utils/completion-index'
 
-export type { ClassPosition }
-
-export interface CSSLanguageServiceOptions {
-  runtime?: CSSLanguageRuntime
+export interface MasterCSSLanguageServiceOptions {
+  session: MasterCSSToolingSession
 }
 
-export default class CSSLanguageService extends EventEmitter {
-  css: MasterCSS
-  runtime: CSSLanguageRuntime
-  settings: Settings
-  private completionIndex?: CompletionIndex
-  private classPositionCache = new ClassPositionCache()
+export class MasterCSSLanguageService implements Disposable {
+  readonly settings: MasterCSSLanguageServiceSettings
+  readonly session: MasterCSSToolingSession
 
   constructor(
-    public customSettings?: Settings,
-    options: CSSLanguageServiceOptions = {}
+    public customSettings: MasterCSSLanguageServiceSettings | undefined,
+    options: MasterCSSLanguageServiceOptions
   ) {
-    super()
-    this.runtime = options.runtime ?? defaultCSSLanguageRuntime
-    this.settings = defu(customSettings, settings) as Settings
-    this.css = this.runtime.MasterCSS.create({
-      manifest: this.settings.manifest || this.runtime.defaultManifest,
-      nativeDeclarationMatcher: this.runtime.nativeDeclarationMatcher
-    })
+    if (!options?.session) {
+      throw new TypeError('MasterCSSLanguageService requires a MasterCSSToolingSession.')
+    }
+    this.settings = defu(
+      customSettings,
+      defaultLanguageServiceSettings
+    ) as MasterCSSLanguageServiceSettings
+    this.session = options.session
   }
 
-  private getCompletionIndex() {
-    this.completionIndex ??= createCompletionIndex(this.css, this.runtime)
-    return this.completionIndex
+  dispose() {
+    this.session.dispose()
+  }
+
+  [Symbol.dispose]() {
+    this.dispose()
   }
 
   inspectSyntax(...params: Parameters<typeof inspectSyntax>) {
     if (this.settings.inspectSyntax && this.isDocumentAccepted(params[0]))
-      return inspectSyntax?.call(this, ...params)
+      return inspectSyntax.call(this, ...params)
   }
 
   renderSyntaxColors(...params: Parameters<typeof renderSyntaxColors>) {
     if (this.settings.renderSyntaxColors && this.isDocumentAccepted(params[0]))
-      return renderSyntaxColors?.call(this, ...params)
+      return renderSyntaxColors.call(this, ...params)
   }
 
   editSyntaxColors(...params: Parameters<typeof editSyntaxColors>) {
     if (this.settings.editSyntaxColors && this.isDocumentAccepted(params[0]))
-      return editSyntaxColors?.call(this, ...params)
+      return editSyntaxColors.call(this, ...params)
   }
 
   formatDirectives(...params: Parameters<typeof formatDirectives>) {
     if (this.settings.formatDirectives && this.isDocumentAccepted(params[0]))
-      return formatDirectives?.call(this, ...params)
+      return formatDirectives.call(this, ...params)
   }
 
   renderSemanticTokens(...params: Parameters<typeof renderSemanticTokens>) {
-    if (this.isDocumentAccepted(params[0]))
-      return renderSemanticTokens?.call(this, ...params)
+    if (this.isDocumentAccepted(params[0])) return renderSemanticTokens.call(this, ...params)
   }
 
   renderSemanticTokensAtPosition(...params: Parameters<typeof renderSemanticTokensAtPosition>) {
-    if (this.isDocumentAccepted(params[0]))
-      return renderSemanticTokensAtPosition?.call(this, ...params)
+    if (this.isDocumentAccepted(params[0])) return renderSemanticTokensAtPosition.call(this, ...params)
   }
 
-  suggestSyntax(
-    document: Parameters<typeof suggestSyntax>[0],
-    position: Parameters<typeof suggestSyntax>[1],
-    context: Parameters<typeof suggestSyntax>[2]
-  ) {
-    if (this.settings.suggestSyntax && this.isDocumentAccepted(document))
-      return suggestSyntax?.call(this, document, position, context, this.getCompletionIndex())
+  suggestSyntax(...params: Parameters<typeof suggestSyntax>) {
+    if (this.settings.suggestSyntax && this.isDocumentAccepted(params[0]))
+      return suggestSyntax.call(this, ...params)
   }
 
-  getClassPositions(textDocument: TextDocument): ClassPosition[] {
-    return getClassPositions(textDocument, this.settings, {
-      cache: this.classPositionCache
-    })
+  getClassPositions(document: TextDocument): MasterCSSLanguageClassPosition[] {
+    return this.analyzeDocumentClassPositions(document)
   }
 
-  getClassPosition(textDocument: TextDocument, position: Position): ClassPosition | undefined {
-    const cachedOxcClassPosition = getClassPositions(textDocument, this.settings, {
-      position,
-      includeEmpty: true,
-      provider: 'oxc',
-      oxcMode: 'cache-only',
-      cache: this.classPositionCache
-    })[0]
-    if (cachedOxcClassPosition) return cachedOxcClassPosition
+  getClassPosition(
+    document: TextDocument,
+    position: Position
+  ): MasterCSSLanguageClassPosition | undefined {
+    const offset = document.offsetAt(position)
+    const classPositions = this.analyzeDocumentClassPositions(document)
+    const exact = classPositions
+      .filter(({ range }) => offset >= range.start && offset <= range.end)
+      .sort((left, right) =>
+        (left.range.end - left.range.start) - (right.range.end - right.range.start)
+      )[0]
+    if (exact) return exact
 
-    const regexClassPosition = getClassPositions(textDocument, this.settings, {
-      position,
-      includeEmpty: true,
-      provider: 'regex'
-    })[0]
-    if (regexClassPosition && !regexClassPosition.raw.includes('${')) {
-      return regexClassPosition
-    }
-
-    return getClassPositions(textDocument, this.settings, {
-      position,
-      includeEmpty: true,
-      provider: 'oxc',
-      cache: this.classPositionCache
-    })[0] ?? regexClassPosition
-  }
-
-  getClassContextPositions(textDocument: TextDocument, position: Position): ClassPosition[] {
-    const cachedOxcClassPositions = getClassPositions(textDocument, this.settings, {
-      position,
-      provider: 'oxc',
-      oxcMode: 'cache-only',
-      positionMatch: 'context',
-      cache: this.classPositionCache
-    })
-    if (cachedOxcClassPositions.length) return cachedOxcClassPositions
-
-    const regexClassPositions = getClassPositions(textDocument, this.settings, {
-      position,
-      provider: 'regex',
-      positionMatch: 'context'
-    })
-    if (regexClassPositions.length && regexClassPositions.every(({ raw }) => !raw.includes('${'))) {
-      return regexClassPositions
-    }
-
-    const oxcClassPositions = getClassPositions(textDocument, this.settings, {
-      position,
-      provider: 'oxc',
-      positionMatch: 'context',
-      cache: this.classPositionCache
-    })
-    return oxcClassPositions.length ? oxcClassPositions : regexClassPositions
-  }
-
-  isDocumentAccepted(doc: TextDocument): boolean {
-    if (!this.settings.exclude) return true
-    for (const exclude of this.settings.exclude) {
-      if (minimatch(doc.uri, exclude)) {
-        return false
+    const context = classPositions.find(({ contextRange }) =>
+      offset >= contextRange.start && offset <= contextRange.end
+    )
+    const source = document.getText()
+    if (context && (offset === context.contextRange.start || /\s/u.test(source[offset - 1] || ''))) {
+      return {
+        range: { start: offset, end: offset },
+        contextRange: context.contextRange,
+        raw: '',
+        token: ''
       }
     }
-    return true
+  }
+
+  getClassContextPositions(
+    document: TextDocument,
+    position: Position
+  ): MasterCSSLanguageClassPosition[] {
+    const offset = document.offsetAt(position)
+    return this.analyzeDocumentClassPositions(document)
+      .filter(({ contextRange }) => offset >= contextRange.start && offset <= contextRange.end)
+  }
+
+  private analyzeDocumentClassPositions(
+    document: TextDocument
+  ): MasterCSSLanguageClassPosition[] {
+    return [...this.session.analyzeDocument({
+      source: document.getText(),
+      languageId: document.languageId,
+      settings: {
+        classAttributes: this.settings.classAttributes,
+        classFunctions: this.settings.classFunctions,
+        classDeclarations: this.settings.classDeclarations
+      }
+    }).classPositions]
+  }
+
+  isDocumentAccepted(document: TextDocument): boolean {
+    return !this.settings.exclude?.some((pattern) => minimatch(document.uri, pattern))
   }
 }

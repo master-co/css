@@ -21,3 +21,4 @@ describe.concurrent('ambiguous', () => {
   test.concurrent('t', () => expect(hint('t')?.map(({ label }) => label)).toContain('text:'))
   test.concurrent('removed t alias', () => expect(hint('t')?.map(({ label }) => label)).not.toContain('t:'))
 })
+

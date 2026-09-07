@@ -1,9 +1,10 @@
 import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
-import { createSortClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'sort-classes',
@@ -20,18 +21,26 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { settings, css } = resolveContext(context)
+    const { settings, tooling, release } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({ context, css, ruleId: 'sort-classes' })
+      return withContextRelease(
+        defineSourceVisitors({ context, tooling, ruleId: 'sort-classes' }),
+        release
+      )
     }
-    return defineVisitors({ context, settings }, (node, { raw, start, end, nodes, unescape }) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
+      const { raw, start, end, nodes, unescape } = resolved
       if (nodes.length <= 1) return
+      const diagnostics = createMasterCSSLintDiagnostics(
+        tooling.analyzeLintClassList(raw, resolved.classValues).diagnostics
+          .filter(({ ruleId }) => ruleId === 'sort-classes')
+      )
       reportLintDiagnostics(
         context,
         node,
         { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
-        createSortClassesReport(raw, css, { unescape }).diagnostics
+        diagnostics
       )
-    })
+    }), release)
   },
 })

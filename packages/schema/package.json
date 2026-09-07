@@ -1,6 +1,9 @@
 {
   "name": "@master/css-schema",
   "type": "module",
+  "engines": {
+    "node": "^24"
+  },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
@@ -28,10 +31,6 @@
     "mastercss"
   ],
   "sideEffects": false,
-  "main": "./dist/index.js",
-  "jsnext:main": "./dist/index.js",
-  "esnext": "./dist/index.js",
-  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -43,11 +42,6 @@
       "types": "./dist/manifest.d.ts",
       "import": "./dist/manifest.js",
       "default": "./dist/manifest.js"
-    },
-    "./manifest-json": {
-      "types": "./dist/manifest-json.d.ts",
-      "import": "./dist/manifest-json.js",
-      "default": "./dist/manifest-json.js"
     },
     "./hydration-manifest": {
       "types": "./dist/hydration-manifest.d.ts",
@@ -74,6 +68,11 @@
       "import": "./dist/runtime-style.js",
       "default": "./dist/runtime-style.js"
     },
+    "./emitted-globals": {
+      "types": "./dist/emitted-globals.d.ts",
+      "import": "./dist/emitted-globals.js",
+      "default": "./dist/emitted-globals.js"
+    },
     "./native-css-shorthand": {
       "types": "./dist/native-css-shorthand.d.ts",
       "import": "./dist/native-css-shorthand.js",
@@ -83,6 +82,16 @@
       "types": "./dist/css-common.d.ts",
       "import": "./dist/css-common.js",
       "default": "./dist/css-common.js"
+    },
+    "./diagnostics": {
+      "types": "./dist/diagnostics.d.ts",
+      "import": "./dist/diagnostics.js",
+      "default": "./dist/diagnostics.js"
+    },
+    "./integration": {
+      "types": "./dist/integration.d.ts",
+      "import": "./dist/integration.js",
+      "default": "./dist/integration.js"
     }
   },
   "files": [

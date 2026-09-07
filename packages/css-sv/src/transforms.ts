@@ -3,10 +3,10 @@ import type { Workspace } from 'sv'
 
 export const MASTER_CSS_PACKAGE = '@master/css'
 export const MASTER_CSS_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_PACKAGE = '@master/css.svelte'
+export const MASTER_CSS_SVELTE_PACKAGE = '@master/css-svelte'
 export const MASTER_CSS_SVELTE_VERSION = 'rc'
-export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css.svelte/vite'
-export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css.svelte/hooks.server'
+export const MASTER_CSS_SVELTE_VITE_IMPORT = '@master/css-svelte/vite'
+export const MASTER_CSS_SVELTE_HOOK_IMPORT = '@master/css-svelte/hooks.server'
 
 const MASTER_CSS_VITE_PLUGIN_NAME = 'masterCSS'
 const MASTER_CSS_IMPORTED_HANDLE_NAME = 'masterCSSSvelteHandle'
@@ -48,10 +48,23 @@ function isIdentifier(value: unknown, name?: string): value is Identifier {
     && (name === undefined || (value as { name?: unknown }).name === name)
 }
 
+function findNamedImportName(ast: { body: unknown[] }, from: string, importedName: string) {
+  for (const node of ast.body) {
+    if (!isImportDeclaration(node) || node.source.value !== from) continue
+    const namedSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportSpecifier'
+      && (specifier as { imported?: { name?: string } }).imported?.name === importedName
+    ))
+    if (namedSpecifier?.local?.name) return namedSpecifier.local.name
+  }
+}
+
 function findDefaultImportName(ast: { body: unknown[] }, from: string) {
   for (const node of ast.body) {
     if (!isImportDeclaration(node) || node.source.value !== from) continue
-    const defaultSpecifier = node.specifiers?.find((specifier) => specifier.type === 'ImportDefaultSpecifier')
+    const defaultSpecifier = node.specifiers?.find((specifier) => (
+      specifier.type === 'ImportDefaultSpecifier'
+    ))
     if (defaultSpecifier?.local?.name) return defaultSpecifier.local.name
   }
 }
@@ -73,11 +86,24 @@ function moveSequenceHandleFirst(ast: unknown, handleName: string) {
 
 export function addMasterCSSVitePlugin(content: string) {
   return transforms.script(({ ast, js }) => {
-    const pluginName = findDefaultImportName(ast, MASTER_CSS_SVELTE_VITE_IMPORT) ?? MASTER_CSS_VITE_PLUGIN_NAME
-    js.imports.addDefault(ast, {
-      from: MASTER_CSS_SVELTE_VITE_IMPORT,
-      as: pluginName
-    })
+    const defaultPluginName = findDefaultImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT
+    )
+    const namedPluginName = findNamedImportName(
+      ast,
+      MASTER_CSS_SVELTE_VITE_IMPORT,
+      'createMasterCSSVitePlugin'
+    )
+    const pluginName = defaultPluginName
+      ?? namedPluginName
+      ?? MASTER_CSS_VITE_PLUGIN_NAME
+    if (!defaultPluginName && !namedPluginName) {
+      js.imports.addDefault(ast, {
+        from: MASTER_CSS_SVELTE_VITE_IMPORT,
+        as: pluginName
+      })
+    }
     js.vite.addPlugin(ast, {
       code: `${pluginName}()`
     })
@@ -120,9 +146,11 @@ export function addMasterCSSServerHook(content: string, language: Language) {
       comments
     })
     moveSequenceHandleFirst(ast, MASTER_CSS_HANDLE_NAME)
-    js.imports.addDefault(ast, {
+    js.imports.addNamed(ast, {
       from: MASTER_CSS_SVELTE_HOOK_IMPORT,
-      as: MASTER_CSS_IMPORTED_HANDLE_NAME
+      imports: {
+        handle: MASTER_CSS_IMPORTED_HANDLE_NAME
+      }
     })
   })(content)
 }

@@ -1,9 +1,10 @@
 import { test, expect, type Page } from '@playwright/test'
-import { MasterCSS, createHydrationManifest } from '@master/css'
+import { createEngineSync } from '@master/css/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
+  type MasterCSSHydrationManifest,
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
@@ -11,16 +12,37 @@ import init, { getRuntimeLoaderURL } from './init'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
+function renderHydration(...classNames: string[]) {
+  const engine = createEngineSync({ manifest: defaultManifest })
+  try {
+    engine.ensureClassRules(classNames)
+    const snapshot = engine.snapshot()
+    return {
+      text: snapshot.text,
+      hydrationManifest: {
+        version: 1 as const,
+        rules: snapshot.rules,
+        resourceOrder: [
+          ...snapshot.resources.variables.map(({ name }) => name),
+          ...snapshot.resources.animations.map(({ name }) => name)
+        ]
+      }
+    }
+  } finally {
+    engine.dispose()
+  }
+}
+
 async function startCSSRuntimeAsync(
   page: Page,
-  hydrationManifest?: ReturnType<typeof createHydrationManifest>,
+  hydrationManifest?: MasterCSSHydrationManifest,
   loaderURL?: string
 ) {
   await page.evaluate(async ({ loaderURL, hydrationManifest }) => {
     const { startCSSRuntimeAsync } = await import(loaderURL)
     await startCSSRuntimeAsync({ hydrationManifest })
   }, { loaderURL: loaderURL || await getRuntimeLoaderURL(), hydrationManifest })
-  await page.waitForFunction(() => !!globalThis.masterCSSRuntime)
+  await page.waitForFunction(() => !!globalThis.__MASTER_CSS_RUNTIME_TEST__)
 }
 
 async function gotoRuntimeOrigin(page: Page, loaderURL: string) {
@@ -57,16 +79,16 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
     document.body.innerHTML = '<div class="block"></div>'
     await new Promise(resolve => setTimeout(resolve, 0))
   })
-  expect(await page.evaluate(() => Object.fromEntries(globalThis.masterCSSRuntime.classCounts))).toEqual({
+  expect(await page.evaluate(() => Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts))).toEqual({
     block: 1
   })
 
   const disconnected = await page.evaluate(async () => {
-    globalThis.masterCSSRuntime.disconnect()
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.disconnect()
     document.body.innerHTML = '<div class="font:bold"></div>'
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
+      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
       hasStyle: !!document.head.querySelector('style#master-css')
     }
   })
@@ -76,11 +98,11 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
   })
 
   const reconnected = await page.evaluate(async () => {
-    globalThis.masterCSSRuntime.observe()
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.observe()
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      text: globalThis.masterCSSRuntime.text
+      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(reconnected.counts).toEqual({
@@ -90,7 +112,6 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
   expect(reconnected.text).toContain('.font\\:bold{font-weight:var(--font-weight-bold)}')
   expect(reconnected.text).not.toContain('.block{display:block}')
 })
-
 test('mutation removals keep counts immediate and retain CSSOM rules after settle', async ({ page }) => {
   await init(page)
   await page.evaluate(() => {
@@ -102,9 +123,9 @@ test('mutation removals keep counts immediate and retain CSSOM rules after settl
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-      text: globalThis.masterCSSRuntime.text
+      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(duringFlushWindow.counts).toEqual({})
@@ -113,10 +134,10 @@ test('mutation removals keep counts immediate and retain CSSOM rules after settl
 
   await waitForRuntimeRemovalFlush(page)
   const afterFlush = await page.evaluate(() => ({
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-    hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    text: globalThis.masterCSSRuntime.text
+    counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
+    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterFlush).toEqual({
     counts: {},
@@ -126,11 +147,11 @@ test('mutation removals keep counts immediate and retain CSSOM rules after settl
   })
 
   const afterForcedCleanup = await page.evaluate(() => ({
-    removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-    text: globalThis.masterCSSRuntime.text
+    removedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(),
+    counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+    retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterForcedCleanup).toEqual({
     removedCount: 1,
@@ -157,7 +178,7 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   await waitForRuntimeRemovalFlush(page)
 
   const afterBatchFlush = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime
+    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     const sheetText = Array.from(runtime.style!.sheet!.cssRules)
       .map((cssRule) => cssRule.cssText)
       .join('\n')
@@ -190,7 +211,7 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   expect(afterBatchFlush.sheetText).toContain('@keyframes fade')
 
   const afterForcedCleanup = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime
+    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     const removedCount = runtime.flushRetainedClassRules()
     const sheetText = Array.from(runtime.style!.sheet!.cssRules)
       .map((cssRule) => cssRule.cssText)
@@ -222,9 +243,9 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   expect(afterForcedCleanup.sheetText).not.toContain('@keyframes fade')
 
   const afterDirectMutation = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime
-    runtime.ensureClassRules('block')
-    runtime.deleteClassRules('fg:blue-60')
+    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
+    runtime.ensureClassRules(['block'])
+    runtime.deleteClassRules(['fg:blue-60'])
     const sheetText = Array.from(runtime.style!.sheet!.cssRules)
       .map((cssRule) => cssRule.cssText)
       .join('\n')
@@ -258,13 +279,13 @@ test('re-adding a retained class cancels retained cleanup', async ({ page }) => 
   const afterReadd = await page.evaluate(async () => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
-    const removedCount = globalThis.masterCSSRuntime.flushRetainedClassRules()
+    const removedCount = globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules()
     return {
       removedCount,
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-      text: globalThis.masterCSSRuntime.text
+      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+      retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(afterReadd.counts).toEqual({
@@ -286,11 +307,11 @@ test('direct remove deletes retained CSSOM rules synchronously', async ({ page }
   await waitForRuntimeRemovalFlush(page)
 
   const afterDirectRemove = await page.evaluate(() => {
-    globalThis.masterCSSRuntime.deleteClassRules('fg:red-60')
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg:red-60'])
     return {
-      retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-      text: globalThis.masterCSSRuntime.text
+      retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(afterDirectRemove).toEqual({
@@ -351,9 +372,9 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
       await waitFrames(3)
 
       const beforeHardLimitCleanup = {
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
         queuedIdleCount: idleCallbacks.size
       }
 
@@ -362,32 +383,32 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
       document.body.append(reused)
       await new Promise(resolve => setTimeout(resolve, 0))
       const afterReuseBeforeCleanup = {
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
-        hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
         queuedIdleCount: idleCallbacks.size
       }
 
       flushIdleCallbacks()
       const afterHardLimitCleanup = {
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        retainedHasReusedClass: globalThis.masterCSSRuntime.retainedClassNames.has('z:0'),
-        hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
-        text: globalThis.masterCSSRuntime.text,
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
+        retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text,
         queuedIdleCount: idleCallbacks.size
       }
 
       const afterForcedCleanup = {
-        removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
-        retainedCount: globalThis.masterCSSRuntime.retainedClassNames.size,
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        hasReusedClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:blue-60'),
-        text: globalThis.masterCSSRuntime.text
+        removedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(),
+        retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
       return {
@@ -458,8 +479,8 @@ test('mutation removals are canceled when a class returns before flush', async (
     document.body.append(target)
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60')
+      counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60')
     }
   })
   expect(duringFlushWindow).toEqual({
@@ -471,9 +492,9 @@ test('mutation removals are canceled when a class returns before flush', async (
 
   await waitForRuntimeRemovalFlush(page)
   const afterFlush = await page.evaluate(() => ({
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-    hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-    text: globalThis.masterCSSRuntime.text
+    counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterFlush.counts).toEqual({
     'fg:red-60': 1
@@ -485,18 +506,18 @@ test('mutation removals are canceled when a class returns before flush', async (
 test('direct ensureClassRules and deleteClassRules stay synchronous', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(() => {
-    globalThis.masterCSSRuntime.ensureClassRules('fg:red-60')
+  const result = await page.evaluate(async () => {
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.ensureClassRules(['fg:red-60'])
     const added = {
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-      text: globalThis.masterCSSRuntime.text
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
-    globalThis.masterCSSRuntime.deleteClassRules('fg:red-60')
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg:red-60'])
     return {
       added,
       removed: {
-        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-        text: globalThis.masterCSSRuntime.text
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
     }
   })
@@ -534,9 +555,9 @@ test('observer-added cold classes update counts immediately and flush rules befo
 
       const beforeFlush = {
         queuedFrameCount: queuedFrames.size,
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-        text: globalThis.masterCSSRuntime.text
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
       for (const callback of queuedFrames.values()) {
@@ -545,9 +566,9 @@ test('observer-added cold classes update counts immediately and flush rules befo
       queuedFrames.clear()
 
       const afterFlush = {
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-        text: globalThis.masterCSSRuntime.text
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
       return { beforeFlush, afterFlush }
@@ -604,10 +625,10 @@ test('observer-added retained classes are reused immediately', async ({ page }) 
       await new Promise(resolve => setTimeout(resolve, 0))
       return {
         queuedFrameCount: queuedFrames.size,
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-        text: globalThis.masterCSSRuntime.text
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
     } finally {
       window.requestAnimationFrame = nativeRequestAnimationFrame
@@ -651,9 +672,9 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
 
       const beforeFlush = {
         queuedFrameCount: queuedFrames.size,
-        counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-        hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:1234'),
-        text: globalThis.masterCSSRuntime.text
+        counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:1234'),
+        text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
       for (const callback of queuedFrames.values()) {
@@ -664,9 +685,9 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
       return {
         beforeFlush,
         afterFlush: {
-          counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-          hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('z:1234'),
-          text: globalThis.masterCSSRuntime.text
+          counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
+          hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:1234'),
+          text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
         }
       }
     } finally {
@@ -688,52 +709,50 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
   })
 })
 
-test('disconnect and destroy clear pending mutation additions and removals', async ({ page }) => {
+test('disconnect and dispose clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
-    globalThis.masterCSSRuntime.disconnect()
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.disconnect()
+    const snapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
     return {
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-      utilities: globalThis.masterCSSRuntime.classUtilities.size,
+      counts: snapshot.usageCounts,
+      classRules: snapshot.classRules,
       hasStyle: !!document.head.querySelector('style#master-css')
     }
   })
   expect(disconnected).toEqual({
     counts: {},
-    retainedClassNames: [],
-    utilities: 0,
+    classRules: {},
     hasStyle: false
   })
   await waitForRuntimeRemovalFlush(page)
-  expect(await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)).toBe(0)
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules)).toEqual({})
 
-  await page.evaluate(() => globalThis.masterCSSRuntime.observe())
-  const destroyed = await page.evaluate(async () => {
+  await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
+  const disposed = await page.evaluate(async (manifest) => {
     document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
-    const runtime = globalThis.masterCSSRuntime
-    runtime.destroy()
+    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
+    runtime.dispose()
+    const replacement = await globalThis.MasterCSSRuntime.start({ manifest })
+    const replaced = replacement !== runtime
+    replacement.dispose()
     return {
-      registered: globalThis.MasterCSSRuntime.instances.get(document) === runtime,
+      replaced,
       globalRuntime: globalThis.masterCSSRuntime,
-      counts: Object.fromEntries(runtime.classCounts),
-      retainedClassNames: [...runtime.retainedClassNames],
-      utilities: runtime.classUtilities.size
+      hasStyle: !!document.head.querySelector('style#master-css')
     }
-  })
-  expect(destroyed).toEqual({
-    registered: false,
+  }, defaultManifest)
+  expect(disposed).toEqual({
+    replaced: true,
     globalRuntime: undefined,
-    counts: {},
-    retainedClassNames: [],
-    utilities: 0
+    hasStyle: false
   })
   await waitForRuntimeRemovalFlush(page)
 })
@@ -741,511 +760,44 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 test('shadow roots maintain isolated runtime state and style nodes', async ({ page }) => {
   await init(page)
 
-  const result = await page.evaluate(() => {
+  const result = await page.evaluate(async (manifest) => {
     const host = document.createElement('section')
     const shadow = host.attachShadow({ mode: 'open' })
     shadow.innerHTML = '<p class="block"></p>'
     document.body.append(host)
 
-    const shadowRuntime = globalThis.MasterCSSRuntime.create({
+    const shadowRuntime = await globalThis.MasterCSSRuntime.start({
       root: shadow,
-      manifest: globalThis.masterCSSRuntime.manifest
-    }).observe()
+      manifest
+    })
+    shadowRuntime.observe()
+    const shadowSnapshot = shadowRuntime.snapshot()
+    const documentSnapshot = globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot()
+    const instanceRegistered = await globalThis.MasterCSSRuntime.start({
+      root: shadow,
+      manifest
+    }) === shadowRuntime
+    const shadowHasStyle = !!shadow.querySelector('style#master-css')
+    shadowRuntime.dispose()
 
     return {
-      documentCounts: Object.fromEntries(globalThis.masterCSSRuntime.classCounts),
-      documentHasBlockRule: globalThis.masterCSSRuntime.text.includes('.block{display:block}'),
-      shadowCounts: Object.fromEntries(shadowRuntime.classCounts),
-      shadowHasStyle: !!shadow.querySelector('style#master-css'),
-      shadowText: shadowRuntime.text,
-      instanceRegistered: globalThis.MasterCSSRuntime.instances.get(shadow) === shadowRuntime
+      documentCounts: documentSnapshot.usageCounts,
+      documentHasBlockRule: documentSnapshot.cssText.includes('.block{display:block}'),
+      shadowCounts: shadowSnapshot.usageCounts,
+      shadowHasStyle,
+      shadowStyleRemoved: !shadow.querySelector('style#master-css'),
+      shadowText: shadowSnapshot.cssText,
+      instanceRegistered
     }
-  })
+  }, defaultManifest)
 
   expect(result).toEqual({
     documentCounts: {},
     documentHasBlockRule: false,
     shadowCounts: { block: 1 },
     shadowHasStyle: true,
+    shadowStyleRemoved: true,
     shadowText: '@layer utilities{.block{display:block}}',
     instanceRegistered: true
-  })
-})
-
-test('progressive hydration without a manifest rebuilds with runtime CSS', async ({ page }) => {
-  const consoleWarnings: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'warning') consoleWarnings.push(message.text())
-  })
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<div class="block"></div>'
-  })
-  await init(page, '@layer utilities{.unknown{color:red}}')
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    ruleNames: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-    nativeRules: Array.from(globalThis.masterCSSRuntime.utilitiesLayer.native?.cssRules || []).map((rule) => rule.cssText),
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
-  expect(result.progressive).toBe(false)
-  expect(result.ruleNames).toEqual(['block'])
-  expect(result.nativeRules.some((text) => text.includes('.unknown'))).toBe(false)
-  expect(result.nativeRules.some((text) => text.includes('.block'))).toBe(true)
-  expect(result.text).toBe('@layer utilities{.block{display:block}}')
-})
-
-test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
-  const css = MasterCSS.create({ manifest: defaultManifest })
-  css.ensureClassRules('fg:red-60', 'bg:red-60')
-  const hydrationManifest = createHydrationManifest(css)
-  const prerenderedCSS = MasterCSS.create({ manifest: defaultManifest })
-  prerenderedCSS.ensureClassRules('fg:red-60')
-  const consoleWarnings: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'warning') consoleWarnings.push(message.text())
-  })
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
-  })
-  await init(page, prerenderedCSS.text, undefined, hydrationManifest)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    text: globalThis.masterCSSRuntime.text,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
-  }))
-
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
-  expect(result.progressive).toBe(false)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
-  expect(result.text).toContain('.fg\\:red-60')
-  expect(result.text).not.toContain('.bg\\:red-60')
-})
-
-test('progressive hydration with an empty manifest rebuilds with runtime CSS', async ({ page }) => {
-  const consoleWarnings: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'warning') consoleWarnings.push(message.text())
-  })
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p class="block"></p>'
-  })
-  await init(page, '@layer utilities{.block{display:block}}', undefined, { version: 1, rules: [] })
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(consoleWarnings.some((message) => message.includes('Hydration manifest has no generated rules'))).toBe(true)
-  expect(result).toEqual({
-    progressive: false,
-    utilityRules: ['block'],
-    text: '@layer utilities{.block{display:block}}'
-  })
-})
-
-test('progressive hydration uses hydration manifest and retains removed hydrated classes', async ({ page }) => {
-  const css = MasterCSS.create({ manifest: defaultManifest })
-  css.ensureClassRules('fg:red-60')
-  const hydrationManifest = createHydrationManifest(css)
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
-  })
-  await init(page, css.text, undefined, hydrationManifest)
-
-  const hydrated = await page.evaluate(() => {
-    const rule = globalThis.masterCSSRuntime.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg:red-60') as any
-    return {
-      hasClassUtility: globalThis.masterCSSRuntime.classUtilities.has('fg:red-60'),
-      hasRegisteredUtility: Boolean(rule?.registeredUtility),
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-      utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
-    }
-  })
-  expect(hydrated).toEqual({
-    hasClassUtility: true,
-    hasRegisteredUtility: false,
-    counts: {
-      'color-red-60': 1
-    },
-    utilityRules: ['fg:red-60']
-  })
-
-  const removed = await page.evaluate(async () => {
-    document.getElementById('target')?.classList.remove('fg:red-60')
-    await new Promise(resolve => setTimeout(resolve, 0))
-    return {
-      text: globalThis.masterCSSRuntime.text,
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-      utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
-    }
-  })
-  expect(removed.utilityRules).toEqual(['fg:red-60'])
-
-  await waitForRuntimeRemovalFlush(page)
-  const afterFlush = await page.evaluate(() => ({
-    text: globalThis.masterCSSRuntime.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
-  }))
-  expect(afterFlush).toEqual({
-    text: expect.stringContaining('.fg\\:red-60'),
-    counts: {
-      'color-red-60': 1
-    },
-    retainedClassNames: ['fg:red-60'],
-    utilityRules: ['fg:red-60']
-  })
-
-  const afterForcedCleanup = await page.evaluate(() => ({
-    removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
-    text: globalThis.masterCSSRuntime.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name)
-  }))
-  expect(afterForcedCleanup).toEqual({
-    removedCount: 1,
-    text: '',
-    counts: {},
-    retainedClassNames: [],
-    utilityRules: []
-  })
-})
-
-test('progressive hydration imports an external style hydration manifest', async ({ page }) => {
-  const css = MasterCSS.create({ manifest: defaultManifest })
-  css.ensureClassRules('fg:red-60')
-  const hydrationManifest = createHydrationManifest(css)
-  const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/external.json', loaderURL).href
-
-  await gotoRuntimeOrigin(page, loaderURL)
-  await page.route(source, route => route.fulfill({
-    status: 200,
-    headers: {
-      'content-type': 'application/json',
-      'access-control-allow-origin': '*'
-    },
-    body: serializeMasterCSSHydrationManifest(hydrationManifest)
-  }))
-  await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
-    const style = document.createElement('style')
-    style.id = runtimeStyleId
-    style.textContent = text
-    style.setAttribute(attr, source)
-    document.head.append(style)
-  }, {
-    attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-    runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
-    source,
-    text: css.text
-  })
-  await startCSSRuntimeAsync(page, undefined, loaderURL)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(result.progressive).toBe(true)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
-  expect(result.text).toContain('.fg\\:red-60')
-})
-
-test('runtime start does not import a hydration manifest without a runtime style source', async ({ page }) => {
-  let requests = 0
-  const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/unreferenced.json', loaderURL).href
-
-  await page.route(source, route => {
-    requests++
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: '{"version":1,"rules":[]}'
-    })
-  })
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p class="block"></p>'
-  })
-  await startCSSRuntimeAsync(page, undefined, loaderURL)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    observing: globalThis.masterCSSRuntime.observing,
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(requests).toBe(0)
-  expect(result).toEqual({
-    progressive: false,
-    observing: true,
-    text: '@layer utilities{.block{display:block}}'
-  })
-})
-
-test('progressive hydration falls back when an external style hydration manifest import fails', async ({ page }) => {
-  const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/missing.json', loaderURL).href
-
-  await gotoRuntimeOrigin(page, loaderURL)
-  await page.route(source, route => route.fulfill({
-    status: 404,
-    body: 'not found'
-  }))
-  await page.evaluate(({ attr, runtimeStyleId, source }) => {
-    document.body.innerHTML = '<p class="block"></p>'
-    const style = document.createElement('style')
-    style.id = runtimeStyleId
-    style.textContent = '@layer utilities{.block{display:block}}'
-    style.setAttribute(attr, source)
-    document.head.append(style)
-  }, {
-    attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-    runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
-    source
-  })
-  await startCSSRuntimeAsync(page, undefined, loaderURL)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(result.progressive).toBe(false)
-  expect(result.utilityRules).toEqual(['block'])
-  expect(result.text).toBe('@layer utilities{.block{display:block}}')
-})
-
-test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
-  const css = MasterCSS.create({ manifest: defaultManifest })
-  css.ensureClassRules('fg:red-60')
-  const hydrationManifest = createHydrationManifest(css)
-  let requests = 0
-  const loaderURL = await getRuntimeLoaderURL()
-  const source = new URL('/_master-css/hydration/ignored.json', loaderURL).href
-
-  await page.route(source, route => {
-    requests++
-    return route.fulfill({
-      status: 200,
-      contentType: 'application/json',
-      body: '{"version":1,"rules":[]}'
-    })
-  })
-  await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
-    const style = document.createElement('style')
-    style.id = runtimeStyleId
-    style.textContent = text
-    style.setAttribute(attr, source)
-    document.head.append(style)
-  }, {
-    attr: MASTER_CSS_HYDRATION_MANIFEST_ATTR,
-    runtimeStyleId: MASTER_CSS_RUNTIME_STYLE_ID,
-    source,
-    text: css.text
-  })
-  await startCSSRuntimeAsync(page, hydrationManifest, loaderURL)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    utilityRules: globalThis.masterCSSRuntime.utilitiesLayer.rules.map(({ name }) => name),
-  }))
-
-  expect(requests).toBe(0)
-  expect(result.progressive).toBe(true)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
-})
-
-test('progressive hydration matches bucketed theme variables', async ({ page }) => {
-  const css = MasterCSS.create({ manifest: defaultManifest })
-  css.ensureClassRules('fg:red-60', 'bg:blue-60')
-  const hydrationManifest = createHydrationManifest(css)
-  const consoleWarnings: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'warning') consoleWarnings.push(message.text())
-  })
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:red-60 bg:blue-60"></p>'
-  })
-  await init(page, css.text, undefined, hydrationManifest)
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    nativeThemeRuleCount: globalThis.masterCSSRuntime.themeLayer.native?.cssRules.length,
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
-  expect(result.progressive).toBe(true)
-  expect(result.counts).toEqual({
-    'color-red-60': 1,
-    'color-blue-60': 1
-  })
-  expect(result.nativeThemeRuleCount).toBe(1)
-  expect(result.text).toContain('--color-red-60')
-  expect(result.text).toContain('--color-blue-60')
-})
-
-test('progressive hydration matches theme variable buckets by key', async ({ page }) => {
-  const consoleWarnings: string[] = []
-  page.on('console', (message) => {
-    if (message.type() === 'warning') consoleWarnings.push(message.text())
-  })
-
-  await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:primary"></p>'
-  })
-  await init(
-    page,
-    '@layer theme{.dark{color-scheme:dark;--color-primary:#ffffff}.light,:root{color-scheme:light;--color-primary:#000000}}@layer utilities{.fg\\:primary{color:var(--color-primary)}}',
-    {
-      variables: [
-        { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
-        { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' }
-      ],
-      modes: ['light', 'dark'],
-      modeTrigger: 'class'
-    },
-    'auto'
-  )
-
-  const result = await page.evaluate(() => ({
-    progressive: globalThis.masterCSSRuntime.progressive,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    nativeThemeRuleCount: globalThis.masterCSSRuntime.themeLayer.native?.cssRules.length,
-    text: globalThis.masterCSSRuntime.text
-  }))
-
-  expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(false)
-  expect(result.progressive).toBe(true)
-  expect(result.counts).toEqual({
-    'color-primary': 1
-  })
-  expect(result.nativeThemeRuleCount).toBe(2)
-  expect(result.text).toContain('.light,:root{color-scheme:light;--color-primary:#000000}')
-  expect(result.text).toContain('.dark{color-scheme:dark;--color-primary:#ffffff}')
-})
-
-test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {
-  await init(page, '', {
-    variables: [
-      { key: 'surface', value: '#ffffff' },
-      { key: 'brand', value: 'var(--surface)', dependencies: ['surface'] }
-    ]
-  })
-
-  await page.evaluate(() => {
-    const el = document.createElement('p')
-    el.classList.add('fg:brand', 'color:brand')
-    document.body.append(el)
-  })
-  await waitForRuntimeRuleFlush(page)
-  const initial = await page.evaluate(() => ({
-    text: globalThis.masterCSSRuntime.themeLayer.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
-  }))
-  expect(initial).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
-    counts: {
-      brand: 2,
-      surface: 2
-    }
-  })
-
-  await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove('fg:brand')
-  })
-  await waitForRuntimeRemovalFlush(page)
-  const afterOneRemoval = await page.evaluate(() => ({
-    text: globalThis.masterCSSRuntime.themeLayer.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames]
-  }))
-  expect(afterOneRemoval).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
-    counts: {
-      brand: 2,
-      surface: 2
-    },
-    retainedClassNames: ['fg:brand']
-  })
-
-  await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove('color:brand')
-  })
-  await waitForRuntimeRemovalFlush(page)
-  const afterAllRemoved = await page.evaluate(() => ({
-    text: globalThis.masterCSSRuntime.themeLayer.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    nativeAttached: !!globalThis.masterCSSRuntime.themeLayer.native?.parentStyleSheet
-  }))
-  expect(afterAllRemoved).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
-    counts: {
-      brand: 2,
-      surface: 2
-    },
-    retainedClassNames: ['fg:brand', 'color:brand'],
-    nativeAttached: true
-  })
-
-  const afterForcedCleanup = await page.evaluate(() => ({
-    removedCount: globalThis.masterCSSRuntime.flushRetainedClassRules(),
-    text: globalThis.masterCSSRuntime.themeLayer.text,
-    counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts),
-    retainedClassNames: [...globalThis.masterCSSRuntime.retainedClassNames],
-    nativeAttached: !!globalThis.masterCSSRuntime.themeLayer.native?.parentStyleSheet
-  }))
-  expect(afterForcedCleanup).toEqual({
-    removedCount: 2,
-    text: '',
-    counts: {},
-    retainedClassNames: [],
-    nativeAttached: false
-  })
-})
-
-test('inlines variables without runtime theme counts', async ({ page }) => {
-  await init(page, '', {
-    variables: [
-      { namespace: 'color', key: 'brand', value: '#123456', inline: true }
-    ]
-  })
-
-  const result = await page.evaluate(async () => {
-    document.body.innerHTML = '<p class="fg:brand"></p>'
-    await new Promise<void>((resolve) => {
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => resolve())
-      })
-    })
-    return {
-      text: globalThis.masterCSSRuntime.text,
-      counts: Object.fromEntries(globalThis.masterCSSRuntime.themeLayer.tokenCounts)
-    }
-  })
-
-  expect(result).toEqual({
-    text: '@layer utilities{.fg\\:brand{color:#123456}}',
-    counts: {}
   })
 })

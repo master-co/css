@@ -5,7 +5,9 @@ import os from 'node:os'
 import { createRequire } from 'module'
 import { pathToFileURL } from 'url'
 import path from 'upath'
-import { cssEscape } from '@master/css-lexer'
+import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
 import waitForDataMatch from '../../helpers/wait-for-data-match'
 import dedent from 'ts-dedent'
 import { it, beforeAll, afterAll, expect } from 'vitest'
@@ -46,6 +48,13 @@ let configFilepath: string
 let virtualCSSFilepath: string
 let subprocess: ResultPromise
 let subprocessOutput = ''
+const lexer = createToolingSessionSync({
+  manifest: defaultManifestJSON as unknown as MasterCSSManifest
+})
+
+function cssEscape(value: string) {
+  return lexer.analyzeClassList({ escapeIdentifiers: [value] }).escapedIdentifiers[0]
+}
 
 async function waitForCSSContent(doesMatch: (css: string) => boolean) {
   const deadline = Date.now() + 60000
@@ -76,7 +85,7 @@ beforeAll(() => {
   virtualCSSFilepath = path.join(workspacePath, 'output.css')
   fs.writeFileSync(HTMLFilepath, originHTMLText, { flag: 'w+' })
   fs.writeFileSync(configFilepath, originConfigText, { flag: 'w+' })
-  subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, '-w', '-o', virtualCSSFilepath], {
+  subprocess = execa(process.execPath, ['--import', tsxLoaderURL, cliFilepath, 'generate', '-w', '-o', virtualCSSFilepath], {
     cwd: workspacePath,
     forceKillAfterDelay: 1000
   })
@@ -128,5 +137,6 @@ it('change html file class attr and update', async () => {
 afterAll(async () => {
   subprocess.kill()
   await subprocess.catch(() => undefined)
+  lexer.dispose()
   fs.rmSync(workspacePath, { recursive: true, force: true })
 })

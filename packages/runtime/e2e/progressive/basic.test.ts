@@ -4,9 +4,9 @@ import init from '../init'
 test('progressive', async ({ page }) => {
   await init(page)
   expect(await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime
-    runtime.destroy()
-    runtime.destroy()
+    const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
+    runtime.dispose()
+    runtime.dispose()
     return {
       globalCleared: globalThis.masterCSSRuntime === undefined,
       styleRemoved: !document.getElementById('master-css')

@@ -77,5 +77,5 @@ auto, vite, react, react-router, tanstack-start, vue, nextjs, svelte, nuxt, astr
 SvelteKit setup is delegated to the Svelte CLI add-on:
 
 ```bash
-npx sv add @master/css-sv
+npx sv add @master/css-svelte-addon
 ```

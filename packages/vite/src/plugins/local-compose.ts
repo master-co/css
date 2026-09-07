@@ -1,16 +1,19 @@
 import type { ModuleNode, Plugin, ViteDevServer } from 'vite'
-import { loadProjectManifest } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles } from '@master/css-project/entries'
 import {
-  collectStyleCSSDependencies,
-  createStyleEntryEmittedGlobals,
-  hasLocalStyleDirectives,
-  isStyleCSSRequest,
-  resolveMasterStyleSource,
-  transformLocalStyleCSS
-} from '@master/css-stylesheet'
-import type { PluginContext } from '../core'
-import type { PluginOptions } from '../options'
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { defaultBuildManifest } from '@master/css-internal/project'
+import {
+  collectStylesheetEmittedGlobals,
+  transformStylesheet
+} from '@master/css-compiler/stylesheet'
+import {
+  collectStylesheetDependenciesSync,
+  resolveStylesheetSync
+} from '@master/css-compiler/node'
+import type { MasterCSSVitePluginContext } from '../core'
+import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { includesFile } from '../utils/path'
 
 function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer): boolean {
@@ -19,11 +22,11 @@ function invalidateModule(module: ModuleNode | undefined, server: ViteDevServer)
   return true
 }
 
-export default function LocalComposePlugin(options: PluginOptions, context: PluginContext): Plugin {
+export default function LocalComposePlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let projectManifest: Awaited<ReturnType<typeof loadProjectManifest>> | undefined
   let projectManifestEntries: string[] = []
   let projectManifestDependencies: string[] = []
-  let styleEntryEmittedGlobals: Awaited<ReturnType<typeof createStyleEntryEmittedGlobals>> | undefined
+  let styleEntryEmittedGlobals: Awaited<ReturnType<typeof collectStylesheetEmittedGlobals>> | undefined
   const localComposeModules = new Set<string>()
 
   const addServerAllow = (paths: string[]) => {
@@ -37,11 +40,11 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
   const loadComposeContext = async (pluginContext: { addWatchFile?: (id: string) => void }) => {
     if (projectManifest) return projectManifest
     const root = context.config?.root
-    const entries = await findCSSManifestEntryFiles(root)
-    projectManifestEntries = entries
+    const entries = await discoverManifestEntries({ root })
+    projectManifestEntries = [...entries]
     const dependencies = new Set<string>()
     for (const entry of entries) {
-      for (const dependency of collectStyleCSSDependencies(entry, undefined, root)) {
+      for (const dependency of collectStylesheetDependenciesSync(entry, undefined, { projectDir: root })) {
         dependencies.add(dependency)
       }
     }
@@ -50,7 +53,11 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     for (const dependency of projectManifestDependencies) {
       pluginContext.addWatchFile?.(dependency)
     }
-    projectManifest = await loadProjectManifest(root, { entries })
+    projectManifest = await loadProjectManifest({
+      root,
+      entries,
+      baseManifest: defaultBuildManifest
+    })
     for (const dependency of projectManifest.dependencies) {
       if (dependencies.has(dependency)) continue
       dependencies.add(dependency)
@@ -65,7 +72,7 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     const manifestResult = await loadComposeContext(pluginContext)
     if (styleEntryEmittedGlobals) return styleEntryEmittedGlobals
     const dependencies = new Set(projectManifestDependencies)
-    styleEntryEmittedGlobals = await createStyleEntryEmittedGlobals(projectManifestEntries, {
+    styleEntryEmittedGlobals = await collectStylesheetEmittedGlobals(projectManifestEntries, {
       baseManifest: manifestResult.manifest,
       projectDir: context.config?.root
     })
@@ -89,17 +96,18 @@ export default function LocalComposePlugin(options: PluginOptions, context: Plug
     },
     async transform(code, id) {
       if (id.startsWith('\0')) return
-      if (!isStyleCSSRequest(id)) return
-      if (!hasLocalStyleDirectives(code)) return
-      if (resolveMasterStyleSource(id, code, context.config?.root)) return
+      const resolution = resolveStylesheetSync(id, code, {
+        projectDir: context.config?.root
+      })
+      if (resolution?.kind !== 'local') return
 
-      const dependencies = new Set(collectStyleCSSDependencies(id, code, context.config?.root))
+      const dependencies = new Set(resolution.dependencies)
       for (const dependency of dependencies) {
         this.addWatchFile?.(dependency)
       }
       const manifestResult = await loadComposeContext(this)
       const emittedGlobalsResult = await loadStyleEntryEmittedGlobals(this)
-      const result = await transformLocalStyleCSS(id, code, {
+      const result = await transformStylesheet(id, code, {
         baseManifest: manifestResult.manifest,
         projectDir: context.config?.root,
         emittedGlobals: emittedGlobalsResult.emittedGlobals

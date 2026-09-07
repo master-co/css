@@ -32,3 +32,4 @@ test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'b
     `
   }
 }))
+

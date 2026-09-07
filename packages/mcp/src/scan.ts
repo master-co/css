@@ -1,13 +1,14 @@
 import { createRequire } from 'node:module'
 import { resolve } from 'node:path'
 import fg from 'fast-glob'
-import { createMasterCSSInspectionReport } from '@master/css-diagnostics'
-import { inspectMasterCSSClass } from '@master/css-engine/inspect'
-import { createCSSWithNativeDeclarations } from '@master/css-validator/native-declaration'
-import { parseHTML } from '@master/css-server'
+import { renderClassNamesSync } from '@master/css/node'
+import { createMasterCSSInspectionReport } from '@master/css-compiler/diagnostics'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import { createToolingSessionSync } from '@master/css-tooling/node'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
-import type { MasterCSSManifest } from '@master/css-engine'
+import { compactClassInspection, createMCPToolingSession } from './tooling-session'
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
@@ -41,17 +42,16 @@ export async function resolveSourceFiles(context: MasterCSSMCPContext, patterns 
 }
 
 export async function scanProject(context: MasterCSSMCPContext, options: ScanProjectOptions = {}) {
-  const [report, manifest] = await Promise.all([
-    createMasterCSSInspectionReport({
-      cwd: context.root,
-      patterns: options.patterns,
-      classes: options.classes,
-      includeCss: options.includeCss,
-      resolveExistingFile: (filePath) => context.resolveExistingFile(filePath),
-      validatePatterns: (patterns) => context.validateGlobPatterns(patterns)
-    }),
-    loadWorkspaceManifest(context)
-  ])
+  const manifest = await loadWorkspaceManifest(context)
+  const report = await createMasterCSSInspectionReport({
+    manifest: manifest.status === 'loaded' ? manifest.manifest : defaultManifest,
+    cwd: context.root,
+    patterns: options.patterns,
+    classes: options.classes,
+    includeCss: options.includeCss,
+    resolveExistingFile: (filePath) => context.resolveExistingFile(filePath),
+    validatePatterns: (patterns) => context.validateGlobPatterns(patterns)
+  })
   return {
     ...report,
     root: context.root,
@@ -67,19 +67,32 @@ export async function scanProject(context: MasterCSSMCPContext, options: ScanPro
 
 export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSSOptions) {
   const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
-  const classes = options.html
-    ? parseHTML(options.html).classes
-    : (options.classList ?? '').split(/\s+/).map((className) => className.trim()).filter(Boolean)
-  const invalid: string[] = []
-  for (const className of classes) {
-    const rules = css.generate(className)
-    if (rules.length) {
-      for (const rule of rules) rule.layer.insert(rule)
-    } else {
-      invalid.push(className)
+  let classes: string[]
+  if (options.html) {
+    const tooling = createToolingSessionSync({
+      manifest: manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+    })
+    try {
+      classes = [...tooling.extractSource({
+        files: [{
+          source: 'index.html',
+          content: options.html,
+          kind: 'html'
+        }]
+      }).files[0]?.candidates ?? []]
+    } finally {
+      tooling.dispose()
     }
+  } else {
+    classes = (options.classList ?? '')
+      .split(/\s+/)
+      .map((className) => className.trim())
+      .filter(Boolean)
   }
+  const rendered = renderClassNamesSync(classes, {
+    manifest: manifest.status === 'loaded' ? manifest.manifest : defaultManifest,
+    supportsNativeDeclaration: supportsNativeDeclaration
+  })
   return {
     manifest: {
       status: manifest.status,
@@ -87,45 +100,41 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
       ...(manifest.status === 'error' ? { error: manifest.error } : {})
     },
     classes,
-    invalid,
+    invalid: rendered.invalidClassNames,
     css: {
-      bytes: css.text.length,
-      text: css.text
+      bytes: rendered.cssText.length,
+      text: rendered.cssText
     }
   }
 }
 
 export async function inspectClass(context: MasterCSSMCPContext, options: InspectClassOptions) {
   const manifest = await loadWorkspaceManifest(context)
-  const css = createCSSWithNativeDeclarations(manifest.status === 'loaded' ? manifest.manifest : defaultManifest)
-  const inspection = inspectMasterCSSClass(css, options.className, options.mode)
-  const rules = inspection.rules.map((rule) => ({
-    className: rule.name,
-    layer: rule.layerName,
-    type: rule.type,
-    text: rule.text
-  }))
-  return {
-    manifest: {
-      status: manifest.status,
-      entries: manifest.entries,
-      ...(manifest.status === 'error' ? { error: manifest.error } : {})
-    },
-    className: options.className,
-    mode: options.mode,
-    valid: rules.length > 0,
-    base: inspection.base,
-    suffix: inspection.suffix,
-    key: inspection.key,
-    value: inspection.value,
-    keyToken: inspection.keyToken,
-    valueToken: inspection.valueToken,
-    stateToken: inspection.stateToken,
-    important: inspection.important,
-    matcherTypes: inspection.matcherTypes,
-    variables: inspection.variableEntries.map(({ key, variable }) => ({ key, variable })),
-    rules,
-    css: rules.map((rule) => rule.text).join('')
+  const session = createMCPToolingSession(
+    manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+  )
+  try {
+    const inspection = session.inspectClassName(options.className, options.mode)
+    const compact = compactClassInspection(
+      session,
+      options.className,
+      options.mode,
+      true,
+      inspection
+    )
+    return {
+      manifest: {
+        status: manifest.status,
+        entries: manifest.entries,
+        ...(manifest.status === 'error' ? { error: manifest.error } : {})
+      },
+      className: options.className,
+      mode: options.mode,
+      ...compact,
+      css: inspection.rules.map((rule) => rule.text).join('')
+    }
+  } finally {
+    session.dispose?.()
   }
 }
 

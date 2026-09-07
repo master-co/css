@@ -1,7 +1,7 @@
 import {
   flattenMasterCSSManifestVariables,
   type MasterCSSManifestUtility
-} from '@master/css-engine'
+} from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import {

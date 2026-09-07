@@ -1,0 +1,377 @@
+{
+  "$schema": "../scripts/rust-refactor-contract-evidence.schema.json",
+  "version": 1,
+  "baseline": {
+    "ref": "bd164e4b5",
+    "commit": "bd164e4b5ae3a713940913d745183e9ab6b54263"
+  },
+  "records": [
+    {
+      "sourceId": "rc87-886095b27074cf6c",
+      "sourceDigest": "0f6195379a6491d260f50a4f15cc0b6e3332db3f207c664a0bd906b1089bd9dd",
+      "targetDigest": "e0de264a272004f70c6996c83bd4fc8e99b6d98abf1d162750ea1d31707a12df",
+      "proof": "verified-superset",
+      "reason": "The original packaged Wasm artifact assertions remain and the target adds native-declaration coverage for Node hosts without CSS.supports."
+    },
+    {
+      "sourceId": "rc87-534a5dbe18105a92",
+      "sourceDigest": "3f0364bd9b6a1fa7c2bd51793132299992be25b488b311bd2ee5899a59d0295a",
+      "targetDigest": "09261e359de7fc13b9b2f2dbe64062d54c49e295219d52a4e22d1e5d99c41ddf",
+      "proof": "verified-superset",
+      "reason": "The existing browser CSS.supports handshake assertions remain and the target adds the equivalent Wasm render-session assertion."
+    },
+    {
+      "sourceId": "rc87-97379238aa6e9c52",
+      "sourceDigest": "5bbd8c3b2443030c35c33062316c8a8e5e4e967d6895f171e073691476f38a1d",
+      "targetDigest": "a13f11ecfd946a2fbe1e1fe86f78e132a4688175523e438963c1207f7ac13fe8",
+      "proof": "verified-superset",
+      "reason": "The original error normalization and idempotent disposal assertions remain and the target adds native declaration rendering coverage."
+    },
+    {
+      "sourceId": "rc87-7748131a83619c59",
+      "sourceDigest": "dcd8212160c12aa1f6d98201a7ec8ee43fa3fb34a477ee6493d24a04a34a24a4",
+      "targetDigest": "b5311a05f6d447fda5f0681fa6f930048c3685744869f200267d6cb31e35fe41",
+      "proof": "verified-superset",
+      "reason": "The workspace manifest assertions were extracted into a shared helper and are executed by both the manifest and runtime compatibility cases."
+    },
+    {
+      "sourceId": "rc87-14a1114fe1dde0c6",
+      "sourceDigest": "7cb4e79ee81d31f2cc625cf9c083150a85b3f10f0d2e8ae04785dd6f4a808673",
+      "targetDigest": "951a346b0d78d53445d9f081701543a7db9e901469b951fdd5f43048a10db4e5",
+      "proof": "verified-superset",
+      "reason": "The bundled manifest fallback assertions were extracted into a shared helper and are executed by both the manifest and runtime compatibility cases."
+    },
+    {
+      "sourceId": "rc87-2d55aa74f4d93510",
+      "sourceDigest": "c1ae579d278253410909689c5bc6ad9ecfbf9665dec7a9393f2f54729be8d64f",
+      "targetDigest": "3a769593af36fcfaffb10cbd2ee4d319f443b4953e8ffd8a3d02c51db2f889f0",
+      "proof": "verified-superset",
+      "reason": "The target checks the Rust completion index directly for the fg property and separately verifies that the language-service presentation returns the concrete red value, replacing an indirect UI-label assertion with evidence at both contract layers."
+    },
+    {
+      "sourceId": "rc87-2d99ea0e5a8248fe",
+      "sourceDigest": "63596bb25639863c4a77c4599587a1178ee46f2d3e938eaeac5d397122c12063",
+      "targetDigest": "5bb285512b710f4cb5fe56e5902499814b647ee410347a7ea3ee6d92c6d070dc",
+      "proof": "approved-contract-change",
+      "reason": "The universal manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6fe7a81f96131dfa49550e0f9608777417cc7938cf967e8e341305a121393625"
+      }
+    },
+    {
+      "sourceId": "rc87-c6f234a37661be00",
+      "sourceDigest": "234eb3d4b27a4bd80066a07a403be6afa0b6be8aa51a268c7720301f8a530a07",
+      "targetDigest": "449583c35a6d3b4499950043ea16a0a2d16912810941afe4801ceac17028121e",
+      "proof": "approved-contract-change",
+      "reason": "The Next manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "af679f9e7623f989848eb99dfe20a405f13b37feefcc96155dd439af8f9276da"
+      }
+    },
+    {
+      "sourceId": "rc87-074e56c447b243c2",
+      "sourceDigest": "27ae2d0a6ebbe1abb2954feb5f2cdb2dc7da7e4040f78bf6374e48a2151c12ef",
+      "targetDigest": "924d5cda2aeecd2e762159ce7ce9a8067590daba505cd2c01c2de298b3f6001a",
+      "proof": "approved-contract-change",
+      "reason": "The Vite browser manifest loader retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "6cd59f6810bc2286f2ee7679dd030dc3154c8ccaa884032285ff198ea4a7c3af"
+      }
+    },
+    {
+      "sourceId": "rc87-fb0fd2ea320a28ed",
+      "sourceDigest": "8d8ab5ad963d8dff03d832ae36cff51bfd4408a419ca1fc34edb446285b99bfa",
+      "targetDigest": "3104ed5c77ee66dac20b25ca29237c3f3b275b179a88852204ca4747157578d5",
+      "proof": "approved-contract-change",
+      "reason": "The Vite universal manifest loader retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "b8513e8dca38c76d577da39961528d9bc298f75601f727cab340480a2467fd43"
+      }
+    },
+    {
+      "sourceId": "rc87-138d2a9846a509c5",
+      "sourceDigest": "d22120b1f722e98435aa92b233e54af23307f115b89583c6b0dc0bbd2e8cdf3e",
+      "targetDigest": "1b83dac91765e67e59f9a1fe4cb0499fc0188d4716cc82ab12b6f125687113ff",
+      "proof": "approved-contract-change",
+      "reason": "The Vite default browser manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "17caa388e1b829f57bc2e3e115fc85e2bf8968aa9bf7345bc36982753e90934b"
+      }
+    },
+    {
+      "sourceId": "rc87-de63cfc41ad8a597",
+      "sourceDigest": "4680427e09f7d1655cbf19d1846c58d956b07b5f693e2c2f4a746bdb0f74caee",
+      "targetDigest": "18901ac79fd0899c1f948c7016a77154927dce05b5fb64389b64b74159f0f4bc",
+      "proof": "approved-contract-change",
+      "reason": "The Vite default universal manifest facade retains the refactor contract browser import-first and server import behavior while adding the user-approved legacy Safari syntax-only fetch fallback, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "8397caf2e0bf3fb8d535199d6d006b140dff388aa1eafc3fb207f1ab44fc0677"
+      }
+    },
+    {
+      "sourceId": "rc87-6c18481fc5cdfa31",
+      "sourceDigest": "ee6b8dcf67b8d3b4e1da6ef2506d00d0688c4af5c50c104eb52dfd7641bdb57a",
+      "targetDigest": "825fbb83678c41c1bda9025b82f6d7e0e8dd5fbb774f4793fa605974249e5ab1",
+      "proof": "approved-contract-change",
+      "reason": "The Webpack default manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "7b3ec6136739fc76be6f6ba28e205d33af22252bef125fcb695a9057cd99cc54"
+      }
+    },
+    {
+      "sourceId": "rc87-692ac35eb7556a3f",
+      "sourceDigest": "64b665198491bd1301fca51534096ffe550f2a3f16863461bb5aa5ec2bfab6e0",
+      "targetDigest": "7eea9812e7eb2a7bc70aab650cc29482dae932839a127ba516b7b53827084748",
+      "proof": "approved-contract-change",
+      "reason": "The Webpack per-file manifest facade retains the refactor contract import-first assertions and adds the user-approved legacy Safari compatibility path: fetch only when JSON import-loader construction throws SyntaxError, without changing published APIs, exports, virtual module IDs, or rendering modes.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-07-28T12:14:27Z",
+        "reviewRef": "codex-task:019f8ebd-c9e4-73b1-814b-5de5e204ca41",
+        "scopeDigest": "dadb0a81246c558c8cb04b3a97b06e2fa86b059ccf9af6e3ded00ec003d20aae"
+      }
+    },
+    {
+      "sourceId": "rc87-38e614a90e947c6e",
+      "sourceDigest": "881fc820f146082f4ab3858223cf9e487007579535731b6441db4e762d7e97a1",
+      "targetDigest": "e83c6a132c65f0e332d86e4d3474165c1d64f8fdac8551eb72551ff9e1d6473d",
+      "proof": "verified-superset",
+      "reason": "The progressive Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+    },
+    {
+      "sourceId": "rc87-c0aa293b8c818099",
+      "sourceDigest": "7dd12ad038b1f8a035766a130deae34304c76c9515c9e7620cfaaff34623093e",
+      "targetDigest": "18a7fa906d36827b33bb1604278ced824c5d54279b1198b04d65a8427739dbb7",
+      "proof": "verified-superset",
+      "reason": "The pre-render Astro integration assertions remain and the target also verifies emitted-global plugin registration."
+    },
+    {
+      "sourceId": "rc87-52d38fb240c780c8",
+      "sourceDigest": "a5da3731ff8892701ce6a2207e45f09459343332877fb5a5217017922dc9b20e",
+      "targetDigest": "ebc04dc051847b727e8d9091f4c852f0d2651867c97a3361c5278a434b09f8f7",
+      "proof": "verified-superset",
+      "reason": "The shared native Rust tooling-session assertions remain and the target adds same-source reuse and explicit release coverage."
+    },
+    {
+      "sourceId": "rc87-f3a51f991c07da68",
+      "sourceDigest": "87c4cc5f64bbc47012f4ddae1788eb544fce9de856542b26f5e0d5b7180efbce",
+      "targetDigest": "999028c048d0793e5b6979d2efc0cbc7507e4e313db5910e0cc0f8ce509dc0e7",
+      "proof": "verified-superset",
+      "reason": "The Next build-state compose, native CSS, and disposal assertions remain and the target adds emitted-global variable coverage."
+    },
+    {
+      "sourceId": "rc87-64695981843c3c3f",
+      "sourceDigest": "539e9d5dff37e4cbc2fd277e41133ff42fe1d948f7f938be03e3c0b78b0e27dc",
+      "targetDigest": "831214290606fcec676fffb39cea34b44d0adfa2f687a9eaea5a81205d371978",
+      "proof": "verified-superset",
+      "reason": "The Next Webpack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+    },
+    {
+      "sourceId": "rc87-bc7adf7569796dc8",
+      "sourceDigest": "9fe3dfa54a4f08cfcd77745c1601c9077b3a554ed8b2be8460e83c62c356fcdd",
+      "targetDigest": "3635270702bb7333ab86052d08b87177fb2bffc2bec0180570e7e7da16c782b8",
+      "proof": "verified-superset",
+      "reason": "The Next Turbopack manifest-loader assertions remain and the target adds the emitted-globals loader contract."
+    },
+    {
+      "sourceId": "rc87-bb811e6bf975c3ed",
+      "sourceDigest": "273cda5376e1c542749cec494aa53fdcdbd55e19f8efac03b9f104d08d832708",
+      "targetDigest": "6cf6ae349b1772019addebb1572bdd5bbf6825fee995cdf6aa9c5f80807c0a5b",
+      "proof": "verified-superset",
+      "reason": "The Nuxt pre-render CSS assertions remain and the target adds global variable ownership and placement coverage."
+    },
+    {
+      "sourceId": "rc87-60160a1512713e62",
+      "sourceDigest": "38a89dfa54b675dc67cef33bf351e323d2635f52b23f82827dfd9ac992524c1e",
+      "targetDigest": "cf1b32532b0d0cae3092bf583438c9e7d4bfa156695b78ec99be4bccfe3014c7",
+      "proof": "verified-superset",
+      "reason": "The Nuxt progressive CSS assertions remain and the target adds global variable ownership and placement coverage."
+    },
+    {
+      "sourceId": "rc87-060c3ad6820a18f8",
+      "sourceDigest": "0c7dafc66d591403af76835958acefdf9273092f334ae0a5bd9a5866397f9466",
+      "targetDigest": "de25f1b167d1913e1be6709cc2385f66201efcdcbf2e6f1c9b8d405e31a71d93",
+      "proof": "verified-superset",
+      "reason": "The Nuxt runtime cascade assertion remains and the target also verifies emitted global variables stay out of the runtime stylesheet."
+    },
+    {
+      "sourceId": "rc87-51b092cde77ad479",
+      "sourceDigest": "ad922ad887d5788df061fc6c7be97aca42f6b4bb56bfdea20f76480ad239e7b9",
+      "targetDigest": "251f5ded15b180c78dc2a5ed3bbdc758461a7235096faf7f9ed892e083b72984",
+      "proof": "approved-contract-change",
+      "reason": "Contributor documentation routing now validates the enforced AI context budget and adds Rust crate routing coverage, replacing the retired documentation-consistency command.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "650a0b3830fece1d4a2ded37f7fd114a49175c94252aa19bb5deeeac0b1a41c6"
+      }
+    },
+    {
+      "sourceId": "rc87-19ccc0505d60d982",
+      "sourceDigest": "2613dedadd32ea00fc41f50a5c91fc37f928db07242138ae139e6718fc4e2503",
+      "targetDigest": "657727f550badd476e66a660280ff8419d3b03b6ce494cfada7ec75189957a27",
+      "proof": "approved-contract-change",
+      "reason": "The runtime emittedGlobals case now verifies referenced resource removal and concurrent count merging with concrete globals while retaining same-instance and registration-count coverage.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "ed1ea81e04702dd01c92be68b0059b52f438072d7ed610408a4e4dae4ede5d3a"
+      }
+    },
+    {
+      "sourceId": "rc87-6037936609bf96b7",
+      "sourceDigest": "abbb842d05f49eddc7f51f331d5fb21227e26e76bc03078d4bd87119bea5a144",
+      "targetDigest": "6387e9c21ea68945e8d6f547750b2af1f73f1fa58a4ee0873156be1ecb42f595",
+      "proof": "approved-contract-change",
+      "reason": "The Vite browser HMR case retains its global-CSS-before-runtime assertions and uses an explicit navigation and readiness timeout for loaded CI runners.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "2cb2d0803fb3465a0fa644392ce46b53fbfc5753bf1bb9b56fd0c993435cf58f"
+      }
+    },
+    {
+      "sourceId": "rc87-9b27332e72026599",
+      "sourceDigest": "51a1859e9f6e589bc75d64e3d898ec4ebcd3aff92053c05e896a409cb9a446eb",
+      "targetDigest": "64ce350cfd396e57a956c28384379f1f0bb4378050f975617fdcd0ce76788974",
+      "proof": "approved-contract-change",
+      "reason": "The Vite invalid-CSS recovery case retains its HMR and no-full-reload assertions and uses an explicit navigation and readiness timeout for loaded CI runners.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "2130ab3173d6d19ce3c730d5593bc6f598d066e39cd484db6aec0a5b8cd2b510"
+      }
+    },
+    {
+      "sourceId": "rc87-48ff4814761d1c90",
+      "sourceDigest": "c62fd9d5353d8b511ad24233e46b4cf160e758ea23c413735a73c3c1c911a7fe",
+      "targetDigest": "4eff30677d1e0c99728b77d0be687e3e063f2a9f5a719e1c76d66a5160d0c2e9",
+      "proof": "approved-contract-change",
+      "reason": "The failed-style dependency case now compares the normalized absolute path returned by the Vite host while preserving the same dependency registration requirement.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:53:04Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "09fffd6b3e164cc50628cca661459c30f2993f80ccddbb9d33871ffcdd54ea75"
+      }
+    }
+  ],
+  "surfaces": [
+    {
+      "surfaceId": "public-api-contract",
+      "baselineDigest": "b3b0acf8161aae00605cd11228b77129eb1b12e37079fd6681dead85e23a5deb",
+      "targetDigest": "10a6bdfd17104db2e12c463e6a1587c300277303ebc66f73e9e169eaaf82d2da",
+      "proof": "approved-contract-change",
+      "reason": "The public tooling surface intentionally adds structured Language Batch v2 color expression and source-format types. The compiler alias removal is tracked separately by the raw compiler surfaces; no compatibility alias remains.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T17:24:34Z",
+        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
+        "scopeDigest": "17dabc1fdf7c4bdbbf9a69f42bdaaeb91ac176d6e3d5d7675cee1441aca9a440"
+      }
+    },
+    {
+      "surfaceId": "binding-version-contract",
+      "baselineDigest": "a647d5bdf4761c7b9ce77609df36cfedb1bb4385e5d5572830b75f28fd165389",
+      "targetDigest": "0cf8147a3c8ecf93750c64d15dddbbb5a9d6375a89890c774b0fa680b296a69f",
+      "proof": "approved-contract-change",
+      "reason": "Language Batch intentionally advances from 1 to 2 for function completions and recursive color expressions. Native binding ABI, manifest, hydration, transition, lexer, lint, source, and validator versions remain unchanged.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T17:24:34Z",
+        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
+        "scopeDigest": "7f0f9f8e75124e2c167bd0a3e45649ac3f076bb64945055d822e169b65c9a6f7"
+      }
+    },
+    {
+      "surfaceId": "native-compiler-raw-surface",
+      "baselineDigest": "c6b7384f29a6bdae96a002b7827b9e2c7b3d7bb994e32adaee4a70abba4324d5",
+      "targetDigest": "7a603fe7cbbe4d301228fe278a2192a77e53062be7a421048e34fd8cd13ce9a4",
+      "proof": "approved-contract-change",
+      "reason": "The native compiler binding intentionally removes compileThemeCSS, leaving compileCSSDirectives as the sole CSS-directive compilation operation; no deprecated alias or compatibility shim remains.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T17:24:34Z",
+        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
+        "scopeDigest": "efe6b8e15f0eb8d0738cf9730ea60e6cf7c83bfdf042ad4e2131550469382786"
+      }
+    },
+    {
+      "surfaceId": "wasm-compiler-raw-surface",
+      "baselineDigest": "7bb965109d8a7b8ebbb475dd67224b0b96493eb21700d553b49891ae4ee648bf",
+      "targetDigest": "71c04aa417736f0df750a897ac39a029ccbe8998d08b55404b3c36633285b127",
+      "proof": "approved-contract-change",
+      "reason": "The Wasm compiler raw surface intentionally removes compileThemeCSS, leaving compileCSSDirectives as the sole CSS-directive compilation operation; no deprecated alias or compatibility shim remains.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T17:24:34Z",
+        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
+        "scopeDigest": "1d3167b6386483bb1a2aab13653cbb339bfc379675395cef8cdb8c4db68b6560"
+      }
+    },
+    {
+      "surfaceId": "language-batch-contract",
+      "baselineDigest": "a77053bed4610a35ef92202e2385f1b6f626a45db097e55d658395f21e948545",
+      "targetDigest": "41d524a9f6106ba619f400075a7b2c6b946e8a3ab31eb34398920e28d2c3bf7e",
+      "proof": "approved-contract-change",
+      "reason": "Language Batch v2 intentionally adds the function completion kind and recursive color expression and source-format contracts for static color-mix; CSS compilation and runtime semantics remain unchanged.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T17:24:34Z",
+        "reviewRef": "codex-task:019fbdfa-fc3c-77b0-9897-b197a2475eab",
+        "scopeDigest": "686afd59e64ea5ee2fd93ff8075b5a937b7d418d4afc70c3ac4e96fe82775937"
+      }
+    },
+    {
+      "surfaceId": "native-engine-raw-surface",
+      "baselineDigest": "ddcb6c249f568ae66a85713793ad1517b28466848414e7068bbb25ecf3102b9a",
+      "targetDigest": "c0fe94acfe7dccfe5e71270fcfd5849e1418185a267640bab7a9a22c89e084ac",
+      "proof": "approved-contract-change",
+      "reason": "The native engine-session raw surface intentionally adds registerEmittedGlobals to mirror the Rust engine operation used by runtime and scanner hosts; existing methods remain unchanged.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:55:21Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "ad6fda408474c6d1576332ca4b340905689a1ac8cd1af1e4f4257ed7bc460636"
+      }
+    },
+    {
+      "surfaceId": "wasm-engine-raw-surface",
+      "baselineDigest": "da686c4f607ed538a4e61f3a15ed0bd559cf18e320f8c6a28b47d58eb187e012",
+      "targetDigest": "6563b821480af814fefd211bd636c111eb9e361c83ea6ac467462df820ab4474",
+      "proof": "approved-contract-change",
+      "reason": "The private generated Wasm render-session declaration matches wasm-bindgen's Vec<bool> JavaScript ABI. The engine-session raw surface now includes registerEmittedGlobals, and its wrapper intentionally exposes the operation so runtime and scanner hosts can coordinate emitted global reference counts. Package exports and existing session behavior remain unchanged; the new method is covered across Wasm binding, engine, runtime, and scanner tests.",
+      "approval": {
+        "approvedBy": "Aron <i@aron.tw>",
+        "approvedAt": "2026-08-01T12:40:43Z",
+        "reviewRef": "codex-task:019fbcb1-2f4f-7b92-91bd-42420d48943c",
+        "scopeDigest": "667e82c6b9260004f951d92075a9edc30c56825eb0674a208919b8298e75c9cc"
+      }
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "allowance": {
+    "minimumBytes": 1024,
+    "ratio": 0.01
+  },
+  "artifacts": {
+    "packages/runtime/dist/global.min.js": {
+      "raw": 48551,
+      "gzip": 13687,
+      "brotli": 12238
+    }
+  }
+}

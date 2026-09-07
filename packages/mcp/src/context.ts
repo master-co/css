@@ -165,7 +165,7 @@ export default class MasterCSSMCPContext {
     return resolved
   }
 
-  validateGlobPatterns(patterns: string[]) {
+  validateGlobPatterns(patterns: readonly string[]) {
     for (const pattern of patterns) assertFilePattern(pattern)
   }
 
@@ -253,6 +253,10 @@ export default class MasterCSSMCPContext {
       applied: true,
       changes: preview.changes.map(({ filePath, afterHash }) => ({ filePath, afterHash }))
     }
+  }
+
+  dispose() {
+    this.previews.clear()
   }
 }
 

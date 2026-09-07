@@ -1,14 +1,25 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
-import { loadManifestJSONSync } from '@master/css-project/manifest-sync'
-import { loadProjectManifestJSON } from '@master/css-project/manifest'
-import { findCSSManifestEntryFiles, isCSSManifestRequest } from '@master/css-project/entries'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
+import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
+import {
+  discoverManifestEntries,
+  loadProjectManifest
+} from '@master/css-compiler/project'
+import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
+import {
+  defaultBuildManifest,
+  isManifestStylesheetRequest
+} from '@master/css-internal/project'
+import { stripMasterCSSManifestQuery } from '@master/css-internal/manifest-module'
 import {
   toInlineManifestModule,
   toUniversalManifestFacadeModule
-} from '@master/css-integration/manifest-facade'
-import { collectStyleCSSDependencies } from '@master/css-stylesheet'
+} from '@master/css-internal/manifest-facade'
+import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
+import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
+import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
+import { toEmittedGlobalsModule } from '@master/css-internal/emitted-globals-module'
 
 interface LoaderContext {
   resourcePath: string
@@ -22,6 +33,17 @@ interface MasterCSSManifestLoaderOptions {
   virtual?: boolean
   module?: boolean
   external?: boolean
+  emittedGlobals?: boolean
+}
+
+const manifestHost = {
+  discoverManifestEntries,
+  loadProjectManifest,
+  collectStylesheetDependencies(entry: string, options: { root?: string }) {
+    return collectStylesheetDependenciesSync(entry, undefined, {
+      projectDir: options.root
+    })
+  }
 }
 
 function writeExternalManifestAssets(projectDir: string, json: string) {
@@ -52,45 +74,72 @@ function toLoaderResult(context: LoaderContext, json: string, options: MasterCSS
 
 async function loadVirtualManifestJSON(context: LoaderContext) {
   const projectDir = context.rootContext || process.cwd()
-  const entries = await findCSSManifestEntryFiles(projectDir)
-  const dependencies = new Set<string>()
-  for (const entry of entries) {
-    for (const dependency of collectStyleCSSDependencies(entry, undefined, projectDir)) {
-      dependencies.add(dependency)
+  const result = await loadMasterCSSVirtualManifest({
+    host: manifestHost,
+    root: projectDir,
+    onDependency(dependency) {
       context.addDependency?.(dependency)
     }
-  }
-  const result = await loadProjectManifestJSON(projectDir, { entries })
-  for (const dependency of result.dependencies) {
-    if (dependencies.has(dependency)) continue
+  })
+  return serializeMasterCSSManifest(result.manifest)
+}
+
+async function loadVirtualEmittedGlobalsModule(context: LoaderContext) {
+  const projectDir = context.rootContext || process.cwd()
+  const dependencies = new Set<string>()
+  const addDependency = (dependency: string) => {
+    if (dependencies.has(dependency)) return
+    dependencies.add(dependency)
     context.addDependency?.(dependency)
   }
-  return result.json
+  const result = await loadMasterCSSVirtualManifest({
+    host: manifestHost,
+    root: projectDir,
+    onDependency: addDependency
+  })
+  const emittedGlobals = await collectStylesheetEmittedGlobals([...result.entries], {
+    baseManifest: result.manifest,
+    projectDir
+  })
+  for (const dependency of emittedGlobals.dependencies) addDependency(dependency)
+  return toEmittedGlobalsModule(emittedGlobals.emittedGlobals)
 }
 
 function loadCSSManifestJSON(context: LoaderContext) {
-  const resourcePath = context.resourcePath
-  if (!isCSSManifestRequest(resourcePath)) {
+  const resourcePath = stripMasterCSSManifestQuery(context.resourcePath)
+  if (!isManifestStylesheetRequest(resourcePath)) {
     throw new TypeError('Master CSS manifest queries only support CSS entry files.')
   }
-  const dependencies = new Set(collectStyleCSSDependencies(resourcePath, undefined, context.rootContext))
+  const dependencies = new Set(collectStylesheetDependenciesSync(resourcePath, undefined, {
+    projectDir: context.rootContext
+  }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
   }
-  const result = loadManifestJSONSync(resourcePath)
+  const result = compileProjectManifestSync({
+    root: context.rootContext,
+    entries: [resourcePath],
+    baseManifest: defaultBuildManifest
+  })
   for (const dependency of result.dependencies) {
     if (dependencies.has(dependency)) continue
     context.addDependency?.(dependency)
   }
-  return result.json
+  return serializeMasterCSSManifest(result.manifest)
 }
 
 export default function masterCSSManifestLoader(this: LoaderContext) {
   const callback = this.async?.()
   if (!callback) {
-    throw new Error('[@master/css.next] CSS manifest loader requires an async loader context.')
+    throw new Error('[@master/css-next] CSS manifest loader requires an async loader context.')
   }
   const options = this.getOptions?.() || {}
+  if (options.emittedGlobals) {
+    loadVirtualEmittedGlobalsModule(this)
+      .then((source) => callback(null, source))
+      .catch((error: Error) => callback(error))
+    return
+  }
   const result = options.virtual
     ? loadVirtualManifestJSON(this)
     : Promise.resolve(loadCSSManifestJSON(this))

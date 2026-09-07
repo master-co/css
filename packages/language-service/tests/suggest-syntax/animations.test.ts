@@ -1,6 +1,6 @@
 import { test, it, expect, describe } from 'vitest'
 import { hint } from './helper'
-import type { Settings } from '../../src'
+import type { Settings } from '../helpers/rc87-language-service'
 import { createPresetManifest } from '../helpers/create-preset-manifest'
 
 const settings = {
@@ -22,3 +22,4 @@ test.concurrent('animation:', () => expect(hint('animation:', settings)?.map(({ 
 test.concurrent('animation-name:', () => expect(hint('animation-name:', settings)?.map(({ label }) => label)).toContain('fade'))
 test.concurrent('selector', () => expect(hint('animation:fade|1s:', settings)?.map(({ label }) => label)).toContain(':hover'))
 test.concurrent('at', () => expect(hint('animation:fade|1s@', settings)?.map(({ label }) => label)).toContain('@sm'))
+

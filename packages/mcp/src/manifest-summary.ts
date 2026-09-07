@@ -3,8 +3,8 @@ import type {
   MasterCSSManifestConditions,
   MasterCSSManifestUtility,
   MasterCSSManifestVariableEntry
-} from '@master/css-engine'
-import { flattenMasterCSSManifestVariables } from '@master/css-engine'
+} from '@master/css-schema/manifest'
+import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 
 export function summarizeManifest(manifest: MasterCSSManifest) {
   const variables = flattenMasterCSSManifestVariables(manifest.variables)

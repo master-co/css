@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import path from 'node:path'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
@@ -7,6 +7,7 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_ATTR,
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID
 } from '@master/css-schema/hydration-manifest'
+import { MasterCSSServerRenderer } from '@master/css-server'
 
 const FIXTURE_DIR = path.resolve(__dirname, '../fixtures/pre-render/master-css-entry')
 
@@ -17,6 +18,8 @@ async function resolveConfigHooks(plugins: any[], config: any) {
     }
   }
 }
+
+afterEach(() => vi.restoreAllMocks())
 
 describe('PreRenderPlugin', () => {
   it('renders HTML classes with the managed CSS manifest entry', async () => {
@@ -77,10 +80,36 @@ describe('PreRenderPlugin', () => {
     expect(JSON.parse(body).rules.map((rule: { className: string }) => rule.className)).toEqual(['card', 'p:0.125rem'])
   })
 
+  it.each([
+    ['successful builds', 'closeBundle'],
+    ['failed builds', 'buildEnd']
+  ])('disposes production renderers after %s', async (_label, hook) => {
+    const plugins = masterCSS({ mode: 'pre-render' })
+    const viteConfig = {
+      command: 'build',
+      root: FIXTURE_DIR,
+      plugins,
+      build: { assetsDir: 'assets' },
+      server: { fs: { allow: [] } }
+    }
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
+    await resolveConfigHooks(plugins, viteConfig)
+
+    const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
+    if (hook === 'buildEnd') {
+      await preRenderPlugin.buildEnd.call({}, new Error('build failed'))
+    } else {
+      await preRenderPlugin.closeBundle.call({})
+    }
+
+    expect(dispose).toHaveBeenCalledOnce()
+  })
+
   it('reloads CSS entry dependencies for pre-rendered HTML', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-'))
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
+    const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
       writeFileSync(themePath, [
         '@components {',
@@ -126,6 +155,7 @@ describe('PreRenderPlugin', () => {
         '}'
       ].join('\n'))
       await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath })
+      expect(dispose).toHaveBeenCalledOnce()
 
       result = await (preRenderPlugin as any).transformIndexHtml.call(
         {},
@@ -133,6 +163,39 @@ describe('PreRenderPlugin', () => {
       )
       html = typeof result === 'string' ? result : result.html
       expect(html).toContain('.card{color:#abcdef}')
+    } finally {
+      vi.restoreAllMocks()
+      rmSync(root, { recursive: true, force: true })
+    }
+  })
+
+  it('does not duplicate globals already emitted by managed CSS entries', async () => {
+    const root = mkdtempSync(path.join(tmpdir(), 'master-css-vite-pre-render-globals-'))
+    const entryPath = path.join(root, 'app.css')
+    try {
+      writeFileSync(entryPath, [
+        '@master entry;',
+        '@theme { --color-primary: #123456; }',
+        '.host { color: var(--color-primary); }'
+      ].join('\n'))
+      const plugins = masterCSS({ mode: 'pre-render' })
+      const viteConfig = {
+        root,
+        plugins,
+        server: { fs: { allow: [] } }
+      }
+
+      await resolveConfigHooks(plugins, viteConfig)
+      const preRenderPlugin = plugins.find((plugin) => plugin.name === 'master-css:pre-render') as any
+      const result = await preRenderPlugin.transformIndexHtml.call(
+        {},
+        '<html><head></head><body><section class="fg:primary">Content</section></body></html>'
+      )
+      const html = typeof result === 'string' ? result : result.html
+      const style = html.match(/<style\b(?=[^>]*\bid=(['"])master-css\1)[^>]*>([\s\S]*?)<\/style>/)?.[2] ?? ''
+
+      expect(style).toContain('.fg\\:primary{color:var(--color-primary)}')
+      expect(style).not.toContain('--color-primary:')
     } finally {
       rmSync(root, { recursive: true, force: true })
     }

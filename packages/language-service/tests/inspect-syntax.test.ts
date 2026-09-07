@@ -1,10 +1,10 @@
 import { test, it, expect, describe } from 'vitest'
-import CSSLanguageService from '../src/core'
+import CSSLanguageService from './helpers/rc87-language-service'
 import getRange from '../src/utils/get-range'
 import createDoc from '../src/utils/create-doc'
 import { Position } from 'vscode-languageserver-textdocument'
 import dedent from 'ts-dedent'
-import { Settings } from '../src'
+import type { Settings } from './helpers/rc87-language-service'
 
 export const inspect = (target: string, settings: Settings = {}) => {
   const content = `export default () => <div className='${target}'></div>`
@@ -57,3 +57,4 @@ test.concurrent('vendor-prefixed native declarations use unprefixed MDN hover sy
     expect(contents?.value).toContain(`.${property}\\:none`)
   }
 })
+

@@ -1,6 +1,6 @@
-import type CSSScanner from '@master/css-scanner'
-import type { MasterCSSEmittedGlobals } from '@master/css'
-import type { StyleCSSSources } from '@master/css-stylesheet'
+import type { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
+import type { MasterCSSStylesheetCollection } from '@master/css-compiler/stylesheet'
 import type { Plugin, ResolvedConfig } from 'vite'
 import ManifestLoaderPlugin from './plugins/manifest-loader'
 import ManifestVirtualModulePlugin from './plugins/manifest-virtual-module'
@@ -12,28 +12,38 @@ import LocalComposePlugin from './plugins/local-compose'
 import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
-import defaultPluginOptions, { type PluginOptions } from './options'
+import RuntimeBootstrapPlugin from './plugins/runtime-bootstrap'
+import {
+  resolveMasterCSSVitePluginOptions,
+  type MasterCSSVitePluginOptions,
+  type ResolvedMasterCSSVitePluginOptions
+} from './options'
 
-export interface PluginContext {
+export interface MasterCSSVitePluginContext {
   config?: ResolvedConfig
-  scanner?: CSSScanner
+  scanner?: MasterCSSScanner
   virtualCSSImporters?: Set<string>
   virtualCSSPlaceholderEmitted?: boolean
-  styleCSSSources?: StyleCSSSources
+  stylesheets?: MasterCSSStylesheetCollection
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
   defaultManifestAssetReferenceId?: string
   defaultManifestAssetSource?: string
 }
 
-export default function masterCSS(options?: PluginOptions): Plugin[] {
-  options = { ...defaultPluginOptions, ...options }
+export function createMasterCSSVitePlugin(
+  specifiedOptions: MasterCSSVitePluginOptions = {}
+): Plugin[] {
+  const options = resolveMasterCSSVitePluginOptions(specifiedOptions)
+  const runtimeBootstrap = RuntimeBootstrapPlugin()
+  if (!options.enabled) return []
   const context = {
     includeGeneratedCSS: options.mode === 'static'
-  } as PluginContext
+  } as MasterCSSVitePluginContext
   const plugins: Plugin[] = [
+    runtimeBootstrap,
     ContextPlugin(options, context),
-    ManifestVirtualModulePlugin(options, context),
+    ManifestVirtualModulePlugin(context),
     EmittedGlobalsVirtualModulePlugin(context),
     ManifestLoaderPlugin(context),
     ScannerPlugin(options, context),
@@ -70,9 +80,13 @@ export default function masterCSS(options?: PluginOptions): Plugin[] {
   return plugins
 }
 
+export default createMasterCSSVitePlugin
+
 type LazyPluginHook =
   | 'configResolved'
   | 'buildStart'
+  | 'buildEnd'
+  | 'closeBundle'
   | 'handleHotUpdate'
   | 'configureServer'
   | 'transform'
@@ -87,7 +101,7 @@ type HookObject = {
   handler?: (...args: unknown[]) => unknown
 }
 
-function InjectRuntimePlugins(options: PluginOptions): Plugin[] {
+function InjectRuntimePlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
   return [
     createLazyPlugin(
       {
@@ -109,7 +123,7 @@ function InjectRuntimePlugins(options: PluginOptions): Plugin[] {
   ]
 }
 
-function ManifestPreloadPlugin(context: PluginContext): Plugin {
+function ManifestPreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:manifest-preload',
@@ -120,7 +134,7 @@ function ManifestPreloadPlugin(context: PluginContext): Plugin {
   )
 }
 
-function RuntimePreloadPlugin(context: PluginContext): Plugin {
+function RuntimePreloadPlugin(context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:runtime-preload'
@@ -130,7 +144,7 @@ function RuntimePreloadPlugin(context: PluginContext): Plugin {
   )
 }
 
-function AvoidFOUCPlugin(options: PluginOptions, context: PluginContext): Plugin {
+function AvoidFOUCPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:avoid-fouc',
@@ -141,7 +155,7 @@ function AvoidFOUCPlugin(options: PluginOptions, context: PluginContext): Plugin
   )
 }
 
-function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin {
+function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   return createLazyPlugin(
     {
       name: 'master-css:pre-render',
@@ -151,6 +165,8 @@ function PreRenderPlugin(options: PluginOptions, context: PluginContext): Plugin
     [
       'configResolved',
       'buildStart',
+      'buildEnd',
+      'closeBundle',
       'handleHotUpdate',
       'configureServer',
       'transformIndexHtml',

@@ -16,11 +16,11 @@ export default function masterCSSNextStaticCSSLoader(this: LoaderContext, source
   const statePath = this.getOptions?.().statePath
 
   if (!callback) {
-    throw new Error('[@master/css.next] Static CSS loader requires an async loader context.')
+    throw new Error('[@master/css-next] Static CSS loader requires an async loader context.')
   }
 
   if (!statePath) {
-    callback(new Error('[@master/css.next] Missing static CSS loader statePath option.'))
+    callback(new Error('[@master/css-next] Missing static CSS loader statePath option.'))
     return
   }
 

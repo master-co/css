@@ -9,6 +9,7 @@ const packageRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const distRoot = resolve(packageRoot, 'dist')
 const globalBundleFile = resolve(distRoot, 'global.min.js')
 const defaultManifestFile = resolve(distRoot, 'default-manifest.json')
+const runtimeWasmFile = resolve(packageRoot, 'artifacts/mastercss_binding_wasm_engine_bg.wasm')
 const args = parseArgs(process.argv.slice(2))
 const rounds = Number(process.env.MASTER_CSS_BENCH_ROUNDS || 5)
 const warmupRounds = Number(process.env.MASTER_CSS_BENCH_WARMUP_ROUNDS || 1)
@@ -20,26 +21,26 @@ const browserName = args.get('browser') || process.env.MASTER_CSS_BENCH_BROWSER 
 const cpuThrottleRate = Number(args.get('cpu-throttle') || process.env.MASTER_CSS_BENCH_CPU_THROTTLE || 1)
 const MASTER_CSS_RUNTIME_STYLE_ID = 'master-css'
 
-const nativeProperties = [
-  'width',
-  'height',
-  'min-width',
-  'max-width',
-  'margin',
-  'padding',
+const utilityKeys = [
+  'w',
+  'h',
+  'min-w',
+  'max-w',
+  'm',
+  'p',
   'top',
   'right',
   'bottom',
   'left'
 ]
 
-if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile)) {
+if (!existsSync(globalBundleFile) || !existsSync(defaultManifestFile) || !existsSync(runtimeWasmFile)) {
   console.error('Runtime benchmark requires built runtime global artifacts.')
   console.error('Run `pnpm --filter @master/css-runtime build` first.')
   process.exit(1)
 }
 
-const { MasterCSS, createHydrationManifest } = await import('@master/css-engine')
+const { createEngineSync } = await import('@master/css/node')
 const defaultManifest = (await import('@master/css-preset/default-manifest.json', { with: { type: 'json' } })).default
 const browserTypes = {
   chromium,
@@ -59,8 +60,8 @@ if (cpuThrottleRate !== 1 && browserName !== 'chromium') {
 
 function createClassNames(count) {
   return Array.from({ length: count }, (_, index) => {
-    const property = nativeProperties[index % nativeProperties.length]
-    return `${property}:${index + 1}px`
+    const key = utilityKeys[index % utilityKeys.length]
+    return `${key}:${index + 1}px`
   })
 }
 
@@ -92,22 +93,39 @@ async function waitForRuntimeRemovalFlush(page) {
   await page.evaluate(() => new Promise((resolve) => {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => resolve())
+        requestAnimationFrame(resolve)
       })
     })
   }))
+  await page.waitForFunction(() => {
+    const snapshot = globalThis.masterCSSRuntime.snapshot()
+    const classRules = Object.values(snapshot.classRules)
+    const rules = classRules.filter((classRule) => classRule.rules.length)
+    return Object.keys(snapshot.usageCounts).length === 0
+      && rules.length <= 128
+      && rules.every((classRule) => classRule.retained)
+  })
 }
 
 function createHydrationFixture(classNames) {
-  const css = MasterCSS.create({
-    manifest: defaultManifest,
-    nativeDeclarationMatcher: () => true
-  })
-  css.ensureClassRules(...classNames)
-  return {
-    bodyMarkup: createClassMarkup(classNames),
-    hydrationManifest: createHydrationManifest(css),
-    styleText: css.text
+  const engine = createEngineSync({ manifest: defaultManifest })
+  try {
+    engine.ensureClassRules(classNames)
+    const snapshot = engine.snapshot()
+    return {
+      bodyMarkup: createClassMarkup(classNames),
+      hydrationManifest: {
+        version: 1,
+        rules: snapshot.rules,
+        resourceOrder: [
+          ...snapshot.resources.variables.map(({ name }) => name),
+          ...snapshot.resources.animations.map(({ name }) => name)
+        ]
+      },
+      styleText: snapshot.text
+    }
+  } finally {
+    engine.dispose()
   }
 }
 
@@ -171,6 +189,16 @@ function startServer() {
         return
       }
 
+      if (path === '/artifacts/mastercss_binding_wasm_engine_bg.wasm') {
+        response.writeHead(200, {
+          'content-type': 'application/wasm',
+          'cache-control': 'no-store',
+          'access-control-allow-origin': '*'
+        })
+        response.end(await readFile(runtimeWasmFile))
+        return
+      }
+
       response.writeHead(404)
       response.end('Not found')
     } catch (error) {
@@ -207,7 +235,7 @@ async function loadRuntime(page, scriptURL) {
     script.src = url
     document.head.append(script)
 
-    while (!globalThis.masterCSSRuntime?.observing) {
+    while (!globalThis.masterCSSRuntime?.snapshot().observing) {
       if (performance.now() - startedAt > 10_000) {
         throw new Error('Timed out waiting for masterCSSRuntime to observe the document.')
       }
@@ -395,11 +423,46 @@ try {
     }
   }))
 
+  results.push(await runBenchmark('late globals rebuild + CSSOM apply', async () => {
+    const page = await createObservedPage(
+      browser,
+      server.url,
+      scriptURL,
+      '<div class="fg:red-60 animation:fade|1s"></div>',
+      { preloadManifest: true }
+    )
+    try {
+      const elapsed = await page.evaluate(async (manifest) => {
+        const startedAt = performance.now()
+        await globalThis.MasterCSSRuntime.start({
+          manifest,
+          emittedGlobals: {
+            variables: { 'color-red-60': 1 },
+            animations: { fade: 1 }
+          }
+        })
+        return performance.now() - startedAt
+      }, defaultManifest)
+      const cssText = await page.evaluate(() => globalThis.masterCSSRuntime.snapshot().cssText)
+      if (cssText.includes('--color-red-60:') || cssText.includes('@keyframes fade{')) {
+        throw new Error('Late emitted globals were not removed from runtime CSS.')
+      }
+      if (!cssText.includes('.fg\\:red-60') || !cssText.includes('.animation\\:fade\\|1s')) {
+        throw new Error('Late emitted globals rebuild removed utility CSS.')
+      }
+      return elapsed
+    } finally {
+      await page.close()
+    }
+  }))
+
   results.push(await runBenchmark('initial DOM scan + unique class add (no preload)', async () => {
     const page = await createPage(browser, server.url, scanMarkup)
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.keys(globalThis.masterCSSRuntime.snapshot().classRules).length
+      )
       if (generatedCount !== scanClasses.length) {
         throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
       }
@@ -413,7 +476,9 @@ try {
     const page = await createPage(browser, server.url, scanMarkup, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.keys(globalThis.masterCSSRuntime.snapshot().classRules).length
+      )
       if (generatedCount !== scanClasses.length) {
         throw new Error(`Expected ${scanClasses.length} generated classes, got ${generatedCount}.`)
       }
@@ -437,14 +502,22 @@ try {
         return performance.now() - startedAt
       }, { html: mutationMarkup })
       await waitForRuntimeRemovalFlush(page)
-      await page.evaluate(() => globalThis.masterCSSRuntime.flushRetainedClassRules())
-      const state = await page.evaluate(() => ({
-        classes: globalThis.masterCSSRuntime.classCounts.size,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size,
-        retained: globalThis.masterCSSRuntime.retainedClassNames.size
-      }))
-      if (state.classes || state.utilities || state.retained) {
-        throw new Error(`Expected mutation cleanup to empty runtime state, got ${JSON.stringify(state)}.`)
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          classes: Object.keys(snapshot.usageCounts).length,
+          utilities: Object.values(snapshot.classRules)
+            .filter((classRule) => classRule.rules.length).length,
+          retained: Object.values(snapshot.classRules)
+            .filter((classRule) => classRule.retained).length
+        }
+      })
+      if (
+        state.classes
+        || state.utilities > 128
+        || state.retained !== state.utilities
+      ) {
+        throw new Error(`Expected mutation cleanup to retain at most 128 cold rules, got ${JSON.stringify(state)}.`)
       }
       return elapsed
     } finally {
@@ -457,11 +530,14 @@ try {
     try {
       const elapsed = await page.evaluate((classes) => {
         const startedAt = performance.now()
-        globalThis.masterCSSRuntime.ensureClassRules(...classes)
-        globalThis.masterCSSRuntime.deleteClassRules(...classes)
+        globalThis.masterCSSRuntime.ensureClassRules(classes)
+        globalThis.masterCSSRuntime.deleteClassRules(classes)
         return performance.now() - startedAt
       }, mutationClasses)
-      const generatedCount = await page.evaluate(() => globalThis.masterCSSRuntime.classUtilities.size)
+      const generatedCount = await page.evaluate(
+        () => Object.values(globalThis.masterCSSRuntime.snapshot().classRules)
+          .filter((classRule) => classRule.rules.length).length
+      )
       if (generatedCount) {
         throw new Error(`Expected direct ensure/delete cleanup to empty classUtilities, got ${generatedCount}.`)
       }
@@ -475,11 +551,14 @@ try {
     const page = await createProgressivePage(browser, server.url, hydrationFixture, true, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const state = await page.evaluate(() => ({
-        failure: globalThis.masterCSSRuntime.hydrationFailureReason,
-        progressive: globalThis.masterCSSRuntime.progressive,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size
-      }))
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          failure: snapshot.hydration.failureReason,
+          progressive: snapshot.hydration.state === 'progressive',
+          utilities: Object.keys(snapshot.classRules).length
+        }
+      })
       if (!state.progressive || state.failure || state.utilities !== hydrationClasses.length) {
         throw new Error(`Expected successful hydration, got ${JSON.stringify(state)}.`)
       }
@@ -493,11 +572,14 @@ try {
     const page = await createProgressivePage(browser, server.url, hydrationFixture, false, { preloadManifest: true })
     try {
       const elapsed = await loadRuntime(page, scriptURL)
-      const state = await page.evaluate(() => ({
-        failure: globalThis.masterCSSRuntime.hydrationFailureReason,
-        progressive: globalThis.masterCSSRuntime.progressive,
-        utilities: globalThis.masterCSSRuntime.classUtilities.size
-      }))
+      const state = await page.evaluate(() => {
+        const snapshot = globalThis.masterCSSRuntime.snapshot()
+        return {
+          failure: snapshot.hydration.failureReason,
+          progressive: snapshot.hydration.state === 'progressive',
+          utilities: Object.keys(snapshot.classRules).length
+        }
+      })
       if (state.progressive || state.utilities !== hydrationClasses.length) {
         throw new Error(`Expected fallback hydration, got ${JSON.stringify(state)}.`)
       }

@@ -2,9 +2,9 @@ import { beforeEach, describe, expect, test, vi } from 'vitest'
 import ScannerPlugin from '../../src/plugins/scanner'
 import UsageGraphPlugin from '../../src/plugins/usage-graph'
 
-vi.mock('@master/css-scanner', () => {
+vi.mock('@master/css-tooling/scanner/node', () => {
   return {
-    default: class {
+    MasterCSSScanner: class {
       options: any = {}
       scanModuleCalls: string[] = []
       constructor(opts: any, _root?: string) {
@@ -17,6 +17,7 @@ vi.mock('@master/css-scanner', () => {
         this.scanModuleCalls.push(id)
         return true
       }
+      async dispose() {}
     },
   }
 })
@@ -44,10 +45,29 @@ describe('shared scanner plugins', () => {
 
     await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
 
-    expect(ctx.scanner.options).toEqual({
+    expect(ctx.scanner.options).toMatchObject({
       exclude: ['src/generated/**'],
       verbose: 0
     })
+  })
+
+  test('reinitializes the scanner for a later build environment', async () => {
+    const ctx: any = {}
+    const scannerPlugin = ScannerPlugin({} as any, ctx) as any
+
+    await scannerPlugin.configResolved.call({}, fakeViteConfig)
+    const firstScanner = ctx.scanner
+    firstScanner.dispose = vi.fn()
+
+    await scannerPlugin.closeBundle.call({})
+    expect(firstScanner.dispose).toHaveBeenCalledOnce()
+    expect(ctx.scanner).toBeUndefined()
+
+    await scannerPlugin.buildStart.call({})
+    expect(ctx.scanner).toBeDefined()
+    expect(ctx.scanner).not.toBe(firstScanner)
+
+    await scannerPlugin.closeBundle.call({})
   })
 
   describe('usage graph delegation', () => {

@@ -50,31 +50,31 @@
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-engine",
+            "name": "@master/css",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-project",
+            "name": "@master/css-compiler",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-scanner",
+            "name": "@master/css-tooling/scanner",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-source",
+            "name": "@master/css-tooling/source",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-stylesheet",
+            "name": "@master/css-compiler/stylesheet",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css-validator",
+            "name": "@master/css-tooling/validator",
             "version": "workspace:^"
         },
         {
-            "name": "@master/css.vite",
+            "name": "@master/css-vite",
             "version": "workspace:^"
         },
         {

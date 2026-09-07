@@ -55,10 +55,11 @@
 ## Installation
 
 ```bash
-npm install -D @master/eslint-plugin-css
+npm install -D @master/eslint-config-css
 ```
 
-The recommended config is also available through `@master/eslint-config-css`.
+The config package installs the matching plugin implementation and exposes the
+complete recommended flat config.
 
 In Visual Studio Code, install the VS Code ESLint extension to surface these diagnostics and run sort-on-save. The Master CSS extension provides completion, hover, colors, highlighting, directive diagnostics, manifest diagnostics, and directive formatting; it does not duplicate class policy warnings by default.
 
@@ -68,7 +69,7 @@ Use ESLint flat configuration:
 
 ```js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 import htmlParser from '@angular-eslint/template-parser'
 import tsParser from '@typescript-eslint/parser'
 
@@ -85,7 +86,7 @@ export default defineConfig([
       parser: tsParser
     }
   },
-  ...css,
+  ...masterCSS,
   {
     rules: {
       '@master/css/no-invalid-classes': ['error', {
@@ -170,14 +171,12 @@ Standalone CSS files are included by default when using `@master/eslint-config-c
 
 ```js
 import { defineConfig } from 'eslint/config'
-import css from '@master/eslint-config-css'
+import masterCSS from '@master/eslint-config-css'
 
 export default defineConfig([
-  ...css
+  ...masterCSS
 ])
 ```
-
-Direct plugin users can add `css.configs.stylesheet` from `@master/eslint-plugin-css` alongside the recommended config.
 
 You can disable specific canonicalization families:
 

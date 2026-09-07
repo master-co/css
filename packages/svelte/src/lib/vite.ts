@@ -1,7 +1,10 @@
-import baseVite, { type PluginOptions } from '@master/css.vite'
+import {
+  createMasterCSSVitePlugin as createBaseMasterCSSVitePlugin,
+  type MasterCSSVitePluginOptions
+} from '@master/css-vite'
 import type { Plugin } from 'vite'
 
-export const SVELTEKIT_SSR_EXTERNAL = ['@master/css-server']
+const SVELTEKIT_SSR_EXTERNAL = ['@master/css-server']
 
 function SvelteKitServerExternalPlugin(): Plugin {
   return {
@@ -21,12 +24,16 @@ function SvelteKitServerExternalPlugin(): Plugin {
   }
 }
 
-export default function masterCSS(options: PluginOptions = {}): Plugin[] {
+export function createMasterCSSVitePlugin(
+  options: MasterCSSVitePluginOptions = {}
+): Plugin[] {
   return [
     SvelteKitServerExternalPlugin(),
-    ...baseVite({
+    ...createBaseMasterCSSVitePlugin({
       mode: 'progressive',
       ...options
     })
   ]
 }
+
+export default createMasterCSSVitePlugin

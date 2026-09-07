@@ -1,49 +1,113 @@
 # Package Map
 
-## Public Packages
+## Primary Public Surfaces
 
-| Package | Entry Points | Responsibility |
+| Package | Entry points | Responsibility |
 |---|---|---|
-| `@master/css` | `.`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Public facade over engine API, manifest types, default preset manifest, and preset stylesheet entries |
-| `@master/css-engine` | `.`, `./compiler`, `./inspect` | Browser-safe MasterCSSManifest executor, class semantics, rule generation, layers, variable and animation lifecycle |
-| `@master/css-preset` | `.`, `./default-manifest.json`, `./index.css`, `./base.css`, `./theme.css`, `./variants.css`, `./utilities.css` | Default preset CSS source and generated default manifest |
-| `@master/css-lexer` | `.` | Dependency-free source ranges, directive/import scanners, lexical escaping helpers, Master class lexical tokens, and CSS unit constants |
-| `@master/css-source` | `.`, `./adapters`, `./adapters/astro`, `./adapters/svelte`, `./adapters/vue` | Source-level class candidate extraction and source-format-aware adapters, including HTML, OXC JavaScript/TypeScript, Astro, Svelte, and Vue scanners |
-| `@master/css-compiler` | `.`, `./browser` | Compile Master CSS stylesheet entries into MasterCSSManifest values, directive metadata, and native CSS |
-| `@master/css-runtime` | `.` | Browser runtime, DOM observation, hydration |
-| `@master/css-server` | `.` | HTML render and CSS injection |
-| `@master/css-scanner` | `.`, `./options` | Static source scanning, class validation, scanner caches, and generated CSS scanner state |
-| `@master/css-stylesheet` | `.`, `./browser`, `./directives` | Stylesheet entry detection, CSS-first stylesheet compilation, native CSS pruning, generated CSS composition, and emittedGlobals manifest output |
-| `@master/css.vite` | `.`, `./runtime` | Vite modes and plugin orchestration |
-| `@master/css.webpack` | `.` | Webpack integration, runtime script injection, and extraction plugin |
-| `@master/css.next` | `.`, `./adapter` | Next.js integration and client instrumentation runtime injection |
-| `@master/css.astro` | `.`, `./middleware` | Astro integration |
-| `@master/css.nuxt` | `.` | Nuxt module |
-| `@master/css.svelte` | `./vite`, `./hooks.server` | SvelteKit hook and Vite wrapper |
-| `@master/css-sv` | `.` | Svelte CLI add-on for one-time SvelteKit project setup |
-| `@master/css-language` | `.`, `./browser`, `./shiki`, `./syntaxes/master-css.tmLanguage.json` | Editor-neutral language primitives, class-position scanning, semantic tokens, browser helpers, Shiki helpers, and shared TextMate grammar |
-| `@master/css-language-service` | `.`, `./common` | Stateful language service wrapper for completion, hover, colors, semantic token methods, and `TextDocument` feature gating |
-| `@master/css-language-server` | `.`, `./server` | LSP wrapper and active/full semantic token request handling |
-| `master-css-vscode` | `.`, `./server` | VS Code extension |
-| `@master/css-validator` | `.`, `./native-declaration` | CSS validation for generated rules |
-| `@master/css-diagnostics` | `.` | Adapter-neutral project inspection reports for scanner state, stylesheet entries, generated CSS metadata, and missing CSS diagnostics |
-| `@master/css-lint` | `.` | Framework-neutral Master CSS class lint policy helpers |
-| `@master/eslint-plugin-css` | `.`, `./configs/*` | ESLint plugin |
-| `@master/eslint-config-css` | `.` | ESLint config wrapper |
-| `@master/css-cli` | package-name binary | Root scan/extract CLI |
-| `@master/create-css` | `.` | Add-first installer for applying Master CSS, ESLint config, MCP, and AI guidance to existing projects |
-| `@master/css-mcp` | `.`, `./server` | Model Context Protocol server and tools for AI clients |
-| `@master/css-schema` | `.`, `./manifest`, `./manifest-json`, `./hydration-manifest`, `./css-directives`, `./css-syntax`, `./utility-type`, `./runtime-style`, `./native-css-shorthand`, `./css-common` | Public dependency-light schema, wire-format contracts, serializable constants, and pure codec helpers |
-| `@master/css-project` | `./entries`, `./manifest`, `./manifest-sync`, `./workspace` | Resolve project CSS manifest entries, workspace roots, explicit CSS manifest resources, and project manifest module source |
-| `@master/css-integration` | `.`, `./client`, `./module`, `./manifest-module`, `./manifest-facade`, `./style-module`, `./emitted-globals-module`, `./node` | Adapter-neutral integration contracts, browser-safe virtual module/codegen helpers, client ambient module declarations, and explicit Node helper subpaths |
-| `@master/css.figma` | plugin bundle | Figma variable import/export |
+| `@master/css` | `.`, `./node`, CSS subpaths | Manifest v1 execution, engine sessions, public schema types, and stable preset CSS proxies |
+| `@master/css-compiler` | `.`, `./node`, `./browser`, `./project*`, `./stylesheet*`, `./diagnostics` | CSS directive compilation, project loading, stylesheet composition, and inspection orchestration |
+| `@master/css-tooling` | `.`, `./node`, `./browser`, `./lexer*`, `./source*`, `./scanner*`, `./validator*`, `./lint*`, `./language*`, `./diagnostics` | Rust-backed extraction and developer-tooling sessions with platform adapters |
 
-## Dependency Direction
+## Contracts And Artifact Delivery
 
-Do not introduce reverse dependencies from engine to compiler, integration contracts, runtime, server, scanner, language packages, ESLint, examples, or site. `@master/css-schema` must stay dependency-light and free of compiler, engine, runtime, integration, filesystem, and framework behavior. `@master/css-lexer` must stay dependency-free from engine/compiler/scanner/language packages and should be consumed upward for lexical source ranges, scanners, tokens, and unit constants. `@master/css-source` may depend on `@master/css-lexer`, HTML parsing, and JavaScript/TypeScript source parsing, but must not depend on scanner, engine, compiler, runtime, server, language service, ESLint, or framework integrations. `@master/css-lint` may depend on engine/schema/validator semantics but must not depend on ESLint, project resolution, filesystem access, scanner, language service, runtime, or framework packages. `@master/css-stylesheet` may compose compiler, integration protocol, validator/native CSS helpers, and structural scanner state, but must not depend on `@master/css-scanner`. `@master/css-diagnostics` may compose project discovery, scanner state, and stylesheet report helpers for tooling reports, and must not own lint policy or adapter-specific CLI/MCP behavior. `@master/css-language` must not depend on `@master/css-language-service`, `@master/css-language-server`, or editor extensions. `@master/css-integration` may depend on `@master/css-schema` and `@master/css-engine` types, must remain below compiler/project/build integrations, and must keep browser-safe subpaths free of Node globals and `node:*` imports. The compiler may depend on the manifest-driven engine for class semantics and must not recreate a public Config contract.
+| Package | Entry points | Responsibility |
+|---|---|---|
+| `@master/css-schema` | `.`, Manifest, directive, hydration, emitted-global, syntax, and runtime contract subpaths | Dependency-light versioned TypeScript/Rust wire contracts and pure codecs |
+| `@master/css-preset` | `.`, `./default-manifest.json`, CSS subpaths | Default preset source and generated Manifest v1 |
+| `@master/css-binding` | `.`, `./engine*`, `./compiler*`, `./tooling*` | Conditional native/Wasm loader, typed feature sessions, and ABI validation |
+| `@master/css-binding-<target>` | `.` | Platform-specific native artifacts; any bundled `mcss` executable is loader-internal and is not a package binary |
+| `@master/css-binding-wasm-engine` | `.`, `./wasm` | Runtime Wasm artifact loader |
+| `@master/css-binding-wasm-compiler` | `.`, `./wasm` | Compiler Wasm artifact loader |
+| `@master/css-binding-wasm-tooling` | `.`, `./wasm` | Tooling Wasm artifact loader |
 
-## Package Tests
+Native, Wasm, schema, preset, and their consumers publish in exact lockstep. They are
+not alternative implementations of the language.
 
-Most packages use package-local `vitest.config.ts` extending the repo-internal `shared/vitest.config.ts`. Runtime and component integrations use Playwright e2e tests where browser behavior matters.
+## Rust Workspace
 
-Runtime script injection, runtime script preload, manifest JSON preload, mode defaults, and cascade-layer initialization are cross-integration behavior. Changes in one build/framework integration must audit Vite, Webpack, Next, Nuxt, and Astro and update package-local `AI.md` files or tests when behavior intentionally differs.
+Rust crates are the semantic implementation behind the public packages. Route a
+focused change with `.ai/context/rust-routing.md` and the crate-local `AI.md` rather
+than loading every crate:
+
+| Crate group | Responsibility |
+|---|---|
+| `mastercss-schema`, `mastercss-lexer` | Dependency-light wire contracts and tokens |
+| `mastercss-engine`, `mastercss-compiler`, `mastercss-project` | CSS execution, authoring lowering, and project policy |
+| `mastercss-source`, `mastercss-scanner`, `mastercss-validator`, `mastercss-lint`, `mastercss-language` | Developer-tooling semantics |
+| `mastercss-render`, `mastercss-diagnostics` | Server render and diagnostic IR |
+| `mastercss-binding-native`, `mastercss-binding-wasm-*` | ABI adaptation and artifact delivery only |
+| `mastercss-cli`, `xtask` | Native CLI transport and repository build/codegen/parity orchestration |
+
+## Runtime, Tooling Consumers, And Adapters
+
+| Package | Entry points | Responsibility |
+|---|---|---|
+| `@master/css-runtime` | `.` | Browser DOM observation, CSSOM updates, hydration, and runtime lifecycle |
+| `@master/css-server` | `.` | Server HTML rendering and CSS injection |
+| `@master/css-language-service` | `.`, `./shiki`, TextMate grammar | Editor-document mapping plus presentation/highlighting assets |
+| `@master/css-language-server` | `.`, `./server` | LSP transport and workspace lifecycle |
+| `@master/eslint-plugin-css` | `.` | ESLint visitors, reports, fixer adaptation, and config implementation |
+| `@master/eslint-config-css` | `.` | Deliberate thin official flat-config preset over the matching plugin version |
+| `@master/css-vite` | `.` | Vite rendering modes and plugin orchestration; runtime bootstrap is private |
+| `@master/css-webpack` | `.` | Webpack static/runtime integration |
+| `@master/css-next` | `.`, `./adapter` | Next.js build and client instrumentation integration |
+| `@master/css-astro` | `.`, `./middleware` | Astro integration |
+| `@master/css-nuxt` | `.` | Nuxt module |
+| `@master/css-svelte` | `./vite`, `./hooks.server` | Svelte and SvelteKit integration |
+| `@master/css-cli` | `master-css` binary only | CLI frontend and native executable dispatch |
+| `@master/create-css` | `.`, `create-css` binary | Project setup and dependency transforms |
+| `@master/css-mcp` | `.` | Model Context Protocol server factories |
+| `@master/css-svelte-addon` | `.` | Svelte CLI add-on |
+| `@master/css-figma` | host artifact | Figma variable import/export plugin |
+| `@master/css-vscode` | extension artifact, `./server` | VS Code extension; staged Marketplace id remains `master-css-vscode` |
+
+## Repository-Private Package
+
+| Package | Responsibility |
+|---|---|
+| `@master/css-internal` | Official virtual-module protocols, generated host modules, build defaults, and Node/workspace helpers bundled into published consumers |
+
+The private internal package is an official integration kernel, not a public extension
+point or generic utility package. Published manifests and built
+JavaScript/declarations must not reference it.
+
+## Retired Public Packages
+
+The following responsibilities were consolidated and these package identities must not
+be restored:
+
+```txt
+@master/css-engine          -> @master/css
+@master/css-project         -> @master/css-compiler/project
+@master/css-stylesheet      -> @master/css-compiler/stylesheet
+@master/css-diagnostics     -> @master/css-compiler/diagnostics and @master/css-tooling/diagnostics
+@master/css-lexer           -> @master/css-tooling/lexer
+@master/css-source          -> @master/css-tooling/source
+@master/css-scanner         -> @master/css-tooling/scanner
+@master/css-validator       -> @master/css-tooling/validator
+@master/css-lint            -> @master/css-tooling/lint
+@master/css-language        -> @master/css-tooling/language and @master/css-language-service
+@master/css-integration     -> private bundled module
+```
+
+The old dotted adapter names and unscoped npm VS Code name are also retired.
+
+## Dependency Rules
+
+- Rust owns semantics; TypeScript owns hosts and adapters.
+- `@master/css-schema` stays dependency-light.
+- `@master/css` does not depend on compiler or tooling.
+- `@master/css-tooling` does not depend on compiler, language-service, adapters, or UI hosts.
+- `@master/css-compiler` may consume dependency-light tooling sessions for source,
+  validation, scanner, and report orchestration; tooling must not depend back on it.
+- Runtime and server do not own compiler or editor behavior.
+- Official adapters consume public compiler/tooling/runtime/server surfaces and bundle
+  the private integration protocol.
+- No public third-party adapter registry is supported.
+
+## Tests
+
+Most packages use package-local Vitest configuration. Runtime and framework behavior
+uses Playwright where browser lifecycle matters. Changes to runtime injection,
+manifest preload, rendering modes, or layer initialization must audit Vite, Webpack,
+Next, Nuxt, Astro, and Svelte together.

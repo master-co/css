@@ -1,0 +1,84 @@
+{
+  "name": "@master/css-binding",
+  "type": "module",
+  "engines": {
+    "node": "^24"
+  },
+  "scripts": {
+    "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
+    "test": "cargo xtask build-native && vitest",
+    "type-check": "tsc -b tsconfig.typecheck.json",
+    "lint": "eslint"
+  },
+  "license": "MIT",
+  "description": "Internal Master CSS native and Wasm binding loader.",
+  "sideEffects": false,
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "browser": "./dist/browser.js",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./engine": {
+      "types": "./dist/engine-binding.d.ts",
+      "browser": "./dist/engine-binding-browser.js",
+      "import": "./dist/engine-binding.js",
+      "default": "./dist/engine-binding.js"
+    },
+    "./engine/node": {
+      "types": "./dist/engine-binding-node.d.ts",
+      "import": "./dist/engine-binding-node.js",
+      "default": "./dist/engine-binding-node.js"
+    },
+    "./compiler": {
+      "types": "./dist/compiler-binding.d.ts",
+      "browser": "./dist/compiler-binding-browser.js",
+      "import": "./dist/compiler-binding.js",
+      "default": "./dist/compiler-binding.js"
+    },
+    "./compiler/node": {
+      "types": "./dist/compiler-binding-node.d.ts",
+      "import": "./dist/compiler-binding-node.js",
+      "default": "./dist/compiler-binding-node.js"
+    },
+    "./tooling": {
+      "types": "./dist/tooling-binding.d.ts",
+      "browser": "./dist/tooling-binding-browser.js",
+      "import": "./dist/tooling-binding.js",
+      "default": "./dist/tooling-binding.js"
+    },
+    "./tooling/node": {
+      "types": "./dist/tooling-binding-node.d.ts",
+      "import": "./dist/tooling-binding-node.js",
+      "default": "./dist/tooling-binding-node.js"
+    }
+  },
+  "files": [
+    "dist",
+    "artifacts"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "optionalDependencies": {
+    "@master/css-binding-darwin-arm64": "workspace:*",
+    "@master/css-binding-darwin-x64": "workspace:*",
+    "@master/css-binding-linux-arm64-gnu": "workspace:*",
+    "@master/css-binding-linux-arm64-musl": "workspace:*",
+    "@master/css-binding-linux-x64-gnu": "workspace:*",
+    "@master/css-binding-linux-x64-musl": "workspace:*",
+    "@master/css-binding-win32-arm64-msvc": "workspace:*",
+    "@master/css-binding-win32-x64-msvc": "workspace:*"
+  },
+  "dependencies": {
+    "@master/css-schema": "workspace:*",
+    "@master/css-binding-wasm-compiler": "workspace:*",
+    "@master/css-binding-wasm-engine": "workspace:*",
+    "@master/css-binding-wasm-tooling": "workspace:*"
+  },
+  "devDependencies": {}
+}

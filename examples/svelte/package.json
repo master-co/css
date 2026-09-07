@@ -12,10 +12,11 @@
   },
   "dependencies": {
     "@master/css": "workspace:^",
-    "@master/css.svelte": "workspace:^"
+    "@master/css-svelte": "workspace:^"
   },
   "devDependencies": {
     "@fontsource/fira-mono": "^5.2.7",
+    "@master/eslint-config-css": "workspace:^",
     "@neoconfetti/svelte": "^2.2.2",
     "@sveltejs/adapter-vercel": "^6.3.4",
     "@sveltejs/kit": "^2.66.0",

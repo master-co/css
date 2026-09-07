@@ -34,6 +34,7 @@ function makeContext(slot: string, css: string) {
       validClasses: new Set(),
       nativeClassNames: new Set(),
       usedNativeClasses: new Set(),
+      registerNativeClasses: vi.fn(),
       options: { safelist: [] },
       emit: vi.fn(),
     },

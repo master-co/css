@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://css.master.co/schemas/ai-source-budget.schema.json",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["version", "limits", "exceptions"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "version": { "const": 1 },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "support", "context"],
+      "properties": {
+        "source": { "$ref": "#/$defs/limit" },
+        "support": { "$ref": "#/$defs/limit" },
+        "context": { "$ref": "#/$defs/limit" }
+      }
+    },
+    "exceptions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "category", "maxLines", "maxBytes", "reason"],
+        "properties": {
+          "path": { "type": "string", "minLength": 1 },
+          "category": { "type": "string", "minLength": 1 },
+          "maxLines": { "type": "integer", "minimum": 1 },
+          "maxBytes": { "type": "integer", "minimum": 1 },
+          "reason": { "type": "string", "minLength": 20 }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "limit": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxLines", "maxBytes"],
+      "properties": {
+        "maxLines": { "type": "integer", "minimum": 1 },
+        "maxBytes": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

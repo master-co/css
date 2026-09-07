@@ -1,0 +1,16 @@
+[package]
+name = "mastercss-lint"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+mastercss-engine = { path = "../mastercss-engine" }
+mastercss-lexer = { path = "../mastercss-lexer" }
+mastercss-schema = { path = "../mastercss-schema" }
+regex.workspace = true
+serde.workspace = true
+serde_json.workspace = true

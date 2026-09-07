@@ -2,9 +2,10 @@ import defineVisitors from '../utils/define-visitors'
 import resolveContext from '../utils/resolve-context'
 import createRule from '../create-rule'
 import { noInvalidClassesOptionsSchema } from '../settings-schema'
-import { createInvalidClassesReport } from '@master/css-lint'
 import reportLintDiagnostics from '../utils/report-lint-diagnostics'
 import defineSourceVisitors, { shouldUseSourceVisitors } from '../utils/define-source-visitors'
+import { createMasterCSSLintDiagnostics } from '@master/css-tooling/lint'
+import withContextRelease from '../utils/with-context-release'
 
 export default createRule({
   name: 'no-invalid-classes',
@@ -22,27 +23,30 @@ export default createRule({
   },
   defaultOptions: [],
   create: function (context) {
-    const { options, settings, css } = resolveContext(context)
+    const { options, settings, tooling, release } = resolveContext(context)
     if (shouldUseSourceVisitors(context)) {
-      return defineSourceVisitors({
+      return withContextRelease(defineSourceVisitors({
         context,
-        css,
+        tooling,
         ruleId: 'no-invalid-classes',
         ruleOptions: {
           disallowUnknownClass: options.disallowUnknownClass
         }
-      })
+      }), release)
     }
-    return defineVisitors({ context, settings }, (node, resolved) => {
+    return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
+      const diagnostics = createMasterCSSLintDiagnostics(
+        tooling.analyzeLintClassList(resolved.raw, resolved.classValues, {
+          disallowUnknownClass: options.disallowUnknownClass
+        }).diagnostics.filter(({ ruleId }) => ruleId === 'no-invalid-classes'),
+        'error'
+      )
       reportLintDiagnostics(
         context,
         node,
         resolved,
-        createInvalidClassesReport(resolved.raw, css, {
-          unescape: resolved.unescape,
-          disallowUnknownClass: options.disallowUnknownClass
-        }).diagnostics
+        diagnostics
       )
-    })
+    }), release)
   }
 })

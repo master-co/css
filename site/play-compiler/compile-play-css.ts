@@ -1,40 +1,38 @@
-import type { MasterCSSManifest } from '@master/css'
+import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
-  compileBrowserStyleCSS,
-  initBrowserStyleCompiler,
-  type CompileBrowserStyleCSSResult
-} from '@master/css-stylesheet/browser'
+  compileBrowserStylesheet,
+  type MasterCSSBrowserStylesheetCompileOptions,
+  type MasterCSSBrowserStylesheetCompileResult
+} from '@master/css-compiler/stylesheet/browser'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
-const lightningCSSWasmURL = 'https://cdn.jsdelivr.net/npm/lightningcss-wasm@1.32.0/lightningcss_node.wasm'
+const compilerWasmURL = new URL('./mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)
 
 export interface CompilePlayCSSResult {
   css: string
   manifest: MasterCSSManifest
   warnings: string[]
-  result: CompileBrowserStyleCSSResult['result']
+  result: MasterCSSBrowserStylesheetCompileResult['result']
 }
 
-async function initPlayCompiler() {
-  if (typeof window === 'undefined') return
-
-  const wasmResponse = fetch(lightningCSSWasmURL)
-  await initBrowserStyleCompiler(wasmResponse as unknown as Parameters<typeof initBrowserStyleCompiler>[0])
-}
-
-export async function compilePlayCSS(sourceCSS: string, classes: string[]): Promise<CompilePlayCSSResult> {
-  await initPlayCompiler()
-
-  const result = await compileBrowserStyleCSS(sourceCSS, {
+export async function compilePlayCSS(
+  sourceCSS: string,
+  classes: string[],
+  binding: NonNullable<MasterCSSBrowserStylesheetCompileOptions['binding']> = {
+    input: compilerWasmURL
+  }
+): Promise<CompilePlayCSSResult> {
+  const result = await compileBrowserStylesheet(sourceCSS, {
     baseManifest: defaultManifest,
     classNames: classes,
-    from: 'playground.css'
+    from: 'playground.css',
+    binding
   })
   return {
     css: result.css,
     manifest: result.manifest,
-    warnings: result.warnings,
+    warnings: result.diagnostics.map(({ message }) => message),
     result: result.result
   }
 }

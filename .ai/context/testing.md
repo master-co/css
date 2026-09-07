@@ -24,14 +24,12 @@ pnpm build:examples
 pnpm --filter @master/css test
 pnpm --filter @master/css-runtime e2e
 pnpm --filter @master/css-server test
-pnpm --filter @master/css-scanner test
-pnpm --filter @master/css.vite test
-pnpm --filter @master/css-language test
+pnpm --filter @master/css-tooling test
+pnpm --filter @master/css-compiler test
+pnpm --filter @master/css-vite test
 pnpm --filter @master/css-language-service test
 pnpm --filter @master/css-language-server test
-pnpm --filter @master/css-lint test
 pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/css-validator test
 pnpm --filter @master/css-cli test
 ```
 

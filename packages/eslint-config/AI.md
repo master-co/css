@@ -2,41 +2,16 @@
 
 ## Responsibility
 
-`@master/eslint-config-css` combines the recommended class linting config and stylesheet linting config from `@master/eslint-plugin-css`.
+`@master/eslint-config-css` is the thin official flat-config entrypoint for the
+complete `@master/eslint-plugin-css` recommended configuration.
 
-## Owns
-
-- Config wrapper package entrypoint.
-- Compatibility with the plugin recommended and stylesheet config shapes.
-
-## Does Not Own
-
-- ESLint rules.
-- Plugin settings schema.
-- Class parsing, validation, ordering, or autofix behavior.
+It owns no rules or duplicated config data. The plugin remains the single source of
+truth; this package only provides the ecosystem config-package import.
 
 ## Public Surface
 
-- Root config export.
-
-## Key Files
-
-- `src/index.ts`
-
-## Risk Areas
-
-- Public config compatibility.
-- Drift from `@master/eslint-plugin-css` recommended config.
-
-## Safe Changes
-
-- Wrapper export fixes that stay aligned with the plugin.
-- Tests for config re-export behavior.
-
-## Dangerous Changes
-
-- Diverging from the plugin recommended config without a clear reason.
-- Adding rule behavior here instead of in `@master/eslint-plugin-css`.
+- Default root export: the complete flat config array.
+- Named `recommended` export: the same frozen config array.
 
 ## Validation
 

@@ -1,5 +1,5 @@
 import { test, it, expect, describe } from 'vitest'
-import { CSSLanguageService } from '../../src'
+import CSSLanguageService from '../helpers/rc87-language-service'
 import createDoc from '../../src/utils/create-doc'
 import { expectClassPosition } from './test'
 
@@ -85,3 +85,4 @@ test.concurrent('regex fallback ignores class attributes inside JS comments', ()
     'fg:blue'
   ])
 })
+

@@ -1,12 +1,12 @@
-# AI Notes For `@master/css-sv`
+# AI Notes For `@master/css-svelte-addon`
 
 ## Responsibility
 
-`@master/css-sv` is the Svelte CLI add-on for one-time Master CSS setup in SvelteKit projects.
+`@master/css-svelte-addon` is the Svelte CLI add-on for one-time Master CSS setup in SvelteKit projects.
 
 ## Owns
 
-- `sv add @master/css-sv` project setup.
+- `sv add @master/css-svelte-addon` project setup.
 - Installing the Master CSS Svelte integration package into the target app.
 - Editing SvelteKit project files such as `vite.config`, root layout stylesheet imports, stylesheet entries, and `hooks.server`.
 
@@ -36,7 +36,7 @@
 ## Validation
 
 ```sh
-pnpm --filter @master/css-sv test
-pnpm --filter @master/css-sv lint
-pnpm --filter @master/css-sv build
+pnpm --filter @master/css-svelte-addon test
+pnpm --filter @master/css-svelte-addon lint
+pnpm --filter @master/css-svelte-addon build
 ```

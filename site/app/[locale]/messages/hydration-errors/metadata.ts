@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'Hydration Errors',
-  description: 'There was a difference between the CSS rules rendered for the first response and the Master CSS rules rendered during the first browser render.',
+  description: 'The page hydration manifest could not be loaded, validated, or matched with the pre-rendered Master CSS rules.',
   category: 'Errors',
   fileURL: import.meta.url
 })

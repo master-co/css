@@ -1,6 +1,6 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
 import { basename, dirname, extname, join, resolve } from 'node:path'
-import { render } from '@master/css-server'
+import { createServerRenderer } from '@master/css-server'
 import type { NextAdapter } from 'next'
 import { MASTER_CSS_RUNTIME_STYLE_ID } from '@master/css-schema/runtime-style'
 import {
@@ -9,9 +9,8 @@ import {
   MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID,
   serializeMasterCSSHydrationManifest
 } from '@master/css-schema/hydration-manifest'
-import { escapeRegExp } from '@master/css-lexer'
-import { toHashedManifestAssetFileName } from '@master/css-integration/node'
-import { getRegisteredOptions, resolveOptions, type AdapterOrder, type Options } from './options'
+import { toHashedManifestAssetFileName } from '@master/css-internal/node'
+import { getRegisteredOptions, resolveOptions, type MasterCSSNextAdapterOrder, type MasterCSSNextOptions } from './options'
 import { createMasterCSSBuildStateResolver } from './build-state'
 
 type BuildCompleteContext = Parameters<NonNullable<NextAdapter['onBuildComplete']>>[0]
@@ -20,6 +19,7 @@ type AdapterModule = NextAdapter | { default?: NextAdapter }
 type AdapterLoader = AdapterModule | (() => AdapterModule | Promise<AdapterModule>)
 
 interface HTMLBuildOutput {
+  id: string
   filePath: string
   pathname: string
   source: 'static' | 'prerender-fallback'
@@ -28,9 +28,15 @@ interface HTMLBuildOutput {
 interface RenderedHTMLBuildOutput {
   output: HTMLBuildOutput
   sourceHTML: string
-  rendered: ReturnType<typeof render>
+  renderedHTML: string
+  classes: string[]
+  cssBytes: number
   hydrationManifestBytes: number
   hydrationManifestFile?: string
+}
+
+function escapeRegExp(value: string) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
 
 export interface RenderedOutput {
@@ -52,7 +58,7 @@ export interface BuildReport {
 }
 
 export interface ComposedAdapterOptions {
-  order?: AdapterOrder
+  order?: MasterCSSNextAdapterOrder
 }
 
 function isHTMLFile(filePath: string | undefined): filePath is string {
@@ -73,6 +79,7 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
   for (const output of outputs.staticFiles) {
     if (isHTMLFile(output.filePath)) {
       add({
+        id: output.id,
         filePath: output.filePath,
         pathname: output.pathname,
         source: 'static'
@@ -83,6 +90,7 @@ function collectHTMLBuildOutputs(outputs: BuildOutputs): HTMLBuildOutput[] {
   for (const output of outputs.prerenders) {
     if (isHTMLFile(output.fallback?.filePath)) {
       add({
+        id: output.id,
         filePath: output.fallback.filePath,
         pathname: output.pathname,
         source: 'prerender-fallback'
@@ -152,7 +160,34 @@ function toNextHydrationManifestPublicURL(ctx: BuildCompleteContext, fileName: s
     : pathname
 }
 
-function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, fileName: string) {
+function resolveStaticExportRoot(output: HTMLBuildOutput) {
+  const normalizedID = output.id.replaceAll('\\', '/')
+  const relativeID = normalizedID.startsWith('/') ? normalizedID.slice(1) : normalizedID
+  const idSegments = relativeID.split('/').filter((segment) => segment && segment !== '.')
+  if (
+    !idSegments.length
+    || normalizedID.startsWith('//')
+    || /^[a-z]:\//i.test(relativeID)
+    || idSegments.includes('..')
+  ) {
+    throw new Error(`[@master/css-next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+  }
+
+  let exportRoot = resolve(output.filePath)
+  for (const _segment of idSegments) exportRoot = dirname(exportRoot)
+
+  const expectedFilePath = resolve(exportRoot, ...idSegments)
+  if (dirname(exportRoot) === exportRoot || expectedFilePath !== resolve(output.filePath)) {
+    throw new Error(`[@master/css-next] Cannot resolve the static export root from output id ${JSON.stringify(output.id)} and file path ${JSON.stringify(output.filePath)}.`)
+  }
+
+  return exportRoot
+}
+
+function toNextHydrationManifestFilePath(ctx: BuildCompleteContext, output: HTMLBuildOutput, fileName: string) {
+  if (ctx.config.output === 'export') {
+    return join(resolveStaticExportRoot(output), '_next', 'static', 'master-css', 'hydration', fileName)
+  }
   return join(ctx.distDir, 'static', 'master-css', 'hydration', fileName)
 }
 
@@ -171,79 +206,106 @@ function upsertMasterStyleText(html: string, cssText: string) {
     : html.slice(0, headCloseIndex) + styleText + html.slice(headCloseIndex)
 }
 
-export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: Options = getRegisteredOptions() ?? {}) {
+export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptions: MasterCSSNextOptions = getRegisteredOptions() ?? {}) {
   const options = resolveOptions(rawOptions)
-  if (options.mode === null) return []
+  if (!options.enabled) return []
 
   const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
-  const baseBuildState = await buildStateResolver.resolve()
-  const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
-  const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
-  const renderedOutputs: RenderedOutput[] = []
-  const hydrationManifestAssets = new Map<string, string>()
-
-  for (const output of htmlOutputs) {
-    const sourceHTML = await readFile(output.filePath, 'utf-8')
-    let hydrationManifestFile: string | undefined
-    let hydrationManifestBytes = 0
-    const rendered = render(sourceHTML, baseBuildState.manifest)
-    if (rendered.hydrationManifest?.rules.length) {
-      const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
-      const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
-      hydrationManifestFile = toNextHydrationManifestFilePath(ctx, fileName)
-      hydrationManifestBytes = Buffer.byteLength(json)
-      hydrationManifestAssets.set(hydrationManifestFile, json)
-    }
-    renderedHTMLOutputs.push({ output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile })
-  }
-
-  for (const [filePath, source] of hydrationManifestAssets) {
-    await mkdir(dirname(filePath), { recursive: true })
-    await writeFile(filePath, source)
-  }
-
-  for (const { output, sourceHTML, rendered, hydrationManifestBytes, hydrationManifestFile } of renderedHTMLOutputs) {
-    const generatedCSS = rendered.css?.classUtilities.size ? rendered.css.text : ''
-    let renderedHTML = generatedCSS
-      ? upsertMasterStyleText(rendered.html, generatedCSS)
-      : sourceHTML
-    if (generatedCSS && hydrationManifestFile) {
-      renderedHTML = attachHydrationManifestSource(
-        renderedHTML,
-        toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
-      )
-    }
-    const didRender = renderedHTML !== sourceHTML
-
-    if (didRender) {
-      await writeFile(output.filePath, renderedHTML)
-    }
-
-    renderedOutputs.push({
-      file: output.filePath,
-      pathname: output.pathname,
-      source: output.source,
-      classes: rendered.classes,
-      cssBytes: Buffer.byteLength(generatedCSS),
-      hydrationManifestBytes,
-      hydrationManifestFile,
-      rendered: didRender
+  let renderer: ReturnType<typeof createServerRenderer> | undefined
+  try {
+    const baseBuildState = await buildStateResolver.resolve()
+    renderer = createServerRenderer({
+      manifest: baseBuildState.manifest,
+      emittedGlobals: baseBuildState.emittedGlobals,
+      maxCachedClasses: Infinity
     })
+    const htmlOutputs = collectHTMLBuildOutputs(ctx.outputs)
+    const renderedHTMLOutputs: RenderedHTMLBuildOutput[] = []
+    const renderedOutputs: RenderedOutput[] = []
+    const hydrationManifestAssets = new Map<string, string>()
+
+    for (const output of htmlOutputs) {
+      const sourceHTML = await readFile(output.filePath, 'utf-8')
+      let hydrationManifestFile: string | undefined
+      let hydrationManifestBytes = 0
+      const rendered = renderer.renderHTML(sourceHTML)
+      if (rendered.hydrationManifest?.rules.length) {
+        const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
+        const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
+        hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)
+        hydrationManifestBytes = Buffer.byteLength(json)
+        hydrationManifestAssets.set(hydrationManifestFile, json)
+      }
+      const generatedCSS = rendered.cssText
+      let renderedHTML = generatedCSS
+        ? upsertMasterStyleText(rendered.html, generatedCSS)
+        : sourceHTML
+      if (generatedCSS && hydrationManifestFile) {
+        renderedHTML = attachHydrationManifestSource(
+          renderedHTML,
+          toNextHydrationManifestPublicURL(ctx, basename(hydrationManifestFile))
+        )
+      }
+      renderedHTMLOutputs.push({
+        output,
+        sourceHTML,
+        renderedHTML,
+        classes: [...rendered.classNames],
+        cssBytes: Buffer.byteLength(generatedCSS),
+        hydrationManifestBytes,
+        hydrationManifestFile
+      })
+    }
+
+    for (const [filePath, source] of hydrationManifestAssets) {
+      await mkdir(dirname(filePath), { recursive: true })
+      await writeFile(filePath, source)
+    }
+
+    for (const {
+      output,
+      sourceHTML,
+      renderedHTML,
+      classes,
+      cssBytes,
+      hydrationManifestBytes,
+      hydrationManifestFile
+    } of renderedHTMLOutputs) {
+      const didRender = renderedHTML !== sourceHTML
+
+      if (didRender) {
+        await writeFile(output.filePath, renderedHTML)
+      }
+
+      renderedOutputs.push({
+        file: output.filePath,
+        pathname: output.pathname,
+        source: output.source,
+        classes,
+        cssBytes,
+        hydrationManifestBytes,
+        hydrationManifestFile,
+        rendered: didRender
+      })
+    }
+
+    await writeBuildReport(ctx, renderedOutputs, options.buildReport)
+
+    if (options.debug) {
+      const renderedCount = renderedOutputs.filter((output) => output.rendered).length
+      console.log(`[@master/css-next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
+    }
+
+    return renderedOutputs
+  } finally {
+    renderer?.dispose()
+    await buildStateResolver.dispose()
   }
-
-  await writeBuildReport(ctx, renderedOutputs, options.buildReport)
-
-  if (options.debug) {
-    const renderedCount = renderedOutputs.filter((output) => output.rendered).length
-    console.log(`[@master/css.next] rendered ${renderedCount}/${renderedOutputs.length} HTML output(s)`)
-  }
-
-  return renderedOutputs
 }
 
-export function createAdapter(options?: Options): NextAdapter {
+export function createAdapter(options?: MasterCSSNextOptions): NextAdapter {
   return {
-    name: '@master/css.next',
+    name: '@master/css-next',
     async onBuildComplete(ctx) {
       await renderNextBuildOutputs(ctx, options ?? getRegisteredOptions() ?? {})
     }
@@ -265,7 +327,7 @@ export function createComposedAdapter(
   { order = 'master-first' }: ComposedAdapterOptions = {}
 ): NextAdapter {
   return {
-    name: '@master/css.next+adapter',
+    name: '@master/css-next+adapter',
     async onBuildComplete(ctx) {
       const resolvedExternalAdapter = await resolveAdapter(externalAdapter)
       const adapters = order === 'master-first'

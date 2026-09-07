@@ -1,5 +1,9 @@
 import presetManifest from './preset-manifest'
-import { flattenMasterCSSManifestVariables, type MasterCSSManifest, type MasterCSSManifestVariable } from '@master/css-engine'
+import {
+  flattenMasterCSSManifestVariables,
+  type MasterCSSManifest,
+  type MasterCSSManifestVariable
+} from '@master/css-schema/manifest'
 
 const presetVariables = flattenMasterCSSManifestVariables((presetManifest as MasterCSSManifest).variables)
 const rootSize = presetManifest.settings?.rootSize || 16

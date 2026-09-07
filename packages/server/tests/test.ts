@@ -2,10 +2,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, test } from 'vitest'
-import { compileCSSManifestFile } from '@master/css-compiler'
+import { compileManifestFileSync } from '@master/css-compiler/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { render } from '../src'
+import { renderHTML } from '../src'
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const __dirname = dirname(fileURLToPath(import.meta.url))
@@ -24,7 +24,7 @@ function collectFixtureNames() {
 function loadFixturePlan(fixtureDirectory: string) {
   const planSource = join(fixtureDirectory, 'manifest.css')
   if (!existsSync(planSource)) return defaultManifest
-  return compileCSSManifestFile(planSource, {
+  return compileManifestFileSync(planSource, {
     baseManifest: defaultManifest
   }).manifest
 }
@@ -36,16 +36,16 @@ describe.concurrent('server fixture CSS parity', () => {
     const html = readFileSync(join(fixtureDirectory, 'template.html'), 'utf-8')
     const expectedCSS = readFileSync(join(fixtureDirectory, 'generated.css'), 'utf-8')
 
-    expect(render(html, manifest).css?.text).toBe(expectedCSS)
+    expect(renderHTML(html, { manifest }).cssText).toBe(expectedCSS)
   })
 })
 
 test('renders native CSS declarations through css-tree fallback', () => {
   const html = '<div class="float:left field-sizing:content display:banana made-up:left"></div>'
-  const result = render(html, defaultManifest)
+  const result = renderHTML(html, { manifest: defaultManifest })
 
-  expect(result.css?.text).toContain('.float\\:left{float:left}')
-  expect(result.css?.text).toContain('.field-sizing\\:content{field-sizing:content}')
-  expect(result.css?.text).not.toContain('display\\:banana')
-  expect(result.css?.text).not.toContain('made-up\\:left')
+  expect(result.cssText).toContain('.float\\:left{float:left}')
+  expect(result.cssText).toContain('.field-sizing\\:content{field-sizing:content}')
+  expect(result.cssText).not.toContain('display\\:banana')
+  expect(result.cssText).not.toContain('made-up\\:left')
 })
