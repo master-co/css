@@ -44,6 +44,7 @@ const NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS = [
 ]
 const COMPOSED_ADAPTER_FILE = 'master-css-next-adapter.js'
 const INSTRUMENTATION_CLIENT_FILE = 'master-css-next-instrumentation-client.js'
+const REQUIRE_INSTRUMENTATION_CLIENT_FILE = 'master-css-next-require-instrumentation-client.cjs'
 const PACKAGE_ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 
 function resolveAdapterPath() {
@@ -143,6 +144,14 @@ function ensureInstrumentationClientPath(projectDir = process.cwd()) {
   return ensureVirtualModuleFile(
     join(projectDir, 'node_modules', '.master-css', INSTRUMENTATION_CLIENT_FILE),
     createInstrumentationClientSource()
+  )
+}
+
+function ensureRequireInstrumentationClientPath(projectDir: string) {
+  // Next's hydration entry consumes an array, while the runtime wrapper is an ESM namespace.
+  return ensureVirtualModuleFile(
+    join(projectDir, 'node_modules', '.master-css', REQUIRE_INSTRUMENTATION_CLIENT_FILE),
+    `module.exports = [require('./${INSTRUMENTATION_CLIENT_FILE}')]\n`
   )
 }
 
@@ -300,7 +309,7 @@ function applyMasterCSSWebpackConfig(
       ? {
         [MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID]: userInstrumentationAlias,
         [NEXT_INSTRUMENTATION_CLIENT_ID]: runtimeInstrumentationPath,
-        ...Object.fromEntries(NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS.map((id) => [id, runtimeInstrumentationPath]))
+        ...Object.fromEntries(NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS.map((id) => [id, ensureRequireInstrumentationClientPath(projectDir)]))
       }
       : {})
   }
@@ -401,7 +410,7 @@ function applyMasterCSSTurbopackConfig(
         ? {
           [MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID]: userInstrumentationAlias,
           [NEXT_INSTRUMENTATION_CLIENT_ID]: turbopackRuntimeInstrumentationPath,
-          ...Object.fromEntries(NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS.map((id) => [id, turbopackRuntimeInstrumentationPath]))
+          ...Object.fromEntries(NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS.map((id) => [id, toTurbopackProjectPath(ensureRequireInstrumentationClientPath(projectDir), projectDir)]))
         }
         : {})
     },

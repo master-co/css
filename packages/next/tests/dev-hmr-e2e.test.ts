@@ -72,8 +72,12 @@ function writeFixture(fixtureDir: string, compose = 'inline-flex') {
     ''
   ].join('\n'))
   writeFileSync(join(fixtureDir, 'app/page.jsx'), [
+    `'use client'`,
+    `import { useEffect, useState } from 'react'`,
     `export default function Page() {`,
-    `    return <main><div id="cascade" className="box block">Cascade</div><div id="probe" className="probe">Probe</div></main>`,
+    `    const [hydrated, setHydrated] = useState(false)`,
+    `    useEffect(() => setHydrated(true), [])`,
+    `    return <main data-hydrated={hydrated}><div id="cascade" className="box block">Cascade</div><div id="probe" className="probe">Probe</div></main>`,
     `}`,
     ''
   ].join('\n'))
@@ -154,6 +158,7 @@ async function waitForServer(url: string, child: ChildProcess, output: { text: s
 async function expectDisplay(browser: Browser, url: string, display: string) {
   const page = await browser.newPage()
   await page.goto(url)
+  await page.waitForSelector('main[data-hydrated="true"]')
   await page.waitForSelector('#probe')
   await page.waitForFunction((expectedDisplay) => {
     const probe = document.getElementById('probe')

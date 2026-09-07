@@ -306,6 +306,27 @@ describe('withMasterCSS', () => {
     expect(webpackConfig.resolve.alias[masterCSSUserInstrumentationClientId]).toBe('./custom-instrumentation-client.js')
   })
 
+  it('provides an array of instrumentation modules to Next hydration for both bundlers', () => {
+    const config = withMasterCSS({}, { mode: 'runtime' }) as any
+    const webpackConfig = config.webpack({ module: { rules: [] } }, {})
+    for (const aliases of [config.turbopack.resolveAlias, webpackConfig.resolve.alias]) {
+      const runtimeModule = { marker: 'runtime' }
+      for (const id of [
+        '../lib/require-instrumentation-client',
+        '../lib/require-instrumentation-client.js',
+        'next/dist/lib/require-instrumentation-client',
+        'next/dist/esm/lib/require-instrumentation-client'
+      ]) {
+        const source = readFileSync(aliases[id], 'utf-8')
+        const module = { exports: undefined as unknown }
+        const require = vi.fn(() => runtimeModule)
+        new Function('module', 'require', source)(module, require)
+        expect(require).toHaveBeenCalledWith('./master-css-next-instrumentation-client.js')
+        expect(module.exports).toEqual([runtimeModule])
+      }
+    }
+  })
+
   it('preserves an existing user instrumentation-client file behind the Master CSS runtime wrapper', () => {
     const cwd = process.cwd()
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-instrumentation-'))
