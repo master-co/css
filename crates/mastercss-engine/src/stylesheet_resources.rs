@@ -1,4 +1,4 @@
-use super::*;
+use super::{HashSet, ManifestProjection, split_top_level};
 
 pub(crate) fn skip_stylesheet_quoted(source: &str, start: usize, quote: char) -> usize {
     let mut index = start + quote.len_utf8();

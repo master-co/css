@@ -10,7 +10,6 @@ interface CompilerOperations {
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileNativeCSS: MasterCSSCompilerBindingSession['compileNativeCSS']
   compileCSSDirectives: MasterCSSCompilerBindingSession['compileCSSDirectives']
-  compileThemeCSS: MasterCSSCompilerBindingSession['compileThemeCSS']
   analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
   analyzeStandaloneDirectives: MasterCSSCompilerBindingSession['analyzeStandaloneDirectives']
   mergeCSSExtractionPolicies: MasterCSSCompilerBindingSession['mergeCSSExtractionPolicies']
@@ -73,8 +72,6 @@ export function bindCompilerBindingSession(
       invoke('compiler', () => operations.compileNativeCSS(source, options), source),
     compileCSSDirectives: (source, options) =>
       invoke('compiler', () => operations.compileCSSDirectives(source, options), source),
-    compileThemeCSS: (source, options) =>
-      invoke('compiler', () => operations.compileThemeCSS(source, options), source),
     analyzeCSSDependencies: (source) =>
       invoke('compiler', () => operations.analyzeCSSDependencies(source), source),
     analyzeStandaloneDirectives: (source) =>

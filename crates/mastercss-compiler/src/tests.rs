@@ -1,4 +1,10 @@
-use super::*;
+use std::collections::HashMap;
+
+use super::{
+    CompileNativeCssOptions, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition,
+    CssImportProvider, ErrorCode, SourceRange, compile_css_directives, compile_native_css,
+    inspect_css, resolve_css_import_graph,
+};
 
 struct MemoryImportProvider {
     files: HashMap<String, String>,
@@ -141,7 +147,7 @@ fn filters_native_selectors_without_losing_discovered_classes() {
 
 #[test]
 fn lowers_theme_tokens_and_preserves_native_css() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
         "@theme { --color-brand: rgb(0 128 255); --leading-tight: 1.0; }\n.card { color: red; }",
         &CompileNativeCssOptions::default(),
     )
@@ -160,7 +166,7 @@ fn lowers_theme_tokens_and_preserves_native_css() {
 
 #[test]
 fn lowers_theme_modifiers_and_replaces_duplicate_mode_tokens_in_order() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
         "@theme { --color-brand: #111; --color-accent: #222; }\n\
              @theme dark static { --color-brand: #333; }\n\
              @theme { --color-brand: #444; }",
@@ -182,7 +188,7 @@ fn lowers_theme_modifiers_and_replaces_duplicate_mode_tokens_in_order() {
 
 #[test]
 fn rejects_invalid_theme_modifier_combinations() {
-    let error = compile_theme_css(
+    let error = compile_css_directives(
         "/*😀*/\n@theme dark inline { --color-brand: #fff; }",
         &CompileNativeCssOptions::default(),
     )
@@ -217,7 +223,7 @@ fn owns_compose_syntax_diagnostic_codes_and_utf16_ranges() {
 
 #[test]
 fn lowers_static_theme_keyframes_outside_layers() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
         "@theme static {\n\
                --color-brand: #123;\n\
                @keyframes fade {\n\
@@ -246,7 +252,7 @@ fn lowers_static_theme_keyframes_outside_layers() {
 
 #[test]
 fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
         "@theme {\n\
                --color-muted: --alpha(var(--color-primary) / .5);\n\
                --content-quoted: \"a | b\";\n\
@@ -269,7 +275,7 @@ fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
         })
     );
 
-    let error = compile_theme_css(
+    let error = compile_css_directives(
         "@theme { --color-brand: $color-blue-60; }",
         &CompileNativeCssOptions::default(),
     )
@@ -282,7 +288,7 @@ fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
 
 #[test]
 fn lowers_settings_into_the_canonical_manifest_input() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
         "@settings {\n\
                root-size: 16;\n\
                base-unit: 1;\n\
@@ -311,7 +317,7 @@ fn lowers_settings_into_the_canonical_manifest_input() {
 
 #[test]
 fn lowers_static_managed_definitions_with_utf16_source_ranges() {
-    let result = compile_theme_css(
+    let result = compile_css_directives(
             "/* 😀 */\n@components {\n  btn { display: inline-flex; color: red; }\n}\n@utilities { content-auto { content-visibility: auto; } }",
             &CompileNativeCssOptions::default(),
         )

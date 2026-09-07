@@ -1,4 +1,7 @@
-use super::*;
+use super::{
+    BUILTIN_NAMESPACES, CompilerError, CssDirectiveManifestInput, Map, NUMERIC_THEME_NAMESPACES,
+    Number, Value, json,
+};
 
 pub(super) fn manifest_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {

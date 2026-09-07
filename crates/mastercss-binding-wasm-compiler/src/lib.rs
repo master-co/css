@@ -125,11 +125,6 @@ pub fn compile_native_css(source: &str, options: JsValue) -> Result<JsValue, JsV
     render_value(&result)
 }
 
-#[wasm_bindgen(js_name = compileThemeCSS)]
-pub fn compile_theme_css(source: &str, options: JsValue) -> Result<JsValue, JsValue> {
-    compile_css_directives(source, options)
-}
-
 #[wasm_bindgen(js_name = analyzeCSSDependencies)]
 pub fn analyze_css_dependencies(source: &str) -> Result<JsValue, JsValue> {
     render_value(&mastercss_compiler::analyze_css_dependencies(source))

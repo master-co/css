@@ -63,8 +63,8 @@ The generated report lives at `.ai/reports/rust-test-migration.md`. A
 `mapped-unverified` entry means only that a target candidate or historical takeover
 reference exists; it is not a parity claim. A `verified-exact` entry must carry either
 an automatically validated `exact-source` proof or a reviewed `rc87-golden` record
-whose target runner and digest still match. This ledger is deliberately not wired into
-CI yet.
+whose target runner and digest still match. The complete ledger check runs as a
+required validation contract in CI.
 
 The command executes every frozen engine/compiler case, verifies exact CSS and
 selected Manifest v1 utility records, validates the ledger count and references, and

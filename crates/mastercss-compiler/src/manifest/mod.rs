@@ -147,15 +147,6 @@ mod preset;
 mod utilities;
 mod variables;
 
-#[allow(unused_imports)]
-pub(super) use normalize::*;
-#[allow(unused_imports)]
-pub(super) use preset::*;
-#[allow(unused_imports)]
-pub(super) use utilities::*;
-#[allow(unused_imports)]
-pub(super) use variables::*;
-
 pub use normalize::{
     compile_manifest_input, normalize_default_manifest_for_json, normalize_manifest_for_json,
 };

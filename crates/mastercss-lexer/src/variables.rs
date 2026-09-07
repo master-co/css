@@ -1,4 +1,4 @@
-use super::*;
+use super::CssVariableReference;
 
 /// Collects syntactically active CSS custom-property references in source order.
 ///

@@ -1,4 +1,6 @@
-use super::*;
+use serde_json::json;
+
+use super::{CompileManifestOptions, CssDirectiveManifestInput, compile_manifest_input};
 
 #[test]
 fn compiles_variables_conditions_and_utilities() {

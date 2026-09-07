@@ -1124,6 +1124,8 @@
           "MasterCSSLanguageClassVariable",
           "MasterCSSLanguageClassifications",
           "MasterCSSLanguageColorCandidate",
+          "MasterCSSLanguageColorExpression",
+          "MasterCSSLanguageColorFormat",
           "MasterCSSLanguageColorPresentation",
           "MasterCSSLanguageColorToken",
           "MasterCSSLanguageColorTokens",
@@ -1157,7 +1159,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "660a84d330363dd5"
+      "surface": "d678240073a5382e"
     },
     "@master/css-vite": {
       "directory": "vite",

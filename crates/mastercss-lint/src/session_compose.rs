@@ -1,4 +1,12 @@
-use super::*;
+use super::{
+    CanonicalClassNameOptions, CanonicalComposeDirectiveIr, CanonicalComposeSuggestionIr,
+    CanonicalComposeSuggestionKind, ComposeBucket, ComposeNativeDeclaration, EngineError, HashMap,
+    HashSet, LINT_BATCH_VERSION, LintSession, NativeDeclarationCandidateIr, UtilityLayerName,
+    canonical_class_parts, collect_rule_declarations, compose_variant_block_text,
+    has_duplicate_compose_declaration_properties, is_safe_compose_variant_token,
+    process_compose_leaf, replace_compose_class_group, replace_first_compose_class,
+    serialize_compose_bucket,
+};
 
 impl LintSession {
     pub(crate) fn ensure_class_rules(

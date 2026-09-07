@@ -418,16 +418,27 @@ mod session;
 mod session_canonical;
 mod session_compose;
 
-#[allow(unused_imports)]
-pub(crate) use compose::*;
-#[allow(unused_imports)]
-pub(crate) use conflicts::*;
-#[allow(unused_imports)]
-pub(crate) use order::*;
-#[allow(unused_imports)]
-pub(crate) use partial_conflicts::*;
-#[allow(unused_imports)]
-pub(crate) use recommendation::*;
+pub(crate) use compose::{
+    compose_variant_block_text, has_duplicate_compose_declaration_properties,
+    is_safe_compose_variant_token, manifest_utility_property_signatures,
+    matching_composition_recipe, merge_group_declarations, normalize_composition_declarations,
+    process_compose_leaf, push_index_value, replace_compose_class_group,
+    replace_first_compose_class, serialize_compose_bucket,
+};
+pub(crate) use conflicts::{
+    collect_rule_declarations, equal_variant_scope, find_conflicts, sort_descriptors,
+    split_top_level,
+};
+pub(crate) use order::{compare_condition_features, get_property_order};
+pub(crate) use partial_conflicts::{
+    collect_manifest_variables, find_partial_conflicts, normalize_css_variable_value,
+};
+pub(crate) use recommendation::{
+    build_canonical_recommendation_index, canonical_class_parts, canonical_condition_suffix,
+    canonical_variable_candidate_keys, css_variable_reference_name, declaration_property_signature,
+    declarations_match_after_variable_resolution, has_same_canonical_rule_shape,
+    numeric_values_match, push_canonical_candidate, rules_declaration_signature,
+};
 
 #[cfg(test)]
 mod tests;

@@ -1,4 +1,11 @@
-use super::*;
+use super::{
+    CanonicalCandidate, CanonicalClassNameOptions, CanonicalClassParts,
+    CanonicalRecommendationIndex, ClassSemanticInspection, EngineError, EngineSession,
+    GeneratedRuleIr, HashMap, HashSet, MatchingVariableKeys, UtilityLayerName, Value,
+    builtin_key_aliases, builtin_native_value_properties, collect_rule_declarations,
+    manifest_utility_property_signatures, normalize_css_variable_value, push_index_value,
+    split_top_level,
+};
 
 pub(crate) fn build_canonical_recommendation_index(
     manifest: &Value,

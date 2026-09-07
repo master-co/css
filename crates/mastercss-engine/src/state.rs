@@ -1,4 +1,8 @@
-use super::*;
+use super::{
+    ManifestProjection, ManifestSelectorNode, ManifestVariant, StateBranch, add_condition_features,
+    add_condition_wrapper, merge_condition_features, parse_raw_condition_wrapper,
+    render_condition_token, render_manifest_condition, resolve_layer_condition,
+};
 
 pub(crate) fn resolve_state_branches(
     state_token: &str,

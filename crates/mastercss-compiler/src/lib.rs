@@ -99,7 +99,7 @@ pub struct CompileNativeCssResult {
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CompileThemeCssResult {
+pub struct CompileCssDirectivesResult {
     pub manifest_input: CssDirectiveManifestInput,
     pub extraction_policy: CssDirectiveExtractionPolicy,
     pub class_names: Vec<String>,
@@ -625,24 +625,33 @@ mod syntax;
 mod theme;
 mod variant;
 
-#[allow(unused_imports)]
-pub(crate) use directives::*;
-#[allow(unused_imports)]
-pub(crate) use imports::*;
-#[allow(unused_imports)]
-pub(crate) use managed::*;
-#[allow(unused_imports)]
-pub(crate) use native_style::*;
-#[allow(unused_imports)]
-pub(crate) use pattern::*;
-#[allow(unused_imports)]
-pub(crate) use syntax::*;
-#[allow(unused_imports)]
-pub(crate) use theme::*;
-#[allow(unused_imports)]
-pub(crate) use variant::*;
+pub(crate) use imports::{
+    decode_css_quoted_string, default_filename, default_true, extraction_policy_from_statements,
+};
+pub(crate) use managed::lower_managed_rule_list;
+pub(crate) use native_style::{
+    NativeStyleContext, lower_native_rule_list, lower_native_style_rule,
+    native_rule_list_has_directives,
+};
+pub(crate) use pattern::{
+    ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
+    lower_managed_pattern_style, mask_managed_pattern_names, minified_css, trim_byte_range,
+};
+pub(crate) use syntax::{
+    collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
+    directive_error, directive_range, is_alias_character, next_char_end,
+    normalize_stylesheet_value, normalize_theme_stylesheet_value, parse_theme_prelude,
+    preserve_compatible_literal_spelling, ranged_directive_diagnostic, theme_value,
+};
+pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
+pub(crate) use variant::{
+    byte_offset_for_location, combine_managed_selectors, lower_custom_variant_rule,
+    managed_selector_definition, printed_selectors, rewrite_managed_variant_directives,
+    selector_source_reference, source_reference_from_bytes, validate_compose_syntax,
+    validate_condition_variant_syntax,
+};
 
-pub use directives::{compile_css_directives, compile_theme_css};
+pub use directives::compile_css_directives;
 pub use imports::{
     compile_native_css, inspect_css, resolve_css_import_graph, resolve_prepared_css_import_graph,
 };

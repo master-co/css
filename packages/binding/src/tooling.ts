@@ -260,6 +260,8 @@ export {
   type MasterCSSLanguageClassKind,
   type MasterCSSLanguageClassVariable,
   type MasterCSSLanguageColorCandidateInput,
+  type MasterCSSLanguageColorExpression,
+  type MasterCSSLanguageColorFormat,
   type MasterCSSLanguageColorPresentation,
   type MasterCSSLanguageColorToken,
   type MasterCSSLanguageColorTokens,

@@ -635,7 +635,7 @@ export interface MasterCSSLanguageInspection {
   text: string
 }
 
-export type MasterCSSLanguageCompletionKind = 'property' | 'value'
+export type MasterCSSLanguageCompletionKind = 'property' | 'value' | 'function'
 
 export interface MasterCSSLanguageCompletionEntry {
   label: string
@@ -654,6 +654,11 @@ export interface MasterCSSLanguageCompletionIndex {
 export interface MasterCSSLanguageColorPresentation {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION
   colorToken: string
+  sourceFormat?: MasterCSSLanguageColorFormat
+}
+
+export interface MasterCSSLanguageColorFormat {
+  syntax: string
   space?: string
 }
 
@@ -664,9 +669,24 @@ export interface MasterCSSLanguageColorCandidateInput {
 
 export interface MasterCSSLanguageColorToken {
   range: MasterCSSSourceRange
-  value: string
-  alpha?: number
+  expression: MasterCSSLanguageColorExpression
 }
+
+export type MasterCSSLanguageColorExpression =
+  | {
+      kind: 'literal'
+      value: string
+      alpha?: number
+    }
+  | {
+      kind: 'mix'
+      space: string
+      hue?: string
+      left: MasterCSSLanguageColorExpression
+      right: MasterCSSLanguageColorExpression
+      progress: number
+      alphaMultiplier: number
+    }
 
 export interface MasterCSSLanguageColorTokens {
   version: typeof MASTER_CSS_LANGUAGE_BATCH_VERSION

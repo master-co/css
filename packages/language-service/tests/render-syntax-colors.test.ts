@@ -176,9 +176,117 @@ test.concurrent('variable/opacity', async () => {
   }])
 })
 
-test.todo('CSS color() function')
-test.todo('CSS color-mix() function')
-test.todo('click to switch color spaces')
+test('CSS color() function', async () => {
+  const target = 'color(display-p3|1|0|0)'
+  const content = `export default () => <div className='fg:${target}'></div>`
+  const doc = createDoc('tsx', content)
+  const languageService = createLanguageService()
+  expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
+    color: { red: 1, green: 0, blue: 0, alpha: 1 },
+    range: getRange(target, doc)
+  }])
+})
+
+test('CSS color-mix() function', async () => {
+  const cases = [
+    {
+      target: 'color-mix(in|srgb,#f00,#00f)',
+      color: { red: 0.5, green: 0, blue: 0.5, alpha: 1 }
+    },
+    {
+      target: 'color-mix(in|srgb,#f00|20%,#00f|40%)',
+      color: { red: 1 / 3, green: 0, blue: 2 / 3, alpha: 0.6 }
+    },
+    {
+      target: 'color-mix(in|srgb,#f00|80%,#00f|80%)',
+      color: { red: 0.5, green: 0, blue: 0.5, alpha: 1 }
+    },
+    {
+      target: 'color-mix(in|srgb,color-mix(in|srgb,#f00,#0f0),#00f)',
+      color: { red: 0.25, green: 0.25, blue: 0.5, alpha: 1 }
+    },
+    {
+      target: 'color-mix(in|srgb,#f00,transparent)',
+      color: { red: 1, green: 0, blue: 0, alpha: 0.5 }
+    }
+  ]
+  for (const { target, color } of cases) {
+    const content = `export default () => <div className='fg:${target}'></div>`
+    const doc = createDoc('tsx', content)
+    const [result] = await createLanguageService().renderSyntaxColors(doc) ?? []
+    expect(result).toBeDefined()
+    if (!result) throw new Error(`Expected a rendered color for ${target}.`)
+    expect(result.range).toStrictEqual(getRange(target, doc))
+    expect(result.color.red).toBeCloseTo(color.red)
+    expect(result.color.green).toBeCloseTo(color.green)
+    expect(result.color.blue).toBeCloseTo(color.blue)
+    expect(result.color.alpha).toBeCloseTo(color.alpha)
+  }
+
+  const polarTarget = 'color-mix(in|oklch|longer|hue,#f00,#00f)'
+  const polarDoc = createDoc('tsx', `<div class='fg:${polarTarget}'></div>`)
+  expect(await createLanguageService().renderSyntaxColors(polarDoc)).toHaveLength(1)
+
+  const aliasTarget = 'color-mix(in|srgb,brand,#00f)'
+  const aliasDoc = createDoc('tsx', `<div class='fg:${aliasTarget}'></div>`)
+  const [aliasResult] = await createLanguageService({
+    manifest: createPresetManifest({
+      variables: [{ namespace: 'color', key: 'brand', value: '#f00' }]
+    })
+  }).renderSyntaxColors(aliasDoc) ?? []
+  expect(aliasResult).toBeDefined()
+  if (!aliasResult) throw new Error('Expected a rendered manifest alias color.')
+  expect(aliasResult.color).toMatchObject({ red: 0.5, green: 0, blue: 0.5, alpha: 1 })
+
+  for (const target of [
+    'color-mix(in|srgb,var(--brand),#00f)',
+    'color-mix(in|srgb,currentColor,#00f)',
+    'color-mix(in|srgb,#f00|0%,#00f|0%)',
+    'color-mix(in|unknown,#f00,#00f)'
+  ]) {
+    const doc = createDoc('tsx', `<div class='fg:${target}'></div>`)
+    expect(await createLanguageService().renderSyntaxColors(doc)).toStrictEqual([])
+  }
+})
+
+test('click to switch color spaces', async () => {
+  const target = 'color(display-p3|.2|.4|.6/.5)'
+  const content = `<div class='fg:${target}'></div>`
+  const doc = createDoc('html', content)
+  const languageService = createLanguageService()
+  const [color] = await languageService.renderSyntaxColors(doc) ?? []
+  expect(color).toBeDefined()
+  if (!color) throw new Error('Expected a rendered display-p3 color.')
+  const presentations = languageService.editSyntaxColors(doc, color.color, color.range) ?? []
+  expect(presentations.map(({ label }) => label)).toEqual([
+    expect.stringMatching(/^color\(display-p3\|/u),
+    expect.stringMatching(/^#[\da-f]{8}$/u),
+    expect.stringMatching(/^rgb\(/u),
+    expect.stringMatching(/^hsl\(/u),
+    expect.stringMatching(/^oklch\(/u)
+  ])
+  expect(presentations.every(({ textEdit }) => textEdit?.range === color.range)).toBe(true)
+})
+
+test('convert any color spaces to RGB and hint correctly', async () => {
+  for (const target of [
+    'rgb(0|0|0)',
+    'hsl(0|0%|0%)',
+    'hwb(0|0%|100%)',
+    'lab(0%|0|0)',
+    'lch(0%|0|0)',
+    'oklab(0%|0|0)',
+    'oklch(0%|0|0)',
+    'color(display-p3|0|0|0)'
+  ]) {
+    const content = `<div class='fg:${target}'></div>`
+    const doc = createDoc('html', content)
+    expect(await createLanguageService().renderSyntaxColors(doc)).toStrictEqual([{
+      color: { red: 0, green: 0, blue: 0, alpha: 1 },
+      range: getRange(target, doc)
+    }])
+  }
+})
 
 test.concurrent('maps out-of-gamut colors into the LSP channel range', async () => {
   const target = 'wide-gamut'

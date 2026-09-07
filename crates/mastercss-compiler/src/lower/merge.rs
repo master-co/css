@@ -1,4 +1,12 @@
-use super::*;
+use super::resolution::{
+    combine_style_selectors, composition_rules, directive_diagnostic, resolve_configured_branches,
+};
+use super::{
+    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition,
+    EngineCompositionRuleIr, EngineSession, ErrorCode, HashMap, Map, MergedStyleDefinition,
+    Ordering, ResolvedStyleBranch, RulePriorityIr, StyleConditionFeature, StyleMergeBucket,
+    StyleMergeEvent, UtilityLayerName, Value, natural_compare,
+};
 
 pub(super) fn bucket_key(
     selector: &str,

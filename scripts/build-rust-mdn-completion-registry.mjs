@@ -31,7 +31,7 @@ const functionalPseudoClasses = new Set([
   ':state',
   ':where'
 ])
-const referenceRE = /<('([^']+)'|([a-zA-Z][\w-]*)(?:\s+[^>]*)?)>/g
+const referenceRE = /<('([^']+)'|([a-zA-Z][\w-]*(?:\(\))?)(?:\s+[^>]*)?)>/g
 const tokenRE = /-?[a-zA-Z_][\w-]*/g
 const nonKeywordTokens = new Set(['∞', 'n', 'of'])
 
@@ -43,7 +43,7 @@ function syntaxByReference(name) {
   return properties[name]?.syntax || syntaxes[name]?.syntax
 }
 
-function collectSyntaxKeywordValues(syntax, seen = new Set()) {
+function collectSyntaxValues(syntax, seen = new Set()) {
   if (!syntax) return []
   const values = []
   let source = syntax
@@ -51,15 +51,21 @@ function collectSyntaxKeywordValues(syntax, seen = new Set()) {
     const name = match[2] || match[3]
     if (!name || seen.has(name)) continue
     seen.add(name)
-    values.push(...collectSyntaxKeywordValues(syntaxByReference(name), seen))
+    if (name.endsWith('()')) {
+      values.push({ label: name, kind: 'function' })
+    } else {
+      values.push(...collectSyntaxValues(syntaxByReference(name), seen))
+    }
     source = source.replace(match[0], ' ')
   }
   for (const match of source.matchAll(tokenRE)) {
     const value = match[0]
     if (nonKeywordTokens.has(value) || /^-?\d/u.test(value)) continue
-    values.push(value)
+    values.push({ label: value, kind: 'value' })
   }
-  return unique(values).filter((value) => !value.includes(' '))
+  return [...new Map(values
+    .filter(({ label }) => !label.includes(' '))
+    .map((value) => [value.label, value])).values()]
 }
 
 function normalizePseudo(label) {
@@ -76,7 +82,7 @@ const registry = {
     .map(normalizePseudo), ':of()'])
     .sort(),
   properties: Object.fromEntries(Object.entries(properties)
-    .map(([name, value]) => [name, collectSyntaxKeywordValues(value.syntax)])
+    .map(([name, value]) => [name, collectSyntaxValues(value.syntax)])
     .filter(([, values]) => values.length)
     .sort(([left], [right]) => left.localeCompare(right)))
 }

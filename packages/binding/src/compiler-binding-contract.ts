@@ -60,10 +60,6 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
     source: string,
     options?: MasterCSSDirectiveCompileOptions
   ): MasterCSSDirectiveCompilation
-  compileThemeCSS(
-    source: string,
-    options?: MasterCSSDirectiveCompileOptions
-  ): MasterCSSDirectiveCompilation
   analyzeCSSDependencies(source: string): MasterCSSDependencyAnalysis
   analyzeStandaloneDirectives(source: string): MasterCSSStandaloneDirectiveAnalysis
   mergeCSSExtractionPolicies(

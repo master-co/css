@@ -1,4 +1,7 @@
-use super::*;
+use super::{
+    CssDeclarationRange, CssFunction, SourceRange, byte_to_utf16_offset,
+    skip_css_string_or_comment, utf16_to_byte_offset,
+};
 
 pub fn read_css_function(source: &str, start: u32, name: &str) -> Option<CssFunction> {
     let start = utf16_to_byte_offset(source, start)?;

@@ -129,6 +129,12 @@ jobs:
           turbo-cache-scope: build
       - name: Validate AI context budgets
         run: pnpm run check:ai-context
+      - name: Validate migration and package contracts
+        run: |
+          pnpm run check:migration
+          pnpm run check:mdn-registry
+          pnpm run check:boundaries
+          pnpm run check:packages
       - name: Detect affected release consumers
         id: consumers
         shell: bash

@@ -98,15 +98,6 @@ mod merge;
 mod render;
 mod resolution;
 
-#[allow(unused_imports)]
-pub(super) use api::*;
-#[allow(unused_imports)]
-pub(super) use merge::*;
-#[allow(unused_imports)]
-pub(super) use render::*;
-#[allow(unused_imports)]
-pub(super) use resolution::*;
-
 pub use api::{lower_css_directives, lower_css_directives_request};
 
 #[cfg(test)]

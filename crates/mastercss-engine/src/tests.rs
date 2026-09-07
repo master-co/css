@@ -1,4 +1,11 @@
-use super::*;
+use serde::Deserialize;
+
+use super::{
+    ClassSemanticInspection, ClassSemanticKind, EngineError, EngineSession,
+    NativeDeclarationCandidateIr, RuleMutationIr, RuleTarget, UtilityMatcherType, css_escape,
+    render_condition_token, selector_token_to_template,
+};
+use crate::state::compose_selector_templates;
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]

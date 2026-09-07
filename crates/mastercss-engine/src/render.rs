@@ -1,4 +1,7 @@
-use super::*;
+use super::{
+    ManifestProjection, Map, StateBranch, UtilityDefinition, UtilityEmit, Value, css_escape,
+    is_css_identifier_character, split_top_level,
+};
 
 pub(crate) fn create_selector_text(
     class_name: &str,

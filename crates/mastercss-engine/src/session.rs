@@ -1,4 +1,15 @@
-use super::*;
+use super::{
+    ClassSemanticInspection, ClassSemanticKind, EmittedGlobals, EngineClassCompletionCandidate,
+    EngineClassVariableIr, EngineColorToken, EngineCompositionRuleIr, EngineError,
+    EngineInspectionIr, EngineSession, EngineSnapshotIr, EngineTransitionIr, HashMap, HashSet,
+    ManifestProjection, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
+    RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
+    canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
+    collect_stylesheet_animation_declarations, collect_stylesheet_animation_names,
+    collect_stylesheet_keyframe_names, collect_stylesheet_variable_names, compare_stored_rules,
+    compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
+    match_utility, normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
+};
 
 impl EngineSession {
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {
@@ -707,14 +718,6 @@ impl EngineSession {
         let mut isolated = self.fork_empty();
         isolated.ensure_class_rules_for_mode([class_name], mode)?;
         Ok(isolated.snapshot()?.text)
-    }
-
-    pub fn color_presentation_space(
-        &self,
-        color_token: &str,
-    ) -> Result<Option<String>, EngineError> {
-        self.ensure_active()?;
-        Ok(color_presentation_space(color_token, &self.compiled))
     }
 
     pub fn color_tokens(&self, class_name: &str) -> Result<Vec<EngineColorToken>, EngineError> {

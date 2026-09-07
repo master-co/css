@@ -1,4 +1,4 @@
-use super::*;
+use super::{Ordering, UNKNOWN_PROPERTY_GROUP_ORDER, UNKNOWN_PROPERTY_ORDER, natural_compare};
 
 pub(crate) fn get_property_order(property: &str) -> (u8, u8) {
     if property == "position" {

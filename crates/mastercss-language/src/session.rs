@@ -1,4 +1,5 @@
 use super::*;
+use crate::color::{color_expression, color_source_format};
 
 impl LanguageSession {
     pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
@@ -421,7 +422,7 @@ impl LanguageSession {
         Ok(LanguageColorPresentationIr {
             version: LANGUAGE_BATCH_VERSION,
             color_token: color_token.to_owned(),
-            space: self.engine.color_presentation_space(color_token)?,
+            source_format: color_source_format(&self.engine, color_token)?,
         })
     }
 
@@ -440,11 +441,17 @@ impl LanguageSession {
                     .start
                     .checked_add(token.end)
                     .ok_or(LanguageError::InvalidRange)?;
-                tokens.push(LanguageColorTokenIr {
-                    range: SourceRange { start, end },
-                    value: token.value,
-                    alpha: token.alpha,
-                });
+                if let Some(expression) = color_expression(
+                    &self.engine,
+                    &candidate.class_name,
+                    &token.value,
+                    token.alpha,
+                )? {
+                    tokens.push(LanguageColorTokenIr {
+                        range: SourceRange { start, end },
+                        expression,
+                    });
+                }
             }
         }
         Ok(LanguageColorTokensIr {

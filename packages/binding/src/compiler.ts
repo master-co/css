@@ -51,8 +51,6 @@ export function loadNativeCompilerBinding(
         parse(nativeBinding.compileNativeCssJson(source, options === undefined ? undefined : JSON.stringify(options))),
       compileCSSDirectives: (source, options) =>
         parse(nativeBinding.compileCssDirectivesJson(source, options === undefined ? undefined : JSON.stringify(options))),
-      compileThemeCSS: (source, options) =>
-        parse(nativeBinding.compileThemeCssJson(source, options === undefined ? undefined : JSON.stringify(options))),
       analyzeCSSDependencies: (source) => parse(nativeBinding.analyzeCssDependenciesJson(source)),
       analyzeStandaloneDirectives: (source) => parse(nativeBinding.analyzeStandaloneDirectivesJson(source)),
       mergeCSSExtractionPolicies: (policies) =>

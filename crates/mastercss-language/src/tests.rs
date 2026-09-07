@@ -621,13 +621,30 @@ fn renders_isolated_hover_inspection_css() {
             && entry.documentation_text.as_deref()
                 == Some("@layer components{.card{display:block}}")
     }));
+    assert!(completion_index.class_entries.iter().any(|entry| {
+        entry.label == "filter:blur()"
+            && entry.kind == LanguageCompletionKind::Function
+            && entry.detail.as_deref() == Some("filter: blur()")
+    }));
     assert_eq!(
-        session.color_presentation("rgb(0|0|0)").unwrap().space,
-        Some("srgb".into())
+        session
+            .color_presentation("rgb(0|0|0)")
+            .unwrap()
+            .source_format,
+        Some(LanguageColorFormatIr {
+            syntax: "rgb".into(),
+            space: None,
+        })
     );
     assert_eq!(
-        session.color_presentation("brand/.5").unwrap().space,
-        Some("oklch".into())
+        session
+            .color_presentation("brand/.5")
+            .unwrap()
+            .source_format,
+        Some(LanguageColorFormatIr {
+            syntax: "oklch".into(),
+            space: None,
+        })
     );
     let color_tokens = session
         .color_tokens(&[
@@ -647,18 +664,24 @@ fn renders_isolated_hover_inspection_css() {
         vec![
             LanguageColorTokenIr {
                 range: SourceRange { start: 5, end: 13 },
-                value: "oklch(50% .1 20)".into(),
-                alpha: Some(0.5),
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: Some(0.5),
+                },
             },
             LanguageColorTokenIr {
                 range: SourceRange { start: 39, end: 43 },
-                value: "#000".into(),
-                alpha: None,
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "#000".into(),
+                    alpha: None,
+                },
             },
             LanguageColorTokenIr {
                 range: SourceRange { start: 44, end: 49 },
-                value: "oklch(50% .1 20)".into(),
-                alpha: None,
+                expression: LanguageColorExpressionIr::Literal {
+                    value: "oklch(50% .1 20)".into(),
+                    alpha: None,
+                },
             },
         ]
     );

@@ -478,22 +478,39 @@ mod stylesheet_resources;
 mod utility;
 mod value_syntax;
 
-#[allow(unused_imports)]
-pub(crate) use completion::*;
-#[allow(unused_imports)]
-pub(crate) use condition::*;
-#[allow(unused_imports)]
-pub(crate) use manifest::*;
-#[allow(unused_imports)]
-pub(crate) use render::*;
-#[allow(unused_imports)]
-pub(crate) use state::*;
-#[allow(unused_imports)]
-pub(crate) use stylesheet_resources::*;
-#[allow(unused_imports)]
-pub(crate) use utility::*;
-#[allow(unused_imports)]
-pub(crate) use value_syntax::*;
+pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
+pub(crate) use condition::{
+    add_condition_features, add_condition_wrapper, format_standard_number,
+    merge_condition_features, normalize_dynamic_value, parse_raw_condition_wrapper,
+    render_condition_token, render_manifest_condition, resolve_layer_condition,
+};
+pub(crate) use manifest::{
+    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_NATIVE_VALUE_NAMESPACES,
+    add_unique_string, compile_manifest, engine_variable_ir, layer_name, push_theme_declaration,
+    serialize_literal_value, single_native_declaration, theme_bucket_rank,
+};
+pub(crate) use render::{
+    composition_conditions, composition_selector, create_selector_text, emit_declarations,
+    parse_serialized_declarations, selector_priority, wrap_raw_conditions, wrap_state_conditions,
+};
+pub(crate) use state::{
+    apply_forced_mode, find_group_close, resolve_state_branches, resolve_style_selector_aliases,
+    selector_token_to_template, split_top_level,
+};
+pub(crate) use stylesheet_resources::{
+    collect_animation_names, collect_stylesheet_animation_declarations,
+    collect_stylesheet_animation_names, collect_stylesheet_keyframe_names,
+    collect_stylesheet_variable_names, is_css_identifier_character,
+};
+pub(crate) use utility::{
+    append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,
+    builtin_key_alias, canonicalize_class_name, compare_stored_rules, compile_utility_variables,
+    layer_index, match_utility, resolve_value_components, split_dynamic_value_state,
+};
+pub(crate) use value_syntax::{
+    find_matching_parenthesis, is_native_shorthand_property, is_valid_native_property,
+    normalize_css_math_functions,
+};
 
 pub use manifest::{
     builtin_key_aliases, builtin_native_value_namespaces, builtin_native_value_properties,

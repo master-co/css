@@ -1,5 +1,6 @@
 import {
   CompletionItemKind,
+  InsertTextFormat,
   type CompletionItem,
   type CompletionParams
 } from 'vscode-languageserver-protocol'
@@ -36,7 +37,15 @@ function classCompletionItem(
 ): CompletionItem {
   return {
     label,
-    kind: entry.kind === 'property' ? CompletionItemKind.Property : CompletionItemKind.Value,
+    kind: entry.kind === 'property'
+      ? CompletionItemKind.Property
+      : entry.kind === 'function'
+        ? CompletionItemKind.Function
+        : CompletionItemKind.Value,
+    insertText: entry.kind === 'function'
+      ? `${label.slice(0, -2)}($0)`
+      : undefined,
+    insertTextFormat: entry.kind === 'function' ? InsertTextFormat.Snippet : undefined,
     detail: entry.detail,
     documentation: entry.documentationText || generateDocumentation
       ? documentation(service, entry, className)
@@ -70,7 +79,7 @@ function valueCompletionItems(
 ) {
   const prefix = `${key}:`
   return sortCompletionItems(entries
-    .filter(({ kind, label }) => kind === 'value' && label.startsWith(prefix))
+    .filter(({ kind, label }) => kind !== 'property' && label.startsWith(prefix))
     .filter(({ label }) => valuePrefix.startsWith('-') || !label.slice(prefix.length).startsWith('-'))
     .map((entry) => classCompletionItem(
       service,

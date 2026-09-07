@@ -272,33 +272,36 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 1,
+    version: 2,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 1,
+    version: 2,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 1,
+    version: 2,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 1,
+    version: 2,
     colorToken: 'rgba(0|0|0/.5)',
-    space: 'srgb'
+    sourceFormat: { syntax: 'rgb' }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 1,
-    tokens: [{ range: { start: 8, end: 12 }, value: '#123' }]
+    version: 2,
+    tokens: [{
+      range: { start: 8, end: 12 },
+      expression: { kind: 'literal', value: '#123' }
+    }]
   })
   language.dispose()
   language.free()

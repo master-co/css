@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 847,
+    "records": 849,
     "byKind": {
       "bin": 3,
       "cli-command": 3,
-      "export": 665,
+      "export": 667,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -14070,6 +14070,60 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-tooling:./language#MasterCSSLanguageColorExpression",
+      "package": "@master/css-tooling",
+      "subpath": "./language",
+      "name": "MasterCSSLanguageColorExpression"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./language#MasterCSSLanguageColorFormat",
+      "package": "@master/css-tooling",
+      "subpath": "./language",
+      "name": "MasterCSSLanguageColorFormat"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-tooling:./language#MasterCSSLanguageColorPresentation",
       "package": "@master/css-tooling",
       "subpath": "./language",
@@ -22828,7 +22882,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_BATCH_VERSION",
       "name": "MASTER_CSS_LANGUAGE_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",

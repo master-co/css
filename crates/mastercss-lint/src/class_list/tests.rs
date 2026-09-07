@@ -1,4 +1,8 @@
-use super::*;
+use super::{
+    CanonicalComposeDirectiveIr, CanonicalComposeSuggestionKind, ClassListPolicy,
+    LINT_BATCH_VERSION, LintBatchIr, LintClassListIr, SourceRange,
+    add_canonical_compose_diagnostics, create_class_list_ir,
+};
 use crate::{CanonicalComposeSuggestionIr, ClassConflictIr, PartialClassConflictIr};
 
 fn analysis() -> LintBatchIr {

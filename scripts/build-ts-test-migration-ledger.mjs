@@ -99,7 +99,7 @@ const ledger = {
       P2: 'CLI, extension, packaging, host, and peripheral integration behavior.',
       P3: 'Performance, bundle size, examples, site, and benchmark residual risk outside the migration denominator.'
     },
-    ciGate: false
+    ciGate: true
   },
   baseline: {
     ref: baselineRef,

@@ -1,4 +1,13 @@
-use super::*;
+use super::{
+    CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalGroupEntry,
+    CompositionRecipe, EngineError, HashSet, LintSession, MatchingVariableKeys,
+    RawValueCandidateIr, UtilityLayerName, canonical_class_parts, canonical_condition_suffix,
+    canonical_variable_candidate_keys, collect_rule_declarations, css_variable_reference_name,
+    declaration_property_signature, declarations_match_after_variable_resolution,
+    has_same_canonical_rule_shape, matching_composition_recipe, merge_group_declarations,
+    normalize_composition_declarations, numeric_values_match, push_canonical_candidate,
+    rules_declaration_signature, split_top_level,
+};
 
 impl LintSession {
     pub(crate) fn suggest_canonical_class_groups(

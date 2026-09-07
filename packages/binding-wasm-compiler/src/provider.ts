@@ -21,7 +21,6 @@ interface MasterCSSCompilerWasmProviderSession {
   inspectCSS(source: string): unknown
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown
-  compileThemeCSS(source: string, options?: unknown): unknown
   analyzeCSSDependencies(source: string): unknown
   analyzeStandaloneDirectives(source: string): unknown
   mergeCSSExtractionPolicies(policies: unknown): unknown

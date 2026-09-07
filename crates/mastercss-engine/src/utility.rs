@@ -1,4 +1,10 @@
-use super::*;
+use super::{
+    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_NATIVE_VALUE_NAMESPACES,
+    CompiledVariable, ConditionFeature, HashMap, ManifestProjection, Ordering, StoredRule,
+    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
+    UtilityMatcherType, collect_css_variable_names, format_standard_number,
+    is_native_shorthand_property, normalize_css_math_functions, normalize_dynamic_value,
+};
 
 pub(crate) fn append_builtin_native_value_utilities(utilities: &mut Vec<UtilityDefinition>) {
     for (properties, variable_alias_refs) in BUILTIN_NATIVE_VALUE_NAMESPACES {

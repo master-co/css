@@ -1,4 +1,9 @@
-use super::*;
+use super::{
+    CompiledVariable, CompiledVariableMode, EngineError, EngineVariableIr, HashMap,
+    ManifestProjection, Map, MasterCssManifest, ThemeBucket, UtilityLayerName, UtilityMatcher,
+    Value, append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,
+    compile_utility_variables, split_top_level, transform_css_variable_references,
+};
 
 pub(crate) fn push_theme_declaration(
     buckets: &mut Vec<ThemeBucket>,

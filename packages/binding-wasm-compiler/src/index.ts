@@ -8,7 +8,6 @@ interface GeneratedCompilerWasmModule {
   inspectCSS(source: string): unknown
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown
-  compileThemeCSS(source: string, options?: unknown): unknown
   analyzeCSSDependencies(source: string): unknown
   analyzeStandaloneDirectives(source: string): unknown
   mergeCSSExtractionPolicies(policies: unknown): unknown
@@ -119,7 +118,6 @@ export interface CompilerWasmSession {
   inspectCSS<T = unknown>(source: string): T
   compileNativeCSS<T = unknown>(source: string, options?: unknown): T
   compileCSSDirectives<T = unknown>(source: string, options?: unknown): T
-  compileThemeCSS<T = unknown>(source: string, options?: unknown): T
   analyzeCSSDependencies<T = unknown>(source: string): T
   analyzeStandaloneDirectives<T = unknown>(source: string): T
   mergeCSSExtractionPolicies<T = unknown>(policies: unknown): T
@@ -141,7 +139,6 @@ export async function createCompilerWasmSession(
     inspectCSS: <T>(source: string) => module.inspectCSS(source) as T,
     compileNativeCSS: <T>(source: string, compileOptions?: unknown) => module.compileNativeCSS(source, compileOptions) as T,
     compileCSSDirectives: <T>(source: string, compileOptions?: unknown) => module.compileCSSDirectives(source, compileOptions) as T,
-    compileThemeCSS: <T>(source: string, compileOptions?: unknown) => module.compileThemeCSS(source, compileOptions) as T,
     analyzeCSSDependencies: <T>(source: string) => module.analyzeCSSDependencies(source) as T,
     analyzeStandaloneDirectives: <T>(source: string) => module.analyzeStandaloneDirectives(source) as T,
     mergeCSSExtractionPolicies: <T>(policies: unknown) => module.mergeCSSExtractionPolicies(policies) as T,

@@ -243,11 +243,6 @@ pub fn compile_css_directives_json(source: String, options_json: Option<String>)
 }
 
 #[napi]
-pub fn compile_theme_css_json(source: String, options_json: Option<String>) -> Result<String> {
-    compile_css_directives_json(source, options_json)
-}
-
-#[napi]
 pub fn analyze_css_dependencies_json(source: String) -> Result<String> {
     to_json(&mastercss_compiler::analyze_css_dependencies(&source))
 }

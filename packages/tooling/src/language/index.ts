@@ -54,6 +54,8 @@ export type {
   MasterCSSLanguageClassPosition,
   MasterCSSLanguageClassVariable,
   MasterCSSLanguageColorCandidate,
+  MasterCSSLanguageColorExpression,
+  MasterCSSLanguageColorFormat,
   MasterCSSLanguageColorPresentation,
   MasterCSSLanguageColorToken,
   MasterCSSLanguageColorTokens,

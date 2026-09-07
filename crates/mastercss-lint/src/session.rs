@@ -1,4 +1,11 @@
-use super::*;
+use super::{
+    CanonicalClassGroupSuggestionsIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
+    CanonicalClassSuggestionsIr, CanonicalComposeDirectiveIr, ClassDescriptor, EngineError,
+    EngineSession, HashMap, HashSet, LINT_BATCH_VERSION, LintBatchIr, LintClassListIr,
+    LintClassListPolicy, LintSession, NativeDeclarationCandidateIr, RawValueCandidatesIr, Value,
+    build_canonical_recommendation_index, class_list, collect_manifest_variables, find_conflicts,
+    find_partial_conflicts, sort_descriptors,
+};
 
 impl LintSession {
     pub fn create(manifest_json: &str) -> Result<Self, EngineError> {

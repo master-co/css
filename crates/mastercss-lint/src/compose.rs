@@ -1,4 +1,8 @@
-use super::*;
+use super::{
+    COMPOSITION_RECIPES, CanonicalComposeSuggestionIr, CanonicalComposeSuggestionKind,
+    CanonicalGroupEntry, ComposeBucket, ComposeNativeDeclaration, CompositionRecipe, HashMap,
+    HashSet, Value, split_top_level,
+};
 
 pub(crate) fn replace_first_compose_class(
     class_names: &mut [String],

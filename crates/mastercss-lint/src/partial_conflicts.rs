@@ -1,4 +1,8 @@
-use super::*;
+use super::{
+    ClassDescriptor, EngineError, EngineSession, GeneratedRuleIr, HashMap, HashSet,
+    PartialClassConflictIr, UtilityLayerName, Value, collect_rule_declarations,
+    equal_variant_scope, split_top_level,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum PartialConflictFamily {

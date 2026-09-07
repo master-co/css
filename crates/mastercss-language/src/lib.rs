@@ -133,11 +133,12 @@ pub struct LanguageInspectionIr {
     pub text: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum LanguageCompletionKind {
     Property,
     Value,
+    Function,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -164,7 +165,14 @@ pub struct LanguageCompletionIndexIr {
 #[derive(Debug, Deserialize)]
 struct MdnCompletionRegistry {
     pseudos: Vec<String>,
-    properties: HashMap<String, Vec<String>>,
+    properties: HashMap<String, Vec<MdnCompletionValue>>,
+}
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct MdnCompletionValue {
+    label: String,
+    kind: LanguageCompletionKind,
 }
 
 fn mdn_completion_registry() -> &'static MdnCompletionRegistry {
@@ -276,17 +284,20 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
             continue;
         };
         for value in property_values {
-            let label = format!("{key}:{value}");
-            let detail = format!("{property}: {value}");
-            let sort_text = format!("ccccc{value}");
+            let label = format!("{key}:{}", value.label);
+            let detail = format!("{property}: {}", value.label);
+            let sort_text = format!("ccccc{}", value.label);
             if let Some(index) = by_label.get(&label).copied() {
                 entries[index].detail.get_or_insert(detail);
                 entries[index].sort_text = Some(sort_text);
+                if value.kind == LanguageCompletionKind::Function {
+                    entries[index].kind = LanguageCompletionKind::Function;
+                }
             } else {
                 by_label.insert(label.clone(), entries.len());
                 entries.push(LanguageCompletionEntryIr {
                     label,
-                    kind: LanguageCompletionKind::Value,
+                    kind: value.kind,
                     detail: Some(detail),
                     documentation_text: None,
                     sort_text: Some(sort_text),
@@ -298,11 +309,12 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
 
     let positive_entries = entries.clone();
     for entry in positive_entries {
-        if entry.kind != LanguageCompletionKind::Value
-            || !entry.sort_text.as_deref().is_some_and(|sort_text| {
-                sort_text.starts_with("aaaa-") && !sort_text.starts_with("aaaa-color-")
-            })
-        {
+        if !matches!(
+            entry.kind,
+            LanguageCompletionKind::Value | LanguageCompletionKind::Function
+        ) || !entry.sort_text.as_deref().is_some_and(|sort_text| {
+            sort_text.starts_with("aaaa-") && !sort_text.starts_with("aaaa-color-")
+        }) {
             continue;
         }
         let Some((key, value)) = entry.label.split_once(':') else {
@@ -328,7 +340,35 @@ pub struct LanguageColorPresentationIr {
     pub version: u32,
     pub color_token: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub source_format: Option<LanguageColorFormatIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct LanguageColorFormatIr {
+    pub syntax: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub space: Option<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "camelCase")]
+pub enum LanguageColorExpressionIr {
+    Literal {
+        value: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        alpha: Option<f64>,
+    },
+    Mix {
+        space: String,
+        #[serde(skip_serializing_if = "Option::is_none")]
+        hue: Option<String>,
+        left: Box<LanguageColorExpressionIr>,
+        right: Box<LanguageColorExpressionIr>,
+        progress: f64,
+        #[serde(rename = "alphaMultiplier")]
+        alpha_multiplier: f64,
+    },
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
@@ -342,9 +382,7 @@ pub struct LanguageColorCandidateInputIr {
 #[serde(rename_all = "camelCase")]
 pub struct LanguageColorTokenIr {
     pub range: SourceRange,
-    pub value: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub alpha: Option<f64>,
+    pub expression: LanguageColorExpressionIr,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize)]
@@ -362,6 +400,7 @@ pub struct LanguageSession {
     variable_names: HashSet<String>,
 }
 
+mod color;
 mod document;
 mod formatting;
 mod positions;

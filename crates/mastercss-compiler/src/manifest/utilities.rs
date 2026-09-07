@@ -1,4 +1,8 @@
-use super::*;
+use super::variables::{
+    compile_condition, compile_selector, manifest_error, object, skip_quoted_value,
+    skip_value_comment, string_array,
+};
+use super::{CompilerError, Map, NATIVE_CSS_SHORTHANDS, Value, json};
 
 pub(super) type CompiledVariants = (Option<Value>, Map<String, Value>, Map<String, Value>);
 

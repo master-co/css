@@ -1,4 +1,12 @@
-use super::*;
+use super::utilities::{compile_utilities, compile_variants};
+use super::variables::{
+    compile_variable_conditions, compile_variables, group_variables, manifest_error, number_value,
+    object,
+};
+use super::{
+    CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
+    MANIFEST_VERSION, Map, MasterCssManifest, Value,
+};
 
 pub(super) fn merge_array_by(
     base: Option<&Value>,

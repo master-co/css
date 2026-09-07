@@ -93,5 +93,6 @@ test.concurrent('sorting', () => {
   expect(hint('text-center:')?.length).toBeGreaterThan(100)
 })
 
-test.todo('types _ should hint')
-
+test('types _ should hint', () => {
+  expect(hint('block_')?.map(({ label }) => label)).toContain(':active')
+})

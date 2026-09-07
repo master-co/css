@@ -12,7 +12,6 @@ type MasterCSSCompilerWasmProviderSession = Pick<
   | 'inspectCSS'
   | 'compileNativeCSS'
   | 'compileCSSDirectives'
-  | 'compileThemeCSS'
   | 'analyzeCSSDependencies'
   | 'analyzeStandaloneDirectives'
   | 'mergeCSSExtractionPolicies'
@@ -75,8 +74,6 @@ export async function createCompilerWasmBindingSession(
       session.compileNativeCSS(source, compileOptions),
     compileCSSDirectives: (source, compileOptions) =>
       session.compileCSSDirectives(source, compileOptions),
-    compileThemeCSS: (source, compileOptions) =>
-      session.compileThemeCSS(source, compileOptions),
     analyzeCSSDependencies: (source) => session.analyzeCSSDependencies(source),
     analyzeStandaloneDirectives: (source) => session.analyzeStandaloneDirectives(source),
     mergeCSSExtractionPolicies: (policies) => session.mergeCSSExtractionPolicies(policies),

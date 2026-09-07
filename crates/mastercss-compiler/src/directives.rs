@@ -1,4 +1,17 @@
-use super::*;
+use super::{
+    CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError,
+    CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
+    CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap, HashSet, MinifyOptions,
+    NativeClassNameCollector, NativeStyleContext, ParserOptions, PrinterOptions, StyleSheet,
+    ThemeAtRule, ThemeAtRuleParser, Visit, byte_offset_for_location, decode_css_quoted_string,
+    directive_error, extraction_policy_from_statements, filter_native_css_rules,
+    lower_custom_variant_rule, lower_managed_rule_list, lower_native_rule_list,
+    lower_native_style_rule, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
+    native_rule_list_has_directives, normalize_stylesheet_value, printed_selectors,
+    remove_css_reference_statements, remove_standalone_css_directives,
+    rewrite_managed_variant_directives, selector_source_reference, validate_compose_syntax,
+    validate_condition_variant_syntax,
+};
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_definition_rule(
@@ -70,7 +83,7 @@ pub(crate) fn lower_managed_definition_rule(
 pub fn compile_css_directives(
     source: &str,
     options: &CompileNativeCssOptions,
-) -> Result<CompileThemeCssResult, CompilerError> {
+) -> Result<CompileCssDirectivesResult, CompilerError> {
     validate_condition_variant_syntax(source, &options.from)?;
     validate_compose_syntax(source, &options.from)?;
     let (source_without_references, reference_statements) = remove_css_reference_statements(source);
@@ -241,7 +254,7 @@ pub fn compile_css_directives(
         String::new()
     };
 
-    Ok(CompileThemeCssResult {
+    Ok(CompileCssDirectivesResult {
         manifest_input,
         extraction_policy,
         class_names,
@@ -254,13 +267,4 @@ pub fn compile_css_directives(
         style_definitions: (!style_definitions.is_empty()).then_some(style_definitions),
         references: (!references.is_empty()).then_some(references),
     })
-}
-
-/// Temporary migration alias for callers that were added before the Rust
-/// compiler covered directives beyond `@theme`.
-pub fn compile_theme_css(
-    source: &str,
-    options: &CompileNativeCssOptions,
-) -> Result<CompileThemeCssResult, CompilerError> {
-    compile_css_directives(source, options)
 }

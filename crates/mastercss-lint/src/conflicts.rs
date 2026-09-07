@@ -1,4 +1,8 @@
-use super::*;
+use super::{
+    ClassConflictIr, ClassDescriptor, GeneratedRuleIr, HashSet, Ordering,
+    UNKNOWN_PROPERTY_GROUP_ORDER, UNKNOWN_PROPERTY_ORDER, UtilityLayerName,
+    compare_condition_features, get_property_order, natural_compare,
+};
 
 impl ClassDescriptor {
     pub(crate) fn unknown(class_name: &str) -> Self {

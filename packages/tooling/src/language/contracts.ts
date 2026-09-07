@@ -37,7 +37,7 @@ export interface MasterCSSDocumentAnalysisRequest {
 }
 
 export interface MasterCSSDocumentAnalysis {
-  readonly version: 1
+  readonly version: 2
   readonly classPositions: readonly MasterCSSLanguageClassPosition[]
   readonly semanticTokens: readonly SemanticTokenItem[]
   readonly semanticTokenData: readonly number[]
@@ -50,7 +50,7 @@ export interface MasterCSSFormatDirectivesRequest {
 }
 
 export interface MasterCSSFormatDirectivesResult {
-  readonly version: 1
+  readonly version: 2
   readonly edits: readonly Readonly<{
     range: Readonly<{ start: number, end: number }>
     text: string
@@ -68,7 +68,7 @@ export interface MasterCSSLanguageClass {
 }
 
 export interface MasterCSSLanguageClassifications {
-  readonly version: 1
+  readonly version: 2
   readonly variableNames: readonly string[]
   readonly classes: readonly MasterCSSLanguageClass[]
 }
@@ -92,7 +92,7 @@ export interface MasterCSSLanguageClassVariable {
 }
 
 export interface MasterCSSLanguageInspection {
-  readonly version: 1
+  readonly version: 2
   readonly className: string
   readonly valid: boolean
   readonly kind: MasterCSSLanguageClassKind
@@ -110,7 +110,7 @@ export interface MasterCSSLanguageInspection {
   readonly text: string
 }
 
-export type MasterCSSLanguageCompletionKind = 'property' | 'value'
+export type MasterCSSLanguageCompletionKind = 'property' | 'value' | 'function'
 
 export interface MasterCSSLanguageCompletionEntry {
   readonly label: string
@@ -122,13 +122,18 @@ export interface MasterCSSLanguageCompletionEntry {
 }
 
 export interface MasterCSSLanguageCompletionIndex {
-  readonly version: 1
+  readonly version: 2
   readonly classEntries: readonly MasterCSSLanguageCompletionEntry[]
 }
 
 export interface MasterCSSLanguageColorPresentation {
-  readonly version: 1
+  readonly version: 2
   readonly colorToken: string
+  readonly sourceFormat?: MasterCSSLanguageColorFormat
+}
+
+export interface MasterCSSLanguageColorFormat {
+  readonly syntax: string
   readonly space?: string
 }
 
@@ -139,11 +144,26 @@ export interface MasterCSSLanguageColorCandidate {
 
 export interface MasterCSSLanguageColorToken {
   readonly range: Readonly<{ start: number, end: number }>
-  readonly value: string
-  readonly alpha?: number
+  readonly expression: MasterCSSLanguageColorExpression
 }
 
+export type MasterCSSLanguageColorExpression =
+  | Readonly<{
+      kind: 'literal'
+      value: string
+      alpha?: number
+    }>
+  | Readonly<{
+      kind: 'mix'
+      space: string
+      hue?: string
+      left: MasterCSSLanguageColorExpression
+      right: MasterCSSLanguageColorExpression
+      progress: number
+      alphaMultiplier: number
+    }>
+
 export interface MasterCSSLanguageColorTokens {
-  readonly version: 1
+  readonly version: 2
   readonly tokens: readonly MasterCSSLanguageColorToken[]
 }

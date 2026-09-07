@@ -1,4 +1,10 @@
-use super::*;
+use super::{
+    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_VALUE_NAMESPACES, CompiledVariable,
+    EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken, EngineError,
+    EngineSession, HashSet, ManifestProjection, UtilityDefinition, UtilityEmit, UtilityLayerName,
+    UtilityMatcher, Value, add_unique_string, canonicalize_class_name, find_matching_parenthesis,
+    match_utility, selector_token_to_template, split_dynamic_value_state, utf16_len,
+};
 
 pub(crate) fn utility_completion_metadata(
     utility: &UtilityDefinition,
@@ -393,40 +399,22 @@ pub(crate) fn collect_class_completion_candidates(
     candidates
 }
 
-pub(crate) fn color_function_name(value: &str) -> Option<&str> {
-    let (name, _) = value.split_once('(')?;
-    (!name.is_empty()
-        && name
-            .chars()
-            .all(|character| character.is_ascii_alphanumeric() || matches!(character, '-' | '.')))
-    .then_some(name)
-}
-
-pub(crate) fn normalize_color_presentation_space(function_name: &str) -> Option<String> {
-    Some(
-        match function_name {
-            "rgb" | "rgba" => "srgb",
-            "hsla" => "hsl",
-            "display-p3" | "p3" => "p3",
-            "rec2020" | "rec.2020" => "rec2020",
-            "color" => return None,
-            function_name => function_name,
-        }
-        .to_owned(),
-    )
-}
-
-pub(crate) fn color_presentation_space(
+pub(crate) fn resolve_color_token_value(
     color_token: &str,
+    class_name: Option<&str>,
     manifest: &ManifestProjection,
 ) -> Option<String> {
-    if let Some(function_name) = color_function_name(color_token) {
-        return normalize_color_presentation_space(function_name);
-    }
-    let variable_token = color_token
+    let raw_variable_token = color_token
         .split_once('/')
         .map_or(color_token, |(key, _)| key);
-    let variable_key = variable_token.strip_prefix('$').unwrap_or(variable_token);
+    let variable_token = raw_variable_token
+        .strip_prefix('$')
+        .unwrap_or(raw_variable_token);
+    if let Some(class_name) = class_name
+        && let Some(value) = resolve_color_variable_value(variable_token, class_name, manifest)
+    {
+        return Some(value);
+    }
     let variable_name = manifest
         .utilities
         .iter()
@@ -435,27 +423,49 @@ pub(crate) fn color_presentation_space(
                 matches!(matcher, UtilityMatcher::Key { keys } if keys.iter().any(|key| key == "color"))
             })
         })
-        .find_map(|utility| utility.variables.get(variable_key))
+        .find_map(|utility| utility.variables.get(variable_token))
         .map(String::as_str)
         .or_else(|| {
             manifest
                 .compiled_variables
-                .contains_key(variable_key)
-                .then_some(variable_key)
-        });
-    if let Some(variable) = variable_name.and_then(|name| manifest.compiled_variables.get(name))
-        && let Some(function_name) = variable.value.as_deref().and_then(color_function_name)
-    {
-        return normalize_color_presentation_space(function_name);
+                .contains_key(variable_token)
+                .then_some(variable_token)
+        })?;
+    let variable = manifest.compiled_variables.get(variable_name)?;
+    variable.value.clone()
+}
+
+impl EngineSession {
+    pub fn resolve_color_token(
+        &self,
+        color_token: &str,
+        class_name: Option<&str>,
+    ) -> Result<Option<String>, EngineError> {
+        self.ensure_active()?;
+        Ok(resolve_color_token_value(
+            color_token,
+            class_name,
+            &self.compiled,
+        ))
     }
-    Some("srgb".into())
 }
 
 pub(crate) fn color_function_name_is_supported(name: &str) -> bool {
-    matches!(
-        name,
-        "rgb" | "rgba" | "hsl" | "hsla" | "hwb" | "lab" | "lch" | "oklab" | "oklch" | "color"
-    )
+    [
+        "rgb",
+        "rgba",
+        "hsl",
+        "hsla",
+        "hwb",
+        "lab",
+        "lch",
+        "oklab",
+        "oklch",
+        "color",
+        "color-mix",
+    ]
+    .iter()
+    .any(|supported| name.eq_ignore_ascii_case(supported))
 }
 
 pub(crate) fn is_color_identifier_character(character: char) -> bool {

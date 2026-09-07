@@ -1,4 +1,8 @@
-use super::*;
+use super::resolution::directive_error;
+use super::{
+    CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition, HashMap, HashSet, Map,
+    MergedStyleDefinition, UtilityLayerName, Value, json,
+};
 
 pub(super) fn layer_name(layer: UtilityLayerName) -> &'static str {
     match layer {

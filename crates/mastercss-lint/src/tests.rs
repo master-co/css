@@ -1,4 +1,12 @@
-use super::*;
+use std::collections::HashSet;
+
+use super::{
+    CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
+    CanonicalComposeDirectiveIr, CanonicalComposeSuggestionIr, CanonicalComposeSuggestionKind,
+    EngineSession, LINT_BATCH_VERSION, LintClassListPolicy, LintSession, PartialClassConflictIr,
+    RawValueCandidateIr, RawValuePolicy, SourceRange, ValidatorBatchIr,
+    classify_host_rule_validation,
+};
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 

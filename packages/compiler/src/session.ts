@@ -20,7 +20,6 @@ export interface BindingCompilerSession {
   readonly binding: MasterCSSCompilerBindingSession['binding']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
-  compileThemeCSS: MasterCSSCompilerBindingSession['compileThemeCSS']
   analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
   analyzeStandaloneDirectives: MasterCSSCompilerBindingSession['analyzeStandaloneDirectives']
   mergeCSSExtractionPolicies: MasterCSSCompilerBindingSession['mergeCSSExtractionPolicies']
@@ -55,8 +54,6 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
         ...(options.classes ? { classes: options.classes } : {})
       }) as CompileCSSResult)
     },
-    compileThemeCSS: (source: string, options?: MasterCSSDirectiveCompileOptions) =>
-      session.compileThemeCSS(source, options),
     analyzeCSSDependencies: (source: string) => session.analyzeCSSDependencies(source),
     analyzeStandaloneDirectives: (source: string) => session.analyzeStandaloneDirectives(source),
     mergeCSSExtractionPolicies: (

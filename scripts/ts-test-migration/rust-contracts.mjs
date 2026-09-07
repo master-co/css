@@ -69,6 +69,14 @@ function extractContractBlock(source, signature) {
   throw new Error(`Cannot locate contract block closing brace: ${signature}`)
 }
 
+function extractContractSection(source, startSignature, endSignature) {
+  const start = source.indexOf(startSignature)
+  assert.notEqual(start, -1, `Cannot locate contract section: ${startSignature}`)
+  const end = source.indexOf(endSignature, start)
+  assert.notEqual(end, -1, `Cannot locate contract section end: ${endSignature}`)
+  return source.slice(start, end)
+}
+
 export function sourceAtCommit(commit, file) {
   return git(['show', `${commit}:${file}`])
 }
@@ -129,9 +137,12 @@ function nativeTargetPackageContract(commit) {
 
 function contractSurfaceSources(commit) {
   const protocol = sourceAtCommit(commit, 'packages/binding/src/protocol.ts')
+  const compilerBinding = sourceAtCommit(commit, 'packages/binding/src/compiler-binding-contract.ts')
   const nativeLoader = sourceAtCommit(commit, 'packages/binding/src/native-loader.ts')
+  const wasmCompiler = sourceAtCommit(commit, 'packages/binding-wasm-compiler/src/index.ts')
   const wasmEngine = sourceAtCommit(commit, 'packages/binding-wasm-engine/src/index.ts')
   const language = sourceAtCommit(commit, 'crates/mastercss-language/src/lib.rs')
+  const schema = sourceAtCommit(commit, 'crates/mastercss-schema/src/lib.rs')
   const renderingOptionFiles = [
     'packages/schema/src/integration.ts',
     'packages/vite/src/options.ts',
@@ -167,6 +178,17 @@ function contractSurfaceSources(commit) {
       source: versions
     },
     {
+      id: 'native-compiler-raw-surface',
+      files: ['packages/binding/src/compiler-binding-contract.ts'],
+      source: extractContractBlock(compilerBinding, 'export interface MasterCSSCompilerBindingSession')
+    },
+    {
+      id: 'wasm-compiler-raw-surface',
+      files: ['packages/binding-wasm-compiler/src/index.ts'],
+      source: extractContractBlock(wasmCompiler, 'interface GeneratedCompilerWasmModule')
+        + extractContractBlock(wasmCompiler, 'export interface CompilerWasmSession')
+    },
+    {
       id: 'native-engine-raw-surface',
       files: ['packages/binding/src/native-loader.ts'],
       source: extractContractBlock(nativeLoader, 'export interface NativeEngineSession')
@@ -186,6 +208,29 @@ function contractSurfaceSources(commit) {
       source: extractContractBlock(protocol, 'export interface MasterCSSLanguageSemanticToken')
         + extractContractBlock(protocol, 'export interface MasterCSSLanguageDocument')
         + extractContractBlock(language, 'pub struct SemanticTokenInputIr')
+    },
+    {
+      id: 'language-batch-contract',
+      files: [
+        'packages/binding/src/protocol.ts',
+        'crates/mastercss-language/src/lib.rs',
+        'crates/mastercss-schema/src/lib.rs'
+      ],
+      source: schema.split('\n').find((line) => line.startsWith('pub const LANGUAGE_BATCH_VERSION:'))
+        + extractContractSection(
+          protocol,
+          'export type MasterCSSLanguageCompletionKind',
+          'export type MasterCSSDirectiveManifestInput'
+        )
+        + extractContractBlock(language, 'pub enum LanguageCompletionKind')
+        + extractContractBlock(language, 'pub struct LanguageCompletionEntryIr')
+        + extractContractBlock(language, 'pub struct LanguageCompletionIndexIr')
+        + extractContractBlock(language, 'pub struct LanguageColorPresentationIr')
+        + extractContractBlock(language, 'pub struct LanguageColorFormatIr')
+        + extractContractBlock(language, 'pub enum LanguageColorExpressionIr')
+        + extractContractBlock(language, 'pub struct LanguageColorCandidateInputIr')
+        + extractContractBlock(language, 'pub struct LanguageColorTokenIr')
+        + extractContractBlock(language, 'pub struct LanguageColorTokensIr')
     },
     {
       id: 'integration-rendering-options-contract',
@@ -391,11 +436,14 @@ export function validateRustRefactorContractLedger(ledger) {
     [
       'binding-version-contract',
       'integration-rendering-options-contract',
+      'language-batch-contract',
       'language-wire-contract',
+      'native-compiler-raw-surface',
       'native-engine-raw-surface',
       'native-target-package-contract',
       'public-api-contract',
       'published-package-exports',
+      'wasm-compiler-raw-surface',
       'wasm-engine-raw-surface'
     ],
     'Rust refactor contract surface inventory drifted.'

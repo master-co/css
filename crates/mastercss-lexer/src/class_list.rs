@@ -1,4 +1,4 @@
-use super::*;
+use super::{ASCII_WHITESPACE, ClassListTokenRange, SourceRange};
 
 pub fn collect_class_list_token_ranges(class_list: &str) -> Vec<ClassListTokenRange> {
     let units: Vec<u16> = class_list.encode_utf16().collect();

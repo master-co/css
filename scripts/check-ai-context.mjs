@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -91,10 +91,12 @@ export function checkRepositorySourceBudgets(root = process.cwd()) {
     encoding: 'utf8',
     maxBuffer: 16 * 1024 * 1024
   }).split('\0').filter(Boolean)
-  const files = paths.filter((path) => classify(path)).map((path) => ({
+  const files = paths
+    .filter((path) => classify(path) && existsSync(resolve(root, path)))
+    .map((path) => ({
     path,
     content: readFileSync(resolve(root, path), 'utf8')
-  }))
+    }))
   return evaluateSourceBudgets(files, policy)
 }
 
