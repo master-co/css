@@ -1,0 +1,65 @@
+{
+  "browser": "153.0.8010.12",
+  "rows": [
+    {
+      "modeId": "master-static",
+      "sidecar": false,
+      "failures": [],
+      "before": {
+        "ready": true,
+        "reported": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "runtimeStyleText": "",
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308
+        },
+        "snapshot": null
+      },
+      "result": {
+        "elapsedMs": 64.70000004768372,
+        "runtimeMutationMs": 0,
+        "runtimeGeneratedRuleCountDelta": 0,
+        "runtimeStyleRawBytesDelta": 0,
+        "domNodeCount": 308,
+        "affectedElementCount": 64,
+        "computedStyleValid": 1,
+        "cleanupValid": 1,
+        "progressiveAdopted": 0,
+        "runtimeStyleText": "",
+        "details": {
+          "affectedElementCount": 64,
+          "computedStyleValid": true,
+          "cleanupValid": true,
+          "beforeColor": "oklch(1 0 none)",
+          "afterColor": "oklch(0.5183 0.2687 266.1)",
+          "targetIndex": 1,
+          "validation": "backgroundColor"
+        }
+      },
+      "after": {
+        "ready": true,
+        "reported": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "runtimeStyleText": "",
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308
+        },
+        "snapshot": null
+      }
+    }
+  ]
+}

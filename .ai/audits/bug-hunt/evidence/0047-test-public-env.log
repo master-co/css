@@ -1,0 +1,22 @@
+✔ resolves version from a tag on HEAD (0.818792ms)
+✔ resolves release version from a remote channel tag when local tags are unavailable (0.148625ms)
+✔ ignores peeled remote tag refs (0.068ms)
+✔ keeps release channels isolated when resolving remote tags (0.053083ms)
+✔ falls back to the latest reachable release tag (0.064042ms)
+✔ resolves stable release versions for main (0.093625ms)
+✔ falls back to a commit-derived prerelease when no tags exist for non-release refs (0.052958ms)
+✔ throws for release refs when no release tag can be resolved (0.205ms)
+✔ allows overriding the site version (0.269708ms)
+✔ supports legacy release tags when no channel is known (0.127375ms)
+✔ uses repo-owned defaults for the rc Cloudflare Pages build (0.1105ms)
+✔ uses localhost for local development even on rc (0.079541ms)
+✔ allows overriding the site locale prefix mode (0.058458ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 136.837
+$ tsx --test utils/public-env.test.ts

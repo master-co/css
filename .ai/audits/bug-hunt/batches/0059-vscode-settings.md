@@ -1,0 +1,29 @@
+# 0059 Actual VS Code settings transitions
+
+- Previous0056–0058 goal turn yielded executed browser/LSP evidence; this continuation is progress, not an impasse. HEAD3d2f47768 and0016 source snapshot unchanged, foreign Site edits preserved.
+- Scope actual staged extension on existing VS Code using disposable profile/extensions/workspace. Toggle active→always→off→active semantic modes; verify current hover, edit document after setting restarts, toggle directive formatting false→true→false→true. No0038 paused work, product/fixture/installation changes.
+- Read root instructions/index/package-routing/testing/accuracy, vscode package/AI/staging/build/source and0016 host material. Runtime semantics follow existing LSP/service source and prior0058 controls.
+- [Wrapper](../repros/vscode-settings-host.mjs) builds only an isolated vscode package with `pnpm exec tsdown`, avoiding normal generate; stages via existing helper. [Host test](../repros/vscode-settings-host.cjs) uses actual VS Code APIs, writes only disposable workspace settings. Native CSS formatter disabled in that workspace to isolate directive edit behavior; no edits applied to CSS source.
+- Command:`python3 .ai/audits/bug-hunt/repros/isolated-package.py packages/vscode node /Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.mjs`. [Source hashes](../evidence/0059-source-hashes.json); completed; feature controls PASS andBH-0035 confirmed below.
+
+## Completed setting controls and harness exclusions
+
+- Fresh isolated build/staged host on VS Code1.136.1 (0016 used1.135.0). [Successful run](../evidence/0059-vscode-contexts.log), [result](../evidence/0059-vscode-host.json):active30 token-data integers→always35→off0→active30; subsequent documentv2 hover renders display:grid. Directive formattingfalse/true/false/true returns0/1/0/1edits and only enabled mode normalizes `bg:transparent !` to `bg:transparent!`. Host exits0 and both staging/package trees cleaned.
+- First [launch](../evidence/0059-vscode-host.log) failed before extension loading: macOS IPC path exceeded103chars. Shortened own temporary prefix tobh59.
+- First command name was wrong ([result](../evidence/0059-wrong-command.json)); corrected from installed VS Code extensionHostProcess API mapping to `vscode.provideDocumentSemanticTokens`. Then [enumeration assumption](../evidence/0059-enumeration-assumption.json) incorrectly required that API alias appear in getCommands. Removed only this invalid precondition; actual command calls now execute and return token arrays.
+- Initial [single-context assertion](../evidence/0059-single-context.json) incorrectly expected always to include more tokens than active for a document with one class-string context. Existing service test/source explicitly highlights the whole active class string. Added a second separate element only in the disposable test input; observed30/35 difference. These are harness errors, not product findings.
+- Actual setting run logs unhandled `eslint.restart` command-not-found rejections while features continue. The same-host control below classifies the setting-only error. No claim that unrelated VS Code AgentHost logs or AccountPolicyGate lines identify a Master CSS bug or satisfy the user's separate identity-verification gate.
+
+## BH-0035 · P3 · Settings restart invokes missing ESLint command
+
+- [Control log](../evidence/0059-vscode-control-final.log), [host result](../evidence/0059-vscode-control.json), [comparison](../evidence/0059-restart-comparison.json). Same fresh staged extension/profile, no ESLint command registered. Manually executing `masterCSS.restart` gives0unhandled errors; changing registered `embeddedSyntaxHighlighting` fromactive toalways gives1unhandled `eslint.restart` command-not-found rejection. Both retain working hover; process exits0. Full settings run independently shows repeated same errors.
+- Source`packages/vscode/src/extension.min.ts:407–423` unconditionally invokes optional ESLint command and leaves returned promise unhandled. Existing manual restart at380–395 already checks registered commands, providing the native control and expected optional-extension behavior. Impact is host error noise on ordinary settings updates, not demonstrated feature loss or host crash.
+- Repro command:prefix the wrapper command with`BH_VSCODE_CONTROL=1`. It prints manual/setting boundaries; log comparison requires0/1 matching rejections. No synthetic ESLint command invocation or production monkey-patch.
+- First control tried language-server-only `verbose`, which is absent from generated VS Code contributions; VS Code refused the workspace settings write ([result](../evidence/0059-unregistered-control-setting.json), [log](../evidence/0059-vscode-control.log)). Corrected test to registered embeddedSyntaxHighlighting. That failed setup is excluded from product evidence.
+- Proposed fix outside current scope: reuse the guarded optional-command path for configuration changes or conditionally await/catch a registered ESLint restart. No fix made.
+- 0059 completed. Actual bounded setting transitions covered; exhaustive cancellation/configuration races and manual corpus remain unclaimed. No persistent package edits or new package-local lint obligation.0038 verification pause and12blocked coverage units remain unfinished.
+
+## End-of-batch validation
+
+- `pnpm run check:ai-context` PASS ([log](../evidence/0059-ai-context.log)); [final checks](../evidence/0059-final-checks.json) reconcile5565 source entries, only superseded0044/0047 Site snapshots differ.35findings (P1=7/P2=22/P3=6);63checked/12blocked. No missing links/budget violation.
+- [Inventory](../evidence/0059-file-inventory.json) updated; foreign tracked diff remains onlysite/next.config.js and internal stays clean. All own host/staging processes exited and disposable trees cleaned. No commit or product/fixture/dependency changes.

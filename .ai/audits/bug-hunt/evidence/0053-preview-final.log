@@ -1,0 +1,349 @@
+[
+  {
+    "control": "sequential duplicate rejected",
+    "pass": true
+  },
+  {
+    "control": "concurrent independent roots",
+    "pass": true
+  },
+  {
+    "round": 0,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-0.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-0.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-1.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-1.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-2.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-2.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-3.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-3.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-4.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-4.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-5.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-5.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-6.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-6.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-7.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-7.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-8.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-8.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-9.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/concurrent-9.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 0,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 1,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 2,
+    "fulfilled": 2,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-cO1gDp/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      }
+    ]
+  }
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: BH-0031: a one-use preview token must accept exactly one simultaneous apply
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/mcp-preview-concurrency.mts:62:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

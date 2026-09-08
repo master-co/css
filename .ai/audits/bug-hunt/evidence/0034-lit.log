@@ -1,0 +1,19 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-5p8kbcny/examples/lit", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--input-type=module", "-e", "import{spawnSync}from\"node:child_process\";for(const [cmd,args]of[[\"pnpm\",[\"run\",\"build\"]],[\"node\",[\"/Users/aron/master/css/.ai/audits/bug-hunt/repros/browser-smoke.mjs\",\"dist\",\"lit\"]]]){const r=spawnSync(cmd,args,{stdio:\"inherit\"});if(r.status)process.exit(r.status)}"]}
+$ tsc && vite build
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 53 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                               0.92 kB │ gzip:   0.47 kB
+dist/assets/master-css-manifest-DnUvY66m.json               120.83 kB │ gzip:  15.96 kB
+dist/assets/mastercss_binding_wasm_engine_bg-C3eCwc19.wasm  867.09 kB │ gzip: 267.39 kB
+dist/assets/index-Dkrc8kIN.css                                3.86 kB │ gzip:   1.42 kB
+dist/assets/provider-M3k4TfgL.js                              0.09 kB │ gzip:   0.10 kB
+dist/assets/provider-Dc6FszRE.js                              4.66 kB │ gzip:   1.89 kB
+dist/assets/mastercss_binding_wasm_engine-DySaBOzq.js        10.92 kB │ gzip:   3.47 kB
+dist/assets/index-CEKjHfCi.js                                60.91 kB │ gzip:  19.16 kB
+
+✓ built in 2.02s
+{"kind":"lit","title":"Lit + Master CSS","heading":"Lit + Master CSS","errors":[]}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-5p8kbcny"}

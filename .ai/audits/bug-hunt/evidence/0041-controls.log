@@ -1,0 +1,2 @@
+Stats finite/empty/even median + fixture valid/duplicate/missing + variant isolation PASS
+Command success/error output/timeout termination PASS

@@ -1,0 +1,48 @@
+{
+  "originalReportStatus": 1,
+  "browser": "153.0.8010.12",
+  "rows": [
+    {
+      "sidecar": false,
+      "failures": [
+        {
+          "url": "http://127.0.0.1:61827/artifacts/mastercss_binding_wasm_engine_bg.wasm",
+          "status": 404
+        }
+      ],
+      "ready": false,
+      "hidden": false,
+      "colorProbeAlign": "start",
+      "reported": {
+        "runtimeScriptLoadedMs": 79.09999990463257,
+        "runtimeReadyMs": 0,
+        "runtimeBootstrapMs": 0,
+        "runtimeObserveMs": 0,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0
+      },
+      "snapshot": null
+    },
+    {
+      "sidecar": true,
+      "failures": [],
+      "ready": true,
+      "hidden": false,
+      "colorProbeAlign": "center",
+      "reported": {
+        "runtimeScriptLoadedMs": 64.60000014305115,
+        "runtimeReadyMs": 387.60000014305115,
+        "runtimeBootstrapMs": 323,
+        "runtimeObserveMs": 89.60000014305115,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0
+      },
+      "snapshot": {
+        "rules": 46,
+        "cssBytes": 1940
+      }
+    }
+  ]
+}

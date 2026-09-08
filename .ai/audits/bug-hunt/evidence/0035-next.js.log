@@ -1,0 +1,36 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-pxtefgps/examples/next.js", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/ssr-example.mjs", "next"]}
+$ next build
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.ts took 399ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 6.2s
+  Running TypeScript ...
+  Finished TypeScript in 320ms ...
+  Collecting page data using 6 workers ...
+  Generating static pages using 6 workers (0/5) ...
+  Generating static pages using 6 workers (1/5) 
+  Generating static pages using 6 workers (2/5) 
+  Generating static pages using 6 workers (3/5) 
+✓ Generating static pages using 6 workers (5/5) in 543ms
+  Finalizing page optimization ...
+  Running onBuildComplete from @master/css-next
+
+Route (app)
+┌ ○ /
+├ ○ /_not-found
+└ ƒ /api/hello
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+{"kind":"next","htmlBytes":14469,"hasMasterStyle":true}
+{"kind":"runtime","title":"Create Next App","heading":"Docs ->","errors":[]}
+▲ Next.js 16.3.4
+- Local:         http://localhost:62657
+- Network:       http://10.0.0.168:62657
+✓ Ready in 213ms
+✓ Running next.config.ts took 276ms
+
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-pxtefgps"}

@@ -1,0 +1,17 @@
+✔ transforms local master.co bitmap paths through Cloudflare Images (0.4655ms)
+✔ defaults image quality to 75 (0.09225ms)
+✔ keeps unsupported and already optimized source types unchanged (0.068ms)
+✔ keeps local and non-master preview hosts unchanged (0.056625ms)
+✔ keeps third-party remote URLs unchanged (0.051584ms)
+✔ uses NEXT_PUBLIC_URL when called as a Next image loader (0.06825ms)
+✔ enables custom loader only for Cloudflare master.co builds by default (0.068625ms)
+✔ honors image transformation overrides (0.035542ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 129.030125
+$ tsx --test utils/cloudflare-image-loader.test.ts

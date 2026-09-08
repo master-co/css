@@ -1,0 +1,152 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-7otygxcq/packages/vscode", "command": ["node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.mjs"]}
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/tmp/master-css-bh-isolated-7otygxcq/packages/vscode/tsdown.config.ts 
+ℹ entry: src/extension.min.ts
+ℹ target: node24.0.0
+ℹ entry: src/server.min.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ dist/extension.min.js  1.46 MB
+ℹ 1 files, total: 1.46 MB
+✔ Build complete in 267ms
+ℹ dist/server.min.js  1.34 MB
+ℹ 1 files, total: 1.34 MB
+✔ Build complete in 272ms
+[90m[main 2026-09-08T14:21:53.004Z][0m StorageMainService: creating application shared storage
+[90m[main 2026-09-08T14:21:53.103Z][0m [shared storage] Creating shared storage database at ':memory:' (wasCreated: true)
+[90m[main 2026-09-08T14:21:53.103Z][0m [shared storage] Initializing fallback application storage (path: in-memory)
+[90m[main 2026-09-08T14:21:53.165Z][0m [shared storage] Fallback application storage initialized with 3 items
+[90m[main 2026-09-08T14:21:54.145Z][0m update#setState idle
+[AgentHost:renderer] Acquiring MessagePort to agent host...
+[ChatModelSelection] event=no-model-at-toolbar-build surface="workbench" sessionKey=undefined conversationKey=undefined modelTarget=undefined storageKey="chat.currentLanguageModel.panel" widgetViewKind="view"
+[90m[main 2026-09-08T14:21:54.353Z][0m AgentHostProcessManager: agent host started
+[AgentHost:renderer] MessagePort acquired, creating client...
+Started local extension host with pid 55473.
+[ChatModelSelection] event=no-model-at-toolbar-build surface="workbench" sessionKey="local" conversationKey="vscode-chat-session://local/YmNhOWZlYTUtNzkxMS00NDEyLThmYjItM2MxMDU4OTI2MjA2" modelTarget=undefined storageKey="chat.currentLanguageModel.panel" widgetViewKind="view"
+[AccountPolicyGate] apply: state=inactive, reason=undefined, isRestricted=false
+Started initializing default profile extensions in extensions installation folder. file:///var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/extensions
+[91m[main 2026-09-08T14:21:54.706Z][0m [AgentHost:stderr] (node:55470) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `Code Helper --trace-deprecation ...` to show where the warning was created)
+
+[ChatModelSelection] event=no-model-at-toolbar-build surface="workbench" sessionKey="local" conversationKey="vscode-chat-session://local/YmNhOWZlYTUtNzkxMS00NDEyLThmYjItM2MxMDU4OTI2MjA2" modelTarget=undefined storageKey="chat.currentLanguageModel.panel" widgetViewKind="view"
+[AgentHost:renderer] Protocol connection established; clientId=326157e9-fd0c-42c5-8c0f-feb0cfc071e5
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] Clearing authentication for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] Clearing authentication for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+[AgentHost] No token resolved for resource: https://api.github.com
+[AgentHost] No token resolved for resource: https://api.github.com/repos
+Completed initializing default profile extensions in extensions installation folder. file:///var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/extensions
+Loading development extension at /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/darwin-arm64
+(node:55115) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+(Use `Code --trace-deprecation ...` to show where the warning was created)
+Settings Sync: Account status changed from uninitialized to unavailable
+Unknown channel: agentHostClientByokLm
+Unknown channel: agentHostClientProxy
+[Master CSS] Using bundled language server because /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/workspace does not resolve @master/css-language-server/server.
+[Master CSS] MasterCSSWorkspace package resolution warning for @master/css: Cannot find module '@master/css'
+Require stack:
+- /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/workspace/package.json
+[Master CSS] Loading server from /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/bh59-L8GSpy/darwin-arm64/dist/server.min.js
+AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+
+  assert(commands.includes('vscode.provideDocumentSemanticTokens'))
+
+	at Object.run (/Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.cjs:26:5)
+[90m[main 2026-09-08T14:21:55.876Z][0m Extension host with pid 55473 exited with code: 0, signal: unknown.
+Unknown channel: agentHostClientProxy
+VS Code settings host exit: 1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.mjs:37:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-7otygxcq"}

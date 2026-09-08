@@ -1,0 +1,24 @@
+$ tsx --test scripts/css-variable-references.test.ts && tsx scripts/verify-css-contract.ts
+✔ collects active CSS variable references including nested fallbacks (0.727ms)
+✔ ignores malformed variable functions (0.060708ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 117.112584
+Site CSS contract mismatch.
+Static route / changed contract.
+Inline CSS bytes changed: 39a39466273e80667e9d02da3f02829586cb81df3aec64b446feffa8e17f10da → 18d151bdd1e0f24935bdd88fa53cec86f65daf167629f9cce6f6c70bf29ee515.
+First changed CSS segment: 2 (1eb52fcabb6737c1 → 34c6c68e8ae7f37a).
+First changed byte: 77.
+expected: "r-scheme:light;--color-text-disabled:var(--color-neutral-40);--color-line-base:oklch(0% 0 none / .12)}"
+actual:   "r-scheme:light;--color-text-disabled:var(--color-neutral-40)}"
+Actual production output:
+  1142 static HTML routes
+  206 deduplicated hydration contracts
+  1901 deduplicated generated rules
+  2202 deduplicated exact CSS segments
+[ELIFECYCLE] Command failed with exit code 1.

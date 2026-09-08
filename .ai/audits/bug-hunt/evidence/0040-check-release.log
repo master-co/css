@@ -1,0 +1,37 @@
+$ node scripts/release-config-check.mjs
+ℹ Add pnpm release for packages/astro
+ℹ Add pnpm release for packages/binding
+ℹ Add pnpm release for packages/binding-darwin-arm64
+ℹ Add pnpm release for packages/binding-darwin-x64
+ℹ Add pnpm release for packages/binding-linux-arm64-gnu
+ℹ Add pnpm release for packages/binding-linux-arm64-musl
+ℹ Add pnpm release for packages/binding-linux-x64-gnu
+ℹ Add pnpm release for packages/binding-linux-x64-musl
+ℹ Add pnpm release for packages/binding-wasm-compiler
+ℹ Add pnpm release for packages/binding-wasm-engine
+ℹ Add pnpm release for packages/binding-wasm-tooling
+ℹ Add pnpm release for packages/binding-win32-arm64-msvc
+ℹ Add pnpm release for packages/binding-win32-x64-msvc
+ℹ Add pnpm release for packages/cli
+ℹ Add pnpm release for packages/compiler
+ℹ Add pnpm release for packages/create
+ℹ Add pnpm release for packages/css
+ℹ Add pnpm release for packages/css-sv
+ℹ Add pnpm release for packages/eslint-config
+ℹ Add pnpm release for packages/eslint-plugin
+ℹ Add pnpm release for packages/figma
+ℹ Add pnpm release for packages/language-server
+ℹ Add pnpm release for packages/language-service
+ℹ Add pnpm release for packages/mcp
+ℹ Add pnpm release for packages/next
+ℹ Add pnpm release for packages/nuxt
+ℹ Add pnpm release for packages/preset
+ℹ Add pnpm release for packages/runtime
+ℹ Add pnpm release for packages/schema
+ℹ Add pnpm release for packages/server
+ℹ Add pnpm release for packages/svelte
+ℹ Add pnpm release for packages/tooling
+ℹ Add pnpm release for packages/vite
+ℹ Add pnpm release for packages/vscode
+ℹ Add pnpm release for packages/webpack
+Validated 35 release package(s) in dependency-safe order.

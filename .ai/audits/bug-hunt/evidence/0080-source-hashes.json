@@ -1,0 +1,8 @@
+{
+  "benchmarks/runtime-style-invalidation-diagnostics/run-report.ts": "78b8daa83c1fa4eaed71a9bce6b4302c53748eec8a413b0b84e8885573eff168",
+  "benchmarks/shared/runtime-style-invalidation-diagnostics.ts": "318a25b77ea13ff1efd4e7d41d1367fbbdfe28cb1d7f3d847fc1b9b3c5390bc0",
+  "benchmarks/shared/runtime-style-invalidation-config.ts": "efb82278a1be80404508fb9ddb2bc7071bdeb82450a727d4a31def6223101627",
+  "benchmarks/shared/runtime-style-invalidation-variants.ts": "4a0d6de40b20bce26b12b277a950652bce5a108bb57ea363bd2114b857c93e81",
+  "benchmarks/shared/runtime-style-invalidation-samples.ts": "c18cadae654a051e07343c61acac6d168fb8b93d24c53636f1e153ad8c915acd",
+  "benchmarks/shared/interaction-cost.ts": "c7009c07f3216ad4571280a8a9d21ff1bb080fd450240ead37dd394a70dea02e"
+}

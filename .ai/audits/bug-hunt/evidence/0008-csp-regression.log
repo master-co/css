@@ -1,0 +1,41 @@
+
+Running 1 test using 1 worker
+
+(node:64906) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/1] [chromium] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied
+  1) [chromium] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied 
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+      Object {
+    -   "error": null,
+    +   "cause": "Evaluating a string as JavaScript violates the following Content Security Policy directive because 'unsafe-eval' is not an allowed source of script: script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' http://127.0.0.1:*\".
+    + ",
+    +   "error": "Cannot load the Master CSS hydration manifest from http://127.0.0.1:57270/audit-hydration.json.",
+        "fetchOK": true,
+        "importVersion": 1,
+      }
+
+      27 |     }
+      28 |   }, { loaderURL, manifestURL })
+    > 29 |   expect(result).toEqual({ fetchOK: true, importVersion: 1, error: null })
+         |                  ^
+      30 | })
+      31 |
+        at /Users/aron/master/css/packages/runtime/e2e/bug-hunt-hydration.test.ts:29:18
+
+    Error Context: test-results/e2e-bug-hunt-hydration-BH--8f4f3-owed-but-unsafe-eval-denied-chromium/error-context.md
+
+
+  1 failed
+    [chromium] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied 
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/runtime
+

@@ -1,0 +1,14 @@
+{"initial":[{"path":"/Users/aron/master/css/examples/eslint-legacy/validation.html","messages":[]}]}
+{"boundary":[{"ruleId":"@master/css/sort-classes","severity":1,"message":"Sort classes into the expected order: \"block\".","line":1,"column":13,"messageId":"invalidClassOrder","endLine":1,"endColumn":24,"fix":{"range":[12,23],"text":"block"}},{"ruleId":"@master/css/no-conflicting-classes","severity":1,"message":"Remove class \"block\"; it is overridden by later class \"block\".","line":1,"column":13,"messageId":"collisionClass","endLine":1,"endColumn":18,"fix":{"range":[12,23],"text":"block"}}]}
+{
+  "unit": "eslint-legacy",
+  "files": 1,
+  "diagnostics": [
+    {
+      "path": "/Users/aron/master/css/examples/eslint-legacy/validation.html",
+      "messages": []
+    }
+  ],
+  "inMemoryFixedFiles": 1,
+  "convergence": "PASS"
+}

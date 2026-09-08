@@ -1,0 +1,10 @@
+{
+  "packages/nuxt/package.json": "82bb12809a4c91e223c00d8b9d9170f1b2ebe934647828f2f45193a0e0a4d9ee",
+  "packages/nuxt/src/module.ts": "d115d848f77864ba94ec2e06024820de95b569bc76874b053b66c2a1dfeaa793",
+  "packages/nuxt/src/runtime/css-runtime.ts": "42efd3f82fb9a008af962540b73a6de14f4791fa7cfc8037da05cd2dd0f13654",
+  "packages/nuxt/tests/fixtures/runtime/app.vue": "892bdd33350e54e25a150a74bdb156297cb1ef3096997e31f66e27aa073c2b4e",
+  "packages/nuxt/tests/fixtures/runtime/app.css": "bc767e3c70862fe49620d4ad338dcd2790879a2619dc43275ad2a533ec037eec",
+  "packages/nuxt/tests/fixtures/runtime/nuxt.config.ts": "7b87b935141e00c5affdde3fbbafee2bc4a7e44f05daf57bfaafd12a00654b5b",
+  "packages/vite/src/core.ts": "1fc390336fb2cccfb5f2fb5cafda41c5400fbf410d41985c2a29b795fb6c6a67",
+  "packages/vite/src/plugins/style-entry.ts": "097d2045ca3be6a237f6692fda36873330a390544a91d8d6e9b872668f216504"
+}

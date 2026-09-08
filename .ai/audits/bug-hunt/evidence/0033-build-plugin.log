@@ -1,0 +1,11 @@
+$ tsdown
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/packages/figma/tsdown.config.ts 
+ℹ entry: src/plugin.min.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 1 files
+ℹ dist/plugin.min.js  86.66 kB │ gzip: 34.47 kB
+ℹ 1 files, total: 86.66 kB
+✔ Build complete in 38ms

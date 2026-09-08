@@ -1,0 +1,6 @@
+{
+  "benchmarks/docs-page-css-size/shared.ts": "22bbff2f75a68f97676ade8c4d281f699e5d8db0d491064021718bc6e4af08c2",
+  "benchmarks/docs-page-css-size/docs-page-css-size.bench.ts": "309037a2d1a87d49ad8aa950e9b34e2ab29dab19ed019b0997dfbdc939108d85",
+  "benchmarks/docs-page-css-size/input.json": "681de1a855e5dba4018f206246ae813ffbc0aa1e5646f2ca91970f42f932473f",
+  "benchmarks/docs-page-css-size/snapshot.json": "9b6f3bb35a8946d4ef6ae849162b42f3614935ace720ed2d6b2d2218561c2c9e"
+}

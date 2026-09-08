@@ -1,0 +1,7 @@
+{
+  "benchmarks/shared/css-structure.ts": "673018c30551eeda34516dacec25e10b8811653ec7a3927ea55be07432ac03bd",
+  "benchmarks/css-structure/css-structure.bench.ts": "513a3ecaaa2deabb8d9f391c30c3e9ced44c9c046f92529803c0008e5af9ef07",
+  "benchmarks/shared/static-build.ts": "bbcbd12f418133ae0570ddf2500ee49fa4a1e1c44c67b3be00aaa7b0cbe635d4",
+  "benchmarks/shared/bytes.ts": "214c13c5236b01915f94a88039444834850be5977bc07cbc9b65223c745ff49f",
+  "benchmarks/fixtures/static.ts": "ebe40d5c6a96021b2c1a40c8bfce39f7138a620a997b0e776d1fefe2364d4724"
+}

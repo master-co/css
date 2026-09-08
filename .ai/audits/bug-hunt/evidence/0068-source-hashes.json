@@ -1,0 +1,9 @@
+{
+  "benchmarks/css-output-size/css-output-size.bench.ts": "c2e838114d9938d7392145bd02b51204d0464354dc4698bbaf34f50880b016d8",
+  "benchmarks/shared/static-build.ts": "bbcbd12f418133ae0570ddf2500ee49fa4a1e1c44c67b3be00aaa7b0cbe635d4",
+  "benchmarks/shared/bytes.ts": "214c13c5236b01915f94a88039444834850be5977bc07cbc9b65223c745ff49f",
+  "benchmarks/shared/runner.ts": "0052fe4ec210a3c8721f25ebd66c092243a082285aa4ea01ff0f8e0484a54883",
+  "benchmarks/shared/report.ts": "5ae3dc0ac1f055ca86a163513dc481898fcd597003aadb5f48e52a8b533573ef",
+  "benchmarks/shared/stats.ts": "327cbac45fb3679cf39287285062ff17529e209de6736322949b8f6218fbe5c4",
+  "benchmarks/fixtures/static.ts": "ebe40d5c6a96021b2c1a40c8bfce39f7138a620a997b0e776d1fefe2364d4724"
+}

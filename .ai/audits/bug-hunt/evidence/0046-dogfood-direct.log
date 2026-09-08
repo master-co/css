@@ -1,0 +1,235 @@
+[WebServer] (node:36888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+
+Running 12 tests using 4 workers
+
+(node:36903) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:36902) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:36905) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+(node:36904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources
+[2/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration
+[3/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration
+[4/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources
+  1) [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "48px"
+    Received: "0px"
+
+      26 |   }, mobile)
+      27 |
+    > 28 |   expect(styles.marginTop).toBe(styles.expectedMarginTop)
+         |                            ^
+      29 |   expect(styles.scrollMarginTop).toBe(mobile ? '60px' : '100px')
+      30 |
+      31 |   const proseRuleText = (await readCssom(page)).text.replace(/\s/g, '')
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:28:28
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-desktop-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  2) [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "oklch(1 0 none)"
+    Received: "lab(100 0 0)"
+
+      10 |   expect(light.surfaceRaised).not.toBe('')
+      11 |   expect(light.white).toBe('')
+    > 12 |   expect(light.background).toBe(light.expectedBackground)
+         |                            ^
+      13 |   expect(light.cssText).not.toContain('--color-white:')
+      14 |   expect(light.cssText).not.toContain('var(--color-white)')
+      15 |
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:12:28
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-desktop-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:36943) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[5/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:41:1 › introduction sidebar keeps descendant selectors and vertical flow
+[6/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:101:1 › site semantic classes preserve cross-layer and variable alias behavior
+  3) [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "oklch(1 0 none)"
+    Received: "lab(100 0 0)"
+
+      10 |   expect(light.surfaceRaised).not.toBe('')
+      11 |   expect(light.white).toBe('')
+    > 12 |   expect(light.background).toBe(light.expectedBackground)
+         |                            ^
+      13 |   expect(light.cssText).not.toContain('--color-white:')
+      14 |   expect(light.cssText).not.toContain('var(--color-white)')
+      15 |
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:12:28
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-mobile-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/inline-theme-inline-mode-t-e51d3-t-emitting-inline-resources-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+  4) [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration 
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "24px"
+    Received: "0px"
+
+      26 |   }, mobile)
+      27 |
+    > 28 |   expect(styles.marginTop).toBe(styles.expectedMarginTop)
+         |                            ^
+      29 |   expect(styles.scrollMarginTop).toBe(mobile ? '60px' : '100px')
+      30 |
+      31 |   const proseRuleText = (await readCssom(page)).text.replace(/\s/g, '')
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:28:28
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-mobile-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-guide-uses-the-re-86826-ose-cascade-after-hydration-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:36959) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[7/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:41:1 › introduction sidebar keeps descendant selectors and vertical flow
+[8/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order
+[9/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:101:1 › site semantic classes preserve cross-layer and variable alias behavior
+[10/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order
+  5) [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order 
+
+    Error: expect(locator).toBeAttached() failed
+
+    Locator: getByRole('heading', { name: 'How layers control the cascade' })
+    Expected: attached
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeAttached" getByRole('heading', { name: 'How layers control the cascade' }) with timeout 10000ms
+      - waiting for getByRole('heading', { name: 'How layers control the cascade' })
+
+
+      147 |   const failures = capturePageFailures(page)
+      148 |   await page.goto('/en/guide/cascade-layers')
+    > 149 |   await expect(page.getByRole('heading', { name: 'How layers control the cascade' })).toBeAttached()
+          |                                                                                       ^
+      150 |
+      151 |   const layers = await readCssom(page)
+      152 |   const topLevel = layers.topLevel.map((rule) => rule.replace(/\s/g, ''))
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:149:87
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-desktop-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-desktop-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-desktop-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:36993) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[11/12] [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:168:1 › Play loads the bundled Rust compiler Wasm and renders selector classes
+  6) [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order 
+
+    Error: expect(locator).toBeAttached() failed
+
+    Locator: getByRole('heading', { name: 'How layers control the cascade' })
+    Expected: attached
+    Timeout: 10000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeAttached" getByRole('heading', { name: 'How layers control the cascade' }) with timeout 10000ms
+      - waiting for getByRole('heading', { name: 'How layers control the cascade' })
+
+
+      147 |   const failures = capturePageFailures(page)
+      148 |   await page.goto('/en/guide/cascade-layers')
+    > 149 |   await expect(page.getByRole('heading', { name: 'How layers control the cascade' })).toBeAttached()
+          |                                                                                       ^
+      150 |
+      151 |   const layers = await readCssom(page)
+      152 |   const topLevel = layers.topLevel.map((rule) => rule.replace(/\s/g, ''))
+        at /Users/aron/master/css/tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:149:87
+
+    Error Context: tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-mobile-chromium/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-mobile-chromium/trace.zip
+    Usage:
+
+        npx playwright show-trace tmp/master-css-bh-site-browser-scy9iwy4/test-results/site-css-cascade-layer-pag-276dd-r-bytes-and-statement-order-mobile-chromium/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+
+(node:37006) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[12/12] [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:168:1 › Play loads the bundled Rust compiler Wasm and renders selector classes
+  6 failed
+    [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources 
+    [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration 
+    [desktop-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order 
+    [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/inline-theme.spec.ts:3:1 › inline mode tokens resolve without emitting inline resources 
+    [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:3:1 › guide uses the responsive prose cascade after hydration 
+    [mobile-chromium] › tmp/master-css-bh-site-browser-scy9iwy4/tests/dogfood/site-css.spec.ts:146:1 › cascade layer page preserves layer bytes and statement order 
+  1 skipped
+  5 passed (16.9s)

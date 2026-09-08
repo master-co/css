@@ -1,0 +1,45 @@
+{
+  "vscode": "1.136.1",
+  "records": [
+    {
+      "stage": "active",
+      "tokenData": [
+        0,
+        12,
+        2,
+        2,
+        0,
+        0,
+        2,
+        1,
+        9,
+        4096,
+        0,
+        1,
+        3,
+        1,
+        0,
+        0,
+        4,
+        5,
+        1,
+        0,
+        0,
+        5,
+        1,
+        9,
+        4194848,
+        0,
+        1,
+        5,
+        8,
+        32
+      ],
+      "hover": "```css\n@layer theme {\n  :root {\n    --color-red-60: oklch(60.94% .2501 29.2);\n    --color-red-50: oklch(62.82% .25 28.6)\n  }\n  @media (prefers-color-scheme:light) {\n    :root {\n      --color-red: var(--color-red-60)\n    }\n  }\n  @media (prefers-color-scheme:dark) {\n    :root {\n      --color-red: var(--color-red-50)\n    }\n  }\n}\n@layer utilities {\n  .fg\\:red {\n    color: var(--color-red)\n  }\n}\n```"
+    },
+    {
+      "error": "Error: tokens after always: [0,12,2,2,0,0,2,1,9,4096,0,1,3,1,0,0,4,5,1,0,0,5,1,9,4194848,0,1,5,8,32]",
+      "stack": "Error: tokens after always: [0,12,2,2,0,0,2,1,9,4096,0,1,3,1,0,0,4,5,1,0,0,5,1,9,4194848,0,1,5,8,32]\n\tat poll (/Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.cjs:19:11)\n\tat async Object.run (/Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.cjs:44:20)"
+    }
+  ]
+}

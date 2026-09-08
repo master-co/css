@@ -1,0 +1,12 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-mgkh3sk3/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/build-performance-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-mgkh3sk3/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  23:26:38
+   Duration  51.74s (tests 99%, transform 1%)
+
+{"variants":16,"artifacts":16,"samples":32,"validation":"PASS"}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-mgkh3sk3"}

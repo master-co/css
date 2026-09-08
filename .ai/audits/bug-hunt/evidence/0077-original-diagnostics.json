@@ -1,0 +1,171 @@
+{
+  "originalReportStatus": 1,
+  "originalDiagnostics": [
+    {
+      "path": "dynamic-master-static-dom-append-remove/round-0/interaction.json",
+      "data": {
+        "result": {
+          "elapsedMs": 342.10000014305115,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 48,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 48,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "appendedCount": 48
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 0.198,
+          "layoutMs": 0,
+          "paintMs": 0.1,
+          "longTaskCount": 0
+        },
+        "consoleWarnings": []
+      }
+    },
+    {
+      "path": "dynamic-master-static-existing-class-toggle/round-0/interaction.json",
+      "data": {
+        "result": {
+          "elapsedMs": 290.7999999523163,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 64,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 64,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "beforeColor": "oklch(1 0 none)",
+            "afterColor": "oklch(0.5183 0.2687 266.1)",
+            "targetIndex": 1,
+            "validation": "backgroundColor"
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 2.016,
+          "layoutMs": 0,
+          "paintMs": 3.2849999999999997,
+          "longTaskCount": 0
+        },
+        "consoleWarnings": []
+      }
+    },
+    {
+      "path": "dynamic-master-static-mutation-cleanup-cycle/round-0/interaction.json",
+      "data": {
+        "result": {
+          "elapsedMs": 406.90000009536743,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 192,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 192,
+            "mutationCycleCount": 4,
+            "appendCount": 48,
+            "removedNodeCount": 192,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "cleanupValidDuringTrace": true,
+            "cleanupValidAfterFlush": true,
+            "runtimeClean": true,
+            "runtimeCleanDuringTrace": true,
+            "runtimeCleanAfterFlush": true,
+            "strategyFlushResult": null,
+            "forcedRetainedCleanup": {
+              "beforeRetainedClassCount": 0,
+              "removedClassCount": 0,
+              "durationMs": 0,
+              "afterRetainedClassCount": 0
+            }
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 3.521,
+          "layoutMs": 3.7209999999999996,
+          "paintMs": 8.604999999999999,
+          "longTaskCount": 0
+        },
+        "consoleWarnings": []
+      }
+    },
+    {
+      "path": "dynamic-master-static-theme-switch/round-0/interaction.json",
+      "data": {
+        "result": {
+          "elapsedMs": 418.09999990463257,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 64,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 64,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "beforeColor": "oklch(0.5183 0.2687 266.1)",
+            "afterColor": "oklch(0.2733 0.0536 264.8)",
+            "targetIndex": 0,
+            "validation": "backgroundColor"
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 1.709,
+          "layoutMs": 0,
+          "paintMs": 3.295,
+          "longTaskCount": 0
+        },
+        "consoleWarnings": []
+      }
+    },
+    {
+      "path": "dynamic-master-static-viewport-resize/round-0/interaction.json",
+      "data": {
+        "result": {
+          "elapsedMs": 817.1602079999993,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 64,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 64,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "beforeWidth": 1180,
+            "resizedWidth": 872
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 359.8349999999999,
+          "layoutMs": 7.466,
+          "paintMs": 8.805,
+          "longTaskCount": 1
+        },
+        "consoleWarnings": []
+      }
+    }
+  ]
+}

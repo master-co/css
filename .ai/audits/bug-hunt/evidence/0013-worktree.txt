@@ -1,0 +1,226 @@
+ m internal
+ M site/.gitignore
+ M site/app/[locale]/guide/cascade-layers/content.mdx
+ M site/app/[locale]/guide/conditional-queries/content.mdx
+ M site/app/[locale]/guide/directives/content.mdx
+ M site/app/[locale]/guide/scanning-latent-classes/content.mdx
+ M site/app/[locale]/guide/state-selectors/content.mdx
+ M site/app/[locale]/guide/style-declarations/content.mdx
+ M site/app/[locale]/guide/variables-and-modes/content.mdx
+ M site/app/[locale]/reference/accent-color/content.mdx
+ M site/app/[locale]/reference/align-content/content.mdx
+ M site/app/[locale]/reference/align-items/content.mdx
+ M site/app/[locale]/reference/align-self/content.mdx
+ M site/app/[locale]/reference/animation-delay/content.mdx
+ M site/app/[locale]/reference/animation-direction/content.mdx
+ M site/app/[locale]/reference/animation-duration/content.mdx
+ M site/app/[locale]/reference/animation-fill-mode/content.mdx
+ M site/app/[locale]/reference/animation-iteration-count/content.mdx
+ M site/app/[locale]/reference/animation-name/content.mdx
+ M site/app/[locale]/reference/animation-play-state/content.mdx
+ M site/app/[locale]/reference/animation-timing-function/content.mdx
+ M site/app/[locale]/reference/animation/content.mdx
+ M site/app/[locale]/reference/appearance/content.mdx
+ M site/app/[locale]/reference/aspect-ratio/content.mdx
+ M site/app/[locale]/reference/backdrop-filter/content.mdx
+ M site/app/[locale]/reference/background-attachment/content.mdx
+ M site/app/[locale]/reference/background-blend-mode/content.mdx
+ M site/app/[locale]/reference/background-clip/content.mdx
+ M site/app/[locale]/reference/background-color/content.mdx
+ M site/app/[locale]/reference/background-image/content.mdx
+ M site/app/[locale]/reference/background-origin/content.mdx
+ M site/app/[locale]/reference/background-position/content.mdx
+ M site/app/[locale]/reference/background-repeat/content.mdx
+ M site/app/[locale]/reference/background-size/content.mdx
+ M site/app/[locale]/reference/background/content.mdx
+ M site/app/[locale]/reference/border-collapse/content.mdx
+ M site/app/[locale]/reference/border-color/content.mdx
+ M site/app/[locale]/reference/border-image-outset/content.mdx
+ M site/app/[locale]/reference/border-image-repeat/content.mdx
+ M site/app/[locale]/reference/border-image-slice/content.mdx
+ M site/app/[locale]/reference/border-image-source/content.mdx
+ M site/app/[locale]/reference/border-image-width/content.mdx
+ M site/app/[locale]/reference/border-image/content.mdx
+ M site/app/[locale]/reference/border-radius/content.mdx
+ M site/app/[locale]/reference/border-style/content.mdx
+ M site/app/[locale]/reference/border-width/content.mdx
+ M site/app/[locale]/reference/border/content.mdx
+ M site/app/[locale]/reference/box-decoration-break/content.mdx
+ M site/app/[locale]/reference/box-shadow/content.mdx
+ M site/app/[locale]/reference/box-sizing/content.mdx
+ M site/app/[locale]/reference/break-after/content.mdx
+ M site/app/[locale]/reference/break-before/content.mdx
+ M site/app/[locale]/reference/break-inside/content.mdx
+ M site/app/[locale]/reference/caret-color/content.mdx
+ M site/app/[locale]/reference/clear/content.mdx
+ M site/app/[locale]/reference/clip-path/content.mdx
+ M site/app/[locale]/reference/color/content.mdx
+ M site/app/[locale]/reference/column-span/content.mdx
+ M site/app/[locale]/reference/columns/content.mdx
+ M site/app/[locale]/reference/contain/content.mdx
+ M site/app/[locale]/reference/content/content.mdx
+ M site/app/[locale]/reference/counter-increment/content.mdx
+ M site/app/[locale]/reference/counter-reset/content.mdx
+ M site/app/[locale]/reference/counter-set/content.mdx
+ M site/app/[locale]/reference/cursor/content.mdx
+ M site/app/[locale]/reference/direction/content.mdx
+ M site/app/[locale]/reference/display/content.mdx
+ M site/app/[locale]/reference/fill/content.mdx
+ M site/app/[locale]/reference/filter/content.mdx
+ M site/app/[locale]/reference/flex-basis/content.mdx
+ M site/app/[locale]/reference/flex-basis/syntaxes.ts
+ M site/app/[locale]/reference/flex-direction/content.mdx
+ M site/app/[locale]/reference/flex-grow/content.mdx
+ M site/app/[locale]/reference/flex-shrink/content.mdx
+ M site/app/[locale]/reference/flex-wrap/content.mdx
+ M site/app/[locale]/reference/flex/content.mdx
+ M site/app/[locale]/reference/float/content.mdx
+ M site/app/[locale]/reference/font-family/content.mdx
+ M site/app/[locale]/reference/font-feature-settings/content.mdx
+ M site/app/[locale]/reference/font-size/content.mdx
+ M site/app/[locale]/reference/font-smooth/content.mdx
+ M site/app/[locale]/reference/font-style/content.mdx
+ M site/app/[locale]/reference/font-variant-numeric/content.mdx
+ M site/app/[locale]/reference/font-weight/content.mdx
+ M site/app/[locale]/reference/gap/content.mdx
+ M site/app/[locale]/reference/grid-area/content.mdx
+ M site/app/[locale]/reference/grid-auto-columns/content.mdx
+ M site/app/[locale]/reference/grid-auto-flow/content.mdx
+ M site/app/[locale]/reference/grid-auto-rows/content.mdx
+ M site/app/[locale]/reference/grid-column/content.mdx
+ M site/app/[locale]/reference/grid-columns/content.mdx
+ M site/app/[locale]/reference/grid-row/content.mdx
+ M site/app/[locale]/reference/grid-rows/content.mdx
+ M site/app/[locale]/reference/grid-template-areas/content.mdx
+ M site/app/[locale]/reference/grid-template-columns/content.mdx
+ M site/app/[locale]/reference/grid-template-rows/content.mdx
+ M site/app/[locale]/reference/grid-template/content.mdx
+ M site/app/[locale]/reference/grid/content.mdx
+ M site/app/[locale]/reference/height/content.mdx
+ M site/app/[locale]/reference/hyphens/content.mdx
+ M site/app/[locale]/reference/inset/content.mdx
+ M site/app/[locale]/reference/isolation/content.mdx
+ M site/app/[locale]/reference/justify-content/content.mdx
+ M site/app/[locale]/reference/justify-items/content.mdx
+ M site/app/[locale]/reference/justify-self/content.mdx
+ M site/app/[locale]/reference/layout.tsx
+ M site/app/[locale]/reference/letter-spacing/content.mdx
+ M site/app/[locale]/reference/line-clamp/content.mdx
+ M site/app/[locale]/reference/line-height/content.mdx
+ M site/app/[locale]/reference/list-style-image/content.mdx
+ M site/app/[locale]/reference/list-style-position/content.mdx
+ M site/app/[locale]/reference/list-style-type/content.mdx
+ M site/app/[locale]/reference/list-style/content.mdx
+ M site/app/[locale]/reference/margin/content.mdx
+ M site/app/[locale]/reference/mask-image/content.mdx
+ M site/app/[locale]/reference/max-height/content.mdx
+ M site/app/[locale]/reference/max-size/content.mdx
+ M site/app/[locale]/reference/max-width/content.mdx
+ M site/app/[locale]/reference/metadata.ts
+ M site/app/[locale]/reference/min-height/content.mdx
+ M site/app/[locale]/reference/min-size/content.mdx
+ M site/app/[locale]/reference/min-width/content.mdx
+ M site/app/[locale]/reference/mix-blend-mode/content.mdx
+ M site/app/[locale]/reference/object-fit/content.mdx
+ M site/app/[locale]/reference/object-position/content.mdx
+ M site/app/[locale]/reference/opacity/content.mdx
+ M site/app/[locale]/reference/order/content.mdx
+ M site/app/[locale]/reference/outline-color/content.mdx
+ M site/app/[locale]/reference/outline-offset/content.mdx
+ M site/app/[locale]/reference/outline-style/content.mdx
+ M site/app/[locale]/reference/outline-width/content.mdx
+ M site/app/[locale]/reference/outline/content.mdx
+ M site/app/[locale]/reference/overflow-wrap/content.mdx
+ M site/app/[locale]/reference/overflow/content.mdx
+ M site/app/[locale]/reference/overscroll-behavior/content.mdx
+ M site/app/[locale]/reference/padding/components/Overview.tsx
+ M site/app/[locale]/reference/padding/content.mdx
+ M site/app/[locale]/reference/page.tsx
+ M site/app/[locale]/reference/place-content/content.mdx
+ M site/app/[locale]/reference/place-items/content.mdx
+ M site/app/[locale]/reference/place-self/content.mdx
+ M site/app/[locale]/reference/pointer-events/content.mdx
+ M site/app/[locale]/reference/position/content.mdx
+ M site/app/[locale]/reference/resize/content.mdx
+ M site/app/[locale]/reference/screen-readers/content.mdx
+ M site/app/[locale]/reference/scroll-behavior/content.mdx
+ M site/app/[locale]/reference/scroll-margin/content.mdx
+ M site/app/[locale]/reference/scroll-padding/content.mdx
+ M site/app/[locale]/reference/scroll-snap-align/content.mdx
+ M site/app/[locale]/reference/scroll-snap-stop/content.mdx
+ M site/app/[locale]/reference/scroll-snap-type/content.mdx
+ M site/app/[locale]/reference/shape-image-threshold/content.mdx
+ M site/app/[locale]/reference/shape-margin/content.mdx
+ M site/app/[locale]/reference/shape-outside/content.mdx
+ M site/app/[locale]/reference/size/content.mdx
+ M site/app/[locale]/reference/stroke-width/content.mdx
+ M site/app/[locale]/reference/stroke/content.mdx
+ M site/app/[locale]/reference/text-align/content.mdx
+ M site/app/[locale]/reference/text-decoration-color/content.mdx
+ M site/app/[locale]/reference/text-decoration-line/content.mdx
+ M site/app/[locale]/reference/text-decoration-style/content.mdx
+ M site/app/[locale]/reference/text-decoration-thickness/content.mdx
+ M site/app/[locale]/reference/text-decoration/content.mdx
+ M site/app/[locale]/reference/text-fill-color/content.mdx
+ M site/app/[locale]/reference/text-indent/content.mdx
+ M site/app/[locale]/reference/text-orientation/content.mdx
+ M site/app/[locale]/reference/text-overflow/content.mdx
+ M site/app/[locale]/reference/text-rendering/content.mdx
+ M site/app/[locale]/reference/text-shadow/content.mdx
+ M site/app/[locale]/reference/text-size/content.mdx
+ M site/app/[locale]/reference/text-stroke-color/content.mdx
+ M site/app/[locale]/reference/text-stroke-width/content.mdx
+ M site/app/[locale]/reference/text-stroke/content.mdx
+ M site/app/[locale]/reference/text-transform/content.mdx
+ M site/app/[locale]/reference/text-underline-offset/content.mdx
+ M site/app/[locale]/reference/text-wrap/content.mdx
+ M site/app/[locale]/reference/touch-action/content.mdx
+ M site/app/[locale]/reference/transform-box/content.mdx
+ M site/app/[locale]/reference/transform-origin/content.mdx
+ M site/app/[locale]/reference/transform-style/content.mdx
+ M site/app/[locale]/reference/transform/content.mdx
+ M site/app/[locale]/reference/transition-delay/content.mdx
+ M site/app/[locale]/reference/transition-duration/content.mdx
+ M site/app/[locale]/reference/transition-property/content.mdx
+ M site/app/[locale]/reference/transition-timing-function/content.mdx
+ M site/app/[locale]/reference/transition/content.mdx
+ M site/app/[locale]/reference/user-drag/content.mdx
+ M site/app/[locale]/reference/user-select/content.mdx
+ M site/app/[locale]/reference/vertical-align/content.mdx
+ M site/app/[locale]/reference/visibility/content.mdx
+ M site/app/[locale]/reference/white-space/content.mdx
+ M site/app/[locale]/reference/width/content.mdx
+ M site/app/[locale]/reference/will-change/content.mdx
+ M site/app/[locale]/reference/word-break/content.mdx
+ M site/app/[locale]/reference/word-spacing/content.mdx
+ M site/app/[locale]/reference/writing-mode/content.mdx
+ M site/app/[locale]/reference/z-index/content.mdx
+ M site/app/globals.css
+ M site/components/SyntaxTr.tsx
+ M site/layouts/doc.tsx
+ M site/navigation.tsx
+ M site/package.json
+ M site/prepare.ts
+ M site/scripts/generate-llms-txt.ts
+?? .ai/audits/
+?? crates/mastercss-compiler/tests/
+?? crates/mastercss-engine/tests/
+?? crates/mastercss-language/tests/
+?? crates/mastercss-lexer/tests/
+?? crates/mastercss-render/tests/
+?? packages/runtime/e2e/bug-hunt-frame.test.ts
+?? packages/runtime/e2e/bug-hunt-hydration.test.ts
+?? packages/server/tests/bug-hunt.test.ts
+?? packages/tooling/tests/language/bug-hunt.test.ts
+?? packages/tooling/tests/scanner/bug-hunt.test.ts
+?? packages/tooling/tests/source/bug-hunt.test.ts
+?? site/app/[locale]/guide/cascade-layers/contract.mdx
+?? site/app/[locale]/guide/conditional-queries/contract.mdx
+?? site/app/[locale]/guide/directives/contract.mdx
+?? site/app/[locale]/guide/scanning-latent-classes/contract.mdx
+?? site/app/[locale]/guide/state-selectors/contract.mdx
+?? site/app/[locale]/guide/style-declarations/contract.mdx
+?? site/app/[locale]/guide/variables-and-modes/contract.mdx
+?? site/app/[locale]/reference/[...entry]/
+?? site/reference/
+?? site/styles/reference.css

@@ -1,0 +1,1423 @@
+{
+  "schemaVersion": 1,
+  "suite": "css-output-size",
+  "generatedAt": "2026-09-08T15:08:27.443Z",
+  "environment": {
+    "os": {
+      "platform": "darwin",
+      "release": "25.6.0",
+      "arch": "arm64"
+    },
+    "node": "v24.20.0",
+    "cpu": {
+      "model": "Apple M3 Max",
+      "count": 16
+    }
+  },
+  "packages": [
+    {
+      "name": "@master/css",
+      "version": "workspace:^"
+    },
+    {
+      "name": "@master/css-cli",
+      "version": "workspace:^"
+    },
+    {
+      "name": "@master/css-vite",
+      "version": "workspace:^"
+    },
+    {
+      "name": "tailwindcss",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "@tailwindcss/cli",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "@tailwindcss/vite",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "vite",
+      "version": "^8.2.2"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "minimal",
+      "name": "Minimal",
+      "purpose": "Small useful page or landing section.",
+      "stress": "Framework overhead, cold-start cost, and minimum payload.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Not representative of dense application UI."
+      ]
+    },
+    {
+      "id": "docs",
+      "name": "Docs",
+      "purpose": "Dense article, navigation, code blocks, and tables.",
+      "stress": "Documentation layout, typography, and nested content.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Does not model frequent runtime mutation."
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "purpose": "Repeated cards, tables, filters, charts, and states.",
+      "stress": "Rule reuse, duplicated utilities, and large DOM.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost",
+        "interaction-cost",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Chart visuals are fixture placeholders, not a chart-library benchmark."
+      ]
+    },
+    {
+      "id": "stress-css",
+      "name": "Stress CSS",
+      "purpose": "Controlled small, medium, and large CSS outputs.",
+      "stress": "Browser style calculation as CSS volume grows.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost"
+      ],
+      "limits": [
+        "Intentionally artificial CSS volume."
+      ]
+    }
+  ],
+  "adapters": [
+    {
+      "id": "master-static",
+      "name": "Master CSS static",
+      "family": "master-css"
+    },
+    {
+      "id": "tailwind-cli",
+      "name": "Tailwind CSS CLI",
+      "family": "tailwind-css"
+    },
+    {
+      "id": "tailwind-vite",
+      "name": "Tailwind CSS Vite",
+      "family": "tailwind-css"
+    }
+  ],
+  "variants": [
+    {
+      "id": "minimal-master-static-cli",
+      "fixtureId": "minimal",
+      "adapterId": "master-static",
+      "label": "minimal / Master CSS static CLI"
+    },
+    {
+      "id": "minimal-master-static-vite",
+      "fixtureId": "minimal",
+      "adapterId": "master-static",
+      "label": "minimal / Master CSS static Vite"
+    },
+    {
+      "id": "minimal-tailwind-cli",
+      "fixtureId": "minimal",
+      "adapterId": "tailwind-cli",
+      "label": "minimal / Tailwind CSS CLI"
+    },
+    {
+      "id": "minimal-tailwind-vite",
+      "fixtureId": "minimal",
+      "adapterId": "tailwind-vite",
+      "label": "minimal / Tailwind CSS Vite"
+    },
+    {
+      "id": "docs-master-static-cli",
+      "fixtureId": "docs",
+      "adapterId": "master-static",
+      "label": "docs / Master CSS static CLI"
+    },
+    {
+      "id": "docs-master-static-vite",
+      "fixtureId": "docs",
+      "adapterId": "master-static",
+      "label": "docs / Master CSS static Vite"
+    },
+    {
+      "id": "docs-tailwind-cli",
+      "fixtureId": "docs",
+      "adapterId": "tailwind-cli",
+      "label": "docs / Tailwind CSS CLI"
+    },
+    {
+      "id": "docs-tailwind-vite",
+      "fixtureId": "docs",
+      "adapterId": "tailwind-vite",
+      "label": "docs / Tailwind CSS Vite"
+    },
+    {
+      "id": "dashboard-master-static-cli",
+      "fixtureId": "dashboard",
+      "adapterId": "master-static",
+      "label": "dashboard / Master CSS static CLI"
+    },
+    {
+      "id": "dashboard-master-static-vite",
+      "fixtureId": "dashboard",
+      "adapterId": "master-static",
+      "label": "dashboard / Master CSS static Vite"
+    },
+    {
+      "id": "dashboard-tailwind-cli",
+      "fixtureId": "dashboard",
+      "adapterId": "tailwind-cli",
+      "label": "dashboard / Tailwind CSS CLI"
+    },
+    {
+      "id": "dashboard-tailwind-vite",
+      "fixtureId": "dashboard",
+      "adapterId": "tailwind-vite",
+      "label": "dashboard / Tailwind CSS Vite"
+    },
+    {
+      "id": "stress-css-master-static-cli",
+      "fixtureId": "stress-css",
+      "adapterId": "master-static",
+      "label": "stress-css / Master CSS static CLI"
+    },
+    {
+      "id": "stress-css-master-static-vite",
+      "fixtureId": "stress-css",
+      "adapterId": "master-static",
+      "label": "stress-css / Master CSS static Vite"
+    },
+    {
+      "id": "stress-css-tailwind-cli",
+      "fixtureId": "stress-css",
+      "adapterId": "tailwind-cli",
+      "label": "stress-css / Tailwind CSS CLI"
+    },
+    {
+      "id": "stress-css-tailwind-vite",
+      "fixtureId": "stress-css",
+      "adapterId": "tailwind-vite",
+      "label": "stress-css / Tailwind CSS Vite"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "css-raw-bytes",
+      "label": "CSS raw bytes",
+      "unit": "B",
+      "description": "Raw bytes of generated CSS files concatenated in output-file order."
+    },
+    {
+      "id": "css-gzip-bytes",
+      "label": "CSS gzip bytes",
+      "unit": "B",
+      "description": "Gzip bytes for the generated CSS payload."
+    },
+    {
+      "id": "css-brotli-bytes",
+      "label": "CSS brotli bytes",
+      "unit": "B",
+      "description": "Brotli bytes for the generated CSS payload."
+    },
+    {
+      "id": "css-file-count",
+      "label": "Generated CSS files",
+      "unit": "count",
+      "description": "Number of CSS files emitted by the production output."
+    }
+  ],
+  "samples": [
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 5178
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 1919
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 1631
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 5179
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 1920
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 1630
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 9350
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 2645
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 2252
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 7882
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 2475
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 2108
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 5903
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 2175
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 1853
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 5904
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 2176
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 1854
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 12169
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 3076
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 2628
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 10190
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 2887
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 2474
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 6101
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 2134
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 1800
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 6102
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 2135
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 1801
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 10667
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 2872
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 2432
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 8897
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 2689
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 2298
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 11779
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 3088
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 2077
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 11780
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 3089
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 2077
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 17258
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 3725
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 2573
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 12896
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 3478
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 2389
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 1
+    }
+  ],
+  "summary": [
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-master-static-cli",
+      "unit": "B",
+      "min": 5178,
+      "median": 5178,
+      "mean": 5178,
+      "max": 5178,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-master-static-cli",
+      "unit": "B",
+      "min": 1919,
+      "median": 1919,
+      "mean": 1919,
+      "max": 1919,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-master-static-cli",
+      "unit": "B",
+      "min": 1631,
+      "median": 1631,
+      "mean": 1631,
+      "max": 1631,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-master-static-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-master-static-vite",
+      "unit": "B",
+      "min": 5179,
+      "median": 5179,
+      "mean": 5179,
+      "max": 5179,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-master-static-vite",
+      "unit": "B",
+      "min": 1920,
+      "median": 1920,
+      "mean": 1920,
+      "max": 1920,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-master-static-vite",
+      "unit": "B",
+      "min": 1630,
+      "median": 1630,
+      "mean": 1630,
+      "max": 1630,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-master-static-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "B",
+      "min": 9350,
+      "median": 9350,
+      "mean": 9350,
+      "max": 9350,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "B",
+      "min": 2645,
+      "median": 2645,
+      "mean": 2645,
+      "max": 2645,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "B",
+      "min": 2252,
+      "median": 2252,
+      "mean": 2252,
+      "max": 2252,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "B",
+      "min": 7882,
+      "median": 7882,
+      "mean": 7882,
+      "max": 7882,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "B",
+      "min": 2475,
+      "median": 2475,
+      "mean": 2475,
+      "max": 2475,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "B",
+      "min": 2108,
+      "median": 2108,
+      "mean": 2108,
+      "max": 2108,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-master-static-cli",
+      "unit": "B",
+      "min": 5903,
+      "median": 5903,
+      "mean": 5903,
+      "max": 5903,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-master-static-cli",
+      "unit": "B",
+      "min": 2175,
+      "median": 2175,
+      "mean": 2175,
+      "max": 2175,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-master-static-cli",
+      "unit": "B",
+      "min": 1853,
+      "median": 1853,
+      "mean": 1853,
+      "max": 1853,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-master-static-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-master-static-vite",
+      "unit": "B",
+      "min": 5904,
+      "median": 5904,
+      "mean": 5904,
+      "max": 5904,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-master-static-vite",
+      "unit": "B",
+      "min": 2176,
+      "median": 2176,
+      "mean": 2176,
+      "max": 2176,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-master-static-vite",
+      "unit": "B",
+      "min": 1854,
+      "median": 1854,
+      "mean": 1854,
+      "max": 1854,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-master-static-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-tailwind-cli",
+      "unit": "B",
+      "min": 12169,
+      "median": 12169,
+      "mean": 12169,
+      "max": 12169,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-tailwind-cli",
+      "unit": "B",
+      "min": 3076,
+      "median": 3076,
+      "mean": 3076,
+      "max": 3076,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-tailwind-cli",
+      "unit": "B",
+      "min": 2628,
+      "median": 2628,
+      "mean": 2628,
+      "max": 2628,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-tailwind-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "docs-tailwind-vite",
+      "unit": "B",
+      "min": 10190,
+      "median": 10190,
+      "mean": 10190,
+      "max": 10190,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "docs-tailwind-vite",
+      "unit": "B",
+      "min": 2887,
+      "median": 2887,
+      "mean": 2887,
+      "max": 2887,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "docs-tailwind-vite",
+      "unit": "B",
+      "min": 2474,
+      "median": 2474,
+      "mean": 2474,
+      "max": 2474,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "docs-tailwind-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "B",
+      "min": 6101,
+      "median": 6101,
+      "mean": 6101,
+      "max": 6101,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "B",
+      "min": 2134,
+      "median": 2134,
+      "mean": 2134,
+      "max": 2134,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "B",
+      "min": 1800,
+      "median": 1800,
+      "mean": 1800,
+      "max": 1800,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "B",
+      "min": 6102,
+      "median": 6102,
+      "mean": 6102,
+      "max": 6102,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "B",
+      "min": 2135,
+      "median": 2135,
+      "mean": 2135,
+      "max": 2135,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "B",
+      "min": 1801,
+      "median": 1801,
+      "mean": 1801,
+      "max": 1801,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "B",
+      "min": 10667,
+      "median": 10667,
+      "mean": 10667,
+      "max": 10667,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "B",
+      "min": 2872,
+      "median": 2872,
+      "mean": 2872,
+      "max": 2872,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "B",
+      "min": 2432,
+      "median": 2432,
+      "mean": 2432,
+      "max": 2432,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "B",
+      "min": 8897,
+      "median": 8897,
+      "mean": 8897,
+      "max": 8897,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "B",
+      "min": 2689,
+      "median": 2689,
+      "mean": 2689,
+      "max": 2689,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "B",
+      "min": 2298,
+      "median": 2298,
+      "mean": 2298,
+      "max": 2298,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "B",
+      "min": 11779,
+      "median": 11779,
+      "mean": 11779,
+      "max": 11779,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "B",
+      "min": 3088,
+      "median": 3088,
+      "mean": 3088,
+      "max": 3088,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "B",
+      "min": 2077,
+      "median": 2077,
+      "mean": 2077,
+      "max": 2077,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "B",
+      "min": 11780,
+      "median": 11780,
+      "mean": 11780,
+      "max": 11780,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "B",
+      "min": 3089,
+      "median": 3089,
+      "mean": 3089,
+      "max": 3089,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "B",
+      "min": 2077,
+      "median": 2077,
+      "mean": 2077,
+      "max": 2077,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "B",
+      "min": 17258,
+      "median": 17258,
+      "mean": 17258,
+      "max": 17258,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "B",
+      "min": 3725,
+      "median": 3725,
+      "mean": 3725,
+      "max": 3725,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "B",
+      "min": 2573,
+      "median": 2573,
+      "mean": 2573,
+      "max": 2573,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-raw-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "B",
+      "min": 12896,
+      "median": 12896,
+      "mean": 12896,
+      "max": 12896,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-gzip-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "B",
+      "min": 3478,
+      "median": 3478,
+      "mean": 3478,
+      "max": 3478,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-brotli-bytes",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "B",
+      "min": 2389,
+      "median": 2389,
+      "mean": 2389,
+      "max": 2389,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "css-file-count",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "count",
+      "min": 1,
+      "median": 1,
+      "mean": 1,
+      "max": 1,
+      "sampleCount": 1
+    }
+  ],
+  "limits": [
+    "This suite measures generated CSS artifacts only; it does not measure browser parse, style recalculation, layout, paint, or interaction cost.",
+    "Master CSS and Tailwind CSS fixtures target equivalent rendered UI intent, not identical class strings.",
+    "CLI and Vite variants use their own production command paths and should be compared with setup labels visible."
+  ],
+  "artifacts": [
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/minimal-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 5178,
+      "gzipBytes": 1919,
+      "brotliBytes": 1631,
+      "sha256": "2a5e9c947b33ed1578bb3aa0351de71af1a8f7d8032ef00fd821fd69453b0bbe"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/minimal-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 5179,
+      "gzipBytes": 1920,
+      "brotliBytes": 1630,
+      "sha256": "d4a478716d50513c2944406c37108650cd333dd5d5404e34ab9b20360c258bcc"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/minimal-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 9350,
+      "gzipBytes": 2645,
+      "brotliBytes": 2252,
+      "sha256": "97c86036589158b6af326c1d9659d06db561c95e1374ce0902fc696fe81db17c"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/minimal-tailwind-vite/round-0/dist/assets/index-DCCw00xG.css",
+      "rawBytes": 7882,
+      "gzipBytes": 2475,
+      "brotliBytes": 2108,
+      "sha256": "0630b3ed357b67ebf7b15043b06b3adff4ef04d1a7de0f1bb5f0f3b26c8f47d8"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/docs-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 5903,
+      "gzipBytes": 2175,
+      "brotliBytes": 1853,
+      "sha256": "c16cebc977bd76962a00cf242dee77d1c8c9499f79bd713d1555ee80837bddef"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/docs-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 5904,
+      "gzipBytes": 2176,
+      "brotliBytes": 1854,
+      "sha256": "453c33a9393c8ab35595fb13fc128a3b72d72a4e53bf6eaf64bb5cee761a2a4b"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/docs-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 12169,
+      "gzipBytes": 3076,
+      "brotliBytes": 2628,
+      "sha256": "8cf1d11e55afefecc219556677cfa570af7a671e5edcb19a5e39910b096a72ac"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/docs-tailwind-vite/round-0/dist/assets/index-C2iiAeRG.css",
+      "rawBytes": 10190,
+      "gzipBytes": 2887,
+      "brotliBytes": 2474,
+      "sha256": "84f0d379a39adb7905aa39d25adf4af7a405b3c1bcd85a1216b48dae517d1409"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/dashboard-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 6101,
+      "gzipBytes": 2134,
+      "brotliBytes": 1800,
+      "sha256": "532685761c7d543fc19f868c58fc19d836ee24a2dd31806e7a45e2a9f638a028"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/dashboard-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 6102,
+      "gzipBytes": 2135,
+      "brotliBytes": 1801,
+      "sha256": "6625c1e4c451e942d9aa0d64f65b55e56f6b22680b4d05bd26699466d4acd9e9"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/dashboard-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 10667,
+      "gzipBytes": 2872,
+      "brotliBytes": 2432,
+      "sha256": "f9d9a4209be325cbe877cd1c7bdc4cadd38557c6a67bf897c7890186c878d6c5"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/dashboard-tailwind-vite/round-0/dist/assets/index-a2ZcXpe2.css",
+      "rawBytes": 8897,
+      "gzipBytes": 2689,
+      "brotliBytes": 2298,
+      "sha256": "8c2aa5bf4be693022871b5d35df00b3918130113fdc46a200bbc20c78eaa8d6a"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/stress-css-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 11779,
+      "gzipBytes": 3088,
+      "brotliBytes": 2077,
+      "sha256": "d9bc2c0b229418f275487aea26172fd3f0d3cda33375f52bdec46b048f819cf4"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/stress-css-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 11780,
+      "gzipBytes": 3089,
+      "brotliBytes": 2077,
+      "sha256": "88bad5ac3f0c234fe6c19ad4fc8f3a5961c15886a1c329d5753e438853554da5"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/stress-css-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 17258,
+      "gzipBytes": 3725,
+      "brotliBytes": 2573,
+      "sha256": "656aa6a7b509a889a6d5e8216b6d6e436c7b2c4e6a27e5e173eae8b7cba50ab0"
+    },
+    {
+      "path": "benchmarks/.results/css-output-size/workspaces/stress-css-tailwind-vite/round-0/dist/assets/index-DLJLPjLO.css",
+      "rawBytes": 12896,
+      "gzipBytes": 3478,
+      "brotliBytes": 2389,
+      "sha256": "a616b232d01d3d478accdd9e532b8e7e4e8816a2f3599fc2f9bf7379a70adb45"
+    }
+  ]
+}

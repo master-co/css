@@ -1,0 +1,30 @@
+$ NODE_OPTIONS=--conditions=react-server tsx --test "utils/*.test.ts"
+✔ reused default sessions return independent trees and retain custom transformers (443.525917ms)
+✔ custom manifests are isolated and caller-owned sessions remain usable (10.010041ms)
+✔ highlightCode renders Master CSS semantic spans only for CSS directive class lists (367.221375ms)
+✔ highlightCode leaves guide theme native values to TextMate without marking comments (0.846792ms)
+✔ highlightCode renders Master CSS semantic spans in HTML class attributes (64.730209ms)
+✔ highlightCode renders Master CSS semantic spans in TSX class attributes (55.331625ms)
+✔ highlightCode treats mcss snippets as plaintext with class-list semantic overlay (4.075458ms)
+✔ highlightCode does not render Master CSS semantic spans for native-only CSS (3.966583ms)
+✔ highlightCode preserves authored block indentation for code block dedent (0.687959ms)
+✔ highlightCode removes incidental outer indentation for indented code blocks (18.531334ms)
+✔ localizePathname prefixes the default locale in always mode (0.472583ms)
+✔ localizePathname prefixes non-default locales and preserves suffixes (0.068667ms)
+✔ localizePathname leaves already-localized and non-page hrefs unchanged (0.065125ms)
+✔ localizePathname respects configured page roots (0.060459ms)
+✔ canonicalizeDefaultLocalePathname strips only the default locale prefix (0.067125ms)
+✔ extractSearchNodesFromMdx reads markdown text, code, list items, and resolved heading ids (6.350083ms)
+✔ createSearchPage localizes metadata and prefixes non-default locales (0.502708ms)
+✔ createLocalizedPathname keeps default locale unprefixed (0.077208ms)
+✔ @MARK highlights exact text without trailing whitespace inside a Shiki token (0.889417ms)
+✔ @MARK highlights conditional query ranges split across Shiki tokens (0.794167ms)
+✔ @WARN and @ERROR add diagnostic mark classes (0.191792ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 705.02775

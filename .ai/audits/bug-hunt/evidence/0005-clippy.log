@@ -1,0 +1,17 @@
+    Checking smallvec v1.16.0
+    Checking libc v0.2.189
+    Checking indexmap v2.14.2
+   Compiling phf_macros v0.13.1
+    Checking getrandom v0.3.4
+    Checking serde_json v1.0.151
+    Checking ahash v0.8.12
+    Checking phf v0.13.1
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+    Checking cssparser v0.37.0
+    Checking cssparser-color v0.5.0
+    Checking parcel_selectors v0.28.3
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Checking lightningcss v1.0.0-alpha.72
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.82s

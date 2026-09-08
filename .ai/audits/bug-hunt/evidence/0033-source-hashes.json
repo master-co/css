@@ -1,0 +1,21 @@
+{
+  "packages/figma/src/export-variables.tsx": "30a8e4e47d39e99f326f6d87c7846941f7d491aaf1a81ef0ee1aa795e7751c84",
+  "packages/figma/src/import-variables.tsx": "186ab0ba738f4fdfd9d59d50e6c2a524022d2c47c744764fce6b731da53bbb01",
+  "packages/figma/src/plugin.min.ts": "8a7795614c6850fdc967088a1b31b549e8393aeb284e938fd6d255784cd4cf61",
+  "packages/figma/src/export-variables.html": "7d8da8c4415f4a788173a75e33d056159b652090b4177b1db885dd57049be740",
+  "packages/figma/src/main.scss": "687c566f1fad0a02c87f956f9d04da22c1fa7eb45b5ff2942b1374a1ca3ff423",
+  "packages/figma/src/vite-env.d.ts": "65996936fbb042915f7b74a200fcdde7e410f32a669b1ab9597cfaa4b0faddb5",
+  "packages/figma/src/import-variables.html": "67ae4e4af8b38ba332cbc9c31524067a020df6021fb5229a31e6f9d3ce809faa",
+  "packages/figma/src/types/message.ts": "e48bfc764fbb61f61147907207b5cbcaec4fc3ea1b43f97f14ecb2d15a7201cd",
+  "packages/figma/src/types/variable-data.ts": "1abdc286f0ac0a89923e8fe36723256fc50cc5575f58c7ce78023c16397bae7e",
+  "packages/figma/src/features/getVariableCollections.ts": "edd27de2796fbf7086c446a4d3058b0d739ac6a11d4ff3368f4502349ca359d0",
+  "packages/figma/src/features/getCollectionVariables.ts": "9ea4baf058552daaa77aa9b8b6daa23efa010b2ed6cd3be7c95708907e4d9cdc",
+  "packages/figma/src/features/setCollectionVariables.ts": "a30fcae32b9e17142caa35dc21c313c2adaaa0d5ceb71579f713f421b5745265",
+  "packages/figma/src/utils/to-color-value.ts": "fcddaf367c64d24b4049f95bb4786241aaa3ed527d35ab89f703644e532cf657",
+  "packages/figma/src/utils/notify.ts": "126fa818bca3192665286b4e5c4de85f8e392d7c8725c4b7075dcf06f8b6dceb",
+  "packages/figma/src/utils/post-and-wait-for-message.ts": "d2e26c60555248591df1c7196b0d90d646f2f30de2fadef2832812d7f72bbf65",
+  "packages/figma/src/utils/parse-color-value.ts": "68939b4d3684f2b8f35da0662392aaa183ac33fc64df3294b1e21a8c5309649c",
+  "packages/figma/src/utils/export-file.ts": "b480f48aa9fe48a05c6f32b4df80ae721b6f1053029c65c057dbfc42d7739fb8",
+  "packages/figma/src/utils/post.ts": "9ed83147a67e8654f6ac7a1232364d31ca0c72f2075360354a4de109c1fd4003",
+  "packages/figma/src/hooks/use-plugin-message.ts": "8dc73cfbbcad4196559a6cc18d6655283d347889e7f1c4d73e26191a4047e3fb"
+}

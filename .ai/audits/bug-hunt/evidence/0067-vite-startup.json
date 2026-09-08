@@ -1,0 +1,380 @@
+{
+  "status": 0,
+  "completedDiagnostic": true,
+  "cssFiles": [
+    "/Users/aron/master/css/tmp/master-css-bh-isolated-ubl25t_v/benchmarks/.results/audit-startup-vite/minimal/dist/assets/index-Dkrc8kIN.css"
+  ],
+  "cssBytes": 5179,
+  "markers": [
+    {
+      "marker": "text-center",
+      "present": true
+    }
+  ],
+  "probeFiles": [
+    "import-master-vite-common-module-import-ms.mjs",
+    "import-master-vite-core-module-import-ms.mjs",
+    "import-master-vite-index-module-import-ms.mjs",
+    "import-master-vite-mode-pre-render-import-ms.mjs",
+    "import-master-vite-mode-progressive-import-ms.mjs",
+    "import-master-vite-mode-runtime-import-ms.mjs",
+    "import-master-vite-mode-static-import-ms.mjs",
+    "import-master-vite-options-module-import-ms.mjs",
+    "import-master-vite-plugin-avoid-fouc-import-ms.mjs",
+    "import-master-vite-plugin-context-import-ms.mjs",
+    "import-master-vite-plugin-emitted-globals-virtual-import-ms.mjs",
+    "import-master-vite-plugin-inject-runtime-import-ms.mjs",
+    "import-master-vite-plugin-local-compose-import-ms.mjs",
+    "import-master-vite-plugin-manifest-loader-import-ms.mjs",
+    "import-master-vite-plugin-manifest-preload-import-ms.mjs",
+    "import-master-vite-plugin-manifest-virtual-import-ms.mjs",
+    "import-master-vite-plugin-pre-render-import-ms.mjs",
+    "import-master-vite-plugin-scanner-import-ms.mjs",
+    "import-master-vite-plugin-style-entry-build-import-ms.mjs",
+    "import-master-vite-plugin-style-entry-hmr-import-ms.mjs",
+    "import-master-vite-plugin-style-entry-import-ms.mjs",
+    "import-master-vite-plugin-usage-graph-import-ms.mjs",
+    "import-master-vite-util-extracted-css-import-ms.mjs",
+    "import-master-vite-util-register-style-source-import-ms.mjs",
+    "import-master-vite-util-scanner-context-import-ms.mjs",
+    "import-vite-css-integration-node-import-ms.mjs",
+    "import-vite-css-project-manifest-import-ms.mjs",
+    "import-vite-css-runtime-import-ms.mjs",
+    "import-vite-css-scanner-import-ms.mjs",
+    "import-vite-css-server-import-ms.mjs",
+    "import-vite-css-stylesheet-import-ms.mjs",
+    "import-vite-magic-string-import-ms.mjs",
+    "vite-startup.mjs"
+  ],
+  "result": {
+    "samples": [
+      {
+        "metricId": "vite-master-command-elapsed-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2324.7566659999998
+      },
+      {
+        "metricId": "vite-baseline-command-elapsed-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 138.40208299999995
+      },
+      {
+        "metricId": "vite-master-command-overhead-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2186.354583
+      },
+      {
+        "metricId": "master-vite-mode-static-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.499333
+      },
+      {
+        "metricId": "master-vite-options-module-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.46300000000000097
+      },
+      {
+        "metricId": "master-vite-mode-runtime-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 8.524750000000001
+      },
+      {
+        "metricId": "master-vite-common-module-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 6.853582999999997
+      },
+      {
+        "metricId": "master-vite-mode-pre-render-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 79.923625
+      },
+      {
+        "metricId": "master-vite-mode-progressive-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 79.64083400000001
+      },
+      {
+        "metricId": "master-vite-core-module-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 85.74000000000001
+      },
+      {
+        "metricId": "master-vite-index-module-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 84.571166
+      },
+      {
+        "metricId": "master-vite-plugin-usage-graph-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.3830829999999992
+      },
+      {
+        "metricId": "master-vite-plugin-context-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.32470900000000213
+      },
+      {
+        "metricId": "master-vite-plugin-emitted-globals-virtual-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 6.350999999999999
+      },
+      {
+        "metricId": "master-vite-plugin-style-entry-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 62.753583
+      },
+      {
+        "metricId": "master-vite-plugin-local-compose-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 62.951167
+      },
+      {
+        "metricId": "master-vite-plugin-scanner-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 63.99487500000001
+      },
+      {
+        "metricId": "master-vite-plugin-manifest-loader-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 67.923375
+      },
+      {
+        "metricId": "master-vite-plugin-manifest-virtual-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 68.145792
+      },
+      {
+        "metricId": "master-vite-plugin-style-entry-build-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 1.0601249999999993
+      },
+      {
+        "metricId": "master-vite-util-extracted-css-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.447499999999998
+      },
+      {
+        "metricId": "master-vite-plugin-manifest-preload-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.6361670000000004
+      },
+      {
+        "metricId": "master-vite-plugin-style-entry-hmr-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 7.268792000000001
+      },
+      {
+        "metricId": "master-vite-plugin-inject-runtime-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 5.925374999999999
+      },
+      {
+        "metricId": "master-vite-plugin-avoid-fouc-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 7.381791999999997
+      },
+      {
+        "metricId": "master-vite-util-register-style-source-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 64.321708
+      },
+      {
+        "metricId": "master-vite-plugin-pre-render-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 75.68924999999999
+      },
+      {
+        "metricId": "master-vite-util-scanner-context-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.2544170000000001
+      },
+      {
+        "metricId": "vite-magic-string-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2.989625
+      },
+      {
+        "metricId": "vite-css-integration-node-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 8.925666
+      },
+      {
+        "metricId": "vite-css-runtime-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 9.731957999999999
+      },
+      {
+        "metricId": "vite-css-project-manifest-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 9.040709
+      },
+      {
+        "metricId": "vite-css-server-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 50.08800000000001
+      },
+      {
+        "metricId": "vite-css-scanner-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 54.68645899999999
+      },
+      {
+        "metricId": "vite-css-stylesheet-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 52.997
+      },
+      {
+        "metricId": "vite-probe-command-elapsed-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2273.400375
+      },
+      {
+        "metricId": "vite-node-first-userland-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 14.823375
+      },
+      {
+        "metricId": "vite-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 67.34649999999999
+      },
+      {
+        "metricId": "master-vite-import-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 59.136167
+      },
+      {
+        "metricId": "master-vite-plugin-factory-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 0.27695900000000506
+      },
+      {
+        "metricId": "vite-master-scanner-init-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 111.96966699999999
+      },
+      {
+        "metricId": "vite-master-module-scan-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 23.57904199999996
+      },
+      {
+        "metricId": "vite-master-style-entry-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 93.95249999999999
+      },
+      {
+        "metricId": "vite-master-html-scan-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 6.256000000000029
+      },
+      {
+        "metricId": "vite-master-generate-bundle-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 1774.181584
+      },
+      {
+        "metricId": "vite-build-with-master-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2081.987958
+      },
+      {
+        "metricId": "vite-child-process-uptime-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 2223.579584
+      },
+      {
+        "metricId": "total-diagnostic-ms",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 5186.021124999999
+      },
+      {
+        "metricId": "css-entry-count",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 1
+      },
+      {
+        "metricId": "source-file-count",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 6
+      },
+      {
+        "metricId": "generated-css-raw-bytes",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 5179
+      },
+      {
+        "metricId": "generated-css-gzip-bytes",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 1920
+      },
+      {
+        "metricId": "generated-css-brotli-bytes",
+        "variantId": "minimal-master-vite-startup-diagnostic",
+        "round": 0,
+        "value": 1630
+      }
+    ],
+    "artifacts": [
+      {
+        "path": "benchmarks/.results/audit-startup-vite/minimal/dist/assets/index-Dkrc8kIN.css",
+        "rawBytes": 5179,
+        "gzipBytes": 1920,
+        "brotliBytes": 1630,
+        "sha256": "d4a478716d50513c2944406c37108650cd333dd5d5404e34ab9b20360c258bcc"
+      }
+    ]
+  }
+}

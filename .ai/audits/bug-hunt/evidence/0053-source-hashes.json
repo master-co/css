@@ -1,0 +1,6 @@
+{
+  "packages/mcp/src/context.ts": "848d3afe1714833cee02b6b1083e1d56da115997c31bd7d7e2ccf4b2f9c4e176",
+  "packages/mcp/src/server.ts": "615ef64ebd44c8aa20bc3842ebfb1bcb8741b1120b3585545d5be0a0b6711af1",
+  "packages/mcp/src/format.ts": "b5cb2e61df816880a73254f72e77a6a274ddbd046b6fd597e592752ba8a35420",
+  "packages/mcp/tests/core.test.ts": "7c227d87b9a8efcb2d1488e1c8835dc4dd01d0ef828ac775856a8f24114796e9"
+}

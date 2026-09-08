@@ -1,0 +1,9 @@
+{
+  "packages/astro/src/middleware.ts": "c445340db1c4e6f5829680be457f80576e5527c370c1ac5125b345f2c08bf245",
+  "packages/astro/src/external-hydration-manifest.ts": "105353f4e3c46e8277839064e18c8369a4a484360049fa22e0d28f21a00c30a3",
+  "packages/astro/src/runtime-preload.ts": "a37871aa54da26c5fe1ea226f72d93f63d70598b7649b29e0cd2514bc06a6a30",
+  "packages/astro/src/core.ts": "75c2733b0a02c2994efa6225f5b6669a246561cbd154c3c9f9a913fc3875ec68",
+  "packages/astro/src/index.ts": "294e0d20c261ed7fb5e268d4ccc0b1d54c45fe8225fa925f8fed8b194a201ccc",
+  "packages/astro/src/server.ts": "e91f9d74343bb21021c8b458310ed352db6665b4d7d1b1e99a4e39cadd38fcf2",
+  "packages/astro/src/options.ts": "f91be8ef50aaf1547bd2c58376f8662342880be8656c94182b18fc0e5c07464a"
+}

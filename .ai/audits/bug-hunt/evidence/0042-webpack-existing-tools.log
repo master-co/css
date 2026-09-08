@@ -1,0 +1,16 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-ldol139o/packages/webpack", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nested-build.mjs", "runtime"]}
+
+(node:33491) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[webpack-cli] ✖ Error: Conflict: Multiple chunks emit assets to the same filename bundle.js (chunks 280 and 792)
+    at /Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5963:12
+    at /Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:114:5
+    at Hook.eval [as callAsync] (eval at create (/Users/aron/master/css/node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10), <anonymous>:6:1)
+    at Cache.get (/Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:96:18)
+    at ItemCacheFacade.get (/Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/CacheFacade.js:128:15)
+    at /Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5902:22
+    at arrayEach (/Users/aron/master/css/node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2405:9)
+    at Object.each (/Users/aron/master/css/node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2846:9)
+    at /Users/aron/master/css/node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5891:14
+    at symbolIterator (/Users/aron/master/css/node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:3482:9)
+{"exit_code": 2, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-ldol139o"}

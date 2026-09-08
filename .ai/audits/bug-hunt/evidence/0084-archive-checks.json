@@ -1,0 +1,12 @@
+[
+  {
+    "mode": "master-static",
+    "archiveSha256": "9760124c0626290d47a3151df1bc0b531e7f7a95cb40189997eecbb859166121",
+    "verifiedArtifacts": 4
+  },
+  {
+    "mode": "tailwind-static",
+    "archiveSha256": "90bb04c75ea0c579516887be0b81ae829e9388ec58fa6f694f7b5dcdad00dbf3",
+    "verifiedArtifacts": 4
+  }
+]

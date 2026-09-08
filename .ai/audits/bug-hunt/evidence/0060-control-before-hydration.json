@@ -1,0 +1,46 @@
+{
+  "records": [
+    {
+      "stage": "initial",
+      "browser": "153.0.8010.12",
+      "navigations": 2,
+      "display": "block",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "1",
+      "marker": "preserve",
+      "hasRuntime": true
+    },
+    {
+      "stage": "class-grid",
+      "navigations": 2,
+      "display": "grid",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "1",
+      "marker": "preserve",
+      "hasRuntime": true
+    },
+    {
+      "stage": "theme-#234567",
+      "navigations": 3,
+      "display": "flex",
+      "color": "rgb(35, 69, 103)",
+      "nativeColor": "rgb(35, 69, 103)",
+      "counter": "0",
+      "hasRuntime": false
+    },
+    {
+      "stage": "class-flex",
+      "navigations": 3,
+      "display": "flex",
+      "color": "rgb(35, 69, 103)",
+      "nativeColor": "rgb(35, 69, 103)",
+      "counter": "0",
+      "hasRuntime": false
+    }
+  ],
+  "errors": [
+    "Error: page.evaluate: Execution context was destroyed, most likely because of a navigation"
+  ]
+}

@@ -1,0 +1,26 @@
+   Compiling mastercss-language v0.0.0 (/Users/aron/master/css/crates/mastercss-language)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.52s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_language-1962a97040d01f2a)
+
+running 12 tests
+test tests::skips_overlapping_and_multiline_tokens ... ok
+test tests::keeps_class_positions_and_semantic_tokens_in_utf16 ... ok
+test tests::treats_plaintext_as_a_class_list_and_skips_markup_comments ... ok
+test tests::applies_document_context_settings_in_rust ... ok
+test tests::tokenizes_group_terminators_and_selector_combinators_in_rust ... ok
+test color::tests::rejects_dynamic_or_invalid_color_mix ... ok
+test tests::batches_manifest_driven_class_semantics ... ok
+test color::tests::parses_static_color_mix_weights_and_hue ... ok
+test tests::commits_only_host_supported_native_class_semantics ... ok
+test tests::owns_mdn_and_negative_completion_candidates_in_rust ... ok
+test tests::renders_isolated_hover_inspection_css ... ok
+test tests::executes_rc87_language_lexer_parity_corpus ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+   Doc-tests mastercss_language
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,7 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running `target/debug/xtask build-wasm tooling`
+    Finished `release` profile [optimized] target(s) in 0.13s
+Built /Users/aron/master/css/packages/binding-wasm-tooling/artifacts

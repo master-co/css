@@ -1,0 +1,8 @@
+{
+  "benchmarks/shared/build-diagnostics.ts": "2797fa688630e6e24387467882d237b96e3de9786a09a4a1315e73079c13505a",
+  "benchmarks/build-diagnostics/build-diagnostics.bench.ts": "04caaa2c1e6094cf4586d5e61a8d6ee352327f8a9ec419fe91de944b6420a7cc",
+  "benchmarks/shared/startup-diagnostics.ts": "5ef5180502ea61404589e3b43f1599fa03a98acf82d33ef3b19bab646a395df7",
+  "packages/vite/src/plugins/usage-graph.ts": "21213827fe94dbd844f07d82f93972b44fd3b410a75d178c17bcae7b06d21c74",
+  "packages/vite/src/plugins/scanner.ts": "ce565e73be71ac88f8a4ae88f070f372881fa7193655a37a3b6f174b4eec1877",
+  "packages/tooling/src/scanner/core.ts": "d805a497d2d90556822f1a54b8ec66a5ae7b840f94ef02f5f8bb8ca533fa3448"
+}

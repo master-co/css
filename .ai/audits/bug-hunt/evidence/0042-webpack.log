@@ -1,0 +1,5 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-4t1oacxp/packages/webpack", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nested-build.mjs", "runtime"]}
+$ webpack --mode production --config webpack.config.js
+sh: webpack: command not found
+[ELIFECYCLE] Command failed with exit code 127.
+{"exit_code": 127, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-4t1oacxp"}

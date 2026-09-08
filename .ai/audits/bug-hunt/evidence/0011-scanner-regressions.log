@@ -1,0 +1,40 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/tooling
+
+ ❯ tests/scanner/bug-hunt.test.ts (2 tests | 1 failed) 332ms
+   × BH-0012 scans native ESM module class strings 112ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/scanner/bug-hunt.test.ts > BH-0012 scans native ESM module class strings
+AssertionError: expected '' to contain '.block{display:block}'
+
+- Expected
++ Received
+
+- .block{display:block}
+
+ ❯ tests/scanner/bug-hunt.test.ts:8:30
+      6|   try {
+      7|     await scanner.scanModule('component.mjs', 'export const classes = …
+      8|     expect(scanner.css.text).toContain('.block{display:block}')
+       |                              ^
+      9|   } finally {
+     10|     await scanner.dispose()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  16:33:42
+   Duration  562ms (tests 68%, transform 20%, import 12%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/tooling
+

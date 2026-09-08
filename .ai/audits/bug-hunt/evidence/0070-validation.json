@@ -1,0 +1,66 @@
+{
+  "variants": [
+    {
+      "variant": "minimal-master-cli-diagnostic",
+      "samples": 12,
+      "rawBytes": 5178,
+      "artifactMatches0068": true,
+      "sourceFileCount": 1
+    },
+    {
+      "variant": "minimal-master-vite-diagnostic",
+      "samples": 15,
+      "rawBytes": 5179,
+      "artifactMatches0068": true,
+      "sourceFileCount": 6
+    },
+    {
+      "variant": "docs-master-cli-diagnostic",
+      "samples": 12,
+      "rawBytes": 5903,
+      "artifactMatches0068": true,
+      "sourceFileCount": 1
+    },
+    {
+      "variant": "docs-master-vite-diagnostic",
+      "samples": 15,
+      "rawBytes": 5904,
+      "artifactMatches0068": true,
+      "sourceFileCount": 6
+    },
+    {
+      "variant": "dashboard-master-cli-diagnostic",
+      "samples": 12,
+      "rawBytes": 6101,
+      "artifactMatches0068": true,
+      "sourceFileCount": 1
+    },
+    {
+      "variant": "dashboard-master-vite-diagnostic",
+      "samples": 15,
+      "rawBytes": 6102,
+      "artifactMatches0068": true,
+      "sourceFileCount": 6
+    },
+    {
+      "variant": "stress-css-master-cli-diagnostic",
+      "samples": 12,
+      "rawBytes": 11779,
+      "artifactMatches0068": true,
+      "sourceFileCount": 1
+    },
+    {
+      "variant": "stress-css-master-vite-diagnostic",
+      "samples": 15,
+      "rawBytes": 11780,
+      "artifactMatches0068": true,
+      "sourceFileCount": 6
+    }
+  ],
+  "finiteSamples": true,
+  "summarySampleCount": 1,
+  "undeclaredSampleMetricIds": [
+    "vite-html-scan-count",
+    "vite-module-scan-count"
+  ]
+}

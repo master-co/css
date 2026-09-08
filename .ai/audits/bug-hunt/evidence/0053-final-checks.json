@@ -1,0 +1,33 @@
+{
+  "budgets": [],
+  "missingLinks": [],
+  "coverage": {
+    "\u5df2\u6aa2\u67e5": 64,
+    "\u9032\u884c\u4e2d": 0,
+    "\u53d7\u963b": 11,
+    "\u672a\u958b\u59cb": 0
+  },
+  "findings": 31,
+  "severity": {
+    "P0": 0,
+    "P1": 7,
+    "P2": 21,
+    "P3": 3
+  },
+  "sourceEntries": 5528,
+  "changedSnapshots": [
+    {
+      "snapshot": "0044-site-source-hashes.json",
+      "count": 247
+    },
+    {
+      "snapshot": "0047-site-source-hashes.json",
+      "count": 243
+    }
+  ],
+  "head": "3d2f47768c30e1678228fa04efcfc4b152e70120",
+  "trackedDiff": [
+    "site/next.config.js"
+  ],
+  "internalStatus": ""
+}

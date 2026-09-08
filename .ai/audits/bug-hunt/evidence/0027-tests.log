@@ -1,0 +1,13 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-ib4fekga/packages/nuxt", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--input-type=module", "-e", "import {spawnSync} from \"node:child_process\"; for (const args of [[\"exec\",\"nuxt-module-build\",\"prepare\"],[\"exec\",\"vitest\",\"run\",\"--no-file-parallelism\"]]) {const r=spawnSync(\"pnpm\",args,{stdio:\"inherit\"});if(r.status)process.exit(r.status)}"]}
+│
+◆  Types generated in .nuxt.
+
+ RUN  v4.1.11 /Users/aron/master/css/tmp/master-css-bh-isolated-ib4fekga/packages/nuxt
+
+
+ Test Files  4 passed (4)
+      Tests  8 passed (8)
+   Start at  17:07:33
+   Duration  27.26s (transform 42ms, setup 0ms, import 186ms, tests 26.78s, environment 0ms)
+
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-ib4fekga"}

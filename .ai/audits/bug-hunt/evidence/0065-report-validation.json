@@ -1,0 +1,66 @@
+{
+  "suiteExit": 0,
+  "variants": 4,
+  "declaredMetrics": 33,
+  "observedMetricIds": [
+    "css-entry-count",
+    "diagnostic-extraction-total-ms",
+    "engine-css-creation-ms",
+    "engine-rule-generation-ms",
+    "final-css-brotli-bytes",
+    "final-css-gzip-bytes",
+    "final-css-raw-bytes",
+    "generated-class-count",
+    "generated-css-brotli-bytes",
+    "generated-css-gzip-bytes",
+    "generated-css-raw-bytes",
+    "latent-class-count",
+    "native-class-name-count",
+    "native-css-source-count",
+    "production-create-extracted-css-ms",
+    "source-file-count",
+    "used-native-class-count",
+    "valid-class-count"
+  ],
+  "missingMetricIds": [
+    "master-import-graph-resolution-ms",
+    "master-package-artifact-read-ms",
+    "master-package-css-compilation-ms",
+    "entry-css-compilation-ms",
+    "manifest-finalization-ms",
+    "native-css-collection-ms",
+    "generated-class-collection-ms",
+    "native-variable-reference-scan-ms",
+    "native-animation-reference-scan-ms",
+    "css-text-serialization-ms",
+    "emitted-globals-creation-ms",
+    "final-css-assembly-ms",
+    "master-package-shortcut-hit-count",
+    "master-package-shortcut-fallback-count",
+    "native-css-raw-bytes"
+  ],
+  "perVariant": [
+    {
+      "id": "minimal-master-static-extraction",
+      "samples": 18,
+      "finalCSSBytes": 5178
+    },
+    {
+      "id": "docs-master-static-extraction",
+      "samples": 18,
+      "finalCSSBytes": 5903
+    },
+    {
+      "id": "dashboard-master-static-extraction",
+      "samples": 18,
+      "finalCSSBytes": 6101
+    },
+    {
+      "id": "stress-css-master-static-extraction",
+      "samples": 18,
+      "finalCSSBytes": 11779
+    }
+  ],
+  "allSamplesFinite": true,
+  "allSummarySampleCountsOne": true
+}

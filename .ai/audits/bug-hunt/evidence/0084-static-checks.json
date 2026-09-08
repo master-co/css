@@ -1,0 +1,308 @@
+[
+  {
+    "variant": "stress-dom-master-static-style-invalidation-static-baseline",
+    "exit": 0,
+    "browser": {
+      "name": "Chromium",
+      "version": "153.0.8010.12"
+    },
+    "samples": 36,
+    "diagnostics": {
+      "variant": {
+        "id": "stress-dom-master-static-style-invalidation-static-baseline",
+        "kind": "static-baseline",
+        "action": "mutation-cleanup-cycle",
+        "preseedTempRules": false,
+        "pauseObserver": false,
+        "retainedVolume": 0
+      },
+      "interaction": {
+        "elapsedMs": 959,
+        "runtimeMutationMs": 0,
+        "runtimeGeneratedRuleCountDelta": 0,
+        "runtimeStyleRawBytesDelta": 0,
+        "domNodeCount": 3620,
+        "affectedElementCount": 480,
+        "computedStyleValid": 1,
+        "cleanupValid": 1,
+        "progressiveAdopted": 0,
+        "details": {
+          "affectedElementCount": 480,
+          "mutationCycleCount": 3,
+          "appendCount": 160,
+          "removedNodeCount": 480,
+          "computedStyleValid": true,
+          "cleanupValid": true,
+          "cleanupValidDuringTrace": true,
+          "cleanupValidAfterFlush": true,
+          "runtimeClean": true,
+          "runtimeCleanDuringTrace": true,
+          "runtimeCleanAfterFlush": true,
+          "strategyFlushResult": null
+        }
+      },
+      "traceMetrics": {
+        "styleRecalculationMs": 12.882,
+        "layoutMs": 24.998999999999995,
+        "paintMs": 92.334,
+        "longTaskCount": 0
+      },
+      "runtimeDiagnostics": {
+        "mutationObserverCallbackCount": 0,
+        "mutationObserverCallbackDurationMs": 0,
+        "mutationRecordCount": 0,
+        "mutationAddedNodeCount": 0,
+        "mutationRemovedNodeCount": 0,
+        "mutationClassAttributeCount": 0,
+        "runtimeAddCallCount": 0,
+        "runtimeRemoveCallCount": 0,
+        "runtimeAddClassCount": 0,
+        "runtimeRemoveClassCount": 0,
+        "runtimeAddDurationMs": 0,
+        "runtimeRemoveDurationMs": 0,
+        "runtimeDeferredRemoveCallCount": 0,
+        "runtimeDeferredRemoveClassCount": 0,
+        "runtimeSuppressedRemoveCallCount": 0,
+        "runtimeSuppressedRemoveClassCount": 0,
+        "runtimeFlushRemoveCallCount": 0,
+        "runtimeFlushRemoveClassCount": 0,
+        "runtimeFlushRemoveDurationMs": 0,
+        "runtimeQueuedRemoveClassCount": 0,
+        "retainedSetAddCount": 0,
+        "retainedSetDeleteCount": 0,
+        "retainedSetClearCount": 0
+      },
+      "preparation": {
+        "preseededRuntimeRuleCount": 0,
+        "seededRetainedClassCount": 0,
+        "seededRetainedRuleCount": 0,
+        "seededRetainedRawBytes": 0,
+        "observerPaused": 0
+      },
+      "beforeState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterTraceState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterFlushState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterForcedCleanupState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "beforeRuntimeStyleRuleCount": 0,
+      "afterTraceRuntimeStyleRuleCount": 0,
+      "afterFlushRuntimeStyleRuleCount": 0,
+      "afterForcedCleanupRuntimeStyleRuleCount": 0,
+      "forcedRetainedCleanup": {
+        "removedClassCount": 0,
+        "durationMs": 0
+      },
+      "consoleWarnings": []
+    },
+    "traceEvents": 2850,
+    "traceRecomputed": {
+      "style-recalculation-ms": 12.882,
+      "layout-ms": 24.998999999999995,
+      "paint-ms": 92.334
+    },
+    "pageHashes": {
+      ".results/runtime-style-invalidation-diagnostics/pages/stress-dom-master-static-style-invalidation-static-baseline/index.html": "9307150b57c7fa79997fbe4251722acc5fb02b69cde672dbe2f1287bc5e9fb9d",
+      ".results/runtime-style-invalidation-diagnostics/pages/stress-dom-master-static-style-invalidation-static-baseline/style.css": "39698540e8338189dcf6d02a4f403da3f31abe309a1d7bfba530179a1f271269"
+    }
+  },
+  {
+    "variant": "stress-dom-tailwind-static-style-invalidation-static-baseline",
+    "exit": 0,
+    "browser": {
+      "name": "Chromium",
+      "version": "153.0.8010.12"
+    },
+    "samples": 36,
+    "diagnostics": {
+      "variant": {
+        "id": "stress-dom-tailwind-static-style-invalidation-static-baseline",
+        "kind": "static-baseline",
+        "action": "mutation-cleanup-cycle",
+        "preseedTempRules": false,
+        "pauseObserver": false,
+        "retainedVolume": 0
+      },
+      "interaction": {
+        "elapsedMs": 796.5,
+        "runtimeMutationMs": 0,
+        "runtimeGeneratedRuleCountDelta": 0,
+        "runtimeStyleRawBytesDelta": 0,
+        "domNodeCount": 3620,
+        "affectedElementCount": 480,
+        "computedStyleValid": 1,
+        "cleanupValid": 1,
+        "progressiveAdopted": 0,
+        "details": {
+          "affectedElementCount": 480,
+          "mutationCycleCount": 3,
+          "appendCount": 160,
+          "removedNodeCount": 480,
+          "computedStyleValid": true,
+          "cleanupValid": true,
+          "cleanupValidDuringTrace": true,
+          "cleanupValidAfterFlush": true,
+          "runtimeClean": true,
+          "runtimeCleanDuringTrace": true,
+          "runtimeCleanAfterFlush": true,
+          "strategyFlushResult": null
+        }
+      },
+      "traceMetrics": {
+        "styleRecalculationMs": 15.421,
+        "layoutMs": 14.269,
+        "paintMs": 72.41199999999999,
+        "longTaskCount": 0
+      },
+      "runtimeDiagnostics": {
+        "mutationObserverCallbackCount": 0,
+        "mutationObserverCallbackDurationMs": 0,
+        "mutationRecordCount": 0,
+        "mutationAddedNodeCount": 0,
+        "mutationRemovedNodeCount": 0,
+        "mutationClassAttributeCount": 0,
+        "runtimeAddCallCount": 0,
+        "runtimeRemoveCallCount": 0,
+        "runtimeAddClassCount": 0,
+        "runtimeRemoveClassCount": 0,
+        "runtimeAddDurationMs": 0,
+        "runtimeRemoveDurationMs": 0,
+        "runtimeDeferredRemoveCallCount": 0,
+        "runtimeDeferredRemoveClassCount": 0,
+        "runtimeSuppressedRemoveCallCount": 0,
+        "runtimeSuppressedRemoveClassCount": 0,
+        "runtimeFlushRemoveCallCount": 0,
+        "runtimeFlushRemoveClassCount": 0,
+        "runtimeFlushRemoveDurationMs": 0,
+        "runtimeQueuedRemoveClassCount": 0,
+        "retainedSetAddCount": 0,
+        "retainedSetDeleteCount": 0,
+        "retainedSetClearCount": 0
+      },
+      "preparation": {
+        "preseededRuntimeRuleCount": 0,
+        "seededRetainedClassCount": 0,
+        "seededRetainedRuleCount": 0,
+        "seededRetainedRawBytes": 0,
+        "observerPaused": 0
+      },
+      "beforeState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterTraceState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterFlushState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "afterForcedCleanupState": {
+        "runtimeAvailable": false,
+        "progressiveAdopted": 0,
+        "runtimeGeneratedRuleCount": 0,
+        "runtimeStyleRawBytes": 0,
+        "classCounts": {},
+        "classUtilityNames": [],
+        "retainedClassNames": [],
+        "retainedClassRuleCount": 0,
+        "retainedClassRawBytes": 0,
+        "domNodeCount": 3620,
+        "runtimeStyleTextBytes": 0
+      },
+      "beforeRuntimeStyleRuleCount": 0,
+      "afterTraceRuntimeStyleRuleCount": 0,
+      "afterFlushRuntimeStyleRuleCount": 0,
+      "afterForcedCleanupRuntimeStyleRuleCount": 0,
+      "forcedRetainedCleanup": {
+        "removedClassCount": 0,
+        "durationMs": 0
+      },
+      "consoleWarnings": []
+    },
+    "traceEvents": 3093,
+    "traceRecomputed": {
+      "style-recalculation-ms": 15.421,
+      "layout-ms": 14.269,
+      "paint-ms": 72.41199999999999
+    },
+    "pageHashes": {
+      ".results/runtime-style-invalidation-diagnostics/pages/stress-dom-tailwind-static-style-invalidation-static-baseline/index.html": "9905de5fcf3d34432a5a95d317ce6ccaf4ad24cb20abce1cf5121336432c1b8f",
+      ".results/runtime-style-invalidation-diagnostics/pages/stress-dom-tailwind-static-style-invalidation-static-baseline/style.css": "edf3c0ef95994c439f98150ab2ed5156f6293ffd919feebaaa7db3a7d60b4cc3"
+    }
+  }
+]

@@ -1,0 +1,26 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/delivery-mode-controls.mjs"]}
+Launching Chromium for Master delivery mode benchmark
+Preparing Master delivery mode page for minimal-master-static
+Measuring Master delivery mode for minimal-master-static, round 1/1
+Preparing Master delivery mode page for minimal-master-runtime
+Measuring Master delivery mode for minimal-master-runtime, round 1/1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 15000ms exceeded.
+    at waitForBenchmarkReady (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-modes.ts:706:14)
+    at traceNavigation (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-modes.ts:689:9)
+    at async measureMasterDeliveryMode (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-modes.ts:204:27)
+    at async collectDeliveryModeSamples (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-mode-report.ts:115:20)
+    at async createMasterDeliveryModeReport (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-mode-report.ts:49:9)
+    at async writeMasterDeliveryModeReport (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/shared/delivery-mode-report.ts:21:18)
+    at async <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc/benchmarks/master-delivery-modes/run-report.ts:3:16) {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0
+{"originalReportStatus":1}
+[{"sidecar":false,"failures":[{"url":"http://127.0.0.1:61827/artifacts/mastercss_binding_wasm_engine_bg.wasm","status":404}],"ready":false,"hidden":false,"colorProbeAlign":"start","reported":{"runtimeScriptLoadedMs":79.09999990463257,"runtimeReadyMs":0,"runtimeBootstrapMs":0,"runtimeObserveMs":0,"progressiveAdopted":0,"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0},"snapshot":null},{"sidecar":true,"failures":[],"ready":true,"hidden":false,"colorProbeAlign":"center","reported":{"runtimeScriptLoadedMs":64.60000014305115,"runtimeReadyMs":387.60000014305115,"runtimeBootstrapMs":323,"runtimeObserveMs":89.60000014305115,"progressiveAdopted":0,"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0},"snapshot":{"rules":46,"cssBytes":1940}}]
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc"}

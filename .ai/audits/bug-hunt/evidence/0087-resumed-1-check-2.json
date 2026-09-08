@@ -1,0 +1,73 @@
+{
+  "resumedRun": 1,
+  "observation": 2,
+  "checkedAt": "2026-09-08T19:07:39.976209+00:00",
+  "goalObservedStatus": "active",
+  "classification": "No progress: unchanged prerequisites in second resumed turn.",
+  "head": "3d2f47768c30e1678228fa04efcfc4b152e70120",
+  "trackedDiff": [
+    "site/next.config.js"
+  ],
+  "internalStatus": "",
+  "host": "Darwin arm64",
+  "commands": {
+    "docker": null,
+    "podman": null,
+    "qemu-system-x86_64": null,
+    "qemu-aarch64": null,
+    "wine": null,
+    "rustup": "/Users/aron/.cargo/bin/rustup",
+    "node": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node"
+  },
+  "rustTargets": "aarch64-apple-darwin\nwasm32-unknown-unknown\nx86_64-pc-windows-msvc\nx86_64-unknown-linux-gnu",
+  "rosetta": "x86_64",
+  "targetArtifacts": {
+    "binding-linux-x64-musl": [],
+    "binding-linux-arm64-musl": [],
+    "binding-wasm-engine": [],
+    "binding-linux-arm64-gnu": [],
+    "binding-wasm-tooling": [],
+    "binding-win32-arm64-msvc": [],
+    "binding-darwin-x64": [],
+    "binding-darwin-arm64": [],
+    "binding-win32-x64-msvc": [],
+    "binding-wasm-compiler": [],
+    "binding-linux-x64-gnu": []
+  },
+  "nestedShims": {
+    "packages/runtime/playground/node_modules/.bin/tsc": {
+      "exists": false,
+      "isSymlink": false,
+      "target": "/Users/aron/master/css/packages/runtime/playground/node_modules/.bin/tsc"
+    },
+    "packages/vite/playground/node_modules/.bin/vite": {
+      "exists": true,
+      "isSymlink": false,
+      "target": "/Users/aron/master/css/packages/vite/playground/node_modules/.bin/vite"
+    },
+    "packages/webpack/playground/node_modules/.bin/webpack": {
+      "exists": false,
+      "isSymlink": false,
+      "target": "/Users/aron/master/css/packages/webpack/playground/node_modules/.bin/webpack"
+    },
+    "packages/nuxt/playground/node_modules/.bin/nuxt": {
+      "exists": false,
+      "isSymlink": false,
+      "target": "/Users/aron/master/css/packages/nuxt/playground/node_modules/.bin/nuxt"
+    }
+  },
+  "sameHostPrerequisites": true,
+  "sourceEntries": 6044,
+  "changedSnapshots": [
+    {
+      "snapshot": "0047-site-source-hashes.json",
+      "count": 243
+    },
+    {
+      "snapshot": "0044-site-source-hashes.json",
+      "count": 247
+    }
+  ],
+  "verificationConfirmationReceived": false,
+  "newResourcesOrMutationAuthorizationReceived": false
+}

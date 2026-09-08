@@ -1,0 +1,12 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest-ci-config" without a file extension (vitest.config.ts:3:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/css
+
+
+ Test Files  4 passed (4)
+      Tests  72 passed (72)
+   Start at  15:35:56
+   Duration  15.62s (tests 99%, transform 1%)
+

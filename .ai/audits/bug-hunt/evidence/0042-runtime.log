@@ -1,0 +1,18 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-6gomopxw/packages/runtime", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nested-build.mjs", "frame"]}
+$ tsc && vite build
+../src/core.ts(4,8): error TS6133: 'MasterCSSEngineTransition' is declared but its value is never read.
+../src/core.ts(28,8): error TS6133: 'RuntimeLayer' is declared but its value is never read.
+../src/core.ts(73,62): error TS2304: Cannot find name 'Disposable'.
+../src/core.ts(213,24): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(254,15): error TS2550: Property 'dispose' does not exist on type 'SymbolConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'esnext' or later.
+../src/core.ts(371,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(676,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(697,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(720,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(786,9): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/core.ts(789,11): error TS2550: Property 'dispose' does not exist on type 'SymbolConstructor'. Do you need to change your target library? Try changing the 'lib' compiler option to 'esnext' or later.
+../src/hydration.ts(37,8): error TS2353: Object literal may only specify known properties, and 'cause' does not exist in type 'MasterCSSErrorOptions'.
+../src/mutation.ts(42,7): error TS2591: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node` and then add 'node' to the types field in your tsconfig.
+../src/types.ts(55,49): error TS2304: Cannot find name 'Disposable'.
+[ELIFECYCLE] Command failed with exit code 1.
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-6gomopxw"}

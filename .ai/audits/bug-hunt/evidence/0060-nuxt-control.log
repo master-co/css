@@ -1,0 +1,49 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-cd99ly6z/packages/nuxt", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs"]}
+│
+◆  Types generated in .nuxt.
+│
+●  Nuxt 4.5.2 (with Nitro 2.13.4, Vite 8.2.2 and Vue 3.5.42)
+
+  ➜ Local:    http://127.0.0.1:59747/
+  ➜ Network:  use --host to expose
+
+✔ Vite client built in 28ms
+✔ Vite server built in 14ms
+[nitro] ✔ Nuxt Nitro server built in 421ms
+ℹ Vite server warmed up in 6ms
+ℹ Vite client warmed up in 14ms
+ℹ hmr update /app.vue
+ℹ page reload app.css
+✔ Vite server hmr 12 files in 1.186ms
+ℹ page reload app.css (x2)
+ℹ hmr update /app.vue
+[nuxt] ℹ Compiled plugins.server.mjs in 2074.25ms
+[nuxt] ℹ Compiled plugins.client.mjs in 2074.57ms
+[nuxt] ℹ Compiled types/plugins.d.ts in 2074.78ms
+
+ WARN  [console.warn] [Vue warn]: Hydration class mismatch on {} 
+  - rendered on server: class="box grid fg:host"
+  - expected on client: class="box flex fg:host"
+  Note: this mismatch is check-only. The DOM will not be rectified in production due to performance overhead.
+  You should fix the source of the mismatch. 
+  at <App key=4 > 
+  at <NuxtRoot>
+
+
+ ERROR  [console.error] Hydration completed but contains mismatches.
+
+✔ Vite server hmr 12 files in 3.852ms
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: Execution context was destroyed, most likely because of a navigation
+    at state (/Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:63:50)
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:101:27 {
+  log: [],
+  name: 'Error'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-cd99ly6z"}

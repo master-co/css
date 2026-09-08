@@ -1,0 +1,242 @@
+[
+  {
+    "suite": "report-smoke",
+    "log": ".ai/audits/bug-hunt/evidence/0041-report-smoke.log",
+    "observedScope": "fake-data writer only; PASS",
+    "tail": [
+      " RUN  v5.0.0 /Users/aron/master/css/benchmarks",
+      "",
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  19:09:45",
+      "   Duration  169ms (transform 60%, tests 23%, import 14%, worker 3%)",
+      ""
+    ]
+  },
+  {
+    "suite": "browser-lifecycle",
+    "log": ".ai/audits/bug-hunt/evidence/0055-metrics.log",
+    "observedScope": "first runtime startup FAIL; full lifecycle blocked",
+    "tail": [
+      "  actual: 1,",
+      "  expected: 0,",
+      "  operator: 'strictEqual',",
+      "  diff: 'simple'",
+      "}",
+      "",
+      "Node.js v24.20.0",
+      "{\"exit_code\": 1, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-ajivtpqy\"}"
+    ]
+  },
+  {
+    "suite": "compiler-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0064-compiler-diagnostics.log",
+    "observedScope": "4fixtures executed; phase metric gapsBH-0037",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  22:51:30",
+      "   Duration  22.97s (tests 99%, transform 1%)",
+      "",
+      "{\"variants\":4,\"metrics\":136,\"samples\":68,\"summary\":68,\"missingMetricIds\":[\"master-import-graph-resolution-ms\",\"master-package-artifact-read-ms\",\"master-package-compile-css-ms\",\"master-package-internal-manifest-finalization-ms\",\"entry-compile-css-ms\",\"entry-internal-manifest-finalization-ms\",\"outer-manifest-finalization-ms\",\"master-package-shortcut-hit-count\",\"master-package-shortcut-fallback-count\",\"master-internal-lower-normalize-directive-input-ms\",\"outer-lower-normalize-directive-input-ms\",\"master-internal-lower-variable-name-resolver-ms\",\"outer-lower-variable-name-resolver-ms\",\"master-internal-lower-validate-token-conflicts-ms\",\"outer-lower-validate-token-conflicts-ms\",\"master-internal-lower-warn-media-modes-ms\",\"outer-lower-warn-media-modes-ms\",\"master-internal-lower-create-directive-css-total-ms\",\"outer-lower-create-directive-css-total-ms\",\"master-internal-lower-directive-css-manifest-creation-ms\",\"outer-lower-directive-css-manifest-creation-ms\",\"master-internal-lower-create-compiler-css-ms\",\"outer-lower-create-compiler-css-ms\",\"master-internal-lower-finalize-utility-definitions-ms\",\"outer-lower-finalize-utility-definitions-ms\",\"master-internal-lower-utility-at-rule-resolution-ms\",\"outer-lower-utility-at-rule-resolution-ms\",\"master-internal-lower-utility-rule-resolution-ms\",\"outer-lower-utility-rule-resolution-ms\",\"master-internal-lower-initial-refresh-manifest-creation-ms\",\"outer-lower-initial-refresh-manifest-creation-ms\",\"master-internal-lower-initial-css-refresh-ms\",\"outer-lower-initial-css-refresh-ms\",\"master-internal-lower-finalize-style-definitions-total-ms\",\"outer-lower-finalize-style-definitions-total-ms\",\"master-internal-lower-style-definition-grouping-ms\",\"outer-lower-style-definition-grouping-ms\",\"master-internal-lower-managed-style-sort-ms\",\"outer-lower-managed-style-sort-ms\",\"master-internal-lower-managed-style-merge-ms\",\"outer-lower-managed-style-merge-ms\",\"master-internal-lower-managed-style-push-ms\",\"outer-lower-managed-style-push-ms\",\"master-internal-lower-managed-refresh-manifest-creation-ms\",\"outer-lower-managed-refresh-manifest-creation-ms\",\"master-internal-lower-managed-css-refresh-ms\",\"outer-lower-managed-css-refresh-ms\",\"master-internal-lower-native-style-merge-ms\",\"outer-lower-native-style-merge-ms\",\"master-internal-lower-native-style-render-ms\",\"outer-lower-native-style-render-ms\",\"master-internal-lower-final-manifest-creation-ms\",\"outer-lower-final-manifest-creation-ms\",\"master-internal-lower-input-variable-count\",\"outer-lower-input-variable-count\",\"master-internal-lower-input-utility-count\",\"outer-lower-input-utility-count\",\"master-internal-lower-input-variant-count\",\"outer-lower-input-variant-count\",\"master-internal-lower-input-animation-count\",\"outer-lower-input-animation-count\",\"master-internal-lower-utility-definition-count\",\"outer-lower-utility-definition-count\",\"master-internal-lower-style-definition-count\",\"outer-lower-style-definition-count\",\"master-internal-lower-managed-style-definition-count\",\"outer-lower-managed-style-definition-count\",\"master-internal-lower-native-style-definition-count\",\"outer-lower-native-style-definition-count\",\"master-internal-lower-managed-style-group-count\",\"outer-lower-managed-style-group-count\",\"master-internal-lower-managed-merged-style-definition-count\",\"outer-lower-managed-merged-style-definition-count\",\"master-internal-lower-native-merged-style-definition-count\",\"outer-lower-native-merged-style-definition-count\",\"master-internal-lower-managed-style-refresh-count\",\"outer-lower-managed-style-refresh-count\",\"master-internal-manifest-create-count\",\"outer-manifest-create-count\",\"master-internal-manifest-variable-name-resolver-ms\",\"outer-manifest-variable-name-resolver-ms\",\"master-internal-manifest-compile-variables-ms\",\"outer-manifest-compile-variables-ms\",\"master-internal-manifest-group-variables-ms\",\"outer-manifest-group-variables-ms\",\"master-internal-manifest-compile-at-rules-ms\",\"outer-manifest-compile-at-rules-ms\",\"master-internal-manifest-variant-base-merge-ms\",\"outer-manifest-variant-base-merge-ms\",\"master-internal-manifest-compile-variants-ms\",\"outer-manifest-compile-variants-ms\",\"master-internal-manifest-compile-utilities-ms\",\"outer-manifest-compile-utilities-ms\",\"master-internal-manifest-compile-animations-ms\",\"outer-manifest-compile-animations-ms\",\"master-internal-manifest-compile-animation-options-ms\",\"outer-manifest-compile-animation-options-ms\",\"master-internal-manifest-final-merge-ms\",\"outer-manifest-final-merge-ms\",\"master-internal-manifest-input-variable-count\",\"outer-manifest-input-variable-count\",\"master-internal-manifest-input-utility-count\",\"outer-manifest-input-utility-count\",\"master-internal-manifest-input-variant-count\",\"outer-manifest-input-variant-count\",\"master-internal-manifest-input-animation-count\",\"outer-manifest-input-animation-count\",\"master-internal-manifest-output-variable-count\",\"outer-manifest-output-variable-count\",\"master-internal-manifest-output-utility-count\",\"outer-manifest-output-utility-count\",\"master-internal-manifest-output-variant-count\",\"outer-manifest-output-variant-count\",\"master-internal-manifest-output-selector-count\",\"outer-manifest-output-selector-count\",\"master-internal-manifest-output-at-rule-count\",\"outer-manifest-output-at-rule-count\",\"master-internal-manifest-output-animation-count\",\"outer-manifest-output-animation-count\"]}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-taf0mqqi\"}"
+    ]
+  },
+  {
+    "suite": "extraction-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0065-extraction-diagnostics.log",
+    "observedScope": "4fixtures executed; phase metric gapsBH-0037",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  22:56:18",
+      "   Duration  22.99s (tests 99%, transform 1%)",
+      "",
+      "{\"variants\":4,\"metrics\":33,\"samples\":72,\"summary\":72,\"missingMetricIds\":[\"master-import-graph-resolution-ms\",\"master-package-artifact-read-ms\",\"master-package-css-compilation-ms\",\"entry-css-compilation-ms\",\"manifest-finalization-ms\",\"native-css-collection-ms\",\"generated-class-collection-ms\",\"native-variable-reference-scan-ms\",\"native-animation-reference-scan-ms\",\"css-text-serialization-ms\",\"emitted-globals-creation-ms\",\"final-css-assembly-ms\",\"master-package-shortcut-hit-count\",\"master-package-shortcut-fallback-count\",\"native-css-raw-bytes\"]}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-m0y7y7ze\"}"
+    ]
+  },
+  {
+    "suite": "startup-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0066-startup-diagnostics.log",
+    "observedScope": "CLIimport FAIL; Vite4independent controls0067",
+    "tail": [
+      "",
+      "",
+      " Test Files  1 failed (1)",
+      "      Tests  1 failed (1)",
+      "   Start at  22:58:01",
+      "   Duration  2.32s (tests 98%, transform 2%, import 1%)",
+      "",
+      "{\"exit_code\": 1, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-6vtfgz6l\"}"
+    ]
+  },
+  {
+    "suite": "css-output-size",
+    "log": ".ai/audits/bug-hunt/evidence/0068-css-output.log",
+    "observedScope": "16variants/artifact checksPASS",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:05:51",
+      "   Duration  156.39s (tests 100%)",
+      "",
+      "{\"variants\":16,\"artifacts\":16,\"samples\":64,\"validation\":\"PASS\"}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-h7p51pr6\"}"
+    ]
+  },
+  {
+    "suite": "css-structure",
+    "log": ".ai/audits/bug-hunt/evidence/0069-css-structure.log",
+    "observedScope": "16variants executed; specificityBH-0039",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:09:57",
+      "   Duration  154.13s (tests 99%)",
+      "",
+      "{\"variants\":16,\"artifacts\":16,\"samples\":336,\"validation\":\"PASS\"}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-56dg8knw\"}"
+    ]
+  },
+  {
+    "suite": "build-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0070-build-diagnostics.log",
+    "observedScope": "8variants executed; sourcecountBH-0041",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:15:08",
+      "   Duration  170.92s (tests 98%, transform 2%)",
+      "",
+      "{\"variants\":8,\"metrics\":19,\"samples\":108,\"summary\":108,\"missingMetricIds\":[]}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-zl3c_oby\"}"
+    ]
+  },
+  {
+    "suite": "docs-page-css-size",
+    "log": ".ai/audits/bug-hunt/evidence/0071-docs-css-size.log",
+    "observedScope": "8publicpages fetched; failedresourceBH-0040",
+    "tail": [
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:16:47",
+      "   Duration  19.70s (tests 92%, import 6%, transform 2%)",
+      "",
+      "{\"pages\":8,\"assets\":45}",
+      "{\"suiteStatus\":0}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-_5uamfp4\"}"
+    ]
+  },
+  {
+    "suite": "build-performance",
+    "log": ".ai/audits/bug-hunt/evidence/0073-build-performance.log",
+    "observedScope": "32commands/16artifactsPASS; one round no speed claim",
+    "tail": [
+      "",
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:26:38",
+      "   Duration  51.74s (tests 99%, transform 1%)",
+      "",
+      "{\"variants\":16,\"artifacts\":16,\"samples\":32,\"validation\":\"PASS\"}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-mgkh3sk3\"}"
+    ]
+  },
+  {
+    "suite": "browser-css-cost",
+    "log": ".ai/audits/bug-hunt/evidence/0074-browser-css-cost.log",
+    "observedScope": "14variants/448samples/tracesPASS; one round",
+    "tail": [
+      " Test Files  1 passed (1)",
+      "      Tests  1 passed (1)",
+      "   Start at  23:35:21",
+      "   Duration  323.02s (tests 100%)",
+      "",
+      "{\"status\":0,\"signal\":null}",
+      "{\"variants\":14,\"samples\":448,\"retainedTraces\":14,\"validation\":\"PASS\"}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-034rs8pm\"}"
+    ]
+  },
+  {
+    "suite": "master-delivery-modes",
+    "log": ".ai/audits/bug-hunt/evidence/0075-master-delivery-modes.log",
+    "observedScope": "first runtime startupFAIL; fullreportblocked",
+    "tail": [
+      "  log: [],",
+      "  name: 'TimeoutError'",
+      "}",
+      "",
+      "Node.js v24.20.0",
+      "{\"originalReportStatus\":1}",
+      "[{\"sidecar\":false,\"failures\":[{\"url\":\"http://127.0.0.1:61827/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}],\"ready\":false,\"hidden\":false,\"colorProbeAlign\":\"start\",\"reported\":{\"runtimeScriptLoadedMs\":79.09999990463257,\"runtimeReadyMs\":0,\"runtimeBootstrapMs\":0,\"runtimeObserveMs\":0,\"progressiveAdopted\":0,\"runtimeGeneratedRuleCount\":0,\"runtimeStyleRawBytes\":0},\"snapshot\":null},{\"sidecar\":true,\"failures\":[],\"ready\":true,\"hidden\":false,\"colorProbeAlign\":\"center\",\"reported\":{\"runtimeScriptLoadedMs\":64.60000014305115,\"runtimeReadyMs\":387.60000014305115,\"runtimeBootstrapMs\":323,\"runtimeObserveMs\":89.60000014305115,\"progressiveAdopted\":0,\"runtimeGeneratedRuleCount\":0,\"runtimeStyleRawBytes\":0},\"snapshot\":{\"rules\":46,\"cssBytes\":1940}}]",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-2vpre7pc\"}"
+    ]
+  },
+  {
+    "suite": "progressive-hydration-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0076-progressive-diagnostics.log",
+    "observedScope": "first runtime startupFAIL; fullreportblocked",
+    "tail": [
+      "  name: 'TimeoutError'",
+      "}",
+      "",
+      "Node.js v24.20.0",
+      "{\"originalReportStatus\":1}",
+      "[{\"sidecar\":false,\"failures\":[{\"url\":\"http://127.0.0.1:62015/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}],\"ready\":false,\"hidden\":false,\"colorProbeAlign\":\"center\",\"reported\":{\"runtimeScriptLoadedMs\":67.89999985694885,\"runtimeReadyMs\":0,\"runtimeBootstrapMs\":0,\"runtimeObserveMs\":0,\"progressiveAdopted\":0,\"runtimeGeneratedRuleCount\":0,\"runtimeStyleRawBytes\":0},\"nativeStyleRules\":46,\"styleTextBytes\":1940,\"snapshot\":null},{\"sidecar\":true,\"failures\":[],\"ready\":true,\"hidden\":false,\"colorProbeAlign\":\"center\",\"reported\":{\"runtimeScriptLoadedMs\":64.40000009536743,\"runtimeReadyMs\":556.9000000953674,\"runtimeBootstrapMs\":492.5,\"runtimeObserveMs\":92.80000019073486,\"progressiveAdopted\":1,\"runtimeGeneratedRuleCount\":0,\"runtimeStyleRawBytes\":1940},\"nativeStyleRules\":46,\"styleTextBytes\":1940,\"snapshot\":{\"rules\":46,\"cssBytes\":1940,\"hydration\":{\"state\":\"progressive\",\"manifestLoaded\":true}}}]",
+      "{\"control\":\"PASS\",\"snapshot\":{\"rules\":46,\"cssBytes\":1940,\"hydration\":{\"state\":\"progressive\",\"manifestLoaded\":true}},\"reportedDiagnostics\":{\"ready\":\"true\",\"textAlign\":\"center\",\"runtimeAvailable\":true,\"progressive\":false,\"hydrationFailureReason\":\"\",\"htmlHidden\":false,\"hydrationManifestRuleCount\":45,\"hydrationManifestLayerRuleCounts\":{\"utilities\":45},\"hydrationManifestLayerExpandedRuleCounts\":{\"utilities\":45},\"cssomTopLevelRuleCount\":2,\"cssomLayerRuleCount\":46,\"cssomLayerRuleCounts\":{\"theme\":1,\"utilities\":45},\"cssomTotalRuleCount\":0,\"layerRuleCountMismatches\":{},\"hydrationManifestSelectorsMissingFromCSSOM\":[],\"runtimeClassUtilityCount\":0,\"runtimeClassUtilityNames\":[],\"runtimeGeneratedRuleCount\":0,\"runtimeStyleRawBytes\":0,\"runtimeStyleText\":\"\",\"connectedClassCount\":46,\"connectedClassNames\":[\"benchmark-root\",\"bg:blue-60\",\"bg:gray-5\",\"bg:white\",\"block\",\"border:1px|solid|gray-20\",\"fg:blue-60\",\"fg:slate-50\",\"fg:slate-60\",\"fg:slate-80\",\"fg:slate-90\",\"fg:white\",\"flex\",\"flex-wrap\",\"font:12px\",\"font:14px\",\"font:18px\",\"font:22px\",\"font:48px\",\"font:heavy\",\"font:semibold\",\"gap:3x\",\"gap:4x\",\"grid\",\"grid-cols:3\",\"h:44px\",\"inline-flex\",\"items-center\",\"justify-center\",\"leading:1.05\",\"leading:1.65\",\"letter-spacing:.08em\",\"m:0\",\"max-w:720px\",\"min-h:100vh\",\"mt:5x\",\"p:4x\",\"p:6x\",\"px:5x\",\"r:10px\",\"r:8px\",\"text-center\",\"text-decoration:none\",\"tracking:-.02em\",\"uppercase\",\"w:full\"],\"missingHydratedClassCount\":46,\"missingHydratedClassNames\":[\"benchmark-root\",\"bg:blue-60\",\"bg:gray-5\",\"bg:white\",\"block\",\"border:1px|solid|gray-20\",\"fg:blue-60\",\"fg:slate-50\",\"fg:slate-60\",\"fg:slate-80\",\"fg:slate-90\",\"fg:white\",\"flex\",\"flex-wrap\",\"font:12px\",\"font:14px\",\"font:18px\",\"font:22px\",\"font:48px\",\"font:heavy\",\"font:semibold\",\"gap:3x\",\"gap:4x\",\"grid\",\"grid-cols:3\",\"h:44px\",\"inline-flex\",\"items-center\",\"justify-center\",\"leading:1.05\",\"leading:1.65\",\"letter-spacing:.08em\",\"m:0\",\"max-w:720px\",\"min-h:100vh\",\"mt:5x\",\"p:4x\",\"p:6x\",\"px:5x\",\"r:10px\",\"r:8px\",\"text-center\",\"text-decoration:none\",\"tracking:-.02em\",\"uppercase\",\"w:full\"],\"consoleWarnings\":[\"`WebAssembly.instantiateStreaming` failed because your server does not serve Wasm with `application/wasm` MIME type. Falling back to `WebAssembly.instantiate` which is slower. Original error:\\n TypeError: Failed to execute 'compile' on 'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'.\"]}}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-jw8zee_7\"}"
+    ]
+  },
+  {
+    "suite": "interaction-cost",
+    "log": ".ai/audits/bug-hunt/evidence/0077-interaction-cost.log",
+    "observedScope": "5static measurements; first runtime startupFAIL",
+    "tail": [
+      "{\"modeId\":\"master-static\",\"sidecar\":false,\"ready\":true,\"computedStyleValid\":1,\"failures\":[]}",
+      "{\"modeId\":\"master-runtime\",\"sidecar\":false,\"ready\":false,\"failures\":[{\"url\":\"http://127.0.0.1:62227/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}]}",
+      "{\"modeId\":\"master-runtime\",\"sidecar\":true,\"ready\":true,\"computedStyleValid\":1,\"failures\":[]}",
+      "{\"modeId\":\"master-progressive\",\"sidecar\":false,\"ready\":false,\"failures\":[{\"url\":\"http://127.0.0.1:62227/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}]}",
+      "{\"modeId\":\"master-progressive\",\"sidecar\":true,\"ready\":true,\"computedStyleValid\":1,\"failures\":[]}",
+      "{\"modeId\":\"tailwind-static\",\"sidecar\":false,\"ready\":true,\"computedStyleValid\":1,\"failures\":[]}",
+      "{\"validation\":\"PASS\",\"originalDiagnostics\":5,\"controls\":6}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-04f8qe6c\"}"
+    ]
+  },
+  {
+    "suite": "runtime-mutation-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0079-runtime-mutation.log",
+    "observedScope": "first runtime startupFAIL; preseedcontrolBH-0042",
+    "tail": [
+      "",
+      "Node.js v24.20.0",
+      "{\"originalReportStatus\":1,\"signal\":null}",
+      "{\"mode\":\"missing-sidecar\",\"ready\":false,\"classes\":[false,false],\"failures\":[{\"url\":\"http://127.0.0.1:62375/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}]}",
+      "{\"mode\":\"original-preseed\",\"ready\":true,\"reportedCount\":0,\"classes\":[false,false],\"failures\":[]}",
+      "{\"mode\":\"array-control\",\"ready\":true,\"classes\":[true,true],\"failures\":[]}",
+      "{\"validation\":\"PASS\",\"controls\":3}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-6mqd14lt\"}"
+    ]
+  },
+  {
+    "suite": "runtime-style-invalidation-diagnostics",
+    "log": ".ai/audits/bug-hunt/evidence/0080-style-invalidation.log",
+    "observedScope": "2static childrenPASS; first runtime startupFAIL",
+    "tail": [
+      "Node.js v24.20.0",
+      "{\"originalReportStatus\":1,\"signal\":null}",
+      "{\"mode\":\"missing-sidecar\",\"ready\":false,\"classes\":[false,false],\"failures\":[{\"url\":\"http://127.0.0.1:62394/artifacts/mastercss_binding_wasm_engine_bg.wasm\",\"status\":404}]}",
+      "{\"mode\":\"original-pause\",\"ready\":true,\"reportedCount\":0,\"classes\":[false,false],\"failures\":[]}",
+      "{\"mode\":\"public-disconnect\",\"ready\":true,\"classes\":[false,false],\"failures\":[]}",
+      "{\"mode\":\"original-retained-seed\",\"ready\":true,\"reportedCount\":{\"classCount\":0,\"ruleCount\":0,\"rawBytes\":0},\"classes\":[false,false],\"failures\":[]}",
+      "{\"validation\":\"PASS\",\"controls\":4}",
+      "{\"exit_code\": 0, \"cleanup\": \"/Users/aron/master/css/tmp/master-css-bh-isolated-s18k6ztj\"}"
+    ]
+  }
+]

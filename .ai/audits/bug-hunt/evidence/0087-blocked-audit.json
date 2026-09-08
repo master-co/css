@@ -1,0 +1,75 @@
+{
+  "condition": "Required target hosts/artifacts, product/config/metric corrections, designated external resources/install authorization, explicit identity verification, and finite acceptance bounds remain unavailable under current restrictions.",
+  "firstObservedAfterConcreteFollowups": "0087",
+  "resumedRun": 1,
+  "consecutiveObservations": 3,
+  "goalStatus": "blocked",
+  "previousAudits": [
+    {
+      "condition": "Required target hosts/artifacts, product/config/metric corrections, designated external resources/install authorization, explicit identity verification, and finite acceptance bounds remain unavailable under current restrictions.",
+      "firstObservedAfterConcreteFollowups": "0087",
+      "consecutiveObservations": 3,
+      "goalStatus": "blocked",
+      "observations": [
+        {
+          "batch": "0087",
+          "classification": "Completion/prerequisite review made progress; at end, no further specified authorized action can satisfy unchanged remaining prerequisites.",
+          "evidence": [
+            "0087-host-prerequisites.json",
+            "0087-source-reconciliation.json",
+            "0087-remaining-obligations.json"
+          ]
+        },
+        {
+          "batch": "0087",
+          "observation": 2,
+          "classification": "No progress; current host/artifacts/source and user authorization unchanged. Same impasse; no meaningful authorized action can satisfy remaining prerequisites.",
+          "evidence": [
+            "0087-prerequisite-recheck-2.json"
+          ]
+        },
+        {
+          "batch": "0087",
+          "observation": 3,
+          "classification": "No progress; third consecutive verified same impasse. update_goal returned status blocked. Objective unchanged and incomplete.",
+          "evidence": [
+            "0087-prerequisite-recheck-3.json"
+          ]
+        }
+      ],
+      "uncompletedUnits": 13,
+      "confirmedFindings": 43
+    }
+  ],
+  "observations": [
+    {
+      "batch": "0087",
+      "resumedRun": 1,
+      "observation": 1,
+      "classification": "No progress. Goal resumed active; new audit starts at one. Current prerequisites unchanged; no meaningful authorized action can satisfy remaining requirements.",
+      "evidence": [
+        "0087-resumed-1-check-1.json"
+      ]
+    },
+    {
+      "batch": "0087",
+      "resumedRun": 1,
+      "observation": 2,
+      "classification": "No progress: same verified impasse, no meaningful authorized action can satisfy remaining prerequisites.",
+      "evidence": [
+        "0087-resumed-1-check-2.json"
+      ]
+    },
+    {
+      "batch": "0087",
+      "resumedRun": 1,
+      "observation": 3,
+      "classification": "No progress. Third consecutive verified same impasse after resumption; update_goal returned blocked. Full objective remains incomplete.",
+      "evidence": [
+        "0087-resumed-1-check-3.json"
+      ]
+    }
+  ],
+  "uncompletedUnits": 13,
+  "confirmedFindings": 43
+}

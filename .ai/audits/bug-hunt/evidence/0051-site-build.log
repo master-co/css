@@ -1,0 +1,15 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-w432vsmh/site", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/site-build.mjs"]}
+{"name":"public-env","status":0}
+{"name":"prepare-app","status":0}
+{"name":"build-llms","status":0}
+{"name":"build-play-compiler","status":0}
+{"name":"build-next","status":0}
+{"name":"postbuild-static","status":0}
+{"name":"lint","status":0}
+{"name":"type-check","status":0}
+{"name":"css-contract","status":0}
+{"name":"dogfood","status":1}
+{"name":"syntax-migration","status":0}
+{"name":"interactions","status":0}
+{"built":true,"results":[{"name":"public-env","status":0},{"name":"prepare-app","status":0},{"name":"build-llms","status":0},{"name":"build-play-compiler","status":0},{"name":"build-next","status":0},{"name":"postbuild-static","status":0},{"name":"lint","status":0},{"name":"type-check","status":0},{"name":"css-contract","status":0},{"name":"dogfood","status":1},{"name":"syntax-migration","status":0},{"name":"interactions","status":0}]}
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-w432vsmh"}

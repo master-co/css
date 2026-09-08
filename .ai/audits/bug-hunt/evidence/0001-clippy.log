@@ -1,0 +1,11 @@
+    Checking hashbrown v0.17.1
+    Checking memchr v2.8.3
+    Checking serde_core v1.0.229
+    Checking thiserror v2.0.20
+    Checking indexmap v2.14.2
+    Checking serde_json v1.0.151
+    Checking serde v1.0.229
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.47s

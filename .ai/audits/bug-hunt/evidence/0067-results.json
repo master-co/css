@@ -1,0 +1,66 @@
+[
+  {
+    "fixture": "minimal",
+    "status": 0,
+    "completedDiagnostic": true,
+    "cssBytes": 5179,
+    "markers": [
+      {
+        "marker": "text-center",
+        "present": true
+      }
+    ],
+    "probes": 33,
+    "samples": 53,
+    "allFinite": true,
+    "uniqueMetricIds": 53
+  },
+  {
+    "fixture": "docs",
+    "status": 0,
+    "completedDiagnostic": true,
+    "cssBytes": 5904,
+    "markers": [
+      {
+        "marker": "text-center",
+        "present": true
+      }
+    ],
+    "probes": 33,
+    "samples": 53,
+    "allFinite": true,
+    "uniqueMetricIds": 53
+  },
+  {
+    "fixture": "dashboard",
+    "status": 0,
+    "completedDiagnostic": true,
+    "cssBytes": 6102,
+    "markers": [
+      {
+        "marker": "text-center",
+        "present": true
+      }
+    ],
+    "probes": 33,
+    "samples": 53,
+    "allFinite": true,
+    "uniqueMetricIds": 53
+  },
+  {
+    "fixture": "stress-css",
+    "status": 0,
+    "completedDiagnostic": true,
+    "cssBytes": 11780,
+    "markers": [
+      {
+        "marker": "text-center",
+        "present": true
+      }
+    ],
+    "probes": 33,
+    "samples": 53,
+    "allFinite": true,
+    "uniqueMetricIds": 53
+  }
+]

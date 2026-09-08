@@ -1,0 +1,15 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-40_w9kow/packages/next", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/next-hmr-browser-copy.mjs"]}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-40_w9kow/packages/next
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  22:07:12
+   Duration  23.58s (tests 99%, import 1%)
+
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-40_w9kow"}

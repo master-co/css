@@ -1,0 +1,133 @@
+
+Running 117 tests using 1 worker
+
+(node:64681) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/117] [chromium] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[2/117] [chromium] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[3/117] [chromium] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[4/117] [chromium] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[5/117] [chromium] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[6/117] [chromium] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[7/117] [chromium] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[8/117] [chromium] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[9/117] [chromium] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[10/117] [chromium] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[11/117] [chromium] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration fetches an external manifest when import attributes are unsupported
+[12/117] [chromium] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration does not fetch for non-syntax loader construction failures
+[13/117] [chromium] › e2e/hydration-edge-cases.test.ts:384:1 › external hydration does not fetch after a JSON import request fails
+[14/117] [chromium] › e2e/hydration-edge-cases.test.ts:429:1 › external hydration reports fallback HTTP failures as structured diagnostics
+[15/117] [chromium] › e2e/hydration-edge-cases.test.ts:475:1 › runtime start does not import a hydration manifest without a runtime style source
+[16/117] [chromium] › e2e/hydration-edge-cases.test.ts:507:1 › progressive hydration fails open when an external style hydration manifest import fails
+[17/117] [chromium] › e2e/hydration-edge-cases.test.ts:551:1 › progressive hydration rejects an invalid external hydration manifest payload
+[18/117] [chromium] › e2e/hydration-edge-cases.test.ts:593:1 › explicit hydration manifest wins over external DOM discovery
+[19/117] [chromium] › e2e/hydration-edge-cases.test.ts:632:1 › progressive hydration matches bucketed theme variables
+[20/117] [chromium] › e2e/hydration-edge-cases.test.ts:662:1 › progressive hydration matches theme variable buckets by key
+[21/117] [chromium] › e2e/hydration-edge-cases.test.ts:702:1 › removes shared alias variable dependencies when classes disappear
+[22/117] [chromium] › e2e/hydration-edge-cases.test.ts:782:1 › inlines variables without runtime theme counts
+[23/117] [chromium] › e2e/progressive/basic.test.ts:4:1 › progressive
+[24/117] [chromium] › e2e/progressive/components/index.test.ts:11:1 › components
+[25/117] [chromium] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[26/117] [chromium] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[27/117] [chromium] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[28/117] [chromium] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[29/117] [chromium] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[30/117] [chromium] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[31/117] [chromium] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[32/117] [chromium] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[33/117] [chromium] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[34/117] [chromium] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[35/117] [chromium] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[36/117] [chromium] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[37/117] [chromium] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[38/117] [chromium] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[39/117] [chromium] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+(node:64742) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[40/117] [firefox] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[41/117] [firefox] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[42/117] [firefox] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[43/117] [firefox] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[44/117] [firefox] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[45/117] [firefox] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[46/117] [firefox] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[47/117] [firefox] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[48/117] [firefox] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[49/117] [firefox] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[50/117] [firefox] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration fetches an external manifest when import attributes are unsupported
+[51/117] [firefox] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration does not fetch for non-syntax loader construction failures
+[52/117] [firefox] › e2e/hydration-edge-cases.test.ts:384:1 › external hydration does not fetch after a JSON import request fails
+[53/117] [firefox] › e2e/hydration-edge-cases.test.ts:429:1 › external hydration reports fallback HTTP failures as structured diagnostics
+[54/117] [firefox] › e2e/hydration-edge-cases.test.ts:475:1 › runtime start does not import a hydration manifest without a runtime style source
+[55/117] [firefox] › e2e/hydration-edge-cases.test.ts:507:1 › progressive hydration fails open when an external style hydration manifest import fails
+[56/117] [firefox] › e2e/hydration-edge-cases.test.ts:551:1 › progressive hydration rejects an invalid external hydration manifest payload
+[57/117] [firefox] › e2e/hydration-edge-cases.test.ts:593:1 › explicit hydration manifest wins over external DOM discovery
+[58/117] [firefox] › e2e/hydration-edge-cases.test.ts:632:1 › progressive hydration matches bucketed theme variables
+[59/117] [firefox] › e2e/hydration-edge-cases.test.ts:662:1 › progressive hydration matches theme variable buckets by key
+[60/117] [firefox] › e2e/hydration-edge-cases.test.ts:702:1 › removes shared alias variable dependencies when classes disappear
+[61/117] [firefox] › e2e/hydration-edge-cases.test.ts:782:1 › inlines variables without runtime theme counts
+[62/117] [firefox] › e2e/progressive/basic.test.ts:4:1 › progressive
+[63/117] [firefox] › e2e/progressive/components/index.test.ts:11:1 › components
+[64/117] [firefox] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[65/117] [firefox] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[66/117] [firefox] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[67/117] [firefox] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[68/117] [firefox] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[69/117] [firefox] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[70/117] [firefox] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[71/117] [firefox] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[72/117] [firefox] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[73/117] [firefox] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[74/117] [firefox] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[75/117] [firefox] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[76/117] [firefox] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[77/117] [firefox] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[78/117] [firefox] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+(node:64792) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[79/117] [webkit] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[80/117] [webkit] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[81/117] [webkit] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[82/117] [webkit] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[83/117] [webkit] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[84/117] [webkit] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[85/117] [webkit] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[86/117] [webkit] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[87/117] [webkit] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[88/117] [webkit] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[89/117] [webkit] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration fetches an external manifest when import attributes are unsupported
+[90/117] [webkit] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration does not fetch for non-syntax loader construction failures
+[91/117] [webkit] › e2e/hydration-edge-cases.test.ts:384:1 › external hydration does not fetch after a JSON import request fails
+[92/117] [webkit] › e2e/hydration-edge-cases.test.ts:429:1 › external hydration reports fallback HTTP failures as structured diagnostics
+[93/117] [webkit] › e2e/hydration-edge-cases.test.ts:475:1 › runtime start does not import a hydration manifest without a runtime style source
+[94/117] [webkit] › e2e/hydration-edge-cases.test.ts:507:1 › progressive hydration fails open when an external style hydration manifest import fails
+[95/117] [webkit] › e2e/hydration-edge-cases.test.ts:551:1 › progressive hydration rejects an invalid external hydration manifest payload
+[96/117] [webkit] › e2e/hydration-edge-cases.test.ts:593:1 › explicit hydration manifest wins over external DOM discovery
+[97/117] [webkit] › e2e/hydration-edge-cases.test.ts:632:1 › progressive hydration matches bucketed theme variables
+[98/117] [webkit] › e2e/hydration-edge-cases.test.ts:662:1 › progressive hydration matches theme variable buckets by key
+[99/117] [webkit] › e2e/hydration-edge-cases.test.ts:702:1 › removes shared alias variable dependencies when classes disappear
+[100/117] [webkit] › e2e/hydration-edge-cases.test.ts:782:1 › inlines variables without runtime theme counts
+[101/117] [webkit] › e2e/progressive/basic.test.ts:4:1 › progressive
+[102/117] [webkit] › e2e/progressive/components/index.test.ts:11:1 › components
+[103/117] [webkit] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[104/117] [webkit] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[105/117] [webkit] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[106/117] [webkit] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[107/117] [webkit] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[108/117] [webkit] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[109/117] [webkit] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[110/117] [webkit] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[111/117] [webkit] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[112/117] [webkit] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[113/117] [webkit] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[114/117] [webkit] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[115/117] [webkit] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[116/117] [webkit] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[117/117] [webkit] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+  117 passed (34.6s)

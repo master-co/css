@@ -1,0 +1,12 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-m0y7y7ze/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/extraction-diagnostic-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-m0y7y7ze/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  22:56:18
+   Duration  22.99s (tests 99%, transform 1%)
+
+{"variants":4,"metrics":33,"samples":72,"summary":72,"missingMetricIds":["master-import-graph-resolution-ms","master-package-artifact-read-ms","master-package-css-compilation-ms","entry-css-compilation-ms","manifest-finalization-ms","native-css-collection-ms","generated-class-collection-ms","native-variable-reference-scan-ms","native-animation-reference-scan-ms","css-text-serialization-ms","emitted-globals-creation-ms","final-css-assembly-ms","master-package-shortcut-hit-count","master-package-shortcut-fallback-count","native-css-raw-bytes"]}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-m0y7y7ze"}

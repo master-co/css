@@ -1,0 +1,15 @@
+{
+  "missingLinks": [],
+  "oversizeMarkdown": [],
+  "coverageUnits": 75,
+  "coverageStatuses": {
+    "已檢查": 64,
+    "受阻": 11
+  },
+  "confirmedSeverities": {
+    "1": 7,
+    "2": 18,
+    "3": 2
+  },
+  "invalidLocations": []
+}

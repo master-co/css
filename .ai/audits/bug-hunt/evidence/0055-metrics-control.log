@@ -1,0 +1,57 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/browser-lifecycle-metrics.mts"]}
+Browser lifecycle selection: scenarios=initial-load modes=master-runtime variants=1 rounds=1 warmupRounds=0 longSessionMs=1000 traceArtifactMode=off
+Launching Chromium for browser lifecycle benchmark
+Preparing browser lifecycle page 1/1: initial-load-master-runtime-docs
+Prepared browser lifecycle page 1/1: initial-load-master-runtime-docs in 414.4ms
+Measuring browser lifecycle 1/1: initial-load-master-runtime-docs, round 1/1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at waitForBenchmarkReady (/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks/shared/browser-lifecycle-samples.ts:140:14)
+    at <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks/shared/browser-lifecycle-measurement.ts:132:11)
+    at async tracePage (/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks/shared/browser-lifecycle-measurement.ts:200:26)
+    at async measureLifecycleNavigation (/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks/shared/browser-lifecycle-measurement.ts:129:18)
+    at async <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy/benchmarks/shared/browser-lifecycle-measurement.ts:35:13) {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0
+{"originalSuiteStatus":1}
+{
+  "baseline": {
+    "failures": [
+      {
+        "url": "http://127.0.0.1:58473/artifacts/mastercss_binding_wasm_engine_bg.wasm",
+        "status": 404
+      },
+      {
+        "console": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      },
+      {
+        "console": "{version: 2, code: INTERNAL, domain: runtime, severity: error, message: failed to fetch Wasm: 404 Not Found fetching 'http…/artifacts/mastercss_binding_wasm_engine_bg.wasm'}"
+      },
+      {
+        "console": "MasterCSSError: failed to fetch Wasm: 404 Not Found fetching 'http://127.0.0.1:58473/artifacts/mastercss_binding_wasm_engine_bg.wasm'\n    at F (http://127.0.0.1:58473/global.min.js:1:13617)\n    at async we (http://127.0.0.1:58473/global.min.js:1:15722)\n    at async ke (http://127.0.0.1:58473/global.min.js:1:16988)\n    at async je (http://127.0.0.1:58473/global.min.js:1:17211)\n    at async http://127.0.0.1:58473/global.min.js:1:19914\n    at async Le (http://127.0.0.1:58473/global.min.js:1:19010)\n    at async We (http://127.0.0.1:58473/global.min.js:1:21341)\n    at async Promise.all (index 0)\n    at async e.startNew (http://127.0.0.1:58473/global.min.js:1:36215)\n    at async e.start (http://127.0.0.1:58473/global.min.js:1:35748)"
+      }
+    ],
+    "ready": false,
+    "hasRuntime": false
+  }
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.evaluate: ReferenceError: __name is not defined
+    at eval (eval at evaluate (:311:30), <anonymous>:1:153)
+    at UtilityScript.evaluate (<anonymous>:313:16)
+    at UtilityScript.<anonymous> (<anonymous>:1:44)
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/browser-lifecycle-metrics.mts:41:25) {
+  log: []
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-3gat3fsy"}

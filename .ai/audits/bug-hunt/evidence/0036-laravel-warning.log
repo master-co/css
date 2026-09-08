@@ -1,0 +1,25 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-ek0ojjkp/examples/laravel", "command": ["/Users/aron/.config/herd-lite/bin/php", "artisan", "test", "--filter=it returns a successful response", "--display-warnings"]}
+
+  [30;43;1m WARN [39;49;22m[39m Tests\Feature\ExampleTest[39m
+  [33;1m![39;22m[90m [39m[90mit returns a successful response[39m[90m [39m[33m→ file_get_contents(/Users/aron/ma[39m[90m…[39m [90m0.10s[39m  
+  [31m────────────────────────────────────────────────────────────────────────────[39m  
+  [30;43;1m WARNINGS [39;49;22m [1mTests\Feature\ExampleTest[22m [90m>[39m it returns a successful response       
+[39;1m  file_get_contents(/Users/aron/master/css/tmp/master-css-bh-isolated-ek0ojjkp/examples/laravel/.env): Failed to open stream: No such file or directory[39;22m
+
+  at [32mvendor/vlucas/phpdotenv/src/Store/File/Reader.php[39m:[32m73[39m
+     69▕      */
+     70▕     private static function readFromFile(string $path, ?string $encoding = null)
+     71▕     {
+     72▕         /** @var Option<string> */
+  ➜  73▕         $content = Option::fromValue(@\file_get_contents($path), false);
+     74▕ 
+     75▕         return $content->flatMap(static function (string $content) use ($encoding) {
+     76▕             return Str::utf8($content, $encoding)->mapError(static function (string $error) {
+     77▕                 throw new InvalidEncodingException($error);
+
+
+
+  [90mTests:[39m    [33;1m1 warning[39;22m[90m (1 assertions)[39m
+  [90mDuration:[39m [39m0.16s[39m
+
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-ek0ojjkp"}

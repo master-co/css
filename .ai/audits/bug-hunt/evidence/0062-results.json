@@ -1,0 +1,41 @@
+{
+  "astro": {
+    "kind": "runtime",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "next.js": {
+    "kind": "next",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "svelte": {
+    "kind": "svelte",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  }
+}

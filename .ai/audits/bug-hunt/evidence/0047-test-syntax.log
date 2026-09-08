@@ -1,0 +1,23 @@
+✔ reused examples match fresh engines without retaining rules or resources (336.56175ms)
+✔ proxies size with a px value and restores the placeholder in generated declarations (3.537792ms)
+✔ restores syntax placeholders without styling the whole text token (0.422542ms)
+✔ proxies length without a unit and restores length and color placeholders (0.466792ms)
+✔ proxies integer without a unit and restores the placeholder in generated declarations (0.446833ms)
+✔ proxies number without a unit and restores the placeholder in generated declarations (0.592958ms)
+✔ proxies hex placeholders inside color literals (0.481916ms)
+✔ proxies URL placeholders with valid URL values (0.699209ms)
+✔ proxies preset namespace placeholders and restores declaration values (0.629292ms)
+✔ restores generic placeholders split across text nodes (0.672584ms)
+✔ uses the current syntax declarations before falling back to preview syntax (2.195958ms)
+✔ throws when syntax and preview fallback generate empty declarations (0.667167ms)
+✔ all reference syntaxes generate declarations without preview fallback (594.118625ms)
+✔ all reference syntaxes place nested rows after plain rows (7.168791ms)
+ℹ tests 14
+ℹ suites 0
+ℹ pass 14
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1114.884958
+$ tsx --test components/SyntaxTr.test.ts common/generate-preset-css.test.ts

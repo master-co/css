@@ -1,0 +1,40 @@
+[
+  {
+    "mode": "light",
+    "color": "PASS",
+    "actual": "lab(100 0 0)",
+    "expected": "oklch(1 0 none)",
+    "actualRGBA": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "expectedRGBA": [
+      255,
+      255,
+      255,
+      255
+    ],
+    "white": ""
+  },
+  {
+    "mode": "dark",
+    "color": "PASS",
+    "actual": "lab(11.26 0.00000745058 -0.00000298023)",
+    "expected": "lab(11.26 0.00000745058 -0.00000298023)",
+    "actualRGBA": [
+      30,
+      30,
+      30,
+      255
+    ],
+    "expectedRGBA": [
+      30,
+      30,
+      30,
+      255
+    ],
+    "white": ""
+  }
+]

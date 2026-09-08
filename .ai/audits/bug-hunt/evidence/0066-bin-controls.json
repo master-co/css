@@ -1,0 +1,24 @@
+{
+  "rows": [
+    {
+      "label": "published bin with valid generate args",
+      "status": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "bin passive import",
+      "status": 1,
+      "stdout": "",
+      "stderr": "Usage: master-css [options] [command]\n\nMaster CSS CLI\n\nOptions:\n  -V, --version                         output the version number\n  -h, --help                            display help for command\n\nCommands:\n  generate [options] [source paths...]  Generate CSS from project source files.\n  lint [options] [source paths...]      Run machine-readable Master CSS\n                                        diagnostics for source files.\n  inspect [options] [source paths...]   Inspect scanner state, stylesheet\n                                        entries, generated CSS, and missing CSS.\n  help [command]                        display help for command\n"
+    },
+    {
+      "label": "core passive import",
+      "status": 0,
+      "stdout": "AUDIT_IMPORT_RETURNED\n",
+      "stderr": ""
+    }
+  ],
+  "cssMarkerPassed": true,
+  "cssBytes": 297
+}

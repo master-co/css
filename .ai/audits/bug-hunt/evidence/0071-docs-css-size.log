@@ -1,0 +1,13 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-_5uamfp4/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/docs-css-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-_5uamfp4/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  23:16:47
+   Duration  19.70s (tests 92%, import 6%, transform 2%)
+
+{"pages":8,"assets":45}
+{"suiteStatus":0}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-_5uamfp4"}

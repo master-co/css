@@ -1,0 +1,33 @@
+{
+  "platform": "macOS-26.6.2-arm64-arm-64bit",
+  "machine": "arm64",
+  "tools": {
+    "docker": null,
+    "podman": null,
+    "qemu-aarch64": null,
+    "qemu-x86_64": null,
+    "wine": null,
+    "rustup": "/Users/aron/.cargo/bin/rustup",
+    "cargo": "/Users/aron/.cargo/bin/cargo"
+  },
+  "rosetta": {
+    "status": 0,
+    "stdout": "x86_64\n",
+    "stderr": ""
+  },
+  "rust_targets": {
+    "status": 0,
+    "stdout": "aarch64-apple-darwin\nwasm32-unknown-unknown\nx86_64-pc-windows-msvc\nx86_64-unknown-linux-gnu\n",
+    "stderr": ""
+  },
+  "target_artifacts": {
+    "packages/binding-linux-x64-musl": [],
+    "packages/binding-linux-arm64-musl": [],
+    "packages/binding-linux-arm64-gnu": [],
+    "packages/binding-win32-arm64-msvc": [],
+    "packages/binding-darwin-x64": [],
+    "packages/binding-darwin-arm64": [],
+    "packages/binding-win32-x64-msvc": [],
+    "packages/binding-linux-x64-gnu": []
+  }
+}

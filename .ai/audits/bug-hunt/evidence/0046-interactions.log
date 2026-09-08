@@ -1,0 +1,21 @@
+[
+  {
+    "width": 390,
+    "error": "expect(locator).toBeFocused() failed\n\nLocator:  locator('a[href*=\"/guide\"]').first()\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n  - Expect \"toBeFocused\" locator('a[href*=\"/guide\"]').first() with timeout 5000ms\n  - waiting for locator('a[href*=\"/guide\"]').first()\n    13 × locator resolved to <a href=\"/guide\" class=\"app-header-nav hidden@<md\">Guide</a>\n       - unexpected value \"inactive\"\n"
+  },
+  {
+    "width": 768,
+    "error": "expect(locator).toBeFocused() failed\n\nLocator:  locator('a[href*=\"/guide\"]').first()\nExpected: focused\nReceived: inactive\nTimeout:  5000ms\n\nCall log:\n  - Expect \"toBeFocused\" locator('a[href*=\"/guide\"]').first() with timeout 5000ms\n  - waiting for locator('a[href*=\"/guide\"]').first()\n    13 × locator resolved to <a href=\"/guide\" class=\"app-header-nav hidden@<md\">Guide</a>\n       - unexpected value \"inactive\"\n"
+  },
+  {
+    "width": 1280,
+    "search": "PASS",
+    "layout": "PASS",
+    "navigation": "/reference/padding#syntax-6821fb05e269"
+  },
+  {
+    "play": "FAIL",
+    "error": "expect(locator).toHaveCSS(expected) failed\n\nLocator: locator('iframe.demo').contentFrame().getByRole('heading', { name: 'Audit preview' })\nExpected: \"rgb(255, 0, 0)\"\nTimeout: 10000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"toHaveCSS\" locator('iframe.demo').contentFrame().getByRole('heading', { name: 'Audit preview' }) with timeout 10000ms\n  - waiting for locator('iframe.demo').contentFrame().getByRole('heading', { name: 'Audit preview' })\n",
+    "pageErrors": []
+  }
+]

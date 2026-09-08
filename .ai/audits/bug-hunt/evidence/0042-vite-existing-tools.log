@@ -1,0 +1,83 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-9l7w9t14/packages/vite", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nested-build.mjs", "vitestatic"]}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../src" resolves to a directory index (vite.config.ts:2:23). Import the index file directly
+  - import "./core" without a file extension (../src/index.ts:4:8). Add the file extension
+  - import "./options" without a file extension (../src/index.ts:5:49). Add the file extension
+  - import "./plugins/manifest-loader" without a file extension (../src/core.ts:5:34). Add the file extension
+  - import "./plugins/manifest-virtual-module" without a file extension (../src/core.ts:6:41). Add the file extension
+  - import "./plugins/emitted-globals-virtual-module" without a file extension (../src/core.ts:7:47). Add the file extension
+  - import "./plugins/context" without a file extension (../src/core.ts:8:27). Add the file extension
+  - import "./plugins/scanner" without a file extension (../src/core.ts:9:27). Add the file extension
+  - import "./plugins/usage-graph" without a file extension (../src/core.ts:10:30). Add the file extension
+  - import "./plugins/local-compose" without a file extension (../src/core.ts:11:32). Add the file extension
+  - import "./plugins/style-entry" without a file extension (../src/core.ts:12:30). Add the file extension
+  - import "./plugins/style-entry-hmr" without a file extension (../src/core.ts:13:33). Add the file extension
+  - import "./plugins/style-entry-build" without a file extension (../src/core.ts:14:35). Add the file extension
+  - import "./plugins/runtime-bootstrap" without a file extension (../src/core.ts:15:36). Add the file extension
+  - import "./options" without a file extension (../src/core.ts:20:8). Add the file extension
+  - import "./plugins/inject-runtime" without a file extension (../src/core.ts:112:33). Add the file extension
+  - import "./plugins/inject-runtime" without a file extension (../src/core.ts:120:33). Add the file extension
+  - import "./plugins/manifest-preload" without a file extension (../src/core.ts:132:31). Add the file extension
+  - import "./plugins/runtime-preload" without a file extension (../src/core.ts:142:31). Add the file extension
+  - import "./plugins/avoid-fouc" without a file extension (../src/core.ts:153:31). Add the file extension
+  - import "./plugins/pre-render" without a file extension (../src/core.ts:164:31). Add the file extension
+  - import "../common" without a file extension (../src/plugins/inject-runtime.ts:5:8). Add the file extension
+  - import "../core" without a file extension (../src/plugins/manifest-virtual-module.ts:2:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/avoid-fouc.ts:3:44). Add the file extension
+  - import "../core" without a file extension (../src/plugins/manifest-loader.ts:2:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/emitted-globals-virtual-module.ts:3:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/pre-render.ts:2:44). Add the file extension
+  - import "../core" without a file extension (../src/plugins/local-compose.ts:15:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/style-entry-build.ts:2:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/style-entry-hmr.ts:3:49). Add the file extension
+  - import "../common" without a file extension (../src/plugins/runtime-preload.ts:5:8). Add the file extension
+  - import "../core" without a file extension (../src/plugins/style-entry.ts:3:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/usage-graph.ts:2:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/scanner.ts:4:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/manifest-preload.ts:6:49). Add the file extension
+  - import "../core" without a file extension (../src/plugins/context.ts:2:49). Add the file extension
+  - import "../options" without a file extension (../src/plugins/inject-runtime.ts:6:52). Add the file extension
+  - import "../common" without a file extension (../src/plugins/avoid-fouc.ts:4:30). Add the file extension
+  - import "../utils/path" without a file extension (../src/plugins/manifest-loader.ts:24:30). Add the file extension
+  - import "../common" without a file extension (../src/plugins/emitted-globals-virtual-module.ts:4:81). Add the file extension
+  - import "../options" without a file extension (../src/plugins/pre-render.ts:9:52). Add the file extension
+  - import "../options" without a file extension (../src/plugins/local-compose.ts:16:57). Add the file extension
+  - import "../options" without a file extension (../src/plugins/style-entry-build.ts:3:57). Add the file extension
+  - import "../options" without a file extension (../src/plugins/style-entry-hmr.ts:4:57). Add the file extension
+  - import "../core" without a file extension (../src/plugins/runtime-preload.ts:7:49). Add the file extension
+  - import "../options" without a file extension (../src/plugins/style-entry.ts:4:57). Add the file extension
+  - import "../options" without a file extension (../src/plugins/usage-graph.ts:3:57). Add the file extension
+  - import "../options" without a file extension (../src/plugins/scanner.ts:5:57). Add the file extension
+  - import "../utils/html" without a file extension (../src/plugins/manifest-preload.ts:7:51). Add the file extension
+  - import "../options" without a file extension (../src/plugins/context.ts:3:57). Add the file extension
+  - import "../options" without a file extension (../src/plugins/avoid-fouc.ts:5:52). Add the file extension
+  - import "../utils/extracted-css" without a file extension (../src/plugins/emitted-globals-virtual-module.ts:5:39). Add the file extension
+  - import "../utils/path" without a file extension (../src/plugins/pre-render.ts:18:30). Add the file extension
+  - import "../utils/path" without a file extension (../src/plugins/local-compose.ts:17:30). Add the file extension
+  - import "../utils/extracted-css" without a file extension (../src/plugins/style-entry-build.ts:4:29). Add the file extension
+  - import "../common" without a file extension (../src/plugins/style-entry-hmr.ts:5:53). Add the file extension
+  - import "../utils/html" without a file extension (../src/plugins/runtime-preload.ts:8:71). Add the file extension
+  - import "../utils/extracted-css" without a file extension (../src/plugins/style-entry.ts:5:29). Add the file extension
+  - import "../utils/scanner-context" without a file extension (../src/plugins/usage-graph.ts:4:28). Add the file extension
+  - import "../utils/scanner-context" without a file extension (../src/plugins/style-entry-build.ts:5:28). Add the file extension
+  - import "../utils/scanner-context" without a file extension (../src/plugins/style-entry-hmr.ts:6:28). Add the file extension
+  - import "../utils/register-style-source" without a file extension (../src/plugins/style-entry.ts:11:42). Add the file extension
+  - import "../core" without a file extension (../src/utils/scanner-context.ts:2:49). Add the file extension
+  - import "../utils/scanner-context" without a file extension (../src/plugins/style-entry.ts:12:28). Add the file extension
+  - import "../core" without a file extension (../src/utils/extracted-css.ts:1:49). Add the file extension
+  - import "./scanner-context" without a file extension (../src/utils/extracted-css.ts:2:28). Add the file extension
+  - import "../core" without a file extension (../src/utils/register-style-source.ts:2:49). Add the file extension
+  - import "./scanner-context" without a file extension (../src/utils/register-style-source.ts:3:28). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+vite v8.2.2 building client environment for production...
+transforming...
+✓ 5 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                 0.65 kB │ gzip: 0.39 kB
+dist/assets/index-Dkrc8kIN.css  5.34 kB │ gzip: 1.93 kB
+dist/assets/index-JbTDVQ9Q.js   0.67 kB │ gzip: 0.38 kB
+
+✓ built in 2.03s
+{"kind":"vitestatic","title":"Master CSS Vite Playground","heading":"Master CSS Vite","errors":[]}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-9l7w9t14"}

@@ -1,0 +1,50 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-52jof2ih/packages/nuxt", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs"]}
+│
+●  Nuxt 4.5.2 (with Nitro 2.13.4, Vite 8.2.2 and Vue 3.5.42)
+
+  ➜ Local:    http://127.0.0.1:59618/
+  ➜ Network:  use --host to expose
+
+✔ Vite client built in 26ms
+✔ Vite server built in 17ms
+[nitro] ✔ Nuxt Nitro server built in 408ms
+ℹ Vite server warmed up in 7ms
+ℹ Vite client warmed up in 15ms
+
+ ERROR  Pre-transform error: Transform failed with 1 error:
+
+[31m[TSCONFIG_ERROR] [0mFailed to load tsconfig '.nuxt/tsconfig.json': Tsconfig not found
+
+  Plugin: vite:oxc
+  File: /Users/aron/master/css/tmp/master-css-bh-isolated-52jof2ih/packages/nuxt/src/runtime/css-runtime.ts
+
+
+ ERROR  Internal server error: Transform failed with 1 error:
+
+[31m[TSCONFIG_ERROR] [0mFailed to load tsconfig '.nuxt/tsconfig.json': Tsconfig not found
+
+  Plugin: vite:oxc
+  File: /Users/aron/master/css/tmp/master-css-bh-isolated-52jof2ih/packages/nuxt/src/runtime/css-runtime.ts
+      at transformWithOxc (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_@vitejs+devtools@0.7.2_esbuild@0.28.2_jiti@2.7.0_less@4._d71c3a1a97e31390e873fa7b8b4584d5/node_modules/vite/dist/node/chunks/node.js:4103:19)
+      at TransformPluginContext.transform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_@vitejs+devtools@0.7.2_esbuild@0.28.2_jiti@2.7.0_less@4._d71c3a1a97e31390e873fa7b8b4584d5/node_modules/vite/dist/node/chunks/node.js:4174:26)
+      at EnvironmentPluginContainer.transform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_@vitejs+devtools@0.7.2_esbuild@0.28.2_jiti@2.7.0_less@4._d71c3a1a97e31390e873fa7b8b4584d5/node_modules/vite/dist/node/chunks/node.js:30932:51)
+      at async loadAndTransform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_@vitejs+devtools@0.7.2_esbuild@0.28.2_jiti@2.7.0_less@4._d71c3a1a97e31390e873fa7b8b4584d5/node_modules/vite/dist/node/chunks/node.js:20671:26)
+      at async viteTransformMiddleware (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_@vitejs+devtools@0.7.2_esbuild@0.28.2_jiti@2.7.0_less@4._d71c3a1a97e31390e873fa7b8b4584d5/node_modules/vite/dist/node/chunks/node.js:25205:20)
+
+
+ ERROR  [Unhandled rejection] TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:59618/_nuxt/@fs/Users/aron/master/css/node_modules/.pnpm/nuxt@4.5.2_@azure+identity@4.13.2_supports-color@10.2.2__@babel+plugin-syntax-jsx@7.29._c3e8266c2e3e241ef3dff2a883a9bcd2/node_modules/nuxt/dist/app/entry.js?v=3baca766
+
+
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:55:14 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-52jof2ih"}

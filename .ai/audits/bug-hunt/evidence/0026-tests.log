@@ -1,0 +1,9 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/svelte
+
+
+ Test Files  3 passed (3)
+      Tests  14 passed (14)
+   Start at  17:06:02
+   Duration  1.30s (tests 43%, transform 41%, import 16%)
+

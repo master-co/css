@@ -1,0 +1,11 @@
+{"id":"animation-control","nativeCSS":".x{animation:fade 1s}","direct":"@keyframes fade{to{opacity:1}}","public":"@keyframes fade{to{opacity:1}}","publicNative":".x {\n  animation: 1s fade;\n}"}
+{"id":"BH-0001-comment-keyframes","nativeCSS":"/* @keyframes fade {to{opacity:0}} */ .x{animation:fade 1s}","direct":"","public":"@keyframes fade{to{opacity:1}}","publicNative":".x {\n  animation: 1s fade;\n}"}
+{"id":"BH-0001-string-keyframes","nativeCSS":".x{content:\"@keyframes fade\";animation:fade 1s}","direct":"","public":"","publicNative":".x {\n  content: \"@keyframes fade\";\n  animation: 1s fade;\n}"}
+{"id":"BH-0001-comment-animation","nativeCSS":"/* animation:fade 1s; */","direct":"@keyframes fade{to{opacity:1}}","public":"","publicNative":""}
+{"id":"BH-0001-string-animation","nativeCSS":".x{content:\"animation:fade 1s;\"}","direct":"@keyframes fade{to{opacity:1}}","public":"@keyframes fade{to{opacity:1}}","publicNative":".x {\n  content: \"animation:fade 1s;\";\n}"}
+{"id":"var-control","nativeCSS":".x{color:var( --color-brand)}","direct":"@layer theme{:root{--color-brand:red}}","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}
+{"id":"BH-0002-\"\\t\"","nativeCSS":".x{color:var(\t--color-brand)}","direct":"","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}
+{"id":"BH-0002-\"\\n\"","nativeCSS":".x{color:var(\n--color-brand)}","direct":"","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}
+{"id":"BH-0002-\"\\r\\n\"","nativeCSS":".x{color:var(\r\n--color-brand)}","direct":"","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}
+{"id":"BH-0002-\"\\f\"","nativeCSS":".x{color:var(\f--color-brand)}","direct":"","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}
+{"id":"BH-0002-\"/**/\"","nativeCSS":".x{color:var(/**/--color-brand)}","direct":"","public":"@layer theme{:root{--color-brand:red}}","publicNative":".x {\n  color: var(--color-brand);\n}"}

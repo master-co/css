@@ -1,0 +1,23 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-41rep4ko/packages/nuxt", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs"]}
+│
+●  Nuxt 4.5.2 (with Nitro 2.13.4, Vite 8.2.2 and Vue 3.5.42)
+
+  ➜ Local:    http://127.0.0.1:59594/
+  ➜ Network:  use --host to expose
+
+✔ Vite client built in 27ms
+✔ Vite server built in 15ms
+[nitro] ✔ Nuxt Nitro server built in 393ms
+ℹ Vite server warmed up in 7ms
+ℹ Vite client warmed up in 15ms
+
+file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:49
+  browser = await chromium.launch()
+                           ^
+
+TypeError: Cannot read properties of undefined (reading 'launch')
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:49:28
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-41rep4ko"}

@@ -1,0 +1,67 @@
+{
+  "blank": {
+    "kind": "runtime",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "vite": {
+    "kind": "static",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "react": {
+    "kind": "runtime",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "lit": {
+    "kind": "lit",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  },
+  "webpack": {
+    "kind": "runtime",
+    "results": [
+      {
+        "browser": "firefox",
+        "exit": 0
+      },
+      {
+        "browser": "webkit",
+        "exit": 0
+      }
+    ]
+  }
+}

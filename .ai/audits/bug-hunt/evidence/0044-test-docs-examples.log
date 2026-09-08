@@ -1,0 +1,15 @@
+✔ overview category references resolve to generated categories (11.36325ms)
+✔ docs example classes are valid default preset classes or locally defined custom classes (1231.9925ms)
+✔ docs @master imports resolve to public package subpaths and exports (51.767167ms)
+✔ docs CLI examples use registered master-css subcommands (47.155542ms)
+✔ docs runtime examples use the public runtime state and rule API signatures (56.933416ms)
+✔ docs contract helpers reject stale public examples (0.295625ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1911.1435
+$ tsx --test scripts/validate-doc-examples.test.ts

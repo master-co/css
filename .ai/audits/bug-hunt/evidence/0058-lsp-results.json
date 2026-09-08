@@ -1,0 +1,117 @@
+{
+  "exitCode": 0,
+  "rounds": [
+    {
+      "round": 0,
+      "settings": {
+        "embeddedSyntaxHighlighting": "active",
+        "formatDirectives": false
+      },
+      "scopedConfiguration": true,
+      "latestVersion": 8,
+      "cancellations": [
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        }
+      ],
+      "reopenFreshService": true,
+      "formattingEdits": 0,
+      "restartRequests": [
+        {
+          "title": "Updating Master CSS settings"
+        }
+      ]
+    },
+    {
+      "round": 1,
+      "settings": {
+        "embeddedSyntaxHighlighting": "always",
+        "formatDirectives": true
+      },
+      "scopedConfiguration": true,
+      "latestVersion": 8,
+      "cancellations": [
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        }
+      ],
+      "reopenFreshService": true,
+      "formattingEdits": 1,
+      "restartRequests": [
+        {
+          "title": "Updating Master CSS settings"
+        }
+      ]
+    },
+    {
+      "round": 2,
+      "settings": {
+        "embeddedSyntaxHighlighting": "off",
+        "formatDirectives": false
+      },
+      "scopedConfiguration": true,
+      "latestVersion": 8,
+      "cancellations": [
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        },
+        {
+          "returned": true
+        }
+      ],
+      "reopenFreshService": true,
+      "formattingEdits": 0,
+      "restartRequests": [
+        {
+          "title": "Updating Master CSS settings"
+        }
+      ]
+    }
+  ],
+  "control": {
+    "initialHarness": "numeric processId enabled dependency parent watchdog; all assertions completed but self-parent stayed alive",
+    "corrected": "processId:null for in-process client; normal exit after disposal"
+  }
+}

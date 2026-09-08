@@ -1,0 +1,899 @@
+{
+  "schemaVersion": 1,
+  "suite": "build-performance",
+  "generatedAt": "2026-09-08T15:27:30.200Z",
+  "environment": {
+    "os": {
+      "platform": "darwin",
+      "release": "25.6.0",
+      "arch": "arm64"
+    },
+    "node": "v24.20.0",
+    "cpu": {
+      "model": "Apple M3 Max",
+      "count": 16
+    }
+  },
+  "packages": [
+    {
+      "name": "@master/css",
+      "version": "workspace:^"
+    },
+    {
+      "name": "@master/css-cli",
+      "version": "workspace:^"
+    },
+    {
+      "name": "@master/css-vite",
+      "version": "workspace:^"
+    },
+    {
+      "name": "tailwindcss",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "@tailwindcss/cli",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "@tailwindcss/vite",
+      "version": "^4.3.3"
+    },
+    {
+      "name": "vite",
+      "version": "^8.2.2"
+    }
+  ],
+  "fixtures": [
+    {
+      "id": "minimal",
+      "name": "Minimal",
+      "purpose": "Small useful page or landing section.",
+      "stress": "Framework overhead, cold-start cost, and minimum payload.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Not representative of dense application UI."
+      ]
+    },
+    {
+      "id": "docs",
+      "name": "Docs",
+      "purpose": "Dense article, navigation, code blocks, and tables.",
+      "stress": "Documentation layout, typography, and nested content.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Does not model frequent runtime mutation."
+      ]
+    },
+    {
+      "id": "dashboard",
+      "name": "Dashboard",
+      "purpose": "Repeated cards, tables, filters, charts, and states.",
+      "stress": "Rule reuse, duplicated utilities, and large DOM.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-performance",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost",
+        "interaction-cost",
+        "browser-lifecycle"
+      ],
+      "limits": [
+        "Chart visuals are fixture placeholders, not a chart-library benchmark."
+      ]
+    },
+    {
+      "id": "stress-css",
+      "name": "Stress CSS",
+      "purpose": "Controlled small, medium, and large CSS outputs.",
+      "stress": "Browser style calculation as CSS volume grows.",
+      "suites": [
+        "css-output-size",
+        "css-structure",
+        "build-diagnostics",
+        "extraction-diagnostics",
+        "compiler-diagnostics",
+        "startup-diagnostics",
+        "master-delivery-modes",
+        "progressive-hydration-diagnostics",
+        "browser-css-cost"
+      ],
+      "limits": [
+        "Intentionally artificial CSS volume."
+      ]
+    }
+  ],
+  "adapters": [
+    {
+      "id": "master-static",
+      "name": "Master CSS static",
+      "family": "master-css"
+    },
+    {
+      "id": "tailwind-cli",
+      "name": "Tailwind CSS CLI",
+      "family": "tailwind-css"
+    },
+    {
+      "id": "tailwind-vite",
+      "name": "Tailwind CSS Vite",
+      "family": "tailwind-css"
+    }
+  ],
+  "variants": [
+    {
+      "id": "minimal-master-static-cli",
+      "fixtureId": "minimal",
+      "adapterId": "master-static",
+      "label": "minimal / Master CSS static CLI"
+    },
+    {
+      "id": "minimal-master-static-vite",
+      "fixtureId": "minimal",
+      "adapterId": "master-static",
+      "label": "minimal / Master CSS static Vite"
+    },
+    {
+      "id": "minimal-tailwind-cli",
+      "fixtureId": "minimal",
+      "adapterId": "tailwind-cli",
+      "label": "minimal / Tailwind CSS CLI"
+    },
+    {
+      "id": "minimal-tailwind-vite",
+      "fixtureId": "minimal",
+      "adapterId": "tailwind-vite",
+      "label": "minimal / Tailwind CSS Vite"
+    },
+    {
+      "id": "docs-master-static-cli",
+      "fixtureId": "docs",
+      "adapterId": "master-static",
+      "label": "docs / Master CSS static CLI"
+    },
+    {
+      "id": "docs-master-static-vite",
+      "fixtureId": "docs",
+      "adapterId": "master-static",
+      "label": "docs / Master CSS static Vite"
+    },
+    {
+      "id": "docs-tailwind-cli",
+      "fixtureId": "docs",
+      "adapterId": "tailwind-cli",
+      "label": "docs / Tailwind CSS CLI"
+    },
+    {
+      "id": "docs-tailwind-vite",
+      "fixtureId": "docs",
+      "adapterId": "tailwind-vite",
+      "label": "docs / Tailwind CSS Vite"
+    },
+    {
+      "id": "dashboard-master-static-cli",
+      "fixtureId": "dashboard",
+      "adapterId": "master-static",
+      "label": "dashboard / Master CSS static CLI"
+    },
+    {
+      "id": "dashboard-master-static-vite",
+      "fixtureId": "dashboard",
+      "adapterId": "master-static",
+      "label": "dashboard / Master CSS static Vite"
+    },
+    {
+      "id": "dashboard-tailwind-cli",
+      "fixtureId": "dashboard",
+      "adapterId": "tailwind-cli",
+      "label": "dashboard / Tailwind CSS CLI"
+    },
+    {
+      "id": "dashboard-tailwind-vite",
+      "fixtureId": "dashboard",
+      "adapterId": "tailwind-vite",
+      "label": "dashboard / Tailwind CSS Vite"
+    },
+    {
+      "id": "stress-css-master-static-cli",
+      "fixtureId": "stress-css",
+      "adapterId": "master-static",
+      "label": "stress-css / Master CSS static CLI"
+    },
+    {
+      "id": "stress-css-master-static-vite",
+      "fixtureId": "stress-css",
+      "adapterId": "master-static",
+      "label": "stress-css / Master CSS static Vite"
+    },
+    {
+      "id": "stress-css-tailwind-cli",
+      "fixtureId": "stress-css",
+      "adapterId": "tailwind-cli",
+      "label": "stress-css / Tailwind CSS CLI"
+    },
+    {
+      "id": "stress-css-tailwind-vite",
+      "fixtureId": "stress-css",
+      "adapterId": "tailwind-vite",
+      "label": "stress-css / Tailwind CSS Vite"
+    }
+  ],
+  "metrics": [
+    {
+      "id": "cold-build-ms",
+      "label": "Cold production build",
+      "unit": "ms",
+      "description": "Elapsed wall time for the first production build in a clean temp workspace."
+    },
+    {
+      "id": "repeat-build-ms",
+      "label": "Repeat production build",
+      "unit": "ms",
+      "description": "Elapsed wall time for a second production build in the same temp workspace."
+    }
+  ],
+  "samples": [
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 15033.243583
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-master-static-cli",
+      "round": 0,
+      "value": 2111.352833000001
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 2218.4187500000007
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-master-static-vite",
+      "round": 0,
+      "value": 2203.6853340000016
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 95.3580409999995
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-tailwind-cli",
+      "round": 0,
+      "value": 86.747457999998
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 162.7953329999982
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-tailwind-vite",
+      "round": 0,
+      "value": 176.5203330000004
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 2095.967332999997
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-master-static-cli",
+      "round": 0,
+      "value": 2090.230291
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 2235.1076250000006
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-master-static-vite",
+      "round": 0,
+      "value": 2239.9483340000006
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 86.52187500000218
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-tailwind-cli",
+      "round": 0,
+      "value": 84.51137500000186
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 164.1373339999991
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-tailwind-vite",
+      "round": 0,
+      "value": 162.0799169999991
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 2049.3364580000016
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-master-static-cli",
+      "round": 0,
+      "value": 2046.7384999999995
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 2197.033374999999
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-master-static-vite",
+      "round": 0,
+      "value": 2190.4210420000018
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 85.59474999999657
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-tailwind-cli",
+      "round": 0,
+      "value": 85.60383400000137
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 159.78949999999895
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-tailwind-vite",
+      "round": 0,
+      "value": 157.7860839999994
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 2179.8309169999993
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-master-static-cli",
+      "round": 0,
+      "value": 2176.319334
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 2370.6797080000033
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-master-static-vite",
+      "round": 0,
+      "value": 2361.3451669999995
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 94.19729100000404
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-tailwind-cli",
+      "round": 0,
+      "value": 93.5705420000013
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 173.7989579999994
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-tailwind-vite",
+      "round": 0,
+      "value": 177.6400829999984
+    }
+  ],
+  "summary": [
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-master-static-cli",
+      "unit": "ms",
+      "min": 15033.243583,
+      "median": 15033.243583,
+      "mean": 15033.243583,
+      "max": 15033.243583,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-master-static-cli",
+      "unit": "ms",
+      "min": 2111.352833000001,
+      "median": 2111.352833000001,
+      "mean": 2111.352833000001,
+      "max": 2111.352833000001,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-master-static-vite",
+      "unit": "ms",
+      "min": 2218.4187500000007,
+      "median": 2218.4187500000007,
+      "mean": 2218.4187500000007,
+      "max": 2218.4187500000007,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-master-static-vite",
+      "unit": "ms",
+      "min": 2203.6853340000016,
+      "median": 2203.6853340000016,
+      "mean": 2203.6853340000016,
+      "max": 2203.6853340000016,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "ms",
+      "min": 95.3580409999995,
+      "median": 95.3580409999995,
+      "mean": 95.3580409999995,
+      "max": 95.3580409999995,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-tailwind-cli",
+      "unit": "ms",
+      "min": 86.747457999998,
+      "median": 86.747457999998,
+      "mean": 86.747457999998,
+      "max": 86.747457999998,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "ms",
+      "min": 162.7953329999982,
+      "median": 162.7953329999982,
+      "mean": 162.7953329999982,
+      "max": 162.7953329999982,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "minimal-tailwind-vite",
+      "unit": "ms",
+      "min": 176.5203330000004,
+      "median": 176.5203330000004,
+      "mean": 176.5203330000004,
+      "max": 176.5203330000004,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-master-static-cli",
+      "unit": "ms",
+      "min": 2095.967332999997,
+      "median": 2095.967332999997,
+      "mean": 2095.967332999997,
+      "max": 2095.967332999997,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-master-static-cli",
+      "unit": "ms",
+      "min": 2090.230291,
+      "median": 2090.230291,
+      "mean": 2090.230291,
+      "max": 2090.230291,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-master-static-vite",
+      "unit": "ms",
+      "min": 2235.1076250000006,
+      "median": 2235.1076250000006,
+      "mean": 2235.1076250000006,
+      "max": 2235.1076250000006,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-master-static-vite",
+      "unit": "ms",
+      "min": 2239.9483340000006,
+      "median": 2239.9483340000006,
+      "mean": 2239.9483340000006,
+      "max": 2239.9483340000006,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-tailwind-cli",
+      "unit": "ms",
+      "min": 86.52187500000218,
+      "median": 86.52187500000218,
+      "mean": 86.52187500000218,
+      "max": 86.52187500000218,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-tailwind-cli",
+      "unit": "ms",
+      "min": 84.51137500000186,
+      "median": 84.51137500000186,
+      "mean": 84.51137500000186,
+      "max": 84.51137500000186,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "docs-tailwind-vite",
+      "unit": "ms",
+      "min": 164.1373339999991,
+      "median": 164.1373339999991,
+      "mean": 164.1373339999991,
+      "max": 164.1373339999991,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "docs-tailwind-vite",
+      "unit": "ms",
+      "min": 162.0799169999991,
+      "median": 162.0799169999991,
+      "mean": 162.0799169999991,
+      "max": 162.0799169999991,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "ms",
+      "min": 2049.3364580000016,
+      "median": 2049.3364580000016,
+      "mean": 2049.3364580000016,
+      "max": 2049.3364580000016,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-master-static-cli",
+      "unit": "ms",
+      "min": 2046.7384999999995,
+      "median": 2046.7384999999995,
+      "mean": 2046.7384999999995,
+      "max": 2046.7384999999995,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "ms",
+      "min": 2197.033374999999,
+      "median": 2197.033374999999,
+      "mean": 2197.033374999999,
+      "max": 2197.033374999999,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-master-static-vite",
+      "unit": "ms",
+      "min": 2190.4210420000018,
+      "median": 2190.4210420000018,
+      "mean": 2190.4210420000018,
+      "max": 2190.4210420000018,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "ms",
+      "min": 85.59474999999657,
+      "median": 85.59474999999657,
+      "mean": 85.59474999999657,
+      "max": 85.59474999999657,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-tailwind-cli",
+      "unit": "ms",
+      "min": 85.60383400000137,
+      "median": 85.60383400000137,
+      "mean": 85.60383400000137,
+      "max": 85.60383400000137,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "ms",
+      "min": 159.78949999999895,
+      "median": 159.78949999999895,
+      "mean": 159.78949999999895,
+      "max": 159.78949999999895,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "dashboard-tailwind-vite",
+      "unit": "ms",
+      "min": 157.7860839999994,
+      "median": 157.7860839999994,
+      "mean": 157.7860839999994,
+      "max": 157.7860839999994,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "ms",
+      "min": 2179.8309169999993,
+      "median": 2179.8309169999993,
+      "mean": 2179.8309169999993,
+      "max": 2179.8309169999993,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-master-static-cli",
+      "unit": "ms",
+      "min": 2176.319334,
+      "median": 2176.319334,
+      "mean": 2176.319334,
+      "max": 2176.319334,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "ms",
+      "min": 2370.6797080000033,
+      "median": 2370.6797080000033,
+      "mean": 2370.6797080000033,
+      "max": 2370.6797080000033,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-master-static-vite",
+      "unit": "ms",
+      "min": 2361.3451669999995,
+      "median": 2361.3451669999995,
+      "mean": 2361.3451669999995,
+      "max": 2361.3451669999995,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "ms",
+      "min": 94.19729100000404,
+      "median": 94.19729100000404,
+      "mean": 94.19729100000404,
+      "max": 94.19729100000404,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-tailwind-cli",
+      "unit": "ms",
+      "min": 93.5705420000013,
+      "median": 93.5705420000013,
+      "mean": 93.5705420000013,
+      "max": 93.5705420000013,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "cold-build-ms",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "ms",
+      "min": 173.7989579999994,
+      "median": 173.7989579999994,
+      "mean": 173.7989579999994,
+      "max": 173.7989579999994,
+      "sampleCount": 1
+    },
+    {
+      "metricId": "repeat-build-ms",
+      "variantId": "stress-css-tailwind-vite",
+      "unit": "ms",
+      "min": 177.6400829999984,
+      "median": 177.6400829999984,
+      "mean": 177.6400829999984,
+      "max": 177.6400829999984,
+      "sampleCount": 1
+    }
+  ],
+  "limits": [
+    "This suite measures production command elapsed time, not watch mode, HMR, browser parse, style recalculation, or interaction cost.",
+    "Repeat production build means a second command execution in the same temp workspace; it is not a long-running watch rebuild.",
+    "Build timings are advisory and should be compared with package versions, machine details, and raw samples."
+  ],
+  "artifacts": [
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/minimal-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 5178,
+      "gzipBytes": 1919,
+      "brotliBytes": 1631,
+      "sha256": "2a5e9c947b33ed1578bb3aa0351de71af1a8f7d8032ef00fd821fd69453b0bbe"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/minimal-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 5179,
+      "gzipBytes": 1920,
+      "brotliBytes": 1630,
+      "sha256": "d4a478716d50513c2944406c37108650cd333dd5d5404e34ab9b20360c258bcc"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/minimal-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 9350,
+      "gzipBytes": 2645,
+      "brotliBytes": 2252,
+      "sha256": "97c86036589158b6af326c1d9659d06db561c95e1374ce0902fc696fe81db17c"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/minimal-tailwind-vite/round-0/dist/assets/index-DCCw00xG.css",
+      "rawBytes": 7882,
+      "gzipBytes": 2475,
+      "brotliBytes": 2108,
+      "sha256": "0630b3ed357b67ebf7b15043b06b3adff4ef04d1a7de0f1bb5f0f3b26c8f47d8"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/docs-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 5903,
+      "gzipBytes": 2175,
+      "brotliBytes": 1853,
+      "sha256": "c16cebc977bd76962a00cf242dee77d1c8c9499f79bd713d1555ee80837bddef"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/docs-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 5904,
+      "gzipBytes": 2176,
+      "brotliBytes": 1854,
+      "sha256": "453c33a9393c8ab35595fb13fc128a3b72d72a4e53bf6eaf64bb5cee761a2a4b"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/docs-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 12169,
+      "gzipBytes": 3076,
+      "brotliBytes": 2628,
+      "sha256": "8cf1d11e55afefecc219556677cfa570af7a671e5edcb19a5e39910b096a72ac"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/docs-tailwind-vite/round-0/dist/assets/index-C2iiAeRG.css",
+      "rawBytes": 10190,
+      "gzipBytes": 2887,
+      "brotliBytes": 2474,
+      "sha256": "84f0d379a39adb7905aa39d25adf4af7a405b3c1bcd85a1216b48dae517d1409"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/dashboard-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 6101,
+      "gzipBytes": 2134,
+      "brotliBytes": 1800,
+      "sha256": "532685761c7d543fc19f868c58fc19d836ee24a2dd31806e7a45e2a9f638a028"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/dashboard-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 6102,
+      "gzipBytes": 2135,
+      "brotliBytes": 1801,
+      "sha256": "6625c1e4c451e942d9aa0d64f65b55e56f6b22680b4d05bd26699466d4acd9e9"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/dashboard-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 10667,
+      "gzipBytes": 2872,
+      "brotliBytes": 2432,
+      "sha256": "f9d9a4209be325cbe877cd1c7bdc4cadd38557c6a67bf897c7890186c878d6c5"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/dashboard-tailwind-vite/round-0/dist/assets/index-a2ZcXpe2.css",
+      "rawBytes": 8897,
+      "gzipBytes": 2689,
+      "brotliBytes": 2298,
+      "sha256": "8c2aa5bf4be693022871b5d35df00b3918130113fdc46a200bbc20c78eaa8d6a"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/stress-css-master-static-cli/round-0/dist/output.css",
+      "rawBytes": 11779,
+      "gzipBytes": 3088,
+      "brotliBytes": 2077,
+      "sha256": "d9bc2c0b229418f275487aea26172fd3f0d3cda33375f52bdec46b048f819cf4"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/stress-css-master-static-vite/round-0/dist/assets/index-Dkrc8kIN.css",
+      "rawBytes": 11780,
+      "gzipBytes": 3089,
+      "brotliBytes": 2077,
+      "sha256": "88bad5ac3f0c234fe6c19ad4fc8f3a5961c15886a1c329d5753e438853554da5"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/stress-css-tailwind-cli/round-0/dist/output.css",
+      "rawBytes": 17258,
+      "gzipBytes": 3725,
+      "brotliBytes": 2573,
+      "sha256": "656aa6a7b509a889a6d5e8216b6d6e436c7b2c4e6a27e5e173eae8b7cba50ab0"
+    },
+    {
+      "path": "benchmarks/.results/build-performance/workspaces/stress-css-tailwind-vite/round-0/dist/assets/index-DLJLPjLO.css",
+      "rawBytes": 12896,
+      "gzipBytes": 3478,
+      "brotliBytes": 2389,
+      "sha256": "a616b232d01d3d478accdd9e532b8e7e4e8816a2f3599fc2f9bf7379a70adb45"
+    }
+  ]
+}

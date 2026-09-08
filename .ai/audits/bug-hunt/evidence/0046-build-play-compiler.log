@@ -1,0 +1,2 @@
+$ tsx scripts/build-play-compiler.ts
+Built Play compiler at /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/play-compiler: compiler.js 100.1 KiB, mastercss_binding_wasm_compiler_bg.wasm 6.5 MiB

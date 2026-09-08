@@ -1,0 +1,5 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-rqu2e3_a/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/browser-css-cost-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-rqu2e3_a/benchmarks
+
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-rqu2e3_a"}

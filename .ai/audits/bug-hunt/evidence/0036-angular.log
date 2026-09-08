@@ -1,0 +1,159 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/ssr-example.mjs", "angular"]}
+$ ng build
+❯ Building...
+✔ Building...
+Browser bundles      
+Initial chunk files   | Names                          |  Raw size | Estimated transfer size
+main-LVHH7ZOB.js      | main                           | 367.32 kB |                89.72 kB
+polyfills-XUIFWYAI.js | polyfills                      |  35.88 kB |                11.64 kB
+chunk-SHGQNUIV.js     | -                              |   4.83 kB |                 1.65 kB
+chunk-2VMXMS7J.js     | -                              | 661 bytes |               661 bytes
+styles-5INURTSO.css   | styles                         |   0 bytes |                 0 bytes
+
+                      | Initial total                  | 408.69 kB |               103.67 kB
+
+Lazy chunk files      | Names                          |  Raw size | Estimated transfer size
+chunk-UUYIHXHM.js     | mastercss_binding_wasm_engine  |  11.07 kB |                 3.16 kB
+chunk-HL2KFEX5.js     | provider                       | 116 bytes |               116 bytes
+
+
+Server bundles       
+Initial chunk files   | Names                          |  Raw size
+server.mjs            | server                         |   1.09 MB |                        
+chunk-ECXJ3J5Q.mjs    | -                              | 719.48 kB |                        
+polyfills.server.mjs  | polyfills.server               | 268.29 kB |                        
+chunk-ADNOIEPG.mjs    | -                              |   5.10 kB |                        
+chunk-FYU4I3VZ.mjs    | -                              |   3.08 kB |                        
+chunk-IONAIH6Q.mjs    | -                              |   1.59 kB |                        
+main.server.mjs       | main.server                    | 359 bytes |                        
+
+Lazy chunk files      | Names                          |  Raw size
+chunk-UBUORPAO.mjs    | mastercss_binding_wasm_tooling |  18.69 kB |                        
+chunk-RQQTFJX3.mjs    | xhr2                           |  12.08 kB |                        
+chunk-KGWMZSYY.mjs    | tooling-binding-native         |   5.64 kB |                        
+chunk-FJEHKGWP.mjs    | provider-node                  |   4.62 kB |                        
+
+Prerendered 1 static route.
+Application bundle generation complete. [6.337 seconds] - 2026-09-07T09:37:44.477Z
+
+▲ [WARNING] Ignoring this import because "../../../../packages/binding/dist/protocol.js" was marked as having no side effects [ignored-bare-import]
+
+    ../../../../packages/binding/dist/binding.js:1:7:
+      1 │ import "./protocol.js";
+        ╵        ~~~~~~~~~~~~~~~
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../../../../packages/binding/package.json:16:2:
+      16 │   "sideEffects": false,
+         ╵   ~~~~~~~~~~~~~
+
+
+▲ [WARNING] Ignoring this import because "../../../../packages/binding/dist/protocol.js" was marked as having no side effects [ignored-bare-import]
+
+    ../../../../packages/binding/dist/binding.js:1:7:
+      1 │ import "./protocol.js";
+        ╵        ~~~~~~~~~~~~~~~
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../../../../packages/binding/package.json:16:2:
+      16 │   "sideEffects": false,
+         ╵   ~~~~~~~~~~~~~
+
+
+▲ [WARNING] Ignoring this import because "../../../../packages/binding/dist/protocol.js" was marked as having no side effects [ignored-bare-import]
+
+    ../../../../packages/binding/dist/native-loader.js:1:7:
+      1 │ import "./protocol.js";
+        ╵        ~~~~~~~~~~~~~~~
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../../../../packages/binding/package.json:16:2:
+      16 │   "sideEffects": false,
+         ╵   ~~~~~~~~~~~~~
+
+
+▲ [WARNING] Ignoring this import because "../../../../packages/binding/dist/protocol.js" was marked as having no side effects [ignored-bare-import]
+
+    ../../../../packages/binding/dist/tooling.js:1:7:
+      1 │ import "./protocol.js";
+        ╵        ~~~~~~~~~~~~~~~
+
+  "sideEffects" is false in the enclosing "package.json" file:
+
+    ../../../../packages/binding/package.json:16:2:
+      16 │   "sideEffects": false,
+         ╵   ~~~~~~~~~~~~~
+
+
+▲ [WARNING] angular:styles/component:css;88b5e1e58400f7b5a50699325b10506edae593d2b13399c9e236a20dd7d33352;/Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/src/app/app.component.html exceeded maximum budget. Budget 2.00 kB was not met by 921 bytes with a total of 2.92 kB.
+
+
+▲ [WARNING] Module 'source-map-js/lib/source-map-generator.js' used by '../../../../node_modules/.pnpm/css-tree@3.2.1/node_modules/css-tree/lib/generator/sourceMap.js' is not ESM
+
+  CommonJS or AMD dependencies can cause optimization bailouts.
+  For more information see: https://angular.dev/tools/cli/build#configuring-commonjs-dependencies
+
+
+Output location: /Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/dist/angular-with-progressive-rendering
+
+node:internal/modules/cjs/loader:1564
+  const err = new Error(message);
+              ^
+
+Error: Cannot find module '../data/patch.json'
+Require stack:
+- /Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/dist/angular-with-progressive-rendering/server/server.mjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at defaultResolve (node:internal/modules/cjs/loader:1199:20)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolve (file:///Users/aron/master/css/scripts/typescript-tooling-compat.mjs:43:16)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolveWithHooks (node:internal/modules/customization_hooks:417:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1212:25)
+    at Module._load (node:internal/modules/cjs/loader:1341:5) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/dist/angular-with-progressive-rendering/server/server.mjs'
+  ]
+}
+
+Node.js v24.20.0
+
+file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/ssr-example.mjs:33
+    if (!html) throw new Error('SSR server unavailable: ' + output)
+                     ^
+
+Error: SSR server unavailable: node:internal/modules/cjs/loader:1564
+  const err = new Error(message);
+              ^
+
+Error: Cannot find module '../data/patch.json'
+Require stack:
+- /Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/dist/angular-with-progressive-rendering/server/server.mjs
+    at Module._resolveFilename (node:internal/modules/cjs/loader:1564:15)
+    at wrapResolveFilename (node:internal/modules/cjs/loader:1118:27)
+    at defaultResolveImplForCJSLoading (node:internal/modules/cjs/loader:1142:10)
+    at defaultResolve (node:internal/modules/cjs/loader:1199:20)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolve (file:///Users/aron/master/css/scripts/typescript-tooling-compat.mjs:43:16)
+    at nextStep (node:internal/modules/customization_hooks:189:26)
+    at resolveWithHooks (node:internal/modules/customization_hooks:417:10)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1212:25)
+    at Module._load (node:internal/modules/cjs/loader:1341:5) {
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    '/Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3/examples/angular/dist/angular-with-progressive-rendering/server/server.mjs'
+  ]
+}
+
+Node.js v24.20.0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/ssr-example.mjs:33:22
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-79o_nlq3"}

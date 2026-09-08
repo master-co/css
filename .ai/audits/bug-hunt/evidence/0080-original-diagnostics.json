@@ -1,0 +1,279 @@
+{
+  "originalReportStatus": 1,
+  "originalDiagnostics": [
+    {
+      "path": "dynamic-master-static-style-invalidation-static-baseline/round-0/diagnostics.json",
+      "data": {
+        "variant": {
+          "id": "dynamic-master-static-style-invalidation-static-baseline",
+          "kind": "static-baseline",
+          "action": "mutation-cleanup-cycle",
+          "preseedTempRules": false,
+          "pauseObserver": false,
+          "retainedVolume": 0
+        },
+        "interaction": {
+          "elapsedMs": 1023.7000000476837,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 192,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 192,
+            "mutationCycleCount": 4,
+            "appendCount": 48,
+            "removedNodeCount": 192,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "cleanupValidDuringTrace": true,
+            "cleanupValidAfterFlush": true,
+            "runtimeClean": true,
+            "runtimeCleanDuringTrace": true,
+            "runtimeCleanAfterFlush": true,
+            "strategyFlushResult": null
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 6.6530000000000005,
+          "layoutMs": 7.973000000000001,
+          "paintMs": 20.250000000000004,
+          "longTaskCount": 0
+        },
+        "runtimeDiagnostics": {
+          "mutationObserverCallbackCount": 0,
+          "mutationObserverCallbackDurationMs": 0,
+          "mutationRecordCount": 0,
+          "mutationAddedNodeCount": 0,
+          "mutationRemovedNodeCount": 0,
+          "mutationClassAttributeCount": 0,
+          "runtimeAddCallCount": 0,
+          "runtimeRemoveCallCount": 0,
+          "runtimeAddClassCount": 0,
+          "runtimeRemoveClassCount": 0,
+          "runtimeAddDurationMs": 0,
+          "runtimeRemoveDurationMs": 0,
+          "runtimeDeferredRemoveCallCount": 0,
+          "runtimeDeferredRemoveClassCount": 0,
+          "runtimeSuppressedRemoveCallCount": 0,
+          "runtimeSuppressedRemoveClassCount": 0,
+          "runtimeFlushRemoveCallCount": 0,
+          "runtimeFlushRemoveClassCount": 0,
+          "runtimeFlushRemoveDurationMs": 0,
+          "runtimeQueuedRemoveClassCount": 0,
+          "retainedSetAddCount": 0,
+          "retainedSetDeleteCount": 0,
+          "retainedSetClearCount": 0
+        },
+        "preparation": {
+          "preseededRuntimeRuleCount": 0,
+          "seededRetainedClassCount": 0,
+          "seededRetainedRuleCount": 0,
+          "seededRetainedRawBytes": 0,
+          "observerPaused": 0
+        },
+        "beforeState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterTraceState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterFlushState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterForcedCleanupState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "beforeRuntimeStyleRuleCount": 0,
+        "afterTraceRuntimeStyleRuleCount": 0,
+        "afterFlushRuntimeStyleRuleCount": 0,
+        "afterForcedCleanupRuntimeStyleRuleCount": 0,
+        "forcedRetainedCleanup": {
+          "removedClassCount": 0,
+          "durationMs": 0.09999990463256836
+        },
+        "consoleWarnings": []
+      }
+    },
+    {
+      "path": "dynamic-tailwind-static-style-invalidation-static-baseline/round-0/diagnostics.json",
+      "data": {
+        "variant": {
+          "id": "dynamic-tailwind-static-style-invalidation-static-baseline",
+          "kind": "static-baseline",
+          "action": "mutation-cleanup-cycle",
+          "preseedTempRules": false,
+          "pauseObserver": false,
+          "retainedVolume": 0
+        },
+        "interaction": {
+          "elapsedMs": 1025.3000001907349,
+          "runtimeMutationMs": 0,
+          "runtimeGeneratedRuleCountDelta": 0,
+          "runtimeStyleRawBytesDelta": 0,
+          "domNodeCount": 308,
+          "affectedElementCount": 192,
+          "computedStyleValid": 1,
+          "cleanupValid": 1,
+          "progressiveAdopted": 0,
+          "details": {
+            "affectedElementCount": 192,
+            "mutationCycleCount": 4,
+            "appendCount": 48,
+            "removedNodeCount": 192,
+            "computedStyleValid": true,
+            "cleanupValid": true,
+            "cleanupValidDuringTrace": true,
+            "cleanupValidAfterFlush": true,
+            "runtimeClean": true,
+            "runtimeCleanDuringTrace": true,
+            "runtimeCleanAfterFlush": true,
+            "strategyFlushResult": null
+          }
+        },
+        "traceMetrics": {
+          "styleRecalculationMs": 5.11,
+          "layoutMs": 6.426,
+          "paintMs": 22.229999999999997,
+          "longTaskCount": 0
+        },
+        "runtimeDiagnostics": {
+          "mutationObserverCallbackCount": 0,
+          "mutationObserverCallbackDurationMs": 0,
+          "mutationRecordCount": 0,
+          "mutationAddedNodeCount": 0,
+          "mutationRemovedNodeCount": 0,
+          "mutationClassAttributeCount": 0,
+          "runtimeAddCallCount": 0,
+          "runtimeRemoveCallCount": 0,
+          "runtimeAddClassCount": 0,
+          "runtimeRemoveClassCount": 0,
+          "runtimeAddDurationMs": 0,
+          "runtimeRemoveDurationMs": 0,
+          "runtimeDeferredRemoveCallCount": 0,
+          "runtimeDeferredRemoveClassCount": 0,
+          "runtimeSuppressedRemoveCallCount": 0,
+          "runtimeSuppressedRemoveClassCount": 0,
+          "runtimeFlushRemoveCallCount": 0,
+          "runtimeFlushRemoveClassCount": 0,
+          "runtimeFlushRemoveDurationMs": 0,
+          "runtimeQueuedRemoveClassCount": 0,
+          "retainedSetAddCount": 0,
+          "retainedSetDeleteCount": 0,
+          "retainedSetClearCount": 0
+        },
+        "preparation": {
+          "preseededRuntimeRuleCount": 0,
+          "seededRetainedClassCount": 0,
+          "seededRetainedRuleCount": 0,
+          "seededRetainedRawBytes": 0,
+          "observerPaused": 0
+        },
+        "beforeState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterTraceState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterFlushState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "afterForcedCleanupState": {
+          "runtimeAvailable": false,
+          "progressiveAdopted": 0,
+          "runtimeGeneratedRuleCount": 0,
+          "runtimeStyleRawBytes": 0,
+          "classCounts": {},
+          "classUtilityNames": [],
+          "retainedClassNames": [],
+          "retainedClassRuleCount": 0,
+          "retainedClassRawBytes": 0,
+          "domNodeCount": 308,
+          "runtimeStyleTextBytes": 0
+        },
+        "beforeRuntimeStyleRuleCount": 0,
+        "afterTraceRuntimeStyleRuleCount": 0,
+        "afterFlushRuntimeStyleRuleCount": 0,
+        "afterForcedCleanupRuntimeStyleRuleCount": 0,
+        "forcedRetainedCleanup": {
+          "removedClassCount": 0,
+          "durationMs": 0
+        },
+        "consoleWarnings": []
+      }
+    }
+  ]
+}

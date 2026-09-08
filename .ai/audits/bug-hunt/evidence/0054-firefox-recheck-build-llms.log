@@ -1,0 +1,2 @@
+$ tsx scripts/generate-llms-txt.ts
+[llms.txt] generated index (390 lines) + full at /Users/aron/master/css/tmp/master-css-bh-isolated-p3czx1rx/site/public

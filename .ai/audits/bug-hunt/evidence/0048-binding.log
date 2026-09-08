@@ -1,0 +1,60 @@
+[
+  {
+    "kind": "cli-baseline",
+    "binding": "auto",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "control",
+    "binding": "native",
+    "status": 1,
+    "nativeScanners": 0,
+    "stdout": "",
+    "stderr": "node:fs:484\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/Users/aron/master/css/packages/preset/dist/default-manifest.json'\n    at readFileSync (node:fs:484:20)\n    at <anonymous> (/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-binding-2K7ePz/control.mts:4:29)\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/Users/aron/master/css/packages/preset/dist/default-manifest.json'\n}\n\nNode.js v24.20.0\n"
+  },
+  {
+    "kind": "control",
+    "binding": "wasm",
+    "status": 1,
+    "nativeScanners": 0,
+    "stdout": "",
+    "stderr": "node:fs:484\n    return binding.readFileUtf8(path, stringToFlags(options.flag));\n                   ^\n\nError: ENOENT: no such file or directory, open '/Users/aron/master/css/packages/preset/dist/default-manifest.json'\n    at readFileSync (node:fs:484:20)\n    at <anonymous> (/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-binding-2K7ePz/control.mts:4:29)\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\n    at async node:internal/modules/esm/loader:647:26\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\n  errno: -2,\n  code: 'ENOENT',\n  syscall: 'open',\n  path: '/Users/aron/master/css/packages/preset/dist/default-manifest.json'\n}\n\nNode.js v24.20.0\n"
+  },
+  {
+    "kind": "cli",
+    "binding": "native",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "cli",
+    "binding": "wasm",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  }
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: all baseline and control executions must succeed
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/BH-0026-binding.mjs:63:5
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

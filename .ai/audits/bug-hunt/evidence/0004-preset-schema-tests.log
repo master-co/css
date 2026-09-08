@@ -1,0 +1,22 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/schema
+
+
+ Test Files  2 passed (2)
+      Tests  3 passed (3)
+   Start at  15:45:20
+   Duration  103ms (transform 63%, import 22%, worker 7%, tests 7%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/preset
+
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  15:45:21
+   Duration  1.74s (tests 90%, transform 8%, import 2%)
+

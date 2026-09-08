@@ -1,0 +1,21 @@
+✔ deriveTitle prefers the first heading over the route segment (0.569208ms)
+✔ Guide overview keeps its category anchors and publishes the same entries to search and Markdown (24.983167ms)
+✔ deriveTitle strips trailing [sr-only] / {.cls} markers from MDX headings (0.163208ms)
+✔ deriveTitle falls back to titleized last segment when no heading (0.062541ms)
+✔ pageUrl strips content.mdx and prefixes locale (0.149375ms)
+✔ pageUrl strips Next.js route groups (0.047708ms)
+✔ topSection extracts the first segment (0.052125ms)
+✔ metadataTitle reads string and absolute metadata titles (0.041625ms)
+✔ cleanMdx removes MDX-only syntax outside fenced code (0.411333ms)
+✔ renderLlmsIndex emits H1 + summary + per-section H2 with links (6.431875ms)
+✔ renderLlmsIndex sorts sections alphabetically and pages by url (0.086667ms)
+✔ renderLlmsFull concatenates each page body with a Source line (0.099833ms)
+ℹ tests 12
+ℹ suites 0
+ℹ pass 12
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1087.029417
+$ tsx --test scripts/generate-llms-txt.test.ts

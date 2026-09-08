@@ -1,0 +1,20 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-zs0cepla/benchmarks", "command": ["node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/docs-css-http-controls.mjs"]}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/docs-css-http-controls.mjs:47:12) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-zs0cepla"}

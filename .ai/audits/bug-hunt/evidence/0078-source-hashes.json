@@ -1,0 +1,8 @@
+{
+  "benchmarks/shared/interaction-cost-harness.ts": "8f379850ac2e4e48787077b038d96a403bbbe1294b17ad5ddb188bb5d57fb177",
+  "benchmarks/shared/interaction-cost.ts": "c7009c07f3216ad4571280a8a9d21ff1bb080fd450240ead37dd394a70dea02e",
+  "benchmarks/shared/interaction-cost-config.ts": "373f9c35ed682d1d750f902d964f79485cb90421bd2e0b1e3d3c38d220c965ce",
+  "packages/runtime/src/core.ts": "ab584b88e2f492a6654b6b614683aa272a99f95d2ebe1c435b768d8e5bcbdf81",
+  "packages/runtime/src/types.ts": "dda70e6003d30d12a2be9c6c9cd87836511e5d7be5f2e419b7baf71fe15fd4a3",
+  "benchmarks/shared/runtime-mutation-diagnostic-metrics.ts": "00ed1180130e5be7bf9ef82afa6dbba8aeb225a63706eb663550c611885677cb"
+}

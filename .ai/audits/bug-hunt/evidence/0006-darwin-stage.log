@@ -1,0 +1,7 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+     Running `target/debug/xtask stage-native-target binding-darwin-arm64`
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+Staged /Users/aron/master/css/packages/binding-darwin-arm64/mastercss.node
+Staged /Users/aron/master/css/packages/binding-darwin-arm64/mcss

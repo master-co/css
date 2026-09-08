@@ -1,0 +1,18 @@
+$ tsx ./prepare
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/search/en.json (286 search pages)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/search/tw.json (286 search pages)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.pages.json (286 pages)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/guide.json (10 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/reference.json (15 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/blog.json (1 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/examples.json (0 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/play.json (1 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/roadmap.json (0 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/sponsor.json (1 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/brand.json (1 categories)
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.categories/design-system.json (1 categories)
+
+Symlink folder created at: /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/images
+Symlink folder created at: /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/icons
+Symlink folder created at: /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/public/fonts
+產生 /Users/aron/master/css/tmp/master-css-bh-isolated-a160dk70/site/.translations/content-registry.ts (0 translated content modules)

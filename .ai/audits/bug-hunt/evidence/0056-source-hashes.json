@@ -1,0 +1,8 @@
+{
+  "packages/next/tests/dev-hmr-e2e.test.ts": "bdccd501bf0a8281e3536c9fa860f5d195a1f5a06a1d7cd422ac91b73ea7252f",
+  "packages/next/tests/helpers/pnpm-command.ts": "74ecb9c2154a4531825108623e2330f3b105abec4fd170e862b02af7046033de",
+  "packages/next/src/index.ts": "f4e18087f22b6f8d1cae5bc084c2dab839a7c25e2867b768adf9ae44859d5d2e",
+  "packages/next/src/static.ts": "810f1274185c85bbacdd0fd5d6ab1c17e7160a029c89f8f11982a018ed028a35",
+  "packages/next/src/stylesheet-loader.ts": "30fa7de0bd662c4cd641a6745c93ff2801789402e6c0a699f05f2de62cdaa72c",
+  "packages/next/package.json": "520d108030f0f3b40e634fc29dd74aa3702dd04ad7f2d520dce5e6925ca7dfd1"
+}

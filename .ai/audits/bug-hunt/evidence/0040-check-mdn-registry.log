@@ -1,0 +1,2 @@
+$ node scripts/build-rust-mdn-completion-registry.mjs --check
+Validated crates/mastercss-language/src/mdn-completion-registry.json.

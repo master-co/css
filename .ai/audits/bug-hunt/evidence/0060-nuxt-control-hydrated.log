@@ -1,0 +1,46 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-t2z2xu2v/packages/nuxt", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs"]}
+│
+◆  Types generated in .nuxt.
+│
+●  Nuxt 4.5.2 (with Nitro 2.13.4, Vite 8.2.2 and Vue 3.5.42)
+
+  ➜ Local:    http://127.0.0.1:59868/
+  ➜ Network:  use --host to expose
+
+✔ Vite client built in 26ms
+✔ Vite server built in 16ms
+[nitro] ✔ Nuxt Nitro server built in 391ms
+ℹ Vite server warmed up in 6ms
+ℹ Vite client warmed up in 15ms
+ℹ hmr update /app.vue
+ℹ page reload app.css
+✔ Vite server hmr 12 files in 1.921ms
+ℹ hmr update /app.vue
+ℹ page reload app.css
+✔ Vite server hmr 12 files in 1.042ms
+ℹ hmr update /app.vue
+ℹ page reload app.css
+✔ Vite server hmr 12 files in 1.625ms
+✔ Vite server hmr 11 files in 0.259ms
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+'flex' !== 'block'
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/nuxt-dev-hmr.mjs:115:10
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:541:9) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 'flex',
+  expected: 'block',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-t2z2xu2v"}

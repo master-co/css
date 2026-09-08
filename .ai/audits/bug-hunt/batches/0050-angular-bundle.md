@@ -1,0 +1,14 @@
+# 0050 Angular SSR dependency bundling
+
+- Scope BH-0025 ownership only. Read0036, current Angular manifest/angular.json/server.ts, tooling css-tree import and server manifest. HEAD3d2f47768 unchanged. Normal build/startup in isolated example; direct dependency and minimal bundled controls to distinguish package data, bundler relocation and Master semantics. No installed dependencies or product changes.
+- Angular SSR/runtime remains blocked by BH-0024 independently even if BH-0025 is classified; no coverage completion from recording the blocker.
+
+## Results
+
+- Command: `python3 .ai/audits/bug-hunt/repros/isolated-package.py examples/angular node /Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs node /Users/aron/master/css/.ai/audits/bug-hunt/repros/BH-0025-angular-bundle.mjs`; [final log](../evidence/0050-angular-bundle-final.log). Aggregate exit1 at intended server-start assertion.
+- **BH-0025 P2 confirmed — example/dependency bundling defect**, not missing installed data or Master semantic failure. Actual ng build succeeds, running its SSR server exits1 with MODULE_NOT_FOUND `../data/patch.json` before listen.
+- Installed css-tree3.2.1 `data/patch.json` exists and parses. Direct ESM import validates display:block (error:null). Minimal esbuild0.28.2 Node ESM bundle using only css-tree fails identically; same bundler with css-tree external passes. Generated control code retains `var require2 = createRequire(import.meta.url); var patch = require2("../data/patch.json");`, relocated to output directory with no corresponding data.
+- Responsibility chain: `examples/angular/server.ts:9` imports server → `packages/server/src/create-server-renderer.ts:9` imports tooling/node host capabilities → `packages/tooling/src/host.ts:1` imports css-tree → css-tree `lib/data-patch.js:3-4`. Example `angular.json` application bundling lacks handling for this runtime-relative dependency data. Controls isolate this from Angular app logic and Rust semantics. They do not claim all bundlers fail or that css-tree installation is broken.
+- Fix direction for later work: preserve the dependency package boundary or deliberately deliver/resolve its runtime data through supported host bundling configuration. Full Angular external configuration and browser success are not proved by the minimal control. BH-0024 remains independently blocking server startup; EX-angular stays受阻.
+- Initial log's `retainedRelativeRequire:false` used too narrow a literal (esbuild renamed require→require2); this observation label was a harness error, not a negative relocation result. Final script records the actual emitted lines; initial [log](../evidence/0050-angular-bundle.log) preserved.
+- No Angular lint script; no package sources/tests changed. Both disposable trees removed. Hypothesis classification completed, SSR/runtime behavior unfinished. Next0051 site current-source validation.

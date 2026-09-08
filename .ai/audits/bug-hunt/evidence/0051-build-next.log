@@ -1,0 +1,946 @@
+$ cross-env NODE_OPTIONS=--max-old-space-size=16384 MASTER_CSS_PUBLIC_ENV_FILE=.generated/public-env.json next build --turbo
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 190ms
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 12.5s
+  Running TypeScript ...
+  Finished TypeScript in 1326ms ...
+  Collecting page data using 15 workers ...
+  Generating static pages using 15 workers (0/766) ...
+  Generating static pages using 15 workers (191/766) 
+  Generating static pages using 15 workers (382/766) 
+  Generating static pages using 15 workers (574/766) 
+✓ Generating static pages using 15 workers (766/766) in 6.6s
+Turbopack build encountered 1 warning:
+./packages/compiler/src/node-compiler.ts
+Warning: Module not found: Can't resolve <dynamic>
+
+
+Import trace:
+  Server Component:
+    ./packages/compiler/src/node-compiler.ts
+    ./packages/compiler/src/node.ts
+    ./tmp/master-css-bh-isolated-w432vsmh/site/reference/configured-example.ts
+    ./tmp/master-css-bh-isolated-w432vsmh/site/reference/ConfiguredExample.tsx
+    ./tmp/master-css-bh-isolated-w432vsmh/site/app/[locale]/guide/variables-and-modes/content.mdx.tsx
+    ./tmp/master-css-bh-isolated-w432vsmh/site/app/[locale]/guide/variables-and-modes/page.tsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+  Finalizing page optimization ...
+  Running onBuildComplete from @master/css-next
+
+Route (app)
+┌ ○ /_not-found
+├   /[locale]
+│ ├ ● /en
+│ └ ● /tw
+├   /[locale]/blog
+│ ├ ● /en/blog
+│ └ ● /tw/blog
+├   /[locale]/blog/bootstrapping-master-css-with-vite
+│ ├ ● /en/blog/bootstrapping-master-css-with-vite
+│ └ ● /tw/blog/bootstrapping-master-css-with-vite
+├   /[locale]/blog/master-css-next
+│ ├ ● /en/blog/master-css-next
+│ └ ● /tw/blog/master-css-next
+├   /[locale]/brand
+│ ├ ● /en/brand
+│ └ ● /tw/brand
+├   /[locale]/design-system
+│ ├ ● /en/design-system
+│ └ ● /tw/design-system
+├   /[locale]/guide
+│ ├ ● /en/guide
+│ └ ● /tw/guide
+├   /[locale]/guide/ai-coding
+│ ├ ● /en/guide/ai-coding
+│ └ ● /tw/guide/ai-coding
+├   /[locale]/guide/at-tokens
+│ ├ ● /en/guide/at-tokens
+│ └ ● /tw/guide/at-tokens
+├   /[locale]/guide/authoring-packages
+│ ├ ● /en/guide/authoring-packages
+│ └ ● /tw/guide/authoring-packages
+├   /[locale]/guide/benchmarks
+│ ├ ● /en/guide/benchmarks
+│ └ ● /tw/guide/benchmarks
+├   /[locale]/guide/breakpoints
+│ ├ ● /en/guide/breakpoints
+│ └ ● /tw/guide/breakpoints
+├   /[locale]/guide/browser-support
+│ ├ ● /en/guide/browser-support
+│ └ ● /tw/guide/browser-support
+├   /[locale]/guide/cascade-layers
+│ ├ ● /en/guide/cascade-layers
+│ └ ● /tw/guide/cascade-layers
+├   /[locale]/guide/code-linting
+│ ├ ● /en/guide/code-linting
+│ └ ● /tw/guide/code-linting
+├   /[locale]/guide/colors
+│ ├ ● /en/guide/colors
+│ └ ● /tw/guide/colors
+├   /[locale]/guide/compatibility
+│ ├ ● /en/guide/compatibility
+│ └ ● /tw/guide/compatibility
+├   /[locale]/guide/components
+│ ├ ● /en/guide/components
+│ └ ● /tw/guide/components
+├   /[locale]/guide/conditional-queries
+│ ├ ● /en/guide/conditional-queries
+│ └ ● /tw/guide/conditional-queries
+├   /[locale]/guide/configuration
+│ ├ ● /en/guide/configuration
+│ └ ● /tw/guide/configuration
+├   /[locale]/guide/containers
+│ ├ ● /en/guide/containers
+│ └ ● /tw/guide/containers
+├   /[locale]/guide/corner-radius
+│ ├ ● /en/guide/corner-radius
+│ └ ● /tw/guide/corner-radius
+├   /[locale]/guide/directives
+│ ├ ● /en/guide/directives
+│ └ ● /tw/guide/directives
+├   /[locale]/guide/elevation
+│ ├ ● /en/guide/elevation
+│ └ ● /tw/guide/elevation
+├   /[locale]/guide/flash-of-unstyled-content
+│ ├ ● /en/guide/flash-of-unstyled-content
+│ └ ● /tw/guide/flash-of-unstyled-content
+├   /[locale]/guide/functions
+│ ├ ● /en/guide/functions
+│ └ ● /tw/guide/functions
+├   /[locale]/guide/global-styles
+│ ├ ● /en/guide/global-styles
+│ └ ● /tw/guide/global-styles
+├   /[locale]/guide/installation
+│ ├ ● /en/guide/installation
+│ └ ● /tw/guide/installation
+├   /[locale]/guide/installation/angular
+│ ├ ● /en/guide/installation/angular
+│ └ ● /tw/guide/installation/angular
+├   /[locale]/guide/installation/angular/runtime-rendering
+│ ├ ● /en/guide/installation/angular/runtime-rendering
+│ └ ● /tw/guide/installation/angular/runtime-rendering
+├   /[locale]/guide/installation/angular/static-rendering
+│ ├ ● /en/guide/installation/angular/static-rendering
+│ └ ● /tw/guide/installation/angular/static-rendering
+├   /[locale]/guide/installation/aspnet-core
+│ ├ ● /en/guide/installation/aspnet-core
+│ └ ● /tw/guide/installation/aspnet-core
+├   /[locale]/guide/installation/aspnet-core/static-rendering
+│ ├ ● /en/guide/installation/aspnet-core/static-rendering
+│ └ ● /tw/guide/installation/aspnet-core/static-rendering
+├   /[locale]/guide/installation/astro
+│ ├ ● /en/guide/installation/astro
+│ └ ● /tw/guide/installation/astro
+├   /[locale]/guide/installation/astro/runtime-rendering
+│ ├ ● /en/guide/installation/astro/runtime-rendering
+│ └ ● /tw/guide/installation/astro/runtime-rendering
+├   /[locale]/guide/installation/astro/static-rendering
+│ ├ ● /en/guide/installation/astro/static-rendering
+│ └ ● /tw/guide/installation/astro/static-rendering
+├   /[locale]/guide/installation/blazor
+│ ├ ● /en/guide/installation/blazor
+│ └ ● /tw/guide/installation/blazor
+├   /[locale]/guide/installation/blazor/runtime-rendering
+│ ├ ● /en/guide/installation/blazor/runtime-rendering
+│ └ ● /tw/guide/installation/blazor/runtime-rendering
+├   /[locale]/guide/installation/blazor/static-rendering
+│ ├ ● /en/guide/installation/blazor/static-rendering
+│ └ ● /tw/guide/installation/blazor/static-rendering
+├   /[locale]/guide/installation/cdn
+│ ├ ● /en/guide/installation/cdn
+│ └ ● /tw/guide/installation/cdn
+├   /[locale]/guide/installation/cli
+│ ├ ● /en/guide/installation/cli
+│ └ ● /tw/guide/installation/cli
+├   /[locale]/guide/installation/express
+│ ├ ● /en/guide/installation/express
+│ └ ● /tw/guide/installation/express
+├   /[locale]/guide/installation/express/static-rendering
+│ ├ ● /en/guide/installation/express/static-rendering
+│ └ ● /tw/guide/installation/express/static-rendering
+├   /[locale]/guide/installation/integrations
+│ ├ ● /en/guide/installation/integrations
+│ └ ● /tw/guide/installation/integrations
+├   /[locale]/guide/installation/laravel
+│ ├ ● /en/guide/installation/laravel
+│ └ ● /tw/guide/installation/laravel
+├   /[locale]/guide/installation/lit
+│ ├ ● /en/guide/installation/lit
+│ └ ● /tw/guide/installation/lit
+├   /[locale]/guide/installation/nextjs
+│ ├ ● /en/guide/installation/nextjs
+│ └ ● /tw/guide/installation/nextjs
+├   /[locale]/guide/installation/nextjs/runtime-rendering
+│ ├ ● /en/guide/installation/nextjs/runtime-rendering
+│ └ ● /tw/guide/installation/nextjs/runtime-rendering
+├   /[locale]/guide/installation/nextjs/static-rendering
+│ ├ ● /en/guide/installation/nextjs/static-rendering
+│ └ ● /tw/guide/installation/nextjs/static-rendering
+├   /[locale]/guide/installation/nuxtjs
+│ ├ ● /en/guide/installation/nuxtjs
+│ └ ● /tw/guide/installation/nuxtjs
+├   /[locale]/guide/installation/nuxtjs/runtime-rendering
+│ ├ ● /en/guide/installation/nuxtjs/runtime-rendering
+│ └ ● /tw/guide/installation/nuxtjs/runtime-rendering
+├   /[locale]/guide/installation/nuxtjs/static-rendering
+│ ├ ● /en/guide/installation/nuxtjs/static-rendering
+│ └ ● /tw/guide/installation/nuxtjs/static-rendering
+├   /[locale]/guide/installation/php
+│ ├ ● /en/guide/installation/php
+│ └ ● /tw/guide/installation/php
+├   /[locale]/guide/installation/php/static-rendering
+│ ├ ● /en/guide/installation/php/static-rendering
+│ └ ● /tw/guide/installation/php/static-rendering
+├   /[locale]/guide/installation/rails
+│ ├ ● /en/guide/installation/rails
+│ └ ● /tw/guide/installation/rails
+├   /[locale]/guide/installation/rails/static-rendering
+│ ├ ● /en/guide/installation/rails/static-rendering
+│ └ ● /tw/guide/installation/rails/static-rendering
+├   /[locale]/guide/installation/react
+│ ├ ● /en/guide/installation/react
+│ └ ● /tw/guide/installation/react
+├   /[locale]/guide/installation/react-router
+│ ├ ● /en/guide/installation/react-router
+│ └ ● /tw/guide/installation/react-router
+├   /[locale]/guide/installation/react-router/static-rendering
+│ ├ ● /en/guide/installation/react-router/static-rendering
+│ └ ● /tw/guide/installation/react-router/static-rendering
+├   /[locale]/guide/installation/react/static-rendering
+│ ├ ● /en/guide/installation/react/static-rendering
+│ └ ● /tw/guide/installation/react/static-rendering
+├   /[locale]/guide/installation/rsbuild
+│ ├ ● /en/guide/installation/rsbuild
+│ └ ● /tw/guide/installation/rsbuild
+├   /[locale]/guide/installation/rsbuild/static-rendering
+│ ├ ● /en/guide/installation/rsbuild/static-rendering
+│ └ ● /tw/guide/installation/rsbuild/static-rendering
+├   /[locale]/guide/installation/rspack
+│ ├ ● /en/guide/installation/rspack
+│ └ ● /tw/guide/installation/rspack
+├   /[locale]/guide/installation/rspack/static-rendering
+│ ├ ● /en/guide/installation/rspack/static-rendering
+│ └ ● /tw/guide/installation/rspack/static-rendering
+├   /[locale]/guide/installation/shopify
+│ ├ ● /en/guide/installation/shopify
+│ └ ● /tw/guide/installation/shopify
+├   /[locale]/guide/installation/storybook
+│ ├ ● /en/guide/installation/storybook
+│ └ ● /tw/guide/installation/storybook
+├   /[locale]/guide/installation/svelte
+│ ├ ● /en/guide/installation/svelte
+│ └ ● /tw/guide/installation/svelte
+├   /[locale]/guide/installation/tanstack-start
+│ ├ ● /en/guide/installation/tanstack-start
+│ └ ● /tw/guide/installation/tanstack-start
+├   /[locale]/guide/installation/tanstack-start/static-rendering
+│ ├ ● /en/guide/installation/tanstack-start/static-rendering
+│ └ ● /tw/guide/installation/tanstack-start/static-rendering
+├   /[locale]/guide/installation/vite
+│ ├ ● /en/guide/installation/vite
+│ └ ● /tw/guide/installation/vite
+├   /[locale]/guide/installation/vite/static-rendering
+│ ├ ● /en/guide/installation/vite/static-rendering
+│ └ ● /tw/guide/installation/vite/static-rendering
+├   /[locale]/guide/installation/vscode
+│ ├ ● /en/guide/installation/vscode
+│ └ ● /tw/guide/installation/vscode
+├   /[locale]/guide/installation/vuejs
+│ ├ ● /en/guide/installation/vuejs
+│ └ ● /tw/guide/installation/vuejs
+├   /[locale]/guide/installation/vuejs/static-rendering
+│ ├ ● /en/guide/installation/vuejs/static-rendering
+│ └ ● /tw/guide/installation/vuejs/static-rendering
+├   /[locale]/guide/installation/webpack
+│ ├ ● /en/guide/installation/webpack
+│ └ ● /tw/guide/installation/webpack
+├   /[locale]/guide/installation/webpack/static-rendering
+│ ├ ● /en/guide/installation/webpack/static-rendering
+│ └ ● /tw/guide/installation/webpack/static-rendering
+├   /[locale]/guide/installation/wordpress
+│ ├ ● /en/guide/installation/wordpress
+│ └ ● /tw/guide/installation/wordpress
+├   /[locale]/guide/installation/wordpress/static-rendering
+│ ├ ● /en/guide/installation/wordpress/static-rendering
+│ └ ● /tw/guide/installation/wordpress/static-rendering
+├   /[locale]/guide/introduction
+│ ├ ● /en/guide/introduction
+│ └ ● /tw/guide/introduction
+├   /[locale]/guide/language-service
+│ ├ ● /en/guide/language-service
+│ └ ● /tw/guide/language-service
+├   /[locale]/guide/language-service/vscode
+│ ├ ● /en/guide/language-service/vscode
+│ └ ● /tw/guide/language-service/vscode
+├   /[locale]/guide/layout-system
+│ ├ ● /en/guide/layout-system
+│ └ ● /tw/guide/layout-system
+├   /[locale]/guide/mcp-server
+│ ├ ● /en/guide/mcp-server
+│ └ ● /tw/guide/mcp-server
+├   /[locale]/guide/migration
+│ ├ ● /en/guide/migration
+│ └ ● /tw/guide/migration
+├   /[locale]/guide/migration/bootstrap
+│ ├ ● /en/guide/migration/bootstrap
+│ └ ● /tw/guide/migration/bootstrap
+├   /[locale]/guide/migration/css
+│ ├ ● /en/guide/migration/css
+│ └ ● /tw/guide/migration/css
+├   /[locale]/guide/migration/css-in-js
+│ ├ ● /en/guide/migration/css-in-js
+│ └ ● /tw/guide/migration/css-in-js
+├   /[locale]/guide/migration/emotion
+│ ├ ● /en/guide/migration/emotion
+│ └ ● /tw/guide/migration/emotion
+├   /[locale]/guide/migration/material-ui
+│ ├ ● /en/guide/migration/material-ui
+│ └ ● /tw/guide/migration/material-ui
+├   /[locale]/guide/migration/sass
+│ ├ ● /en/guide/migration/sass
+│ └ ● /tw/guide/migration/sass
+├   /[locale]/guide/migration/styled-components
+│ ├ ● /en/guide/migration/styled-components
+│ └ ● /tw/guide/migration/styled-components
+├   /[locale]/guide/migration/tailwindcss
+│ ├ ● /en/guide/migration/tailwindcss
+│ └ ● /tw/guide/migration/tailwindcss
+├   /[locale]/guide/migration/v1
+│ ├ ● /en/guide/migration/v1
+│ └ ● /tw/guide/migration/v1
+├   /[locale]/guide/monorepo
+│ ├ ● /en/guide/monorepo
+│ └ ● /tw/guide/monorepo
+├   /[locale]/guide/motion
+│ ├ ● /en/guide/motion
+│ └ ● /tw/guide/motion
+├   /[locale]/guide/native-css-pruning
+│ ├ ● /en/guide/native-css-pruning
+│ └ ● /tw/guide/native-css-pruning
+├   /[locale]/guide/preload-critical-resources
+│ ├ ● /en/guide/preload-critical-resources
+│ └ ● /tw/guide/preload-critical-resources
+├   /[locale]/guide/rendering-modes
+│ ├ ● /en/guide/rendering-modes
+│ └ ● /tw/guide/rendering-modes
+├   /[locale]/guide/responsive-design
+│ ├ ● /en/guide/responsive-design
+│ └ ● /tw/guide/responsive-design
+├   /[locale]/guide/route-level-styles
+│ ├ ● /en/guide/route-level-styles
+│ └ ● /tw/guide/route-level-styles
+├   /[locale]/guide/scanning-latent-classes
+│ ├ ● /en/guide/scanning-latent-classes
+│ └ ● /tw/guide/scanning-latent-classes
+├   /[locale]/guide/sizing
+│ ├ ● /en/guide/sizing
+│ └ ● /tw/guide/sizing
+├   /[locale]/guide/spacing
+│ ├ ● /en/guide/spacing
+│ └ ● /tw/guide/spacing
+├   /[locale]/guide/state-selectors
+│ ├ ● /en/guide/state-selectors
+│ └ ● /tw/guide/state-selectors
+├   /[locale]/guide/style-declarations
+│ ├ ● /en/guide/style-declarations
+│ └ ● /tw/guide/style-declarations
+├   /[locale]/guide/syntax-tutorial
+│ ├ ● /en/guide/syntax-tutorial
+│ └ ● /tw/guide/syntax-tutorial
+├   /[locale]/guide/theme
+│ ├ ● /en/guide/theme
+│ └ ● /tw/guide/theme
+├   /[locale]/guide/typography
+│ ├ ● /en/guide/typography
+│ └ ● /tw/guide/typography
+├   /[locale]/guide/utilities
+│ ├ ● /en/guide/utilities
+│ └ ● /tw/guide/utilities
+├   /[locale]/guide/variables
+│ ├ ● /en/guide/variables
+│ └ ● /tw/guide/variables
+├   /[locale]/guide/variables-and-modes
+│ ├ ● /en/guide/variables-and-modes
+│ └ ● /tw/guide/variables-and-modes
+├   /[locale]/guide/view-transitions
+│ ├ ● /en/guide/view-transitions
+│ └ ● /tw/guide/view-transitions
+├   /[locale]/guide/works-with-third-party
+│ ├ ● /en/guide/works-with-third-party
+│ └ ● /tw/guide/works-with-third-party
+├   /[locale]/play
+│ ├ ● /en/play
+│ └ ● /tw/play
+├   /[locale]/reference
+│ ├ ● /en/reference
+│ └ ● /tw/reference
+├   /[locale]/reference/[...entry]
+│ ├ ● /en/reference/rules/declarations
+│ ├ ● /en/reference/rules/selectors
+│ ├ ● /en/reference/rules/conditions
+│ └ ● [+159 more paths]
+├   /[locale]/reference/accent-color
+│ ├ ● /en/reference/accent-color
+│ └ ● /tw/reference/accent-color
+├   /[locale]/reference/align-content
+│ ├ ● /en/reference/align-content
+│ └ ● /tw/reference/align-content
+├   /[locale]/reference/align-items
+│ ├ ● /en/reference/align-items
+│ └ ● /tw/reference/align-items
+├   /[locale]/reference/align-self
+│ ├ ● /en/reference/align-self
+│ └ ● /tw/reference/align-self
+├   /[locale]/reference/animation
+│ ├ ● /en/reference/animation
+│ └ ● /tw/reference/animation
+├   /[locale]/reference/animation-delay
+│ ├ ● /en/reference/animation-delay
+│ └ ● /tw/reference/animation-delay
+├   /[locale]/reference/animation-direction
+│ ├ ● /en/reference/animation-direction
+│ └ ● /tw/reference/animation-direction
+├   /[locale]/reference/animation-duration
+│ ├ ● /en/reference/animation-duration
+│ └ ● /tw/reference/animation-duration
+├   /[locale]/reference/animation-fill-mode
+│ ├ ● /en/reference/animation-fill-mode
+│ └ ● /tw/reference/animation-fill-mode
+├   /[locale]/reference/animation-iteration-count
+│ ├ ● /en/reference/animation-iteration-count
+│ └ ● /tw/reference/animation-iteration-count
+├   /[locale]/reference/animation-name
+│ ├ ● /en/reference/animation-name
+│ └ ● /tw/reference/animation-name
+├   /[locale]/reference/animation-play-state
+│ ├ ● /en/reference/animation-play-state
+│ └ ● /tw/reference/animation-play-state
+├   /[locale]/reference/animation-timing-function
+│ ├ ● /en/reference/animation-timing-function
+│ └ ● /tw/reference/animation-timing-function
+├   /[locale]/reference/appearance
+│ ├ ● /en/reference/appearance
+│ └ ● /tw/reference/appearance
+├   /[locale]/reference/aspect-ratio
+│ ├ ● /en/reference/aspect-ratio
+│ └ ● /tw/reference/aspect-ratio
+├   /[locale]/reference/backdrop-filter
+│ ├ ● /en/reference/backdrop-filter
+│ └ ● /tw/reference/backdrop-filter
+├   /[locale]/reference/background
+│ ├ ● /en/reference/background
+│ └ ● /tw/reference/background
+├   /[locale]/reference/background-attachment
+│ ├ ● /en/reference/background-attachment
+│ └ ● /tw/reference/background-attachment
+├   /[locale]/reference/background-blend-mode
+│ ├ ● /en/reference/background-blend-mode
+│ └ ● /tw/reference/background-blend-mode
+├   /[locale]/reference/background-clip
+│ ├ ● /en/reference/background-clip
+│ └ ● /tw/reference/background-clip
+├   /[locale]/reference/background-color
+│ ├ ● /en/reference/background-color
+│ └ ● /tw/reference/background-color
+├   /[locale]/reference/background-image
+│ ├ ● /en/reference/background-image
+│ └ ● /tw/reference/background-image
+├   /[locale]/reference/background-origin
+│ ├ ● /en/reference/background-origin
+│ └ ● /tw/reference/background-origin
+├   /[locale]/reference/background-position
+│ ├ ● /en/reference/background-position
+│ └ ● /tw/reference/background-position
+├   /[locale]/reference/background-repeat
+│ ├ ● /en/reference/background-repeat
+│ └ ● /tw/reference/background-repeat
+├   /[locale]/reference/background-size
+│ ├ ● /en/reference/background-size
+│ └ ● /tw/reference/background-size
+├   /[locale]/reference/border
+│ ├ ● /en/reference/border
+│ └ ● /tw/reference/border
+├   /[locale]/reference/border-collapse
+│ ├ ● /en/reference/border-collapse
+│ └ ● /tw/reference/border-collapse
+├   /[locale]/reference/border-color
+│ ├ ● /en/reference/border-color
+│ └ ● /tw/reference/border-color
+├   /[locale]/reference/border-image
+│ ├ ● /en/reference/border-image
+│ └ ● /tw/reference/border-image
+├   /[locale]/reference/border-image-outset
+│ ├ ● /en/reference/border-image-outset
+│ └ ● /tw/reference/border-image-outset
+├   /[locale]/reference/border-image-repeat
+│ ├ ● /en/reference/border-image-repeat
+│ └ ● /tw/reference/border-image-repeat
+├   /[locale]/reference/border-image-slice
+│ ├ ● /en/reference/border-image-slice
+│ └ ● /tw/reference/border-image-slice
+├   /[locale]/reference/border-image-source
+│ ├ ● /en/reference/border-image-source
+│ └ ● /tw/reference/border-image-source
+├   /[locale]/reference/border-image-width
+│ ├ ● /en/reference/border-image-width
+│ └ ● /tw/reference/border-image-width
+├   /[locale]/reference/border-radius
+│ ├ ● /en/reference/border-radius
+│ └ ● /tw/reference/border-radius
+├   /[locale]/reference/border-style
+│ ├ ● /en/reference/border-style
+│ └ ● /tw/reference/border-style
+├   /[locale]/reference/border-width
+│ ├ ● /en/reference/border-width
+│ └ ● /tw/reference/border-width
+├   /[locale]/reference/box-decoration-break
+│ ├ ● /en/reference/box-decoration-break
+│ └ ● /tw/reference/box-decoration-break
+├   /[locale]/reference/box-shadow
+│ ├ ● /en/reference/box-shadow
+│ └ ● /tw/reference/box-shadow
+├   /[locale]/reference/box-sizing
+│ ├ ● /en/reference/box-sizing
+│ └ ● /tw/reference/box-sizing
+├   /[locale]/reference/break-after
+│ ├ ● /en/reference/break-after
+│ └ ● /tw/reference/break-after
+├   /[locale]/reference/break-before
+│ ├ ● /en/reference/break-before
+│ └ ● /tw/reference/break-before
+├   /[locale]/reference/break-inside
+│ ├ ● /en/reference/break-inside
+│ └ ● /tw/reference/break-inside
+├   /[locale]/reference/caret-color
+│ ├ ● /en/reference/caret-color
+│ └ ● /tw/reference/caret-color
+├   /[locale]/reference/clear
+│ ├ ● /en/reference/clear
+│ └ ● /tw/reference/clear
+├   /[locale]/reference/clip-path
+│ ├ ● /en/reference/clip-path
+│ └ ● /tw/reference/clip-path
+├   /[locale]/reference/color
+│ ├ ● /en/reference/color
+│ └ ● /tw/reference/color
+├   /[locale]/reference/column-span
+│ ├ ● /en/reference/column-span
+│ └ ● /tw/reference/column-span
+├   /[locale]/reference/columns
+│ ├ ● /en/reference/columns
+│ └ ● /tw/reference/columns
+├   /[locale]/reference/contain
+│ ├ ● /en/reference/contain
+│ └ ● /tw/reference/contain
+├   /[locale]/reference/content
+│ ├ ● /en/reference/content
+│ └ ● /tw/reference/content
+├   /[locale]/reference/counter-increment
+│ ├ ● /en/reference/counter-increment
+│ └ ● /tw/reference/counter-increment
+├   /[locale]/reference/counter-reset
+│ ├ ● /en/reference/counter-reset
+│ └ ● /tw/reference/counter-reset
+├   /[locale]/reference/counter-set
+│ ├ ● /en/reference/counter-set
+│ └ ● /tw/reference/counter-set
+├   /[locale]/reference/cursor
+│ ├ ● /en/reference/cursor
+│ └ ● /tw/reference/cursor
+├   /[locale]/reference/direction
+│ ├ ● /en/reference/direction
+│ └ ● /tw/reference/direction
+├   /[locale]/reference/display
+│ ├ ● /en/reference/display
+│ └ ● /tw/reference/display
+├   /[locale]/reference/fill
+│ ├ ● /en/reference/fill
+│ └ ● /tw/reference/fill
+├   /[locale]/reference/filter
+│ ├ ● /en/reference/filter
+│ └ ● /tw/reference/filter
+├   /[locale]/reference/flex
+│ ├ ● /en/reference/flex
+│ └ ● /tw/reference/flex
+├   /[locale]/reference/flex-basis
+│ ├ ● /en/reference/flex-basis
+│ └ ● /tw/reference/flex-basis
+├   /[locale]/reference/flex-direction
+│ ├ ● /en/reference/flex-direction
+│ └ ● /tw/reference/flex-direction
+├   /[locale]/reference/flex-grow
+│ ├ ● /en/reference/flex-grow
+│ └ ● /tw/reference/flex-grow
+├   /[locale]/reference/flex-shrink
+│ ├ ● /en/reference/flex-shrink
+│ └ ● /tw/reference/flex-shrink
+├   /[locale]/reference/flex-wrap
+│ ├ ● /en/reference/flex-wrap
+│ └ ● /tw/reference/flex-wrap
+├   /[locale]/reference/float
+│ ├ ● /en/reference/float
+│ └ ● /tw/reference/float
+├   /[locale]/reference/font-family
+│ ├ ● /en/reference/font-family
+│ └ ● /tw/reference/font-family
+├   /[locale]/reference/font-feature-settings
+│ ├ ● /en/reference/font-feature-settings
+│ └ ● /tw/reference/font-feature-settings
+├   /[locale]/reference/font-size
+│ ├ ● /en/reference/font-size
+│ └ ● /tw/reference/font-size
+├   /[locale]/reference/font-smooth
+│ ├ ● /en/reference/font-smooth
+│ └ ● /tw/reference/font-smooth
+├   /[locale]/reference/font-style
+│ ├ ● /en/reference/font-style
+│ └ ● /tw/reference/font-style
+├   /[locale]/reference/font-variant-numeric
+│ ├ ● /en/reference/font-variant-numeric
+│ └ ● /tw/reference/font-variant-numeric
+├   /[locale]/reference/font-weight
+│ ├ ● /en/reference/font-weight
+│ └ ● /tw/reference/font-weight
+├   /[locale]/reference/gap
+│ ├ ● /en/reference/gap
+│ └ ● /tw/reference/gap
+├   /[locale]/reference/grid
+│ ├ ● /en/reference/grid
+│ └ ● /tw/reference/grid
+├   /[locale]/reference/grid-area
+│ ├ ● /en/reference/grid-area
+│ └ ● /tw/reference/grid-area
+├   /[locale]/reference/grid-auto-columns
+│ ├ ● /en/reference/grid-auto-columns
+│ └ ● /tw/reference/grid-auto-columns
+├   /[locale]/reference/grid-auto-flow
+│ ├ ● /en/reference/grid-auto-flow
+│ └ ● /tw/reference/grid-auto-flow
+├   /[locale]/reference/grid-auto-rows
+│ ├ ● /en/reference/grid-auto-rows
+│ └ ● /tw/reference/grid-auto-rows
+├   /[locale]/reference/grid-column
+│ ├ ● /en/reference/grid-column
+│ └ ● /tw/reference/grid-column
+├   /[locale]/reference/grid-columns
+│ ├ ● /en/reference/grid-columns
+│ └ ● /tw/reference/grid-columns
+├   /[locale]/reference/grid-row
+│ ├ ● /en/reference/grid-row
+│ └ ● /tw/reference/grid-row
+├   /[locale]/reference/grid-rows
+│ ├ ● /en/reference/grid-rows
+│ └ ● /tw/reference/grid-rows
+├   /[locale]/reference/grid-template
+│ ├ ● /en/reference/grid-template
+│ └ ● /tw/reference/grid-template
+├   /[locale]/reference/grid-template-areas
+│ ├ ● /en/reference/grid-template-areas
+│ └ ● /tw/reference/grid-template-areas
+├   /[locale]/reference/grid-template-columns
+│ ├ ● /en/reference/grid-template-columns
+│ └ ● /tw/reference/grid-template-columns
+├   /[locale]/reference/grid-template-rows
+│ ├ ● /en/reference/grid-template-rows
+│ └ ● /tw/reference/grid-template-rows
+├   /[locale]/reference/height
+│ ├ ● /en/reference/height
+│ └ ● /tw/reference/height
+├   /[locale]/reference/hyphens
+│ ├ ● /en/reference/hyphens
+│ └ ● /tw/reference/hyphens
+├   /[locale]/reference/inset
+│ ├ ● /en/reference/inset
+│ └ ● /tw/reference/inset
+├   /[locale]/reference/isolation
+│ ├ ● /en/reference/isolation
+│ └ ● /tw/reference/isolation
+├   /[locale]/reference/justify-content
+│ ├ ● /en/reference/justify-content
+│ └ ● /tw/reference/justify-content
+├   /[locale]/reference/justify-items
+│ ├ ● /en/reference/justify-items
+│ └ ● /tw/reference/justify-items
+├   /[locale]/reference/justify-self
+│ ├ ● /en/reference/justify-self
+│ └ ● /tw/reference/justify-self
+├   /[locale]/reference/letter-spacing
+│ ├ ● /en/reference/letter-spacing
+│ └ ● /tw/reference/letter-spacing
+├   /[locale]/reference/line-clamp
+│ ├ ● /en/reference/line-clamp
+│ └ ● /tw/reference/line-clamp
+├   /[locale]/reference/line-height
+│ ├ ● /en/reference/line-height
+│ └ ● /tw/reference/line-height
+├   /[locale]/reference/list-style
+│ ├ ● /en/reference/list-style
+│ └ ● /tw/reference/list-style
+├   /[locale]/reference/list-style-image
+│ ├ ● /en/reference/list-style-image
+│ └ ● /tw/reference/list-style-image
+├   /[locale]/reference/list-style-position
+│ ├ ● /en/reference/list-style-position
+│ └ ● /tw/reference/list-style-position
+├   /[locale]/reference/list-style-type
+│ ├ ● /en/reference/list-style-type
+│ └ ● /tw/reference/list-style-type
+├   /[locale]/reference/margin
+│ ├ ● /en/reference/margin
+│ └ ● /tw/reference/margin
+├   /[locale]/reference/mask-image
+│ ├ ● /en/reference/mask-image
+│ └ ● /tw/reference/mask-image
+├   /[locale]/reference/max-height
+│ ├ ● /en/reference/max-height
+│ └ ● /tw/reference/max-height
+├   /[locale]/reference/max-size
+│ ├ ● /en/reference/max-size
+│ └ ● /tw/reference/max-size
+├   /[locale]/reference/max-width
+│ ├ ● /en/reference/max-width
+│ └ ● /tw/reference/max-width
+├   /[locale]/reference/min-height
+│ ├ ● /en/reference/min-height
+│ └ ● /tw/reference/min-height
+├   /[locale]/reference/min-size
+│ ├ ● /en/reference/min-size
+│ └ ● /tw/reference/min-size
+├   /[locale]/reference/min-width
+│ ├ ● /en/reference/min-width
+│ └ ● /tw/reference/min-width
+├   /[locale]/reference/mix-blend-mode
+│ ├ ● /en/reference/mix-blend-mode
+│ └ ● /tw/reference/mix-blend-mode
+├   /[locale]/reference/object-fit
+│ ├ ● /en/reference/object-fit
+│ └ ● /tw/reference/object-fit
+├   /[locale]/reference/object-position
+│ ├ ● /en/reference/object-position
+│ └ ● /tw/reference/object-position
+├   /[locale]/reference/opacity
+│ ├ ● /en/reference/opacity
+│ └ ● /tw/reference/opacity
+├   /[locale]/reference/order
+│ ├ ● /en/reference/order
+│ └ ● /tw/reference/order
+├   /[locale]/reference/outline
+│ ├ ● /en/reference/outline
+│ └ ● /tw/reference/outline
+├   /[locale]/reference/outline-color
+│ ├ ● /en/reference/outline-color
+│ └ ● /tw/reference/outline-color
+├   /[locale]/reference/outline-offset
+│ ├ ● /en/reference/outline-offset
+│ └ ● /tw/reference/outline-offset
+├   /[locale]/reference/outline-style
+│ ├ ● /en/reference/outline-style
+│ └ ● /tw/reference/outline-style
+├   /[locale]/reference/outline-width
+│ ├ ● /en/reference/outline-width
+│ └ ● /tw/reference/outline-width
+├   /[locale]/reference/overflow
+│ ├ ● /en/reference/overflow
+│ └ ● /tw/reference/overflow
+├   /[locale]/reference/overflow-wrap
+│ ├ ● /en/reference/overflow-wrap
+│ └ ● /tw/reference/overflow-wrap
+├   /[locale]/reference/overscroll-behavior
+│ ├ ● /en/reference/overscroll-behavior
+│ └ ● /tw/reference/overscroll-behavior
+├   /[locale]/reference/padding
+│ ├ ● /en/reference/padding
+│ └ ● /tw/reference/padding
+├   /[locale]/reference/place-content
+│ ├ ● /en/reference/place-content
+│ └ ● /tw/reference/place-content
+├   /[locale]/reference/place-items
+│ ├ ● /en/reference/place-items
+│ └ ● /tw/reference/place-items
+├   /[locale]/reference/place-self
+│ ├ ● /en/reference/place-self
+│ └ ● /tw/reference/place-self
+├   /[locale]/reference/pointer-events
+│ ├ ● /en/reference/pointer-events
+│ └ ● /tw/reference/pointer-events
+├   /[locale]/reference/position
+│ ├ ● /en/reference/position
+│ └ ● /tw/reference/position
+├   /[locale]/reference/resize
+│ ├ ● /en/reference/resize
+│ └ ● /tw/reference/resize
+├   /[locale]/reference/screen-readers
+│ ├ ● /en/reference/screen-readers
+│ └ ● /tw/reference/screen-readers
+├   /[locale]/reference/scroll-behavior
+│ ├ ● /en/reference/scroll-behavior
+│ └ ● /tw/reference/scroll-behavior
+├   /[locale]/reference/scroll-margin
+│ ├ ● /en/reference/scroll-margin
+│ └ ● /tw/reference/scroll-margin
+├   /[locale]/reference/scroll-padding
+│ ├ ● /en/reference/scroll-padding
+│ └ ● /tw/reference/scroll-padding
+├   /[locale]/reference/scroll-snap-align
+│ ├ ● /en/reference/scroll-snap-align
+│ └ ● /tw/reference/scroll-snap-align
+├   /[locale]/reference/scroll-snap-stop
+│ ├ ● /en/reference/scroll-snap-stop
+│ └ ● /tw/reference/scroll-snap-stop
+├   /[locale]/reference/scroll-snap-type
+│ ├ ● /en/reference/scroll-snap-type
+│ └ ● /tw/reference/scroll-snap-type
+├   /[locale]/reference/shape-image-threshold
+│ ├ ● /en/reference/shape-image-threshold
+│ └ ● /tw/reference/shape-image-threshold
+├   /[locale]/reference/shape-margin
+│ ├ ● /en/reference/shape-margin
+│ └ ● /tw/reference/shape-margin
+├   /[locale]/reference/shape-outside
+│ ├ ● /en/reference/shape-outside
+│ └ ● /tw/reference/shape-outside
+├   /[locale]/reference/size
+│ ├ ● /en/reference/size
+│ └ ● /tw/reference/size
+├   /[locale]/reference/stroke
+│ ├ ● /en/reference/stroke
+│ └ ● /tw/reference/stroke
+├   /[locale]/reference/stroke-width
+│ ├ ● /en/reference/stroke-width
+│ └ ● /tw/reference/stroke-width
+├   /[locale]/reference/text-align
+│ ├ ● /en/reference/text-align
+│ └ ● /tw/reference/text-align
+├   /[locale]/reference/text-decoration
+│ ├ ● /en/reference/text-decoration
+│ └ ● /tw/reference/text-decoration
+├   /[locale]/reference/text-decoration-color
+│ ├ ● /en/reference/text-decoration-color
+│ └ ● /tw/reference/text-decoration-color
+├   /[locale]/reference/text-decoration-line
+│ ├ ● /en/reference/text-decoration-line
+│ └ ● /tw/reference/text-decoration-line
+├   /[locale]/reference/text-decoration-style
+│ ├ ● /en/reference/text-decoration-style
+│ └ ● /tw/reference/text-decoration-style
+├   /[locale]/reference/text-decoration-thickness
+│ ├ ● /en/reference/text-decoration-thickness
+│ └ ● /tw/reference/text-decoration-thickness
+├   /[locale]/reference/text-fill-color
+│ ├ ● /en/reference/text-fill-color
+│ └ ● /tw/reference/text-fill-color
+├   /[locale]/reference/text-indent
+│ ├ ● /en/reference/text-indent
+│ └ ● /tw/reference/text-indent
+├   /[locale]/reference/text-orientation
+│ ├ ● /en/reference/text-orientation
+│ └ ● /tw/reference/text-orientation
+├   /[locale]/reference/text-overflow
+│ ├ ● /en/reference/text-overflow
+│ └ ● /tw/reference/text-overflow
+├   /[locale]/reference/text-rendering
+│ ├ ● /en/reference/text-rendering
+│ └ ● /tw/reference/text-rendering
+├   /[locale]/reference/text-shadow
+│ ├ ● /en/reference/text-shadow
+│ └ ● /tw/reference/text-shadow
+├   /[locale]/reference/text-size
+│ ├ ● /en/reference/text-size
+│ └ ● /tw/reference/text-size
+├   /[locale]/reference/text-stroke
+│ ├ ● /en/reference/text-stroke
+│ └ ● /tw/reference/text-stroke
+├   /[locale]/reference/text-stroke-color
+│ ├ ● /en/reference/text-stroke-color
+│ └ ● /tw/reference/text-stroke-color
+├   /[locale]/reference/text-stroke-width
+│ ├ ● /en/reference/text-stroke-width
+│ └ ● /tw/reference/text-stroke-width
+├   /[locale]/reference/text-transform
+│ ├ ● /en/reference/text-transform
+│ └ ● /tw/reference/text-transform
+├   /[locale]/reference/text-underline-offset
+│ ├ ● /en/reference/text-underline-offset
+│ └ ● /tw/reference/text-underline-offset
+├   /[locale]/reference/text-wrap
+│ ├ ● /en/reference/text-wrap
+│ └ ● /tw/reference/text-wrap
+├   /[locale]/reference/touch-action
+│ ├ ● /en/reference/touch-action
+│ └ ● /tw/reference/touch-action
+├   /[locale]/reference/transform
+│ ├ ● /en/reference/transform
+│ └ ● /tw/reference/transform
+├   /[locale]/reference/transform-box
+│ ├ ● /en/reference/transform-box
+│ └ ● /tw/reference/transform-box
+├   /[locale]/reference/transform-origin
+│ ├ ● /en/reference/transform-origin
+│ └ ● /tw/reference/transform-origin
+├   /[locale]/reference/transform-style
+│ ├ ● /en/reference/transform-style
+│ └ ● /tw/reference/transform-style
+├   /[locale]/reference/transition
+│ ├ ● /en/reference/transition
+│ └ ● /tw/reference/transition
+├   /[locale]/reference/transition-delay
+│ ├ ● /en/reference/transition-delay
+│ └ ● /tw/reference/transition-delay
+├   /[locale]/reference/transition-duration
+│ ├ ● /en/reference/transition-duration
+│ └ ● /tw/reference/transition-duration
+├   /[locale]/reference/transition-property
+│ ├ ● /en/reference/transition-property
+│ └ ● /tw/reference/transition-property
+├   /[locale]/reference/transition-timing-function
+│ ├ ● /en/reference/transition-timing-function
+│ └ ● /tw/reference/transition-timing-function
+├   /[locale]/reference/user-drag
+│ ├ ● /en/reference/user-drag
+│ └ ● /tw/reference/user-drag
+├   /[locale]/reference/user-select
+│ ├ ● /en/reference/user-select
+│ └ ● /tw/reference/user-select
+├   /[locale]/reference/vertical-align
+│ ├ ● /en/reference/vertical-align
+│ └ ● /tw/reference/vertical-align
+├   /[locale]/reference/visibility
+│ ├ ● /en/reference/visibility
+│ └ ● /tw/reference/visibility
+├   /[locale]/reference/white-space
+│ ├ ● /en/reference/white-space
+│ └ ● /tw/reference/white-space
+├   /[locale]/reference/width
+│ ├ ● /en/reference/width
+│ └ ● /tw/reference/width
+├   /[locale]/reference/will-change
+│ ├ ● /en/reference/will-change
+│ └ ● /tw/reference/will-change
+├   /[locale]/reference/word-break
+│ ├ ● /en/reference/word-break
+│ └ ● /tw/reference/word-break
+├   /[locale]/reference/word-spacing
+│ ├ ● /en/reference/word-spacing
+│ └ ● /tw/reference/word-spacing
+├   /[locale]/reference/writing-mode
+│ ├ ● /en/reference/writing-mode
+│ └ ● /tw/reference/writing-mode
+├   /[locale]/reference/z-index
+│ ├ ● /en/reference/z-index
+│ └ ● /tw/reference/z-index
+├   /[locale]/sponsor
+│ ├ ● /en/sponsor
+│ └ ● /tw/sponsor
+├ ○ /examples/layout-system
+├ ○ /examples/responsive-button
+└ ○ /examples/responsive-gallery
+
+
+○  (Static)  prerendered as static content
+●  (SSG)     prerendered as static HTML (uses generateStaticParams)
+

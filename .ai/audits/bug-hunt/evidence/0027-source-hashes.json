@@ -1,0 +1,7 @@
+{
+  "packages/nuxt/src/module.ts": "d115d848f77864ba94ec2e06024820de95b569bc76874b053b66c2a1dfeaa793",
+  "packages/nuxt/src/external-hydration-manifest.ts": "a74c57ac3b2c0ff124c56c036428d8b29556b3b781bd1ead25a6481d825375ad",
+  "packages/nuxt/src/options.ts": "1018515443c2620f13c0bc308d1e9f3f6401565d3ca1a7fe075140f1474edfbd",
+  "packages/nuxt/src/runtime/css-runtime.ts": "42efd3f82fb9a008af962540b73a6de14f4791fa7cfc8037da05cd2dd0f13654",
+  "packages/nuxt/src/runtime/css-server.ts": "d85952a798fa301f559356b892f38b56005ac286d72b8b52656700898a292aaf"
+}

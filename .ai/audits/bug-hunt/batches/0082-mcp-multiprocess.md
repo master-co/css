@@ -1,0 +1,11 @@
+# 0082 MCP multi-process preview apply
+
+- Scope explicit PKG-mcp residual from0053/0081. Currentmanifest/AI andcontextcreatePreview/applyPreview source inspected; one-use/stale guards establish expectations. Two actualOSchildprocesses each own anindependentrealContext; IPC only orchestrates calls. Existingin-memorySDK/stdio baselines remainvalid; thisbatch targetscontextfilesystembehavior, not anadditionalexternalMCPclient.
+- [Driver](../repros/mcp-multiprocess.mjs), [source hashes](../evidence/0082-source-hashes.json). Own temporaryfiles only; separatecontextpreviews, sequentialstale rejection, concurrentdifferentfiles, then10samefile overlaprounds. Shared100ms starttimestamp coordinatesentry only; no productI/O hooks orbarriers aftervalidation. Classification completed. No paused0038work orproductchanges.
+- Initial snapshot bookkeeping referenced nonexistentpackages/mcp/src/types.ts; corrected toactualpackage.json before source reconciliation. This metadata error didnotchange orrerun product behavior; runningtool6699 continues independently.
+
+- [Executed evidence](../evidence/0082-multiprocess.json), [log](../evidence/0082-multiprocess.log). IndependentworkerPIDs66659/66660. Cross-process sequential competingpreview correctly rejected bystalehash, originalfirstoutputpreserved; parallel differentfiles bothapplycorrectly.10/10aligned-entry overlappingrounds bothcontexts returnappliedtrue, finalcontents alternatebetweenone/two output, oneacceptedchangeoverwritesanother fromthesamebeforehash.
+- ExistingBH-0031P2 extends acrossprocesscontexts. Root remains packages/mcp/src/context.ts:221–251 validate/read thenlaterwrite withoutatomiccoordination. A per-instancequeue alone wouldnotprotect thiscase. No newID orclaim thateveryfilesystem/interleavingiscovered; filesystemfaults/processcrashes remainunverified.
+- Auditexit0 means observations/normalcontrols completed, not that staleprotection passed theoverlapcase. Tool6699 terminal0; bothworkersclosed andownedtemporaryroot removed. No productedits ornewpackage-localtest, so priorMCP package lint/sourcebaselines remainapplicable withoutredundant rerun.
+
+- Final0081/0082 evidence/ownership checks: [checks](../evidence/0082-final-checks.json), [inventory](../evidence/0082-file-inventory.json), [AI context](../evidence/0082-ai-context.log).42confirmed/62checked/13blocked; goalactive.

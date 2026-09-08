@@ -1,0 +1,12 @@
+{
+  "vscode": "1.136.1",
+  "records": [
+    {
+      "control": "same host without ESLint",
+      "manualRestart": true,
+      "settingRestart": true,
+      "hoverStillWorks": true,
+      "complete": true
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "kind": "cli-baseline",
+    "binding": "auto",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "control",
+    "binding": "native",
+    "status": 0,
+    "nativeScanners": 1,
+    "stdout": "{\"binding\":\"native\",\"snapshot\":{\"latentClasses\":[],\"validClasses\":[],\"invalidClasses\":[],\"cachedSources\":0,\"engine\":{\"version\":1,\"rules\":[{\"className\":\"block\",\"key\":\"block\",\"layer\":\"utilities\",\"type\":-2,\"sortTier\":0,\"priority\":{\"selector\":0},\"text\":\".block{display:block}\",\"selectorText\":\".block\"}],\"resources\":{\"variables\":[],\"animations\":[]},\"text\":\"@layer utilities{.block{display:block}}\"}}}\n",
+    "stderr": "BH_NATIVE_SCANNER\n"
+  },
+  {
+    "kind": "control",
+    "binding": "wasm",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "{\"binding\":\"wasm\",\"snapshot\":{\"latentClasses\":[],\"validClasses\":[],\"invalidClasses\":[],\"cachedSources\":0,\"engine\":{\"version\":1,\"rules\":[{\"className\":\"block\",\"key\":\"block\",\"layer\":\"utilities\",\"type\":-2,\"sortTier\":0,\"priority\":{\"selector\":0},\"text\":\".block{display:block}\",\"selectorText\":\".block\"}],\"resources\":{\"variables\":[],\"animations\":[]},\"text\":\"@layer utilities{.block{display:block}}\"}}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "cli",
+    "binding": "native",
+    "status": 0,
+    "nativeScanners": 1,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": "BH_NATIVE_SCANNER\n"
+  },
+  {
+    "kind": "cli",
+    "binding": "wasm",
+    "status": 0,
+    "nativeScanners": 1,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": "BH_NATIVE_SCANNER\n"
+  }
+]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: BH-0026: CLI --binding wasm must not instantiate a native scanner
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/BH-0026-binding.mjs:68:12
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

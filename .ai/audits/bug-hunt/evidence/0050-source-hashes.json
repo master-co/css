@@ -1,0 +1,7 @@
+{
+  "examples/angular/angular.json": "31813ca3703d0c9dceadfb6fd7ed92b10935f35eb6f56b1491052972216a2d57",
+  "examples/angular/server.ts": "f657c472c7cee0273c9798d0ae19c2cbbea1029db9da59552d8c8624ee9c5bf2",
+  "examples/angular/package.json": "6a3da77f82c02965e8bb5b73b1b1ef2d668ee1b648dcd4f6bc6c60c55f76ce03",
+  "packages/server/src/create-server-renderer.ts": "ad852fe177e13d00daf8486b82942d87cc087ebd3ae2864c7488a54c1bd990a6",
+  "packages/tooling/src/host.ts": "b6eff5478cbc4e69555ea8b905239def81bc42e5cac57b29bd9f0d711b964581"
+}

@@ -1,0 +1,23 @@
+{
+  "crates/mastercss-language/src/session.rs": "66f8bf897fcc5b1e2c04bdfb2c227d25e485122c58fe0da0a1eb2d2bd3169b5a",
+  "crates/mastercss-language/src/formatting.rs": "73f4a51075865a870d767089764b282fbae15733f3aead4332b9d29bfb7b931b",
+  "crates/mastercss-language/src/positions.rs": "1dccebf668a7d5ea0b7933f3a86502bd4184396768d74db19a579ef4ea601a26",
+  "crates/mastercss-language/src/color.rs": "7f0e4c076286aded4c1f202cb73f25a30e089018c2ca351051d364a5d88aa309",
+  "crates/mastercss-language/src/lib.rs": "8bd7313c3c698f275229d7a5260875fab0dd61c1991d326b8dcf6d3846708caf",
+  "crates/mastercss-language/src/semantic_tokens.rs": "c0ed16ed18e962dab1405b6afd30abe4e6cc413fbcb79489fb61cda5cc6faadf",
+  "crates/mastercss-language/src/mdn-completion-registry.json": "ec17b147824652b28983561b753cbf5bd4fd8ce0fe89db2717957030621eb0db",
+  "crates/mastercss-language/src/tests.rs": "e20f607e5cbd4944c872283c6fff6b832433a5acfad9e781ec72b44f78b52261",
+  "crates/mastercss-language/src/document.rs": "0d53379dfecca7c089cc7a029b17ce3210e4b3e87e24924f9a4a1ab6765ae923",
+  "packages/tooling/src/language/master-css.ts": "b3125ca25a33531f0d1b5661925022ef1c76d092892954830e720db2d17ad5ec",
+  "packages/tooling/src/language/node.ts": "9ea459942327750aa74a11f88c147c74168731bf3d206c6ad96d11254eab1561",
+  "packages/tooling/src/language/contracts.ts": "34563a0062514e9b2ba7c3acd77fe33998a2665dd65a828a3d01cdde626898de",
+  "packages/tooling/src/language/settings.ts": "efce627c2c8ec4eb472d1ca3dee7f0cbc061095832ef3fbdb1f3875306f5b9ea",
+  "packages/tooling/src/language/common.ts": "2f37a43f20ff5e0d62cc5f277a789c9827b437da9e10b5656238cbc29df7c52f",
+  "packages/tooling/src/language/browser.ts": "8cb933d875a58a34884656954e3bbfa1e5f7313e17f015e51a8ee364e5e4d99f",
+  "packages/tooling/src/language/session.ts": "9c78ada5de73eff91ef27f66b2542570b9ceb61e0c529fd13ba83eaadaa6e0ef",
+  "packages/tooling/src/language/index.ts": "e94802708f819fea0cf43fa242c4aac45cced33ec147594f01ee8f2c3029b957",
+  "packages/tooling/src/language/binding-session.ts": "91fcc36f3c525a1ab93799dcb0fb0e6cacc970dd0e36c118a2e9b047993be254",
+  "packages/tooling/src/language/utils/mdn-css-data.ts": "106670becf5831dd65a3e295ee35f5336cbf711a8299705cb21489e31132ca9c",
+  "packages/tooling/src/language/semantic/types.ts": "235fb4ae58d08f851d82e1cea3e47c961573fd19d79d967c7cd6252f1947531f",
+  "packages/tooling/src/language/semantic/scopes.ts": "476a4ff561abb1cce98b0156b593d251bf66f67a947821ca19b8bf11d0bcbd7c"
+}

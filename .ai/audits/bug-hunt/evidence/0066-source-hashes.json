@@ -1,0 +1,10 @@
+{
+  "benchmarks/shared/startup-diagnostics.ts": "5ef5180502ea61404589e3b43f1599fa03a98acf82d33ef3b19bab646a395df7",
+  "benchmarks/startup-diagnostics/startup-diagnostics.bench.ts": "c6af29915ea22fe601d7c79acfb223f2c2a9a70645a5f77a232e82fd8f4b562f",
+  "benchmarks/startup-diagnostics/run-diagnostic.ts": "64385144db2167e82159e3341c8882b83c99b0b9c7cd09a710465db77e9cc2be",
+  "packages/cli/package.json": "fa0c6e36879e46477c43d7949332047740e96663a78078ebd49ae902a5ed3554",
+  "packages/cli/src/bin/index.ts": "ce2433868de1912aa49f4368e5c7788e3509f932bb9c4bd87141ef1a646e02e3",
+  "packages/cli/src/core.ts": "c930df7c348b276419f494628e9597c4504533b753608b09a8bcd349571b0cf2",
+  "packages/cli/dist/bin/index.js": "81a3cefcde14b37a6d1acfa0dbec63f6d17a50310b3130734fc7092dc14a9936",
+  "packages/cli/dist/core.js": "5fe7f7a2e44ae1d76aae8e419035cca93f1708735e7acf470a20c898109f7a5d"
+}

@@ -1,0 +1,216 @@
+{
+  "rows": [
+    {
+      "variant": "stress-css-small-css-cold-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 29313,
+      "traceEventCount": 2201,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 6,
+        "layout-ms": 2,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-small-css-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-small-css-warm-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 29313,
+      "traceEventCount": 1912,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 6,
+        "layout-ms": 1,
+        "paint-ms": 3
+      },
+      "trace": "0074-traces/stress-css-small-css-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-medium-css-cold-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 283749,
+      "traceEventCount": 2086,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 8,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-medium-css-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-medium-css-warm-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 283749,
+      "traceEventCount": 2001,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 6,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-medium-css-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-large-css-cold-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 1131873,
+      "traceEventCount": 2222,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 6,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-large-css-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-large-css-warm-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 1131873,
+      "traceEventCount": 2001,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 4,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-large-css-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-xlarge-css-cold-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 3393539,
+      "traceEventCount": 2609,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 6,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-xlarge-css-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-css-xlarge-css-warm-cache",
+      "navigationReady": true,
+      "domNodes": 205,
+      "domItems": 48,
+      "cssBytes": 3393539,
+      "traceEventCount": 2002,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 4,
+        "layout-ms": 1,
+        "paint-ms": 5
+      },
+      "trace": "0074-traces/stress-css-xlarge-css-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-small-dom-cold-cache",
+      "navigationReady": true,
+      "domNodes": 712,
+      "domItems": 100,
+      "cssBytes": 1154,
+      "traceEventCount": 2315,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 4,
+        "layout-ms": 1,
+        "paint-ms": 4
+      },
+      "trace": "0074-traces/stress-dom-small-dom-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-small-dom-warm-cache",
+      "navigationReady": true,
+      "domNodes": 712,
+      "domItems": 100,
+      "cssBytes": 1154,
+      "traceEventCount": 2297,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 6,
+        "layout-ms": 1,
+        "paint-ms": 4
+      },
+      "trace": "0074-traces/stress-dom-small-dom-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-medium-dom-cold-cache",
+      "navigationReady": true,
+      "domNodes": 7012,
+      "domItems": 1000,
+      "cssBytes": 1154,
+      "traceEventCount": 5170,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 4,
+        "layout-ms": 1,
+        "paint-ms": 4
+      },
+      "trace": "0074-traces/stress-dom-medium-dom-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-medium-dom-warm-cache",
+      "navigationReady": true,
+      "domNodes": 7012,
+      "domItems": 1000,
+      "cssBytes": 1154,
+      "traceEventCount": 5027,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 4,
+        "layout-ms": 1,
+        "paint-ms": 4
+      },
+      "trace": "0074-traces/stress-dom-medium-dom-warm-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-large-dom-cold-cache",
+      "navigationReady": true,
+      "domNodes": 21012,
+      "domItems": 3000,
+      "cssBytes": 1154,
+      "traceEventCount": 11673,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 2,
+        "style-recalculation-ms": 12,
+        "layout-ms": 4,
+        "paint-ms": 12
+      },
+      "trace": "0074-traces/stress-dom-large-dom-cold-cache.json.gz"
+    },
+    {
+      "variant": "stress-dom-large-dom-warm-cache",
+      "navigationReady": true,
+      "domNodes": 21012,
+      "domItems": 3000,
+      "cssBytes": 1154,
+      "traceEventCount": 12549,
+      "matchedTimingEvents": {
+        "stylesheet-parse-ms": 0,
+        "style-recalculation-ms": 12,
+        "layout-ms": 5,
+        "paint-ms": 12
+      },
+      "trace": "0074-traces/stress-dom-large-dom-warm-cache.json.gz"
+    }
+  ],
+  "finiteSamples": true,
+  "recomputedTraceTimings": true
+}

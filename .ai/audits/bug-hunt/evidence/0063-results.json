@@ -1,0 +1,16 @@
+[
+  {
+    "browser": "firefox",
+    "version": "155.0",
+    "cssFont": "48px",
+    "loginVisible": true,
+    "errors": []
+  },
+  {
+    "browser": "webkit",
+    "version": "26.6",
+    "cssFont": "48px",
+    "loginVisible": true,
+    "errors": []
+  }
+]

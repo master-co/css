@@ -1,0 +1,154 @@
+$ vitest --run
+
+ RUN  v5.0.0 /Users/aron/master/css/examples/integration-lab
+
+[log]
+[log]
+[log]
+[log]
+stdout | tests/integration-lab.test.ts > @master/css-webpack with Rsbuild > builds an Rsbuild React app in static mode
+info    build started...
+
+stdout | tests/integration-lab.test.ts > @master/css-webpack with Rsbuild > builds an Rsbuild React app in static mode
+ready   built in 0.14s
+
+stdout | tests/integration-lab.test.ts > @master/css-webpack with Rsbuild > builds an Rsbuild React app in static mode
+
+File (web)                    Size        Gzip   
+dist/static/css/index.css     0.00 kB     0.02 kB
+dist/index.html               0.36 kB     0.23 kB
+dist/static/js/index.js       5.9 kB      2.0 kB
+dist/static/js/lib-react.js   1730.2 kB   295.5 kB
+
+                     Total:   1736.4 kB   297.7 kB
+
+
+transforming...
+✓ 130 modules transformed.
+rendering chunks...
+computing gzip size...
+transforming...
+✓ 108 modules transformed.
+rendering chunks...
+computing gzip size...
+[log]
+[log]
+stdout | tests/integration-lab.test.ts > TanStack Start with Rsbuild and @master/css-webpack > builds the Rsbuild variant with managed CSS and SSR output
+info    build started...
+
+stdout | tests/integration-lab.test.ts > TanStack Start with Rsbuild and @master/css-webpack > builds the Rsbuild variant with managed CSS and SSR output
+ready   built in 0.22s (client)
+
+stdout | tests/integration-lab.test.ts > TanStack Start with Rsbuild and @master/css-webpack > builds the Rsbuild variant with managed CSS and SSR output
+ready   built in 0.18s (ssr)
+
+stdout | tests/integration-lab.test.ts > TanStack Start with Rsbuild and @master/css-webpack > builds the Rsbuild variant with managed CSS and SSR output
+
+File (client)                      Size        Gzip   
+dist/client/assets/css/index.css   0.00 kB     0.02 kB
+dist/client/assets/js/async/0.js   0.49 kB     0.29 kB
+dist/client/assets/js/index.js     2224.6 kB   399.2 kB
+
+                          Total:   2225.0 kB   399.6 kB
+
+File (ssr)             Size        
+dist/server/2.js       0.38 kB  
+dist/server/5.js       0.49 kB  
+dist/server/3.js       0.61 kB  
+dist/server/4.js       0.90 kB  
+dist/server/1.js       3.9 kB   
+dist/server/0.js       78.2 kB  
+dist/server/index.js   2174.1 kB
+
+              Total:   2258.6 kB
+
+
+ ❯ tests/integration-lab.test.ts (7 tests | 3 failed) 11501ms
+   ❯ @master/css-webpack with Rspack (2)
+     × builds a raw Rspack app in static mode 1688ms
+   ❯ @master/css-webpack with Rsbuild (2)
+     × builds an Rsbuild React app in static mode 366ms
+   ❯ TanStack Start with Rsbuild and @master/css-webpack (1)
+     × builds the Rsbuild variant with managed CSS and SSR output 823ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration-lab.test.ts > @master/css-webpack with Rspack > builds a raw Rspack app in static mode
+AssertionError: expected '' to contain '.block{display:block}'
+
+- Expected
++ Received
+
+- .block{display:block}
+
+ ❯ expectStaticCSS tests/integration-lab.test.ts:63:17
+     61| function expectStaticCSS(css: string) {
+     62|   for (const expected of expectedStaticCSS) {
+     63|     expect(css).toContain(expected)
+       |                 ^
+     64|   }
+     65|   expect(css).toContain('--color-primary:#123456')
+ ❯ tests/integration-lab.test.ts:465:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/integration-lab.test.ts > @master/css-webpack with Rsbuild > builds an Rsbuild React app in static mode
+AssertionError: expected '\n\n\n\n' to contain '.block{display:block}'
+
+- Expected
++ Received
+
+- .block{display:block}
++
++
++
++
++
+
+ ❯ expectStaticCSS tests/integration-lab.test.ts:63:17
+     61| function expectStaticCSS(css: string) {
+     62|   for (const expected of expectedStaticCSS) {
+     63|     expect(css).toContain(expected)
+       |                 ^
+     64|   }
+     65|   expect(css).toContain('--color-primary:#123456')
+ ❯ tests/integration-lab.test.ts:488:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/integration-lab.test.ts > TanStack Start with Rsbuild and @master/css-webpack > builds the Rsbuild variant with managed CSS and SSR output
+AssertionError: expected '\n\n\n\n' to contain '.block{display:block}'
+
+- Expected
++ Received
+
+- .block{display:block}
++
++
++
++
++
+
+ ❯ expectStaticCSS tests/integration-lab.test.ts:63:17
+     61| function expectStaticCSS(css: string) {
+     62|   for (const expected of expectedStaticCSS) {
+     63|     expect(css).toContain(expected)
+       |                 ^
+     64|   }
+     65|   expect(css).toContain('--color-primary:#123456')
+ ❯ tests/integration-lab.test.ts:563:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 4 passed (7)
+   Start at  17:55:04
+   Duration  11.61s (tests 100%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/examples/
+  │ integration-lab
+

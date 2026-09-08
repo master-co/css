@@ -1,0 +1,13 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-034rs8pm/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/browser-css-cost-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-034rs8pm/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  23:35:21
+   Duration  323.02s (tests 100%)
+
+{"status":0,"signal":null}
+{"variants":14,"samples":448,"retainedTraces":14,"validation":"PASS"}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-034rs8pm"}

@@ -1,0 +1,10 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-1ebowa6x/site", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/site-content.mjs"]}
+{"name":"prepare-app","status":0}
+{"name":"test:image-loader","status":0}
+{"name":"test:public-env","status":0}
+{"name":"test:syntax","status":0}
+{"name":"test:reference","status":0}
+{"name":"test:llms","status":0}
+{"name":"test:docs-examples","status":0}
+{"name":"css-variable-references","status":0}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-1ebowa6x"}

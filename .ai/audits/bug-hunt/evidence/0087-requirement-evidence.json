@@ -1,0 +1,130 @@
+{
+  "original-pending-classification": [
+    {
+      "path": "batches/0048-cli-binding-selection.md",
+      "exists": true,
+      "sha256": "3d49bcf7dc84c73233f8adb41c98874613d7b18ccb3c506ce0e64354cd4a253a"
+    },
+    {
+      "path": "batches/0049-webpack-example-asset.md",
+      "exists": true,
+      "sha256": "b8460b11bcf704add7a33b2888a95fc64c8456780d81ba77b46f26f14cc72b4e"
+    },
+    {
+      "path": "batches/0050-angular-bundle.md",
+      "exists": true,
+      "sha256": "3fc0b45f492a639556f177aa25b00b740b1e002ef53f81393a2b3a8a2554965c"
+    }
+  ],
+  "current-site-revalidation": [
+    {
+      "path": "batches/0051-site-syntax-revalidation.md",
+      "exists": true,
+      "sha256": "b157847f984d6cb5265eb3da3581e84bf0da567343d8f4c363a47ae3ce35886c"
+    },
+    {
+      "path": "batches/0054-site-browser-matrix.md",
+      "exists": true,
+      "sha256": "81a7bdfdc9cd19de10b1a78502c8195b6fbe0caedc87b59911d7ac7bbc0f39e3"
+    }
+  ],
+  "concrete-MCP-followup": [
+    {
+      "path": "evidence/0082-multiprocess.json",
+      "exists": true,
+      "sha256": "7858dc95b25071b8e480c1cba8f99abacbee5c27a7cfca47aa4fbe149051b2ea"
+    },
+    {
+      "path": "evidence/0085-filesystem-faults.json",
+      "exists": true,
+      "sha256": "7135605b4c3392b91b035aa2914680d8eff58bb4594b53cd63ce7062666f2e34"
+    },
+    {
+      "path": "evidence/0086-process-interruption.json",
+      "exists": true,
+      "sha256": "0da55caf57e81fd18ad4e4b205aa32b1d2b4ac244a7746cd94dfdfd99c1b1d2d"
+    }
+  ],
+  "concrete-editor-followup": [
+    {
+      "path": "evidence/0083-corpus-checks.json",
+      "exists": true,
+      "sha256": "8d5d836d7e069e0240700331105a03b22f8e0bd46b46a8e5a4869e669796a806"
+    },
+    {
+      "path": "evidence/0083-vscode-corpus.json",
+      "exists": true,
+      "sha256": "227a79db24eba04576cdcfde0abe147b4da2774a685314e8ae6c91522df4f356"
+    }
+  ],
+  "concrete-static-children": [
+    {
+      "path": "evidence/0080-original-diagnostics.json",
+      "exists": true,
+      "sha256": "3896e0fa0e9d1df8e49acc3a874c884fdf7ccb0c22bdf3f144a4345ed504c363"
+    },
+    {
+      "path": "evidence/0084-static-checks.json",
+      "exists": true,
+      "sha256": "04466d3ef1f98009b0f8c296c9ae4785c163ca4b81b9d15179b4af76623e37ec"
+    },
+    {
+      "path": "evidence/0084-archive-checks.json",
+      "exists": true,
+      "sha256": "776a669da28af247b38e9ca054b37efce8fd4298a13b628e891a39827d661a7c"
+    }
+  ],
+  "unchanged-prerequisite-failures": [
+    {
+      "path": "evidence/0050-angular-bundle-final.log",
+      "exists": true,
+      "sha256": "3193034b27610581f41d8504e803e5f8b5176d22773e9c4ed92b17370cc3bda1"
+    },
+    {
+      "path": "evidence/0037-eslint-examples.log",
+      "exists": true,
+      "sha256": "0d100ed762aab9f2c5dce24531afd761bc39d303271d739e341e1726b8177cfb"
+    },
+    {
+      "path": "evidence/0042-runtime.log",
+      "exists": true,
+      "sha256": "6bc94264d92d7beff8e7c1b04a0e06c4c2cb5ede64a5d85065c84743fb1e2853"
+    },
+    {
+      "path": "evidence/0042-webpack-existing-tools.log",
+      "exists": true,
+      "sha256": "1d5ee0d15799015dbd2a3a09fa0878cf4a5e2d08e95b77a277f893f8eed372b8"
+    },
+    {
+      "path": "batches/0060-nuxt-dev-hmr.md",
+      "exists": true,
+      "sha256": "bb6529776bf670eb45f9b23b83afb33d652ffdb6c976ebac63026495fc472e26"
+    }
+  ],
+  "root-baseline-failures": [
+    {
+      "path": "batches/0040-root-shared.md",
+      "exists": true,
+      "sha256": "34a494bd6e26fea3c4e7acac73a4d9ac29f1fc04040be82488a5c9e1eb1291da"
+    }
+  ],
+  "paused-verification": [
+    {
+      "path": "batches/0038-integration-lab.md",
+      "exists": true,
+      "sha256": "30d38542d1b34ae2df47283789f7d15ec8a8c6883224cb7c82e71426288681c7"
+    }
+  ],
+  "complete-remaining-scope": [
+    {
+      "path": "coverage.md",
+      "exists": true,
+      "sha256": "a254bd210fd32f59e81bb80812d982dc92ccad432c46f40dfa6183e5e3ec4692"
+    },
+    {
+      "path": "batches/0052-remaining-prerequisites.md",
+      "exists": true,
+      "sha256": "54a902a0545fb6edf5bb274909a91b42f337e77761bc9488ae6691431fa08904"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/progressive-diagnostic-controls.mjs"]}
+Launching Chromium for progressive hydration diagnostics
+Preparing progressive hydration diagnostic page for minimal-master-progressive
+Measuring progressive hydration diagnostics for minimal-master-progressive, round 1/1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 15000ms exceeded.
+    at waitForBenchmarkReady (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/shared/delivery-modes.ts:706:14)
+    at measureProgressiveHydrationDiagnostics (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/shared/delivery-modes.ts:259:13)
+    at async collectProgressiveHydrationDiagnosticSamples (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/shared/progressive-hydration-diagnostics.ts:155:20)
+    at async createProgressiveHydrationDiagnosticsReport (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/shared/progressive-hydration-diagnostics.ts:101:7)
+    at async writeProgressiveHydrationDiagnosticsReport (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/shared/progressive-hydration-diagnostics.ts:75:18)
+    at async <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9/benchmarks/progressive-hydration-diagnostics/run-report.ts:3:16) {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0
+{"originalReportStatus":1}
+[{"sidecar":false,"failures":[{"url":"http://127.0.0.1:61942/artifacts/mastercss_binding_wasm_engine_bg.wasm","status":404}],"ready":false,"hidden":false,"colorProbeAlign":"center","reported":{"runtimeScriptLoadedMs":79.39999985694885,"runtimeReadyMs":0,"runtimeBootstrapMs":0,"runtimeObserveMs":0,"progressiveAdopted":0,"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0},"snapshot":null},{"sidecar":true,"failures":[],"ready":true,"hidden":false,"colorProbeAlign":"center","reported":{"runtimeScriptLoadedMs":46.10000014305115,"runtimeReadyMs":310.40000009536743,"runtimeBootstrapMs":264.2999999523163,"runtimeObserveMs":50,"progressiveAdopted":1,"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":1940},"snapshot":{"rules":46,"cssBytes":1940,"hydration":{"state":"progressive","manifestLoaded":true}}}]
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/progressive-diagnostic-controls.mjs:71:10)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-5d0jppm9"}

@@ -1,0 +1,10 @@
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+     Running tests/bug_hunt_lifecycle.rs (target/debug/deps/bug_hunt_lifecycle-5c0b8c0a35d45578)
+
+running 2 tests
+test audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable ... ok
+test audit_transition_replay_matches_snapshot_through_256_operations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 16.84s
+

@@ -1,0 +1,15 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-no1yc_cy/packages/css-sv", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--input-type=module", "-e", "import{readFileSync,writeFileSync}from\"node:fs\";import{spawnSync}from\"node:child_process\";const f=\"tests/global-setup.ts\";writeFileSync(f,readFileSync(f,\"utf8\").replace(\"master-css-sv-tests\",\"master-css-sv-tests-bh-\"+process.pid));const r=spawnSync(\"pnpm\",[\"exec\",\"vitest\",\"run\"],{stdio:\"inherit\"});process.exit(r.status??1)"]}
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-no1yc_cy/packages/css-sv
+
+
+ Test Files  2 passed (2)
+      Tests  19 passed (19)
+   Start at  17:18:09
+   Duration  6.28s (tests 98%, import 1%)
+
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-no1yc_cy"}

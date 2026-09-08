@@ -1,0 +1,5 @@
+{
+  "benchmarks/shared/extraction-diagnostics.ts": "d4ff2f337e2af6843f59bc17f445d99297cfc2347059a9e289f59103c32ba624",
+  "benchmarks/extraction-diagnostics/extraction-diagnostics.bench.ts": "826055e328351b3e436a94415a6375ecb48eca88616ecaf8e1a6cc546f42d60e",
+  "benchmarks/extraction-diagnostics/run-diagnostic.ts": "74f31252fc472f353a69685612c324a423cf8f8356deea32723b1068abb22d0c"
+}

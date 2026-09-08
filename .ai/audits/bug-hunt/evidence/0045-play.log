@@ -1,0 +1,28 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-vpvojueu/site", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "pnpm", "run", "test:play"]}
+$ tsx --test app/api/play/_lib/route-handlers.test.ts app/api/play/_lib/compile-play-css.test.ts app/api/play/_lib/preview-script.test.ts
+✔ compiles the starter Play template into generated CSS (121.417ms)
+✔ keeps native CSS while generating Play classes (57.75425ms)
+✔ includes generated keyframes referenced by native CSS (26.582833ms)
+✔ does not duplicate generated keyframes when native CSS defines them (25.62325ms)
+✔ keeps the initial preview hidden until compiled CSS and HTML are applied (1.503125ms)
+✔ ignores stale preview reveal frames (0.433416ms)
+✔ returns Play API health response (10.939958ms)
+✔ returns CORS headers for OPTIONS requests (0.252083ms)
+✔ normalizes allowed CORS origins (0.142542ms)
+✔ uses configured CORS origins instead of merging defaults (0.127583ms)
+✔ creates and reads a Play share from KV (2.128208ms)
+✔ uses the default Play share TTL when the env var is unset (0.28625ms)
+✔ returns 404 for a missing Play share (0.143583ms)
+✔ rejects invalid share JSON (0.231583ms)
+✔ rejects disallowed origins (0.264417ms)
+✔ rejects oversized share payloads (0.392208ms)
+✔ rejects invalid file data (0.159417ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 380.304667
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-vpvojueu"}

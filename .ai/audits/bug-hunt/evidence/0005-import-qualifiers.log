@@ -1,0 +1,5 @@
+{"qualifier":"","graph":".example { color: red; }","css":".example {\n  color: red;\n}","nativeCSS":".example {\n  color: red;\n}"}
+{"qualifier":" print","graph":".example { color: red; }","css":".example {\n  color: red;\n}","nativeCSS":".example {\n  color: red;\n}"}
+{"qualifier":" supports(display: grid)","graph":".example { color: red; }","css":".example {\n  color: red;\n}","nativeCSS":".example {\n  color: red;\n}"}
+{"qualifier":" layer(test)","graph":".example { color: red; }","css":".example {\n  color: red;\n}","nativeCSS":".example {\n  color: red;\n}"}
+{"qualifier":" layer(test) screen and (min-width: 1000px)","graph":".example { color: red; }","css":".example {\n  color: red;\n}","nativeCSS":".example {\n  color: red;\n}"}

@@ -1,0 +1,15 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q/benchmarks", "command": ["python3", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/style-invalidation-static.py"]}
+Launching Chromium per measurement for runtime style invalidation diagnostics
+Preparing runtime style invalidation diagnostic page for stress-dom-master-static-style-invalidation-static-baseline
+Measuring runtime style invalidation diagnostics for stress-dom-master-static-style-invalidation-static-baseline, round 1/1
+Wrote runtime style invalidation diagnostics report JSON to /Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q/benchmarks/.results/runtime-style-invalidation-diagnostics/report.json
+Wrote runtime style invalidation diagnostics report Markdown to /Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q/benchmarks/.results/runtime-style-invalidation-diagnostics/report.md
+{"variant": "stress-dom-master-static-style-invalidation-static-baseline", "validation": "PASS", "samples": 36, "traceEvents": 2850}
+Launching Chromium per measurement for runtime style invalidation diagnostics
+Preparing runtime style invalidation diagnostic page for stress-dom-tailwind-static-style-invalidation-static-baseline
+Measuring runtime style invalidation diagnostics for stress-dom-tailwind-static-style-invalidation-static-baseline, round 1/1
+Wrote runtime style invalidation diagnostics report JSON to /Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q/benchmarks/.results/runtime-style-invalidation-diagnostics/report.json
+Wrote runtime style invalidation diagnostics report Markdown to /Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q/benchmarks/.results/runtime-style-invalidation-diagnostics/report.md
+{"variant": "stress-dom-tailwind-static-style-invalidation-static-baseline", "validation": "PASS", "samples": 36, "traceEvents": 3093}
+{"styleControl":"observations PASS","reportedValidWithStylesDisabled":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-dcaly80q"}

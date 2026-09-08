@@ -1,0 +1,15 @@
+{
+  "packages/internal/src/project.ts": "6af6f6ecef8323e61b509da86cd00c85717ef303b7e98c375ee72f5a16520e12",
+  "packages/internal/src/manifest-module.ts": "af4f87cd67e93f03e53c11d092ffe97e51e748c97ce8c2916e5190f8d307f1d3",
+  "packages/internal/src/manifest-virtual-module.ts": "a20bf1488bd0fb9a90ba543ec9276d4b1eeae191d22baba123513028d2c4a833",
+  "packages/internal/src/node.ts": "70077d050166f3e95068db0bc86b691e4f311e394f00e0dd62cf2d141cb62088",
+  "packages/internal/src/workspace.ts": "6f7baebb5ba29851b5be5927cc495c0195215ea83dc2c222dd285e82bd16d894",
+  "packages/internal/src/module.ts": "117a96a552f344e9c80cc8274c87928cc678b4c41b064435cef60cbf9a7f0275",
+  "packages/internal/src/emitted-globals-module.ts": "4fa9f99308ae881205392fb3af6714dc5ad6fc92b5dc92f8aa2674ebc66227d7",
+  "packages/internal/src/manifest-loader.ts": "ba0ebc53557d4834d5da14b1576a188ba95a1530ceae605aa798af198c6447a9",
+  "packages/internal/src/workspace-directories.ts": "03ea985b3cf4b5982491915c28f4b6b492d7fff49f8e604d05b986873b41dd25",
+  "packages/internal/src/style-module.ts": "70ff8ef1c7785faa0bedbd557d100874efb9be94d8678483fcb870d181c7772a",
+  "packages/internal/src/runtime-bootstrap.ts": "d631136eb94c5a6e741b5a7b7867f4a419417e4ffd8b7b7c0fe3140301ff4f07",
+  "packages/internal/src/index.ts": "a7dcda5045fc34e020ebe6fe5d32b873e7a6ddb151c3c036b3cf9d4ff872f005",
+  "packages/internal/src/manifest-facade.ts": "60599b4e73be23fcc1c76a667b4325ab1afba06c8697a6e7f9874dacc80689ec"
+}

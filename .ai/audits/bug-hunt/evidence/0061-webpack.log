@@ -1,0 +1,45 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-owsc0jei/examples/webpack", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/example-browser-matrix.mjs", "runtime"]}
+$ webpack --config webpack.config.js --mode production
+
+assets by info 967 KiB [immutable]
+  assets by path *.svg 2.66 KiB
+    asset aa590663d3a5f30a0b5a.svg 2.17 KiB [emitted] [immutable] [from: assets/master.svg]
+    asset 5a9d112718ef7773344a.svg 502 bytes [emitted] [immutable] [from: assets/webpack.svg]
+  asset ce506cb841e14d90eb5b.wasm 847 KiB [emitted] [immutable] [from: ../../../../packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm] [big] (auxiliary name: master-css-runtime)
+  asset master-css-manifest.68940fce.json 118 KiB [emitted] [immutable]
+assets by path *.js 60 KiB
+  asset master-css-runtime.js 44.3 KiB [emitted] [minimized] (name: master-css-runtime)
+  asset 593.js 10.9 KiB [emitted] [minimized]
+  asset main.js 4.68 KiB [emitted] [minimized] (name: main)
+asset index.html 1010 bytes [emitted] [minimized]
+orphan modules 36 KiB [orphan] 27 modules
+runtime modules 10.5 KiB 15 modules
+cacheable modules 111 KiB (javascript) 847 KiB (asset)
+  modules by path ../../../../ 102 KiB (javascript) 847 KiB (asset)
+    modules by path ../../../../packages/ 98.3 KiB (javascript) 847 KiB (asset) 7 modules
+    modules by path ../../../../examples/webpack/node_modules/.master-css/ 1.5 KiB
+      ../../../../examples/webpack/node_modules/.master-css/master-css-manifest.js 897 bytes [built] [code generated]
+      ../../../../examples/webpack/node_modules/.master-css/master-css-emit...(truncated) 48 bytes [built] [code generated]
+      ../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js!../../../../examples/webpack/node_modules/.master-css/master-utilities.css 586 bytes [built] [code generated]
+    modules by path ../../../../node_modules/.pnpm/ 2.31 KiB
+      ../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110...(truncated) 64 bytes [built] [code generated]
+      ../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110...(truncated) 2.25 KiB [built] [code generated]
+  modules by path ./src/ 8.56 KiB
+    ./src/index.js + 7 modules 7.68 KiB [built] [code generated]
+    ../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js!../../../../packages/webpack/dist/stylesheet-loader.js??ruleSet[1].rules[2].use[0]!./src/style.css 905 bytes [built] [code generated]
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  ce506cb841e14d90eb5b.wasm (847 KiB)
+
+webpack 5.110.3 compiled with 1 warning in 3036 ms
+{"browser":"firefox","version":"155.0"}
+HTTP: 404 http://127.0.0.1:60155/index.js
+{"kind":"runtime","title":"","heading":"Webpack + Master CSS","errors":[]}
+{"browser":"webkit","version":"26.6"}
+HTTP: 404 http://127.0.0.1:60189/index.js
+Browser console: Failed to load resource: the server responded with a status of 404 (Not Found)
+{"kind":"runtime","title":"","heading":"Webpack + Master CSS","errors":[]}
+{"kind":"runtime","results":[{"browser":"firefox","exit":0},{"browser":"webkit","exit":0}]}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-owsc0jei"}

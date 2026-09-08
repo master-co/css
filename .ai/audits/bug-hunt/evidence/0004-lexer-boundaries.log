@@ -1,0 +1,10 @@
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.58s
+     Running tests/bug_hunt_boundaries.rs (target/debug/deps/bug_hunt_boundaries-77a06cc786718d0f)
+
+running 2 tests
+test audit_variable_transform_identity_and_malformed_directives_do_not_panic ... ok
+test audit_unicode_class_ranges_round_trip_utf16 ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

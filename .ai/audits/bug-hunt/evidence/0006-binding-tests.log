@@ -1,0 +1,40 @@
+
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/binding-wasm-tooling
+ RUN  v5.0.0 /Users/aron/master/css/packages/binding-wasm-engine
+
+
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/binding-wasm-compiler
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  15:52:04
+   Duration  452ms (transform 55%, tests 36%, import 8%, worker 1%)
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  15:52:04
+   Duration  488ms (tests 61%, transform 30%, import 7%, worker 2%)
+
+
+ Test Files  2 passed (2)
+      Tests  7 passed (7)
+   Start at  15:52:04
+   Duration  624ms (tests 68%, transform 26%, import 5%, worker 1%)
+
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/binding
+
+
+ Test Files  3 passed (3)
+      Tests  17 passed (17)
+   Start at  15:52:05
+   Duration  1.15s (tests 73%, transform 22%, import 4%, worker 1%)
+

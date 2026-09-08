@@ -1,0 +1,16 @@
+$ tsx --test scripts/css-variable-references.test.ts && tsx scripts/verify-css-contract.ts
+✔ collects active CSS variable references including nested fallbacks (0.786292ms)
+✔ ignores malformed variable functions (0.06725ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 129.567542
+Site CSS contract verified:
+  1142 static HTML routes
+  204 deduplicated hydration contracts
+  1901 deduplicated generated rules
+  2202 deduplicated exact CSS segments
