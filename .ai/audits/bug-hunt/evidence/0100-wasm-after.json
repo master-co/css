@@ -1,0 +1,16 @@
+{
+  "packages/binding-wasm-tooling/artifacts/mastercss_binding_wasm_tooling_bg.wasm": {
+    "bytes": 3806175,
+    "gzip": 1096370,
+    "sha256": "13d3b16470f4ef5e0a207545faca34f1f5849d197c74dddbce26b5f17907a2ed",
+    "deltaBytes": 35182,
+    "deltaGzip": 14360
+  },
+  "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+    "bytes": 867094,
+    "gzip": 263432,
+    "sha256": "ad5ab3fbd5c61cc4edc515184e0955f2a086d6c730797616ffce27ff00b2f080",
+    "deltaBytes": 0,
+    "deltaGzip": 0
+  }
+}

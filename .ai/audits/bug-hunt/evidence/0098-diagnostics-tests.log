@@ -1,0 +1,28 @@
+   Compiling mastercss-diagnostics v0.0.0 (/Users/aron/master/css/crates/mastercss-diagnostics)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.55s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_diagnostics-24877c82fc2114f7)
+
+running 5 tests
+test tests::classifies_missing_css_in_observable_precedence_order ... ok
+test tests::reports_version_mismatches_as_structured_invalid_input ... ok
+test tests::creates_empty_scanner_error_reports ... ok
+test tests::composes_stable_reports_and_utf16_css_sizes ... FAILED
+test tests::reports_utf8_css_bytes_whether_or_not_text_is_included ... ok
+
+failures:
+
+---- tests::composes_stable_reports_and_utf16_css_sizes stdout ----
+
+thread 'tests::composes_stable_reports_and_utf16_css_sizes' (36683038) panicked at crates/mastercss-diagnostics/src/lib.rs:651:9:
+assertion `left == right` failed
+  left: 4
+ right: 2
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::composes_stable_reports_and_utf16_css_sizes
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-diagnostics --lib`

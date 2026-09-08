@@ -1,0 +1,18 @@
+$ tsdown --config ../../shared/tsdown-package.config.ts
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/shared/tsdown-package.config.ts 
+ℹ entry: src/constants.ts, src/core.ts, src/generate.ts, src/inspect.ts, src/lint.ts, src/source-watch.ts, src/bin/index.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 7 files
+ℹ Granting execute permission to dist/bin/index.js
+ℹ dist/generate.js      8.21 kB │ gzip: 2.37 kB
+ℹ dist/lint.js          5.58 kB │ gzip: 1.94 kB
+ℹ dist/core.js          3.22 kB │ gzip: 1.23 kB
+ℹ dist/inspect.js       2.00 kB │ gzip: 0.88 kB
+ℹ dist/source-watch.js  1.88 kB │ gzip: 0.77 kB
+ℹ dist/bin/index.js     0.13 kB │ gzip: 0.12 kB
+ℹ dist/constants.js     0.11 kB │ gzip: 0.11 kB
+ℹ 7 files, total: 21.13 kB
+✔ Build complete in 15ms

@@ -1,0 +1,9 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running `target/debug/xtask build-native`
+   Compiling mastercss-source v0.0.0 (/Users/aron/master/css/crates/mastercss-source)
+   Compiling mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.37s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss

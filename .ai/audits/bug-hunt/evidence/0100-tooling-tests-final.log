@@ -1,0 +1,34 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/tooling
+
+[success] foo.tsx 3 classes inserted in 0.5ms 
+[success] index.html 1 classes inserted in 0.2ms 
+[success] a.tsx 3 classes inserted in 0.5ms 
+[success] ../../button.html 1 classes inserted in 0.2ms 
+[success] foo.tsx 1 classes inserted in 0.3ms 
+[success] foo.tsx 1 classes inserted in 0.3ms 
+[success] 1 fixed classes inserted block
+[success] index.html 1 classes inserted in 0.3ms 
+[success] foo.tsx 3 classes inserted in 1.3ms 
+[success] 1 fixed classes inserted block
+[success] foo.tsx 3 classes inserted in 0.5ms 
+[success] a.tsx 1 classes inserted in 0.2ms 
+[success] ../../syntax.html 41 classes inserted in 11.4ms 
+[success] a.tsx 1 classes inserted in 0.1ms 
+[success] App.tsx 2 classes inserted in 0.3ms 
+[success] ../../validation.html 1 classes inserted in 0.2ms 
+[success] foo.tsx 1 classes inserted in 0.1ms 
+[success] excluded.tsx 1 classes inserted in 0.1ms 
+[success] included.tsx 1 classes inserted in 0.3ms 
+[success] component.tsx 1 classes inserted in 0.1ms 
+[success] src/App.tsx 1 classes inserted in 0.1ms 
+
+ Test Files  34 passed (34)
+      Tests  212 passed (212)
+   Start at  06:13:14
+   Duration  7.15s (tests 80%, import 15%, transform 5%)
+

@@ -15,7 +15,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 44 historical confirmed findings; 18 fixed, 26 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 44 historical confirmed findings; 23 fixed, 21 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -161,16 +161,29 @@
 
 - [0095 ESM discovery](batches/0095-mjs-source-discovery.md)：BH-0012/0018修復，scanner/CLI/Vite驗證通過。
 
+- [0096 CLI source watch](batches/0096-cli-source-watch.md)：BH-0019修復，新來源與排除/重載控制通過。
+- [0097 CLI binding](batches/0097-cli-binding-selection.md)：BH-0026修復，native/Wasm選擇、reset與載入錯誤控制通過。
+
+- [0098 MCP UTF-8 bytes](batches/0098-mcp-utf8-bytes.md)：BH-0020修復，preview/format/render/inspection大小與磁碟檔案一致。
+
+- [0099 Svelte branches](batches/0099-svelte-branches.md)：BH-0011修復；BH-0010仍未完成。
+
+- [0100 HTML references](batches/0100-html-character-references.md)：BH-0010修復，完整命名/數值參照及三瀏覽器對照通過。
+
 ## 目前交接點
 
 - 目標「執行並修正所有問題」持續active；已授權必要產品/範例修正，全部完成後才清理帳本。
-- 44個歷史確認問題：18已修復、26未解決。已修復ID：BH-0005/0006/0007/0008/0009/0012/0013/0014/0018/0021/0022/0023/0024/0025/0027/0028/0036/0044。
+- 44個歷史確認問題：23已修復、21未解決。已修復ID：BH-0005/0006/0007/0008/0009/0010/0011/0012/0013/0014/0018/0019/0020/0021/0022/0023/0024/0025/0026/0027/0028/0036/0044。
 - 0094：runtime CSP native JSON import與iframe Document/ShadowRoot mutation修復；273browser tests、lint/types/build通過。標準Chromium benchmark前後均完成；global gzip減112bytes，manifest/Wasm hashes不變。原始benchmark history保留/tmp/mastercss-0094-{before,after}.{json,log}，不納入repo/commit。
 - 0095：scanner及Node/native CLI.mjs來源發現修復；scanner80、NodeCLI28、RustCLI3、Vite99tests与3browser實際static build通過。上批0092新test缺baseManifest的型別錯誤已修正，3tests及下游型別檢查通過，最新test hash見0095。
 - BH-0004仍部分修復：本機qualified/nested imports已驗證，但含未展開external import的條件/圖層/cascade保留未完成，目前明確回報限制，不能標fixed。
-- 下一步：繼續BH-0001/0002/0003資源依賴、BH-0019 CLI新增檔監看、BH-0026 binding選擇及其餘integrations/benchmarks/nested hosts；完整26項以findings為準，不省略BH-0004未完成邊界。
+- 下一步：繼續BH-0001/0002/0003資源依賴、BH-0004 nested external imports條件/cascade保留、BH-0031 MCP concurrent preview，以及其他extraction/integrations/benchmarks/nested hosts。共21未解決項目以findings為準；不得省略既有4項root檢查失敗與10blocked coverage。
 - Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認，不重試該追加驗證。
-- 使用者本次要求提交已完成部分：以dba77281f為父提交，提交0093–0095的5項修復（BH-0008/0009/0012/0018/0022）及已整理的帳本/證據。0092的compiler產品修改與測試仍保留未提交；其帳本與證據只記錄工作目錄的部分進度，不代表本提交包含該修復。其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md保持原樣。未改fixtures/snapshots、依賴、lockfile、CI/release。
-- 0096 watch與0097 binding修改/新測試/重現材料仍未提交。0096新增來源監看4files/8tests通過；0097 scanner14files/83tests、CLI9files/34tests及built CLI native/Wasm scanner選擇控制通過。尚未完成lint/types、最終證據及批次收尾，BH-0019/0026維持未完成；不可把這些工作目錄結果視為本提交內容。
-- runtime/tooling/CLI ignored artifacts已更新；前輪3個command session均已確認exit0，沒有等待中的command jobs。下一步由0096/0097驗證與帳本收尾接續。
+- 上次依使用者要求提交已完成部分：以dba77281f為父提交，提交0093–0095的5項修復（BH-0008/0009/0012/0018/0022）及已整理的帳本/證據。0092的compiler產品修改與測試仍保留未提交；其帳本與證據只記錄工作目錄的部分進度，不代表本提交包含該修復。其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md保持原樣。未改fixtures/snapshots、依賴、lockfile、CI/release。
+- 先前HEAD 9e1c87794已提交0093–0095的5項修復。本次依使用者新指示提交0096–0100的5項完成修復：BH-0019/0026/0020/0011/0010，包含必要產品修改、回歸測試與帳本/證據。來源及測試雜湊均與各批最終驗證一致。0092 compiler部分修復及Site其他工作不納入。
+- 待查候選（尚未建立問題ID）：compiler diagnostics與MCP resolveSourceFiles的預設glob仍缺.mjs；需用實際inspect/scan入口確認影響，不能直接沿用generate已修復的結論。
+- 0099已完成BH-0011：走訪Svelte else/await分支；tooling208tests加原始回歸、lint/types/build與三瀏覽器static分支互動通過。BH-0010當時仍FAIL，現已由0100修復；新scanner測試缺manifest已修正，不列產品問題。所有command/browser jobs已terminal，暫存專案已清理。
+- 0100已完成BH-0010：Rust HTML attribute解碼與token讀取；23312cases三瀏覽器/native/Wasm一致、Rust14/tooling212/CLI34/inspection4/Vite99及實際static browser通過。本次提交包含產品/測試/帳本；所有jobs terminal。Tooling Wasm gzip增14360bytes，runtime engine Wasm hash未變；資料表無新依賴。
+- 提交完成部分後仍保留21未解決與10blocked coverage，不清理帳本、不推送。未修改fixtures/snapshots、依賴、lockfile、CI/release；Site其他工作hash保持原樣。
+- BH-0031續查已再次重現並行失敗（未提交的evidence/0101-concurrency-before.log），尚無產品修復或完成批次；下一步需同時處理同token、重疊檔案與跨process競爭。該重現job已terminal。
 - 舊批次為歷史，當前依最新批次、來源及證據；65checked/10blocked coverage未改成全完成，尚不清理帳本。

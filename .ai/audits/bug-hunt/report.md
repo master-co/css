@@ -1,8 +1,8 @@
 # Master CSS 調查交付
 
-起始 commit `e66ba7236`，目前 HEAD `dba77281f`，另有0092–0095未提交修復。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
+起始 commit `e66ba7236`，目前 HEAD `9e1c87794`，另有0092部分修復與0096–0100未提交工作。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-44個歷史確認問題：18已修復、26未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。
+44個歷史確認問題：23已修復、21未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
@@ -339,3 +339,11 @@ BH-0004本機條件與cascade層級通過96browser比較，但nested unresolved 
 ## 0094–0095 修復進度
 
 BH-0008/0009 runtime CSP/iframe更新已修復，273browser tests與standard benchmark通過。[0094](batches/0094-runtime-csp-frame.md)。BH-0012/0018 .mjs發現已修復，scanner/Node/native CLI/Vite及實際browser驗證通過；BH-0019/0026及BH-0004殘餘仍未完成。[0095](batches/0095-mjs-source-discovery.md)。目前18已修復、26未解決，目標active。
+
+0096/0097：BH-0019新增檔監看與BH-0026 CLI binding選擇已修復；CLI34/scanner83tests、lint/types/build及built CLI native/Wasm重載控制通過。詳細範圍及限制見[0096](batches/0096-cli-source-watch.md)、[0097](batches/0097-cli-binding-selection.md)。
+
+0098：BH-0020 UTF-8 byte metadata已修復；涵蓋MCP preview/format/render與Rust inspection來源，實際stdio預覽/套用後檔案大小一致。MCP24/Rust5/inspection4tests及lint/types/build通過。[證據](batches/0098-mcp-utf8-bytes.md)。目前21已修復、23未解決，10受阻覆蓋仍未完成。
+
+0099：BH-0011 Svelte else/each/await分支提取已修復，三瀏覽器實際static分支互動、tooling208tests加原始回歸及lint/types/build通過。BH-0010仍未完成。[證據](batches/0099-svelte-branches.md)。目前22已修復、22未解決。
+
+0100：BH-0010已修復，完整HTML attribute參照、ASCII class邊界與quoted/unquoted讀取經23312cases三瀏覽器/native/Wasm比對通過；Rust14、tooling212、CLI34、Vite99及實際static browser通過。Tooling Wasm gzip增14360bytes，runtime engine Wasm未變。[證據](batches/0100-html-character-references.md)。目前23已修復、21未解決。

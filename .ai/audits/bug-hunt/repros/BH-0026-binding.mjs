@@ -10,6 +10,7 @@ const root = fileURLToPath(new URL('../../../../', import.meta.url))
 const require = createRequire(join(root, 'package.json'))
 const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-binding-'))
 const records = []
+const builtCLI = process.env.BH_CLI_ARTIFACT === 'dist'
 try {
     writeFileSync(join(cwd, 'index.html'), '<div class="block"></div>')
     const preload = join(cwd, 'observe.cjs')
@@ -46,9 +47,9 @@ try {
         for (const binding of kind === 'cli-baseline' ? ['auto'] : ['native', 'wasm']) {
             const args = [
                 ...(kind === 'cli-baseline' ? [] : ['--require', preload]),
-                '--import', require.resolve('tsx'),
+                ...(kind === 'control' || !builtCLI ? ['--import', require.resolve('tsx')] : []),
                 ...(kind === 'control' ? [control, binding] : [
-                    join(root, 'packages/cli/src/bin/index.ts'),
+                    join(root, builtCLI ? 'packages/cli/dist/bin/index.js' : 'packages/cli/src/bin/index.ts'),
                     'generate', 'index.html', '--binding', binding, '--no-export'
                 ])
             ]

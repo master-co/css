@@ -1,6 +1,7 @@
 import { createToolingBinding } from '@master/css-binding/tooling'
 import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 import type {
+  MasterCSSBindingLoadOptions,
   MasterCSSEngineSnapshot,
   MasterCSSEngineTransition,
   MasterCSSNativeDeclarationCandidate,
@@ -115,8 +116,8 @@ export function createNativeScannerSession(manifest: MasterCSSManifest): Binding
   )
 }
 
-export async function createScannerSession(manifest: MasterCSSManifest): Promise<BindingScannerSession> {
-  const tooling = await createToolingBinding()
+export async function createScannerSession(manifest: MasterCSSManifest, options: MasterCSSBindingLoadOptions = {}): Promise<BindingScannerSession> {
+  const tooling = await createToolingBinding(options)
   const [scanner, validator] = await Promise.all([
     tooling.createScannerSession(manifest),
     tooling.createValidatorSession(manifest)

@@ -1,0 +1,8 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `target/debug/xtask build-wasm tooling`
+   Compiling mastercss-diagnostics v0.0.0 (/Users/aron/master/css/crates/mastercss-diagnostics)
+   Compiling mastercss-source v0.0.0 (/Users/aron/master/css/crates/mastercss-source)
+   Compiling mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
+   Compiling mastercss-binding-wasm-tooling v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-tooling)
+    Finished `release` profile [optimized] target(s) in 4.90s
+Built /Users/aron/master/css/packages/binding-wasm-tooling/artifacts

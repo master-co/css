@@ -28,8 +28,8 @@ function formatContent(service: MasterCSSLanguageService, filePath: string, cont
     languageId: getLanguageId(filePath),
     edits,
     changed: formatted !== content,
-    beforeBytes: content.length,
-    afterBytes: formatted.length,
+    beforeBytes: Buffer.byteLength(content, 'utf8'),
+    afterBytes: Buffer.byteLength(formatted, 'utf8'),
     formatted
   }
 }

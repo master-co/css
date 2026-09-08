@@ -181,8 +181,8 @@ export default class MasterCSSMCPContext {
         beforeHash: beforeExists ? sha256(beforeText) : null,
         afterHash: sha256(change.afterText),
         beforeExists,
-        beforeBytes: beforeText.length,
-        afterBytes: change.afterText.length,
+        beforeBytes: Buffer.byteLength(beforeText, 'utf8'),
+        afterBytes: Buffer.byteLength(change.afterText, 'utf8'),
         afterText: change.afterText,
         diff: formatDiff(filePath, beforeText, change.afterText)
       })

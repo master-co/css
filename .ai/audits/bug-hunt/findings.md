@@ -15,8 +15,8 @@
 | BH-0007 | P2 | 已修復 | HTML 無 class 屬性時完全遺漏 static theme/keyframe 初始資源 | server；[0007](batches/0007-server-render.md) |
 | BH-0008 | P2 | 已修復 | external hydration 使用 Function，CSP 禁止 unsafe-eval 時 runtime 啟動失敗 | runtime；[0008](batches/0008-runtime-hydration.md) |
 | BH-0009 | P2 | 已修復 | iframe Document root 元素跨 realm，漏掉 class mutation | runtime；[0009](batches/0009-runtime-mutations.md) |
-| BH-0010 | P2 | 已確認 | Rust HTML source extraction 未解碼 class character references | source/tooling；[0010](batches/0010-source-extraction.md) |
-| BH-0011 | P2 | 已確認 | Svelte 提取略過 else 分支，static CSS 漏收 | tooling；[0010](batches/0010-source-extraction.md) |
+| BH-0010 | P2 | 已修復 | Rust HTML source extraction 未解碼 class character references | source/tooling；[0010](batches/0010-source-extraction.md) |
+| BH-0011 | P2 | 已修復 | Svelte 提取略過 else 分支，static CSS 漏收 | tooling；[0010](batches/0010-source-extraction.md) |
 | BH-0012 | P2 | 已修復 | scanModule 缺少 .mjs 支援，原生 ESM class 不產生 CSS | tooling/scanner；[0011](batches/0011-scanner-state.md) |
 | BH-0013 | P1 | 已修復 | 語言分析 512-byte 前綴切入 Unicode 字元而 panic | language；[0012](batches/0012-language-ir.md) |
 | BH-0014 | P2 | 已修復 | 解码後 token 長度直接用作原始語意範圍，跳脫引號後高亮偏移 | language/tooling；[0012](batches/0012-language-ir.md) |
@@ -24,14 +24,14 @@
 | BH-0016 | P2 | 已確認 | Vite relative base 巢狀 HTML 的 hydration JSON URL 指向錯誤路徑 | vite；[0020](batches/0020-vite-runtime-html.md) |
 | BH-0017 | P2 | 已確認 | Webpack relative publicPath 的巢狀 HTML 注入不存在的 runtime URL | webpack；[0021](batches/0021-webpack.md) |
 | BH-0018 | P2 | 已修復 | Node/native CLI 預設 source discovery 漏掉 .mjs | cli；[0028](batches/0028-cli-discovery.md) |
-| BH-0019 | P2 | 已確認 | CLI watch 只監看啟動時已有檔案，新增頁面漏產 CSS | cli；[0029](batches/0029-cli-watch.md) |
-| BH-0020 | P3 | 已確認 | MCP preview bytes 欄位以 UTF-16 長度計算，Unicode 大小錯誤 | mcp；[0030](batches/0030-mcp-contracts.md) |
+| BH-0019 | P2 | 已修復 | CLI watch 只監看啟動時已有檔案，新增頁面漏產 CSS | cli；[0029](batches/0029-cli-watch.md) |
+| BH-0020 | P3 | 已修復 | MCP preview/format/render與Rust inspection bytes以UTF-16長度計算，Unicode大小錯誤 | mcp；[0030](batches/0030-mcp-contracts.md) |
 | BH-0021 | P1 | 已修復 | create installer 在多行 import 中間插入新 import，破壞既有設定語法 | create；[0031](batches/0031-create-setup.md) |
 | BH-0022 | P1 | 已修復 | Figma importer 把自身 exporter 的 definitions array 當作巢狀物件，寫入錯誤變數名稱 | figma；[0033](batches/0033-figma-variables.md) |
 | BH-0023 | P1 | 已修復 | Nuxt progressive 未發布 client manifest，JSON 請求回傳 HTML，hydration/runtime 啟動失敗 | nuxt/example；[0035](batches/0035-ssr-examples.md) |
 | BH-0024 | P2 | 已修復 | Angular Express5 無名 wildcard 路由註冊即拋錯 | example；[0036](batches/0036-angular-laravel.md) |
 | BH-0025 | P2 | 已修復 | Angular SSR 打包搬移 css-tree 相對資料 require，啟動缺少 patch.json | example/dependency bundling；[0050](batches/0050-angular-bundle.md) |
-| BH-0026 | P2 | 已確認 | CLI generate --binding wasm 被忽略，仍建立 native scanner | cli；[0048](batches/0048-cli-binding-selection.md) |
+| BH-0026 | P2 | 已修復 | CLI generate --binding wasm 被忽略，仍建立 native scanner | cli；[0048](batches/0048-cli-binding-selection.md) |
 | BH-0027 | P3 | 已修復 | Webpack example 多餘 index.js 請求404；main/runtime正常 | example；[0049](batches/0049-webpack-example-asset.md) |
 | BH-0028 | P2 | 已修復 | ESLint 現代範例 CSS 使用不支援的 $variable，規則載入失敗 | EX-eslint；[0037](batches/0037-eslint-examples.md) |
 | BH-0029 | P1 | 已確認 | Rspack succeedModule 無 source，static 模式漏掉所有 managed CSS | Webpack/Rspack/Rsbuild；[0038](batches/0038-integration-lab.md)；追加驗證暫停 |
@@ -112,3 +112,11 @@
 
 - 0094：BH-0008/0009修復；273browser tests/lint/types/build與標準runtime benchmark通過。Global gzip減112bytes，無效manifest仍拒絕；18fixed的最終累計見0095。[證據](batches/0094-runtime-csp-frame.md)。
 - 0095：BH-0012/0018修復；scanner80、NodeCLI28、RustCLI3、Vite99與實際三瀏覽器.mjs build通過。44歷史確認：18已修復、26未解決。[證據](batches/0095-mjs-source-discovery.md)。
+
+- 0096/0097：BH-0019/0026修復；CLI34、scanner83tests及built native/Wasm reset/新增source控制通過。44歷史確認：20已修復、24未解決。[watch](batches/0096-cli-source-watch.md)、[binding](batches/0097-cli-binding-selection.md)。
+
+- 0098：BH-0020修復，MCP24/Rust5/native inspection4tests、lint/types/build/Clippy及actual built stdio大小與磁碟檔案一致。44歷史確認：21已修復、23未解決。[證據](batches/0098-mcp-utf8-bytes.md)。
+
+- 0099：BH-0011已修復，tooling208tests加原始Svelte回歸、lint/types/build及三瀏覽器Svelte/Vite分支互動通過；BH-0010仍失敗。44歷史確認：22已修復、22未解決。[證據](batches/0099-svelte-branches.md)。
+
+- 0100：BH-0010已修復；完整2231named references、numeric/attribute規則與23312三瀏覽器/native/Wasm對照通過；Rust14/tooling212/CLI34/Vite99及actual static browser通過。44歷史確認：23已修復、21未解決。[證據](batches/0100-html-character-references.md)。

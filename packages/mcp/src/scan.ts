@@ -102,7 +102,7 @@ export async function renderCSS(context: MasterCSSMCPContext, options: RenderCSS
     classes,
     invalid: rendered.invalidClassNames,
     css: {
-      bytes: rendered.cssText.length,
+      bytes: Buffer.byteLength(rendered.cssText, 'utf8'),
       text: rendered.cssText
     }
   }

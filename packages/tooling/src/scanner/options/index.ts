@@ -1,4 +1,5 @@
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSBindingLoadOptions } from '@master/css-binding/tooling'
 
 const defaultExclude = Object.freeze([
   '**/*.css',
@@ -58,7 +59,7 @@ export interface MasterCSSScannerConfiguration {
   blocklist?: readonly (string | RegExp)[]
 }
 
-export interface MasterCSSScannerOptions extends MasterCSSScannerConfiguration {
+export interface MasterCSSScannerOptions extends MasterCSSScannerConfiguration, MasterCSSBindingLoadOptions {
   manifest: MasterCSSManifest
 }
 

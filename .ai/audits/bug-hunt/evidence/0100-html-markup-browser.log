@@ -1,0 +1,22 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: chromium: <svg><title><a class="block"></a></title></svg>
++ actual - expected
+
++ []
+- [
+-   'block'
+- ]
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/html-reference-browser.mjs:49:14 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: [],
+  expected: [ 'block' ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

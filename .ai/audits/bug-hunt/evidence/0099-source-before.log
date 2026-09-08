@@ -1,0 +1,66 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/tooling
+
+ ❯ tests/source/bug-hunt.test.ts (2 tests | 2 failed) 121ms
+   × BH-0010 decodes HTML class character references before extraction 6ms
+   × BH-0011 extracts classes in both Svelte conditional branches 115ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/source/bug-hunt.test.ts > BH-0010 decodes HTML class character references before extraction
+AssertionError: expected [ 'block&#32;hidden' ] to deeply equal [ 'block', 'hidden' ]
+
+- Expected
++ Received
+
+  [
+-   "block",
+-   "hidden",
++   "block&#32;hidden",
+  ]
+
+ ❯ tests/source/bug-hunt.test.ts:7:6
+      5| test('BH-0010 decodes HTML class character references before extractio…
+      6|   expect(extractHTMLClassesNative('index.html', '<div class="block&#32…
+      7|     .toEqual(['block', 'hidden'])
+       |      ^
+      8| })
+      9|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/source/bug-hunt.test.ts > BH-0011 extracts classes in both Svelte conditional branches
+AssertionError: expected [ 'block' ] to deeply equal [ 'block', 'hidden' ]
+
+- Expected
++ Received
+
+  [
+    "block",
+-   "hidden",
+  ]
+
+ ❯ tests/source/bug-hunt.test.ts:15:19
+     13|     {#if enabled}<div class="block"></div>{:else}<div class="hidden"><…
+     14|   `)
+     15|   expect(classes).toEqual(['block', 'hidden'])
+       |                   ^
+     16| })
+     17|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  05:54:49
+   Duration  257ms (tests 65%, transform 27%, import 7%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/tooling
+

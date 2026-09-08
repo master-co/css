@@ -28,6 +28,10 @@ interface SvelteAttribute {
 interface SvelteMarkupNode {
   attributes?: SvelteAttribute[]
   children?: SvelteMarkupNode[]
+  else?: SvelteMarkupNode
+  pending?: SvelteMarkupNode
+  then?: SvelteMarkupNode
+  catch?: SvelteMarkupNode
 }
 
 export const SVELTE_SOURCE_EXT = /\.svelte(?:\?|$)/
@@ -74,6 +78,9 @@ function visitMarkup(node: SvelteMarkupNode | undefined, source: string, content
 
   for (const child of node.children || []) {
     visitMarkup(child, source, content, classes)
+  }
+  for (const branch of [node.else, node.pending, node.then, node.catch]) {
+    visitMarkup(branch, source, content, classes)
   }
 }
 

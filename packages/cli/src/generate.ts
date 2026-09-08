@@ -8,9 +8,10 @@ import type { FSWatcher } from 'chokidar'
 import fs from 'node:fs'
 import path from 'node:path'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
+import { createSourceWatchPlan } from './source-watch'
 
 const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
-type FastGlob = Pick<typeof import('fast-glob'), 'sync'>
+type FastGlob = Pick<typeof import('fast-glob'), 'sync' | 'generateTasks'>
 type Chokidar = typeof import('chokidar').default
 type Bytes = (value: number) => string
 type MasterCSSScannerConstructor =
@@ -135,6 +136,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
   const { watch, output, verbose, cwd } = options
   const scanner = new MasterCSSScanner({
     manifest: defaultManifest,
+    binding: options.binding,
     exclude: specifiedSourcePaths.length
       ? undefined
       : ['**/node_modules/**', 'node_modules'],
@@ -180,18 +182,31 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       stylesheets.dispose()
     }
     const startWatchers = async () => {
-      const sourcePaths = scanPaths()
-      if (sourcePaths.length) {
-        const sourceWatcher = chokidar.watch(sourcePaths, {
+      const sourcePlan = createSourceWatchPlan(fg, scanner.cwd, sourcePatterns,
+        specifiedSourcePaths.length ? [] : scanner.options.exclude)
+      if (sourcePlan.roots.length) {
+        const outputPath = options.export ? path.resolve(scanner.cwd, output || DEFAULT_SCAN_OUTPUT) : undefined
+        const sourceWatcher = chokidar.watch(sourcePlan.roots, {
           cwd: scanner.cwd,
-          ignoreInitial: true
+          ignoreInitial: true,
+          ignored: (file, stats) => path.resolve(scanner.cwd, file) === outputPath || sourcePlan.ignored(file, stats)
         })
-        sourceWatcher.on('add', (source) => {
-          void scanSourceFile(scanner, source).then(queueWrite)
-        })
-        sourceWatcher.on('change', (source) => {
-          void scanSourceFile(scanner, source).then(queueWrite)
-        })
+        const scanChangedSource = (source: string) => {
+          if (restarting || !sourcePlan.matches(source)) return
+          writing = writing.then(async () => {
+            try {
+              await scanSourceFile(scanner, source)
+              await writeOutput()
+            } catch (error) {
+              const code = (error as NodeJS.ErrnoException).code
+              if (code !== 'ENOENT' && code !== 'ENOTDIR') {
+                process.stderr.write(`Cannot scan ${source}: ${error}\n`)
+              }
+            }
+          })
+        }
+        sourceWatcher.on('add', scanChangedSource)
+        sourceWatcher.on('change', scanChangedSource)
         watchers.push(sourceWatcher)
         await waitForWatcherReady(sourceWatcher)
       }
@@ -207,6 +222,7 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
               process.stderr.write(`\n[change] ${formatWatchedPath(scanner.cwd, resetDependency)}\n`)
             }
             await closeWatchers()
+            await writing
             await scanner.reset(scanner.customOptions, { emit: false })
             await prepareScanner(scanner, stylesheets, scanPaths())
             await queueWrite()

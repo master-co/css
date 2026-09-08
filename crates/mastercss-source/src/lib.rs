@@ -1,9 +1,12 @@
 #![forbid(unsafe_code)]
 
+mod html_attribute;
+mod html_class_values;
+mod html_entities;
+
 use std::collections::HashSet;
 use std::path::Path;
 
-use htmlparser::{Token, Tokenizer};
 use oxc_allocator::Allocator;
 use oxc_ast::ast::{
     CallExpression, Directive, ExportAllDeclaration, ExportFromDeclaration, Expression,
@@ -127,34 +130,25 @@ pub fn extract_oxc_classes(source: &str, content: &str) -> Vec<String> {
 }
 
 pub fn extract_html_classes(source: &str, content: &str) -> Vec<String> {
-    let lowercase = content.to_ascii_lowercase();
     let mut candidates = Vec::new();
     let mut seen = HashSet::new();
-    let mut cursor = 0;
-    while let Some(start) = find_script_open(&lowercase, cursor) {
-        extract_html_markup_classes(&content[cursor..start], &mut candidates, &mut seen);
-        let Some(relative_open_end) = content[start..].find('>') else {
-            break;
+    for part in html_class_values::parts(content) {
+        let extracted = match part {
+            html_class_values::Part::Class(value) => {
+                let decoded = html_attribute::decode(value);
+                // Parsed class values are class lists, not arbitrary source strings.
+                decoded
+                    .split([' ', '\t', '\n', '\r', '\u{c}'])
+                    .filter(|class| !class.is_empty())
+                    .map(str::to_owned)
+                    .collect()
+            }
+            html_class_values::Part::Script(script) => {
+                extract_oxc_classes(&format!("{source}.js"), script)
+            }
         };
-        let body_start = start + relative_open_end + 1;
-        let Some(relative_close) = lowercase[body_start..].find("</script>") else {
-            add_unique_candidates(
-                &mut candidates,
-                &mut seen,
-                extract_oxc_classes(&format!("{source}.js"), &content[body_start..]),
-            );
-            cursor = content.len();
-            break;
-        };
-        let close = body_start + relative_close;
-        add_unique_candidates(
-            &mut candidates,
-            &mut seen,
-            extract_oxc_classes(&format!("{source}.js"), &content[body_start..close]),
-        );
-        cursor = close + "</script>".len();
+        add_unique_candidates(&mut candidates, &mut seen, extracted);
     }
-    extract_html_markup_classes(&content[cursor..], &mut candidates, &mut seen);
     candidates
 }
 
@@ -231,38 +225,6 @@ fn remove_tag_elements(source: &str, tag: &str, mut on_content: impl FnMut(&str)
     }
     output.push_str(&source[cursor..]);
     output
-}
-
-fn find_script_open(lowercase: &str, mut cursor: usize) -> Option<usize> {
-    while let Some(relative) = lowercase[cursor..].find("<script") {
-        let start = cursor + relative;
-        let boundary = lowercase[start + "<script".len()..].chars().next();
-        if boundary.is_none_or(|character| character.is_whitespace() || character == '>') {
-            return Some(start);
-        }
-        cursor = start + "<script".len();
-    }
-    None
-}
-
-fn extract_html_markup_classes(
-    markup: &str,
-    candidates: &mut Vec<String>,
-    seen: &mut HashSet<String>,
-) {
-    for token in Tokenizer::from(markup).flatten() {
-        if let Token::Attribute {
-            prefix,
-            local,
-            value: Some(value),
-            ..
-        } = token
-            && prefix.as_str().is_empty()
-            && local.as_str().eq_ignore_ascii_case("class")
-        {
-            add_unique_candidates(candidates, seen, extract_class_candidates(value.as_str()));
-        }
-    }
 }
 
 fn add_unique_candidates(

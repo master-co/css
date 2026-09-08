@@ -1,0 +1,19 @@
+   Compiling mastercss-diagnostics v0.0.0 (/Users/aron/master/css/crates/mastercss-diagnostics)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.39s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_diagnostics-24877c82fc2114f7)
+
+running 5 tests
+test tests::reports_version_mismatches_as_structured_invalid_input ... ok
+test tests::creates_empty_scanner_error_reports ... ok
+test tests::composes_stable_reports_and_utf8_css_sizes ... ok
+test tests::classifies_missing_css_in_observable_precedence_order ... ok
+test tests::reports_utf8_css_bytes_whether_or_not_text_is_included ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_diagnostics
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

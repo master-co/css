@@ -1,0 +1,3 @@
+{"browser":"chromium","namedReferences":2231,"quotedAndUnquotedCases":23301,"native":"PASS","wasm":"PASS"}
+{"browser":"firefox","namedReferences":2231,"quotedAndUnquotedCases":23301,"native":"PASS","wasm":"PASS"}
+{"browser":"webkit","namedReferences":2231,"quotedAndUnquotedCases":23301,"native":"PASS","wasm":"PASS"}

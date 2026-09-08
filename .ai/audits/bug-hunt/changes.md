@@ -128,3 +128,13 @@
 0094–0095修復runtime CSP/iframe與scanner/CLI.mjs發現，新增回歸測試；3個舊hydration測試改驗證原生JSON module/error contract，未改fixtures/snapshots。0092新增測試baseManifest型別材料已補正。所有修復仍未新增commit，benchmark history僅留/tmp。
 
 本次依使用者指示提交0093–0095已完成的5項修復及帳本/證據。0092 compiler部分修復和0096/0097進行中變更不納入產品提交；共用CLI/tooling檔案僅暫存0095的.mjs修改，與0095驗證hash一致。Site其他工作原樣保留，未推送。
+
+0096/0097新增watch helper、glob/實際watch回歸、binding載入失敗/reset/CLI參數測試及built CLI觀察repro。兩批驗證完成，未提交；compiler部分修復與Site其他工作保留。
+
+0098將MCP與Rust inspection bytes統一為UTF-8；新增/擴充byte metadata與native binding測試、built stdio重現。既有Rust emoji byte斷言由2改4，屬單位修正；未改fixtures/snapshots。所有新增修復仍未提交。
+
+0099新增Svelte分支走訪、8個parser/scanner測試及實際Svelte/Vite三瀏覽器static互動repro。BH-0011修復；BH-0010未完成。未提交，保留其他工作及既有fixtures/snapshots/dependencies/lockfiles/CI。
+
+0100新增Rust HTML attribute decoder/token reader、2231entry固定資料表與stdlib generator、Rust/TS回歸及browser corpus/static build重現。BH-0010已修復，既有JS/raw字串行為保留；新表與parser不進runtime engine。未改依賴/lockfile/fixtures/snapshots/CI，未提交，未清理帳本。
+
+本次依使用者最新指示提交0096–0100已完成的5項修復（BH-0019/0026/0020/0011/0010）及對應測試、重現與帳本。提交前核對36個來源/測試/重現/其他工作雜湊一致；沿用各批最終測試、lint/types/build及browser證據。0092 compiler部分修復、0101並行重現與Site其他工作留在工作區；未推送、未清理帳本，目標仍active。

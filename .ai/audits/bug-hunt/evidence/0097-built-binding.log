@@ -1,0 +1,42 @@
+[
+  {
+    "kind": "cli-baseline",
+    "binding": "auto",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "control",
+    "binding": "native",
+    "status": 0,
+    "nativeScanners": 1,
+    "stdout": "{\"binding\":\"native\",\"snapshot\":{\"latentClasses\":[],\"validClasses\":[],\"invalidClasses\":[],\"cachedSources\":0,\"engine\":{\"version\":1,\"rules\":[{\"className\":\"block\",\"key\":\"block\",\"layer\":\"utilities\",\"type\":-2,\"sortTier\":0,\"priority\":{\"selector\":0},\"text\":\".block{display:block}\",\"selectorText\":\".block\"}],\"resources\":{\"variables\":[],\"animations\":[]},\"text\":\"@layer utilities{.block{display:block}}\"}}}\n",
+    "stderr": "BH_NATIVE_SCANNER\n"
+  },
+  {
+    "kind": "control",
+    "binding": "wasm",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "{\"binding\":\"wasm\",\"snapshot\":{\"latentClasses\":[],\"validClasses\":[],\"invalidClasses\":[],\"cachedSources\":0,\"engine\":{\"version\":1,\"rules\":[{\"className\":\"block\",\"key\":\"block\",\"layer\":\"utilities\",\"type\":-2,\"sortTier\":0,\"priority\":{\"selector\":0},\"text\":\".block{display:block}\",\"selectorText\":\".block\"}],\"resources\":{\"variables\":[],\"animations\":[]},\"text\":\"@layer utilities{.block{display:block}}\"}}}\n",
+    "stderr": ""
+  },
+  {
+    "kind": "cli",
+    "binding": "native",
+    "status": 0,
+    "nativeScanners": 1,
+    "stdout": "✔ index.html 1 classes inserted in 0.2ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": "BH_NATIVE_SCANNER\n"
+  },
+  {
+    "kind": "cli",
+    "binding": "wasm",
+    "status": 0,
+    "nativeScanners": 0,
+    "stdout": "✔ index.html 1 classes inserted in 1.1ms \n@layer utilities{.block{display:block}}\n",
+    "stderr": ""
+  }
+]

@@ -486,7 +486,7 @@ pub fn create_inspection_report(
             .flat_map(|entry| entry.dependencies.iter().cloned())
             .collect::<Vec<_>>(),
     );
-    let css_bytes = input.css.text.encode_utf16().count();
+    let css_bytes = input.css.text.len();
     let error_count = diagnostics
         .iter()
         .filter(|diagnostic| diagnostic.severity == InspectionDiagnosticSeverity::Error)
@@ -645,10 +645,10 @@ mod tests {
     }
 
     #[test]
-    fn composes_stable_reports_and_utf16_css_sizes() {
+    fn composes_stable_reports_and_utf8_css_sizes() {
         let report = create_inspection_report(input()).unwrap();
         assert_eq!(report.version, 1);
-        assert_eq!(report.css.bytes, 2);
+        assert_eq!(report.css.bytes, 4);
         assert_eq!(report.summary.errors, 1);
         assert_eq!(report.summary.warnings, 1);
         assert_eq!(
@@ -675,6 +675,20 @@ mod tests {
             report.missing_css.present[0].reason,
             MissingCssReason::Generated
         );
+    }
+
+    #[test]
+    fn reports_utf8_css_bytes_whether_or_not_text_is_included() {
+        for included in [false, true] {
+            for (text, expected) in [("", 0), ("abc", 3), ("é中文😀", 12)] {
+                let mut input = input();
+                input.css.text = text.into();
+                input.css.included = included;
+                let report = create_inspection_report(input).unwrap();
+                assert_eq!(report.css.bytes, expected);
+                assert_eq!(report.css.text, included.then(|| text.to_owned()));
+            }
+        }
     }
 
     #[test]

@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { Command } from 'commander'
+import { Command, Option } from 'commander'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
 import type { GenerateOptions } from './generate'
 import type { LintOptions } from './lint'
@@ -23,7 +23,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('-w, --watch', 'Watch file changes and generate CSS rules.')
     .option('-o, --output <path>', 'Specify your CSS file output path', DEFAULT_SCAN_OUTPUT)
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
-    .option('--binding <binding>', 'Execution binding: auto, native, or wasm.', 'auto')
+    .addOption(new Option('--binding <binding>', 'Execution binding: auto, native, or wasm.').choices(['auto', 'native', 'wasm']).default('auto'))
     .option('--no-export', 'Print only CSS results.')
     .action(async (sourcePaths: string[], options: GenerateOptions) => {
       const { default: runGenerate } = await import('./generate')

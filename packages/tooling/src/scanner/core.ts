@@ -235,7 +235,11 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       logger.log(options)
       logger.log('')
     }
-    const bindingSession = await createScannerSession(options.manifest)
+    const bindingSession = await createScannerSession(options.manifest, {
+      binding: options.binding,
+      native: options.native,
+      wasm: options.wasm
+    })
     if (generation !== this.lifecycleGeneration) {
       bindingSession.dispose()
       return this
