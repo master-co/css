@@ -215,7 +215,10 @@ pub(crate) fn collect_script_string_contexts(
             index += 1;
             continue;
         }
-        let prefix_start = index.saturating_sub(512);
+        let mut prefix_start = index.saturating_sub(512);
+        while !source.is_char_boundary(prefix_start) {
+            prefix_start += 1;
+        }
         let prefix = source[prefix_start..index].to_ascii_lowercase();
         let compact_prefix = prefix
             .chars()

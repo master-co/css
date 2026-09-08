@@ -135,6 +135,15 @@ function result(
   })
 }
 
+function styleText(css: string) {
+  // HTML closes raw-text elements even inside CSS strings. Reuse an existing
+  // odd escaping backslash so the replacement preserves the CSS string value.
+  return css.replace(/(\\*)<\/style/gi, (match, escapes: string) => {
+    return escapes.slice(0, escapes.length - escapes.length % 2)
+      + '\\3c ' + match.slice(escapes.length + 1)
+  })
+}
+
 export function renderHTMLWithSnapshot(
   html: string,
   context: ReturnType<typeof parseHTML>,
@@ -161,11 +170,12 @@ export function renderHTMLWithSnapshot(
     return result(nextHTML, classNames, snapshot, hydrationManifest)
   }
 
+  const safeStyleText = styleText(snapshot.cssText)
   if (styleElement) {
-    styleElement.childNodes = [new Text(snapshot.cssText)]
+    styleElement.childNodes = [new Text(safeStyleText)]
   } else {
     styleElement = new Element('style', { id: MASTER_CSS_RUNTIME_STYLE_ID }, [
-      new Text(snapshot.cssText)
+      new Text(safeStyleText)
     ])
     if (headElement) headElement.childNodes.push(styleElement)
     else if (htmlElement) {

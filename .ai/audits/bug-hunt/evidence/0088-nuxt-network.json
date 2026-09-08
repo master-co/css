@@ -1,0 +1,6 @@
+{
+  "records": [],
+  "errors": [
+    "AssertionError [ERR_ASSERTION]: actual Nuxt dev server ready"
+  ]
+}

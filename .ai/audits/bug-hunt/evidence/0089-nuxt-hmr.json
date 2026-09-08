@@ -1,0 +1,78 @@
+{
+  "records": [
+    {
+      "stage": "initial",
+      "browser": "153.0.8010.12",
+      "navigations": 3,
+      "display": "block",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "1",
+      "marker": "preserve",
+      "hasRuntime": true
+    },
+    {
+      "stage": "class-grid",
+      "navigations": 5,
+      "display": "grid",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "theme-#234567",
+      "navigations": 7,
+      "display": "grid",
+      "color": "rgb(35, 69, 103)",
+      "nativeColor": "rgb(35, 69, 103)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "class-flex",
+      "navigations": 9,
+      "display": "flex",
+      "color": "rgb(35, 69, 103)",
+      "nativeColor": "rgb(35, 69, 103)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "theme-#345678",
+      "navigations": 11,
+      "display": "flex",
+      "color": "rgb(52, 86, 120)",
+      "nativeColor": "rgb(52, 86, 120)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "class-block",
+      "navigations": 11,
+      "display": "block",
+      "color": "rgb(52, 86, 120)",
+      "nativeColor": "rgb(52, 86, 120)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "theme-#123456",
+      "navigations": 13,
+      "display": "block",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "0",
+      "hasRuntime": true
+    },
+    {
+      "stage": "cold-control",
+      "display": "block",
+      "color": "rgb(18, 52, 86)",
+      "nativeColor": "rgb(18, 52, 86)",
+      "counter": "0",
+      "hasRuntime": true
+    }
+  ],
+  "errors": []
+}

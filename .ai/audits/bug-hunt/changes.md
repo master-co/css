@@ -1,5 +1,7 @@
 # 新增檔案與驗證限制
 
+0088 起使用者已授權「執行並修正所有問題」，新增產品／範例修正與一個 Nuxt theme 回歸測試。0089–0091另修正語言、SSR與installer，新增語言Rust與native/Wasm回歸測試；最新狀態及驗證見 [目前交接點](README.md#目前交接點)；下列內容是原調查 commit 的檔案歸屬與限制，保留作歷史。
+
 本次僅新增 `.ai/audits/bug-hunt/` 帳本、其中的證據／重現材料，以及下列 23 個測試檔。沒有修改正式產品、既有測試／snapshot／fixtures、依賴、lockfile、CI 或 release。使用者後續明確要求將已完成部分 commit；提交包含既有調查成果及其未完成／受阻記錄，不代表完整目標完成。故意失敗的回歸測試保存尚未修正問題的證據，不代表整體測試全數通過。
 
 完整機器可讀清單見 [file inventory](evidence/0087-file-inventory.json)，行為、命令與各項結果見 [批次索引](README.md)；問題詳見 [報告](report.md)。

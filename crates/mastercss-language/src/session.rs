@@ -34,7 +34,7 @@ impl LanguageSession {
         contexts.sort_by_key(|range| (range.start, range.end));
         contexts.dedup_by(|left, right| left.start == right.start && left.end == right.end);
         let class_positions = collect_class_positions(&request.source, &contexts)?;
-        let semantic_tokens = self.semantic_tokens_for_positions(&class_positions)?;
+        let semantic_tokens = self.semantic_tokens_for_positions(&class_positions, &contexts)?;
         Ok(LanguageDocumentIr {
             version: LANGUAGE_BATCH_VERSION,
             class_positions,
@@ -261,10 +261,38 @@ impl LanguageSession {
     fn semantic_tokens_for_positions(
         &self,
         positions: &[ClassPositionIr],
+        contexts: &[ClassListContextIr],
     ) -> Result<Vec<SemanticTokenInputIr>, LanguageError> {
         let mut tokens = Vec::new();
         for position in positions {
-            self.push_class_semantic_tokens(&position.token, position.range.start, &mut tokens)?;
+            if position.raw == position.token {
+                self.push_class_semantic_tokens(
+                    &position.token,
+                    position.range.start,
+                    &mut tokens,
+                )?;
+                continue;
+            }
+            let context = contexts
+                .iter()
+                .find(|context| {
+                    context.start == position.context_range.start
+                        && context.end == position.context_range.end
+                })
+                .ok_or(LanguageError::InvalidRange)?;
+            let offsets = crate::positions::unescape_offsets(&position.raw, &context.unescape);
+            let first = tokens.len();
+            self.push_class_semantic_tokens(&position.token, 0, &mut tokens)?;
+            for token in &mut tokens[first..] {
+                token.start = position.range.start
+                    + offsets
+                        .get(token.start as usize)
+                        .ok_or(LanguageError::InvalidRange)?;
+                token.end = position.range.start
+                    + offsets
+                        .get(token.end as usize)
+                        .ok_or(LanguageError::InvalidRange)?;
+            }
         }
         Ok(tokens)
     }

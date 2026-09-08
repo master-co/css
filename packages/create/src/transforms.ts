@@ -22,12 +22,24 @@ function formatNextCall(target: string, mode?: MasterCSSRenderingMode) {
 
 function addImport(content: string, statement: string) {
   if (content.includes(statement)) return content
+  const newline = content.includes('\r\n') ? '\r\n' : '\n'
   const lines = content.split('\n')
+  // A header may contain a shebang or directive prologue. Appending an ESM
+  // import keeps it intact without guessing where comments or strings end.
+  if (content && !/^import\s/.test(lines[0])) {
+    return content + (content.endsWith('\n') ? '' : newline) + statement + newline
+  }
   let insertIndex = 0
-  while (insertIndex < lines.length && /^import\s/.test(lines[insertIndex])) {
+  while (insertIndex < lines.length) {
+    const complete = /^import\s+(?:[^'"]+\s+from\s+)?(['"])[^'"]+\1\s*(;?)\s*(?:\/\/.*)?$/.exec(lines[insertIndex])
+    if (!complete) break
+    const next = lines.slice(insertIndex + 1).find(line => line.trim())?.trim()
+    // Without a semicolon, a following attribute clause can still belong to
+    // this import. Insert before it unless the next statement is unambiguous.
+    if (!complete[2] && next && !/^(?:import|export|const|let|var|function|class)\b/.test(next)) break
     insertIndex++
   }
-  lines.splice(insertIndex, 0, statement)
+  lines.splice(insertIndex, 0, statement + (newline === '\r\n' ? '\r' : ''))
   return lines.join('\n').replace(/\n{3,}/, '\n\n')
 }
 

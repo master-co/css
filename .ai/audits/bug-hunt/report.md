@@ -315,3 +315,19 @@ Extraction亦有15個未量測IDs，兩次完整compose卻標為engine建立／�
 - 目標重新啟用後，依規則重設停滯計數。恢復後第一次核對仍無解除條件；目標目前active、未完成，先前blocked紀錄保留。[新核對](evidence/0087-resumed-1-check-1.json)。
 
 - 恢復後再連續三輪確認條件未變，目標已再次標為blocked；所有未完成要求與接續步驟保留於0087。
+
+## 0088 修復狀態
+
+BH-0024、BH-0025、BH-0027、BH-0028 已修復並通過原始驗證；另確認並修復 Angular Wasm 資產遗漏 BH-0044。Nuxt BH-0023／0036 尚在驗證，不計已修復。[修正與證據](batches/0088-example-nuxt-fixes.md)。舊段落保留修正前問題與重現。
+
+## 0089 修復狀態
+
+BH-0013／0014 的 Unicode panic 與 semantic ranges 已修復，Rust、native／Wasm、language-service 驗證通過；Nuxt BH-0023／0036 通過原始8階段 HMR 與4模式 production 測試。[證據](batches/0089-language-and-nuxt-validation.md)。
+
+## 0090 修復狀態
+
+BH-0005／0006／0007 已修復；SSR 字元參照、靜態資源與style注入邊界通過測試，三瀏覽器72案例證明沒有script執行且CSS內容值不變。[證據](batches/0090-server-html-fixes.md)。
+
+## 0091 修復狀態
+
+BH-0021已修復；installer保留完整import邊界、shebang與directive prologue，58tests/lint/build通過。[證據](batches/0091-create-import-boundaries.md)。目前44個歷史確認問題中13已修復、31未解決。

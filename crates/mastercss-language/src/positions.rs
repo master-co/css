@@ -166,6 +166,42 @@ fn unescape_token(raw: &str, characters: &[String]) -> String {
     })
 }
 
+pub(super) fn unescape_offsets(raw: &str, characters: &[String]) -> Vec<u32> {
+    let mut token = raw.to_owned();
+    let mut offsets = (0..=utf16_len(raw)).collect::<Vec<_>>();
+    for character in characters {
+        let escaped = format!("\\{character}");
+        let mut removed = Vec::new();
+        let mut byte_cursor = 0;
+        let mut utf16_cursor = 0;
+        for (index, _) in token.match_indices(&escaped) {
+            utf16_cursor += utf16_len(&token[byte_cursor..index]);
+            // Keep the escape's starting boundary and the character's ending boundary.
+            removed.push((utf16_cursor + 1) as usize);
+            utf16_cursor += utf16_len(&escaped);
+            byte_cursor = index + escaped.len();
+        }
+        if removed.is_empty() {
+            continue;
+        }
+        let mut removed = removed.into_iter().peekable();
+        offsets = offsets
+            .into_iter()
+            .enumerate()
+            .filter_map(|(index, offset)| {
+                if removed.peek() == Some(&index) {
+                    removed.next();
+                    None
+                } else {
+                    Some(offset)
+                }
+            })
+            .collect();
+        token = token.replace(&escaped, character);
+    }
+    offsets
+}
+
 fn position_at(source: &str, offset: u32) -> Option<(u32, u32)> {
     if offset > utf16_len(source) {
         return None;

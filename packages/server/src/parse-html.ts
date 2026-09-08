@@ -37,12 +37,10 @@ export default function parseHTML(html: string): {
     }
 
     if (element.attribs.class) {
-      element.attribs.class
-        .trim()
-        .split(/\s+/)
+      decodeHTML(element.attribs.class)
+        .split(/[\t\n\f\r ]+/)
         .forEach((className) => {
           if (!className) return
-          className = decodeHTML(className)
           classes.add(className)
         })
     }

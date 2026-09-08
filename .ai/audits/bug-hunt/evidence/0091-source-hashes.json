@@ -1,0 +1,4 @@
+{
+  "packages/create/src/transforms.ts": "e9f119bac594a0a77a2ce2914c62f029449cdc4c3fb9f413a48a7dd5b4a0b4dc",
+  "packages/create/tests/bug-hunt-multiline-import.test.ts": "4412f5c102c88a4f4cb9ca185f86e86bad4bbf13a4796b04e6ddd445b21bcf43"
+}

@@ -237,6 +237,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
       writeFileSync(manifestAssetPath, manifestJSON)
     }
     ensureManifestAsset()
+    const hasClientRuntime = (options.mode === 'runtime' || options.mode === 'progressive') && options.injectRuntime
     if (options.mode === 'runtime' && options.injectRuntime) {
       setGlobalHead({
         link: [
@@ -252,36 +253,28 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
         `new URL(${JSON.stringify(pathToFileURL(manifestAssetPath).href)})`
       )
       config.virtual[VIRTUAL_EMITTED_GLOBALS_ID] = emittedGlobalsModule
-      if (options.mode === 'runtime' && options.injectRuntime) {
+      if (hasClientRuntime) {
         addNitroPublicAsset(config, manifestDir, MASTER_CSS_MANIFEST_ASSET_BASE)
       }
     })
-    const addCSSVitePlugin = (
-      viteOptions: Pick<MasterCSSNuxtModuleOptions, 'enabled' | 'mode'> = {
-        mode: options.mode
-      }
-    ) => {
+    const addCSSVitePlugin = () => {
       nuxt.hook('vite:extendConfig', (viteConfig) => {
         viteConfig.plugins = viteConfig.plugins || []
-        if (
-          (options.mode === 'runtime' || options.mode === 'progressive')
-          && options.injectRuntime
-          && viteOptions.enabled === false
-        ) {
+        if (hasClientRuntime) {
           viteConfig.plugins.push(RuntimeVirtualModulesPlugin(publicManifestHref, nuxt.options.rootDir))
         }
         viteConfig.plugins.push(createMasterCSSVitePlugin({
-          enabled: viteOptions.enabled,
-          mode: viteOptions.mode,
+          // Nuxt owns client startup and Nitro rendering; Vite still compiles CSS.
+          mode: options.mode === 'static' ? 'static' : 'runtime',
           scanner: options.scanner,
-          runtime: options.runtime
+          runtime: { enabled: false, avoidFOUC: false }
         }) as unknown as Plugin)
       })
     }
     switch (options.mode) {
       case 'progressive':
       case 'runtime':
-        addCSSVitePlugin({ enabled: false })
+        addCSSVitePlugin()
         if (options.injectRuntime) {
           addPlugin({
             mode: 'client',
@@ -290,6 +283,9 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
             append: true
           })
         }
+        break
+      case 'pre-render':
+        addCSSVitePlugin()
         break
       case 'static':
         // Fix: [plugin ssr-styles] Cannot inline generated static CSS during SSR.

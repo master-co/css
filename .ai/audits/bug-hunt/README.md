@@ -14,8 +14,8 @@
 
 ## 覆蓋與問題
 
-- 75 單位：62 已檢查、0 進行中、0 未開始、13 受阻。
-- 問題：[findings](findings.md), 43 confirmed (including benchmark tooling), 0 pending hypotheses; blocked coverage remains unfinished.
+- 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
+- 問題：[findings](findings.md), 44 historical confirmed findings; 13 fixed, 31 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -145,13 +145,20 @@
 
 - [0087 Completion prerequisites](batches/0087-completion-prerequisites.md): all75remainingrows preserved; first verified post-follow-up impasse observation.
 
+- [0088 Example and Nuxt fixes](batches/0088-example-nuxt-fixes.md)：Angular/ESLint fixed; Nuxt tests and diagnostics in progress.
+
+- [0089 Language and Nuxt](batches/0089-language-and-nuxt-validation.md)：4 additional fixes verified.
+
+- [0090 Server HTML fixes](batches/0090-server-html-fixes.md)：3server fixes verified; downstream Nuxt follow-up.
+
+- [0091 Installer imports](batches/0091-create-import-boundaries.md)：BH-0021 fixed,58tests PASS.
+
 ## 目前交接點
 
-- Latest0087 reconciles fullrequirements; resumedrun1, thirdfresh verified impasse observation. Goalblocked, notcomplete. Site current revision revalidated0051; full objective remains unfinished.
-- Confirmed:43 (BH-0001..0043); latestBH-0043 cleanup benchmark falsely reports computed-style success.
-- Pending hypotheses: none. Unfinished coverage includes13 blocked units and explicitly unclaimed residuals in0052.
-- Next action: goalblocked again afterresumedrun1threefreshconsecutiveverifiedsame-impasse observations. Resumeaffectedoriginalcommands onlywhen theirrequiredhost/artifact/source/resource/authorization conditions change.13blockedunits/43findings andallremainingrequirements remainunfinished;0038needs explicituserverification. [State/history](evidence/0087-blocked-audit.json), [latestcheck](evidence/0087-resumed-1-check-3.json), [exactunblock steps](batches/0087-completion-prerequisites.md). Futureuserresumption starts afreshblocked-audit count; nevermarkgoalcompletefromrecordingblockers.
-- Completion criteria for a follow-up: one bounded reproduction with a valid control, current source location, observed outcome, and synchronized batch/coverage/finding indexes. Preserve excluded assumptions and prior-revision evidence.
-- HEAD3d2f47768c30e1678228fa04efcfc4b152e70120; internal169b5ee6f8b4ca9817fa82eb572e105a24f78d80. Semantic sources unchanged; site255 changed paths revalidated0051. Latest audit6044 hash entries, only superseded0044/0047 site snapshots differ; [0087 validation](evidence/0087-final-checks.json) and AI context check PASS.
-- Additional 0038 Rspack/Rsbuild host checks parked after user-reported access banner; wait for user verification before resuming them. Classifier trigger unknown.
-- Constraints: no production/fixture/lockfile changes; user subsequently authorized a commit of completed audit work, including its remaining-work records. Preserve external site/internal edits; seven nonlocal native targets blocked. If platform cyber access banner recurs, record the exact blocked action and continue other work; only resume that action after user reports verification passed. Existing security evidence needs no repeat.
+- 最新目標「執行並修正所有問題」授權必要產品與範例修正，全部完成後才清理帳本；目標active，未全部完成。
+- 44個歷史確認問題：13已修復、31未解決。已修復ID：BH-0005/0006/0007/0013/0014/0021/0023/0024/0025/0027/0028/0036/0044；修復證據見0088–0091。
+- Nuxt四種production模式10tests、8階段原始HMR、實際Nuxt範例的三瀏覽器SSR/runtime均通過；語言Rust14/native-Wasm22/editor373通過；SSR67tests與72瀏覽器raw-text/CSS控制通過；installer58tests通過。
+- 本輪所有command handles均已terminal；隔離副本、server/browser已清理，沒有等待中的驗證。下一步優先繼續未修復P1／核心／runtime，再處理integrations、benchmarks、nested hosts；先讀對應原始批次與當前原始碼。
+- Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認。保留此前暫停，不重試該追加驗證。
+- 修復前基準commit5ec506c0b；使用者已明確要求提交已完成部分，本次提交0088–0091的13項已驗證修復、測試與證據；31項未解決及受阻狀態仍保留。保留其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md；不改无關程式、既有fixtures/snapshots、依賴、lockfile、CI/release。Native/tooling-Wasm及server/Nuxt/create的ignored build artifacts已更新供實際host驗證。
+- 0087及更早的blocked／來源快照是修復前歷史；當前以0088–0091、原始碼與最新證據為準。不要重建帳本或覆寫歷史，尚不清理。

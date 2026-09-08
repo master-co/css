@@ -1,0 +1,25 @@
+{
+  "baseCommit": "5ec506c0be0c6a64e72d72fc15cb1b88ce60e552",
+  "fixedFindings": [
+    "BH-0024",
+    "BH-0025",
+    "BH-0027",
+    "BH-0028",
+    "BH-0044"
+  ],
+  "unresolvedFindings": 39,
+  "coverage": {
+    "\u5df2\u6aa2\u67e5": 64,
+    "\u9032\u884c\u4e2d": 1,
+    "\u53d7\u963b": 10
+  },
+  "nuxtLint": "PASS",
+  "nuxtPackageBuild": "PASS",
+  "angularThreeBrowsers": "PASS",
+  "eslintDiagnosticsAndFixConvergence": "PASS",
+  "eslintLint": "5 intentional errors / 18 warnings",
+  "webpackExample": "PASS",
+  "nuxtBehaviorVerification": "initial colors PASS; HMR navigation observation corrected, session 91787 live; production tests incomplete",
+  "goal": "active",
+  "cleanup": "deferred until completion"
+}

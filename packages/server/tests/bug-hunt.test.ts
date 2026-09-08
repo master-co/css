@@ -12,6 +12,19 @@ test('BH-0005: HTML character references form browser class separators', () => {
   expect(result.cssText).toContain('.hidden{display:none}')
 })
 
+test.each([
+  ['&#x62;lock&#9;hidden', ['block', 'hidden']],
+  ['block&NewLine;hidden&Tab;flex', ['block', 'hidden', 'flex']],
+  ['block&nbsp;hidden', ['block\u00a0hidden']],
+  ['block\vhidden', ['block\vhidden']],
+  ['block&amp;#32;hidden', ['block&#32;hidden']],
+  ['&NotEqualTilde; &nbsp;', ['\u2242\u0338', '\u00a0']],
+  ['&copy=1 &copy;', ['&copy=1', '\u00a9']]
+])('BH-0005 decodes attribute references once with ASCII separators: %s', (value, expected) => {
+  const result = renderHTML(`<div class="${value}"></div>`, { manifest })
+  expect(result.classNames).toEqual(expected)
+})
+
 test('BH-0006: escaped class content cannot create executable HTML elements', () => {
   const input = '<div class="content:\'&lt;/style&gt;&lt;script&gt;globalThis.__audit=1&lt;/script&gt;\'"></div>'
   expect(parseDocument(input).children.filter((node) => node.type === 'script')).toHaveLength(0)

@@ -22,13 +22,19 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              {
+                "glob": "*.wasm",
+                "input": "node_modules/@master/css-runtime/artifacts",
+                "output": "artifacts"
+              }
             ],
             "styles": [
               "src/styles.css"
             ],
             "scripts": [],
             "server": "src/main.server.ts",
+            "externalDependencies": ["@master/css-server"],
             "prerender": true,
             "ssr": {
               "entry": "server.ts"
