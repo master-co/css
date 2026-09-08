@@ -27,7 +27,8 @@
     "test:dogfood": "playwright test --config tests/dogfood/playwright.config.ts",
     "test:dogfood:dev": "playwright test --config tests/dogfood/playwright.dev.config.ts",
     "test:syntax": "tsx --test components/SyntaxTr.test.ts common/generate-preset-css.test.ts",
-    "test:reference": "NODE_OPTIONS=--conditions=react-server tsx --test reference/reference.test.ts",
+    "test:syntax-migration": "tsx --test scripts/verify-syntax-migration.test.ts",
+    "test:reference": "NODE_OPTIONS=--conditions=react-server tsx --test reference/reference.test.ts utils/legacy-syntax.test.ts",
     "start": "wrangler pages dev site/out --cwd .. --kv PLAY_SHARES",
     "lint": "eslint .",
     "type-check": "tsc --noEmit"

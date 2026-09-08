@@ -1,21 +1,29 @@
 'use client'
 
-import { IconBook, IconBraces, IconLayersIntersect, IconPalette, IconPencil, IconRocket, IconRobot, IconSettings } from '@tabler/icons-react'
+import { IconBook, IconLayersIntersect, IconPalette, IconPencil, IconRocket, IconRobot, IconSettings } from '@tabler/icons-react'
 import { useLocale } from 'internal/contexts/locale'
 import { useTranslation } from 'internal/contexts/i18n'
 import DocumentationIndex from '~/site/components/DocumentationIndex'
 import { guideOverviewSections, type GuideCategory } from '~/site/utils/guide-overview'
 
-const sectionIcons = [IconRocket, IconRobot, IconBraces, IconPencil, IconLayersIntersect, IconPalette, IconSettings]
+const sectionIcons: Record<string, typeof IconBook> = {
+  'getting-started': IconRocket,
+  'agentic-workflows': IconRobot,
+  authoring: IconPencil,
+  fundamentals: IconLayersIntersect,
+  'design-foundations': IconPalette,
+  'build--delivery': IconSettings
+}
 
 export default function GuideIndex({ pageCategories }: { pageCategories: GuideCategory[] }) {
   const tw = useLocale() === 'tw'
   const $ = useTranslation()
-  const sections = guideOverviewSections(pageCategories).map((section, index) => ({
+  const sections = guideOverviewSections(pageCategories).map(section => ({
     id: section.id,
     title: tw ? $(section.category) : section.title,
     description: tw ? section.descriptionTW : section.description,
-    Icon: sectionIcons[index],
+    Icon: sectionIcons[section.id],
+    legacyIds: section.id === 'getting-started' ? ['syntax-tutorial'] : [],
     groups: [{ entries: section.entries.map(entry => ({ ...entry, displayTitle: $(entry.title) })) }]
   }))
   return <DocumentationIndex name="guide" sections={sections} showDescriptions related={{

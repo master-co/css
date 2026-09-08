@@ -3,6 +3,10 @@ import { createEngineSync } from '@master/css/node'
 import { validateCSS } from '@master/css-tooling/css'
 import preset from '../utils/preset-manifest'
 
+export function configuredExampleHTML(classes: string[], element: 'div' | 'button' = 'div', label = 'Example') {
+  return `<${element}${element === 'button' ? ' type="button"' : ''} class="${classes.join(' ')}">${label}</${element}>`
+}
+
 /** Compile the complete configuration before validating any class that depends on it. */
 export function configuredExampleCSS(source: string, classes: string[]) {
   const result = compileManifestSync(source, { baseManifest: preset })

@@ -12,10 +12,14 @@ import { tokenValuesMarkdown } from './TokenValues'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
-import { configuredExampleCSS } from './configured-example'
+import { configuredExampleCSS, configuredExampleHTML } from './configured-example'
 
 export function syntaxMarkdown(rows: SyntaxRow[]) {
   return rows.map(row => `### \`${row.syntax}\` {#${row.id}}\n\n\`\`\`css\n${row.declarations}\n\`\`\``).join('\n\n')
+}
+
+export function portableMarkdown(markdown: string) {
+  return markdown.split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/^(#{2,3}) (.+) \{#([\w-]+)\}$/gm, '<a id="$3"></a>\n\n$1 $2')).join('')
 }
 
 /** Resolve authored literals only. Never execute MDX expressions to extract documents. */
@@ -85,7 +89,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         const classes = await expression(attrs.classes.value) as string[]
         const css = configuredExampleCSS(configuration, classes)
         examples.push({ id: `example-${examples.length + 1}`, title: classes.join(' '), classes, configuration, css })
-        return `\`\`\`css\n${configuration}\n\`\`\`\n\n\`\`\`html\n<div class="${classes.join(' ')}">Example</div>\n\`\`\`\n\n\`\`\`css\n${css}\n\`\`\``
+        return `\`\`\`css\n${configuration}\n\`\`\`\n\n\`\`\`html\n${configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css\n${css}\n\`\`\``
       }
       if (name === 'TextHeirs') return getVariableNamespacePublicKeys('color-text').map(key => `\`${key}:\``).join(', ')
       if (name === 'VariableNamespaceSources') return [...new Set(flattenMasterCSSManifestVariables(preset.variables).map(variable => variable.namespace).filter(Boolean))].map(namespace => `- \`${namespace}\`: ${getVariableNamespacePublicKeys(namespace!).map(key => `\`${key}:\``).join(', ')}`).join('\n')

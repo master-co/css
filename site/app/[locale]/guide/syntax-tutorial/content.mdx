@@ -1,0 +1,114 @@
+import ConfiguredExample from '~/site/reference/ConfiguredExample'
+
+export const actionStyles = "@import '@master/css';\n\n@theme {\n  --spacing-action: 1rem;\n}"
+
+Build a Save button that gains space at a larger viewport, responds to interaction, and uses a shared project value. Each step changes the same button. You only need basic HTML and CSS; no JavaScript is required for these styles.
+
+Before starting, complete [Installation](/guide/installation) and keep the app stylesheet loaded:
+
+```css name=app.css
+@import '@master/css';
+```
+
+The import supplies the preset and base layer order. Keep class names as complete strings in a source file your integration scans. The previews below use native buttons so you can also test their keyboard focus.
+
+## Add a declaration \{#declarations\}
+
+Start with padding around the label:
+
+```html
+<button type="button" class="p:md">Save</button>
+```
+
+`p` selects padding; `md` selects a value in the spacing namespace. The generated declaration uses a CSS variable, whose definition is included in the output:
+
+<Class2CSS>{['p:md']}</Class2CSS>
+
+<Demo><ButtonPreview classes={['p:md']} /></Demo>
+
+The space should appear on all four sides. Change the value only after checking that the declaration affects the property you intended. The [padding reference](/reference/padding) supplies its full syntax; [Declarations & values](/reference/rules/declarations) defines how values are read. This tutorial consistently uses `p:` instead of switching between equivalent spellings.
+
+## Add interaction states \{#states\}
+
+Keep the padding and add a text-color change on hover and keyboard focus:
+
+```html
+<button type="button" class="p:md fg:blue-60:hover fg:blue-60:focus-visible">Save</button>
+```
+
+`fg:blue-60:hover` applies its color to this button while the pointer is over it. The separate `:focus-visible` class provides the color change when keyboard focus is visible. Neither class changes the button's behavior, and neither removes its native focus outline.
+
+<Class2CSS>{['fg:blue-60:hover', 'fg:blue-60:focus-visible']}</Class2CSS>
+
+<Demo><ButtonPreview classes={['p:md', 'fg:blue-60:hover', 'fg:blue-60:focus-visible']} /></Demo>
+
+Hover over the button, then use Tab to reach it. Look for the color change and the keyboard focus indicator. In the CSS, both selectors target the element carrying the class. See [Selectors](/reference/rules/selectors) when the element receiving the style differs from the element owning the state.
+
+## Add a responsive condition \{#conditions\}
+
+Add `p:lg@sm` so the same button gets more space at the preset's `sm` boundary and above:
+
+```html
+<button type="button" class="p:md p:lg@sm fg:blue-60:hover fg:blue-60:focus-visible">Save</button>
+```
+
+<Class2CSS>{['p:md', 'p:lg@sm']}</Class2CSS>
+
+The unqualified padding applies below the boundary. At and above it, the qualified padding takes effect. Read the exact media condition and spacing values in the generated CSS; a project's theme can change them.
+
+<Demo><ButtonPreview responsive classes={['p:md', 'p:lg@sm', 'fg:blue-60:hover', 'fg:blue-60:focus-visible']} /></Demo>
+
+Switch the preview between the two sides of `sm`. Its frame uses a real viewport just below or above the current preset boundary, so this also works on a narrow phone screen. The button should grow while its interaction behavior remains available. See [Conditions](/reference/rules/conditions) for exact condition forms and [Responsive Design](/guide/responsive-design) for choosing viewport versus container boundaries.
+
+## Combine and check \{#composition\}
+
+A declaration, selector and condition answer different questions:
+
+| Part | Question | Example |
+| --- | --- | --- |
+| Declaration | What changes? | `fg:blue-60` changes text color. |
+| Selector | Which element or state receives it? | `:hover` targets this element while hovered. |
+| Condition | When is the rule available? | `@sm` requires the viewport boundary. |
+
+For comparison, adding a condition to the hover class would make that color change available only at `sm` and above:
+
+```html
+<button type="button" class="p:md p:lg@sm fg:blue-60:hover@sm fg:blue-60:focus-visible">Save</button>
+```
+
+<Class2CSS>{['fg:blue-60:hover@sm']}</Class2CSS>
+
+This is an alternative to the previous hover class, not an additional class to keep alongside it. For our final button, keep the unqualified hover class so interaction feedback works at every viewport size.
+
+When a result surprises you, remove the condition and check the declaration first, then the state, then the boundary. Inspect generated CSS to confirm the rule exists. If it exists but loses, inspect competing declarations and [cascade layers](/reference/rules/layers); rearranging words in the HTML class attribute is not a reliable fix.
+
+## Introduce a project value \{#project-settings\}
+
+When several action buttons share the same padding decision, name that value in the app stylesheet:
+
+<Code lang="css" name="app.css">{actionStyles}</Code>
+
+Replace `p:md` with `p:action`. The `spacing` namespace makes the new token available to padding; `action` names the shared decision. Keep `p:lg@sm` for the larger viewport treatment.
+
+```html
+<button type="button" class="p:action p:lg@sm fg:blue-60:hover fg:blue-60:focus-visible">Save</button>
+```
+
+Compile this stylesheet together with the class strings. `p:action` is a project-defined value, so checking it against the preset alone is insufficient. Change `--spacing-action` to `1.25rem` and verify that the base padding changes while `p:lg@sm` still selects the larger spacing token.
+
+`@theme` is a stylesheet directive: it defines vocabulary for the project rather than styling one element by itself. Continue with [Theme Tokens](/guide/theme) for shared values, [Global Styles](/guide/global-styles) for reusable style definitions, or [source scanning](/guide/scanning-latent-classes) when a class is missing from generated output. The [theme directive reference](/reference/directives/theme) owns its complete syntax and restrictions.
+
+## Complete the button \{#complete-button\}
+
+Use this complete app stylesheet and button markup in the project you installed. The output is generated from the configuration and classes together. The retained `@import` is resolved by your project's build integration; the rules shown after it include this example's theme dependencies.
+
+<ConfiguredExample element="button" label="Save" source={actionStyles} classes={['p:action', 'p:lg@sm', 'fg:blue-60:hover', 'fg:blue-60:focus-visible']} />
+
+Check the result in your app:
+
+- Below `sm`, the padding uses your `action` token.
+- At `sm` and above, padding uses the preset's `lg` token.
+- Hover and visible keyboard focus change the text color at both widths; the native focus outline remains available.
+- This is a native button with `type="button"`. Styling does not implement a Save action; connect that behavior in your application.
+
+You now have one component that combines a declaration, state selectors, a condition and a project value. Use the same sequence for the next component, checking one change at a time.

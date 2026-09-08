@@ -14,7 +14,7 @@ Reference verifies language and tool behavior during writing, explanation and re
 | MCP | Public stdio `tools/list` protocol | Actual tool descriptions and input/output schemas when advertised |
 | Package APIs | Published exports and public TypeScript entrypoints | Declarations, overloads and public names; API census controls visibility |
 
-The original Guide locations retain their workflow content and old anchor entrances. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
+The declarations, selectors, conditions and directives Guide routes redirect through `utils/legacy-syntax.json`: known rule anchors lead to Reference, while other visits lead to a step in the Getting Started Syntax Tutorial. They have no indexed teaching body. Other Guide locations retain their workflow content and old anchor entrances. Rule registry entries separate the `source` contract path from the `guide` learning URL. The `contract.mdx` files remain beside existing MDX includes during migration. They are the single authored source consumed by Reference, not a second copy of the Guide.
 
 `prepare-app` builds `.generated/reference.json`, the searchable documents, `public/reference/index.json`, per-page English and Traditional Chinese Markdown URLs, and section text bundles. `build:llms` reuses the same normalized Reference in `llms.txt` and `llms-full.txt`. Generated outputs are ignored; edit their sources.
 
@@ -34,7 +34,7 @@ Individual document pages render their authored or generated body directly. Do n
 
 The first content language is English. Traditional Chinese navigation remains available and per-page Markdown explicitly identifies English fallback. Preserve semantic IDs and identifiers when adding a translated body; do not silently label English prose as a completed translation.
 
-Guide and Reference overviews share `site/components/DocumentationIndex.tsx` and `site/styles/documentation-index.css`. Reference adapts its catalog in `reference/Index.tsx`; Guide derives its primary teaching entries from existing category metadata through `site/utils/guide-overview.ts`. That Guide model also supplies overview search nodes during `prepare-app` and its body in llms exports. Keep category anchors and metadata-derived links aligned when changing either overview.
+Guide and Reference overviews share `site/components/DocumentationIndex.tsx` and `site/styles/documentation-index.css`. Reference adapts its catalog in `reference/Index.tsx`; Guide derives its primary teaching entries from existing category metadata through `site/utils/guide-overview.ts`. That Guide model also supplies overview search nodes during `prepare-app` and its body in llms exports. Keep category anchors and metadata-derived links aligned when changing either overview. Section icons are keyed by section ID. The old `#syntax-tutorial` overview anchor belongs to Getting Started. `utils/syntax-tutorial.ts` uses the Reference component adapters to include generated CSS and complete configured examples in tutorial search and llms output.
 
 ## Validation
 
@@ -51,6 +51,8 @@ pnpm --filter site type-check
 pnpm --filter internal test
 pnpm run check:ai-context
 ```
+
+After a full static build, `pnpm --filter site test:syntax-migration` checks the retired routes’ noindex/canonical metadata, no-JavaScript links and sitemap exclusion, including canonical route copies.
 
 `internal` has no package-local lint script. Shared search, heading and table changes also require Guide regression checks. Inspect 390px, 768px and 1280px layouts, keyboard selection, one-press Escape, focus restoration, direct row links and reopening search with its query preserved.
 

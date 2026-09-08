@@ -394,5 +394,6 @@
   "one-time": "單次",
   "month": "月",
   "Choose a platform": "選擇平台",
-  "Github Sponsors": "GitHub Sponsors"
+  "Github Sponsors": "GitHub Sponsors",
+  "Build one button step by step with declarations, interaction states, responsive conditions and a project theme token.": "透過宣告、互動狀態、響應式條件與專案 token，逐步完成一個按鈕。"
 }

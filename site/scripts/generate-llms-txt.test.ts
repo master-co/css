@@ -1,10 +1,14 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
+import { legacySyntaxPages } from '../utils/legacy-syntax'
+import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 import { readFile } from 'node:fs/promises'
 import { extractSearchNodesFromMdx } from 'internal/utils/search-pages'
 import { guideOverviewMarkdown, guideOverviewSections } from '../utils/guide-overview'
 import {
   cleanMdx,
+  loadPages,
   deriveTitle,
   metadataTitle,
   normalizeRoutePath,
@@ -53,9 +57,11 @@ test('Guide overview keeps its category anchors and publishes the same entries t
   const markdown = guideOverviewMarkdown(categories)
   const nodes = extractSearchNodesFromMdx(markdown)
   assert.deepEqual(nodes.filter(node => node.tag === 'h2').map(node => node.id), [
-    'getting-started', 'agentic-workflows', 'syntax-tutorial', 'authoring', 'fundamentals', 'design-foundations', 'build--delivery'
+    'getting-started', 'agentic-workflows', 'authoring', 'fundamentals', 'design-foundations', 'build--delivery'
   ])
   for (const section of sections) for (const entry of section.entries) assert.ok(markdown.includes(`](${entry.url})`), entry.url)
+  assert.ok(markdown.includes('<a id="syntax-tutorial"></a>'))
+  assert.equal(sections[0].entries[2].url, '/guide/syntax-tutorial')
   const searchPages = JSON.parse(await readFile(new URL('../public/search/en.json', import.meta.url), 'utf8'))
   assert.deepEqual(searchPages.find((page: { url: string }) => page.url === '/guide').nodes, nodes)
   const source = await readFile(new URL('../app/[locale]/guide/content.mdx', import.meta.url), 'utf8')
@@ -148,4 +154,13 @@ test('renderLlmsFull concatenates each page body with a Source line', () => {
   assert.match(out, /Summary: Start using Master CSS\./)
   assert.match(out, /Color system overview\./)
   assert.match(out, /API reference\./)
+})
+
+test('llms includes the complete tutorial and excludes retired Guide bodies', async () => {
+  const root = fileURLToPath(new URL('../', import.meta.url))
+  const pages = await loadPages(`${root}/app/[locale]`)
+  const tutorial = pages.find(page => page.url === '/en/guide/syntax-tutorial')
+  assert.equal(tutorial?.body, (await syntaxTutorialContent(root)).markdown)
+  for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!pages.some(page => page.url === `/en/guide/${slug}`))
+  assert.match(renderLlmsFull(pages), /--spacing-action:1rem/)
 })

@@ -10,7 +10,7 @@ import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@mast
 import preset from '../utils/preset-manifest'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
 import { resolveSyntaxRow } from './syntax'
-import { extractReferenceMdx } from './markdown'
+import { extractReferenceMdx, portableMarkdown } from './markdown'
 import { utilityEditorial, ruleSources } from './editorial'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
@@ -58,8 +58,8 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     documents.push(doc)
   }
   for (const rule of ruleSources) {
-    const doc: ReferenceDocument = await fromMdx(rule.id, 'rule', path.join(root, 'guide', rule.guide, 'contract.mdx'), rule.title, rule.description, 'Syntax & rules')
-    doc.guide = `/guide/${rule.guide}`
+    const doc: ReferenceDocument = await fromMdx(rule.id, 'rule', path.join(root, rule.source), rule.title, rule.description, 'Syntax & rules')
+    doc.guide = rule.guide
     doc.terms = rule.terms ?? []
     doc.related = ['rules/declarations', 'rules/selectors', 'rules/conditions', 'rules/modes', 'rules/layers'].filter(id => id !== rule.id)
     if (rule.id === 'rules/conditions') {
@@ -100,7 +100,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const headings = documentHeadings(markdown)
     const identifiers = headings.filter(heading => heading.title.startsWith('@')).flatMap(heading => [[heading.title, heading.id], [heading.title.split(' ')[0], heading.id]])
     const identifierAnchors = Object.fromEntries(identifiers.reverse())
-    documents.push({ ...directive, id: `directives/${id}`, url: `/reference/directives/${id}`, title: title!, markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/layers', 'rules/extraction'], guide: '/guide/directives' })
+    documents.push({ ...directive, id: `directives/${id}`, url: `/reference/directives/${id}`, title: title!, markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/layers', 'rules/extraction'], guide: id === 'theme' ? '/guide/theme' : ['source', 'candidates'].includes(id) ? '/guide/scanning-latent-classes' : '/guide/global-styles' })
   }
   let revision = 'unknown'
   let sourceState: ReferenceCatalog['sourceState'] = 'archive'
@@ -115,7 +115,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
 }
 
 export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: ReferenceCatalog, locale = 'en') {
-  const markdown = doc.markdown.split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/^(#{2,3}) (.+) \{#([\w-]+)\}$/gm, '<a id="$3"></a>\n\n$1 $2')).join('')
+  const markdown = portableMarkdown(doc.markdown)
   return `# ${doc.title}\n\n${doc.description}\n\n- ID: ${doc.id}\n- Type: ${doc.kind}\n- Canonical: ${doc.url}\n- Version: ${catalog.version}\n- Source revision: ${catalog.revision} (${catalog.sourceState})\n- Source: ${doc.source}\n- Content digest: ${digest(doc.markdown)}\n- Semantic digest: ${catalog.semanticDigest}\n- Language: ${doc.language}${locale === 'tw' ? ' (English fallback; 尚無繁中全文翻譯)' : ''}\n\n${doc.kind === 'utility' ? '> Syntax placeholders illustrate declaration shapes; they are not an exhaustive grammar for valid values. Examples use the current preset.\n\n' : ''}${markdown}\n\n## Related reference\n\n${doc.related.map(id => `- [${id}](/reference/${id}.md)`).join('\n')}${doc.extractionNotes.length ? `\n\n## Additional interactive content\n\nThe HTML page contains additional presentation components: ${doc.extractionNotes.join('; ')}.` : ''}\n`
 }
 

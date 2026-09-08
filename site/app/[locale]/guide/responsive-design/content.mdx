@@ -23,7 +23,7 @@ The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [breakpoint theme
 ```
 
 ### Querying viewport ranges
-Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex viewport range queries.
+Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators to create more complex viewport range queries.
 ```html
 <!-- @MARK @sm&<=md -->
 <div class="hidden@sm&<=md">…</div>
@@ -79,7 +79,7 @@ The `container` class is a utility class that applies the `container-type: inlin
 Container queries use the [container scale](/guide/containers), which can use different values from viewport breakpoints.
 
 ### Querying container ranges
-Use [comparison](/guide/conditional-queries#comparison-operators) and [logical](/guide/conditional-queries#logical-operators) operators to create more complex container range queries.
+Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators to create more complex container range queries.
 ```html
 <!-- @MARK @sm&<=md -->
 <div class="hidden@container(sm&<=md)">…</div>

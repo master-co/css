@@ -14,12 +14,14 @@ import SyntaxTr from '../components/SyntaxTr'
 import { resolveSyntaxRow } from './syntax'
 import resolveHeading from 'internal/utils/resolve-heading'
 import { extractReferenceMdx } from './markdown'
-import { configuredExampleCSS } from './configured-example'
+import { configuredExampleCSS, configuredExampleHTML } from './configured-example'
 import legacyAnchors from './legacy-anchors.json' with { type: 'json' }
 import { collectCSSVariableReferences } from '../scripts/css-variable-references'
 import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
 import { compileManifestSync } from '@master/css-compiler/node'
+import { legacySyntaxPages, type LegacySyntaxSlug } from '../utils/legacy-syntax'
+import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 
 const root = fileURLToPath(new URL('../', import.meta.url))
 let catalog: ReferenceCatalog
@@ -121,6 +123,12 @@ test('explicit anchors survive renamed headings and are exported as portable Mar
 test('all pre-migration utility and Guide anchors remain available', async () => {
   const missing: string[] = []
   for (const page of legacyAnchors.pages) {
+    const slug = page.source.match(/\/guide\/([^/]+)\/content.mdx$/)?.[1]
+    if (slug && Object.hasOwn(legacySyntaxPages, slug)) {
+      const anchors = legacySyntaxPages[slug as LegacySyntaxSlug].anchors
+      for (const id of page.anchors) if (!Object.hasOwn(anchors, id)) missing.push(`${page.source}#${id}`)
+      continue
+    }
     const source = await readFile(path.join(root, '..', page.source), 'utf8')
     const ids = new Set(extractSearchNodesFromMdx(source).filter(node => node.id).map(node => node.id))
     for (const match of source.matchAll(/<a id="([^"]+)"/g)) ids.add(match[1])
@@ -139,9 +147,50 @@ test('Reference links and preserved Guide anchors resolve to real documents and 
     }
   }
   for (const doc of catalog.documents.filter(doc => doc.kind === 'rule')) {
-    const guide = await readFile(path.join(root, `app/[locale]${doc.guide}/content.mdx`), 'utf8')
+    const [guideURL, guideAnchor] = doc.guide!.split('#')
+    const guide = await readFile(path.join(root, `app/[locale]${guideURL}/content.mdx`), 'utf8')
+    if (guideAnchor) {
+      assert.ok(extractSearchNodesFromMdx(guide).some(node => node.id === guideAnchor), doc.guide)
+      continue
+    }
     const source = await readFile(path.join(root, '..', doc.source), 'utf8')
     for (const heading of extractSearchNodesFromMdx(source).filter(node => node.id)) assert.ok(guide.includes(`id="${heading.id}"`), `${doc.guide}#${heading.id}`)
+  }
+})
+
+test('all 120 retired Guide anchors target an existing Reference section', () => {
+  let count = 0
+  for (const page of Object.values(legacySyntaxPages)) for (const target of Object.values(page.anchors)) {
+    const [url, anchor] = target.split('#')
+    const doc = catalog.documents.find(doc => doc.url === url)
+    assert.ok(doc?.headings.some(heading => heading.id === anchor), target)
+    count++
+  }
+  assert.equal(count, 120)
+})
+
+test('Syntax Tutorial exports its complete configured button, CSS, headings and searchable output', async () => {
+  const tutorial = await syntaxTutorialContent(root)
+  assert.deepEqual(tutorial.notes, [])
+  assert.doesNotMatch(tutorial.markdown, /Look up a rule|<ButtonPreview|MCSS_EXPRESSION|\{#/)
+  for (const anchor of ['declarations', 'states', 'conditions', 'composition', 'project-settings', 'complete-button']) assert.ok(tutorial.markdown.includes(`id="${anchor}"`), anchor)
+  const example = tutorial.examples.find(example => example.configuration)!
+  assert.ok(example.configuration?.includes("@import '@master/css'"))
+  const expectedHTML = `<button type="button" class="${example.classes.join(' ')}">Save</button>`
+  assert.ok(tutorial.markdown.includes(expectedHTML))
+  assert.equal(configuredExampleHTML(example.classes, 'button', 'Save'), expectedHTML)
+  assert.ok(tutorial.markdown.includes(example.css))
+  assert.match(example.css, /--spacing-action:1rem/)
+  assert.match(example.css, /:hover\{color:var\(--color-blue-60\)/)
+  assert.match(example.css, /:focus-visible\{color:var\(--color-blue-60\)/)
+  assert.match(example.css, /@media \(width>=52\.125rem\)/)
+  assert.match(configuredExampleCSS(example.configuration!.replace('1rem', '1.25rem'), example.classes), /--spacing-action:1.25rem/)
+  for (const locale of ['en', 'tw']) {
+    const searchPages = JSON.parse(await readFile(path.join(root, `public/search/${locale}.json`), 'utf8'))
+    const canonical = (url: string) => url.replace(/^\/(en|tw)(?=\/)/, '')
+    const page = searchPages.find((page: any) => canonical(page.url) === '/guide/syntax-tutorial')
+    assert.deepEqual(page.nodes, extractSearchNodesFromMdx(tutorial.markdown))
+    for (const slug of Object.keys(legacySyntaxPages)) assert.ok(!searchPages.some((page: any) => canonical(page.url) === `/guide/${slug}`))
   }
 })
 

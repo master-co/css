@@ -22,6 +22,7 @@ export interface DocumentationIndexSection {
   title: string
   description: string
   Icon: typeof IconBook
+  legacyIds?: string[]
   groups: { title?: string; entries: DocumentationIndexEntry[] }[]
 }
 
@@ -42,7 +43,7 @@ export default function DocumentationIndex({ name, sections, related, showDescri
   const tw = useLocale() === 'tw'
   const entries = sections.flatMap(section => section.groups.flatMap(group => group.entries))
   const letters = Map.groupBy([...entries].sort((a, b) => a.title.localeCompare(b.title)), entry => /^[a-z]/i.test(entry.title) ? entry.title[0].toUpperCase() : '#')
-  const sectionIds = sections.map(section => section.id).join(',')
+  const sectionIds = sections.flatMap(section => [section.id, ...(section.legacyIds ?? [])]).join(',')
 
   useEffect(() => {
     function syncView() {
@@ -75,6 +76,7 @@ export default function DocumentationIndex({ name, sections, related, showDescri
     <div id={`${name}-category-index`} hidden={alphabetical}>
       {sections.map(section => <section key={section.id} className="doc-index-section" aria-labelledby={section.id}>
         <header className="doc-index-heading">
+          {section.legacyIds?.map(id => <span key={id} id={id} />)}
           <h2 id={section.id}>{section.title} <span className="doc-index-count">{section.groups.reduce((total, group) => total + group.entries.length, 0)}</span></h2>
           <p>{section.description}</p>
         </header>

@@ -111,7 +111,7 @@ By default, there are four layer shorthands: `@base`, `@default`, `@component`, 
         {['hidden@base', 'hidden@default', 'hidden@component', 'hidden@utility']}
     </Class2CSS>
 </details>
-You can [create a condition variant](/guide/directives#custom-variant) to simplify longer conditions.
+You can [create a condition variant](/reference/directives/theme#custom-variant) to simplify longer conditions.
 
 See [cascade layers](/guide/cascade-layers) for layer order and override behavior.
 
@@ -179,7 +179,7 @@ Use `@media()` for arbitrary [CSS media queries](https://developer.mozilla.org/e
 <!-- @MARK @media(pointer:coarse) -->
 <div class="hidden@media(pointer:coarse)">
 ```
-Create a [condition variant](/guide/directives#custom-variant) if the same media query appears repeatedly.
+Create a [condition variant](/reference/directives/theme#custom-variant) if the same media query appears repeatedly.
 
 ### `@supports(<feature>)` \{#supportsfeature\}
 Use `@supports()` to apply a declaration only when the browser supports a feature.
@@ -187,7 +187,7 @@ Use `@supports()` to apply a declaration only when the browser supports a featur
 <!-- @MARK @supports(backdrop-filter(0px)) -->
 <div class="hidden@supports(backdrop-filter(0px))">
 ```
-Create a [condition variant](/guide/directives#custom-variant) if the same support check appears repeatedly.
+Create a [condition variant](/reference/directives/theme#custom-variant) if the same support check appears repeatedly.
 
 ### `@layer(<name>)` \{#layername\}
 Use `@layer()` to put a declaration in a named cascade layer.
@@ -217,7 +217,7 @@ Use `@container(<size>)` when the nearest container, not the viewport, should co
         {['container', 'hidden@container(sm)']}
     </Class2CSS>
 </details>
-Create a [condition variant](/guide/directives#custom-variant) if a longer container query appears repeatedly.
+Create a [condition variant](/reference/directives/theme#custom-variant) if a longer container query appears repeatedly.
 
 See [container queries](/guide/responsive-design#based-on-container-sizes) for the full container workflow.
 

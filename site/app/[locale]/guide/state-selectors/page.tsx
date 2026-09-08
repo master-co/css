@@ -1,15 +1,11 @@
-import createPage from '~/internal/factories/create-page'
-import Layout from '~/site/layouts/doc'
-import metadata from './metadata'
-import dictionaries from '~/site/dictionaries'
-import categories from '~/site/.categories/guide.json'
+import LegacySyntaxPage, { legacySyntaxMetadata } from '~/site/components/LegacySyntaxPage'
 
-export const { Page, dynamic, revalidate, generateMetadata } = createPage({
-  metadata,
-  dictionaries,
-  categories,
-  content: import('./content.mdx'),
-  Layout,
-})
+export const dynamic = 'force-static'
 
-export default Page
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }) {
+  return legacySyntaxMetadata('state-selectors', (await params).locale)
+}
+
+export default async function Page({ params }: { params: Promise<{ locale: string }> }) {
+  return <LegacySyntaxPage slug="state-selectors" locale={(await params).locale} />
+}

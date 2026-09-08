@@ -3,6 +3,7 @@ import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolvePublicEnv } from '../utils/public-env.js'
 import { generateReference, renderDocumentMarkdown } from '../reference/build'
+import { syntaxTutorialContent } from '../utils/syntax-tutorial'
 
 const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().NEXT_PUBLIC_URL
@@ -183,7 +184,9 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
       url: pageUrl(rel),
       title: metadataTitle(metadata.title) || deriveTitle(rawBody, lastSegment),
       description: metadata.description,
-      body: cleanMdx(rawBody)
+      body: normalizeRoutePath(rel) === 'guide/syntax-tutorial'
+        ? (await syntaxTutorialContent(path.resolve(localeRoot, '../..'))).markdown
+        : cleanMdx(rawBody)
     })
   }
   return pages

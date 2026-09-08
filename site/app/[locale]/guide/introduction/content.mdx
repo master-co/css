@@ -36,50 +36,7 @@ When a value or pattern becomes shared across the product, promote it later. Rep
 
 ---
 
-## Add states and conditions
-A Master CSS class can carry the condition that controls when it applies.
-
-```html
-<!-- @MARK :hover --><!-- @MARK @md -->
-<button class="px:md py:xs r:md bg:blue-60 fg:white bg:blue-70:hover grid-cols:2@md">
-  Save
-</button>
-```
-
-Read the suffixes after the declaration:
-
-- `bg:blue-70:hover` changes the background on hover.
-- `grid-cols:2@md` applies at the `md` breakpoint.
-
-The same idea extends to responsive design, dark mode, print styles, container queries, feature queries, attributes, pseudo-classes, and custom variants. Learn the pieces in [Style Declarations](/guide/style-declarations), [State Selectors](/guide/state-selectors), and [Conditional Queries](/guide/conditional-queries).
-
----
-
-## Add a project CSS entry
-Most projects start by importing Master CSS from the stylesheet the app already loads:
-
-```css name=app.css
-@import "@master/css";
-```
-
-That stylesheet becomes the project CSS entry. It can later define shared styling vocabulary:
-
-```css name=app.css
-@import "@master/css";
-
-@theme {
-  --color-brand: #4f46e5;
-  --spacing-card: 1.5rem;
-}
-```
-
-```html
-<article class="fg:white bg:brand p:card">
-  ...
-</article>
-```
-
-Keep this simple at first. Add tokens, component classes, custom utilities, and custom variants only when the project has a repeated decision worth naming.
+After [Installation](/guide/installation), follow the [Syntax Tutorial](/guide/syntax-tutorial) to build one button with declarations, interaction states, responsive conditions and a project token.
 
 ---
 
@@ -99,8 +56,7 @@ You can start with the recommended setup for your framework, then revisit delive
 If you are new to Master CSS, read these next:
 
 1. [Installation](/guide/installation) to add Master CSS to a project.
-2. [Style Declarations](/guide/style-declarations) to learn how class names map to CSS.
-3. [State Selectors](/guide/state-selectors) and [Conditional Queries](/guide/conditional-queries) to control when styles apply.
-4. [Theme Tokens](/guide/theme) when you need shared values, [Variables and Modes](/guide/variables-and-modes) when those values need modes, and [Global Styles](/guide/global-styles) when repeated roles become components or utilities.
-5. [Rendering Modes](/guide/rendering-modes) when CSS delivery matters.
-6. [Language Service](/guide/language-service), [Code Linting](/guide/code-linting), and [AI Coding](/guide/ai-coding) when you want editor help, team checks, or AI-assisted styling.
+2. [Syntax Tutorial](/guide/syntax-tutorial) to build and verify your first interactive, responsive component.
+3. [Theme Tokens](/guide/theme) when you need shared values, [Variables and Modes](/guide/variables-and-modes) when those values need modes, and [Global Styles](/guide/global-styles) when repeated roles become components or utilities.
+4. [Rendering Modes](/guide/rendering-modes) when CSS delivery matters.
+5. [Language Service](/guide/language-service), [Code Linting](/guide/code-linting), and [AI Coding](/guide/ai-coding) when you want editor help, team checks, or AI-assisted styling.

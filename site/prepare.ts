@@ -5,17 +5,21 @@ import { extractSearchNodesFromMdx } from 'internal/utils/search-pages'
 import { generateTranslatedContentRegistry } from './scripts/generate-translation-registry'
 import { generateReference } from './reference/build'
 import { guideOverviewMarkdown } from './utils/guide-overview'
+import { syntaxTutorialContent } from './utils/syntax-tutorial'
 
 await generateTranslatedContentRegistry()
 await generateReference(process.cwd())
 
 const guideCategories = JSON.parse(await readFile(new URL('./.categories/guide.json', import.meta.url), 'utf8'))
 const guideOverviewNodes = extractSearchNodesFromMdx(guideOverviewMarkdown(guideCategories))
+const syntaxTutorialNodes = extractSearchNodesFromMdx((await syntaxTutorialContent(process.cwd())).markdown)
 for (const locale of ['en', 'tw']) {
   const searchFile = new URL(`./public/search/${locale}.json`, import.meta.url)
   const pages = JSON.parse(await readFile(searchFile, 'utf8'))
   const overview = pages.find((page: { url: string }) => page.url === '/guide' || page.url === `/${locale}/guide`)
   if (overview) overview.nodes = guideOverviewNodes
+  const tutorial = pages.find((page: { url: string }) => page.url.replace(/^\/(en|tw)(?=\/)/, '') === '/guide/syntax-tutorial')
+  if (tutorial) tutorial.nodes = syntaxTutorialNodes
   await writeFile(searchFile, JSON.stringify(pages))
 }
 
