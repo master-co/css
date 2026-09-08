@@ -56,13 +56,13 @@ export default createRule({
       }), release)
     }
 
-    const reportCanonicalClassList = (node, { raw, start, end, unescape, classNodes, classValues }: ResolvedClassNode) => {
+    const reportCanonicalClassList = (node, resolved: ResolvedClassNode) => {
       reportLintDiagnostics(
         context,
         node,
-        { raw, start, end, unescape, classNodes, classValues, nodes: [], value: raw },
+        resolved,
         createMasterCSSLintDiagnostics(
-          tooling.analyzeLintClassList(raw, classValues, {
+          tooling.analyzeLintClassList(resolved.analysisText ?? resolved.raw, resolved.classValues, {
             canonicalOptions: options
           }).diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
         )

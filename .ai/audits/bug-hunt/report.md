@@ -1,8 +1,8 @@
 # Master CSS 調查交付
 
-起始 commit `e66ba7236`，目前 HEAD `9e1c87794`，另有0092部分修復與0096–0100未提交工作。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
+起始 commit `e66ba7236`，本次提交以 `b056fbf33` 為父提交，包含0101與0102–0103完成修復；0092部分修復留在工作區。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-44個歷史確認問題：23已修復、21未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。
+44個歷史確認問題：25已修復、19未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
@@ -126,7 +126,9 @@
 
 修正方向：保留 decoded-to-raw mapping，再轉為 UTF-16 範圍。 [重現與證據](batches/0012-language-ir.md)。
 
-## BH-0015 · P2 · 合法 Unicode escape 被 ESLint 誤報
+## BH-0015 · P2 · 合法 Unicode escape 被 ESLint 誤報（部分修復）
+
+0102已將JavaScript cooked字串送入Rust lint並對映來源範圍；Vue同時包含HTML entity時仍缺外層對映。完整plugin269PASS/2FAIL；已阻止已知錯誤範圍的autofix，但仍須恢復精確診斷及正確修正，不可標完成。[進度與下一步](batches/0102-eslint-javascript-escapes.md)。
 
 [packages/eslint-plugin/src/utils/resolve-class-node.ts:89](/Users/aron/master/css/packages/eslint-plugin/src/utils/resolve-class-node.ts:89)。clsx 字串以 Unicode escape 表示 block；應認得合法 class，實際 raw 字串被當成 unknown。
 
@@ -186,7 +188,9 @@
 
 修正方向：為 runtime entry 指定獨立檔名，或明確調整 multi-entry 輸出契約。 [重現與證據](batches/0042-nested-hosts.md)。
 
-## BH-0031 · P2 · MCP 並行預覽套用缺少序列化
+## BH-0031 · P2 · MCP 並行預覽套用缺少序列化（已修復）
+
+0101同步認領token並以同帳號跨程序filesystem gate保護hash驗證到寫入。MCP34tests、built stdio20rounds、260critical sections及權限/中止恢復控制通過；外部writer與crash atomicity仍不保證。[修復與限制](batches/0101-mcp-preview-concurrency-fix.md)。以下保留原始問題證據。
 
 [packages/mcp/src/context.ts:221](/Users/aron/master/css/packages/mcp/src/context.ts:221)。同一token同時套用兩次均成功；兩個基於相同原文的預覽也可都成功寫入同一檔案，後者覆蓋前者。依序重試／衝突控制正確拒絕；實際SDK並行也重現。
 

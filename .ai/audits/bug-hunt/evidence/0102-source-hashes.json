@@ -1,0 +1,12 @@
+{
+  "packages/eslint-plugin/src/rules/no-conflicting-classes.ts": "87fad1880f539af89b5cec96050c4571c570acda2c96e8fd36115bfb4aea58fb",
+  "packages/eslint-plugin/src/rules/no-invalid-classes.ts": "0637ceba5e5c5c85129fba201f20ba58cadd6deea5b47308d9898429c5eb8399",
+  "packages/eslint-plugin/src/rules/no-unapproved-raw-values.ts": "ec262005b37621980f9bc557a134aa593a93decf6a412cffa6f723830d4e0b30",
+  "packages/eslint-plugin/src/rules/prefer-canonical-classes.ts": "477e43f7005d4648b3a07cce897652c5c575a14d970bd957d634da905113331a",
+  "packages/eslint-plugin/src/rules/sort-classes.ts": "56eb2f206c1bd2d9ddfd1f6133d1ac50066303a9bb6411aa765178f07304f7b4",
+  "packages/eslint-plugin/src/utils/report-lint-diagnostics.ts": "d12394849933238dcb021e4cea521b768bae58e40ea23082f1f0e586b5603c8f",
+  "packages/eslint-plugin/src/utils/resolve-class-node.ts": "fbb9eaee887fca6e0e2054ce079517ccfd79143e5202090e22cd7bf6cea4773f",
+  "packages/eslint-plugin/src/utils/javascript-literal.ts": "48d72549890620c3ffb332117584eccd122b39dfeb6e377ddc4f6f54148d5ad3",
+  "packages/eslint-plugin/tests/bug-hunt-javascript-escapes.test.ts": "206e139c1162b0ca96e75ed1e794fe36344b8198ab8e4d18ba1b9c8251d5b598",
+  "packages/eslint-plugin/tests/bug-hunt-vue-escaped-attribute.test.ts": "8b755a3e59e66ffd1629d44569c0730274d05e857eda4d98252e9717f67fa261"
+}

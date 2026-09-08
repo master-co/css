@@ -1,0 +1,158 @@
+{
+  "platform": "darwin",
+  "uid": 501,
+  "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4",
+  "rows": [
+    {
+      "scenario": "normal",
+      "order": [
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css",
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css"
+      ],
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"version\": 1,\n  \"diagnostics\": [],\n  \"applied\": true,\n  \"changes\": [\n    {\n      \"filePath\": \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css\",\n      \"afterHash\": \"67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b\"\n    },\n    {\n      \"filePath\": \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css\",\n      \"afterHash\": \"67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "afterAttempt": [
+        "@compose block inline;",
+        "@compose block inline;"
+      ],
+      "reusedToken": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Unknown or already applied preview token."
+          }
+        ],
+        "isError": true
+      }
+    },
+    {
+      "scenario": "stale-second",
+      "order": [
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css",
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css"
+      ],
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "File changed after preview generation: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css"
+          }
+        ],
+        "isError": true
+      },
+      "afterAttempt": [
+        "@compose block   inline;",
+        "@compose flex;"
+      ]
+    },
+    {
+      "scenario": "unwritable-first",
+      "order": [
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css",
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css"
+      ],
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "EACCES: permission denied, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css'"
+          }
+        ],
+        "isError": true
+      },
+      "afterAttempt": [
+        "@compose block   inline;",
+        "@compose block   inline;"
+      ],
+      "retryAfterPermissionRestore": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"version\": 1,\n  \"diagnostics\": [],\n  \"applied\": true,\n  \"changes\": [\n    {\n      \"filePath\": \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css\",\n      \"afterHash\": \"67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b\"\n    },\n    {\n      \"filePath\": \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css\",\n      \"afterHash\": \"67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "afterRetry": [
+        "@compose block inline;",
+        "@compose block inline;"
+      ]
+    },
+    {
+      "scenario": "unwritable-second",
+      "order": [
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css",
+        "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css"
+      ],
+      "response": {
+        "content": [
+          {
+            "type": "text",
+            "text": "EACCES: permission denied, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css'"
+          }
+        ],
+        "isError": true
+      },
+      "afterAttempt": [
+        "@compose block inline;",
+        "@compose block   inline;"
+      ],
+      "retryAfterPermissionRestore": {
+        "content": [
+          {
+            "type": "text",
+            "text": "File changed after preview generation: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/a.css"
+          }
+        ],
+        "isError": true
+      },
+      "afterRetry": [
+        "@compose block inline;",
+        "@compose block   inline;"
+      ],
+      "freshPreview": {
+        "confirmToken": "hV0CShpIADLG6WSp00uVGkWKk200gm3n",
+        "expiresAt": 1788907330527,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css",
+            "beforeHash": "cbc07c7ea452134a484ae655e38e029b139e835b620b446a05702fcffc472d78",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b",
+            "beforeExists": true,
+            "beforeBytes": 24,
+            "afterBytes": 22,
+            "afterText": "@compose block inline;",
+            "diff": "--- /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css\n+++ /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css\n@@\n-@compose block   inline;\n+@compose block inline;"
+          }
+        ],
+        "summary": {
+          "files": 1,
+          "bytesBefore": 24,
+          "bytesAfter": 22
+        }
+      },
+      "recovery": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\n  \"version\": 1,\n  \"diagnostics\": [],\n  \"applied\": true,\n  \"changes\": [\n    {\n      \"filePath\": \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-fs-fault-I16kV4/b.css\",\n      \"afterHash\": \"67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b\"\n    }\n  ]\n}"
+          }
+        ]
+      },
+      "afterRecovery": [
+        "@compose block inline;",
+        "@compose block inline;"
+      ]
+    },
+    {
+      "complete": true,
+      "scenarios": 4,
+      "classification": "Partial writes and retry behavior observed; atomicity is not promised by current public contract."
+    }
+  ]
+}

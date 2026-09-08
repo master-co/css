@@ -1,0 +1,36 @@
+file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:41
+	return new MasterCSSError({
+	       ^
+
+MasterCSSError: Error while loading rule '@master/css/sort-classes': @compose only accepts unquoted class lists
+Occurred while linting /Users/aron/master/css/attribute.vue
+    at normalizeBindingError (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:41:9)
+    at callBinding (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:52:9)
+    at invoke (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
+    ... 5 lines matching cause stack trace ...
+    at create (file:///Users/aron/master/css/packages/eslint-plugin/dist/rules/sort-classes.js:20:42)
+    at Object.create (/Users/aron/master/css/node_modules/.pnpm/@typescript-eslint+utils@8.69.0_eslint@10.10.0_jiti@2.7.0_supports-color@10.2.2__supports-color@10.2.2_typescript@7.0.2/node_modules/@typescript-eslint/utils/dist/eslint-utils/RuleCreator.js:39:20) {
+  code: 'GenericFailure',
+  domain: 'project',
+  diagnostics: [],
+  payload: {
+    code: 'GenericFailure',
+    domain: 'project',
+    message: '@compose only accepts unquoted class lists'
+  },
+  [cause]: Error: @compose only accepts unquoted class lists
+      at Object.loadPreparedProjectManifest (file:///Users/aron/master/css/packages/binding/dist/compiler.js:26:91)
+      at file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:134
+      at callBinding (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:50:10)
+      at invoke (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
+      at Object.loadPreparedProjectManifest (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:70)
+      at loadBindingProjectManifest (file:///Users/aron/master/css/packages/compiler/dist/project/binding-project.js:21:26)
+      at loadProjectManifestSync (file:///Users/aron/master/css/packages/compiler/dist/project/manifest-sync.js:33:32)
+      at resolvePlan (file:///Users/aron/master/css/packages/eslint-plugin/dist/utils/resolve-context.js:87:17)
+      at resolveContext (file:///Users/aron/master/css/packages/eslint-plugin/dist/utils/resolve-context.js:124:27)
+      at create (file:///Users/aron/master/css/packages/eslint-plugin/dist/rules/sort-classes.js:20:42) {
+    code: 'GenericFailure'
+  }
+}
+
+Node.js v24.20.0

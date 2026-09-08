@@ -22,7 +22,7 @@ if (process.argv[2] === 'worker') {
 } else {
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-bh-interrupt-')))
   const workers = [], rows = []
-  const evidence = fileURLToPath(new URL('../evidence/0086-process-interruption.json', import.meta.url))
+  const evidence = process.env.BH_EVIDENCE_PATH || fileURLToPath(new URL('../evidence/0086-process-interruption.json', import.meta.url))
   const save = row => { rows.push(row); writeFileSync(evidence, JSON.stringify({ root, rows }, null, 2)) }
   function startWorker() {
     const child = fork(fileURLToPath(import.meta.url), ['worker'], { execArgv: ['--import', 'tsx'], stdio: ['ignore', 'inherit', 'inherit', 'ipc'] })

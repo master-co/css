@@ -9,7 +9,7 @@ export default function defineVisitors(
   { context, settings, tooling }: {
     context: RuleContext<any, any[]>
     settings: Settings
-    tooling: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
+    tooling: Pick<MasterCSSToolingSession, 'tokenizeClassList' | 'decodeHTMLAttribute'>
   },
   visitNode: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void
 ): RuleListener {

@@ -1,0 +1,35 @@
+$ tsdown --config ../../shared/tsdown-package.config.ts
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/shared/tsdown-package.config.ts 
+ℹ entry: src/index.ts, src/bin/index.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 26 files
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+ℹ Granting execute permission to dist/bin/index.js
+ℹ dist/bin/index.js                1.77 kB │ gzip: 0.83 kB
+ℹ dist/index.js                    0.15 kB │ gzip: 0.09 kB
+ℹ dist/contributor.js             26.30 kB │ gzip: 6.46 kB
+ℹ dist/server.js                  17.07 kB │ gzip: 3.76 kB
+ℹ dist/context.js                  7.53 kB │ gzip: 2.29 kB
+ℹ dist/classes.js                  7.05 kB │ gzip: 1.98 kB
+ℹ dist/setup.js                    6.80 kB │ gzip: 1.97 kB
+ℹ dist/manifest-query.js           5.37 kB │ gzip: 1.57 kB
+ℹ dist/lint.js                     4.74 kB │ gzip: 1.38 kB
+ℹ dist/compare.js                  4.71 kB │ gzip: 1.50 kB
+ℹ dist/directives.js               4.65 kB │ gzip: 1.40 kB
+ℹ dist/scan.js                     4.37 kB │ gzip: 1.44 kB
+ℹ dist/format.js                   3.22 kB │ gzip: 1.12 kB
+ℹ dist/preview-write-lock.js       2.82 kB │ gzip: 1.22 kB
+ℹ dist/internal/src/workspace.js   2.57 kB │ gzip: 0.91 kB
+ℹ dist/manifest-summary.js         2.14 kB │ gzip: 0.68 kB
+ℹ dist/language.js                 1.57 kB │ gzip: 0.64 kB
+ℹ dist/project.js                  1.54 kB │ gzip: 0.60 kB
+ℹ dist/document.js                 1.38 kB │ gzip: 0.58 kB
+ℹ dist/tooling-session.js          1.17 kB │ gzip: 0.49 kB
+ℹ dist/result.js                   0.77 kB │ gzip: 0.35 kB
+ℹ dist/index.d.ts                  0.15 kB │ gzip: 0.09 kB
+ℹ dist/bin/index.d.ts              0.01 kB │ gzip: 0.03 kB
+ℹ 23 files, total: 107.86 kB
+✔ Build complete in 150ms

@@ -6,7 +6,7 @@ import type { MasterCSSToolingSession } from '@master/css-tooling'
 export default function withVisitClassNode(
   visit: (node: TSESTree.Node, resolved: ReturnType<typeof resolveClassNode>) => void,
   context: RuleContext<any, any[]>,
-  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList'>
+  lintSession: Pick<MasterCSSToolingSession, 'tokenizeClassList' | 'decodeHTMLAttribute'>
 ) {
   const visitNode = (node) => {
     if (!node) return

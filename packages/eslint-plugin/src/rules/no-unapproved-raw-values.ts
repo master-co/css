@@ -55,7 +55,7 @@ export default createRule({
 
     return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
       const diagnostics = createMasterCSSLintDiagnostics(
-        tooling.analyzeLintClassList(resolved.raw, resolved.classValues, {
+        tooling.analyzeLintClassList(resolved.analysisText ?? resolved.raw, resolved.classValues, {
           rawValuePolicy: options
         }).diagnostics.filter(({ ruleId }) => ruleId === 'no-unapproved-raw-values')
       )

@@ -177,6 +177,7 @@ export interface MasterCSSSourceExtractionInput {
 
 export interface MasterCSSSourceBatchRequest {
   files: MasterCSSSourceExtractionInput[]
+  htmlAttributes?: string[]
 }
 
 export interface MasterCSSSourceExtraction {
@@ -187,6 +188,10 @@ export interface MasterCSSSourceExtraction {
 export interface MasterCSSSourceBatch {
   version: typeof MASTER_CSS_SOURCE_BATCH_VERSION
   files: MasterCSSSourceExtraction[]
+  htmlAttributes?: {
+    value: string
+    spans: { range: MasterCSSSourceRange, sourceRange: MasterCSSSourceRange }[]
+  }[]
 }
 
 export interface MasterCSSScannerUpdate {

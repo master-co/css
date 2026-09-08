@@ -16,7 +16,7 @@ const before = '@compose block   inline;'
 const after = '@compose block inline;'
 const external = '@compose flex;'
 const rows = []
-const evidence = fileURLToPath(new URL('../evidence/0085-filesystem-faults.json', import.meta.url))
+const evidence = process.env.BH_EVIDENCE_PATH || fileURLToPath(new URL('../evidence/0085-filesystem-faults.json', import.meta.url))
 const save = row => {
   rows.push(row)
   writeFileSync(evidence, JSON.stringify({ platform: process.platform, uid: process.getuid(), root, rows }, null, 2))

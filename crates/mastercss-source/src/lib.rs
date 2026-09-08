@@ -3,6 +3,9 @@
 mod html_attribute;
 mod html_class_values;
 mod html_entities;
+pub use html_attribute::{
+    DecodedHTMLAttribute, HTMLAttributeSpan, decode_with_spans as decode_html_attribute,
+};
 
 use std::collections::HashSet;
 use std::path::Path;
@@ -41,6 +44,8 @@ pub struct SourceExtractionInputIr {
 #[serde(rename_all = "camelCase")]
 pub struct SourceBatchRequestIr {
     pub files: Vec<SourceExtractionInputIr>,
+    #[serde(default)]
+    pub html_attributes: Vec<String>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -55,6 +60,8 @@ pub struct SourceExtractionIr {
 pub struct SourceBatchIr {
     pub version: u32,
     pub files: Vec<SourceExtractionIr>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub html_attributes: Vec<DecodedHTMLAttribute>,
 }
 
 pub fn extract_source(input: &SourceExtractionInputIr) -> Vec<String> {
@@ -92,6 +99,11 @@ pub fn extract_source_batch(request: &SourceBatchRequestIr) -> SourceBatchIr {
                 source: input.source.clone(),
                 candidates: extract_source(input),
             })
+            .collect(),
+        html_attributes: request
+            .html_attributes
+            .iter()
+            .map(|value| decode_html_attribute(value))
             .collect(),
     }
 }

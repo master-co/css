@@ -34,6 +34,7 @@ import {
   type SourceExtractor
 } from './source/session'
 import type {
+  MasterCSSDecodedHTMLAttribute,
   MasterCSSSourceExtraction,
   MasterCSSSourceExtractionRequest
 } from './source/contracts'
@@ -99,6 +100,14 @@ export class MasterCSSToolingSession implements Disposable {
     return freezeToolingResult(this.parts.source.extract({
       files: request.files.map((file) => ({ ...file }))
     }))
+  }
+
+  /** Decode HTML attribute contents without delimiters, preserving UTF-16 spans. */
+  decodeHTMLAttribute(source: string): MasterCSSDecodedHTMLAttribute {
+    this.assertActive()
+    const result = this.parts.source.extract({ files: [], htmlAttributes: [source] }).htmlAttributes?.[0]
+    if (!result) throw new Error('The loaded Master CSS source binding does not support HTML attribute mapping. Rebuild or update the binding.')
+    return freezeToolingResult(result)
   }
 
   extractClassCandidates(content: string) {

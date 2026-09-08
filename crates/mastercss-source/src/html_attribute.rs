@@ -1,6 +1,73 @@
 use std::borrow::Cow;
 
 use crate::html_entities::NAMED;
+use mastercss_schema::SourceRange;
+use serde::Serialize;
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct HTMLAttributeSpan {
+    pub range: SourceRange,
+    pub source_range: SourceRange,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct DecodedHTMLAttribute {
+    pub value: String,
+    pub spans: Vec<HTMLAttributeSpan>,
+}
+
+/// Decode an attribute after its delimiters have been removed. Both coordinate
+/// systems use UTF-16, and an expanded reference is one indivisible source span.
+pub fn decode_with_spans(source: &str) -> DecodedHTMLAttribute {
+    let mut result = DecodedHTMLAttribute {
+        value: String::new(),
+        spans: Vec::new(),
+    };
+    let mut cursor = 0;
+    let mut source_offset = 0;
+    let mut offset = 0;
+    while cursor < source.len() {
+        let rest = &source[cursor..];
+        let first = rest.chars().next().unwrap();
+        let (length, value) = if let Some(reference) = rest.strip_prefix('&') {
+            if let Some((length, character)) = numeric(reference) {
+                (length + 1, Cow::Owned(character.to_string()))
+            } else if let Some((length, characters)) = named(reference) {
+                (length + 1, Cow::Borrowed(characters))
+            } else {
+                (1, Cow::Borrowed("&"))
+            }
+        } else if first == '\r' {
+            // HTML input preprocessing happens before character references, so
+            // a numeric reference to CR is deliberately not normalized here.
+            (
+                if rest.starts_with("\r\n") { 2 } else { 1 },
+                Cow::Borrowed("\n"),
+            )
+        } else if first == '\0' {
+            (1, Cow::Borrowed("\u{fffd}"))
+        } else {
+            (first.len_utf8(), Cow::Borrowed(&rest[..first.len_utf8()]))
+        };
+        let source_end =
+            source_offset + source[cursor..cursor + length].encode_utf16().count() as u32;
+        let end = offset + value.encode_utf16().count() as u32;
+        result.spans.push(HTMLAttributeSpan {
+            range: SourceRange { start: offset, end },
+            source_range: SourceRange {
+                start: source_offset,
+                end: source_end,
+            },
+        });
+        result.value.push_str(&value);
+        cursor += length;
+        source_offset = source_end;
+        offset = end;
+    }
+    result
+}
 
 // HTML tokenization, attribute return states (not XML or JavaScript strings).
 // https://html.spec.whatwg.org/multipage/parsing.html#character-reference-state
@@ -90,4 +157,24 @@ fn numeric(value: &str) -> Option<(usize, char)> {
         .filter(|c| *c != '\0')
         .unwrap_or('\u{fffd}');
     Some((end, character))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn every_named_reference_matches_the_existing_decoder_and_maps_its_source() {
+        for (name, _) in NAMED {
+            for suffix in ["", "x", "=", "-"] {
+                let raw = format!("&{name}{suffix}");
+                let mapped = decode_with_spans(&raw);
+                assert_eq!(mapped.value, decode(&raw), "{raw}");
+                assert_eq!(
+                    mapped.spans.last().unwrap().source_range.end,
+                    raw.len() as u32
+                );
+            }
+        }
+    }
 }

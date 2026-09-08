@@ -29,16 +29,16 @@ export default createRule({
       )
     }
     return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
-      const { raw, start, end, nodes, unescape } = resolved
+      const { nodes } = resolved
       if (nodes.length <= 1) return
       const diagnostics = createMasterCSSLintDiagnostics(
-        tooling.analyzeLintClassList(raw, resolved.classValues).diagnostics
+        tooling.analyzeLintClassList(resolved.analysisText ?? resolved.raw, resolved.classValues).diagnostics
           .filter(({ ruleId }) => ruleId === 'sort-classes')
       )
       reportLintDiagnostics(
         context,
         node,
-        { raw, start, end, nodes, unescape, value: raw, classNodes: [], classValues: [] },
+        resolved,
         diagnostics
       )
     }), release)

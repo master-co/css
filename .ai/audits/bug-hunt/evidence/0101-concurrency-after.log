@@ -1,0 +1,338 @@
+[
+  {
+    "control": "sequential duplicate rejected",
+    "pass": true
+  },
+  {
+    "control": "sequential conflicting preview rejected",
+    "pass": true
+  },
+  {
+    "control": "concurrent independent roots",
+    "pass": true
+  },
+  {
+    "round": 0,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-0.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 1,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-1.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 2,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-2.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 3,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-3.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 4,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-4.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 5,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-5.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 6,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-6.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 7,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-7.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 8,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-8.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "round": 9,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/concurrent-9.txt",
+            "afterHash": "f39592393ef0859cb196a52693d2cea00fb2df784b3c04ae54aa7cadb8e562f8"
+          }
+        ]
+      },
+      {
+        "error": "Error: Preview token is already being applied."
+      }
+    ]
+  },
+  {
+    "conflictingRound": 0,
+    "fulfilled": 1,
+    "finalText": "after-two",
+    "promisedTexts": [
+      "after-one",
+      "after-two"
+    ],
+    "outcomes": [
+      {
+        "error": "Error: File changed after preview generation: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-0.txt"
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-0.txt",
+            "afterHash": "daeba8f55bf2b80cf87005e3687416f9cffbf23dcd4195bf13dbfbf6d5239a4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "conflictingRound": 1,
+    "fulfilled": 1,
+    "finalText": "after-two",
+    "promisedTexts": [
+      "after-one",
+      "after-two"
+    ],
+    "outcomes": [
+      {
+        "error": "Error: File changed after preview generation: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-1.txt"
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-1.txt",
+            "afterHash": "daeba8f55bf2b80cf87005e3687416f9cffbf23dcd4195bf13dbfbf6d5239a4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "conflictingRound": 2,
+    "fulfilled": 1,
+    "finalText": "after-two",
+    "promisedTexts": [
+      "after-one",
+      "after-two"
+    ],
+    "outcomes": [
+      {
+        "error": "Error: File changed after preview generation: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-2.txt"
+      },
+      {
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/conflicting-2.txt",
+            "afterHash": "daeba8f55bf2b80cf87005e3687416f9cffbf23dcd4195bf13dbfbf6d5239a4e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 0,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "error": [
+          {
+            "type": "text",
+            "text": "Preview token is already being applied."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 1,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "error": [
+          {
+            "type": "text",
+            "text": "Preview token is already being applied."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "rpcRound": 2,
+    "fulfilled": 1,
+    "outcomes": [
+      {
+        "version": 1,
+        "diagnostics": [],
+        "applied": true,
+        "changes": [
+          {
+            "filePath": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-bh-preview-U4GZnS/a/style.css",
+            "afterHash": "67c453e1c90af1efbebb297fca458befbe70ea198dd4b35569fbd74739d4075b"
+          }
+        ]
+      },
+      {
+        "error": [
+          {
+            "type": "text",
+            "text": "Preview token is already being applied."
+          }
+        ]
+      }
+    ]
+  }
+]

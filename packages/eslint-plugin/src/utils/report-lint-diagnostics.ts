@@ -38,12 +38,13 @@ export function stringifyLintDiagnosticMessageData(diagnostic: Pick<MasterCSSLin
 
 function defaultFix(resolved: ResolvedClassNode, fix: MasterCSSLintFix) {
   if (fix.scope === 'directive') return
+  const [start, end] = resolved.sourceRange?.(fix.range.start, fix.range.end) ?? [fix.range.start, fix.range.end]
   return {
     range: [
-      resolved.start + fix.range.start,
-      resolved.start + fix.range.end
+      resolved.start + start,
+      resolved.start + end
     ] as FixRange,
-    text: fix.text
+    text: resolved.encodeReplacement?.(fix.text) ?? fix.text
   }
 }
 
@@ -56,10 +57,11 @@ export default function reportLintDiagnostics(
 ) {
   const { sourceCode } = context
   for (const diagnostic of diagnostics) {
-    const start = resolved.start + diagnostic.range.start
-    const end = resolved.start + diagnostic.range.end
+    const range = resolved.sourceRange?.(diagnostic.range.start, diagnostic.range.end) ?? [diagnostic.range.start, diagnostic.range.end]
+    const start = resolved.start + range[0]
+    const end = resolved.start + range[1]
     const messageId = messageIdByCode[diagnostic.code]
-    const fix = diagnostic.fix
+    const fix = diagnostic.fix && resolved.canFix !== false
       ? options.getFix?.(diagnostic, diagnostic.fix) || defaultFix(resolved, diagnostic.fix)
       : undefined
 

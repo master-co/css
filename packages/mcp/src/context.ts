@@ -2,6 +2,7 @@ import { createHash, randomBytes } from 'node:crypto'
 import { existsSync, realpathSync, statSync } from 'node:fs'
 import { mkdir, readFile, realpath as realpathAsync, stat, writeFile } from 'node:fs/promises'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
+import { withPreviewWriteLock } from './preview-write-lock'
 
 export interface MasterCSSMCPContextOptions {
   root?: string
@@ -100,6 +101,7 @@ export default class MasterCSSMCPContext {
   readonly previewTTL: number
   private readonly containmentRoots: string[]
   private previews = new Map<string, StoredPreview>()
+  private applying = new Set<string>()
 
   constructor(options: MasterCSSMCPContextOptions = {}) {
     const configuredRoots = options.roots?.length ? options.roots : [options.root || process.cwd()]
@@ -223,6 +225,25 @@ export default class MasterCSSMCPContext {
     if (!preview) {
       throw new Error('Unknown or already applied preview token.')
     }
+    if (this.applying.has(confirmToken)) {
+      throw new Error('Preview token is already being applied.')
+    }
+    this.applying.add(confirmToken)
+    try {
+      return await withPreviewWriteLock(async () => {
+        // Waiting must not extend a token's lifetime or revive a disposed context.
+        if (this.previews.get(confirmToken) !== preview) {
+          throw new Error('Unknown or already applied preview token.')
+        }
+        return await this.applyStoredPreview(preview)
+      })
+    } finally {
+      this.applying.delete(confirmToken)
+    }
+  }
+
+  private async applyStoredPreview(preview: StoredPreview) {
+    const { confirmToken } = preview
     if (preview.expiresAt < Date.now()) {
       this.previews.delete(confirmToken)
       throw new Error('Preview token has expired.')

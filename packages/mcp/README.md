@@ -83,6 +83,8 @@ Project scan, lint, setup audit, directive inspection, class extraction, class t
 
 Read-only tools do not write files. File writes use a two-step preview/apply flow, validate workspace containment, and verify original file hashes before writing. Lint fixes, generated CSS output writes, and directive formatting for files all use preview tokens before `mastercss_apply_preview` can write anything.
 
+Concurrent applies coordinate across MCP processes for the same OS user through a local lock directory under `~/.cache/mastercss`. Hash validation and writes run one apply at a time across all workspace roots. A waiting apply times out after 30 seconds without taking over a live writer; its token can be retried until it expires. External editors do not participate in this lock, so edits made after hash validation can still race with apply. Multi-file writes are sequential and do not provide rollback or crash atomicity.
+
 ## Related docs
 
 - [MCP Server guide](https://rc.css.master.co/guide/mcp-server)

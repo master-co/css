@@ -1,5 +1,14 @@
 export type MasterCSSSourceKind = 'auto' | 'raw' | 'oxc' | 'html' | 'astro'
 
+/** Decoded HTML attribute text and indivisible UTF-16 source spans. */
+export interface MasterCSSDecodedHTMLAttribute {
+  readonly value: string
+  readonly spans: readonly {
+    readonly range: { readonly start: number, readonly end: number }
+    readonly sourceRange: { readonly start: number, readonly end: number }
+  }[]
+}
+
 export interface MasterCSSSourceExtractionInput {
   readonly source: string
   readonly content: string

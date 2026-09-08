@@ -7,6 +7,7 @@ import type {
 } from './contracts'
 
 export type {
+  MasterCSSDecodedHTMLAttribute,
   MasterCSSExtractedSource,
   MasterCSSSourceExtraction,
   MasterCSSSourceExtractionInput,

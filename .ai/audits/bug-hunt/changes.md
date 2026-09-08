@@ -138,3 +138,11 @@
 0100新增Rust HTML attribute decoder/token reader、2231entry固定資料表與stdlib generator、Rust/TS回歸及browser corpus/static build重現。BH-0010已修復，既有JS/raw字串行為保留；新表與parser不進runtime engine。未改依賴/lockfile/fixtures/snapshots/CI，未提交，未清理帳本。
 
 本次依使用者最新指示提交0096–0100已完成的5項修復（BH-0019/0026/0020/0011/0010）及對應測試、重現與帳本。提交前核對36個來源/測試/重現/其他工作雜湊一致；沿用各批最終測試、lint/types/build及browser證據。0092 compiler部分修復、0101並行重現與Site其他工作留在工作區；未推送、未清理帳本，目標仍active。
+
+0101新增MCP私有跨程序preview gate、token認領與10個回歸測試，更新公開README的序列化/timeout/partial-write界線；新增built stdio及鎖壓力repros，既有fault/interruption repro僅增可選證據輸出路徑。BH-0031修復但本批未提交；0092部分修復、Site其他工作及全部阻礙保留。
+
+0102新增ESLint私有JavaScript literal範圍/編碼helper，5規則傳遞cooked分析和來源對映，新增37個通過控制與2個仍失敗的Vue外層encoding回歸；現有fixtures/snapshots未改。對AST raw與source不一致情境暫不給不安全autofix，完整修復仍待外層HTML mapping。BH-0015未完成、不得作為已完成修復提交；MCP0101、compiler0092與Site其他工作保持原樣。
+
+0103完成BH-0015 Vue外層HTML mapping，新增Rust mapping與tooling公開API，經xtask重新產生binding protocol，ESLint組合JS/HTML來源與替換編碼。ESLint291/tooling215/binding17/config4/Rust18及21三瀏覽器控制通過。0102原始失敗證據保留，由0103最終结果取代。
+
+本次依使用者指示提交0101及0102–0103兩項已完成修復BH-0031/0015及必要測試/README/帳本/重現。0092 compiler部分修復和Site其他工作留在工作區，未推送。新增tooling API為刻意的相容擴充；未改依賴/lockfile/fixtures/snapshots/CI/release。25fixed/19unresolved、65checked/10blocked，目標仍active。

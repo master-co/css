@@ -31,7 +31,7 @@ export default createRule({
     }
     return withContextRelease(defineVisitors({ context, settings, tooling }, (node, resolved) => {
       const diagnostics = createMasterCSSLintDiagnostics(
-        tooling.analyzeLintClassList(resolved.raw, resolved.classValues).diagnostics
+        tooling.analyzeLintClassList(resolved.analysisText ?? resolved.raw, resolved.classValues).diagnostics
           .filter(({ ruleId }) => ruleId === 'no-conflicting-classes')
       )
       reportLintDiagnostics(
