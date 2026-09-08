@@ -77,6 +77,13 @@ The overview refresh also retains the global manifest, class-name set and genera
 
 The Guide overview refresh changes generated inline CSS only on `/guide`, `/en/guide` and `/tw/guide`. The global manifest and existing rule text remain identical. Seven obsolete layout/keycap classes leave the generated class set when the old overview and tutorial are removed; no new classes are introduced. Reference and other routes retain their inline CSS. The snapshot is refreshed for this reviewed Guide-only content/layout change.
 
+## Article UI removal, 2026-09-08
+
+- At the user's request, removed the injected Related reference section, version/source/Markdown toolbar, page-level copy-example control and alias list, including their dedicated components and styles. Article bodies, syntax tables, overview/navigation and the shared content pipeline remain in place.
+- Desktop flex-wrap and 390px Traditional Chinese padding render the body directly with no removed controls or horizontal overflow. All 792 localized/canonical Reference article HTML files were checked for obsolete UI markers; none remain.
+- The scoped production build, type-check, 10 Reference tests and source-budget check passed. Site lint reports no errors and the same 72 existing warnings.
+- CSS baseline review: the global manifest, all existing generated rule text and the global class-name set are identical. Only the 792 Reference article routes change their contracts; their removed UI no longer contributes `flex-wrap`, `gap:sm`, `ml:xs` or `text:sm` where otherwise unused. No route gains a class. The reviewed snapshot contains 1,142 routes, 204 hydration contracts, 1,901 rules and 2,202 CSS segments.
+
 ## Outcome study still pending
 
 `evaluation.json` contains twelve concrete tasks and the recording fields for two retrieval workflows: HTML/browser and per-page Markdown/index. No human timing, agent model score or production search improvement is claimed here. Recruit the planned new/experienced users and run both actual agent workflows before assessing those outcome thresholds or investing in semantic search.

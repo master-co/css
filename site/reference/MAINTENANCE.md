@@ -20,6 +20,8 @@ The original Guide locations retain their workflow content and old anchor entran
 
 The current source revision and semantic/content digests identify the build inputs. Current-version URLs can change between builds; these are not historical version snapshots. A local dirty checkout is not a published immutable document.
 
+Individual document pages render their authored or generated body directly. Do not inject a version/source/Markdown toolbar, a page-level copy-example control, a generic Related reference section or an extra alias list. Keep the body as the reading source of truth; search and machine exports derive from the existing shared content model.
+
 ## Editing safely
 
 1. Keep existing utility URLs. Add new contracts through the section registry instead of creating a URL for every alias or token.

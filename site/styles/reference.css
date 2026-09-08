@@ -1,7 +1,4 @@
 @layer components {
-  .reference-meta { margin-block: 1.5rem 2rem; padding-block: 1rem; border-block: 1px solid var(--color-line-subtle); }
-  .reference-meta p { margin-block: .75rem; }
-  .reference-aliases { display: flex; flex-wrap: wrap; gap: .5rem; }
   .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }
   .reference-document pre { max-width: 100%; overflow-x: auto; }
   .reference-document code { overflow-wrap: anywhere; }
