@@ -24,10 +24,11 @@ export default function postAndWaitForMessage<T extends PluginMessage['type']>(
 
     const handler = (event: MessageEvent<{ pluginMessage: PluginMessage }>) => {
       const message = event.data.pluginMessage
-      if (message.type === type) {
+      if (message?.type === type) {
         clearTimeout(timer)
         window.removeEventListener('message', handler)
-        resolve(message.data as T)
+        if (message.error) reject(new Error(message.error))
+        else resolve(message.data as T)
       }
     }
 

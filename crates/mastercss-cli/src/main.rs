@@ -24,8 +24,8 @@ const SELF_TEST_MANIFEST: &str = r#"{
   }]
 }"#;
 const SOURCE_EXTENSIONS: &[&str] = &[
-    "html", "htm", "js", "jsx", "cjs", "ts", "tsx", "mts", "cts", "svelte", "astro", "vue", "md",
-    "mdx", "pug", "php",
+    "html", "htm", "js", "mjs", "jsx", "cjs", "ts", "tsx", "mts", "cts", "svelte", "astro", "vue",
+    "md", "mdx", "pug", "php",
 ];
 
 #[derive(Debug)]

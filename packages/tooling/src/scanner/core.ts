@@ -33,6 +33,7 @@ const sourceLikeExtensions = new Set([
   '.html',
   '.htm',
   '.js',
+  '.mjs',
   '.jsx',
   '.cjs',
   '.ts',

@@ -1,0 +1,3 @@
+{"browser":"chromium","version":"153.0.8010.12","actualBuiltPluginAndUI":true,"figmaAPI":"explicit in-memory mock","definitionsModesAliasesBoolean":"PASS","errorAndRetry":"PASS"}
+{"browser":"firefox","version":"155.0","actualBuiltPluginAndUI":true,"figmaAPI":"explicit in-memory mock","definitionsModesAliasesBoolean":"PASS","errorAndRetry":"PASS"}
+{"browser":"webkit","version":"26.6","actualBuiltPluginAndUI":true,"figmaAPI":"explicit in-memory mock","definitionsModesAliasesBoolean":"PASS","errorAndRetry":"PASS"}

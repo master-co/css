@@ -122,3 +122,9 @@
 - [mcp-filesystem-faults.mjs](repros/mcp-filesystem-faults.mjs)
 
 - [mcp-process-interruption.mjs](repros/mcp-process-interruption.mjs)
+
+0092–0093新增compiler import條件與Figma definitions/modes修復、最小測試與repros；詳細限制見批次。未提交；原有其他工作與fixtures/snapshots/dependencies/lockfiles/CI均保留。
+
+0094–0095修復runtime CSP/iframe與scanner/CLI.mjs發現，新增回歸測試；3個舊hydration測試改驗證原生JSON module/error contract，未改fixtures/snapshots。0092新增測試baseManifest型別材料已補正。所有修復仍未新增commit，benchmark history僅留/tmp。
+
+本次依使用者指示提交0093–0095已完成的5項修復及帳本/證據。0092 compiler部分修復和0096/0097進行中變更不納入產品提交；共用CLI/tooling檔案僅暫存0095的.mjs修改，與0095驗證hash一致。Site其他工作原樣保留，未推送。

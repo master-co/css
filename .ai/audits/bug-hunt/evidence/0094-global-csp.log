@@ -1,0 +1,19 @@
+
+Running 3 tests using 1 worker
+
+(node:84801) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/3] [chromium] › e2e/bug-hunt-global-csp.test.ts:7:1 › BH-0008 built global runtime hydrates and updates under CSP without unsafe-eval
+(node:84882) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[2/3] [firefox] › e2e/bug-hunt-global-csp.test.ts:7:1 › BH-0008 built global runtime hydrates and updates under CSP without unsafe-eval
+(node:85040) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[3/3] [webkit] › e2e/bug-hunt-global-csp.test.ts:7:1 › BH-0008 built global runtime hydrates and updates under CSP without unsafe-eval
+  3 passed (23.0s)

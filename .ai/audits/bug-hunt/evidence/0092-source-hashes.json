@@ -1,0 +1,5 @@
+{
+  "crates/mastercss-compiler/src/imports.rs": "dc897f22bb1df4e0a8522cc2a10a00623c17d48b931c7d9e20e215cc6c198716",
+  "crates/mastercss-compiler/tests/bug_hunt_import_qualifiers.rs": "9c20e63d369a13763b385e9417150e02019c201b069d57bf716872e461540a4b",
+  "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "b9ced3cee63daa8e39039dcde8e19c096a733263d5e5095df82d8ced05894bc8"
+}

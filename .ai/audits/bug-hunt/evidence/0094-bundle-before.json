@@ -1,0 +1,26 @@
+{
+  "packages/runtime/dist/global.min.js": {
+    "raw": 49993,
+    "gzip": 14099,
+    "brotli": 12631,
+    "sha256": "46d48a2e4a4e27c317a53d7e6b4c4ce53442e46421915480f6aac53411c2a722"
+  },
+  "packages/runtime/dist/index.js": {
+    "raw": 53049,
+    "gzip": 11817,
+    "brotli": 10421,
+    "sha256": "f6c8386e17217521796c31543818b032bdf9028e07dd9d33683a4a3ee5e50a89"
+  },
+  "packages/runtime/dist/default-manifest.json": {
+    "raw": 82513,
+    "gzip": 11747,
+    "brotli": 9374,
+    "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+  },
+  "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+    "raw": 867094,
+    "gzip": 265242,
+    "brotli": 202188,
+    "sha256": "ad5ab3fbd5c61cc4edc515184e0955f2a086d6c730797616ffce27ff00b2f080"
+  }
+}

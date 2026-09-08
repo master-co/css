@@ -1,0 +1,74 @@
+[
+  {
+    "host": "node",
+    "extension": "js",
+    "explicit": true,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "node",
+    "extension": "js",
+    "explicit": false,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "native",
+    "extension": "js",
+    "explicit": true,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "native",
+    "extension": "js",
+    "explicit": false,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "node",
+    "extension": "mjs",
+    "explicit": true,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "node",
+    "extension": "mjs",
+    "explicit": false,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "native",
+    "extension": "mjs",
+    "explicit": true,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  },
+  {
+    "host": "native",
+    "extension": "mjs",
+    "explicit": false,
+    "status": 0,
+    "containsBlock": true,
+    "stderr": "",
+    "wroteFile": false
+  }
+]

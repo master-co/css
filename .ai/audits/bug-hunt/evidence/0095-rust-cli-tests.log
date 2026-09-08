@@ -1,0 +1,19 @@
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.12s
+     Running unittests src/main.rs (target/debug/deps/mcss-1a1a148485dbcbf4)
+
+running 2 tests
+test tests::matches_cross_platform_glob_patterns ... ok
+test tests::self_test_engine_contract_is_stable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_mjs.rs (target/debug/deps/bug_hunt_mjs-a9210e6140b46f1f)
+
+running 1 test
+test bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.45s
+

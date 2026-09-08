@@ -1,4 +1,4 @@
-export type VariableDataValue = string | number | false | (string | number)[]
+export type VariableDataValue = string | number | boolean | (string | number)[]
 
 export interface VariableDataDefinition {
   key: string

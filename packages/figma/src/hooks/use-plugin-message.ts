@@ -10,7 +10,7 @@ export default function usePluginMessage<T>(
   useEffect(() => {
     const listener = (event: MessageEvent<{ pluginMessage: PluginMessage }>) => {
       const message = event.data.pluginMessage
-      if (message?.type === type) {
+      if (message?.type === type && !message.error) {
         handler(message.data as T)
       }
     }

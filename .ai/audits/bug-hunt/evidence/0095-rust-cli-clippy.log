@@ -1,0 +1,30 @@
+    Checking indexmap v2.14.2
+   Compiling oxc_ast_macros v0.148.0
+   Compiling phf_macros v0.14.0
+    Checking serde v1.0.229
+    Checking thiserror v2.0.20
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+    Checking smallvec v1.16.0
+    Checking oxc_index v5.0.0
+    Checking oxc_span v0.148.0
+    Checking phf v0.14.0
+    Checking serde_json v1.0.151
+    Checking cssparser v0.37.0
+    Checking parcel_selectors v0.28.3
+    Checking cssparser-color v0.5.0
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+    Checking oxc_diagnostics v0.148.0
+    Checking lightningcss v1.0.0-alpha.72
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Checking oxc_regular_expression v0.148.0
+    Checking oxc_syntax v0.148.0
+    Checking oxc_ast v0.148.0
+    Checking oxc_ecmascript v0.148.0
+    Checking oxc_ast_visit v0.148.0
+    Checking oxc_parser v0.148.0
+    Checking mastercss-source v0.0.0 (/Users/aron/master/css/crates/mastercss-source)
+    Checking mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Checking mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.49s

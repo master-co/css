@@ -26,3 +26,20 @@ test('audit control: accumulated sources are cleared by reset and can be rescann
     await scanner.dispose()
   }
 })
+
+test.each([
+  ['component.mjs?import', true],
+  ['component.mjs?type=script', true],
+  ['component.mjs?type=style', false],
+  ['component.css', false],
+  ['component.json', false],
+  ['component.wasm', false]
+])('BH-0012 module filtering for %s yields supported=%s', async (source, supported) => {
+  const scanner = await new MasterCSSScanner({ verbose: 0 }).init()
+  try {
+    await scanner.scanModule(source, 'export const classes = "block"')
+    expect(scanner.css.text.includes('.block{display:block}')).toBe(supported)
+  } finally {
+    await scanner.dispose()
+  }
+})

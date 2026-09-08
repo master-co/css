@@ -1,6 +1,10 @@
 type ClassDeltaMap = Map<string, number>
 type ClassCountMap = Map<string, number>
 
+function isElement(node: Node): node is Element {
+  return node.nodeType === 1
+}
+
 function updateClassDelta(deltaCounts: ClassDeltaMap, className: string, delta: number) {
   const nextDelta = (deltaCounts.get(className) || 0) + delta
   if (nextDelta) {
@@ -64,14 +68,14 @@ export default class RuntimeClassTracker {
     for (const record of records) {
       if (record.type === 'childList') {
         for (const node of record.addedNodes) {
-          if (node instanceof Element && belongsToRoot(node)) updateNodeCount(node, 1)
+          if (isElement(node) && belongsToRoot(node)) updateNodeCount(node, 1)
         }
         for (const node of record.removedNodes) {
-          if (node instanceof Element && !belongsToRoot(node)) updateNodeCount(node, -1)
+          if (isElement(node) && !belongsToRoot(node)) updateNodeCount(node, -1)
         }
       } else if (record.type === 'attributes' && record.attributeName === 'class') {
         const target = record.target
-        if (target instanceof Element) attrRecords.add(target)
+        if (isElement(target)) attrRecords.add(target)
       }
     }
 

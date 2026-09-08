@@ -1,0 +1,286 @@
+
+Running 270 tests using 1 worker
+
+(node:84355) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[1/270] [chromium] › e2e/bug-hunt-frame.test.ts:6:1 › BH-0009 tracks class updates in a same-origin iframe Document root
+[2/270] [chromium] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe document subtree addition, attributes, moves and removal
+[3/270] [chromium] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe shadow subtree addition, attributes, moves and removal
+[4/270] [chromium] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied
+[5/270] [chromium] › e2e/class-usages.test.ts:16:1 › inner
+[6/270] [chromium] › e2e/class-usages.test.ts:26:1 › remove z1 element
+[7/270] [chromium] › e2e/class-usages.test.ts:33:1 › remove z2 element
+[8/270] [chromium] › e2e/class-usages.test.ts:42:1 › remove z3 element
+[9/270] [chromium] › e2e/class-usages.test.ts:52:1 › remove body content and append again
+[10/270] [chromium] › e2e/class-usages.test.ts:66:1 › add an element to z1
+[11/270] [chromium] › e2e/class-usages.test.ts:83:1 › add an element to z2
+[12/270] [chromium] › e2e/class-usages.test.ts:100:1 › remove a class while the subtree is disconnected and append again
+[13/270] [chromium] › e2e/class-usages.test.ts:122:1 › moves class subtrees across document and shadow roots without stale counts
+[14/270] [chromium] › e2e/complex.test.ts:10:1 › complex
+[15/270] [chromium] › e2e/edge-cases.test.ts:76:1 › disconnect clears counts and observe rescans the current DOM
+[16/270] [chromium] › e2e/edge-cases.test.ts:115:1 › mutation removals keep counts immediate and retain CSSOM rules after settle
+[17/270] [chromium] › e2e/edge-cases.test.ts:165:1 › mutation removal flush keeps remaining native CSSOM references valid
+[18/270] [chromium] › e2e/edge-cases.test.ts:266:1 › re-adding a retained class cancels retained cleanup
+[19/270] [chromium] › e2e/edge-cases.test.ts:300:1 › direct remove deletes retained CSSOM rules synchronously
+[20/270] [chromium] › e2e/edge-cases.test.ts:324:1 › retained hard-limit cleanup returns to soft target and preserves active classes
+[21/270] [chromium] › e2e/edge-cases.test.ts:468:1 › mutation removals are canceled when a class returns before flush
+[22/270] [chromium] › e2e/edge-cases.test.ts:506:1 › direct ensureClassRules and deleteClassRules stay synchronous
+[23/270] [chromium] › e2e/edge-cases.test.ts:533:1 › observer-added cold classes update counts immediately and flush rules before paint
+[24/270] [chromium] › e2e/edge-cases.test.ts:596:1 › observer-added retained classes are reused immediately
+[25/270] [chromium] › e2e/edge-cases.test.ts:648:1 › observer queued cold classes removed before flush are skipped
+[26/270] [chromium] › e2e/edge-cases.test.ts:712:1 › disconnect and dispose clear pending mutation additions and removals
+[27/270] [chromium] › e2e/edge-cases.test.ts:760:1 › shadow roots maintain isolated runtime state and style nodes
+[28/270] [chromium] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[29/270] [chromium] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[30/270] [chromium] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[31/270] [chromium] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[32/270] [chromium] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[33/270] [chromium] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[34/270] [chromium] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[35/270] [chromium] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[36/270] [chromium] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[37/270] [chromium] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[38/270] [chromium] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration uses JSON modules without constructing a loader or calling fetch
+[39/270] [chromium] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration rejects an unsupported JSON module manifest without fetch
+[40/270] [chromium] › e2e/hydration-edge-cases.test.ts:383:1 › external hydration does not fetch after a JSON import request fails
+[41/270] [chromium] › e2e/hydration-edge-cases.test.ts:428:1 › external hydration reports HTTP failures as structured diagnostics
+[42/270] [chromium] › e2e/hydration-edge-cases.test.ts:467:1 › runtime start does not import a hydration manifest without a runtime style source
+[43/270] [chromium] › e2e/hydration-edge-cases.test.ts:499:1 › progressive hydration fails open when an external style hydration manifest import fails
+[44/270] [chromium] › e2e/hydration-edge-cases.test.ts:543:1 › progressive hydration rejects an invalid external hydration manifest payload
+[45/270] [chromium] › e2e/hydration-edge-cases.test.ts:585:1 › explicit hydration manifest wins over external DOM discovery
+[46/270] [chromium] › e2e/hydration-edge-cases.test.ts:624:1 › progressive hydration matches bucketed theme variables
+[47/270] [chromium] › e2e/hydration-edge-cases.test.ts:654:1 › progressive hydration matches theme variable buckets by key
+[48/270] [chromium] › e2e/hydration-edge-cases.test.ts:694:1 › removes shared alias variable dependencies when classes disappear
+[49/270] [chromium] › e2e/hydration-edge-cases.test.ts:774:1 › inlines variables without runtime theme counts
+[50/270] [chromium] › e2e/keyframes.test.ts:35:1 › expects the animate token output
+[51/270] [chromium] › e2e/keyframes.test.ts:56:1 › expects the animation output
+[52/270] [chromium] › e2e/lifecycle.test.ts:17:1 › starts the browser runtime through the Wasm binding
+[53/270] [chromium] › e2e/lifecycle.test.ts:22:1 › exposes only the frozen runtime facade and immutable snapshot
+[54/270] [chromium] › e2e/lifecycle.test.ts:43:1 › does not install the removed devtools hook global
+[55/270] [chromium] › e2e/lifecycle.test.ts:48:1 › dispose on progressive
+[56/270] [chromium] › e2e/lifecycle.test.ts:85:1 › prevent attach layer twice
+[57/270] [chromium] › e2e/lifecycle.test.ts:107:1 › insert semantic utility with multiple native rules into existing layer
+[58/270] [chromium] › e2e/lifecycle.test.ts:131:1 › inserts functional pseudo-class selector aliases into native CSSOM
+[59/270] [chromium] › e2e/lifecycle.test.ts:150:1 › refresh clears stale native keyframes
+[60/270] [chromium] › e2e/lifecycle.test.ts:170:1 › observes static theme variables and keyframes without class references
+[61/270] [chromium] › e2e/lifecycle.test.ts:203:1 › generates browser native declarations through CSS.supports fallback
+[62/270] [chromium] › e2e/lifecycle.test.ts:250:1 › hydrates progressive static theme variables and keyframes
+[63/270] [chromium] › e2e/lifecycle.test.ts:288:1 › registers emittedGlobals counts on an existing runtime
+[64/270] [chromium] › e2e/lifecycle.test.ts:329:1 › merges emittedGlobals from concurrent starts before resolving callers
+[65/270] [chromium] › e2e/lifecycle.test.ts:387:1 › registers emittedGlobals counts once on a new runtime
+[66/270] [chromium] › e2e/progressive/basic.test.ts:4:1 › progressive
+[67/270] [chromium] › e2e/progressive/components/index.test.ts:11:1 › components
+[68/270] [chromium] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[69/270] [chromium] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[70/270] [chromium] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[71/270] [chromium] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[72/270] [chromium] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[73/270] [chromium] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[74/270] [chromium] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[75/270] [chromium] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[76/270] [chromium] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[77/270] [chromium] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[78/270] [chromium] › e2e/theme-layer-order.test.ts:4:1 › keeps default variable buckets before mode buckets when CSSOM buckets are inserted later
+[79/270] [chromium] › e2e/variables.test.ts:54:1 › expects the variable output
+[80/270] [chromium] › e2e/variables.test.ts:155:1 › sets native color-scheme on local class-triggered mode islands
+[81/270] [chromium] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[82/270] [chromium] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[83/270] [chromium] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[84/270] [chromium] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[85/270] [chromium] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+[86/270] [chromium] › tests/issues/382.test.ts:6:1 › O to O
+[87/270] [chromium] › tests/issues/382.test.ts:44:1 › O to X
+[88/270] [chromium] › tests/issues/382.test.ts:76:1 › X to O
+[89/270] [chromium] › tests/issues/382.test.ts:110:1 › X to X
+[90/270] [chromium] › tests/issues/383.test.ts:16:1 › 383
+(node:84646) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[91/270] [firefox] › e2e/bug-hunt-frame.test.ts:6:1 › BH-0009 tracks class updates in a same-origin iframe Document root
+[92/270] [firefox] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe document subtree addition, attributes, moves and removal
+[93/270] [firefox] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe shadow subtree addition, attributes, moves and removal
+[94/270] [firefox] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied
+[95/270] [firefox] › e2e/class-usages.test.ts:16:1 › inner
+[96/270] [firefox] › e2e/class-usages.test.ts:26:1 › remove z1 element
+[97/270] [firefox] › e2e/class-usages.test.ts:33:1 › remove z2 element
+[98/270] [firefox] › e2e/class-usages.test.ts:42:1 › remove z3 element
+[99/270] [firefox] › e2e/class-usages.test.ts:52:1 › remove body content and append again
+[100/270] [firefox] › e2e/class-usages.test.ts:66:1 › add an element to z1
+[101/270] [firefox] › e2e/class-usages.test.ts:83:1 › add an element to z2
+[102/270] [firefox] › e2e/class-usages.test.ts:100:1 › remove a class while the subtree is disconnected and append again
+[103/270] [firefox] › e2e/class-usages.test.ts:122:1 › moves class subtrees across document and shadow roots without stale counts
+[104/270] [firefox] › e2e/complex.test.ts:10:1 › complex
+[105/270] [firefox] › e2e/edge-cases.test.ts:76:1 › disconnect clears counts and observe rescans the current DOM
+[106/270] [firefox] › e2e/edge-cases.test.ts:115:1 › mutation removals keep counts immediate and retain CSSOM rules after settle
+[107/270] [firefox] › e2e/edge-cases.test.ts:165:1 › mutation removal flush keeps remaining native CSSOM references valid
+[108/270] [firefox] › e2e/edge-cases.test.ts:266:1 › re-adding a retained class cancels retained cleanup
+[109/270] [firefox] › e2e/edge-cases.test.ts:300:1 › direct remove deletes retained CSSOM rules synchronously
+[110/270] [firefox] › e2e/edge-cases.test.ts:324:1 › retained hard-limit cleanup returns to soft target and preserves active classes
+[111/270] [firefox] › e2e/edge-cases.test.ts:468:1 › mutation removals are canceled when a class returns before flush
+[112/270] [firefox] › e2e/edge-cases.test.ts:506:1 › direct ensureClassRules and deleteClassRules stay synchronous
+[113/270] [firefox] › e2e/edge-cases.test.ts:533:1 › observer-added cold classes update counts immediately and flush rules before paint
+[114/270] [firefox] › e2e/edge-cases.test.ts:596:1 › observer-added retained classes are reused immediately
+[115/270] [firefox] › e2e/edge-cases.test.ts:648:1 › observer queued cold classes removed before flush are skipped
+[116/270] [firefox] › e2e/edge-cases.test.ts:712:1 › disconnect and dispose clear pending mutation additions and removals
+[117/270] [firefox] › e2e/edge-cases.test.ts:760:1 › shadow roots maintain isolated runtime state and style nodes
+[118/270] [firefox] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[119/270] [firefox] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[120/270] [firefox] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[121/270] [firefox] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[122/270] [firefox] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[123/270] [firefox] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[124/270] [firefox] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[125/270] [firefox] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[126/270] [firefox] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[127/270] [firefox] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[128/270] [firefox] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration uses JSON modules without constructing a loader or calling fetch
+[129/270] [firefox] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration rejects an unsupported JSON module manifest without fetch
+[130/270] [firefox] › e2e/hydration-edge-cases.test.ts:383:1 › external hydration does not fetch after a JSON import request fails
+[131/270] [firefox] › e2e/hydration-edge-cases.test.ts:428:1 › external hydration reports HTTP failures as structured diagnostics
+[132/270] [firefox] › e2e/hydration-edge-cases.test.ts:467:1 › runtime start does not import a hydration manifest without a runtime style source
+[133/270] [firefox] › e2e/hydration-edge-cases.test.ts:499:1 › progressive hydration fails open when an external style hydration manifest import fails
+[134/270] [firefox] › e2e/hydration-edge-cases.test.ts:543:1 › progressive hydration rejects an invalid external hydration manifest payload
+[135/270] [firefox] › e2e/hydration-edge-cases.test.ts:585:1 › explicit hydration manifest wins over external DOM discovery
+[136/270] [firefox] › e2e/hydration-edge-cases.test.ts:624:1 › progressive hydration matches bucketed theme variables
+[137/270] [firefox] › e2e/hydration-edge-cases.test.ts:654:1 › progressive hydration matches theme variable buckets by key
+[138/270] [firefox] › e2e/hydration-edge-cases.test.ts:694:1 › removes shared alias variable dependencies when classes disappear
+[139/270] [firefox] › e2e/hydration-edge-cases.test.ts:774:1 › inlines variables without runtime theme counts
+[140/270] [firefox] › e2e/keyframes.test.ts:35:1 › expects the animate token output
+[141/270] [firefox] › e2e/keyframes.test.ts:56:1 › expects the animation output
+[142/270] [firefox] › e2e/lifecycle.test.ts:17:1 › starts the browser runtime through the Wasm binding
+[143/270] [firefox] › e2e/lifecycle.test.ts:22:1 › exposes only the frozen runtime facade and immutable snapshot
+[144/270] [firefox] › e2e/lifecycle.test.ts:43:1 › does not install the removed devtools hook global
+[145/270] [firefox] › e2e/lifecycle.test.ts:48:1 › dispose on progressive
+[146/270] [firefox] › e2e/lifecycle.test.ts:85:1 › prevent attach layer twice
+[147/270] [firefox] › e2e/lifecycle.test.ts:107:1 › insert semantic utility with multiple native rules into existing layer
+[148/270] [firefox] › e2e/lifecycle.test.ts:131:1 › inserts functional pseudo-class selector aliases into native CSSOM
+[149/270] [firefox] › e2e/lifecycle.test.ts:150:1 › refresh clears stale native keyframes
+[150/270] [firefox] › e2e/lifecycle.test.ts:170:1 › observes static theme variables and keyframes without class references
+[151/270] [firefox] › e2e/lifecycle.test.ts:203:1 › generates browser native declarations through CSS.supports fallback
+[152/270] [firefox] › e2e/lifecycle.test.ts:250:1 › hydrates progressive static theme variables and keyframes
+[153/270] [firefox] › e2e/lifecycle.test.ts:288:1 › registers emittedGlobals counts on an existing runtime
+[154/270] [firefox] › e2e/lifecycle.test.ts:329:1 › merges emittedGlobals from concurrent starts before resolving callers
+[155/270] [firefox] › e2e/lifecycle.test.ts:387:1 › registers emittedGlobals counts once on a new runtime
+[156/270] [firefox] › e2e/progressive/basic.test.ts:4:1 › progressive
+[157/270] [firefox] › e2e/progressive/components/index.test.ts:11:1 › components
+[158/270] [firefox] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[159/270] [firefox] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[160/270] [firefox] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[161/270] [firefox] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[162/270] [firefox] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[163/270] [firefox] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[164/270] [firefox] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[165/270] [firefox] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[166/270] [firefox] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[167/270] [firefox] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[168/270] [firefox] › e2e/theme-layer-order.test.ts:4:1 › keeps default variable buckets before mode buckets when CSSOM buckets are inserted later
+[169/270] [firefox] › e2e/variables.test.ts:54:1 › expects the variable output
+[170/270] [firefox] › e2e/variables.test.ts:155:1 › sets native color-scheme on local class-triggered mode islands
+[171/270] [firefox] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[172/270] [firefox] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[173/270] [firefox] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[174/270] [firefox] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[175/270] [firefox] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+[176/270] [firefox] › tests/issues/382.test.ts:6:1 › O to O
+[177/270] [firefox] › tests/issues/382.test.ts:44:1 › O to X
+[178/270] [firefox] › tests/issues/382.test.ts:76:1 › X to O
+[179/270] [firefox] › tests/issues/382.test.ts:110:1 › X to X
+[180/270] [firefox] › tests/issues/383.test.ts:16:1 › 383
+(node:85279) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+
+[181/270] [webkit] › e2e/bug-hunt-frame.test.ts:6:1 › BH-0009 tracks class updates in a same-origin iframe Document root
+[182/270] [webkit] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe document subtree addition, attributes, moves and removal
+[183/270] [webkit] › e2e/bug-hunt-frame.test.ts:34:3 › BH-0009 handles iframe shadow subtree addition, attributes, moves and removal
+[184/270] [webkit] › e2e/bug-hunt-hydration.test.ts:4:1 › BH-0008: external hydration works with modules and Wasm allowed but unsafe-eval denied
+[185/270] [webkit] › e2e/class-usages.test.ts:16:1 › inner
+[186/270] [webkit] › e2e/class-usages.test.ts:26:1 › remove z1 element
+[187/270] [webkit] › e2e/class-usages.test.ts:33:1 › remove z2 element
+[188/270] [webkit] › e2e/class-usages.test.ts:42:1 › remove z3 element
+[189/270] [webkit] › e2e/class-usages.test.ts:52:1 › remove body content and append again
+[190/270] [webkit] › e2e/class-usages.test.ts:66:1 › add an element to z1
+[191/270] [webkit] › e2e/class-usages.test.ts:83:1 › add an element to z2
+[192/270] [webkit] › e2e/class-usages.test.ts:100:1 › remove a class while the subtree is disconnected and append again
+[193/270] [webkit] › e2e/class-usages.test.ts:122:1 › moves class subtrees across document and shadow roots without stale counts
+[194/270] [webkit] › e2e/complex.test.ts:10:1 › complex
+[195/270] [webkit] › e2e/edge-cases.test.ts:76:1 › disconnect clears counts and observe rescans the current DOM
+[196/270] [webkit] › e2e/edge-cases.test.ts:115:1 › mutation removals keep counts immediate and retain CSSOM rules after settle
+[197/270] [webkit] › e2e/edge-cases.test.ts:165:1 › mutation removal flush keeps remaining native CSSOM references valid
+[198/270] [webkit] › e2e/edge-cases.test.ts:266:1 › re-adding a retained class cancels retained cleanup
+[199/270] [webkit] › e2e/edge-cases.test.ts:300:1 › direct remove deletes retained CSSOM rules synchronously
+[200/270] [webkit] › e2e/edge-cases.test.ts:324:1 › retained hard-limit cleanup returns to soft target and preserves active classes
+[201/270] [webkit] › e2e/edge-cases.test.ts:468:1 › mutation removals are canceled when a class returns before flush
+[202/270] [webkit] › e2e/edge-cases.test.ts:506:1 › direct ensureClassRules and deleteClassRules stay synchronous
+[203/270] [webkit] › e2e/edge-cases.test.ts:533:1 › observer-added cold classes update counts immediately and flush rules before paint
+[204/270] [webkit] › e2e/edge-cases.test.ts:596:1 › observer-added retained classes are reused immediately
+[205/270] [webkit] › e2e/edge-cases.test.ts:648:1 › observer queued cold classes removed before flush are skipped
+[206/270] [webkit] › e2e/edge-cases.test.ts:712:1 › disconnect and dispose clear pending mutation additions and removals
+[207/270] [webkit] › e2e/edge-cases.test.ts:760:1 › shadow roots maintain isolated runtime state and style nodes
+[208/270] [webkit] › e2e/global-manifest.test.ts:53:1 › uses split bundled preset manifest
+[209/270] [webkit] › e2e/global-manifest.test.ts:66:1 › uses modulepreloaded default manifest
+[210/270] [webkit] › e2e/global-manifest.test.ts:105:1 › ignores global manifest override
+[211/270] [webkit] › e2e/global-manifest.test.ts:125:1 › fails open when a cross-origin Wasm request is blocked
+[212/270] [webkit] › e2e/global-manifest.test.ts:146:1 › fails open when strict CSP disallows Wasm compilation
+[213/270] [webkit] › e2e/hydration-edge-cases.test.ts:76:1 › progressive hydration without a manifest rebuilds with runtime CSS
+[214/270] [webkit] › e2e/hydration-edge-cases.test.ts:102:1 › progressive hydration with a mismatched manifest rebuilds with runtime CSS
+[215/270] [webkit] › e2e/hydration-edge-cases.test.ts:128:1 › progressive hydration with an empty manifest rebuilds with runtime CSS
+[216/270] [webkit] › e2e/hydration-edge-cases.test.ts:157:1 › progressive hydration uses hydration manifest and retains removed hydrated classes
+[217/270] [webkit] › e2e/hydration-edge-cases.test.ts:226:1 › progressive hydration imports an external style hydration manifest
+[218/270] [webkit] › e2e/hydration-edge-cases.test.ts:266:1 › progressive hydration uses JSON modules without constructing a loader or calling fetch
+[219/270] [webkit] › e2e/hydration-edge-cases.test.ts:329:1 › external hydration rejects an unsupported JSON module manifest without fetch
+[220/270] [webkit] › e2e/hydration-edge-cases.test.ts:383:1 › external hydration does not fetch after a JSON import request fails
+[221/270] [webkit] › e2e/hydration-edge-cases.test.ts:428:1 › external hydration reports HTTP failures as structured diagnostics
+[222/270] [webkit] › e2e/hydration-edge-cases.test.ts:467:1 › runtime start does not import a hydration manifest without a runtime style source
+[223/270] [webkit] › e2e/hydration-edge-cases.test.ts:499:1 › progressive hydration fails open when an external style hydration manifest import fails
+[224/270] [webkit] › e2e/hydration-edge-cases.test.ts:543:1 › progressive hydration rejects an invalid external hydration manifest payload
+[225/270] [webkit] › e2e/hydration-edge-cases.test.ts:585:1 › explicit hydration manifest wins over external DOM discovery
+[226/270] [webkit] › e2e/hydration-edge-cases.test.ts:624:1 › progressive hydration matches bucketed theme variables
+[227/270] [webkit] › e2e/hydration-edge-cases.test.ts:654:1 › progressive hydration matches theme variable buckets by key
+[228/270] [webkit] › e2e/hydration-edge-cases.test.ts:694:1 › removes shared alias variable dependencies when classes disappear
+[229/270] [webkit] › e2e/hydration-edge-cases.test.ts:774:1 › inlines variables without runtime theme counts
+[230/270] [webkit] › e2e/keyframes.test.ts:35:1 › expects the animate token output
+[231/270] [webkit] › e2e/keyframes.test.ts:56:1 › expects the animation output
+[232/270] [webkit] › e2e/lifecycle.test.ts:17:1 › starts the browser runtime through the Wasm binding
+[233/270] [webkit] › e2e/lifecycle.test.ts:22:1 › exposes only the frozen runtime facade and immutable snapshot
+[234/270] [webkit] › e2e/lifecycle.test.ts:43:1 › does not install the removed devtools hook global
+[235/270] [webkit] › e2e/lifecycle.test.ts:48:1 › dispose on progressive
+[236/270] [webkit] › e2e/lifecycle.test.ts:85:1 › prevent attach layer twice
+[237/270] [webkit] › e2e/lifecycle.test.ts:107:1 › insert semantic utility with multiple native rules into existing layer
+[238/270] [webkit] › e2e/lifecycle.test.ts:131:1 › inserts functional pseudo-class selector aliases into native CSSOM
+[239/270] [webkit] › e2e/lifecycle.test.ts:150:1 › refresh clears stale native keyframes
+[240/270] [webkit] › e2e/lifecycle.test.ts:170:1 › observes static theme variables and keyframes without class references
+[241/270] [webkit] › e2e/lifecycle.test.ts:203:1 › generates browser native declarations through CSS.supports fallback
+[242/270] [webkit] › e2e/lifecycle.test.ts:250:1 › hydrates progressive static theme variables and keyframes
+[243/270] [webkit] › e2e/lifecycle.test.ts:288:1 › registers emittedGlobals counts on an existing runtime
+[244/270] [webkit] › e2e/lifecycle.test.ts:329:1 › merges emittedGlobals from concurrent starts before resolving callers
+[245/270] [webkit] › e2e/lifecycle.test.ts:387:1 › registers emittedGlobals counts once on a new runtime
+[246/270] [webkit] › e2e/progressive/basic.test.ts:4:1 › progressive
+[247/270] [webkit] › e2e/progressive/components/index.test.ts:11:1 › components
+[248/270] [webkit] › e2e/progressive/comprehensive/index.test.ts:13:1 › comprehensive
+[249/270] [webkit] › e2e/progressive/default-mode.test.ts:4:1 › prerender
+[250/270] [webkit] › e2e/progressive/media-mode.test.ts:4:1 › prerender
+[251/270] [webkit] › e2e/progressive/modes/index.test.ts:11:1 › selectors
+[252/270] [webkit] › e2e/progressive/selectors/index.test.ts:11:1 › selectors
+[253/270] [webkit] › e2e/progressive/theme/index.test.ts:11:1 › theme
+[254/270] [webkit] › e2e/rc87-rendering.test.ts:38:1 › does not expose tooling-only engine inspection helpers
+[255/270] [webkit] › e2e/rc87-rendering.test.ts:49:1 › destroy on progressive
+[256/270] [webkit] › e2e/rc87-rendering.test.ts:84:1 › disconnect and destroy clear pending mutation additions and removals
+[257/270] [webkit] › e2e/rc87-rendering.test.ts:133:1 › preserves the strict Rust contract when an external hydration manifest import fails
+[258/270] [webkit] › e2e/theme-layer-order.test.ts:4:1 › keeps default variable buckets before mode buckets when CSSOM buckets are inserted later
+[259/270] [webkit] › e2e/variables.test.ts:54:1 › expects the variable output
+[260/270] [webkit] › e2e/variables.test.ts:155:1 › sets native color-scheme on local class-triggered mode islands
+[261/270] [webkit] › e2e/wasm-startup.test.ts:39:1 › falls back to ArrayBuffer instantiation for an incorrect Wasm MIME type
+[262/270] [webkit] › e2e/wasm-startup.test.ts:74:1 › fails open when the Wasm asset returns 404
+[263/270] [webkit] › e2e/wasm-startup.test.ts:90:1 › fails open when Wasm startup exceeds the configured timeout
+[264/270] [webkit] › e2e/wasm-startup.test.ts:110:1 › disposes an engine that resolves before hydration startup times out
+[265/270] [webkit] › e2e/wasm-startup.test.ts:173:1 › rejects every pending caller and disposes when emitted globals registration fails
+[266/270] [webkit] › tests/issues/382.test.ts:6:1 › O to O
+[267/270] [webkit] › tests/issues/382.test.ts:44:1 › O to X
+[268/270] [webkit] › tests/issues/382.test.ts:76:1 › X to O
+[269/270] [webkit] › tests/issues/382.test.ts:110:1 › X to X
+[270/270] [webkit] › tests/issues/383.test.ts:16:1 › 383
+  270 passed (4.6m)

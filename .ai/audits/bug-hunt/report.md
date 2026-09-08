@@ -1,20 +1,20 @@
 # Master CSS 調查交付
 
-起始 commit `e66ba7236`，目前 `3d2f47768`。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
+起始 commit `e66ba7236`，目前 HEAD `dba77281f`，另有0092–0095未提交修復。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-43 項已確認（包含benchmark工具）：P1 7、P2 24、P3 12，無 P0。以下依嚴重度及固定 ID 排序；尚未修正產品。來源行號於收尾重新核對。
+44個歷史確認問題：18已修復、26未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
 ## 覆蓋與驗證
 
-75 單位中62已檢查、13受阻，沒有未開始項目。Site 在0047後的255路徑更新已於0051重驗。已檢查只代表完成 coverage 所列的有界檢查。
+75 單位中65已檢查、10受阻，沒有未開始項目。Site 在0047後的255路徑更新已於0051重驗。已檢查只代表完成 coverage 所列的有界檢查。
 
 | 分類 | 已檢查 | 受阻 |
 |---|---:|---:|
 | packages（36） | 29 | 7 |
 | Rust crates（18） | 18 | 0 |
-| examples（14） | 11 | 3 |
+| examples（14） | 13 | 1 |
 | site（1） | 1 | 0 |
 | support（6） | 4 | 2 |
 
@@ -331,3 +331,11 @@ BH-0005／0006／0007 已修復；SSR 字元參照、靜態資源與style注入�
 ## 0091 修復狀態
 
 BH-0021已修復；installer保留完整import邊界、shebang與directive prologue，58tests/lint/build通過。[證據](batches/0091-create-import-boundaries.md)。目前44個歷史確認問題中13已修復、31未解決。
+
+## 0092–0093 修復進度
+
+BH-0004本機條件與cascade層級通過96browser比較，但nested unresolved imports仍未完成。[0092](batches/0092-import-conditions.md)。BH-0022已修復，15tests及三瀏覽器built plugin/UI＋mock Figma API通過，真實Figma host仍未驗證。[0093](batches/0093-figma-import.md)。目前14已修復、30未解決，目標active。
+
+## 0094–0095 修復進度
+
+BH-0008/0009 runtime CSP/iframe更新已修復，273browser tests與standard benchmark通過。[0094](batches/0094-runtime-csp-frame.md)。BH-0012/0018 .mjs發現已修復，scanner/Node/native CLI/Vite及實際browser驗證通過；BH-0019/0026及BH-0004殘餘仍未完成。[0095](batches/0095-mjs-source-discovery.md)。目前18已修復、26未解決，目標active。

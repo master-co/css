@@ -15,7 +15,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 44 historical confirmed findings; 13 fixed, 31 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 44 historical confirmed findings; 18 fixed, 26 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -153,12 +153,24 @@
 
 - [0091 Installer imports](batches/0091-create-import-boundaries.md)：BH-0021 fixed,58tests PASS.
 
+- [0092 Import conditions](batches/0092-import-conditions.md)：本機條件修復驗證完成，BH-0004仍有未完成邊界。
+
+- [0093 Figma import](batches/0093-figma-import.md)：BH-0022修復，15tests及三瀏覽器built plugin/UI控制通過。
+
+- [0094 Runtime CSP/frame](batches/0094-runtime-csp-frame.md)：BH-0008/0009修復，273browser tests與benchmark通過。
+
+- [0095 ESM discovery](batches/0095-mjs-source-discovery.md)：BH-0012/0018修復，scanner/CLI/Vite驗證通過。
+
 ## 目前交接點
 
-- 最新目標「執行並修正所有問題」授權必要產品與範例修正，全部完成後才清理帳本；目標active，未全部完成。
-- 44個歷史確認問題：13已修復、31未解決。已修復ID：BH-0005/0006/0007/0013/0014/0021/0023/0024/0025/0027/0028/0036/0044；修復證據見0088–0091。
-- Nuxt四種production模式10tests、8階段原始HMR、實際Nuxt範例的三瀏覽器SSR/runtime均通過；語言Rust14/native-Wasm22/editor373通過；SSR67tests與72瀏覽器raw-text/CSS控制通過；installer58tests通過。
-- 本輪所有command handles均已terminal；隔離副本、server/browser已清理，沒有等待中的驗證。下一步優先繼續未修復P1／核心／runtime，再處理integrations、benchmarks、nested hosts；先讀對應原始批次與當前原始碼。
-- Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認。保留此前暫停，不重試該追加驗證。
-- 修復前基準commit5ec506c0b；使用者已明確要求提交已完成部分，本次提交0088–0091的13項已驗證修復、測試與證據；31項未解決及受阻狀態仍保留。保留其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md；不改无關程式、既有fixtures/snapshots、依賴、lockfile、CI/release。Native/tooling-Wasm及server/Nuxt/create的ignored build artifacts已更新供實際host驗證。
-- 0087及更早的blocked／來源快照是修復前歷史；當前以0088–0091、原始碼與最新證據為準。不要重建帳本或覆寫歷史，尚不清理。
+- 目標「執行並修正所有問題」持續active；已授權必要產品/範例修正，全部完成後才清理帳本。
+- 44個歷史確認問題：18已修復、26未解決。已修復ID：BH-0005/0006/0007/0008/0009/0012/0013/0014/0018/0021/0022/0023/0024/0025/0027/0028/0036/0044。
+- 0094：runtime CSP native JSON import與iframe Document/ShadowRoot mutation修復；273browser tests、lint/types/build通過。標準Chromium benchmark前後均完成；global gzip減112bytes，manifest/Wasm hashes不變。原始benchmark history保留/tmp/mastercss-0094-{before,after}.{json,log}，不納入repo/commit。
+- 0095：scanner及Node/native CLI.mjs來源發現修復；scanner80、NodeCLI28、RustCLI3、Vite99tests与3browser實際static build通過。上批0092新test缺baseManifest的型別錯誤已修正，3tests及下游型別檢查通過，最新test hash見0095。
+- BH-0004仍部分修復：本機qualified/nested imports已驗證，但含未展開external import的條件/圖層/cascade保留未完成，目前明確回報限制，不能標fixed。
+- 下一步：繼續BH-0001/0002/0003資源依賴、BH-0019 CLI新增檔監看、BH-0026 binding選擇及其餘integrations/benchmarks/nested hosts；完整26項以findings為準，不省略BH-0004未完成邊界。
+- Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認，不重試該追加驗證。
+- 使用者本次要求提交已完成部分：以dba77281f為父提交，提交0093–0095的5項修復（BH-0008/0009/0012/0018/0022）及已整理的帳本/證據。0092的compiler產品修改與測試仍保留未提交；其帳本與證據只記錄工作目錄的部分進度，不代表本提交包含該修復。其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md保持原樣。未改fixtures/snapshots、依賴、lockfile、CI/release。
+- 0096 watch與0097 binding修改/新測試/重現材料仍未提交。0096新增來源監看4files/8tests通過；0097 scanner14files/83tests、CLI9files/34tests及built CLI native/Wasm scanner選擇控制通過。尚未完成lint/types、最終證據及批次收尾，BH-0019/0026維持未完成；不可把這些工作目錄結果視為本提交內容。
+- runtime/tooling/CLI ignored artifacts已更新；前輪3個command session均已確認exit0，沒有等待中的command jobs。下一步由0096/0097驗證與帳本收尾接續。
+- 舊批次為歷史，當前依最新批次、來源及證據；65checked/10blocked coverage未改成全完成，尚不清理帳本。

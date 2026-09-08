@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { DEFAULT_SCAN_OUTPUT } from './constants'
 
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,mjs,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 type FastGlob = Pick<typeof import('fast-glob'), 'sync'>
 type Chokidar = typeof import('chokidar').default
 type Bytes = (value: number) => string

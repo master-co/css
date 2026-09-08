@@ -263,7 +263,7 @@ test('progressive hydration imports an external style hydration manifest', async
   expect(result.text).toContain('.fg\\:red-60')
 })
 
-test('progressive hydration fetches an external manifest when import attributes are unsupported', async ({ page }) => {
+test('progressive hydration uses JSON modules without constructing a loader or calling fetch', async ({ page }) => {
   const { text, hydrationManifest } = renderHydration('fg:red-60')
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/syntax-fallback.json', loaderURL).href
@@ -320,17 +320,22 @@ test('progressive hydration fetches an external manifest when import attributes 
   }, { loaderURL, source })
 
   expect(result).toEqual({
-    fetchCalls: 1,
+    fetchCalls: 0,
     progressive: true,
     text
   })
 })
 
-test('external hydration does not fetch for non-syntax loader construction failures', async ({ page }) => {
+test('external hydration rejects an unsupported JSON module manifest without fetch', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/eval-error.json', loaderURL).href
 
   await gotoRuntimeOrigin(page, loaderURL)
+  await page.route(source, route => route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify({ version: 2, rules: [], resourceOrder: [] })
+  }))
   await page.evaluate(({ attr, runtimeStyleId, source }) => {
     const style = document.createElement('style')
     style.id = runtimeStyleId
@@ -345,13 +350,8 @@ test('external hydration does not fetch for non-syntax loader construction failu
 
   const result = await page.evaluate(async ({ loaderURL, source }) => {
     const { startCSSRuntimeAsync } = await import(loaderURL)
-    const NativeFunction = globalThis.Function
     const nativeFetch = globalThis.fetch
     let fetchCalls = 0
-    globalThis.Function = function (...args: string[]) {
-      if (args.at(-1)?.includes(`with: { type: 'json' }`)) throw new EvalError('Blocked by policy')
-      return NativeFunction(...args)
-    } as FunctionConstructor
     globalThis.fetch = async (...args) => {
       const requestURL = typeof args[0] === 'string'
         ? args[0]
@@ -368,7 +368,6 @@ test('external hydration does not fetch for non-syntax loader construction failu
         runtimeStarted: Boolean(globalThis.__MASTER_CSS_RUNTIME_TEST__)
       }
     } finally {
-      globalThis.Function = NativeFunction
       globalThis.fetch = nativeFetch
     }
     throw new Error('Expected runtime startup to fail.')
@@ -426,7 +425,7 @@ test('external hydration does not fetch after a JSON import request fails', asyn
   })
 })
 
-test('external hydration reports fallback HTTP failures as structured diagnostics', async ({ page }) => {
+test('external hydration reports HTTP failures as structured diagnostics', async ({ page }) => {
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/fallback-failure.json', loaderURL).href
 
@@ -446,29 +445,22 @@ test('external hydration reports fallback HTTP failures as structured diagnostic
 
   const result = await page.evaluate(async (loaderURL) => {
     const { startCSSRuntimeAsync } = await import(loaderURL)
-    const NativeFunction = globalThis.Function
-    globalThis.Function = function (...args: string[]) {
-      if (args.at(-1)?.includes(`with: { type: 'json' }`)) {
-        throw new SyntaxError('Unsupported import attributes')
-      }
-      return NativeFunction(...args)
-    } as FunctionConstructor
     try {
       await startCSSRuntimeAsync()
     } catch (error) {
       return {
         code: (error as { code?: string }).code,
-        cause: (error as { cause?: Error }).cause?.message
+        message: (error as Error).message,
+        hasCause: Boolean((error as { cause?: Error }).cause)
       }
-    } finally {
-      globalThis.Function = NativeFunction
     }
     throw new Error('Expected runtime startup to fail.')
   }, loaderURL)
 
   expect(result).toEqual({
     code: 'INVALID_HYDRATION_MANIFEST',
-    cause: `Cannot load the Master CSS hydration manifest from ${source} (HTTP 503).`
+    message: `Cannot load the Master CSS hydration manifest from ${source}.`,
+    hasCause: true
   })
 })
 

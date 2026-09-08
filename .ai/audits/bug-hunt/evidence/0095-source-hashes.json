@@ -1,0 +1,9 @@
+{
+  "crates/mastercss-cli/src/main.rs": "9c3871d597b6984902ecf5d2b10db4dd4bb81e87349a53365122ac65f594d47d",
+  "crates/mastercss-cli/tests/bug_hunt_mjs.rs": "9963e0208183481fcf841eb55a25347b1ec5a749bdf50c3f637ddf9db26f9394",
+  "packages/cli/src/generate.ts": "ea0e990f592153a976b18127933a1a50fa8b8c9a639f6fe1a33e6fdeb7456e94",
+  "packages/cli/tests/bug-hunt-mjs.test.ts": "7974a7700eba24b759ee045451b146954ca8637ca583d317de9b75b3c120e161",
+  "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "6b644b8724a184f826a4c83e0b0d387dfbefab7f57b76cf46c5a7dd6696f0502",
+  "packages/tooling/src/scanner/core.ts": "13995f2354df9f6911719c8e0726163f7a5b0f7041cf4567e8a3c472486a75b5",
+  "packages/tooling/tests/scanner/bug-hunt.test.ts": "bc4fcab28607d0a4f76886eae7b742b86c7aac3062545d618b9786ea15d8f347"
+}
