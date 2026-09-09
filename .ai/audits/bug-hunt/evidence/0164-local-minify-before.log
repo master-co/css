@@ -1,0 +1,44 @@
+$ vitest --run tests/utils/bug-hunt-local-build-order.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/utils/bug-hunt-local-build-order.test.ts (2 tests | 1 failed) 685ms
+   × Vite CSS optimization cannot merge two local entry placeholders 676ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/utils/bug-hunt-local-build-order.test.ts > Vite CSS optimization cannot merge two local entry placeholders
+AssertionError: expected '#master-css-local-328d80dc1b12aec116f…' to contain '.a{display:block}'
+
+- Expected
++ Received
+
+- .a{display:block}
++ #master-css-local-328d80dc1b12aec116fb,#master-css-local-155af5e872130068a3a5{--slot:0}
++
+
+ ❯ tests/utils/bug-hunt-local-build-order.test.ts:42:17
+     40|     if (Array.isArray(result) || 'on' in result) throw new Error('Expe…
+     41|     const css = result.output.filter(asset => asset.type === 'asset' &…
+     42|     expect(css).toContain('.a{display:block}')
+       |                 ^
+     43|     expect(css).toContain('.b{display:inline-flex}')
+     44|     expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  03:14:02
+   Duration  1.16s (tests 62%, transform 25%, import 13%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

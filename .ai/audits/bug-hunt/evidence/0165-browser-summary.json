@@ -1,0 +1,41 @@
+{
+  "matrices": {
+    "0165-plain-root-dev-browser.log": {
+      "observations": 72,
+      "failures": 0,
+      "sha256": "7d16340a73f5ffd84b37bf786bce2aeb29347638fa141f33ce9e22d484a5c850"
+    },
+    "0165-plain-root-inline-browser.log": {
+      "observations": 36,
+      "failures": 0,
+      "sha256": "3541a6ab37dc8a4f4fdfdd3d1bed71d046852c7e5cf4914e68886f4879b84b72"
+    },
+    "0165-plain-root-build-browser.log": {
+      "observations": 36,
+      "failures": 0,
+      "sha256": "5e9386a26ddf88fc63576add89dcc2b2b3f0fc3e73dcc543ab0b913740e4a312"
+    },
+    "0165-plain-module-dev-browser.log": {
+      "observations": 72,
+      "failures": 0,
+      "sha256": "3aeb604c6a52aa4d24e40cd87dae5bdd2f095ab683d61da7ae2751f3e7456e91"
+    },
+    "0165-plain-module-build-browser.log": {
+      "observations": 36,
+      "failures": 0,
+      "sha256": "0b9cbf6e8aad172b0670b1bbb5e9c7ed7b949b8447a99ca752f9d2ab07e0c580"
+    },
+    "0165-plain-scss-dev-browser.log": {
+      "observations": 72,
+      "failures": 0,
+      "sha256": "d0479f243371d074cfdd11d1fbe38ed7ac89cf63845ea8485a6d910bb3b59a2d"
+    },
+    "0165-plain-scss-build-browser.log": {
+      "observations": 36,
+      "failures": 0,
+      "sha256": "8845878a79842b0f486fc340bbe14c36c4c858b8f20a1fcc38e99caf6062c7e0"
+    }
+  },
+  "total": 360,
+  "failures": 0
+}

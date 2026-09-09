@@ -1,0 +1,103 @@
+{
+  "head": "282a9fb8884035c9d84e536697842955edd4e411",
+  "goal": "active",
+  "previousGoalTurn": "Progress: completed and committed BH-0047 and0159-0162 audits, preserved133 excluded files",
+  "batch": "0163 compiler local delivery implemented and verified; Vite integration has8 confirmed failures and remains unfinished",
+  "validation": {
+    "actualInitial": "8 native-child controls PASS",
+    "actualExpanded": "8PASS/8FAIL across4modes dev/build; imported child @compose retained uncompiled",
+    "compilerBefore": "2FAIL/2PASS; missing returned child assets",
+    "compilerFirst": "2PASS/2FAIL; supplied root source not on disk causes reference realpath ENOENT",
+    "compilerFinal": "239PASS/31files; added4 controls",
+    "compilerLint": "PASS",
+    "compilerTypes": "PASS",
+    "compilerBuild": "PASS",
+    "compilerBrowser": "18PASS: supports true/false x3browsers x900/500/900, exact computedCSS/image RGBA and resource MIME/query/fragment, no page/HTTP errors",
+    "browserHarnessCorrection": "First invocation used nonexistent preset/dist path;0 observations; corrected to package export resolution",
+    "testHarnessCorrection": "New root imported-utility check expected blue but compiler emits canonical #00f; corrected assertion",
+    "viteSuite": "261PASS/8FAIL/46files; prior253 tests PASS plus8 new native-child controls PASS;8 child-compose failures remain",
+    "viteLintTypes": "PASS",
+    "viteExampleBuild": "PASS",
+    "apiCensus": "exit1; same0141 failure after command-wrapper lines removed",
+    "packageContracts": "exit1 public export golden mismatch; not updated",
+    "aiContext": "AI context budget passed for 2757 files (4 generated excluded, 1 bounded exception).",
+    "whitespace": "PASS outside raw logs",
+    "reproSyntax": "PASS"
+  },
+  "preservation": {
+    "head": "282a9fb8884035c9d84e536697842955edd4e411",
+    "baseline": 218,
+    "preserved": 213,
+    "changed": [
+      "packages/compiler/README.md",
+      "packages/compiler/src/stylesheet/delivery.ts",
+      "packages/compiler/src/stylesheet/index.ts",
+      "packages/compiler/src/stylesheet/public.ts",
+      "packages/compiler/src/stylesheet/types.ts"
+    ],
+    "newSources": [
+      "packages/compiler/tests/bug-hunt-local-transform-delivery.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-local-compose-graphs.test.ts",
+      ".ai/audits/bug-hunt/repros/local-transform-delivery.mjs"
+    ],
+    "totalSources": 221,
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "resourceCacheDirectories": [],
+    "indexEmpty": true,
+    "historyOccurrencesPreserved": 5,
+    "apiCensus": "Identical to0141 after removing command banner and package-manager exit line"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 35,
+    "unresolved": 12,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "unresolvedHostShutdownLimitation": 1
+  },
+  "implementation": "Existing delivery option now compiles supplied local sources through Rust graph API. Transform result adds optional immutable stylesheets/resources. No Rust/binding/runtime/Vite production change this batch.",
+  "publicContract": "Publish entry code and every returned asset at supplied URLs; existing no-delivery behavior retained. Compiler README updated. Syntax/lowering semantics remain owned by unchanged Rust.",
+  "next": [
+    "Wire Vite LocalComposePlugin to full graph delivery for dev/build; preserve CSS Modules/Sass/SSR and validate resources/hash/HMR/lifetimes",
+    "Plain-root imported directives, virtual resource/reference owners, other preprocessors/PostCSS/maps",
+    "Nuxt actual childCSS, Webpack graph migration and shared-dist parallel race",
+    "All original unresolved findings, blocked coverage, root gates and candidates remain required"
+  ],
+  "paused": "0038 explicit identity confirmation not received",
+  "commit": false,
+  "push": false,
+  "terminalSessions": {
+    "76802": 0,
+    "13430": 1,
+    "7107": 1,
+    "74022": 0,
+    "95465": 0,
+    "75884": 1,
+    "36832": 0,
+    "1118": 0,
+    "35977": 0,
+    "12811": 1,
+    "4857": 0,
+    "89252": 0,
+    "65182": 0
+  },
+  "synchronousTerminal": [
+    "Initial post-change compiler probe1",
+    "Compiler build0",
+    "Browser harness bad preset path1",
+    "API census1",
+    "Package contracts1",
+    "AI context0",
+    "Whitespace0",
+    "Repro syntax0"
+  ],
+  "activeJobs": [],
+  "auditInventoryEntries": 37
+}

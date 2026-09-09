@@ -1,0 +1,12 @@
+{
+  "occurrences": 5,
+  "sources": [
+    "README.md",
+    "coverage.md",
+    "findings.md",
+    "changes.md",
+    "report.md"
+  ],
+  "text": "- 0164：Vite local graph已接dev／build／inline完整assets，原child compose8FAIL修復。279tests、lint/types/build、範例及最終252三瀏覽器觀測全PASS：CSS／root Modules、SSR inline／raw、child／resource HMR、media縮窄／還原、多入口順序。新增實作的註冊順序hash不穩及minifier合併local slots均有修前／修後證據；token斷言及第二external fixture校正另列。3份公開文件同步，Site prepare/lint0errors／75warnings；5artifacts不變。下一批接plain-root imports、local ?url、Modules跨import與Sass／owner／watch／base／lifecycle，再續全部原要求。47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host限制及0038身分暫停維持；HEAD282a9fb88，未commit/push。[0164](batches/0164-vite-local-graph-publication.md)。",
+  "sha256": "eeae8258e0adfc766ce1c8cdea9ea4d8a807511497d73048dab3615efc153fa0"
+}

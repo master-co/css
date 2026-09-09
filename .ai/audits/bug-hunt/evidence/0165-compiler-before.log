@@ -1,0 +1,55 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-imported-local-classification.test.ts (3 tests | 2 failed) 45ms
+   × imported local directives classify and transform a plain root with custom resolver=false 25ms
+   × imported local directives classify and transform a plain root with custom resolver=true 19ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-imported-local-classification.test.ts > imported local directives classify and transform a plain root with custom resolver=false
+AssertionError: expected 'plain' to be 'local' // Object.is equality
+
+Expected: "local"
+Received: "plain"
+
+ ❯ tests/bug-hunt-imported-local-classification.test.ts:19:30
+     17|     const resolveImport = custom ? async (specifier: string) => specif…
+     18|     const resolution = await resolveStylesheet(entry, source, { projec…
+     19|     expect(resolution?.kind).toBe('local')
+       |                              ^
+     20|     expect(resolution?.compilationSource).toBe(source)
+     21|     expect(resolution?.dependencies).toEqual(expect.arrayContaining([e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-imported-local-classification.test.ts > imported local directives classify and transform a plain root with custom resolver=true
+AssertionError: expected 'plain' to be 'local' // Object.is equality
+
+Expected: "local"
+Received: "plain"
+
+ ❯ tests/bug-hunt-imported-local-classification.test.ts:19:30
+     17|     const resolveImport = custom ? async (specifier: string) => specif…
+     18|     const resolution = await resolveStylesheet(entry, source, { projec…
+     19|     expect(resolution?.kind).toBe('local')
+       |                              ^
+     20|     expect(resolution?.compilationSource).toBe(source)
+     21|     expect(resolution?.dependencies).toEqual(expect.arrayContaining([e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  03:25:44
+   Duration  379ms (transform 58%, import 27%, tests 14%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

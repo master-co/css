@@ -1,6 +1,12 @@
 # 覆蓋清單
 
-- 0162：retained graph環境交付查核完成，沒有修改產品程式。16actual-server cases涵蓋四mode、兩種per-environment設定的idle edge replacement，以及standalone／middleware restart；新entry／child更新、新舊CSS／resource版本與副本清理通過。完整Vite253tests、lint/types及96三瀏覽器觀測全PASS：restart重連／換新URL，後續CSS色彩與SVG像素更新且無額外reload。沿用來源未變的0161 built package；公開文件同步範圍。仍47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制；0038身分暫停維持。下一批接local-compose完整graph transform，再續virtual resource/reference owner、其他preprocessor／maps、Nuxt／Webpack及全部未完成要求。本批未commit/push；HEADb306e5d77。[0162](batches/0162-development-graph-environments.md)。
+- 0165：plain root／bridge只在leaf含local directives的漏判已修；原compiler2FAIL及Vite8FAIL皆通過。既有Rust-backed helper共用於整圖分類／delivery，純native圖不接管資源。完整compiler242／Vite295tests、lint/types/build、範例及360三瀏覽器觀測PASS：兩層CSS／Module／Sass imports、inline、media、child/resource HMR且無reload。3份公開文件同步，Site prepare/lint0errors／75warnings；5artifacts不變。下一批接local ?url、Modules跨import exports，再續owner／watch／base／lifecycle、Nuxt／Webpack、10個benchmark問題與全部原要求。47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host限制及0038身分暫停維持；HEAD282a9fb88，未commit/push。[0165](batches/0165-imported-local-directives.md)。
+
+- 0164交接原文已逐字歸檔至[歷史紀錄](progress-history-0165.md)，既有證據與未完成範圍保留。
+
+- 0163交接原文已逐字歸檔至[歷史紀錄](progress-history-0164.md)，既有證據與未完成範圍保留。
+
+- 0162交接原文已逐字歸檔至[歷史紀錄](progress-history-0163.md)，既有證據與未完成範圍保留。
 
 - 0161 handoff preserved verbatim in [history](progress-history-0162.md); original evidence and unfinished scope remain available.
 

@@ -1,0 +1,103 @@
+$ vitest --run tests/utils/bug-hunt-local-build-order.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/utils/bug-hunt-local-build-order.test.ts (1 test | 1 failed) 10ms
+   × local graph names depend on CSS order and content, not asynchronous registration order 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/utils/bug-hunt-local-build-order.test.ts > local graph names depend on CSS order and content, not asynchronous registration order
+AssertionError: expected { …(3) } to deeply equal { …(3) }
+
+- Expected
++ Received
+
+  {
+    "assets": [
+      {
+-       "css": "@import \"./master-css-6cb35b5eac66c6ce8477-1.css\";",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-0.css",
++       "css": "@import \"./master-css-5cb57ac571de6123dddf-1.css\";",
++       "href": "./master-css-5cb57ac571de6123dddf-0.css",
+        "id": "master-css-output",
+      },
+      {
+-       "css": "@import \"./master-css-6cb35b5eac66c6ce8477-3.css\";@import \"./master-css-6cb35b5eac66c6ce8477-2.css\";",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-1.css",
++       "css": "@import \"./master-css-5cb57ac571de6123dddf-2.css\";@import \"./master-css-5cb57ac571de6123dddf-3.css\";",
++       "href": "./master-css-5cb57ac571de6123dddf-1.css",
+        "id": "./master-css-host.css",
+      },
+      {
+-       "css": "@import \"./master-css-6cb35b5eac66c6ce8477-5.css\";@import \"./master-css-6cb35b5eac66c6ce8477-6.css\";",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-2.css",
++       "css": "@import \"./master-css-5cb57ac571de6123dddf-6.css\";@import \"./master-css-5cb57ac571de6123dddf-5.css\";",
++       "href": "./master-css-5cb57ac571de6123dddf-2.css",
+        "id": "./master-css-intermediate-1-0-0.css",
+      },
+      {
+-       "css": "@import \"./master-css-6cb35b5eac66c6ce8477-4.css\" layer(a);.target{color:red}",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-3.css",
++       "css": "@import \"./master-css-5cb57ac571de6123dddf-4.css\" layer(b);.target{color:blue}",
++       "href": "./master-css-5cb57ac571de6123dddf-3.css",
+        "id": "./master-css-intermediate-1-0-2.css",
+      },
+      {
+-       "css": "@import \"https://external.test/a.css\";.a{padding:1rem}",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-4.css",
++       "css": "@import \"https://external.test/b.css\";.b{padding:2rem}",
++       "href": "./master-css-5cb57ac571de6123dddf-4.css",
+        "id": "./master-css-intermediate-1-0-3.css",
+      },
+      {
+        "css": ".between{display:block}",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-5.css",
++       "href": "./master-css-5cb57ac571de6123dddf-5.css",
+        "id": "./master-css-intermediate-2-1-0.css",
+      },
+      {
+-       "css": "@import \"./master-css-6cb35b5eac66c6ce8477-7.css\" layer(b);.target{color:blue}",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-6.css",
++       "css": "@import \"./master-css-5cb57ac571de6123dddf-7.css\" layer(a);.target{color:red}",
++       "href": "./master-css-5cb57ac571de6123dddf-6.css",
+        "id": "./master-css-intermediate-2-1-2.css",
+      },
+      {
+-       "css": "@import \"https://external.test/b.css\";.b{padding:2rem}",
+-       "href": "./master-css-6cb35b5eac66c6ce8477-7.css",
++       "css": "@import \"https://external.test/a.css\";.a{padding:1rem}",
++       "href": "./master-css-5cb57ac571de6123dddf-7.css",
+        "id": "./master-css-intermediate-2-1-3.css",
+      },
+    ],
+    "resources": [],
+-   "source": "@import \"./master-css-6cb35b5eac66c6ce8477-0.css\";",
++   "source": "@import \"./master-css-5cb57ac571de6123dddf-0.css\";",
+  }
+
+ ❯ tests/utils/bug-hunt-local-build-order.test.ts:21:35
+     19|   const first = prepare(source, [a, b])
+     20|   expect(first).toBeDefined()
+     21|   expect(prepare(source, [b, a])).toEqual(first)
+       |                                   ^
+     22|   expect(prepare(b.slot + '.between{display:block}' + a.slot, [a, b])?…
+     23|   expect(prepare(source, [a, { ...b, result: { ...b.result, code: b.re…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  03:10:44
+   Duration  305ms (transform 66%, import 29%, tests 4%, worker 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

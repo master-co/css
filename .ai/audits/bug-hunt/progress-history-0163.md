@@ -1,0 +1,3 @@
+# Progress history preserved in0163
+
+- 0162：retained graph環境交付查核完成，沒有修改產品程式。16actual-server cases涵蓋四mode、兩種per-environment設定的idle edge replacement，以及standalone／middleware restart；新entry／child更新、新舊CSS／resource版本與副本清理通過。完整Vite253tests、lint/types及96三瀏覽器觀測全PASS：restart重連／換新URL，後續CSS色彩與SVG像素更新且無額外reload。沿用來源未變的0161 built package；公開文件同步範圍。仍47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制；0038身分暫停維持。下一批接local-compose完整graph transform，再續virtual resource/reference owner、其他preprocessor／maps、Nuxt／Webpack及全部未完成要求。本批未commit/push；HEADb306e5d77。[0162](batches/0162-development-graph-environments.md)。

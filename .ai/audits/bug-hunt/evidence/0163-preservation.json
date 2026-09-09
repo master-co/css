@@ -1,0 +1,28 @@
+{
+  "head": "282a9fb8884035c9d84e536697842955edd4e411",
+  "baseline": 218,
+  "preserved": 213,
+  "changed": [
+    "packages/compiler/README.md",
+    "packages/compiler/src/stylesheet/delivery.ts",
+    "packages/compiler/src/stylesheet/index.ts",
+    "packages/compiler/src/stylesheet/public.ts",
+    "packages/compiler/src/stylesheet/types.ts"
+  ],
+  "newSources": [
+    "packages/compiler/tests/bug-hunt-local-transform-delivery.test.ts",
+    "packages/vite/tests/plugins/bug-hunt-local-compose-graphs.test.ts",
+    ".ai/audits/bug-hunt/repros/local-transform-delivery.mjs"
+  ],
+  "totalSources": 221,
+  "foreignSite": {
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+  },
+  "fiveArtifactsByteIdentical": true,
+  "resourceCacheDirectories": [],
+  "indexEmpty": true,
+  "historyOccurrencesPreserved": 5,
+  "apiCensus": "Identical to0141 after removing command banner and package-manager exit line"
+}

@@ -1,0 +1,3 @@
+# Progress history preserved in0164
+
+- 0163：local子檔compose確認漏編譯，actual dev/build四mode共8FAIL；原生child控制8PASS。compiler既有delivery選項已接Rust graph並回傳child/resource assets，reference來源未落盤檢查修正；239compiler tests、lint/types/build、18三瀏覽器觀測及範例build通過。Vite仍261PASS／8FAIL，未接新交付結果，不能結案。首輪browser的preset dist路徑及blue/#00f斷言是腳本錯誤，另存證據。API census與package golden仍失敗；5artifacts不變。下一批接Vite local transform完整資產發布，含CSS Modules／Sass／SSR／HMR與hash／resource owner，再續全部未完成項目。47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host限制及0038身分暫停維持；HEAD282a9fb88，本批未commit/push。[0163](batches/0163-local-compose-graph-delivery.md)。
