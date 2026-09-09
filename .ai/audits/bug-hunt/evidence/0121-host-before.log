@@ -1,0 +1,254 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts (7 tests | 7 failed) 1073ms
+   × BH-0004 native original graph diagnostic: /*😀*/.image{background:url(a.png)}
+.x{@compose unknown-utility;} 8ms
+   × BH-0004 native original graph diagnostic: /*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}} 1ms
+   × BH-0004 native original graph diagnostic: .a{background:image-set("a.png" 1x,url(b.png) 2x)}
+/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;} 1ms
+   × BH-0004 wasm original graph diagnostic: /*😀*/.image{background:url(a.png)}
+.x{@compose unknown-utility;} 50ms
+   × BH-0004 wasm original graph diagnostic: /*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}} 522ms
+   × BH-0004 wasm original graph diagnostic: .a{background:image-set("a.png" 1x,url(b.png) 2x)}
+/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;} 480ms
+   × BH-0004 collection composition diagnostic uses original owner instead of variant ID 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 native original graph diagnostic: /*😀*/.image{background:url(a.png)}
+.x{@compose unknown-utility;}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 27,
+-       "line": 1,
+-     },
+-     "start": {
+-       "character": 12,
+-       "line": 1,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 native original graph diagnostic: /*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 46,
+-       "line": 0,
+-     },
+-     "start": {
+-       "character": 36,
+-       "line": 0,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 native original graph diagnostic: .a{background:image-set("a.png" 1x,url(b.png) 2x)}
+/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 58,
+-       "line": 1,
+-     },
+-     "start": {
+-       "character": 43,
+-       "line": 1,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 wasm original graph diagnostic: /*😀*/.image{background:url(a.png)}
+.x{@compose unknown-utility;}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 27,
+-       "line": 1,
+-     },
+-     "start": {
+-       "character": 12,
+-       "line": 1,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 wasm original graph diagnostic: /*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 46,
+-       "line": 0,
+-     },
+-     "start": {
+-       "character": 36,
+-       "line": 0,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 wasm original graph diagnostic: .a{background:image-set("a.png" 1x,url(b.png) 2x)}
+/*😀*/.b{background:url(b.png)}.x{@compose unknown-utility;}
+AssertionError: expected { version: 2, …(5) } to match object { Object (source, range) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 58,
+-       "line": 1,
+-     },
+-     "start": {
+-       "character": 43,
+-       "line": 1,
+-     },
+-   },
+    "source": "child.css",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:41:36
+     39|       const error = failure(() => compiler.compileStylesheets({ ...req…
+     40|       expect(error.code).toBe(code)
+     41|       expect(error.diagnostics[0]).toMatchObject({ source: 'child.css'…
+       |                                    ^
+     42|     }
+     43|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  tests/bug-hunt-stylesheet-diagnostics.test.ts > BH-0004 collection composition diagnostic uses original owner instead of variant ID
+AssertionError: expected { version: 2, …(5) } to match object { …(2) }
+(5 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "range": {
+-     "end": {
+-       "character": 23,
+-       "line": 1,
+-     },
+-     "start": {
+-       "character": 18,
+-       "line": 1,
+-     },
+-   },
+-   "source": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-graph-diagnostic-6jUjuA/child.css",
++   "source": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-graph-diagnostic-6jUjuA/child.css sheet-0",
+  }
+
+ ❯ tests/bug-hunt-stylesheet-diagnostics.test.ts:66:34
+     64|     expect(error).toBeInstanceOf(MasterCSSError)
+     65|     expect(error.code).toBe('invalid-compose-class')
+     66|     expect(error.diagnostics[0]).toMatchObject({ source: child, range:…
+       |                                  ^
+     67|     expect(JSON.stringify(error.toJSON())).not.toContain('\\u0000')
+     68|   } finally { await scanner.dispose(); collection.dispose(); rmSync(cw…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  13:07:21
+   Duration  1.37s (tests 82%, transform 12%, import 6%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

@@ -1,0 +1,69 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/cli
+
+ ❯ tests/bug-hunt-watch-recovery.test.ts (5 tests | 2 failed) 20688ms
+   × BH-0004 CLI watch recovers new-resource without restart 8602ms
+   × BH-0004 CLI watch recovers new-import without restart 8566ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers new-resource without restart
+AssertionError: 
+Start watching source changes
+Cannot rebuild CSS: Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-6d8Wji/new/nested.svg'
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:55:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers new-import without restart
+AssertionError: 
+Start watching source changes
+Cannot rebuild CSS: Error: CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-38cImO/new/nested.css
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:55:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  13:26:43
+   Duration  20.76s (tests 100%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/cli
+

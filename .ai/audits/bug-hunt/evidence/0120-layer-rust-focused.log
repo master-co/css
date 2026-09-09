@@ -1,0 +1,9 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.31s
+     Running tests/bug_hunt_native_output_selection.rs (target/debug/deps/bug_hunt_native_output_selection-00f816af4cf1c326)
+
+running 1 test
+test selected_native_output_keeps_local_reachability_and_only_selected_external_imports ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

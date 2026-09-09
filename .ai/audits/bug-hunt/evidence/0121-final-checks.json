@@ -1,0 +1,61 @@
+{
+  "head": "912a73b2666a853e8898979c25642bfe0a670e68",
+  "previousGoalTurn": "progress: 0120 output mode and empty-layer fixes verified",
+  "goal": "active",
+  "BH-0004": "partial: original-source ranged diagnostics and collection owner names fixed; legacy delivery, unlocated diagnostics and asset lifecycle remain unfinished",
+  "validation": {
+    "rustTests": 65,
+    "compilerTests": 194,
+    "cliTests": 37,
+    "bindingTests": 17,
+    "diagnosticsSourceComparisons": 4,
+    "diagnosticsBuiltComparisons": 4,
+    "diagnosticHostFailuresBefore": 7,
+    "diagnosticRustFailuresBefore": 2,
+    "outputModeBrowserComparisons": 96,
+    "resourceBrowsers": 3,
+    "builtCLIBrowserComparisons": 18,
+    "legacyExternalFailures": 39,
+    "compilerBindingLintTypesBuild": "PASS",
+    "cliBuild": "PASS",
+    "nativeWasmBuilds": "PASS",
+    "rustClippyFmtCodegenParity": "PASS",
+    "siteLint": "0errors/75warnings",
+    "sitePrepare": "PASS",
+    "aiContext": "PASS",
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "previousSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "currentSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchanged": true
+      },
+      "package-check": {
+        "exit": 1,
+        "previousSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "currentSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchanged": true
+      }
+    }
+  },
+  "verificationErrors": {
+    "initialCLI": "7FAIL/30PASS because the agent overlapped compiler dist rebuild with consumers; accepted rerun after build completed:37PASS",
+    "initialStandaloneWasm": "Default file-URL fetch failed; explicit artifact bytes used only for diagnostic verification; default loader candidate remains unclassified"
+  },
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "current": 10,
+    "preserved": 68
+  },
+  "paused": "0038 additional verification still awaits explicit identity confirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

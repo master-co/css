@@ -1,0 +1,273 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/cli
+
+ ❯ tests/bug-hunt-watch-recovery.test.ts (5 tests | 5 failed) 2802ms
+   × BH-0004 CLI watch recovers deleted-resource without restart 677ms
+   × BH-0004 CLI watch recovers deleted-import without restart 671ms
+   × BH-0004 CLI watch recovers new-resource without restart 586ms
+   × BH-0004 CLI watch recovers new-import without restart 568ms
+   × BH-0004 CLI watch recovers initial-resource without restart 298ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers deleted-resource without restart
+AssertionError: 
+Start watching source changes
+node:fs:622
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-SmvvVM/image.svg'
+    at Object.openSync (node:fs:622:18)
+    at readFileSync (node:fs:488:35)
+    at prepareDelivery (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:42:7)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:56:20)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:109:18)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:611:32)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:334:26)
+    at registerManagedCSSEntries (/Users/aron/master/css/packages/cli/src/generate.ts:56:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async prepareScanner (/Users/aron/master/css/packages/cli/src/generate.ts:101:3) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-SmvvVM/image.svg'
+}
+
+Node.js v24.20.0
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ prepareDelivery ../compiler/src/stylesheet/delivery.ts:42:7
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:56:20
+ ❯ registerDeliveredStylesheet ../compiler/src/stylesheet/delivery.ts:109:18
+ ❯ registerStylesheetSource ../compiler/src/stylesheet/index.ts:611:32
+ ❯ MasterCSSStylesheetCollection.register ../compiler/src/stylesheet/public.ts:334:26
+ ❯ registerManagedCSSEntries src/generate.ts:56:23
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:48:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers deleted-import without restart
+AssertionError: 
+Start watching source changes
+/Users/aron/master/css/packages/compiler/src/node-imports.ts:161
+    throw new Error(`CSS file not found: ${absoluteFile}`)
+          ^
+
+Error: CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-QJfIAN/child.css
+    at prepareCSSImportGraphFile (/Users/aron/master/css/packages/compiler/src/node-imports.ts:161:11)
+    at prepareCSSImportGraphFile (/Users/aron/master/css/packages/compiler/src/node-imports.ts:181:7)
+    at prepareCSSImportGraph (/Users/aron/master/css/packages/compiler/src/node-imports.ts:193:3)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:107:17)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:611:32)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:334:26)
+    at registerManagedCSSEntries (/Users/aron/master/css/packages/cli/src/generate.ts:56:23)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async prepareScanner (/Users/aron/master/css/packages/cli/src/generate.ts:101:3)
+    at async handlePlanChange (/Users/aron/master/css/packages/cli/src/generate.ts:255:13)
+
+Node.js v24.20.0
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ prepareCSSImportGraphFile ../compiler/src/node-imports.ts:161:11
+ ❯ prepareCSSImportGraphFile ../compiler/src/node-imports.ts:181:7
+ ❯ prepareCSSImportGraph ../compiler/src/node-imports.ts:193:3
+ ❯ registerDeliveredStylesheet ../compiler/src/stylesheet/delivery.ts:107:17
+ ❯ registerStylesheetSource ../compiler/src/stylesheet/index.ts:611:32
+ ❯ MasterCSSStylesheetCollection.register ../compiler/src/stylesheet/public.ts:334:26
+ ❯ registerManagedCSSEntries src/generate.ts:56:23
+ ❯ prepareScanner src/generate.ts:101:3
+ ❯ handlePlanChange src/generate.ts:255:13
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:48:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers new-resource without restart
+AssertionError: 
+Start watching source changes
+node:fs:622
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-HSCNeL/new/nested.svg'
+    at Object.openSync (node:fs:622:18)
+    at readFileSync (node:fs:488:35)
+    at prepareDelivery (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:42:7)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:56:20)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:109:18)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:611:32)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:334:26)
+    at registerManagedCSSEntries (/Users/aron/master/css/packages/cli/src/generate.ts:56:23)
+    at async prepareScanner (/Users/aron/master/css/packages/cli/src/generate.ts:101:3)
+    at async handlePlanChange (/Users/aron/master/css/packages/cli/src/generate.ts:255:13) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-HSCNeL/new/nested.svg'
+}
+
+Node.js v24.20.0
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ prepareDelivery ../compiler/src/stylesheet/delivery.ts:42:7
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:56:20
+ ❯ registerDeliveredStylesheet ../compiler/src/stylesheet/delivery.ts:109:18
+ ❯ registerStylesheetSource ../compiler/src/stylesheet/index.ts:611:32
+ ❯ MasterCSSStylesheetCollection.register ../compiler/src/stylesheet/public.ts:334:26
+ ❯ registerManagedCSSEntries src/generate.ts:56:23
+ ❯ prepareScanner src/generate.ts:101:3
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:48:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers new-import without restart
+AssertionError: 
+Start watching source changes
+/Users/aron/master/css/packages/compiler/src/node-imports.ts:161
+    throw new Error(`CSS file not found: ${absoluteFile}`)
+          ^
+
+Error: CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-JCaO28/new/nested.css
+    at prepareCSSImportGraphFile (/Users/aron/master/css/packages/compiler/src/node-imports.ts:161:11)
+    at prepareCSSImportGraphFile (/Users/aron/master/css/packages/compiler/src/node-imports.ts:181:7)
+    at prepareCSSImportGraphFile (/Users/aron/master/css/packages/compiler/src/node-imports.ts:181:7)
+    at prepareCSSImportGraph (/Users/aron/master/css/packages/compiler/src/node-imports.ts:193:3)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:107:17)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:611:32)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:334:26)
+    at registerManagedCSSEntries (/Users/aron/master/css/packages/cli/src/generate.ts:56:23)
+    at async prepareScanner (/Users/aron/master/css/packages/cli/src/generate.ts:101:3)
+    at async handlePlanChange (/Users/aron/master/css/packages/cli/src/generate.ts:255:13)
+
+Node.js v24.20.0
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ prepareCSSImportGraphFile ../compiler/src/node-imports.ts:161:11
+ ❯ prepareCSSImportGraphFile ../compiler/src/node-imports.ts:181:7
+ ❯ prepareCSSImportGraphFile ../compiler/src/node-imports.ts:181:7
+ ❯ prepareCSSImportGraph ../compiler/src/node-imports.ts:193:3
+ ❯ registerDeliveredStylesheet ../compiler/src/stylesheet/delivery.ts:107:17
+ ❯ registerStylesheetSource ../compiler/src/stylesheet/index.ts:611:32
+ ❯ MasterCSSStylesheetCollection.register ../compiler/src/stylesheet/public.ts:334:26
+ ❯ registerManagedCSSEntries src/generate.ts:56:23
+ ❯ prepareScanner src/generate.ts:101:3
+ ❯ handlePlanChange src/generate.ts:255:13
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:48:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/bug-hunt-watch-recovery.test.ts > BH-0004 CLI watch recovers initial-resource without restart
+AssertionError: node:fs:622
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-7NhTvB/image.svg'
+    at Object.openSync (node:fs:622:18)
+    at readFileSync (node:fs:488:35)
+    at prepareDelivery (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:42:7)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:56:20)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:109:18)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:611:32)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:334:26)
+    at registerManagedCSSEntries (/Users/aron/master/css/packages/cli/src/generate.ts:56:23)
+    at async prepareScanner (/Users/aron/master/css/packages/cli/src/generate.ts:101:3)
+    at async runGenerate (/Users/aron/master/css/packages/cli/src/generate.ts:285:7) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-watch-recovery-7NhTvB/image.svg'
+}
+
+Node.js v24.20.0
+: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ prepareDelivery ../compiler/src/stylesheet/delivery.ts:42:7
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:56:20
+ ❯ registerDeliveredStylesheet ../compiler/src/stylesheet/delivery.ts:109:18
+ ❯ registerStylesheetSource ../compiler/src/stylesheet/index.ts:611:32
+ ❯ MasterCSSStylesheetCollection.register ../compiler/src/stylesheet/public.ts:334:26
+ ❯ registerManagedCSSEntries src/generate.ts:56:23
+ ❯ prepareScanner src/generate.ts:101:3
+ ❯ wait tests/bug-hunt-watch-recovery.test.ts:33:31
+     31|       const deadline = Date.now() + 8000
+     32|       while (!check() && child.exitCode === null && Date.now() < deadl…
+     33|       expect(check(), stderr).toBe(true)
+       |                               ^
+     34|       expect(child.exitCode, stderr).toBeNull()
+     35|     }
+ ❯ tests/bug-hunt-watch-recovery.test.ts:48:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  13:20:47
+   Duration  2.87s (tests 99%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/cli
+

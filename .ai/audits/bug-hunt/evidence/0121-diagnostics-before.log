@@ -1,0 +1,42 @@
+{"binding":"native","operation":"original","source":"/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}","error":{"code":"invalid-compose-class","domain":"compiler","message":"Invalid @compose class: unknown-utility","diagnostics":[{"version":2,"code":"invalid-compose-class","domain":"compiler","severity":"error","message":"Invalid @compose class: unknown-utility","source":"child.css","range":{"start":{"line":1,"character":12},"end":{"line":1,"character":27}}}]},"cause":"Error: {\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: unknown-utility\",\"source\":\"child.css\",\"range\":{\"start\":49,\"end\":64}}"}
+{"binding":"native","operation":"graph","source":"/*😀*/.image{background:url(a.png)}\r\n.x{@compose unknown-utility;}","error":{"code":"invalid-compose-class","domain":"compiler","message":"Invalid @compose class: unknown-utility","diagnostics":[{"version":2,"code":"invalid-compose-class","domain":"compiler","severity":"error","message":"Invalid @compose class: unknown-utility","source":"child.css"}]},"cause":"Error: {\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: unknown-utility\",\"source\":\"child.css\",\"range\":{\"start\":85,\"end\":100}}"}
+{"binding":"native","operation":"original","source":"/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}","error":{"code":"CSS_DIRECTIVE_ERROR","domain":"compiler","message":"@utilities does not accept a prelude","diagnostics":[{"version":2,"code":"CSS_DIRECTIVE_ERROR","domain":"compiler","severity":"error","message":"@utilities does not accept a prelude","source":"child.css","range":{"start":{"line":0,"character":36},"end":{"line":0,"character":46}}}]},"cause":"Error: {\"code\":\"CSS_DIRECTIVE_ERROR\",\"message\":\"@utilities does not accept a prelude\",\"source\":\"child.css\",\"range\":{\"start\":36,\"end\":46}}"}
+{"binding":"native","operation":"graph","source":"/*😀*/.image{background:url(a.png)} @utilities invalid {paint{color:red}}","error":{"code":"CSS_DIRECTIVE_ERROR","domain":"compiler","message":"@utilities does not accept a prelude","diagnostics":[{"version":2,"code":"CSS_DIRECTIVE_ERROR","domain":"compiler","severity":"error","message":"@utilities does not accept a prelude","source":"child.css"}]},"cause":"Error: {\"code\":\"CSS_DIRECTIVE_ERROR\",\"message\":\"@utilities does not accept a prelude\",\"source\":\"child.css\",\"range\":{\"start\":72,\"end\":82}}"}
+/Users/aron/master/css/packages/binding-wasm-compiler/src/index.ts:103
+    throw new MasterCSSError({
+          ^
+
+MasterCSSError: fetch failed
+    at initCompilerWasm (/Users/aron/master/css/packages/binding-wasm-compiler/src/index.ts:103:11)
+    at async createMasterCSSCompilerWasmProvider (/Users/aron/master/css/packages/binding-wasm-compiler/src/provider.ts:58:18)
+    at async loadDefaultWasmProvider (/Users/aron/master/css/packages/binding/src/compiler-binding-wasm.ts:51:10)
+    at async provider (/Users/aron/master/css/packages/binding/src/compiler-binding-wasm.ts:58:16)
+    at async createCompilerWasmBindingSession (/Users/aron/master/css/packages/binding/src/compiler-binding-wasm.ts:70:16)
+    at async createCompilerBindingSession (/Users/aron/master/css/packages/binding/src/compiler-binding.ts:74:12)
+    at async createCompilerBindingSession (/Users/aron/master/css/packages/compiler/src/session.ts:102:30)
+    at async createCompiler (/Users/aron/master/css/packages/compiler/src/index.ts:90:38)
+    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/stylesheet-source-diagnostics.mjs:8:20 {
+  code: 'WASM_LOAD_FAILED',
+  domain: 'binding',
+  diagnostics: [],
+  payload: {
+    code: 'WASM_LOAD_FAILED',
+    domain: 'binding',
+    message: 'fetch failed'
+  },
+  [cause]: [TypeError: fetch failed] {
+    [cause]: Error: not implemented... yet...
+        at makeNetworkError (node:internal/deps/undici/undici:11806:35)
+        at schemeFetch (node:internal/deps/undici/undici:13359:34)
+        at mainFetch (node:internal/deps/undici/undici:13207:30)
+        at fetching (node:internal/deps/undici/undici:13176:7)
+        at fetch (node:internal/deps/undici/undici:13040:20)
+        at fetch (node:internal/deps/undici/undici:17708:10)
+        at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+        at Module.__wbg_init (file:///Users/aron/master/css/packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.js:826:26)
+        at initializeModule (/Users/aron/master/css/packages/binding-wasm-compiler/src/index.ts:74:16)
+        at <anonymous> (/Users/aron/master/css/packages/binding-wasm-compiler/src/index.ts:94:9)
+  }
+}
+
+Node.js v24.20.0

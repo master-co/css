@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+[success] ../../../../../../Users/aron/master/css/packages/compiler/index.html 6 classes inserted in 0.3ms 
+ ❯ tests/bug-hunt-delivery-output-modes.test.ts (8 tests | 6 failed) 2143ms
+   × BH-0004 standalone output native=false/base=false/generated=false 230ms
+   × BH-0004 standalone output native=false/base=false/generated=true 217ms
+   × BH-0004 standalone output native=false/base=true/generated=false 221ms
+   × BH-0004 standalone output native=false/base=true/generated=true 224ms
+   × BH-0004 standalone output native=true/base=false/generated=false 228ms
+   × BH-0004 standalone output native=true/base=false/generated=true 239ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=false/base=false/generated=false
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=false/base=false/generated=true
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=false/base=true/generated=false
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=false/base=true/generated=true
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=true/base=false/generated=false
+ FAIL  tests/bug-hunt-delivery-output-modes.test.ts > BH-0004 standalone output native=true/base=false/generated=true
+TypeError: Standalone stylesheet delivery currently requires native and Master base CSS.
+ ❯ createExtractedCSSResult src/stylesheet/index.ts:690:13
+    688|   if (compileOptions.delivery) {
+    689|     if (!includeNativeCSS || !includeMasterBaseCSS) {
+    690|       throw new TypeError('Standalone stylesheet delivery currently re…
+       |             ^
+    691|     }
+    692|     return composeDeliveredStylesheets(stylesheetSources ?? new Map(),…
+ ❯ MasterCSSStylesheetCollection.compose src/stylesheet/public.ts:363:26
+ ❯ tests/bug-hunt-delivery-output-modes.test.ts:34:39
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 2 passed (8)
+   Start at  12:23:48
+   Duration  2.48s (tests 89%, transform 7%, import 4%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

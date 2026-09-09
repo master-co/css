@@ -1,0 +1,56 @@
+{
+  "head": "912a73b2666a853e8898979c25642bfe0a670e68",
+  "previousGoalTurn": "progress: completed audit evidence committed as 912a73b26; unfinished implementation preserved",
+  "goal": "active",
+  "BH-0004": "partial: standalone output mode contracts and empty-layer reachability corrected; legacy delivery/diagnostics/assets unfinished",
+  "validation": {
+    "rustTests": 63,
+    "compilerTests": 185,
+    "cliTests": 37,
+    "bindingTests": 17,
+    "collectionModes": 16,
+    "collectionBrowserComparisons": 96,
+    "collectionLayerFailuresBefore": 36,
+    "collectionLayerFailuresAfter": 0,
+    "cliSourceBrowser": 18,
+    "cliBuiltBrowser": 18,
+    "legacyExternalFailures": 39,
+    "compilerBindingLintTypes": "PASS",
+    "compilerCLIBuilds": "PASS",
+    "nativeWasmBuilds": "PASS",
+    "clippyFmtCodegenParity": "PASS",
+    "siteLint": "0errors/75warnings",
+    "sitePrepare": "PASS",
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "previousSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "currentSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchanged": true
+      },
+      "package-check": {
+        "exit": 1,
+        "previousSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "currentSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchanged": true
+      },
+      "packageDifference": "Output unchanged from 0119 despite the new optional nativeStylesheets request field; existing failures remain and no golden was updated"
+    }
+  },
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "current": 10,
+    "preserved": 64
+  },
+  "paused": "0038 additional verification awaits explicit identity confirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}
