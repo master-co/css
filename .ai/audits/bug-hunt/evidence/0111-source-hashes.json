@@ -1,0 +1,10 @@
+{
+  "crates/mastercss-engine/src/resources.rs": "a3c3de1ff8c59f309c54b456159fad2419da6ebff4ad2e30620af60af880cc69",
+  "crates/mastercss-engine/tests/bug_hunt_static_dependencies.rs": "ce9d2b0f9ba5f2ed3dd499f877bd68ed6fe7487b922534d46212fcc55f44e620",
+  "crates/mastercss-engine/tests/bug_hunt_static_retention.rs": "709ab2bb72355ae5c3d6cf05e76a6b25543c327741feaf5070bf6321d441ce14",
+  "packages/compiler/tests/bug-hunt-static-retention.test.ts": "94416d1193a6556f06fcaa437d3d248402a67afa68ddfdf9a28dcfb05567c9cb",
+  "packages/compiler/tests/bug-hunt-static-retention.json": "e0180768e26c36d8b0441f5047ed75f334f140c682cd719c568805bb9598a5ff",
+  "packages/runtime/e2e/bug-hunt-static-retention.test.ts": "0150f1dd8a00ca1dbba20d4a9f9fd72679957ea89fbb1629dc7a8de21c775f7b",
+  ".ai/audits/bug-hunt/repros/static-retention-browser.mjs": "7975abcfd84579227400caef032df645ed2c9b5cf5df076dd7f0db430894ad5d",
+  ".ai/audits/bug-hunt/repros/static-retention-cost.mjs": "f3c984b1bee8d1917150ac184bc1e5f9bd3565e951b47b18c07f21d3895242c3"
+}

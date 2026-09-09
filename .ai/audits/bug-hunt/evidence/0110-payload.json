@@ -1,0 +1,77 @@
+{
+  "compression": "Node zlib defaults, identical settings for both versions; unchanged JS/manifest baseline remeasured after SHA-256 equality, rather than comparing historical compressor settings",
+  "before": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 933092,
+      "gzip": 287770,
+      "brotli": 219350,
+      "sha256": "1d3fb799c91b24d10c87ab14628586f57e3351dbd903b3dc74a4374014788b3b"
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 933092,
+      "gzip": 287770,
+      "brotli": 219350,
+      "sha256": "1d3fb799c91b24d10c87ab14628586f57e3351dbd903b3dc74a4374014788b3b"
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 49716,
+      "gzip": 13987,
+      "brotli": 12535,
+      "sha256": "5159131ac7234afc9aa60bee12269a775c25a5db6550cf375ea8adfd38e39667"
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 82513,
+      "gzip": 11747,
+      "brotli": 9374,
+      "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+    }
+  },
+  "after": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 930739,
+      "gzip": 287083,
+      "brotli": 218540,
+      "sha256": "9ab7eaefa665c90ffd2cadbcbda351d15697019b732f144d19cf5641ad7677ad"
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 930739,
+      "gzip": 287083,
+      "brotli": 218540,
+      "sha256": "9ab7eaefa665c90ffd2cadbcbda351d15697019b732f144d19cf5641ad7677ad"
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 49716,
+      "gzip": 13987,
+      "brotli": 12535,
+      "sha256": "5159131ac7234afc9aa60bee12269a775c25a5db6550cf375ea8adfd38e39667"
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 82513,
+      "gzip": 11747,
+      "brotli": 9374,
+      "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+    }
+  },
+  "delta": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": -2353,
+      "gzip": -687,
+      "brotli": -810
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": -2353,
+      "gzip": -687,
+      "brotli": -810
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 0,
+      "gzip": 0,
+      "brotli": 0
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 0,
+      "gzip": 0,
+      "brotli": 0
+    }
+  }
+}

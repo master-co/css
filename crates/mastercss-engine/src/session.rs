@@ -5,10 +5,9 @@ use super::{
     ManifestProjection, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
     canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
-    collect_stylesheet_animation_names, collect_stylesheet_variable_names, compare_stored_rules,
-    compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
-    match_utility, normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
-    stylesheet_animation_syntax,
+    collect_stylesheet_animation_names, compare_stored_rules, compile_manifest, emit_declarations,
+    engine_variable_ir, layer_index, layer_name, match_utility, normalize_dynamic_value,
+    resolve_state_branches, resolve_style_selector_aliases, stylesheet_resource_syntax,
 };
 
 impl EngineSession {
@@ -225,8 +224,8 @@ impl EngineSession {
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
         let mut mutations = Vec::new();
-        let (native_animation_names, animation_declarations) =
-            stylesheet_animation_syntax(native_css);
+        let (native_animation_names, animation_declarations, stylesheet_variables) =
+            stylesheet_resource_syntax(native_css);
         for name in &native_animation_names {
             let count = self.emitted_globals.animation_count(name);
             self.emitted_globals
@@ -246,7 +245,7 @@ impl EngineSession {
             }
         }
 
-        let variable_names = collect_stylesheet_variable_names(native_css)
+        let variable_names = stylesheet_variables
             .into_iter()
             .filter(|name| self.compiled.compiled_variables.contains_key(name))
             .collect::<Vec<_>>();

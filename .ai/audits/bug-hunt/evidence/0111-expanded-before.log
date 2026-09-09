@@ -1,0 +1,86 @@
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.43s
+     Running tests/bug_hunt_static_retention.rs (target/debug/deps/bug_hunt_static_retention-6e560d394af8fad8)
+
+running 9 tests
+test cyclic_dependency_graph_is_retained_once_per_static_root ... FAILED
+test static_roots_share_one_declaration_and_independent_baselines ... FAILED
+test externally_emitted_root_still_keeps_missing_dependencies ... FAILED
+test inline_intermediate_is_not_emitted_but_its_dependencies_are_retained ... FAILED
+test static_chain_counts_survive_repeated_class_lifetimes ... FAILED
+test mode_only_static_root_keeps_dependencies_from_all_modes ... FAILED
+test registering_external_root_after_creation_preserves_local_dependencies ... FAILED
+test refresh_replaces_static_dependencies_and_subset_forks_preserve_them ... FAILED
+test full_external_graph_is_not_duplicated_and_refresh_keeps_suppression ... ok
+
+failures:
+
+---- cyclic_dependency_graph_is_retained_once_per_static_root stdout ----
+
+thread 'cyclic_dependency_graph_is_retained_once_per_static_root' (37170462) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:92:5:
+assertion `left == right` failed
+  left: ["color-a"]
+ right: ["color-a", "color-b"]
+
+---- static_roots_share_one_declaration_and_independent_baselines stdout ----
+
+thread 'static_roots_share_one_declaration_and_independent_baselines' (37170470) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:58:5:
+assertion `left == right` failed
+  left: 0
+ right: 1
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- externally_emitted_root_still_keeps_missing_dependencies stdout ----
+
+thread 'externally_emitted_root_still_keeps_missing_dependencies' (37170463) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:139:5:
+assertion `left == right` failed
+  left: []
+ right: ["color-base", "color-mid"]
+
+---- inline_intermediate_is_not_emitted_but_its_dependencies_are_retained stdout ----
+
+thread 'inline_intermediate_is_not_emitted_but_its_dependencies_are_retained' (37170465) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:112:5:
+assertion `left == right` failed
+  left: ["color-brand"]
+ right: ["color-base", "color-brand"]
+
+---- static_chain_counts_survive_repeated_class_lifetimes stdout ----
+
+thread 'static_chain_counts_survive_repeated_class_lifetimes' (37170469) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:33:5:
+assertion `left == right` failed
+  left: ["color-brand"]
+ right: ["color-base", "color-brand", "color-mid"]
+
+---- mode_only_static_root_keeps_dependencies_from_all_modes stdout ----
+
+thread 'mode_only_static_root_keeps_dependencies_from_all_modes' (37170466) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:132:5:
+assertion `left == right` failed
+  left: ["color-brand"]
+ right: ["color-base", "color-brand", "color-dark"]
+
+---- registering_external_root_after_creation_preserves_local_dependencies stdout ----
+
+thread 'registering_external_root_after_creation_preserves_local_dependencies' (37170468) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:189:5:
+assertion `left == right` failed
+  left: []
+ right: ["color-base", "color-mid"]
+
+---- refresh_replaces_static_dependencies_and_subset_forks_preserve_them stdout ----
+
+thread 'refresh_replaces_static_dependencies_and_subset_forks_preserve_them' (37170467) panicked at crates/mastercss-engine/tests/bug_hunt_static_retention.rs:164:5:
+assertion failed: engine.snapshot_for_classes(["block"]).unwrap().text.contains("--color-base:red")
+
+
+failures:
+    cyclic_dependency_graph_is_retained_once_per_static_root
+    externally_emitted_root_still_keeps_missing_dependencies
+    inline_intermediate_is_not_emitted_but_its_dependencies_are_retained
+    mode_only_static_root_keeps_dependencies_from_all_modes
+    refresh_replaces_static_dependencies_and_subset_forks_preserve_them
+    registering_external_root_after_creation_preserves_local_dependencies
+    static_chain_counts_survive_repeated_class_lifetimes
+    static_roots_share_one_declaration_and_independent_baselines
+
+test result: FAILED. 1 passed; 8 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-engine --test bug_hunt_static_retention`

@@ -153,17 +153,13 @@ impl EngineSession {
                     .compiled_variables
                     .get(*name)
                     .is_some_and(|variable| variable.static_resource && !variable.inline)
-                    && self.emitted_globals.variable_count(name) == 0
             })
             .cloned()
             .collect::<Vec<_>>();
         for variable_name in static_variables {
-            let count = self
-                .variable_counts
-                .entry(variable_name.clone())
-                .or_default();
-            *count = count.saturating_add(1);
-            self.theme_variable_names.push(variable_name);
+            // A static root owns a permanent reference to its dependency graph,
+            // including when another stylesheet already supplies the root.
+            self.retain_variable_graph(&variable_name, None, &mut HashSet::new());
         }
     }
 
@@ -475,27 +471,40 @@ impl EngineSession {
         mutations: &mut Vec<RuleMutationIr>,
         visited: &mut HashSet<String>,
     ) {
-        if !visited.insert(variable_name.to_owned()) {
-            return;
-        }
-        let Some(variable) = self.compiled.compiled_variables.get(variable_name).cloned() else {
-            return;
-        };
-        if variable.inline {
-            return;
-        }
-        let count = self
-            .variable_counts
-            .entry(variable_name.to_owned())
-            .or_default();
-        *count = count.saturating_add(1);
-        if *count == 1 {
-            let previous = self.theme_rule_text();
-            self.theme_variable_names.push(variable_name.to_owned());
-            self.push_theme_rule_change(previous, mutations);
-        }
-        for dependency in variable.dependencies {
-            self.register_variable(&dependency, mutations, visited);
+        self.retain_variable_graph(variable_name, Some(mutations), visited);
+    }
+
+    fn retain_variable_graph(
+        &mut self,
+        variable_name: &str,
+        mut mutations: Option<&mut Vec<RuleMutationIr>>,
+        visited: &mut HashSet<String>,
+    ) {
+        let mut pending = vec![variable_name.to_owned()];
+        while let Some(name) = pending.pop() {
+            if !visited.insert(name.clone()) {
+                continue;
+            }
+            let Some(variable) = self.compiled.compiled_variables.get(&name) else {
+                continue;
+            };
+            // Inline nodes do not emit declarations, but their substituted values
+            // can still reference non-inline resources.
+            pending.extend(variable.dependencies.iter().rev().cloned());
+            if variable.inline {
+                continue;
+            }
+            let count = self.variable_counts.entry(name.clone()).or_default();
+            *count = count.saturating_add(1);
+            if *count == 1 {
+                // Initialization has no live stylesheet to mutate. Avoid building
+                // and discarding the entire growing theme for every static node.
+                let previous = mutations.as_ref().and_then(|_| self.theme_rule_text());
+                self.theme_variable_names.push(name);
+                if let Some(mutations) = mutations.as_deref_mut() {
+                    self.push_theme_rule_change(previous, mutations);
+                }
+            }
         }
     }
 
@@ -515,37 +524,38 @@ impl EngineSession {
         mutations: &mut Vec<RuleMutationIr>,
         visited: &mut HashSet<String>,
     ) {
-        if !visited.insert(variable_name.to_owned()) {
-            return;
-        }
-        let Some(variable) = self.compiled.compiled_variables.get(variable_name).cloned() else {
-            return;
-        };
-        if variable.inline {
-            return;
-        }
-        let previous = self.theme_rule_text();
-        let host_count = self.emitted_globals.variable_count(variable_name);
-        let remove = match self.variable_counts.get_mut(variable_name) {
-            Some(count) if *count > host_count => {
-                if host_count == 0 && *count == 1 {
-                    true
-                } else {
-                    *count -= 1;
-                    false
-                }
+        let mut pending = vec![variable_name.to_owned()];
+        while let Some(name) = pending.pop() {
+            if !visited.insert(name.clone()) {
+                continue;
             }
-            Some(_) => false,
-            None => false,
-        };
-        if remove {
-            self.variable_counts.remove(variable_name);
-            self.theme_variable_names
-                .retain(|name| name != variable_name);
-            self.push_theme_rule_change(previous, mutations);
-        }
-        for dependency in variable.dependencies {
-            self.unregister_variable(&dependency, mutations, visited);
+            let Some(variable) = self.compiled.compiled_variables.get(&name) else {
+                continue;
+            };
+            pending.extend(variable.dependencies.iter().rev().cloned());
+            if variable.inline {
+                continue;
+            }
+            let previous = self.theme_rule_text();
+            let host_count = self.emitted_globals.variable_count(&name);
+            let remove = match self.variable_counts.get_mut(&name) {
+                Some(count) if *count > host_count => {
+                    if host_count == 0 && *count == 1 {
+                        true
+                    } else {
+                        *count -= 1;
+                        false
+                    }
+                }
+                Some(_) => false,
+                None => false,
+            };
+            if remove {
+                self.variable_counts.remove(&name);
+                self.theme_variable_names
+                    .retain(|variable| variable != &name);
+                self.push_theme_rule_change(previous, mutations);
+            }
         }
     }
 

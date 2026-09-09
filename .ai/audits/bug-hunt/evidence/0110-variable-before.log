@@ -1,0 +1,38 @@
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running tests/bug_hunt_variable_syntax.rs (target/debug/deps/bug_hunt_variable_syntax-0c9823a8e0eea9f1)
+
+running 1 test
+test raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks ... FAILED
+
+failures:
+
+---- raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks stdout ----
+
+thread 'raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks' (37111665) panicked at crates/mastercss-render/tests/bug_hunt_variable_syntax.rs:41:5:
+"tab": variables=[], output=
+"newline": variables=[], output=
+"crlf": variables=[], output=
+"formfeed": variables=[], output=
+"comment": variables=[], output=
+"mixed": variables=[], output=
+"escaped_function": variables=[], output=
+"escaped_name": variables=[], output=
+"unicode_name": variables=[], output=
+"unicode_suffix": variables=["color-brand"], output=@layer theme{:root{--color-brand:red}}
+"url_unquoted": variables=["color-brand"], output=@layer theme{:root{--color-brand:red}}
+"split_name": variables=["color-brand"], output=@layer theme{:root{--color-brand:red}}
+"extra_argument": variables=["color-brand"], output=@layer theme{:root{--color-brand:red}}
+"nested_fallback": variables=[], output=
+"fallback_reference": variables=["color-brand"], output=@layer theme{:root{--color-brand:red}}
+"animation_tab": variables=[], output=@keyframes fade{to{opacity:1}}
+"animation_comment": variables=[], output=@keyframes fade{to{opacity:1}}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p mastercss-render --test bug_hunt_variable_syntax`

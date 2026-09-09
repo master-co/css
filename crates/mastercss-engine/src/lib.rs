@@ -499,10 +499,9 @@ pub(crate) use state::{
 };
 mod stylesheet_animation;
 mod stylesheet_animation_value;
-pub(crate) use stylesheet_animation::stylesheet_animation_syntax;
+pub(crate) use stylesheet_animation::stylesheet_resource_syntax;
 pub(crate) use stylesheet_resources::{
-    collect_animation_names, collect_stylesheet_animation_names, collect_stylesheet_variable_names,
-    is_css_identifier_character,
+    collect_animation_names, collect_stylesheet_animation_names, is_css_identifier_character,
 };
 pub(crate) use utility::{
     append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,

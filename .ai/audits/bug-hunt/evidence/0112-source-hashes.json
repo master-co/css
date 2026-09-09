@@ -1,0 +1,28 @@
+{
+  "preservedSources": {
+    "crates/mastercss-engine/src/lib.rs": "dcc4670f4965f1ddd3af1bdd8db2eb1256b8814bc99a5a1a01c2e6e1a24bae9f",
+    "crates/mastercss-engine/src/session.rs": "dfba209236fd71730ce6c6460c35ad2874b76e0fba83c7ce5f4e3b7a81ae829a",
+    "crates/mastercss-engine/src/stylesheet_animation.rs": "a0ba7cc06b7ad741745a80378141221121a6337587b59409a2ef27eb837ca08d",
+    "crates/mastercss-engine/src/stylesheet_resources.rs": "d32f9e56788f61ce532673ac492d30abe039b4ca3a0f371019b239cf721e33ef",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.rs": "b9c670ca42abb086a1f261ffee6ef7823678ba13e56f3df3fe2f4672719a59ba",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.json": "5c6b28dfd10ed406cedbcc4aed5b55cf12328b1378652431efba484aba3abc86",
+    ".ai/audits/bug-hunt/repros/stylesheet-variable-browser.mjs": "b01125dc19825a5bffd912701e37157adf8949ac1d9b564ee44c0fab9465a127",
+    "crates/mastercss-engine/src/resources.rs": "a3c3de1ff8c59f309c54b456159fad2419da6ebff4ad2e30620af60af880cc69",
+    "crates/mastercss-engine/tests/bug_hunt_static_dependencies.rs": "ce9d2b0f9ba5f2ed3dd499f877bd68ed6fe7487b922534d46212fcc55f44e620",
+    "crates/mastercss-engine/tests/bug_hunt_static_retention.rs": "709ab2bb72355ae5c3d6cf05e76a6b25543c327741feaf5070bf6321d441ce14",
+    "packages/compiler/tests/bug-hunt-static-retention.test.ts": "94416d1193a6556f06fcaa437d3d248402a67afa68ddfdf9a28dcfb05567c9cb",
+    "packages/compiler/tests/bug-hunt-static-retention.json": "e0180768e26c36d8b0441f5047ed75f334f140c682cd719c568805bb9598a5ff",
+    "packages/runtime/e2e/bug-hunt-static-retention.test.ts": "0150f1dd8a00ca1dbba20d4a9f9fd72679957ea89fbb1629dc7a8de21c775f7b",
+    ".ai/audits/bug-hunt/repros/static-retention-browser.mjs": "7975abcfd84579227400caef032df645ed2c9b5cf5df076dd7f0db430894ad5d",
+    ".ai/audits/bug-hunt/repros/static-retention-cost.mjs": "f3c984b1bee8d1917150ac184bc1e5f9bd3565e951b47b18c07f21d3895242c3",
+    "crates/mastercss-compiler/src/imports.rs": "dc897f22bb1df4e0a8522cc2a10a00623c17d48b931c7d9e20e215cc6c198716",
+    "crates/mastercss-compiler/tests/bug_hunt_import_qualifiers.rs": "9c20e63d369a13763b385e9417150e02019c201b069d57bf716872e461540a4b",
+    "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "6b644b8724a184f826a4c83e0b0d387dfbefab7f57b76cf46c5a7dd6696f0502",
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+  },
+  "newRepro": {
+    ".ai/audits/bug-hunt/repros/external-import-order.mjs": "f70c6afae72b7f802823f0197f3675772b450fd62c5f79028a943ec6be67da6b"
+  }
+}

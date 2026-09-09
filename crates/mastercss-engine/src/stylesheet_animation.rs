@@ -5,9 +5,9 @@ pub(crate) struct StylesheetAnimationValue {
     pub name_only: bool,
 }
 
-pub(crate) fn stylesheet_animation_syntax(
+pub(crate) fn stylesheet_resource_syntax(
     source: &str,
-) -> (Vec<String>, Vec<StylesheetAnimationValue>) {
+) -> (Vec<String>, Vec<StylesheetAnimationValue>, Vec<String>) {
     let tokens = tokenize_css_syntax(source);
     let statements = collect_css_syntax_statements(&tokens);
     let mut contexts: Vec<(bool, bool)> = Vec::new();
@@ -75,5 +75,6 @@ pub(crate) fn stylesheet_animation_syntax(
         }
         contexts.push(child_context);
     }
-    (definitions, declarations)
+    let variables = super::stylesheet_resources::collect_stylesheet_variable_names(&tokens);
+    (definitions, declarations, variables)
 }

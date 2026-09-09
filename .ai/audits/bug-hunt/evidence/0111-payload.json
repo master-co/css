@@ -1,0 +1,77 @@
+{
+  "compression": "Node zlib defaults, both Wasm versions remeasured; unchanged JS/manifest verified by SHA",
+  "before": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 930739,
+      "gzip": 287083,
+      "brotli": 218540,
+      "sha256": "9ab7eaefa665c90ffd2cadbcbda351d15697019b732f144d19cf5641ad7677ad"
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 930739,
+      "gzip": 287083,
+      "brotli": 218540,
+      "sha256": "9ab7eaefa665c90ffd2cadbcbda351d15697019b732f144d19cf5641ad7677ad"
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 49716,
+      "gzip": 13987,
+      "brotli": 12535,
+      "sha256": "5159131ac7234afc9aa60bee12269a775c25a5db6550cf375ea8adfd38e39667"
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 82513,
+      "gzip": 11747,
+      "brotli": 9374,
+      "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+    }
+  },
+  "after": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 929757,
+      "gzip": 286205,
+      "brotli": 218273,
+      "sha256": "4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 929757,
+      "gzip": 286205,
+      "brotli": 218273,
+      "sha256": "4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 49716,
+      "gzip": 13987,
+      "brotli": 12535,
+      "sha256": "5159131ac7234afc9aa60bee12269a775c25a5db6550cf375ea8adfd38e39667"
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 82513,
+      "gzip": 11747,
+      "brotli": 9374,
+      "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+    }
+  },
+  "delta": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": -982,
+      "gzip": -878,
+      "brotli": -267
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": -982,
+      "gzip": -878,
+      "brotli": -267
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 0,
+      "gzip": 0,
+      "brotli": 0
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 0,
+      "gzip": 0,
+      "brotli": 0
+    }
+  }
+}

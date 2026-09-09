@@ -1,88 +1,32 @@
 use super::{HashSet, ManifestProjection, split_top_level};
 
-pub(crate) fn skip_stylesheet_quoted(source: &str, start: usize, quote: char) -> usize {
-    let mut index = start + quote.len_utf8();
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        index += character.len_utf8();
-        if character == '\\' {
-            if let Some(escaped) = source[index..].chars().next() {
-                index += escaped.len_utf8();
-            }
-        } else if character == quote {
-            break;
-        }
-    }
-    index
-}
-
-pub(crate) fn skip_stylesheet_comment(source: &str, start: usize) -> usize {
-    source[start + 2..]
-        .find("*/")
-        .map(|offset| start + 2 + offset + 2)
-        .unwrap_or(source.len())
-}
-
-pub(crate) fn collect_stylesheet_variable_names(source: &str) -> Vec<String> {
+pub(crate) fn collect_stylesheet_variable_names(
+    tokens: &[mastercss_lexer::CssSyntaxToken<'_>],
+) -> Vec<String> {
+    use mastercss_lexer::CssSyntaxKind as Kind;
     let mut names = Vec::new();
     let mut index = 0;
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = skip_stylesheet_quoted(source, index, character);
+    while index < tokens.len() {
+        let token = &tokens[index];
+        let end = token.close.unwrap_or(tokens.len());
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("url")) {
+            // Unquoted URL content is not a nested CSS component-value stream.
+            index = (end + 1).min(tokens.len());
             continue;
         }
-        if source[index..].starts_with("/*") {
-            index = skip_stylesheet_comment(source, index);
-            continue;
-        }
-        let is_variable_function = source
-            .get(index..index + 4)
-            .is_some_and(|value| value.eq_ignore_ascii_case("var("))
-            && source[..index]
-                .chars()
-                .next_back()
-                .is_none_or(|character| !is_css_identifier_character(character));
-        if !is_variable_function {
-            index += character.len_utf8();
-            continue;
-        }
-        let mut cursor = index + 4;
-        while source[cursor..]
-            .chars()
-            .next()
-            .is_some_and(|character| character == ' ')
+        if matches!(&token.kind, Kind::Function(name) if name.eq_ignore_ascii_case("var"))
+            && let Some(Kind::Ident(name)) = tokens.get(index + 1).map(|token| &token.kind)
+            && let Some(name) = name.strip_prefix("--").filter(|name| !name.is_empty())
+            && (index + 2 == end
+                || tokens
+                    .get(index + 2)
+                    .is_some_and(|token| token.kind == Kind::Delim(',')))
+            && !names.iter().any(|existing| existing == name)
         {
-            cursor += source[cursor..]
-                .chars()
-                .next()
-                .unwrap_or_default()
-                .len_utf8();
+            names.push(name.to_owned());
         }
-        if !source[cursor..].starts_with("--") {
-            index += 4;
-            continue;
-        }
-        cursor += 2;
-        let name_start = cursor;
-        while source[cursor..]
-            .chars()
-            .next()
-            .is_some_and(is_css_identifier_character)
-        {
-            cursor += source[cursor..]
-                .chars()
-                .next()
-                .unwrap_or_default()
-                .len_utf8();
-        }
-        if cursor > name_start {
-            let name = &source[name_start..cursor];
-            if !names.iter().any(|existing| existing == name) {
-                names.push(name.to_owned());
-            }
-        }
-        index = cursor;
+        // Visit nested fallback functions too; strings/comments stay opaque.
+        index += 1;
     }
     names
 }

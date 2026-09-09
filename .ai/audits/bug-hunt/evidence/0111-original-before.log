@@ -1,0 +1,28 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+     Running tests/bug_hunt_static_dependencies.rs (target/debug/deps/bug_hunt_static_dependencies-edbdce573c34177a)
+
+running 2 tests
+test bh_0003_static_dependency_survives_last_class_deletion ... FAILED
+test bh_0003_static_resources_retain_transitive_dependencies_at_creation ... FAILED
+
+failures:
+
+---- bh_0003_static_dependency_survives_last_class_deletion stdout ----
+
+thread 'bh_0003_static_dependency_survives_last_class_deletion' (37166927) panicked at crates/mastercss-engine/tests/bug_hunt_static_dependencies.rs:26:5:
+assertion failed: engine.snapshot().unwrap().text.contains("--color-base:red")
+
+---- bh_0003_static_resources_retain_transitive_dependencies_at_creation stdout ----
+
+thread 'bh_0003_static_resources_retain_transitive_dependencies_at_creation' (37166928) panicked at crates/mastercss-engine/tests/bug_hunt_static_dependencies.rs:17:5:
+assertion failed: engine.snapshot().unwrap().text.contains("--color-base:red")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    bh_0003_static_dependency_survives_last_class_deletion
+    bh_0003_static_resources_retain_transitive_dependencies_at_creation
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-engine --test bug_hunt_static_dependencies`

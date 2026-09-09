@@ -162,3 +162,11 @@
 0109完成BH-0001：Rust數值token、動畫欄位狀態及保留原位置的變數/mode/fallback/cycle處理；快取依incoming state重用，使用既有hash容器並排序最終名稱。擴充新tests/repros與共享10-case corpus，未動既有fixtures/snapshots/依賴/lockfile/CI/release。129Rust PASS及3個BH-0002/0003既有FAIL、CSS72/compiler127/server67/runtime273、87+42browser及auto語法差異控制均已分類。engine Wasm gzip增22484bytes；resource及runtime benchmark history只在/tmp。29fixed/15unresolved、10blocked不變；未commit/push，0092/Site工作保留。
 
 本次依使用者指示，以e71cce539為父提交，提交0108–0109完成的BH-0001修復與測試/重現/帳本證據。20項來源雜湊逐一符合0109最終驗證；與0110交疊的4個engine檔案僅暫存0109已驗證內容，工作區0110版本保持原樣。0092 compiler、0110部分修改與Site其他工作不納入，benchmark history仍只留/tmp，未推送。
+
+0110完成BH-0002：raw var()改用與animation共用的一次CSS斷詞，移除舊字串掃描，新增25-case Rust/browser共享corpus。75raw browser、63compiled controls與12預期語法拒絕/native-WasmPASS；131RustPASS/2BH-0003FAIL、CSS72/compiler127/server67/runtime273與lint/types/Clippy/parity通過。Wasm比0109減2353raw/687gzip/810brotli bytes，JS/manifest不變；resource及runtime benchmark完成，history只留/tmp。新driver的無效CSS編譯假設及手動probe缺options均分類為測試材料錯誤。未改依賴/lockfile/既有fixtures/snapshots/CI/release；0092與Site其他工作保留，本批未提交。[0110](batches/0110-variable-syntax.md)。
+
+0111完成BH-0003：engine resources共用iterative依賴保留，static roots建立永久reference、inline中介傳遞依賴，對稱釋放及不產生初始化丟棄mutation。新增12Rust groups、5compiler shared-corpus tests、2runtime tests（三瀏覽器6控制）與browser/performance drivers；145Rust/CSS72/compiler132/server67/runtime279及72browser全通過。Wasm比0110減982raw/878gzip/267brotli，JS/manifest不變；static與runtime benchmark完成，原始history僅/tmp。新測試的API/Node載入/JSON型別/retention時序問題均分開記錄；Node預設Wasm loader另列待分類候選。本批無commit，0110/0092/Site工作保留，未動依賴/lockfile/既有fixtures/snapshots/CI/release。[0111](batches/0111-static-retention.md)。
+
+0112新增external-import-order重現與帳本診斷，沒有產品修改：native/compiler-Wasm10cases同結果，60三瀏覽器對照21PASS/39FAIL，區分21實際cascade錯誤與18typed拒絕。保持BH-0004未完成，具體graph/stylesheet-boundary與host交付下一步見[0112](batches/0112-external-import-order.md)。既有0092/0110/0111及Site來源hash保持、未commit/push，不重跑暫停的0038追加驗證。
+
+本次依使用者指示提交0110–0111的BH-0002/0003完成修復及0110–0112調查證據，以7e225b3da為父提交。完成來源與既有最終hash一致；提交前重跑engine/lexer/render測試。0092/0113 compiler部分修改、新graph及未完成測試與Site其他工作保留未提交；未推送，未納入benchmark原始history。當前0113接續點見README；goal仍active，0038追加驗證仍暫停。
