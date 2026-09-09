@@ -97,6 +97,12 @@ In static mode, import the generated stylesheet from a source stylesheet.
 
 Source stylesheets that import `@master/css` are treated as native CSS pruning roots by default. Ordinary CSS outside Master CSS directives is pruned against detected classes, and the import inserts generated Master CSS. Add `@preserve native;` when native CSS must be preserved.
 
+## Production CSS asset names
+
+When Vite uses an `assetFileNames` pattern containing `[hash]`, managed CSS participates in the asset hash before Vite generates HTML and JavaScript references. Changing the managed stylesheet therefore changes its URL; identical inputs produce stable output names. This also applies to CSS loaded by dynamic imports and builds with `cssCodeSplit: false`.
+
+Custom `assetFileNames` callbacks receive the extracted managed CSS in the CSS asset source at the naming stage. Hash length and `hashCharacters` settings are honored. Vite can still include its own naming metadata and perform later output processing, so the filename hash is not a checksum of the final file on disk. Fixed filename patterns remain fixed and require the application's own cache invalidation policy.
+
 ## Runtime input imports
 
 The plugin exposes canonical project-level runtime input modules:

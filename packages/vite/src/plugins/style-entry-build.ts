@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite'
+import { createHash } from 'node:crypto'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import getExtractedCSS from '../utils/extracted-css'
@@ -16,13 +17,40 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
 }
 
 export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
+  let renderedCSS: string | undefined
   return {
     name: 'master-css:style-entry:build',
-    enforce: 'pre',
+    enforce: 'post',
     apply: 'build',
+    async renderStart() {
+      // Module transforms and usage collection finish before output rendering.
+      renderedCSS = await getExtractedCSS(context)
+    },
+    outputOptions(options) {
+      const assetFileNames = options.assetFileNames
+      return {
+        ...options,
+        assetFileNames(asset) {
+          const cssAsset = (asset.names ?? [asset.name]).some(name => name?.endsWith('.css'))
+          const result = cssAsset && renderedCSS !== undefined && typeof asset.source === 'string'
+            ? replaceSlotCSSRule(asset.source, getScanner(context).slotCSSRule, renderedCSS)
+            : undefined
+          const pattern = typeof assetFileNames === 'function'
+            ? assetFileNames(result?.replaced ? { ...asset, source: result.source } : asset)
+            : assetFileNames ?? '[name]-[hash][extname]'
+          if (!result?.replaced) return pattern
+          const bytes = createHash('sha256').update(result.source).digest()
+          const hash = options.hashCharacters === 'hex' ? bytes.toString('hex')
+            : options.hashCharacters === 'base36' ? BigInt(`0x${bytes.toString('hex')}`).toString(36)
+              : bytes.toString('base64url')
+          // Name the final bytes while Vite still owns all HTML/JS/CSS references.
+          return pattern.replace(/\[hash(?::(\d+))?\]/g, (_token, length) => hash.slice(0, length ? Number(length) : 8))
+        }
+      }
+    },
     async generateBundle(_options, bundle) {
       const slotCSSRule = getScanner(context).slotCSSRule
-      const realCSS = await getExtractedCSS(context)
+      const realCSS = renderedCSS ?? await getExtractedCSS(context)
       const cssFileNames = Object.keys(bundle).filter(eachFileName => eachFileName.endsWith('.css'))
       let replacedAny = false
       for (const eachCssFileName of cssFileNames) {
