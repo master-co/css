@@ -1,0 +1,46 @@
+{
+  "head": "927278b1c0bf2b0087fee2f671bf12dcfdc4a9fd",
+  "previousTurn": "progress: completed commits and corrected lint evidence",
+  "goal": "active",
+  "BH-0004": "unfinished: actual CLI6PASS/12FAIL for both source and built; shared Node preparation extracted",
+  "validation": {
+    "compilerTests": 167,
+    "cliTests": 34,
+    "fileBrowser": 42,
+    "compilerLint": "PASS",
+    "compilerTypes": "PASS",
+    "compilerBuild": "PASS",
+    "cliTypes": "PASS",
+    "cliBuild": "PASS",
+    "sourceCLI": {
+      "comparisons": 18,
+      "failures": 12,
+      "builtCLI": false,
+      "cleanup": true
+    },
+    "builtCLI": {
+      "comparisons": 18,
+      "failures": 12,
+      "builtCLI": true,
+      "cleanup": true
+    },
+    "sourceBuiltOutputParity": true,
+    "rootGates": "API census and package contracts FAIL with unchanged hashes"
+  },
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "paused": "0038 additional verification awaits explicit identity confirmation",
+  "preservation": {
+    "current": 3,
+    "unchanged": 60
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

@@ -204,11 +204,21 @@
 
 - [0117](batches/0117-vscode-settings-restart.md) VS Code settings restart：BH-0035修復，缺少／已註冊／失敗／移除optional command的實際host控制、完整設定切換與31tests通過。
 
+- [0118](batches/0118-cli-stylesheet-delivery.md) CLI stylesheet delivery：actual CLI失敗已直接驗證；Node準備流程抽出，完整交付未完成。
+
+- [0119](batches/0119-cli-asset-delivery.md) CLI asset delivery：source/built各18browser及37CLI tests通過；BH-0004其他入口仍未完成。
+
 ## 目前交接點
+
+- 本次提交整理（父提交 `927278b1c`）：僅納入 0118–0119 已完成的調查紀錄、驗證證據及 CLI 重現腳本；BH-0004 產品、測試與公開文件實作仍未提交，其他對話的 Site 變更保持原樣。證據對應各批來源雜湊所標識的工作區版本，不能宣稱本提交的乾淨 checkout 可重現修復後結果。0119 的 55 個保留檔案雜湊全部一致；其後 0120 已修改 7 個相關來源／文件，0119 證據不代表這些新版本全部通過。0120 仍在進行：新增 layer probe 有 36 次失敗，須處理排除 native CSS 時空 import 仍宣告 layer、改變 cascade 的問題，再重跑輸出組合與 native/Wasm 驗證；0120 材料保留工作區。32 已修復／12 未解決、65 已檢查／10 受阻及 4 項 root gates 不變；0038 追加驗證仍等待明確身分確認。未推送。
+
+- 0119：CLI file export已接Rust graph，實際輸出相依CSS與resources；source/built各18browser全通過（原各12FAIL），reference資源、分入口native pruning與watch更新共37CLI tests通過。61Rust/168compiler/binding17、126graph與3resource browsers及lint/types/build/Clippy/codegen/parity通過。舊入口仍39FAIL，BH-0004保持部分修復；file/project/build/no-export、診斷位置、output exclusions與stale asset cleanup續作。32fixed/12unresolved、65checked/10blocked、4root gates不變；0038追加驗證仍暫停。未commit/push。[0119](batches/0119-cli-asset-delivery.md)。
+
+- 0118：實際 source／built CLI 各18個三瀏覽器對照6PASS/12FAIL，確認外部import遭刪除、順序錯誤、巢狀條件拒絕與relative resource錯誤目錄；沿用BH-0004。已抽出Node filesystem/package graph準備流程供collection接續，167compiler/34CLI、42file browser及lint/types/build通過，兩項root API失敗hash不變。完整asset delivery仍未完成；32fixed/12unresolved、65checked/10blocked及4root gates保持。[0118](batches/0118-cli-stylesheet-delivery.md)。未commit/push，0038追加驗證仍暫停。
 
 - 提交整理：依使用者要求，BH-0035 的產品修復、實際 host 回歸測試與兩個啟動腳本已提交為 `79eea0d8f`。本次另保存 0115–0117 已完成的調查、證據及重現材料；BH-0004 的 compiler／binding／測試與文件實作及 Site 其他工作仍未提交。0115–0116 證據對應已記錄雜湊的工作區版本，其 graph 重現仍依賴未提交來源，不能宣稱乾淨 checkout 可獨立重現。提交前發現 0117 原 lint 紀錄實為 13 個 CommonJS 測試環境錯誤，先前 PASS 記載不正確；只新增測試檔的 Node globals 與 CommonJS import 註記後，完整 package lint 已通過，見 `evidence/0117-commit-lint.log`。測試執行內容與產品來源未變，沿用既有 31 tests、actual VS Code、types 與 isolated build 證據。12 個未解決問題、10 個受阻覆蓋單位及四項 root gates 保持未完成；0038 追加驗證仍待身分驗證明確確認。未推送。
 
-- 0117當前交接：BH-0035已修復，設定變更共用guarded restart並處理拒絕；實際VS Code缺少命令錯誤從manual/settings 0/1降為0/0，registered/failing/removed controls與tokens/format/document更新皆通過，31package tests與lint/types/full isolated build通過。現在32fixed/12unresolved、65checked/10blocked；回到0116的BH-0004實際asset delivery/prepared reference/resource及source diagnostics工作，原external39FAIL與4root gates保持。產品修復已提交79eea0d8f；lint更正與提交範圍見上方；[0117](batches/0117-vscode-settings-restart.md)。
+- 0117歷史交接：BH-0035已修復，設定變更共用guarded restart並處理拒絕；實際VS Code缺少命令錯誤從manual/settings 0/1降為0/0，registered/failing/removed controls與tokens/format/document更新皆通過，31package tests與lint/types/full isolated build通過。現在32fixed/12unresolved、65checked/10blocked；回到0116的BH-0004實際asset delivery/prepared reference/resource及source diagnostics工作，原external39FAIL與4root gates保持。產品修復已提交79eea0d8f；lint更正與提交範圍見上方；[0117](batches/0117-vscode-settings-restart.md)。
 
 - 0116歷史交接：Node dependency preparation與Rust graph共用decoded import parser；既有compileManifestFileSync正確讀取escaped/encoded/query/bare local CSS及reference檔名中的#。60Rust/167compiler/MCP34、42新browser與96local控制通過；原external60仍39FAIL。下一步將prepared graph/reference資源與實際output URL/asset emission接到file/project/stylesheet/build/CLI，保留診斷位置、external URL base及reload依賴。Node原檔近800行，先抽出既有filesystem preparation以續接。31fixed/13unresolved、65checked/10blocked不變；本批未提交，HEAD2449e8664。[0116](batches/0116-node-import-discovery.md)。
 
