@@ -1,0 +1,52 @@
+
+{"publicPath":"./","module":false,"browser":"chromium","page":"index.html","assets":["/mount/index.html","/mount/js/master-css-runtime.js","/mount/master-css-manifest.68940fce.json"],"missing":["/mount/js/master-css-manifest.68940fce.json"],"errors":["Failed to load resource: the server responded with a status of 404 (Not Found)","Failed to fetch dynamically imported module: http://webpack-relative.test/mount/js/master-css-manifest.68940fce.json"]}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+ExpectError: expect(locator).toHaveCSS(expected) failed
+
+Locator:  locator('#probe')
+Expected: "inline-flex"
+Received: "block"
+Timeout:  15000ms
+
+Call log:
+  - Expect "toHaveCSS" locator('#probe') with timeout 15000ms
+  - waiting for locator('#probe')
+    34 × locator resolved to <div id="probe" class="inline-flex"></div>
+       - unexpected value "block"
+
+    at captureRawStack (/Users/aron/master/css/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:8588:17)
+    at callMatcherAsStep (/Users/aron/master/css/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13310:57)
+    at Object.toHaveCSS (/Users/aron/master/css/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13302:23)
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-relative-runtime.mjs:56:59 {
+  matcherResult: {
+    name: 'toHaveCSS',
+    expected: 'inline-flex',
+    message: 'expect(locator).toHaveCSS(expected) failed\n' +
+      '\n' +
+      "Locator:  locator('#probe')\n" +
+      'Expected: "inline-flex"\n' +
+      'Received: "block"\n' +
+      'Timeout:  15000ms\n' +
+      '\n' +
+      'Call log:\n' +
+      `  - Expect "toHaveCSS" locator('#probe') with timeout 15000ms\n` +
+      "  - waiting for locator('#probe')\n" +
+      '    34 × locator resolved to <div id="probe" class="inline-flex"></div>\n' +
+      '       - unexpected value "block"\n',
+    pass: false,
+    actual: 'block',
+    log: [
+      `  - Expect "toHaveCSS" locator('#probe') with timeout 15000ms`,
+      "  - waiting for locator('#probe')",
+      '    34 × locator resolved to <div id="probe" class="inline-flex"></div>',
+      '       - unexpected value "block"'
+    ],
+    timeout: 15000,
+    ariaSnapshot: ''
+  }
+}
+
+Node.js v24.20.0

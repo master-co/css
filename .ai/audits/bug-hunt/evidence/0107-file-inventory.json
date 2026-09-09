@@ -1,0 +1,21 @@
+[
+  ".ai/audits/bug-hunt/README.md",
+  ".ai/audits/bug-hunt/batches/0107-animation-syntax-evidence.md",
+  ".ai/audits/bug-hunt/changes.md",
+  ".ai/audits/bug-hunt/coverage.md",
+  ".ai/audits/bug-hunt/evidence/0107-ai-context.log",
+  ".ai/audits/bug-hunt/evidence/0107-animation-syntax-before.log",
+  ".ai/audits/bug-hunt/evidence/0107-animation-syntax-final.log",
+  ".ai/audits/bug-hunt/evidence/0107-browser-syntax.log",
+  ".ai/audits/bug-hunt/evidence/0107-engine-baseline.log",
+  ".ai/audits/bug-hunt/evidence/0107-file-inventory.json",
+  ".ai/audits/bug-hunt/evidence/0107-final-checks.json",
+  ".ai/audits/bug-hunt/evidence/0107-new-tests-clippy.log",
+  ".ai/audits/bug-hunt/evidence/0107-resources-before.log",
+  ".ai/audits/bug-hunt/evidence/0107-source-hashes.json",
+  ".ai/audits/bug-hunt/findings.md",
+  ".ai/audits/bug-hunt/report.md",
+  ".ai/audits/bug-hunt/repros/animation-syntax-browser.mjs",
+  "crates/mastercss-render/tests/bug_hunt_animation_syntax.rs",
+  "crates/mastercss-render/tests/bug_hunt_stylesheet_resources.rs"
+]

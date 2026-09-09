@@ -1,0 +1,36 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-j4et8ojd/packages/webpack", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/nested-build.mjs", "runtime"]}
+
+(node:13951) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+assets by status 126 KiB [cached] 4 assets
+runtime modules 3.9 KiB 5 modules
+cacheable modules 3 KiB
+  modules by path ../../../../../packages/ 2.01 KiB
+    ../../../../../packages/webpack/dist/runtime.js 1.41 KiB [built] [code generated]
+    ../../../../../packages/webpack/dist/_virtual/_rolldown/runtime.js 187 bytes [built] [code generated]
+    ../../../../../packages/runtime/src/index.ts 427 bytes [built] [code generated]
+  modules by path ./ 1020 bytes
+    ./src/main.js 73 bytes [built] [code generated]
+    ./node_modules/.master-css/master-css-manifest.js 897 bytes [built] [code generated]
+    ./node_modules/.master-css/master-css-emitted-globals.js 48 bytes [built] [code generated]
+
+ERROR in ../../../../../packages/runtime/src/index.ts 1:0-41
+Module not found: Error: Can't resolve './core' in '/Users/aron/master/css/packages/runtime/src'
+Did you mean 'core.ts'?
+BREAKING CHANGE: The request './core' failed to resolve only because it was resolved as fully specified
+(probably because the origin is strict EcmaScript Module, e. g. a module with javascript mimetype, a '*.mjs' file, or a '*.js' file where the package.json contains '"type": "module"').
+The extension in the request is mandatory for it to be fully specified.
+Add the extension to the request.
+ @ ../../../../../packages/webpack/dist/runtime.js 2:0-55 17:28-50
+
+ERROR in ../../../../../packages/webpack/dist/runtime.js 17:28-50
+export 'MasterCSSRuntime' (imported as 'MasterCSSRuntime') was not found in '@master/css-runtime' (possible exports: withMasterCSSRuntime)
+
+ERROR in ./src/main.js 1:0-20
+Module not found: Error: Can't resolve 'css-loader' in '/Users/aron/master/css/tmp/master-css-bh-isolated-j4et8ojd/packages/webpack/playground'
+
+2 errors have detailed information that is not shown.
+Use 'stats.errorDetails: true' resp. '--stats-error-details' to show it.
+
+webpack 5.110.3 compiled with 3 errors in 1466 ms
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-j4et8ojd"}

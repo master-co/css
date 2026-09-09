@@ -1,0 +1,189 @@
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running tests/bug_hunt_animation_syntax.rs (target/debug/deps/bug_hunt_animation_syntax-b1613740ef4b5629)
+
+running 22 tests
+test native_definition ... ok
+test plain_use ... ok
+test commented_fake_definition ... FAILED
+test comment_after_name ... FAILED
+test comment_before_colon ... FAILED
+test quoted_animation_name ... FAILED
+test quoted_definition ... FAILED
+test escaped_animation_name ... FAILED
+test escaped_definition ... FAILED
+test missing_definition_block ... FAILED
+test commented_fake_use ... FAILED
+test important_animation_name ... FAILED
+test custom_property_is_not_use ... FAILED
+test comment_separates_definition ... FAILED
+test custom_block_is_not_use ... FAILED
+test nested_definition ... ok
+test quoted_fake_definition ... FAILED
+test quoted_fake_use ... FAILED
+test supports_is_not_use ... FAILED
+test uppercase_definition ... FAILED
+test url_fake_use ... FAILED
+test uppercase_property ... FAILED
+
+failures:
+
+---- commented_fake_definition stdout ----
+
+thread 'commented_fake_definition' (36850173) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: /* @keyframes fade{} */.x{animation:fade 1s}: 
+  left: false
+ right: true
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- comment_after_name stdout ----
+
+thread 'comment_after_name' (36850170) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{animation:fade/**/ 1s}: 
+  left: false
+ right: true
+
+---- comment_before_colon stdout ----
+
+thread 'comment_before_colon' (36850171) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{animation/**/:fade 1s}: 
+  left: false
+ right: true
+
+---- quoted_animation_name stdout ----
+
+thread 'quoted_animation_name' (36850184) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{animation-name:"fade"}: 
+  left: false
+ right: true
+
+---- quoted_definition stdout ----
+
+thread 'quoted_definition' (36850185) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @keyframes "fade"{to{opacity:0}}.x{animation:fade 1s}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- escaped_animation_name stdout ----
+
+thread 'escaped_animation_name' (36850177) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{animation-name:f\61 de}: 
+  left: false
+ right: true
+
+---- escaped_definition stdout ----
+
+thread 'escaped_definition' (36850178) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @keyframes f\61 de{to{opacity:0}}.x{animation:fade 1s}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- missing_definition_block stdout ----
+
+thread 'missing_definition_block' (36850180) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @keyframes fade;.x{animation:fade 1s}: 
+  left: false
+ right: true
+
+---- commented_fake_use stdout ----
+
+thread 'commented_fake_use' (36850174) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: /* animation:fade 1s; */.x{display:block}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- important_animation_name stdout ----
+
+thread 'important_animation_name' (36850179) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{animation-name:fade!important}: 
+  left: false
+ right: true
+
+---- custom_property_is_not_use stdout ----
+
+thread 'custom_property_is_not_use' (36850176) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{--animation:fade 1s}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- comment_separates_definition stdout ----
+
+thread 'comment_separates_definition' (36850172) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @keyframes/**/fade{to{opacity:0}}.x{animation:fade 1s}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- custom_block_is_not_use stdout ----
+
+thread 'custom_block_is_not_use' (36850175) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{--recipe:{animation:fade 1s};}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- quoted_fake_definition stdout ----
+
+thread 'quoted_fake_definition' (36850186) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{content:"@keyframes fade";animation:fade 1s}: 
+  left: false
+ right: true
+
+---- quoted_fake_use stdout ----
+
+thread 'quoted_fake_use' (36850187) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{content:"animation:fade 1s;"}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- supports_is_not_use stdout ----
+
+thread 'supports_is_not_use' (36850188) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @supports (animation:fade 1s){.x{display:block}}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- uppercase_definition stdout ----
+
+thread 'uppercase_definition' (36850189) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: @KEYFRAMES fade{to{opacity:0}}.x{animation:fade 1s}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- url_fake_use stdout ----
+
+thread 'url_fake_use' (36850191) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{background:url("data:text/plain,animation:fade 1s;")}: @keyframes fade{to{opacity:1}}
+  left: true
+ right: false
+
+---- uppercase_property stdout ----
+
+thread 'uppercase_property' (36850190) panicked at crates/mastercss-render/tests/bug_hunt_animation_syntax.rs:13:5:
+assertion `left == right` failed: .x{ANIMATION:fade 1s}: 
+  left: false
+ right: true
+
+
+failures:
+    comment_after_name
+    comment_before_colon
+    comment_separates_definition
+    commented_fake_definition
+    commented_fake_use
+    custom_block_is_not_use
+    custom_property_is_not_use
+    escaped_animation_name
+    escaped_definition
+    important_animation_name
+    missing_definition_block
+    quoted_animation_name
+    quoted_definition
+    quoted_fake_definition
+    quoted_fake_use
+    supports_is_not_use
+    uppercase_definition
+    uppercase_property
+    url_fake_use
+
+test result: FAILED. 3 passed; 19 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-render --test bug_hunt_animation_syntax`

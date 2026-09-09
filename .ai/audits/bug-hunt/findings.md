@@ -6,7 +6,7 @@
 
 | ID | 嚴重度 | 驗證狀態 | 問題 | 範圍／證據 |
 |---|---|---|---|---|
-| BH-0001 | P2 | 已確認 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；[0002](batches/0002-stylesheet-resources.md#bh-0001--p2-已確認動畫提取把字串與註解當作-css) |
+| BH-0001 | P2 | 已確認 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；0107擴充語法證據，19回歸仍FAIL，66browser controls支持預期；[0107](batches/0107-animation-syntax-evidence.md)；[0002](batches/0002-stylesheet-resources.md#bh-0001--p2-已確認動畫提取把字串與註解當作-css) |
 | BH-0002 | P3 | 已確認 | raw stylesheet var() 非 space 空白漏掉依賴；compiler 正規化路徑不受影響 | engine/render；[0002](batches/0002-stylesheet-resources.md#bh-0002--p3-已確認raw-stylesheet-var-空白漏掉依賴) |
 | BH-0003 | P2 | 已確認 | static token 不保留動態依賴，初始化與最後 class 刪除後缺少 CSS 變數 | engine/compiler；[0003](batches/0003-static-resources.md) |
 | BH-0004 | P1 | 已確認 | 展開 CSS import 丟失 media/supports/layer，條件與 cascade 失真 | compiler/project；0092本機情境修正，nested unresolved imports仍未完成；[0005](batches/0005-project-graph.md#bh-0004--p1-已確認展開匯入丟失條件與-cascade-layer) |
@@ -21,8 +21,8 @@
 | BH-0013 | P1 | 已修復 | 語言分析 512-byte 前綴切入 Unicode 字元而 panic | language；[0012](batches/0012-language-ir.md) |
 | BH-0014 | P2 | 已修復 | 解码後 token 長度直接用作原始語意範圍，跳脫引號後高亮偏移 | language/tooling；[0012](batches/0012-language-ir.md) |
 | BH-0015 | P2 | 已修復 | ESLint 未解碼 JS Unicode escape，把合法 block 誤報 unknown | eslint-plugin/tooling/source；JS與Vue外層HTML mapping及fix encoding完成；[0017](batches/0017-eslint-adapters.md), [0102](batches/0102-eslint-javascript-escapes.md), [0103](batches/0103-vue-attribute-mapping.md) |
-| BH-0016 | P2 | 已確認 | Vite relative base 巢狀 HTML 的 hydration JSON URL 指向錯誤路徑 | vite；[0020](batches/0020-vite-runtime-html.md) |
-| BH-0017 | P2 | 已確認 | Webpack relative publicPath 的巢狀 HTML 注入不存在的 runtime URL | webpack；[0021](batches/0021-webpack.md) |
+| BH-0016 | P2 | 已修復 | Vite relative base 巢狀 HTML 的 hydration JSON URL 指向錯誤路徑 | vite；[0020](batches/0020-vite-runtime-html.md), [0104修復](batches/0104-vite-relative-hydration.md) |
+| BH-0017 | P2 | 已修復 | Webpack relative publicPath 的巢狀 HTML 注入不存在的 runtime URL | webpack；[0021](batches/0021-webpack.md), [0105修復](batches/0105-webpack-relative-runtime.md) |
 | BH-0018 | P2 | 已修復 | Node/native CLI 預設 source discovery 漏掉 .mjs | cli；[0028](batches/0028-cli-discovery.md) |
 | BH-0019 | P2 | 已修復 | CLI watch 只監看啟動時已有檔案，新增頁面漏產 CSS | cli；[0029](batches/0029-cli-watch.md) |
 | BH-0020 | P3 | 已修復 | MCP preview/format/render與Rust inspection bytes以UTF-16長度計算，Unicode大小錯誤 | mcp；[0030](batches/0030-mcp-contracts.md) |
@@ -35,7 +35,7 @@
 | BH-0027 | P3 | 已修復 | Webpack example 多餘 index.js 請求404；main/runtime正常 | example；[0049](batches/0049-webpack-example-asset.md) |
 | BH-0028 | P2 | 已修復 | ESLint 現代範例 CSS 使用不支援的 $variable，規則載入失敗 | EX-eslint；[0037](batches/0037-eslint-examples.md) |
 | BH-0029 | P1 | 已確認 | Rspack succeedModule 無 source，static 模式漏掉所有 managed CSS | Webpack/Rspack/Rsbuild；[0038](batches/0038-integration-lab.md)；追加驗證暫停 |
-| BH-0030 | P2 | 已確認 | Webpack 固定 output.filename 與自動 runtime entry 衝突，playground 無法 build | webpack/playground；[0042](batches/0042-nested-hosts.md) |
+| BH-0030 | P2 | 已修復 | Webpack 固定 output.filename 與自動 runtime entry 衝突，playground 無法 build | webpack/playground；[0042](batches/0042-nested-hosts.md), [0106修復](batches/0106-webpack-fixed-filename.md) |
 | BH-0031 | P2 | 已修復 | MCP 並行套用預覽重複接受 token，重疊檔案更新略過 stale-hash 保護 | mcp；[0053](batches/0053-mcp-preview-concurrency.md), [0082](batches/0082-mcp-multiprocess.md), [0101修復](batches/0101-mcp-preview-concurrency-fix.md) |
 | BH-0032 | P2 | 已確認 | Browser lifecycle/delivery benchmark 未複製 Wasm sidecar，runtime 頁面無法啟動 | benchmarks；[0055](batches/0055-browser-lifecycle-metrics.md), [0075](batches/0075-master-delivery-modes.md), [0076](batches/0076-progressive-diagnostics.md), [0077](batches/0077-interaction-cost.md), [0079](batches/0079-runtime-mutation-diagnostics.md), [0080](batches/0080-style-invalidation-diagnostics.md) |
 | BH-0033 | P3 | 已確認 | Benchmark 讀取已移除的 global runtime 欄位，規則數／CSS bytes 錯報零 | benchmarks；[0055](batches/0055-browser-lifecycle-metrics.md), [0076](batches/0076-progressive-diagnostics.md), [0077](batches/0077-interaction-cost.md), [0080](batches/0080-style-invalidation-diagnostics.md) |
@@ -126,3 +126,11 @@
 - 0102：BH-0015保留已確認／部分修復。JavaScript直接literal與框架JS expression控制通過，但Vue外層HTML entity＋JS escape的2個範圍/修正回歸失敗；現269PASS/2FAIL。24fixed/20unresolved不變。[下一步](batches/0102-eslint-javascript-escapes.md)。
 
 - 0103：BH-0015修復，ESLint291/tooling215/binding17/config4/Rust18與21實際Vue三瀏覽器控制通過。44歷史確認：25已修復、19未解決；詳見[批次](batches/0103-vue-attribute-mapping.md)。
+
+- 0104：BH-0016修復，Vite106tests/lint/types/build、36built三瀏覽器控制與原範例build通過；44歷史確認：26已修復、18未解決。[證據](batches/0104-vite-relative-hydration.md)。
+
+- 0105：BH-0017已修復；Webpack63tests serial/lint/types/build與54三瀏覽器完整runtime控制、原範例build通過。44歷史確認：27已修復、17未解決；首次parallel suite單項shared-dist載入失敗仍留harness調查。[批次](batches/0105-webpack-relative-runtime.md)。
+
+- 0106：BH-0030已修復；Webpack69tests serial/lint/types/build、36檔名矩陣與3原playground瀏覽器控制通過。44歷史確認：28已修復、16未解決；官方nested命令/依賴及parallel harness限制仍未完成。[批次](batches/0106-webpack-fixed-filename.md)。
+
+- 0107：BH-0001新增22獨立語法回歸（19FAIL/3PASS），三瀏覽器66對照支持預期；原BH-0001/0002仍FAIL。未修產品，28fixed/16unresolved不變；下批需詞法結構與名稱解碼，不能將新增證據視為修復。[批次](batches/0107-animation-syntax-evidence.md)。

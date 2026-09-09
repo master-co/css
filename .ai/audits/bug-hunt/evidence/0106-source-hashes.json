@@ -1,0 +1,13 @@
+{
+  "packages/webpack/src/plugins/runtime-entry.ts": "c99ed62b4cea543cc1f24fa6222519e2f6d64c652b2f7cb654f9bb97c769613f",
+  "packages/webpack/src/plugins/runtime-html-assets.ts": "e49c63e019ac67d95249c966e44dfea2b15385e4e78f4e815f9e955389bd62ab",
+  "packages/webpack/README.md": "50da753acd30ca601c050a87ff983fcffd4ab5b5f28908f396f75aab899c3b36",
+  "packages/webpack/tests/bug-hunt-fixed-runtime-filename.test.ts": "0c83f7f0dfd45de641802ee10f6a384371ee70b74fba1de832515252efa0d417",
+  ".ai/audits/bug-hunt/repros/webpack-relative-runtime.mjs": "aff1315806abb2237ea5188f9290d782e574b338b2780dcb50f6181b729f37ae",
+  ".ai/audits/bug-hunt/repros/webpack-playground-fixed.mjs": "606d5b0a2dc45867979ad7fb3196449852f22fb0917b3309ec08012f690354e2",
+  "packages/webpack/playground/webpack.config.js": "c28634cc95855b430a6bd8c5930fd2a7dc374c9dc0b8762b46ad40055f1d0444",
+  "packages/webpack/playground/index.html": "7b8bd714b9b8a41ce7ca12f6a8d04136b23c276e1fb49759ac4a2fa276c5b097",
+  "packages/webpack/playground/src/main.js": "fe658f92f110964ac30f041e16d160488937e5a1b59bdb90b1e427263b183641",
+  "packages/webpack/playground/src/style.css": "146dbb92597bc0f6d3211b98c1c5ac91bc9ca5d105349298f19570610e7cb82c",
+  "packages/webpack/playground/src/project.css": "b5a42b5daa47864490d3a2edbbfb98b6009ced7b6574792bce5b55aa5969449e"
+}

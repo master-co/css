@@ -70,7 +70,13 @@ export default {
 }
 ```
 
+When `output.filename` is fixed, uses only a build-wide hash, or is a callback,
+the injected runtime entry uses its own content-hashed file under `_master-css/`.
+Application filenames retain their configured behavior. Chunk-specific templates
+such as `[name].js` or `[contenthash].js` also apply to the runtime entry.
+
 ## Client types
+
 Add the client type reference when TypeScript source files import `virtual:master-utilities.css`, `virtual:master-css-manifest`, `virtual:master-css-emitted-globals`, or `?master-css-manifest` modules:
 
 ```ts

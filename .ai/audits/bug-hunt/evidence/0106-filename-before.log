@@ -1,0 +1,77 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/webpack
+
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+ ❯ tests/bug-hunt-fixed-runtime-filename.test.ts (6 tests | 4 failed) 6392ms
+   × BH-0030 preserves the app filename and emits a separate runtime: fixed 1230ms
+   × BH-0030 preserves the app filename and emits a separate runtime: nested fixed 978ms
+   × BH-0030 preserves the app filename and emits a separate runtime: build hash 937ms
+   × BH-0030 preserves the app filename and emits a separate runtime: callback fixed 923ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-fixed-runtime-filename.test.ts > BH-0030 preserves the app filename and emits a separate runtime: fixed
+ FAIL  tests/bug-hunt-fixed-runtime-filename.test.ts > BH-0030 preserves the app filename and emits a separate runtime: callback fixed
+Error: Conflict: Multiple chunks emit assets to the same filename bundle.js (chunks 280 and 792)
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5963:12
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:114:5
+ ❯ Hook.eval [as callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10
+ ❯ Cache.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:96:18
+ ❯ ItemCacheFacade.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/CacheFacade.js:128:15
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5902:22
+ ❯ arrayEach ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2405:9
+ ❯ Object.each ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2846:9
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5891:14
+ ❯ symbolIterator ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:3482:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-fixed-runtime-filename.test.ts > BH-0030 preserves the app filename and emits a separate runtime: nested fixed
+Error: Conflict: Multiple chunks emit assets to the same filename js/bundle.js (chunks 280 and 792)
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5963:12
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:114:5
+ ❯ Hook.eval [as callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10
+ ❯ Cache.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:96:18
+ ❯ ItemCacheFacade.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/CacheFacade.js:128:15
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5902:22
+ ❯ arrayEach ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2405:9
+ ❯ Object.each ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2846:9
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5891:14
+ ❯ symbolIterator ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:3482:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/bug-hunt-fixed-runtime-filename.test.ts > BH-0030 preserves the app filename and emits a separate runtime: build hash
+Error: Conflict: Multiple chunks emit assets to the same filename bundle.6b8a8344.js (chunks 280 and 792)
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5963:12
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:114:5
+ ❯ Hook.eval [as callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10
+ ❯ Cache.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Cache.js:96:18
+ ❯ ItemCacheFacade.get ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/CacheFacade.js:128:15
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5902:22
+ ❯ arrayEach ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2405:9
+ ❯ Object.each ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:2846:9
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compilation.js:5891:14
+ ❯ symbolIterator ../../node_modules/.pnpm/neo-async@2.6.2/node_modules/neo-async/async.js:3482:9
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  07:41:04
+   Duration  6.77s (tests 95%, transform 3%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/webpack
+

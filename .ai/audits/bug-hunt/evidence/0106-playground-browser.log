@@ -1,0 +1,63 @@
+
+WARNING in ../../runtime/dist/index.js 354:23-358:1
+Critical dependency: the request of a dependency is an expression
+
+WARNING in asset size limit: The following asset(s) exceed the recommended size limit (244 KiB).
+This can impact web performance.
+Assets: 
+  ce506cb841e14d90eb5b.wasm (847 KiB)
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+ExpectError: expect(locator).toHaveCSS(expected) failed
+
+Locator:  locator('#new-class')
+Expected: "inline-flex"
+Received: "flex"
+Timeout:  5000ms
+
+Call log:
+  - Expect "toHaveCSS" locator('#new-class') with timeout 5000ms
+  - waiting for locator('#new-class')
+    14 × locator resolved to <div id="new-class" class="inline-flex"></div>
+       - unexpected value "flex"
+
+    at captureRawStack (/Users/aron/master/css/node_modules/.pnpm/playwright-core@1.63.0/node_modules/playwright-core/lib/coreBundle.js:8588:17)
+    at callMatcherAsStep (/Users/aron/master/css/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13310:57)
+    at Object.toHaveCSS (/Users/aron/master/css/node_modules/.pnpm/playwright@1.63.0/node_modules/playwright/lib/matchers/expect.js:13302:23)
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-playground-fixed.mjs:47:57 {
+  matcherResult: {
+    name: 'toHaveCSS',
+    expected: 'inline-flex',
+    message: 'expect(locator).toHaveCSS(expected) failed\n' +
+      '\n' +
+      "Locator:  locator('#new-class')\n" +
+      'Expected: "inline-flex"\n' +
+      'Received: "flex"\n' +
+      'Timeout:  5000ms\n' +
+      '\n' +
+      'Call log:\n' +
+      `  - Expect "toHaveCSS" locator('#new-class') with timeout 5000ms\n` +
+      "  - waiting for locator('#new-class')\n" +
+      '    14 × locator resolved to <div id="new-class" class="inline-flex"></div>\n' +
+      '       - unexpected value "flex"\n',
+    pass: false,
+    actual: 'flex',
+    log: [
+      `  - Expect "toHaveCSS" locator('#new-class') with timeout 5000ms`,
+      "  - waiting for locator('#new-class')",
+      '    14 × locator resolved to <div id="new-class" class="inline-flex"></div>',
+      '       - unexpected value "flex"'
+    ],
+    timeout: 5000,
+    ariaSnapshot: '- main:\n' +
+      '  - text: Live\n' +
+      '  - heading "Master CSS Webpack" [level=1]\n' +
+      '  - paragraph: A CSS config file is compiled by Webpack and injected with CSS HMR.\n' +
+      '  - button "Button"'
+  }
+}
+
+Node.js v24.20.0

@@ -1,4 +1,5 @@
 import type { Plugin } from 'vite'
+import { relative } from 'node:path'
 import { MasterCSSVitePluginContext } from '../core'
 import { createServerRenderer } from '@master/css-server'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -16,6 +17,7 @@ import {
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { collectStylesheetEmittedGlobals } from '@master/css-compiler/stylesheet'
 import { includesFile } from '../utils/path'
+import { toAssetHref } from '../utils/html'
 
 const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 
@@ -77,26 +79,20 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     addServerAllow(cssManifestDependencies)
   }
   const toBuildHydrationManifestAssetFileName = (fileName: string) => {
-    const assetsDir = context.config?.build.assetsDir || 'assets'
-    return `${assetsDir.replace(/\/$/, '')}/${HYDRATION_MANIFEST_ASSET_DIR}/${fileName}`
+    const assetsDir = context.config?.build.assetsDir ?? 'assets'
+    return [assetsDir.replace(/\/$/, ''), HYDRATION_MANIFEST_ASSET_DIR, fileName].filter(Boolean).join('/')
   }
-  const toBuildPublicURL = (fileName: string) => {
-    const assetFileName = toBuildHydrationManifestAssetFileName(fileName)
-    const base = context.config?.base ?? '/'
-    if (!base || base === './') return `${base}${assetFileName}`
-    return `${base.replace(/\/?$/, '/')}${assetFileName}`
-  }
-  const addHydrationManifestAsset = (json: string) => {
+  const addHydrationManifestAsset = (json: string, htmlPath?: string) => {
     const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
     hydrationManifestAssets.set(fileName, json)
     return context.config?.command === 'build'
-      ? toBuildPublicURL(fileName)
+      ? toAssetHref(toBuildHydrationManifestAssetFileName(fileName), context.config?.base, htmlPath)
       : `${MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE}${fileName}`
   }
-  const renderHTML = (html: string) => renderer?.renderHTML(html, {
+  const renderHTML = (html: string, htmlPath?: string) => renderer?.renderHTML(html, {
     hydrationManifest: {
       type: 'external',
-      source: addHydrationManifestAsset
+      source: json => addHydrationManifestAsset(json, htmlPath)
     }
   })
   return {
@@ -140,10 +136,10 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
         response.end(source)
       })
     },
-    transformIndexHtml(html) {
+    transformIndexHtml(html, htmlContext) {
       if (!enabled) return
       if (!cssManifest || !renderer) return
-      const rendered = renderHTML(html)
+      const rendered = renderHTML(html, htmlContext?.path)
       if (!rendered) return
       return {
         html: rendered.html,
@@ -154,7 +150,8 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       if (!enabled) return
       if (id.endsWith('.html')) {
         if (!cssManifest || !renderer) return null
-        const rendered = renderHTML(code)
+        const htmlPath = context.config?.root ? relative(context.config.root, id).replace(/\\/g, '/') : undefined
+        const rendered = renderHTML(code, htmlPath)
         if (!rendered) return null
         return {
           code: rendered.html,

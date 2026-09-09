@@ -15,7 +15,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 44 historical confirmed findings; 25 fixed, 19 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 44 historical confirmed findings; 28 fixed, 16 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -176,14 +176,22 @@
 
 - [0103 Vue attribute mapping](batches/0103-vue-attribute-mapping.md)：BH-0015修復，291 ESLint測試與21三瀏覽器控制通過。
 
+- [0104 Vite hydration URLs](batches/0104-vite-relative-hydration.md)：BH-0016修復；106tests與36三瀏覽器控制通過。
+
+- [0105 Webpack runtime URLs](batches/0105-webpack-relative-runtime.md)：BH-0017修復；63tests與54三瀏覽器控制通過。
+
+- [0106 Webpack fixed filenames](batches/0106-webpack-fixed-filename.md)：BH-0030修復；69tests、36檔名矩陣與3原playground瀏覽器控制通過。
+
+- [0107 Animation syntax](batches/0107-animation-syntax-evidence.md)：22新增語法回歸19FAIL/3PASS，66瀏覽器語法對照PASS；BH-0001仍未修復。
+
 ## 目前交接點
 
 - 目標「執行並修正所有問題」持續active；已授權必要產品/範例修正，全部完成後才清理帳本。
-- 44個歷史確認問題：25已修復、19未解決。已修復ID：BH-0005/0006/0007/0008/0009/0010/0011/0012/0013/0014/0015/0018/0019/0020/0021/0022/0023/0024/0025/0026/0027/0028/0031/0036/0044。
+- 44個歷史確認問題：28已修復、16未解決。已修復ID：BH-0005/0006/0007/0008/0009/0010/0011/0012/0013/0014/0015/0016/0017/0018/0019/0020/0021/0022/0023/0024/0025/0026/0027/0028/0030/0031/0036/0044。
 - 0094：runtime CSP native JSON import與iframe Document/ShadowRoot mutation修復；273browser tests、lint/types/build通過。標準Chromium benchmark前後均完成；global gzip減112bytes，manifest/Wasm hashes不變。原始benchmark history保留/tmp/mastercss-0094-{before,after}.{json,log}，不納入repo/commit。
 - 0095：scanner及Node/native CLI.mjs來源發現修復；scanner80、NodeCLI28、RustCLI3、Vite99tests与3browser實際static build通過。上批0092新test缺baseManifest的型別錯誤已修正，3tests及下游型別檢查通過，最新test hash見0095。
 - BH-0004仍部分修復：本機qualified/nested imports已驗證，但含未展開external import的條件/圖層/cascade保留未完成，目前明確回報限制，不能標fixed。
-- 下一步驗證BH-0016 Vite relative base在nested route的hydration；其後繼續BH-0001/0002/0003資源依賴、BH-0004 nested external imports條件/cascade及其他未完成項目。19未解決以findings為準；既有4項root檢查失敗與10blocked coverage仍未完成。
+- 下一步接續工作區0108的BH-0001部分實作：lexer/engine詞法位置與名稱解碼已加入，22語法回歸及3組動畫值測試通過，但Wasm尚未重建，native/Wasm公開入口、完整下游與runtime/payload驗證未完成，仍不能標fixed。0107的19FAIL/3PASS是修復前歷史，66三瀏覽器對照支持預期；其後繼續BH-0001/0002/0003資源依賴、BH-0004 nested external imports條件/cascade及其他未完成項目。16未解決以findings為準；既有4項root檢查失敗與10blocked coverage仍未完成。
 - Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認，不重試該追加驗證。
 - 上次依使用者要求提交已完成部分：以dba77281f為父提交，提交0093–0095的5項修復（BH-0008/0009/0012/0018/0022）及已整理的帳本/證據。0092的compiler產品修改與測試仍保留未提交；其帳本與證據只記錄工作目錄的部分進度，不代表本提交包含該修復。其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md保持原樣。未改fixtures/snapshots、依賴、lockfile、CI/release。
 - 目前HEAD b056fbf33已提交0096–0100的5項完成修復（上次使用者提交指示）：BH-0019/0026/0020/0011/0010，包含必要產品修改、回歸測試與帳本/證據。來源及測試雜湊均與各批最終驗證一致。0092 compiler部分修復及Site其他工作不納入。
@@ -194,4 +202,9 @@
 - 0101已完成BH-0031：同步認領token、同OS帳號的local filesystem gate包住hash驗證與寫入；MCP34tests/lint/types/build、built stdio20rounds、260critical sections及實際權限/中止恢復控制通過。MCP產品/README/測試與帳本修改尚未提交，所有jobs terminal。多檔案寫入仍可能部分完成；外部editor/networkFS/cross-user不在此鎖保證內。
 - 0102歷史狀態（已由0103完成）：JavaScript cooked分析/UTF-16來源對映與修正編碼已實作；完整plugin269PASS/2FAIL，兩個Vue HTML entity＋JS escape回歸仍失敗。暫停AST raw不等於source時的autofix以避免錯誤替換，不能視為修復完成。Lint/types/build與config4tests通過；產品/測試未提交，所有jobs terminal。下批沿用BH-0015與現有兩個失敗測試，詳見0102，不略過外層對映。
 - 本次依使用者指示提交0101與0102–0103的兩項完成修復（BH-0031/0015），包含產品、測試、重現與帳本證據，以b056fbf33為父提交。0092 compiler部分修復及Site其他工作保留未提交；未推送。0103完整ESLint291/tooling215/binding17/config4/Rust18與21browser控制通過；詳見0103。
+- 現在HEAD5dc6f2ad1已提交0101–0103；0104 BH-0016修復尚未提交。Vite106tests/lint/types/build、36built三瀏覽器JSON載入與mutation控制、原Vite範例build通過。所有jobs terminal；0092 compiler與Site其他工作保持原樣。
+- 0105 BH-0017修復未提交：每頁asset href與runtime entry auto publicPath涵蓋JSON/Wasm/chunk；Webpack63tests（serial）/lint/types/build、54三瀏覽器控制與原範例build通過。首次parallel suite在既有dist重建期間1FAIL，疑似共享dist測試競態，未聲稱已修復；續跑本套件使用--no-file-parallelism並保留未完成harness調查。
+- 0106 BH-0030修復未提交：固定/build-wide/callback檔名使用獨立content-hashed runtime，app及chunk-specific樣板保留。Webpack69tests serial/lint/types/build、36檔名矩陣與3原playground三瀏覽器控制通過。官方playground命令仍exit127缺webpack，舊fallback另有loader/alias問題；新API控制不是修好官方依賴環境。SUP-nested-hosts保持blocked。所有jobs terminal，0104/0105修復、compiler0092與Site其他工作保留。
+- 0107僅新增證據/測試，未改產品：原resource tests1PASS/3FAIL，新animation syntax3PASS/19FAIL，engine36baseline及Clippy通過。不要用skip quotes的局部補丁或現有declaration scanner直接掃全檔冒充完成；詳細能力差距與native/Wasm/performance驗證下一步見0107。所有jobs terminal，既有工作hash不變。
+- 本次依使用者指示，以5dc6f2ad1為父提交，提交0104–0106三項完成修復BH-0016/0017/0030及必要測試、重現、帳本證據；0107已完成的語法調查與明確失敗回歸亦納入，但不代表BH-0001修復。20項0104–0106來源雜湊均與最終驗證一致。0092 compiler及0108 engine/lexer部分實作與其新材料、Site其他工作保留未提交；未推送。0108 native已重建，engine Wasm仍為舊產物，續作需先重建Wasm再做一致性驗證；所有先前jobs已terminal。28fixed/16unresolved與10blocked不變，0038追加驗證仍暫停。
 - 舊批次為歷史，當前依最新批次、來源及證據；65checked/10blocked coverage未改成全完成，尚不清理帳本。

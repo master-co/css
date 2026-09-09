@@ -1,0 +1,8 @@
+{
+  "packages/vite/src/plugins/pre-render.ts": "bb28a5c65e4dfaf3c8914ddb190fcc824fd60536df35976850ebf2a0950757db",
+  "packages/vite/tests/bug-hunt-relative-hydration.test.ts": "c9b5571e7d1d67a415428da793d03edd2e48216ef4d3beb78c0bb5f190957d01",
+  "packages/vite/tests/bug-hunt-hydration-url-matrix.test.ts": "5d6f4439a3e98b4efa5ebd0ea8cf8d6e7e19fd08c7e1188407a56b2733fce81e",
+  ".ai/audits/bug-hunt/repros/vite-relative-hydration.mjs": "0f895137358bdad8430fc44b22abf2c881d21f6ae15836af89a87b2a06997556",
+  "packages/vite/src/utils/html.ts": "bef1bad5fbe4ba58852bdc8bc43645c84f75edef64d604379cb2c2c35a86bb10",
+  "packages/vite/package.json": "ed2fb7ab195b4be6ce1f9dd3b19ba11d4eac4de9469300ef6088db8b0f5b0158"
+}

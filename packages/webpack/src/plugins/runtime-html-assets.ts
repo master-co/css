@@ -2,6 +2,7 @@ import {
   toManifestPreloadLinkTag
 } from '@master/css-internal/manifest-facade'
 import type { Compilation, Compiler } from 'webpack'
+import { posix } from 'node:path'
 import type { MasterCSSWebpackContext, WebpackSubPlugin } from '../plugin'
 
 const JS_FILE_PATTERN = /\.m?js(?:[?#].*)?$/
@@ -46,11 +47,13 @@ function injectBeforeBodyClose(html: string, tag: string) {
     : `${html.slice(0, bodyCloseIndex)}${tag}${html.slice(bodyCloseIndex)}`
 }
 
-function toPublicHref(compilation: Compilation, fileName: string) {
+function toPublicHref(compilation: Compilation, fileName: string, htmlFileName: string) {
   const publicPath = compilation.outputOptions.publicPath
-  if (!publicPath || publicPath === 'auto') return fileName
-  if (typeof publicPath !== 'string') return fileName
-  return `${publicPath.replace(/\/?$/, '/')}${fileName.replace(/^\/+/, '')}`
+  const base = typeof publicPath === 'string' && publicPath !== 'auto' ? publicPath : ''
+  const href = base ? `${base.replace(/\/?$/, '/')}${fileName.replace(/^\/+/, '')}` : fileName
+  if (/^(?:[a-z][a-z\d+.-]*:|\/)/i.test(href)) return href
+  const directory = posix.dirname(htmlFileName)
+  return directory === '.' ? href : posix.relative(directory, href)
 }
 
 function usesModuleScript(compilation: Compilation) {
@@ -90,28 +93,29 @@ function transformHTML(
   html: string,
   context: MasterCSSWebpackContext,
   compilation: Compilation,
-  assets: Compilation['assets']
+  assets: Compilation['assets'],
+  htmlFileName: string
 ) {
   const moduleScript = usesModuleScript(compilation)
   let nextHTML = html
 
   if (context.shouldPreloadRuntime()) {
     for (const runtimeFile of getRuntimeFiles(compilation, context.runtimeEntryName)) {
-      const href = toPublicHref(compilation, runtimeFile)
+      const href = toPublicHref(compilation, runtimeFile, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, createRuntimePreloadTag(href, moduleScript))
       }
     }
 
     for (const [assetFileName] of context.getManifestJSONAssets()) {
-      const href = toPublicHref(compilation, assetFileName)
+      const href = toPublicHref(compilation, assetFileName, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, toManifestPreloadLinkTag(href))
       }
     }
 
     for (const wasmFile of getRuntimeWasmFiles(assets)) {
-      const href = toPublicHref(compilation, wasmFile)
+      const href = toPublicHref(compilation, wasmFile, htmlFileName)
       if (!hasTagWithHref(nextHTML, 'link', href)) {
         nextHTML = injectBeforeHeadClose(nextHTML, createRuntimeWasmPreloadTag(href))
       }
@@ -119,7 +123,7 @@ function transformHTML(
   }
 
   for (const runtimeFile of getRuntimeFiles(compilation, context.runtimeEntryName)) {
-    const href = toPublicHref(compilation, runtimeFile)
+    const href = toPublicHref(compilation, runtimeFile, htmlFileName)
     if (!hasScriptWithSrc(nextHTML, href)) {
       nextHTML = injectBeforeBodyClose(nextHTML, createScriptTag(href, moduleScript))
     }
@@ -148,7 +152,7 @@ export default function RuntimeHTMLAssetsPlugin(context: MasterCSSWebpackContext
             for (const [fileName, asset] of Object.entries(assets)) {
               if (!fileName.endsWith('.html') && !fileName.endsWith('.htm')) continue
               const source = asset.source().toString()
-              const nextSource = transformHTML(source, context, compilation, assets)
+              const nextSource = transformHTML(source, context, compilation, assets, fileName)
               if (nextSource === source) continue
               compilation.updateAsset(fileName, new RawSource(nextSource))
             }

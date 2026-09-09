@@ -1,0 +1,8 @@
+{
+  "packages/webpack/src/plugins/runtime-html-assets.ts": "e49c63e019ac67d95249c966e44dfea2b15385e4e78f4e815f9e955389bd62ab",
+  "packages/webpack/src/plugins/runtime-entry.ts": "ed9c56e050e80c8407903c64b0bc405c48f2e87b77f7789991f4ce319b2f454a",
+  "packages/webpack/tests/bug-hunt-runtime-url-matrix.test.ts": "6340b7c2fca1bf1208a7dcaeae6fd97e7de23428894166d0d7fc3ffdf320f2c1",
+  "packages/webpack/tests/bug-hunt-relative-assets.test.ts": "5e22123c413ba21450856886601fbb0eb5f7bdc2d96b79e4212fb37e5e1cb91a",
+  ".ai/audits/bug-hunt/repros/webpack-relative-runtime.mjs": "c1e6530169a7077281a666440e3d2e2894964fa0a4f7acd0c78c49fb2f40ca2a",
+  "packages/webpack/package.json": "bbf48677d0448d861777302f68d45f0d610a2361844becd979832662deeb61d4"
+}

@@ -146,3 +146,13 @@
 0103完成BH-0015 Vue外層HTML mapping，新增Rust mapping與tooling公開API，經xtask重新產生binding protocol，ESLint組合JS/HTML來源與替換編碼。ESLint291/tooling215/binding17/config4/Rust18及21三瀏覽器控制通過。0102原始失敗證據保留，由0103最終结果取代。
 
 本次依使用者指示提交0101及0102–0103兩項已完成修復BH-0031/0015及必要測試/README/帳本/重現。0092 compiler部分修復和Site其他工作留在工作區，未推送。新增tooling API為刻意的相容擴充；未改依賴/lockfile/fixtures/snapshots/CI/release。25fixed/19unresolved、65checked/10blocked，目標仍active。
+
+0104修復BH-0016 Vite page-relative hydration asset URL，共用既有toAssetHref並為兩個HTML入口傳入頁面路徑，明確空assetsDir正確發佈。新增6個production build矩陣測試與36三瀏覽器built驗證repro；Vite106tests/lint/types/build與原範例build通過。未提交，原fixtures/snapshots/依賴/lockfile/CI、compiler0092及Site其他工作保持原樣；26fixed/18unresolved、10blocked coverage。
+
+0105完成BH-0017：Webpack每頁HTML asset href與注入entry的auto publicPath，新增14tests及45+9built三瀏覽器控制；完整63tests serial/lint/types/build/範例build通過。首次parallel shared-dist載入失敗與新test型別材料錯誤分開保留；前者仍待harness調查。未提交，原fixtures/snapshots/依賴/lockfile/CI、0104/0092及Site其他工作保留。27fixed/17unresolved、10blocked coverage。
+
+0106完成BH-0030：runtime entry在固定/build-wide/callback檔名設定使用獨立content-hashed檔名，README記錄契約；新增6個真實production build測試，擴充browser repro，新增原playground API/browser控制。Webpack69tests、36+3browser及lint/types/build/範例build通過；官方playground缺工具仍blocked。未提交，0104/0105、compiler0092與Site其他工作保留；28fixed/16unresolved、10blocked coverage。
+
+0107新增Rust render animation syntax22tests及直接讀取同組case的browser repro，19Rust回歸FAIL、66browser controls支持預期；不改產品，不改既有fixtures/snapshots/依賴/lockfile/CI。engine36baseline/Clippy通過，BH-0001/0002仍未完成。保留0104–0106修復/0092及Site其他工作，未提交。
+
+本次提交以5dc6f2ad1為父提交：0104–0106三項完成修復BH-0016/0017/0030，連同必要測試/README/重現/帳本及0107已完成的語法調查證據。0107失敗回歸不代表產品修復；0092 compiler與0108 engine/lexer部分實作、新材料和Site其他工作均未提交。0108仍須重建Wasm及完成native/Wasm、下游、runtime/payload驗證。未推送，28fixed/16unresolved、10blocked保持。
