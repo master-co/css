@@ -1,0 +1,34 @@
+[
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "on",
+    "pid": 85777,
+    "exitCode": 13,
+    "terminatedAfterObservedLeak": false,
+    "observation": null,
+    "residual": null,
+    "output": "{\"temporaryRoot\":\"/Users/aron/master/css/packages/vite/tmp/virtual-shutdown-lSNaFA\"}\nWarning: Detected unsettled top-level await at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-virtual-shutdown.mjs:26\n} finally { await server?.close();rmSync(root, { recursive: true, force: true }) }\n            ^\n\n\n\n"
+  },
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "off",
+    "pid": 85778,
+    "exitCode": 0,
+    "terminatedAfterObservedLeak": false,
+    "observation": {
+      "dependency": false,
+      "full": true,
+      "hot": true,
+      "events": [
+        {
+          "response": 200
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": null,
+    "output": "{\"temporaryRoot\":\"/Users/aron/master/css/packages/vite/tmp/virtual-shutdown-QSfAAt\"}\n{\"dependency\":false,\"full\":true,\"hot\":true,\"events\":[{\"response\":200}],\"observationsFinished\":true}\n"
+  }
+]

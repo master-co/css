@@ -1,0 +1,23 @@
+{
+  "reason": "All observed and closed checkpoints complete; each process retains a referenced native async handle after server.close with no JS resources. Explicitly terminate owned diagnostic leftovers after preserving evidence, not a normal completion.",
+  "pids": [
+    76929,
+    77056,
+    77441
+  ],
+  "cases": [
+    {
+      "log": "0157-dev-simple-control.log",
+      "session": 56399
+    },
+    {
+      "log": "0157-dev-qualified-consumed.log",
+      "session": 13235
+    },
+    {
+      "log": "0157-progressive-close-control.log",
+      "session": 16268
+    }
+  ],
+  "signal": "SIGTERM"
+}

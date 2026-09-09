@@ -1,0 +1,2 @@
+{"dependency": "0", "hot": "1", "optimizer": "on", "pid": 84474, "exitCode": -15, "terminatedAfterObservedLeak": true}
+{"dependency": "0", "hot": "1", "optimizer": "off", "pid": 84552, "exitCode": -15, "terminatedAfterObservedLeak": true}

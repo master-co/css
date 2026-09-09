@@ -1,0 +1,292 @@
+[
+  {
+    "mode": "pure-full",
+    "request": "runtime",
+    "pid": 82185,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "mode": "pure-full",
+      "request": "runtime",
+      "events": [
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x000000093eda9d30"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"mode\":\"pure-full\",\"request\":\"runtime\",\"events\":[{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"closed\"}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x000000093eda9d30\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "mode": "pure-full",
+    "request": "css-runtime",
+    "pid": 82201,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "mode": "pure-full",
+      "request": "css-runtime",
+      "events": [
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "style.css",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x0000000b23241d30"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"mode\":\"pure-full\",\"request\":\"css-runtime\",\"events\":[{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"style.css\",\"status\":200},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"closed\"}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x0000000b23241d30\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "mode": "runtime",
+    "request": "runtime",
+    "pid": 82243,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "mode": "runtime",
+      "request": "runtime",
+      "events": [
+        {
+          "event": "scanner:init",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "scanner:dispose",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x00000009d0dcdeb0"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"mode\":\"runtime\",\"request\":\"runtime\",\"events\":[{\"event\":\"scanner:init\",\"instance\":\"scanner:0\"},{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"scanner:dispose\",\"instance\":\"scanner:0\"},{\"event\":\"closed\"}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x00000009d0dcdeb0\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "mode": "runtime",
+    "request": "css-runtime",
+    "pid": 82281,
+    "exitCode": 0,
+    "terminatedAfterObservedLeak": false,
+    "observation": {
+      "mode": "runtime",
+      "request": "css-runtime",
+      "events": [
+        {
+          "event": "scanner:init",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "style.css",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "scanner:dispose",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": null,
+    "output": "{\"mode\":\"runtime\",\"request\":\"css-runtime\",\"events\":[{\"event\":\"scanner:init\",\"instance\":\"scanner:0\"},{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"style.css\",\"status\":200},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"scanner:dispose\",\"instance\":\"scanner:0\"},{\"event\":\"closed\"}],\"observationsFinished\":true}\n"
+  },
+  {
+    "mode": "progressive",
+    "request": "runtime",
+    "pid": 82282,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "mode": "progressive",
+      "request": "runtime",
+      "events": [
+        {
+          "event": "scanner:init",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "renderer:dispose",
+          "instance": "renderer:1"
+        },
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "renderer:dispose",
+          "instance": "renderer:2"
+        },
+        {
+          "event": "scanner:dispose",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x00000009cd501a30"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"mode\":\"progressive\",\"request\":\"runtime\",\"events\":[{\"event\":\"scanner:init\",\"instance\":\"scanner:0\"},{\"event\":\"renderer:dispose\",\"instance\":\"renderer:1\"},{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"renderer:dispose\",\"instance\":\"renderer:2\"},{\"event\":\"scanner:dispose\",\"instance\":\"scanner:0\"},{\"event\":\"closed\"}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x00000009cd501a30\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "mode": "progressive",
+    "request": "css-runtime",
+    "pid": 82290,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "mode": "progressive",
+      "request": "css-runtime",
+      "events": [
+        {
+          "event": "scanner:init",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "renderer:dispose",
+          "instance": "renderer:1"
+        },
+        {
+          "event": "listening"
+        },
+        {
+          "event": "response",
+          "route": "style.css",
+          "status": 200
+        },
+        {
+          "event": "response",
+          "route": "@id/__x00__virtual:master-css-runtime",
+          "status": 200
+        },
+        {
+          "event": "renderer:dispose",
+          "instance": "renderer:2"
+        },
+        {
+          "event": "scanner:dispose",
+          "instance": "scanner:0"
+        },
+        {
+          "event": "closed"
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x0000000b05a3dbb0"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"mode\":\"progressive\",\"request\":\"css-runtime\",\"events\":[{\"event\":\"scanner:init\",\"instance\":\"scanner:0\"},{\"event\":\"renderer:dispose\",\"instance\":\"renderer:1\"},{\"event\":\"listening\"},{\"event\":\"response\",\"route\":\"style.css\",\"status\":200},{\"event\":\"response\",\"route\":\"@id/__x00__virtual:master-css-runtime\",\"status\":200},{\"event\":\"renderer:dispose\",\"instance\":\"renderer:2\"},{\"event\":\"scanner:dispose\",\"instance\":\"scanner:0\"},{\"event\":\"closed\"}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x0000000b05a3dbb0\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  }
+]

@@ -1,0 +1,38 @@
+{
+  "archive": ".ai/audits/bug-hunt/progress-history-0158.md",
+  "uniqueParagraphs": 1,
+  "occurrences": 5,
+  "paragraphs": [
+    {
+      "sha256": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c",
+      "text": "- 0157：獨立確認並修復BH-0046：dev runtime script與preload未加base造成404；改用既有URL helper與實際server設定。12新actual-server cases（六base×兩模式，各含根／巢狀HTML）、完整Vite209tests／38files、lint/types/build與原範例PASS；三瀏覽器動態class及theme HMR共216觀測PASS，無整頁reload。qualified dev控制仍500，bootstrap已200，與BH-0004分開。46historical／34fixed／12unresolved，10blocked／4root gates／4原候選與新增關閉殘留候選及0038身分暫停保留。只請求CSS／runtime後close留native async handle，普通CSS亦重現，診斷程序已留證終止。下一批先分類此生命週期，再接development graph完整CSS／resource交付、Nuxt子CSS與Webpack競態。HEAD42ccdc182，本批未提交／推送。[0157](batches/0157-runtime-development-base.md)。"
+    }
+  ],
+  "files": {
+    "README.md": {
+      "before": "2da836aa528bb06e139df5633fc8a08b9745fb64bc05d9418a91e2b988087e3c",
+      "afterArchive": "ae07d34519153d1ccda09e5077b1720b28a7d20602f12f8e70461592b87f847d",
+      "paragraph": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c"
+    },
+    "coverage.md": {
+      "before": "279db4e88e3406be5c1b472ea2865b79f91386cf9ec918a1c46e2416c324cdb8",
+      "afterArchive": "df96b24886b5ec498730677f808e494fff9fa24a3c504337c033a8dc70d1b34d",
+      "paragraph": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c"
+    },
+    "findings.md": {
+      "before": "11df7ce991726647db9c7e9806b23bcbdd843ba65bab58ff3c8c185ccb8b16f2",
+      "afterArchive": "ab24b99abe8f0e60c83a36510e49a95cde2e72d32e206bb0b565238f2bd719fc",
+      "paragraph": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c"
+    },
+    "report.md": {
+      "before": "cf5e34e809d048daad917899303fdc5b4062d9511e239b92a68db5d43783cc9c",
+      "afterArchive": "e76d76a105b2ce03c4980f34a54507220351e319012d49ff54b9fddbd5c7bd84",
+      "paragraph": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c"
+    },
+    "changes.md": {
+      "before": "37f52f677f0512ce1ff22902bd712b3b07c96544796feed1aad5bbd66f1455df",
+      "afterArchive": "e7c89741b15c252d2df30dce5c9ff19ff27bae65ea8cae470014635ba9e9d190",
+      "paragraph": "b15cabbad90ba552493b364e3c494e4b51fb96fafc3944d5736144f3ceaa632c"
+    }
+  }
+}

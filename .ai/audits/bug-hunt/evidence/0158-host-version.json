@@ -1,0 +1,9 @@
+{
+  "node": "v24.20.0",
+  "vite": "8.2.2",
+  "files": {
+    "/Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/index.js": "c7ea52906f843318d7971209ce62bd24bab60590275e8f415c5564fa35cb82dc",
+    "/Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/index.d.ts": "b0d00966e18eb7d205f31e4766dba87631e14bc121c5bef41bc70dad3c39a902",
+    "/Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js": "f64038f08022030b77efee87b6baa81933a7b77d820aaa64bc3262fda44d80b0"
+  }
+}

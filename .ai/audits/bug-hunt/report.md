@@ -1,8 +1,10 @@
 # Master CSS 調查交付
 
-- 0156：compiler globals蒐集改用Rust import/reference graph，metadata不讀host資源；5新tests、compiler235／Vite197（qualified案例開啟）、lint/types/build及範例PASS。最終supports真／假、兩模式與三瀏覽器4build／36觀測PASS；首輪6個outline寬度oracle錯誤已修正留證。Dev仍24FAIL：local-compose的舊攤平路徑500；progressive /base/runtime404另列新增待分類候選。Astro15／Next58通過；Webpack並行載入失敗、串行69PASS仍待修競態，Nuxt串行7PASS／3FAIL需驗證子CSS／實際頁面。189來源與五產物不變。下一批先獨立分類runtime base，再接dev graph／資源交付；12unresolved／10blocked／4gates／4原候選+1新增候選及0038身分暫停維持。HEAD9aefc18ac，未提交／推送。[0156](batches/0156-emitted-globals-graphs.md)。
+- 0158：關閉殘留完成有界分類，71個獨立程序控制；scanner／renderer dispose均有trace。完全不載Master CSS插件或Node API的純Vite加runtime dependency／virtual HMR亦留native async handle，停optimizer不解；普通小dependency另有close未完成exit13，與native殘留分開。先等待公開waitForRequestsIdle的六控制全部自然退出0；CSS調查腳本採相同收尾，直接close仍保留主機限制，未視為修復／完成。產品來源與既有驗證不變；46historical／34fixed／12unresolved、10blocked／4gates／4原候選+1主機關閉待辦及0038身分暫停保留。下一批接BH-0004 dev分類、CSS graph與resources實際交付，再續Nuxt／Webpack與其餘要求。HEAD42ccdc182，未提交／推送。[0158](batches/0158-development-shutdown-classification.md)。
 
-- 0155：共用插件跨root污染修復，按ResolvedConfig隔離完整插件組；applyToEnvironment與非同步呼叫設定路由保留外層hook包裝及無environment的resolveFileUrl，SSR原始base經config merge保留。197tests／37files、lint/types/build／範例及Site PASS（75warnings）；四組restart、替換控制與四模式重用建置共384browser／128SSR及16build全PASS。185既有來源、五產物不變；3段交接逐字歸檔。另確認pre-render／progressive qualified子檔保留external import在獨立factory也失敗，下一批先修此BH-0004交付，再續資源／reference、其他host；同config並行production environments／workers仍待驗。12unresolved／10blocked／4gates／4候選及0038身分暫停維持；HEAD9aefc18ac，本批未提交／推送。[0155](batches/0155-shared-plugin-roots.md)。
+- 0157共同交接原文已移至[歷史紀錄](progress-history-0158.md)，BH-0046證據及關閉候選沿用。
+
+- 0155–0156共用交接已逐字歸檔至[歷史紀錄](progress-history-0157.md)，各批次證據與未完成範圍保留。
 
 - 0152–0154共用交接已逐字移至[歷史紀錄](progress-history-0155.md)，批次證據與未完成項目保留。
 
@@ -10,7 +12,7 @@
 
 起始 commit `e66ba7236`。提交整理：依使用者要求，BH-0035 的產品修復、實際 host 回歸測試與兩個啟動腳本已提交為 `79eea0d8f`。本次另保存 0115–0117 已完成的調查、證據及重現材料；BH-0004 的 compiler／binding／測試與文件實作及 Site 其他工作仍未提交。0115–0116 證據對應已記錄雜湊的工作區版本，其 graph 重現仍依賴未提交來源，不能宣稱乾淨 checkout 可獨立重現。提交前發現 0117 原 lint 紀錄實為 13 個 CommonJS 測試環境錯誤，先前 PASS 記載不正確；只新增測試檔的 Node globals 與 CommonJS import 註記後，完整 package lint 已通過，見 `evidence/0117-commit-lint.log`。測試執行內容與產品來源未變，沿用既有 31 tests、actual VS Code、types 與 isolated build 證據。12 個未解決問題、10 個受阻覆蓋單位及四項 root gates 保持未完成；0038 追加驗證仍待身分驗證明確確認。未推送。 進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-45個歷史確認問題：33已修復、12未解決。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
+46個歷史確認問題：34已修復、12未解決。0157另修復BH-0046的development runtime base，詳見最新批次。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 

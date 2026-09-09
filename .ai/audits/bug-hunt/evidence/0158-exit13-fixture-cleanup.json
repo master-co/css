@@ -1,0 +1,20 @@
+[
+  {
+    "root": "packages/vite/tmp/virtual-shutdown-Z2ZeUb",
+    "files": {
+      "index.html": "d2ce0c6adc8070b01a7080f21e30ec21d4de607a0e1f256477bdf75b75bdf651",
+      "node_modules/audit-dependency/index.js": "f2ed650f15f224fa0836d26fabb81f0e219e1e3515d41640040073b222ffcbfd",
+      "node_modules/audit-dependency/package.json": "e0f850a2dd6896e2a91f61ce4e01e14c561dbc43f38f387744e0c9512eea73cc"
+    },
+    "reason": "Owned temporary fixture left when pure Vite close ended with unsettled top-level await exit13; no live process remains"
+  },
+  {
+    "root": "packages/vite/tmp/virtual-shutdown-JkFinJ",
+    "files": {
+      "index.html": "d2ce0c6adc8070b01a7080f21e30ec21d4de607a0e1f256477bdf75b75bdf651",
+      "node_modules/audit-dependency/index.js": "f2ed650f15f224fa0836d26fabb81f0e219e1e3515d41640040073b222ffcbfd",
+      "node_modules/audit-dependency/package.json": "e0f850a2dd6896e2a91f61ce4e01e14c561dbc43f38f387744e0c9512eea73cc"
+    },
+    "reason": "Owned temporary fixture left when pure Vite close ended with unsettled top-level await exit13; no live process remains"
+  }
+]

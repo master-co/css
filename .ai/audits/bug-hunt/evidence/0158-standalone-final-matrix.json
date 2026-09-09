@@ -1,0 +1,70 @@
+[
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "on",
+    "pid": 88319,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "dependency": false,
+      "full": true,
+      "hot": true,
+      "events": [
+        {
+          "response": 200
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x0000000b832a1d30"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"temporaryRoot\":\"/Users/aron/master/css/packages/vite/tmp/virtual-shutdown-TD820v\"}\n{\"dependency\":false,\"full\":true,\"hot\":true,\"events\":[{\"response\":200}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x0000000b832a1d30\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "off",
+    "pid": 88335,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "dependency": false,
+      "full": true,
+      "hot": true,
+      "events": [
+        {
+          "response": 200
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x0000000b4fa0ce30"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"temporaryRoot\":\"/Users/aron/master/css/packages/vite/tmp/virtual-shutdown-4iqzzS\"}\n{\"dependency\":false,\"full\":true,\"hot\":true,\"events\":[{\"response\":200}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x0000000b4fa0ce30\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  }
+]

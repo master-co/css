@@ -1,0 +1,14 @@
+$ vitest --run tests/plugins/bug-hunt-runtime-dev-base.test.ts tests/plugins/runtime-preload.test.ts tests/plugins/inject-runtime.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  01:43:49
+   Duration  4.50s (tests 82%, transform 12%, import 6%)
+

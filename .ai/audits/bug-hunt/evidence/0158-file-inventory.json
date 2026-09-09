@@ -1,0 +1,198 @@
+{
+  ".ai/audits/bug-hunt/README.md": {
+    "bytes": 39634,
+    "sha256": "d337ea83d0bdb4ad810bfa3bdfb88f2cba85fb5f957ffb9c52d9173434ed77f2"
+  },
+  ".ai/audits/bug-hunt/batches/0158-development-shutdown-classification.md": {
+    "bytes": 4972,
+    "sha256": "d548cb328ca12c8ba7ae5a03f4a26ff6676a4b3f1d9a3a1623b1b4cc71f7abb1"
+  },
+  ".ai/audits/bug-hunt/changes.md": {
+    "bytes": 43841,
+    "sha256": "621f227397052dce317f44954b3b9928f929f5f08abf4ae3ac9bcc9e81604f71"
+  },
+  ".ai/audits/bug-hunt/coverage.md": {
+    "bytes": 39644,
+    "sha256": "ada00f828fa74508d5f595d8aa40b93feb7b72e904112460110b6375828f8a12"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-ai-context.log": {
+    "bytes": 121,
+    "sha256": "2395d8f6e013dd1615717062e6ea2e8417729054f270a421b19fd0a6f24adeb7"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-artifact-hashes.json": {
+    "bytes": 1303,
+    "sha256": "2cb5e40a0fad293ca04babc37c68ab9309a26f778e531da4a2f5f4fb55bd2247"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-before-hashes.json": {
+    "bytes": 25457,
+    "sha256": "6df93c163e682327394c6a2fd9dd2fefa0e93ae1b247d1c43e13b00ca40ed831"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-drained-host-matrix.json": {
+    "bytes": 7129,
+    "sha256": "59b6ddfa474d8be7676e550bec694ee7f76e2fee257a802e6a6c582d550ac0ec"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-drained-host-matrix.log": {
+    "bytes": 678,
+    "sha256": "6e6766cd0d1c2ee12ba10c4dd89a4701e3575b2637b1c52fdfe804e614c8d99a"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-exit13-fixture-cleanup.json": {
+    "bytes": 1095,
+    "sha256": "fde6ae4fec24bef8526d01aa29e62416b17c4916f3ee3cbefa251ffa6bc6c754"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-final-checks.json": {
+    "bytes": 3505,
+    "sha256": "75c58382a42a48dd3f09d28fa14c4761deea01d957cc9d6de5e0d299370470a8"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-first-termination.json": {
+    "bytes": 192,
+    "sha256": "f5f5c96f33ec430f7bed1774f1138b81c14a629f4019b447ed1f26f3eaf33366"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-full-bootstrap-matrix.json": {
+    "bytes": 9309,
+    "sha256": "e8fb21feccebfb849a5f69b26d4f5627f2826619e7e16340e5b56039fa5e27b6"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-full-bootstrap-matrix.log": {
+    "bytes": 683,
+    "sha256": "e68f235cc43d6f7af5a8e6079e191d032b75fcde6fc82bf024f1d8fa60568e31"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-history-preservation.json": {
+    "bytes": 2560,
+    "sha256": "6b729184bca9c386fcdf5d783cefbd37cba46593c991685bcb92276f2da29a15"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-host-version.json": {
+    "bytes": 894,
+    "sha256": "07ab27bd9a4d2109c39c460749faf3efe53741118415eb1ec82a98ee52a926f7"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-magic-string-matrix.json": {
+    "bytes": 1142,
+    "sha256": "c1020ae3d257480fb8dc66b249dc0c578ffc9cbdd02dfcbceb5a55d02dd86bc5"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-magic-string-matrix.log": {
+    "bytes": 238,
+    "sha256": "d1db03b89826f2f89bdbbc0477a659c24e55f9040b4f7bb4fbc3abda879364d4"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-minimal-virtual-matrix.json": {
+    "bytes": 3737,
+    "sha256": "88be0a5df7eae49d9801ab3340fe4fc8324468f230484609a784856abb8b3337"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-minimal-virtual-matrix.log": {
+    "bytes": 950,
+    "sha256": "56d77b0554d244e63bd68b56e3f2fbb9dbbb43e088f263023d4ebec2b8f42fcf"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-mode-request-matrix.json": {
+    "bytes": 40068,
+    "sha256": "07bc18a8e3b23a44710b62fb4869798f75553b5156b509168d3d71727dd9199e"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-mode-request-matrix.log": {
+    "bytes": 3314,
+    "sha256": "21d59e5a5f6a6389a7b4cb053ef2d43157c5ee90e6d735b753905aaa4fcc116c"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-optimizer-off-matrix.json": {
+    "bytes": 9745,
+    "sha256": "ec3df05559db9a9fcb508da45b286e549306f7460d8b5e0d9870e2f1f3a5d005"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-optimizer-off-matrix.log": {
+    "bytes": 684,
+    "sha256": "8eafb3653dfc39ce8d0f9ad6fddf324c77f8d34029950c2fb504370996e985bd"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-pure-runtime-matrix.json": {
+    "bytes": 14280,
+    "sha256": "d1818167f312812a7716a02ed9ef1d26d162b1b6aa459c280abf43f3c39ffc0c"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-pure-runtime-matrix.log": {
+    "bytes": 1053,
+    "sha256": "8a96276c9d531787d1d1c95eb49063de6cdb492d242f2c12362ed5bff2b28d3a"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-qualified-dev-drained.log": {
+    "bytes": 445,
+    "sha256": "8f1f226abf8f86f10892d66b87986228ec33022482a2364f16f13ad5cbc7d01f"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-drain.py": {
+    "bytes": 1106,
+    "sha256": "76d1879afe4804917ef75d50cdcd0ca098af870bfce6fa3bdb9c7270fa392172"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-full.py": {
+    "bytes": 1093,
+    "sha256": "d0afa02842d49d32b697405b7629b60a142b893d76f47ebfbed91000d12c2350"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-magic.py": {
+    "bytes": 1181,
+    "sha256": "448cd8386fece493cc8efd26d0129783e293e7aa38696de137f7dcd8b573fd0f"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-matrix.py": {
+    "bytes": 1147,
+    "sha256": "24c2c28f8b60309536fc2357b7bbc34bad85f74c8c4bec290559ce27e4e75bae"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-minimal.py": {
+    "bytes": 1150,
+    "sha256": "56fbd16239bcf7c675a6d3219714b7d8b72bb4d3d2551f942e166975049f36ad"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-off.py": {
+    "bytes": 1113,
+    "sha256": "f46d41361b2a034c313a272c634beb6041df62d072ec538c1f423418a7bcb9e3"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-pure.py": {
+    "bytes": 1113,
+    "sha256": "0e42e0bb968fb0e8277c15b5babf9d81f4006062927776f8027abba28dc14e17"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-standalone-final.py": {
+    "bytes": 1157,
+    "sha256": "5cc607ab7f9e2d52ea664f0faa115d73098a846bcf2bc93126742a5f89386a69"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-runner-standalone.py": {
+    "bytes": 1156,
+    "sha256": "4e3f494ca41e1cc9f43a8807fd25ca86bb4fc7766ef58fccadd949b3a91289c2"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-shutdown-first.log": {
+    "bytes": 4281,
+    "sha256": "2d75833ab460cfa01797d1cebf4039e8721d162e0ce1c7e1ac6b5a7ad7d9c887"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-source-hashes.json": {
+    "bytes": 25232,
+    "sha256": "7e2168626e191c56a2e65bc98c7f62696fe421bb63cbbe873e982412f55d6d40"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-standalone-final-matrix.json": {
+    "bytes": 2064,
+    "sha256": "e96d338a4042a30fe24143309417044ec68256f4775f9364c9c205f34fd5d0bb"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-standalone-final-matrix.log": {
+    "bytes": 239,
+    "sha256": "e8906ece0703ace161b976ab078a08558407735dd63e4163644c3736785fe608"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-standalone-full-matrix.json": {
+    "bytes": 1884,
+    "sha256": "cea45e7fc01b26a72ef82b6a5550a51d53b86484e795c6f5bc5773518be02b70"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-standalone-full-matrix.log": {
+    "bytes": 239,
+    "sha256": "f58f1e8feeb35ccc971dfec0d1294a39440e434c1904f71b9af3e2a8fa7985cb"
+  },
+  ".ai/audits/bug-hunt/evidence/0158-whitespace.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".ai/audits/bug-hunt/findings.md": {
+    "bytes": 44402,
+    "sha256": "42ffd1fe3126e673fb77feb97aa5c5948a48823a2ed0a429052b50cdca881b67"
+  },
+  ".ai/audits/bug-hunt/progress-history-0158.md": {
+    "bytes": 948,
+    "sha256": "dfc3a4d6c7353e126120ca31b2931fcea37eb2c1a3f435355013f62d02a5fc87"
+  },
+  ".ai/audits/bug-hunt/report.md": {
+    "bytes": 39133,
+    "sha256": "2adfd5c081dbbf171bb30a1e1b986116374d766fa83d4e7131761fa34188714a"
+  },
+  ".ai/audits/bug-hunt/repros/vite-qualified-dev-status.mjs": {
+    "bytes": 2891,
+    "sha256": "44ab258612af90f42019c52abc32651f8cb3691ee481c56f21351c9ef269e25f"
+  },
+  ".ai/audits/bug-hunt/repros/vite-shutdown-handles.mjs": {
+    "bytes": 4684,
+    "sha256": "44a9fdad4d64e70a01255e33bc32657928da0d007d438bd9cd287f79568b2457"
+  },
+  ".ai/audits/bug-hunt/repros/vite-virtual-shutdown.mjs": {
+    "bytes": 3227,
+    "sha256": "4b36524994e203b6c9704151e79e783d6e3d0753bd18749e7b2ed8a2bb91355a"
+  }
+}

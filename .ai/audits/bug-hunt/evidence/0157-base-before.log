@@ -1,0 +1,51 @@
+$ vitest --run tests/plugins/bug-hunt-runtime-dev-base.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-runtime-dev-base.test.ts > dev runtime is served with mode=runtime base=/base/
+{"mode":"runtime","base":"/base/","script":"/@id/__x00__virtual:master-css-runtime","status":404}
+
+stdout | tests/plugins/bug-hunt-runtime-dev-base.test.ts > dev runtime is served with mode=progressive base=/base/
+{"mode":"progressive","base":"/base/","script":"/@id/__x00__virtual:master-css-runtime","status":404}
+
+ ❯ tests/plugins/bug-hunt-runtime-dev-base.test.ts (4 tests | 2 failed) 1004ms
+   × dev runtime is served with mode=runtime base=/base/ 148ms
+   × dev runtime is served with mode=progressive base=/base/ 337ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-runtime-dev-base.test.ts > dev runtime is served with mode=runtime base=/base/
+ FAIL  tests/plugins/bug-hunt-runtime-dev-base.test.ts > dev runtime is served with mode=progressive base=/base/
+AssertionError: {"script":"/@id/__x00__virtual:master-css-runtime","status":404,"text":"The server is configured with a public base URL of /base/ - did you mean to visit /base/@id/__x00__virtual:master-css-runtime instead?"}: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/plugins/bug-hunt-runtime-dev-base.test.ts:30:51
+     28|     const result = { script, status: runtime.status, text: await runti…
+     29|     console.log(JSON.stringify({ mode, base, script, status: result.st…
+     30|     expect(result.status, JSON.stringify(result)).toBe(200)
+       |                                                   ^
+     31|     expect(result.text).toContain('import')
+     32|     expect(script).toBe(base + DEV_RUNTIME_ENTRY_ID.slice(1))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  00:53:59
+   Duration  1.53s (tests 69%, transform 20%, import 11%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

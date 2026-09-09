@@ -1,0 +1,70 @@
+[
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "on",
+    "pid": 84474,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "dependency": false,
+      "full": true,
+      "hot": true,
+      "events": [
+        {
+          "response": 200
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x00000009f28c5eb0"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"dependency\":false,\"full\":true,\"hot\":true,\"events\":[{\"response\":200}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x00000009f28c5eb0\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  },
+  {
+    "dependency": "0",
+    "hot": "1",
+    "optimizer": "off",
+    "pid": 84552,
+    "exitCode": -15,
+    "terminatedAfterObservedLeak": true,
+    "observation": {
+      "dependency": false,
+      "full": true,
+      "hot": true,
+      "events": [
+        {
+          "response": 200
+        }
+      ],
+      "observationsFinished": true
+    },
+    "residual": {
+      "residualNativeHandles": [
+        {
+          "type": "async",
+          "is_active": true,
+          "is_referenced": true,
+          "address": "0x00000007e7894cb0"
+        }
+      ],
+      "resources": [
+        "PipeWrap",
+        "PipeWrap"
+      ]
+    },
+    "output": "{\"dependency\":false,\"full\":true,\"hot\":true,\"events\":[{\"response\":200}],\"observationsFinished\":true}\n{\"residualNativeHandles\":[{\"type\":\"async\",\"is_active\":true,\"is_referenced\":true,\"address\":\"0x00000007e7894cb0\"}],\"resources\":[\"PipeWrap\",\"PipeWrap\"]}\n"
+  }
+]
