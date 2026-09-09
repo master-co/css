@@ -16,129 +16,12 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 47 historical confirmed findings; 36 fixed, 11 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 47 historical confirmed findings; 38 fixed, 9 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
 
-- [0001 Engine session](batches/0001-engine-session.md)：完成。
-- [0002 Native CSS resources](batches/0002-stylesheet-resources.md)：完成，BH-0001/0002。
-- [0003 Static resources](batches/0003-static-resources.md)：完成，BH-0003。
-- [0004 Class boundaries](batches/0004-class-boundaries.md): completed.
-- [0005 Project graph](batches/0005-project-graph.md): completed; BH-0004.
-- [0006 Binding contracts](batches/0006-binding-contracts.md): completed, 7 targets blocked.
-- [0007 Server render](batches/0007-server-render.md): completed; BH-0005/0006/0007.
-- [0008 Runtime hydration](batches/0008-runtime-hydration.md): completed; BH-0008.
-- [0009 Runtime mutations](batches/0009-runtime-mutations.md): completed; baseline 126 passed; BH-0009.
-- [0000 完整盤點](batches/0000-inventory.md)：完成清單與環境基準。
-
-- [0010 Source extraction](batches/0010-source-extraction.md): completed; BH-0010/0011.
-- [0011 Scanner state](batches/0011-scanner-state.md): completed; BH-0012.
-- [0012 Language IR](batches/0012-language-ir.md): completed; BH-0013/0014.
-- [0013 Validator/lint](batches/0013-validator-lint.md): completed.
-- [0014 Language service](batches/0014-language-service.md): completed.
-- [0015 LSP lifecycle](batches/0015-language-server.md): completed.
-- [0016 VS Code delivery](batches/0016-vscode-delivery.md): completed; real editor host PASS.
-- [0017 ESLint](batches/0017-eslint-adapters.md): completed; BH-0015.
-- [0018 Integration kernel](batches/0018-integration-kernel.md): completed.
-- [0019 Vite stylesheets](batches/0019-vite-stylesheets.md): completed; 71 tests PASS.
-- [0020 Vite runtime HTML](batches/0020-vite-runtime-html.md): completed; BH-0016.
-- [0021 Webpack](batches/0021-webpack.md): completed; BH-0017.
-- [0022 Next state](batches/0022-next-state.md): completed; 57 PASS.
-- [0023 Next builds](batches/0023-next-builds.md): completed; 3 actual builds PASS.
-- [0024 Next HMR](batches/0024-next-hmr.md): completed; Chromium PASS.
-- [0025 Astro](batches/0025-astro.md): completed; 15 PASS.
-- [0026 Svelte streaming](batches/0026-svelte-stream.md): completed; 14 PASS.
-- [0027 Nuxt modes](batches/0027-nuxt-modes.md): completed; 8 host tests PASS.
-- [0028 CLI discovery](batches/0028-cli-discovery.md): completed; BH-0018.
-- [0029 CLI watch](batches/0029-cli-watch.md): completed; BH-0019.
-- [0030 MCP contracts](batches/0030-mcp-contracts.md): completed; BH-0020.
-- [0031 Create setup](batches/0031-create-setup.md): completed; BH-0021.
-- [0032 Svelte addon](batches/0032-svelte-addon.md): completed; 19 PASS.
-- [0033 Figma variables](batches/0033-figma-variables.md): completed; BH-0022.
-- [0034 Browser examples](batches/0034-browser-examples.md): completed; 5 builds/browsers PASS.
-- [0035 SSR examples](batches/0035-ssr-examples.md): completed; BH-0023.
-- [0036 Angular/Laravel](batches/0036-angular-laravel.md): completed with Angular SSR blocked; BH-0024.
-
-- [0037 ESLint examples](batches/0037-eslint-examples.md): completed; BH-0028, modern example blocked.
-- [0038 Integration lab](batches/0038-integration-lab.md): BH-0029 confirmed; further host checks parked.
-- [0039 xtask/parity](batches/0039-xtask-parity.md): completed; checks PASS.
-- [0040 Root/shared](batches/0040-root-shared.md): completed;4 baseline failures recorded.
-- [0041 Benchmarks](batches/0041-benchmark-harness.md): completed.
-- [0042 Nested hosts](batches/0042-nested-hosts.md): partial; BH-0030, explicit blockers.
-- [0043 Site internal](batches/0043-internal-site-support.md): completed21 PASS.
-- [0044 Site content](batches/0044-site-content.md): completed65 tests PASS.
-- [0045 Play](batches/0045-site-play.md): completed17 PASS.
-- [0046 Site delivery](batches/0046-site-build-browser.md): prior-revision evidence; current state revalidated0047.
-- [0047 Revision revalidation](batches/0047-revision-revalidation.md): completed; current site CSS contract/build/interaction checks PASS.
-
-- [0048 CLI binding](batches/0048-cli-binding-selection.md): completed; BH-0026 confirmed.
-- [0049 Webpack example asset](batches/0049-webpack-example-asset.md): completed; BH-0027 confirmed.
-- [0050 Angular bundle](batches/0050-angular-bundle.md): completed classification; BH-0025 confirmed, Angular SSR remains blocked.
-- [0051 Site syntax revalidation](batches/0051-site-syntax-revalidation.md): completed current-source revalidation;69+3 tests and build/CSS/browser controls PASS.
-- [0052 Remaining prerequisites](batches/0052-remaining-prerequisites.md): reviewed; blockers and unclaimed residuals remain unfinished.
-- [0053 MCP preview concurrency](batches/0053-mcp-preview-concurrency.md): completed; BH-0031 confirmed.
-
-- [0054 Site browser matrix](batches/0054-site-browser-matrix.md): completed Firefox/WebKit controls; no new Site finding.
-- [0055 Browser lifecycle metrics](batches/0055-browser-lifecycle-metrics.md): completed classification; BH-0032/0033/0034, measurement remains blocked.
-
-- [0056 Next browser HMR](batches/0056-next-browser-hmr.md): completed; Firefox/WebKit hydration/cascade/5 HMR edits PASS.
-
-- [0057 Vite browser HMR](batches/0057-vite-browser-hmr.md): completed; Firefox/WebKit4 controls PASS.
-
-- [0058 LSP cancellation/settings](batches/0058-lsp-cancellation-settings.md): completed;18version/cancellation cycles and3settings/reopen controls PASS.
-
-- [0059 VS Code settings](batches/0059-vscode-settings.md): completed feature controls;BH-0035 confirmed.
-
-- [0060 Nuxt dev HMR](batches/0060-nuxt-dev-hmr.md): classification complete;BH-0036, original theme HMR remains blocked.
-
-- [0061 Example browser matrix](batches/0061-example-browser-matrix.md): completed;10Firefox/WebKit controls PASS.
-
-- [0062 SSR browser matrix](batches/0062-ssr-browser-matrix.md): completed;6Firefox/WebKit controls PASS.
-
-- [0063 Laravel browser matrix](batches/0063-laravel-browser-matrix.md): completed;2Firefox/WebKit controls PASS.
-
-- [0064 Compiler diagnostics](batches/0064-compiler-diagnostics.md): completed classification; BH-0037, four CSS consistency controls PASS.
-
-- [0065 Extraction diagnostics](batches/0065-extraction-diagnostics.md): completed classification; BH-0037 extends, four CSS consistency controls PASS.
-
-- [0066 Startup diagnostics](batches/0066-startup-diagnostics.md): completed classification; BH-0038, original report remains blocked.
-
-- [0067 Vite startup](batches/0067-vite-startup.md): completed; four Vite diagnostic controls PASS.
-
-- [0068 CSS output size](batches/0068-css-output-size.md): completed;16builds and artifact/sample checks PASS.
-
-- [0069 CSS structure](batches/0069-css-structure.md): completed classification;16variant report produced, BH-0039 metric remains incorrect.
-
-- [0070 Build diagnostics](batches/0070-build-diagnostics.md): completed8variant output checks; source-count semantics follow0072.
-
-- [0071 Docs CSS size](batches/0071-docs-css-size.md): completed classification; BH-0040,8public pages fetched.
-
-- [0072 Vite scan counts](batches/0072-vite-scan-counts.md): completed classification; BH-0041.
-
-- [0073 Build cold/repeat](batches/0073-build-performance.md): completed32commands/16artifact checks PASS.
-
-- [0074 Browser CSS cost](batches/0074-browser-css-cost.md): completed14variants/448samples/trace sums PASS.
-
-- [0075 Master delivery modes](batches/0075-master-delivery-modes.md): classification complete; original report blockedBH-0032.
-
-- [0076 Progressive diagnostics](batches/0076-progressive-diagnostics.md): classifiedBH-0032/0033/0034; original report remains blocked.
-
-- [0077 Interaction cost](batches/0077-interaction-cost.md): classified;5static/four-mode controlsPASS, original reportblocked.
-
-- [0078 Interaction array contract](batches/0078-interaction-array-contract.md): completed;BH-0042.
-
-- [0079 Runtime mutation diagnostics](batches/0079-runtime-mutation-diagnostics.md): classifiedBH-0032/0042; original reportblocked.
-
-- [0080 Style invalidation diagnostics](batches/0080-style-invalidation-diagnostics.md): classifiedBH-0032/0033;2staticchildrenPASS.
-
-- [0081 Completion evidence audit](batches/0081-completion-evidence-audit.md): mapped75rows/16benchmarkentries; authorized local work remains.
-
-- [0082 MCP multi-process](batches/0082-mcp-multiprocess.md): classifiedBH-0031;10overlaprounds/two controls.
-
-- [0083 VS Code corpus](batches/0083-vscode-corpus.md): completed16selected hover/completion/language controls and13color-presentation sets.
-
-- [0084 Stress DOM static](batches/0084-style-invalidation-static.md): two original children/72samples and trace controls;BH-0043 confirmed.
+- [0000–0084 歷史批次索引](batch-index-history-0172.md)：原文與所有批次連結逐字保留。
 
 - [0085 MCP filesystem faults](batches/0085-mcp-filesystem-faults.md): four actual SDK permission/stale/retry controls; partial-write limitations classified.
 
@@ -302,14 +185,18 @@
 - [0169 Benchmark Wasm delivery](batches/0169-benchmark-wasm-delivery.md): BH-0032 fixed;42 browser controls,5 tests and3 original reports complete; remaining readers next0170.
 
 - [0170 Runtime snapshot readers](batches/0170-benchmark-runtime-snapshot.md): bounded readers/guards verified;9tests/36browser controls; BH-0033 private preparation/cleanup remains.
+- [0171 Runtime preparation](batches/0171-benchmark-runtime-preparation.md): BH-0033 fixed;12tests,36browser controls and48 original diagnostic variants verified.
+- [0172 Native CSSOM traversal](batches/0172-benchmark-cssom-traversal.md): BH-0034 fixed;15tests,60 browser controls and72 original report-page comparisons PASS.
 
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
 - 使用者再次授權提交已完成部分：本次納入0163–0165已收尾的查核、原始證據、重現材料與逐字歷史。產品及套件測試仍依賴未完成的BH-0004 graph改動，與其他對話Site變更一併保留工作目錄；未推送。228來源及7份最終browser log雜湊一致；47historical／35fixed／12unresolved與0038身分暫停維持，目標active。下一步接local ?url／Modules跨import exports；各批歷史HEAD與未提交描述保留當時狀態。[提交核對](evidence/0165-commit-validation.json)。
 
 - 使用者再次授權提交已完成部分：BH-0047的pre-render manifest HMR修復、2項新回歸、既有測試補齊及對應README已提交`5e707ec75`；本次7項聚焦測試、Vite lint/types全通過。0159–0162已完成查核、重現與原始證據另作一筆提交；各批歷史HEAD及未提交描述保留當時狀態。BH-0004其餘產品／套件測試與其他對話Site變更留工作目錄。下一批接local-compose完整graph交付；47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制及0038身分暫停維持，目標active；未推送。[提交核對](evidence/0162-commit-validation.json)。
 
-- 0170完成BH-0033的公開snapshot讀取與guard限定修正：統一輸出規則項目數、UTF-8 CSS bytes、usage／retained與hydration狀態；marker class不算生成規則，共用規則依layer/key去重。9tests、types、36個三瀏覽器讀取／retention／fallback控制及原始lifecycle4、delivery16、progressive4、interaction54變體完成，report-smoke通過；invalidation原始報表完成但舊準備工具碼仍無效。mutation原始報表暴露未實際執行的private強制清理後仍有retained類別。BH-0033仍未完成：下一批0171處理強制清理、observer暫停、retained-volume準備與不可觀測內部計數，禁止以0冒充成功；BH-0034／0042／0043續驗。47historical／36fixed／11unresolved、65checked／10blocked、4root gates／4原候選及host shutdown限制不變；BH-0004完整graph／Sass maps／virtual／watch／base／SSR／lifecycle與Nuxt/Webpack全部保留，0038仍無身分確認。上輪BH-0032修復是有效進展，本輪未commit/push，目標active。[0170](batches/0170-benchmark-runtime-snapshot.md)／[核對](evidence/0170-final-checks.json)；0169交接逐字見[歷史](progress-history-0170.md)。
+- 0172完成BH-0034：native CSSOM traversal計入一般與巢狀style本身及leaf規則，遞迴處理group／keyframes，並收集巢狀selector；頂層layer統計只辨識CSSLayerBlockRule，重複名稱累加。修前54控制中42FAIL／12PASS；修後擴充60個三瀏覽器控制全PASS，含故意缺selector的負向控制。15tests／types、原lifecycle4／delivery16／progressive4與72個三瀏覽器報表頁面核對及report-smoke通過。CSSOM計數與公開runtime輸出項目數維持不同定義；既有snapshots不重寫，無效歷史數值不可直接比較。359來源核對完成，原151個排除變更及5項Wasm／runtime產物不變。47historical／38fixed／9unresolved、65checked／10blocked、4root gates／4原候選與host shutdown限制保持；BH-0004全部graph／Sass maps／virtual／watch／base／SSR／lifecycle與Nuxt/Webpack、0038身分暫停仍保留。全部本批程序已結束，HEADca2c8d00d，未commit/push，目標active。下一批0173處理BH-0042的array參數數量與deferred removal，再接BH-0043實際class／computed-style驗證及其他問題。[0172](batches/0172-benchmark-cssom-traversal.md)／[核對](evidence/0172-final-checks.json)；0171交接逐字見[歷史](progress-history-0172.md)。
 
 - 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
 

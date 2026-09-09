@@ -1,0 +1,36 @@
+{
+  "baselineSources": 355,
+  "finalSources": 359,
+  "changed": {
+    "benchmarks/shared/browser-lifecycle-metrics.ts": {
+      "before": "a3b8214552b817d202a6cd392484b034802bdc911c952188abc99a2f189c2d43",
+      "after": "c3816c8ff8661d66fc0810d6023d1074dbb7867b65ae72a7039124bde402b882"
+    },
+    "benchmarks/shared/browser-lifecycle-page.ts": {
+      "before": "6a27703cb64fc9e06de3d52539aaf782092459a93c9767588ada0fc1848a1d8f",
+      "after": "8eccb2d39108de8ddbb2b3bddb5d6cc9804e238d2696f69919afb5872ebb7878"
+    },
+    "benchmarks/shared/delivery-mode-harness.ts": {
+      "before": "d866b14a77e6f732fd58f19d90326f76eb4bfb861eaf79af5581c3fe1dab5f32",
+      "after": "413fa166edf99e36523aa543e9c7fb849609b59298026277813f708e506394b9"
+    },
+    "benchmarks/shared/delivery-modes.ts": {
+      "before": "e39778348b0276138b1866040727145076e839080327e2aa084f25023e9a27f0",
+      "after": "0ca92e0e9704455c30043e55a354130d7b58fcd8f8eb76a73c30f1028f51baa3"
+    },
+    "benchmarks/shared/progressive-hydration-diagnostics.ts": {
+      "before": "8a8da256edf37245ecaa918be2228f2330f324db07d2c4969a50bf4244239401",
+      "after": "aa2b782a67be17306d49c5d12b400fb3e37a43882b5c19a24438579fff074e6e"
+    }
+  },
+  "newSources": [
+    "benchmarks/shared/cssom.ts",
+    "benchmarks/tests/bug-hunt-cssom.test.ts",
+    ".ai/audits/bug-hunt/repros/benchmark-cssom-traversal.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-cssom-report.mjs"
+  ],
+  "priorExcluded151ByteIdentical": true,
+  "fiveArtifactsByteIdentical": true,
+  "previousGoalTurn": "Progress:BH-0033 preparation repair and original diagnostic verification completed",
+  "head": "ca2c8d00daee26f5d7cd15fb2ebad6722aa12162"
+}

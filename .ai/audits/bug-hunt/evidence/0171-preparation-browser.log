@@ -1,0 +1,20 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-yg06kfby/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-runtime-preparation.mjs"]}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+3 !== 2
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-runtime-preparation.mjs:20:12) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 3,
+  expected: 2,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-yg06kfby"}

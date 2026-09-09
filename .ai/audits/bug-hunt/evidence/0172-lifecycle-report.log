@@ -1,0 +1,62 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-iy2ozm8k/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-cssom-report.mjs", "browser-lifecycle"]}
+$ vitest bench browser-lifecycle --run
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-iy2ozm8k/benchmarks
+
+Browser lifecycle selection: scenarios=initial-load modes=master-static,master-runtime,master-progressive,tailwind-static variants=4 rounds=1 warmupRounds=0 longSessionMs=1000 traceArtifactMode=off
+Launching Chromium for browser lifecycle benchmark
+Preparing browser lifecycle page 1/4: initial-load-master-static-docs
+Prepared browser lifecycle page 1/4: initial-load-master-static-docs in 3.34s
+Measuring browser lifecycle 1/4: initial-load-master-static-docs, round 1/1
+Measured browser lifecycle 1/4: initial-load-master-static-docs, round 1/1 in 291.1ms
+Finished browser lifecycle variant 1/4: initial-load-master-static-docs in 3.63s
+Preparing browser lifecycle page 2/4: initial-load-master-runtime-docs
+Prepared browser lifecycle page 2/4: initial-load-master-runtime-docs in 2.9s
+Measuring browser lifecycle 2/4: initial-load-master-runtime-docs, round 1/1
+Measured browser lifecycle 2/4: initial-load-master-runtime-docs, round 1/1 in 231.8ms
+Finished browser lifecycle variant 2/4: initial-load-master-runtime-docs in 3.13s
+Preparing browser lifecycle page 3/4: initial-load-master-progressive-docs
+Prepared browser lifecycle page 3/4: initial-load-master-progressive-docs in 3.01s
+Measuring browser lifecycle 3/4: initial-load-master-progressive-docs, round 1/1
+Measured browser lifecycle 3/4: initial-load-master-progressive-docs, round 1/1 in 229.7ms
+Finished browser lifecycle variant 3/4: initial-load-master-progressive-docs in 3.24s
+Preparing browser lifecycle page 4/4: initial-load-tailwind-static-docs
+Prepared browser lifecycle page 4/4: initial-load-tailwind-static-docs in 303.4ms
+Measuring browser lifecycle 4/4: initial-load-tailwind-static-docs, round 1/1
+Measured browser lifecycle 4/4: initial-load-tailwind-static-docs, round 1/1 in 222.3ms
+Finished browser lifecycle variant 4/4: initial-load-tailwind-static-docs in 525.8ms
+Wrote browser lifecycle report JSON to /Users/aron/master/css/tmp/master-css-bh-isolated-iy2ozm8k/benchmarks/.results/browser-lifecycle/report.json
+Wrote browser lifecycle report Markdown to /Users/aron/master/css/tmp/master-css-bh-isolated-iy2ozm8k/benchmarks/.results/browser-lifecycle/report.md
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  06:50:58
+   Duration  11.22s (tests 100%)
+
+{"suite":"browser-lifecycle","commandExit":0}
+{"suite":"browser-lifecycle","variants":[{"id":"initial-load-master-static-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":96},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-master-runtime-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":48},{"metricId":"runtime-generated-rule-count","value":54},{"metricId":"runtime-style-raw-bytes","value":1904},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-master-progressive-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":48},{"metricId":"runtime-generated-rule-count","value":54},{"metricId":"runtime-style-raw-bytes","value":1904},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-tailwind-static-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":112},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]}],"artifactCount":33,"wasmArtifacts":2,"wasm":{"raw":929757,"gzip":286205,"brotli":218273,"hash":"4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"},"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"chromium","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"chromium","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"chromium","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"chromium","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"firefox","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"firefox","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"firefox","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"firefox","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"webkit","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"webkit","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"webkit","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"webkit","responses":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"chromium","variantId":"initial-load-master-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":96,"lifecycleCount":96,"nativeKinds":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"chromium","variantId":"initial-load-master-runtime-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"runtime","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"chromium","variantId":"initial-load-master-progressive-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"progressive","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"chromium","variantId":"initial-load-tailwind-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":112,"lifecycleCount":112,"nativeKinds":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"firefox","variantId":"initial-load-master-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":97,"lifecycleCount":97,"nativeKinds":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"firefox","variantId":"initial-load-master-runtime-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"runtime","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"firefox","variantId":"initial-load-master-progressive-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"progressive","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"firefox","variantId":"initial-load-tailwind-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":114,"lifecycleCount":114,"nativeKinds":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"webkit","variantId":"initial-load-master-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":96,"lifecycleCount":96,"nativeKinds":[],"pass":true}
+{"cssomReport":"browser-lifecycle","engine":"webkit","variantId":"initial-load-master-runtime-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"runtime","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"webkit","variantId":"initial-load-master-progressive-docs","expected":{"total":44,"top":2,"layers":{"theme":1,"utilities":43},"layerTotal":44},"documentCount":48,"lifecycleCount":48,"nativeKinds":["CSSLayerBlockRule","CSSStyleRule"],"hydration":"progressive","pass":true}
+{"cssomReport":"browser-lifecycle","engine":"webkit","variantId":"initial-load-tailwind-static-docs","expected":{"total":0,"top":0,"layers":{},"layerTotal":0},"documentCount":112,"lifecycleCount":112,"nativeKinds":[],"pass":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-iy2ozm8k"}

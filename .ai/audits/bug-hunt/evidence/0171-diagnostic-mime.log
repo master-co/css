@@ -1,0 +1,4 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-xy8hiovk/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-diagnostic-mime.mjs"]}
+{"suite":"runtime-mutation-diagnostics","status":200,"mime":"application/wasm","bytes":929757,"sourceHash":"0b809ca9ccd84b7c09fde249419499e16b96a3a8b21ce4d0fe60789e5497c654","pass":true}
+{"suite":"runtime-style-invalidation-diagnostics","status":200,"mime":"application/wasm","bytes":929757,"sourceHash":"b988b006aefd7a8ded08c276274e9e8ee622709aed9d2535cf6effaddb97332a","pass":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-xy8hiovk"}
