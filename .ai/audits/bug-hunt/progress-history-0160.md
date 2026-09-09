@@ -1,0 +1,3 @@
+# 0160 historical handoff archive
+
+- 0159：managed development entry已接Rust graph／bundle renderer與server子CSS／resource交付；四mode HTTP及普通請求→SSR inline控制通過，canonical來源ID修正重複圖譜。BH-0047修復pre-render manifest更新後舊SSR樣式，manifest改變才full-reload，progressive維持runtime HMR。Vite215tests／lint／types／build、原範例及四build／96三瀏覽器控制通過（supports真假、media、external子檔、resource與bootID）。舊測試mock、新oracle／filter錯誤分別留證。47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制維持，0038仍等身分確認。下一批驗證retained graph資源更新、shared root／environment生命週期與local-compose／virtual來源，再續Nuxt／Webpack及全部未完成項目。本批未commit/push；HEADb306e5d77。[0159](batches/0159-development-stylesheet-graphs.md)。

@@ -1,0 +1,54 @@
+$ vitest --run tests/utils/bug-hunt-dev-resource-snapshots.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/utils/bug-hunt-dev-resource-snapshots.test.ts (2 tests | 2 failed) 9ms
+   × resource naming captures bytes before source replace 7ms
+   × resource naming captures bytes before source delete 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/utils/bug-hunt-dev-resource-snapshots.test.ts > resource naming captures bytes before source replace
+AssertionError: expected '<svg xmlns="http://www.w3.org/2000/sv…' to be '<svg xmlns="http://www.w3.org/2000/sv…' // Object.is equality
+
+Expected: "<svg xmlns="http://www.w3.org/2000/svg"><title>red</title></svg>"
+Received: "<svg xmlns="http://www.w3.org/2000/svg"><title>blue</title></svg>"
+
+ ❯ tests/utils/bug-hunt-dev-resource-snapshots.test.ts:26:45
+     24|     snapshot = devStylesheetState(context).resources.get(new URL(href)…
+     25|     expect(snapshot).toBeDefined()
+     26|     expect(readFileSync(snapshot!, 'utf8')).toBe(red)
+       |                                             ^
+     27|   } finally {
+     28|     clearDevStylesheets(context)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/utils/bug-hunt-dev-resource-snapshots.test.ts > resource naming captures bytes before source delete
+Error: ENOENT: no such file or directory, copyfile '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/dev-resource-snapshot-O4E4MR/pixel.svg' -> '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-vite-resources-oFGNgZ/1f4d1761284d0fd604d4-pixel.svg'
+ ❯ publishDevStylesheets src/utils/dev-stylesheet-delivery.ts:65:28
+     63|     // Publish a safe, versioned copy and let Vite retain MIME and ran…
+     64|     const file = join(state.resourceDir, digest(asset.href) + '-' + ba…
+     65|     if (!existsSync(file)) copyFileSync(asset.file, file)
+       |                            ^
+     66|     state.resources.set(new URL(asset.href).pathname, { file, source: …
+     67|   }
+ ❯ tests/utils/bug-hunt-dev-resource-snapshots.test.ts:19:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  02:17:28
+   Duration  313ms (transform 66%, import 29%, tests 4%, worker 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,28 @@
+{
+  "head": "b306e5d770c3fb4fc706fa064b8c300d41ad22d2",
+  "baseline": 209,
+  "preserved": 204,
+  "changed": [
+    "packages/vite/README.md",
+    "packages/vite/src/plugins/dev-stylesheet.ts",
+    "packages/vite/src/utils/dev-stylesheet-delivery.ts",
+    "packages/vite/tests/plugins/style-entry.test.ts",
+    "site/app/[locale]/guide/directives/contract.mdx"
+  ],
+  "newSources": [
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-paths.test.ts",
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-lifecycle.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-dev-graph-resources.mjs",
+    ".ai/audits/bug-hunt/repros/vite-pure-resource-paths.mjs"
+  ],
+  "totalSources": 213,
+  "foreignSite": {
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+  },
+  "fiveArtifactsByteIdentical": true,
+  "resourceCacheDirectoriesAfterAllJobs": [],
+  "indexEmpty": true,
+  "historicalHandoffOccurrencesPreserved": 5
+}

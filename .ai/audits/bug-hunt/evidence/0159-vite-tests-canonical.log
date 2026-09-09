@@ -1,0 +1,38 @@
+$ vitest --run
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/pre-render.test.ts (5 tests | 1 failed) 3412ms
+   ❯ PreRenderPlugin (5)
+     × reloads CSS entry dependencies for pre-rendered HTML 1093ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/pre-render.test.ts > PreRenderPlugin > reloads CSS entry dependencies for pre-rendered HTML
+TypeError: Cannot read properties of undefined (reading 'ws')
+ ❯ Object.handleHotUpdate src/plugins/pre-render.ts:124:60
+    122|       if (!enabled || !includesFile(cssManifestDependencies, file)) re…
+    123|       const changed = await loadCSSManifest()
+    124|       if (changed && options.mode === 'pre-render') server.ws.send({ t…
+       |                                                            ^
+    125|     },
+    126|     configureServer(server) {
+ ❯ tests/plugins/pre-render.test.ts:157:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 39 passed (40)
+      Tests  1 failed | 214 passed (215)
+   Start at  01:47:13
+   Duration  33.72s (tests 94%, import 4%, transform 3%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

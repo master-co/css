@@ -1,0 +1,14 @@
+$ vitest --run tests/plugins/bug-hunt-dev-stylesheet-graphs.test.ts tests/plugins/bug-hunt-prerender-manifest-hmr.test.ts tests/plugins/style-entry.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+
+ Test Files  3 passed (3)
+      Tests  18 passed (18)
+   Start at  01:46:45
+   Duration  7.74s (tests 92%, transform 5%, import 3%)
+

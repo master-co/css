@@ -1,6 +1,14 @@
 # Master CSS 調查交付
 
-- 0158：關閉殘留完成有界分類，71個獨立程序控制；scanner／renderer dispose均有trace。完全不載Master CSS插件或Node API的純Vite加runtime dependency／virtual HMR亦留native async handle，停optimizer不解；普通小dependency另有close未完成exit13，與native殘留分開。先等待公開waitForRequestsIdle的六控制全部自然退出0；CSS調查腳本採相同收尾，直接close仍保留主機限制，未視為修復／完成。產品來源與既有驗證不變；46historical／34fixed／12unresolved、10blocked／4gates／4原候選+1主機關閉待辦及0038身分暫停保留。下一批接BH-0004 dev分類、CSS graph與resources實際交付，再續Nuxt／Webpack與其餘要求。HEAD42ccdc182，未提交／推送。[0158](batches/0158-development-shutdown-classification.md)。
+- 0162：retained graph環境交付查核完成，沒有修改產品程式。16actual-server cases涵蓋四mode、兩種per-environment設定的idle edge replacement，以及standalone／middleware restart；新entry／child更新、新舊CSS／resource版本與副本清理通過。完整Vite253tests、lint/types及96三瀏覽器觀測全PASS：restart重連／換新URL，後續CSS色彩與SVG像素更新且無額外reload。沿用來源未變的0161 built package；公開文件同步範圍。仍47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制；0038身分暫停維持。下一批接local-compose完整graph transform，再續virtual resource/reference owner、其他preprocessor／maps、Nuxt／Webpack及全部未完成要求。本批未commit/push；HEADb306e5d77。[0162](batches/0162-development-graph-environments.md)。
+
+- 0161 handoff preserved verbatim in [history](progress-history-0162.md); original evidence and unfinished scope remain available.
+
+- 0160 handoff preserved verbatim in [history](progress-history-0161.md); original results and incomplete scope remain available.
+
+- 0159 handoff preserved verbatim in [history](progress-history-0160.md); original batch evidence and unfinished scope remain authoritative.
+
+- 0158共同交接已逐字歸檔至[歷史紀錄](progress-history-0159.md)；關閉限制與未完成範圍保留。
 
 - 0157共同交接原文已移至[歷史紀錄](progress-history-0158.md)，BH-0046證據及關閉候選沿用。
 
@@ -12,7 +20,7 @@
 
 起始 commit `e66ba7236`。提交整理：依使用者要求，BH-0035 的產品修復、實際 host 回歸測試與兩個啟動腳本已提交為 `79eea0d8f`。本次另保存 0115–0117 已完成的調查、證據及重現材料；BH-0004 的 compiler／binding／測試與文件實作及 Site 其他工作仍未提交。0115–0116 證據對應已記錄雜湊的工作區版本，其 graph 重現仍依賴未提交來源，不能宣稱乾淨 checkout 可獨立重現。提交前發現 0117 原 lint 紀錄實為 13 個 CommonJS 測試環境錯誤，先前 PASS 記載不正確；只新增測試檔的 Node globals 與 CommonJS import 註記後，完整 package lint 已通過，見 `evidence/0117-commit-lint.log`。測試執行內容與產品來源未變，沿用既有 31 tests、actual VS Code、types 與 isolated build 證據。12 個未解決問題、10 個受阻覆蓋單位及四項 root gates 保持未完成；0038 追加驗證仍待身分驗證明確確認。未推送。 進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-46個歷史確認問題：34已修復、12未解決。0157另修復BH-0046的development runtime base，詳見最新批次。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
+47個歷史確認問題：35已修復、12未解決。0159修復BH-0047的pre-render manifest HMR；0157另修復BH-0046的development runtime base，詳見最新批次。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
@@ -364,3 +372,5 @@ Extraction亦有15個未量測IDs，兩次完整compose卻標為engine建立／�
 0141–0144歷史進度逐字移至 [歷史進度（0146整理）](progress-history-0146.md)；目前狀態以本檔最新批次為準。
 
 0146：修復共用manifest HMR hook丟棄普通CSS／inline／raw更新modules，保留原節點並合併virtual manifest；internal18、Vite160、Astro15與三套件lint/types/build、Vite／Astro範例均PASS。修後完整開發request矩陣93PASS／3FAIL；剩managed Sass ?url的link為/style.scss，但HMR送/style.scss.css?direct，更新路徑不匹配，已留WebSocket證據待修。另Modules HMR18PASS；URL原文oracle與pure冷啟動boot判定分開記錄。Site通過（75warnings），五產物不變；20段歷史逐字歸檔。下一批先修Sass direct URL HMR，再續其他request／host與Webpack；0144巢狀缺檔仍未完成。33fixed／12unresolved、10blocked／4root gates／4候選及0038身分暫停不變；HEADeb6b479a3，未提交／推送。[0146](batches/0146-development-style-requests.md)。
+
+部分較早批次交接逐字保存於[0159歷史歸檔](progress-history-0159.md)，目前狀態以最新交接與原批次為準。

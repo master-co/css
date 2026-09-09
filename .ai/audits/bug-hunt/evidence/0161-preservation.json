@@ -1,0 +1,25 @@
+{
+  "head": "b306e5d770c3fb4fc706fa064b8c300d41ad22d2",
+  "baseline": 213,
+  "preserved": 210,
+  "changed": [
+    "packages/vite/README.md",
+    "packages/vite/src/utils/dev-stylesheet-delivery.ts",
+    "site/app/[locale]/guide/directives/contract.mdx"
+  ],
+  "newSources": [
+    "packages/vite/tests/utils/bug-hunt-dev-resource-snapshots.test.ts",
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-recovery.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-dev-resource-recovery.mjs"
+  ],
+  "totalSources": 216,
+  "foreignSite": {
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+  },
+  "fiveArtifactsByteIdentical": true,
+  "resourceCacheDirectoriesAfterResourceJobs": [],
+  "indexEmpty": true,
+  "historyOccurrencesPreserved": 5
+}

@@ -34,7 +34,7 @@ for (const mode of ['pre-render', 'progressive']) {
     writeFileSync(join(root, 'styles/branch.css'), `@import "${origin}/external.css";.conditional{padding-left:var(--spacing-5xl);background:rgb(12,34,56)}.resource{background-image:url("pixel.svg?q=1#part")}`)
     writeFileSync(join(root, 'styles/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><title>branch-owned</title><rect width="1" height="1" fill="red"/></svg>')
     writeFileSync(join(root, 'index.html'), '<!doctype html><html><head><meta charset="utf-8"></head><body><div id="card" class="card p:0.125rem">card</div><div id="external" class="external">external</div><div id="conditional" class="conditional resource">conditional</div><script type="module" src="./client.js"></script></body></html>')
-    writeFileSync(join(root, 'client.js'), 'import "./style.css";window.ready=true')
+    writeFileSync(join(root, 'client.js'), 'import "./style.css";window.bootID=Math.random();window.ready=true')
     const plugins = createMasterCSSVitePlugin({ mode })
     try {
       await build({ root, configFile: false, logLevel: 'silent', base: '/base/', plugins, build: { minify: false, cssMinify: false } })
@@ -66,8 +66,11 @@ for (const mode of ['pre-render', 'progressive']) {
             const card = getComputedStyle(document.querySelector('#card')), external = getComputedStyle(document.querySelector('#external')), conditional = getComputedStyle(document.querySelector('#conditional'))
             return window.ready && card.color === color && card.paddingTop === '2px' && external.marginLeft === (wide ? '17px' : '3px') && (wide ? external.outlineWidth === '7px' && external.outlineStyle === 'solid' : external.outlineStyle === 'none') && conditional.backgroundColor === (wide ? 'rgb(12, 34, 56)' : 'rgb(1, 2, 3)') && (wide ? parseFloat(conditional.paddingLeft) > 0 : conditional.paddingLeft === '0px')
           }, { wide: supported && width >= 700, color: expectedColor }, { timeout: 15000 })
-          value = await page.evaluate(() => { const card = getComputedStyle(document.querySelector('#card')), external = getComputedStyle(document.querySelector('#external')), conditional = getComputedStyle(document.querySelector('#conditional'));return { color: card.color, padding: card.paddingTop, margin: external.marginLeft, outline: external.outlineWidth, outlineStyle: external.outlineStyle, background: conditional.backgroundColor, conditionalPadding: conditional.paddingLeft, resource: conditional.backgroundImage, styles: document.querySelectorAll('style#master-css').length } })
+          value = await page.evaluate(() => { const card = getComputedStyle(document.querySelector('#card')), external = getComputedStyle(document.querySelector('#external')), conditional = getComputedStyle(document.querySelector('#conditional'));return { color: card.color, padding: card.paddingTop, margin: external.marginLeft, outline: external.outlineWidth, outlineStyle: external.outlineStyle, background: conditional.backgroundColor, conditionalPadding: conditional.paddingLeft, resource: conditional.backgroundImage, bootID: window.bootID, styles: document.querySelectorAll('style#master-css').length } })
           assert.equal(value.styles, 1)
+          if (phase === 'wide') item.initialBootID = value.bootID
+          if (phase === 'theme-update' && target === 'dev' && mode === 'pre-render') assert.notEqual(value.bootID, item.initialBootID)
+          else assert.equal(value.bootID, item.initialBootID)
           if (supported && width >= 700) {
             const url = value.resource.match(/^url\(["']?(.*?)["']?\)$/)?.[1];assert.ok(url)
             const response = await page.request.get(url);assert.equal(response.status(), 200);assert.ok((await response.text()).includes('branch-owned'))

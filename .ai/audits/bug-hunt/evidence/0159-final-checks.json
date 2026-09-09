@@ -1,0 +1,113 @@
+{
+  "head": "b306e5d770c3fb4fc706fa064b8c300d41ad22d2",
+  "goal": "active",
+  "previousGoalTurn": "Progress: committed independently complete BH-0046 and bounded 0157-0158 audit records; excluded source hashes preserved",
+  "batch": "0159 bounded development graph and pre-render manifest HMR verified; full BH-0004 remains incomplete",
+  "validation": {
+    "viteTests": "215 PASS / 40 files",
+    "focusedCanonical": "18 PASS",
+    "existingPreRenderCorrected": "5 PASS",
+    "viteLint": "PASS",
+    "viteTypes": "PASS",
+    "viteBuild": "PASS",
+    "exampleBuild": "master-css-vite-example PASS; initial wrong filter ran nothing and is excluded",
+    "compilerLint": "PASS (README-only change)",
+    "siteLint": "PASS / 0 errors / 75 existing warnings",
+    "browserSummaries": [
+      {
+        "buildOnly": false,
+        "supported": true,
+        "builds": [
+          {
+            "mode": "pre-render",
+            "result": "PASS"
+          },
+          {
+            "mode": "progressive",
+            "result": "PASS"
+          }
+        ],
+        "browserComparisons": 48,
+        "browserFailures": 0
+      },
+      {
+        "buildOnly": false,
+        "supported": false,
+        "builds": [
+          {
+            "mode": "pre-render",
+            "result": "PASS"
+          },
+          {
+            "mode": "progressive",
+            "result": "PASS"
+          }
+        ],
+        "browserComparisons": 48,
+        "browserFailures": 0
+      }
+    ],
+    "browserRows": 96,
+    "reproSyntax": "PASS",
+    "aiContext": "AI context budget passed for 2737 files (4 generated excluded, 1 bounded exception).",
+    "whitespace": "PASS outside raw log evidence"
+  },
+  "finding": "BH-0047 P2 fixed: pre-render manifest changes refresh rendered page; ordinary CSS and progressive avoid manifest full reload",
+  "preservation": {
+    "baselineSources": 204,
+    "preserved": 192,
+    "changed": 12,
+    "sourceInventory": 209,
+    "newInventoryIncludesExistingPreRenderTest": true,
+    "existingPreRenderTestDiff": "Add required server.ws mock and assert full-reload",
+    "fiveArtifacts": "byte-identical",
+    "foreignSite": "byte-identical",
+    "fixturesSnapshotsDependenciesLockfilesCIRelease": "unchanged",
+    "index": "empty",
+    "historyOccurrences": 21,
+    "auditInventoryEntries": 45
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 35,
+    "unresolved": 12,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "unresolvedHostShutdownLimitation": 1
+  },
+  "terminalSessions": {
+    "5616": 1,
+    "56384": 1,
+    "80878": 0,
+    "98015": 1,
+    "22402": 0,
+    "82589": 0,
+    "70474": 0,
+    "54247": 0,
+    "83697": 0,
+    "30333": 0,
+    "13014": 0,
+    "31955": 0,
+    "72036": 0
+  },
+  "terminalSynchronousCommands": [
+    "Vite build final0",
+    "wrong example filter0: no package execution",
+    "repro syntax0",
+    "AI context0",
+    "whitespace0"
+  ],
+  "activeJobs": [],
+  "paused": "0038 explicit identity confirmation not received",
+  "next": [
+    "Graph resource edits and resource URL special characters; CSS/resource cache invalidation and old requests",
+    "Shared roots and custom environment close/replacement with retained graph assets",
+    "local-compose actual graph delivery; virtual loader/resource/reference ownership",
+    "Nuxt actual child-CSS page rendering; Webpack parallel dist race and graph migration",
+    "All original unresolved findings, blocked coverage, root gates and candidates remain in scope"
+  ],
+  "commit": false,
+  "push": false
+}

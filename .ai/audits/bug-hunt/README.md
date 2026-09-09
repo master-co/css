@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 46 historical confirmed findings; 34 fixed, 12 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 47 historical confirmed findings; 35 fixed, 12 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -282,11 +282,29 @@
 
 - [0158 Development shutdown](batches/0158-development-shutdown-classification.md)：關閉候選有界分類；主機限制仍未解，CSS調查可正常收尾。
 
+- [0159 Development stylesheet graphs](batches/0159-development-stylesheet-graphs.md)：有界查核完成，BH-0047已修復；BH-0004完整交付仍未完成。
+
+- [0160 Development resource lifecycle](batches/0160-development-resource-lifecycle.md)：有界查核完成；BH-0004其餘交付仍未完成。
+
+- [0161 Resource snapshot and recovery](batches/0161-development-resource-recovery.md)：有界查核完成；BH-0004完整交付仍未完成。
+
+- [0162 Retained graph environments](batches/0162-development-graph-environments.md)：有界查核完成；BH-0004其餘交付仍未完成。
+
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：BH-0047的pre-render manifest HMR修復、2項新回歸、既有測試補齊及對應README已提交`5e707ec75`；本次7項聚焦測試、Vite lint/types全通過。0159–0162已完成查核、重現與原始證據另作一筆提交；各批歷史HEAD及未提交描述保留當時狀態。BH-0004其餘產品／套件測試與其他對話Site變更留工作目錄。下一批接local-compose完整graph交付；47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制及0038身分暫停維持，目標active；未推送。[提交核對](evidence/0162-commit-validation.json)。
+
+- 0162：retained graph環境交付查核完成，沒有修改產品程式。16actual-server cases涵蓋四mode、兩種per-environment設定的idle edge replacement，以及standalone／middleware restart；新entry／child更新、新舊CSS／resource版本與副本清理通過。完整Vite253tests、lint/types及96三瀏覽器觀測全PASS：restart重連／換新URL，後續CSS色彩與SVG像素更新且無額外reload。沿用來源未變的0161 built package；公開文件同步範圍。仍47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制；0038身分暫停維持。下一批接local-compose完整graph transform，再續virtual resource/reference owner、其他preprocessor／maps、Nuxt／Webpack及全部未完成要求。本批未commit/push；HEADb306e5d77。[0162](batches/0162-development-graph-environments.md)。
+
+- 0161 handoff preserved verbatim in [history](progress-history-0162.md); original evidence and unfinished scope remain available.
+
+- 0160 handoff preserved verbatim in [history](progress-history-0161.md); original results and incomplete scope remain available.
+
+- 0159 handoff preserved verbatim in [history](progress-history-0160.md); original batch evidence and unfinished scope remain authoritative.
 
 - 使用者再次授權提交已完成部分：BH-0046 的 base URL 修復、12項新回歸及對應README已提交 `8c16c3f42`，本次21項聚焦測試／lint／types全通過。0157–0158已收尾的查核、原始證據與重現另行提交；歷史HEAD與未提交描述保留當時狀態。0159與BH-0004產品修改仍留工作目錄：首輪瀏覽器45／48通過，3項pre-render theme HMR失敗；新SSR完整子圖控制4項均因重複layer失敗。下一步驗證serve註冊採canonical resolution.id，並完成theme HMR修正的build／瀏覽器回歸；不得沿用0157全套PASS。其他對話Site變更保留，0038身分暫停與全部未完成項目維持，目標active；未推送。[提交核對](evidence/0158-commit-validation.json)。
 
-- 0158：關閉殘留完成有界分類，71個獨立程序控制；scanner／renderer dispose均有trace。完全不載Master CSS插件或Node API的純Vite加runtime dependency／virtual HMR亦留native async handle，停optimizer不解；普通小dependency另有close未完成exit13，與native殘留分開。先等待公開waitForRequestsIdle的六控制全部自然退出0；CSS調查腳本採相同收尾，直接close仍保留主機限制，未視為修復／完成。產品來源與既有驗證不變；46historical／34fixed／12unresolved、10blocked／4gates／4原候選+1主機關閉待辦及0038身分暫停保留。下一批接BH-0004 dev分類、CSS graph與resources實際交付，再續Nuxt／Webpack與其餘要求。HEAD42ccdc182，未提交／推送。[0158](batches/0158-development-shutdown-classification.md)。
+- 0158共同交接已逐字歸檔至[歷史紀錄](progress-history-0159.md)；關閉限制與未完成範圍保留。
 
 - 0157共同交接原文已移至[歷史紀錄](progress-history-0158.md)，BH-0046證據及關閉候選沿用。
 
@@ -304,9 +322,9 @@
 
 - 使用者再次授權提交已完成部分：此次僅納入0143–0146查核紀錄、重現腳本、原始證據與逐字歷史歸檔；各批次的HEAD／未提交描述保留為當時狀態。BH-0004產品／套件測試、0147進行中材料與其他對話Site變更留在工作目錄。0147以公開middleware及module graph追蹤實際stylesheet URL，補送匹配link的CSS HMR；目前focused2tests與Sass URL三瀏覽器初始／更新6觀測通過，相關命令已結束，但尚未完成完整request96、base／alias／外部root邊界及最終回歸，不能宣稱整體修復完成。下一步先補這些驗證與0147批次收尾，再續其他host、Webpack及0144巢狀缺檔恢復。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分驗證暫停不變；目標維持active，此次未推送。[提交範圍與保存證據](evidence/0146-commit-validation.json)。
 
-- 0146：修復共用manifest HMR hook丟棄普通CSS／inline／raw更新modules，保留原節點並合併virtual manifest；internal18、Vite160、Astro15與三套件lint/types/build、Vite／Astro範例均PASS。修後完整開發request矩陣93PASS／3FAIL；剩managed Sass ?url的link為/style.scss，但HMR送/style.scss.css?direct，更新路徑不匹配，已留WebSocket證據待修。另Modules HMR18PASS；URL原文oracle與pure冷啟動boot判定分開記錄。Site通過（75warnings），五產物不變；20段歷史逐字歸檔。下一批先修Sass direct URL HMR，再續其他request／host與Webpack；0144巢狀缺檔仍未完成。33fixed／12unresolved、10blocked／4root gates／4候選及0038身分暫停不變；HEADeb6b479a3，未提交／推送。[0146](batches/0146-development-style-requests.md)。
 
-- 0145：development CSS／Sass Modules接入既有主機預處理與scoped匯出／usage流程，依root／composes子檔失效cache及Vite代理modules；修復managed entry缺少具名匯出與local Sass500。Vite160／lint/types/build／範例PASS；entry／local、直接／巢狀、三瀏覽器HMR72及production60對照PASS，逐步核對新HMR且無整頁reload。preset blue色彩oracle與首次baseFile/preserveImports接入錯誤分開留證。Site通過（75warnings），五產物不變。下一批dev inline／raw／url與普通Sass、其他host／Webpack；0144巢狀缺檔主機終止仍未完成。33fixed／12unresolved、10blocked／4root gates／4候選與0038身分暫停不變；HEADeb6b479a3，未提交／推送。[0145](batches/0145-module-development-hmr.md)。
+
+
 
 - 使用者再次授權提交已完成部分：本次納入0141–0142已完成的查核紀錄、重現材料與原始證據；歷史HEAD／未提交描述保留為當時狀態。共用watch腳本僅提交與0142 inventory SHA-256一致的已驗證版本，0143擴充保留工作目錄。BH-0004產品／套件測試與其他對話Site變更未納入。0143直接子檔watch已6build／18browser PASS，新增dependency3tests與Modules9tests通過；但巢狀錯誤恢復最新6build／18browser為16PASS／2FAIL，Chromium恢復時請求不存在的JS／CSS資產，尚須區分watch事件時序、發布行為與腳本因素，不能宣稱修復完成。相關命令已結束；下一步先查事件與資產發布時序，再補穩定的恢復驗證及0143整批收尾，續dev/HMR、其他host與Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分驗證暫停不變，目標保持active；此次未推送。[提交範圍與保存證據](evidence/0142-commit-validation.json)。
 
@@ -326,7 +344,7 @@
 
 - 使用者再次授權提交已完成部分：此次納入0133–0135已完成的查核紀錄、重現材料與原始證據，以及0134逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試仍未完成整體交付，連同0136 Sass初步修改／證據保留於工作目錄。0136已新增Sass預處理與內部CSS入口、baseFile來源傳遞；compiler／Vite的首輪types與build日誌已寫出，但尚未完成Sass行為驗證，不能沿用0135的PASS宣稱目前修改全部通過。下一步先以`vite-host-inputs.mjs`的scss-entry／scss-import重現驗證，再補additionalData、條件CSS imports、aliases／partials、資源、診斷與watch。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停維持；其他對話Site變更原樣保存，未推送。[提交範圍與保存證據](evidence/0135-commit-validation.json)。
 
-- 0135：接通Vite virtual CSS來源載入，保留原始CSS、opaque ID/query與條件圖譜；graph-only loader子檔不再額外成為無條件入口。compiler223／Vite110、兩套件lint/types/build通過；13actual builds剩1SassFAIL，72browser為66PASS／6SassFAIL，其中virtual30與裁剪36全通過。既有resolver36／resource18／cache39、3種watch共54與純Vite控制18通過；早期watch非實體暫存路徑及錯用getWatchFiles屬harness問題，query截斷則已修復。Site prepare/lint通過（75warnings）；5artifacts不變，兩root API gates仍失敗。下一步接Sass入口／匯入預處理、virtual資源／reference與其他host路徑，再遷移Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEADef7887f76，本批未提交／推送。[0135](batches/0135-vite-virtual-sources.md)。
+
 
 - 0134：修復alias／custom resolver把專案CSS誤當套件而漏裁剪的回歸；改核對實際檔案是否在原名稱的套件根目錄。新增actual10build／54browser，修後36PASS／18FAIL及1Sass buildFAIL；36個裁剪／套件／明確保留控制全通過，剩餘為virtual匯入／入口與Sass入口／匯入。compiler219／Vite110、lint/types/build、既有resolver36／resource18及Site prepare/lint通過（75warnings）。下一批接非檔案來源載入與預處理，保留條件、資源、診斷與watch；不以拒絕計完成。歷史0131–0133交接逐字歸檔。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分暫停不變；HEADef7887f76，未提交／推送。[0134](batches/0134-vite-alias-pruning.md)。
 
@@ -354,3 +372,5 @@
 0141–0144歷史進度逐字移至 [歷史進度（0146整理）](progress-history-0146.md)；目前狀態以本檔最新批次為準。
 
 0136–0140歷史進度逐字移至 [歷史進度（0149整理）](progress-history-0149.md)；目前狀態以最新交接為準。
+
+部分較早批次交接逐字保存於[0159歷史歸檔](progress-history-0159.md)，目前狀態以最新交接與原批次為準。
