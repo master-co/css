@@ -1,0 +1,41 @@
+$ vitest --run tests/plugins/bug-hunt-middleware-restart.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-middleware-restart.test.ts > BH-0004 middleware restart serves HTML and styles (managed=true)
+{"managed":true,"events":["configResolved","buildStart","configResolved","buildStart","closeBundle","closeBundle"],"root":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-middleware-restart-Irwde1","appType":"spa","htmlStatus":404,"html":"","cssStatus":404,"css":"","stack":["viteRejectInvalidRequestMiddleware","corsMiddleware","hostValidationMiddleware","","viteCachedTransformMiddleware","launchEditorMiddleware","viteHMRPingMiddleware","viteServePublicMiddleware","viteTransformMiddleware","viteServeRawFsMiddleware","viteServeStaticMiddleware","viteHtmlFallbackMiddleware","viteIndexHtmlMiddleware","vite404Middleware","viteErrorMiddleware"],"ssr":"Error: [@master/css-vite] Scanner context was not initialized."}
+
+ ❯ tests/plugins/bug-hunt-middleware-restart.test.ts (2 tests | 1 failed) 671ms
+   × BH-0004 middleware restart serves HTML and styles (managed=true) 340ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-middleware-restart.test.ts > BH-0004 middleware restart serves HTML and styles (managed=true)
+AssertionError: expected 404 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 404
+
+ ❯ tests/plugins/bug-hunt-middleware-restart.test.ts:50:25
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  23:06:09
+   Duration  1.23s (tests 58%, transform 28%, import 14%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

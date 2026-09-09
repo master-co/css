@@ -1,0 +1,145 @@
+{
+  "head": "8d40735be376c3aea029617bb94abe5c0818bbb7",
+  "goal": "active",
+  "batch": "0151 ordinary live restart verified;middleware failure reproduced and localized,not repaired",
+  "previousGoalTurn": "progress:completed 0147–0150 audit commit and verified preservation",
+  "validation": {
+    "viteTests": {
+      "passed": 167,
+      "failed": 1,
+      "total": 168,
+      "files": 31,
+      "failure": "New managed middleware restart test expects200 but receives404;previous166tests pass"
+    },
+    "newTests": 2,
+    "focusedNormal": {
+      "passed": 1,
+      "failed": 1
+    },
+    "skipOldConfigCloseControl": {
+      "passed": 2,
+      "failed": 0,
+      "scope": "Diagnostic test hook only;not a product fix"
+    },
+    "liveFinal": {
+      "browserComparisons": 72,
+      "browserFailures": 0,
+      "ssrOutputs": 24,
+      "ssrFailures": 0,
+      "ssrRendering": "each output rendered in three independent browser shadow roots"
+    },
+    "middlewareFinalDiagnostic": {
+      "successfulBrowserObservations": 12,
+      "hostErrors": 1,
+      "ssrOutputsBeforeFailure": 4,
+      "editedBrowsers": "All three record404 and no target afterrestart;independent root HTML remains"
+    },
+    "middlewareEarlierCombined": {
+      "pureBrowserPass": 36,
+      "pureSSRPass": 12,
+      "managedBrowserPassBeforeFailure": 12,
+      "managedSSRPassBeforeFailure": 4,
+      "hostErrors": 1
+    },
+    "lint": "PASS",
+    "types": "PASS after diagnostic ServerHandle typeof guard",
+    "reproSyntax": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2702 files (4 generated excluded, 1 bounded exception).",
+    "whitespace": "PASS authored files;raw evidence unchanged",
+    "productBuildExampleSite": "Not rerun:no product orSite changes in0151;no middleware fix claimed"
+  },
+  "classifications": {
+    "product": "BH-0004 middleware restart shared scanner/context lifecycle remains unresolved;newconfig buildStart precedesoldconfig closeBundle;SSRmissing scanner;skippingoldclose restores scoped behavior",
+    "http404": "Observed beforeandafter fixingHTTP finalcallback;early callback-cause hypothesis withdrawn",
+    "pureTiming": "Immediate read afterwrite outranwatcher;boundedwaitforactualCSSandSSRupdatecorrected",
+    "testTypes": "InitialTS2339 fromdiagnosticServerHandle.name;typeofguardfixed",
+    "normalVsControl": "Control bypassesoldcleanup solelyforcausaldiagnosis andstillcleansuponfinalnewserverclose;not validproductionrepair"
+  },
+  "preservation": {
+    "baselineSources": 184,
+    "preserved": 183,
+    "changedReproductions": 1,
+    "newTestFiles": 1,
+    "totalSources": 185,
+    "productChanges": 0,
+    "foreignSite": "byte-preserved",
+    "artifacts": "five byte-identical;compressed sizes retainedfromsamebytes",
+    "unexpectedDirtySourcePaths": [],
+    "index": "empty"
+  },
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 requires explicit useridentity confirmation;none received",
+  "limitations": [
+    "Middleware restart remains a failing product behavior;skip-close control is not repair",
+    "Scanner andstylesheetcollection cleanup ownership requires concrete lifecycle fix andnormal-mode regression",
+    "Sameplugininstance reuse/customenvironments/resource/reference/other preprocessors/PostCSS/publishedmaps/Webpack remainunfinished",
+    "0144nestedModulesmissingdependency hosttermination and0148Modules?url delivery remainunfinished",
+    "Rootgates andlegacyfailures notretested orclosed"
+  ],
+  "terminalJobs": {
+    "liveFirst": {
+      "session": 10087,
+      "exitCode": 0
+    },
+    "liveRepeat": {
+      "session": 97809,
+      "exitCode": 0
+    },
+    "middlewareRepeat": {
+      "session": 53600,
+      "exitCode": 1
+    },
+    "middlewareBefore": {
+      "session": 56059,
+      "exitCode": 1
+    },
+    "middlewareDiagnostic": {
+      "session": 14600,
+      "exitCode": 1
+    },
+    "middlewareCorrectedTiming": {
+      "session": 44780,
+      "exitCode": 1
+    },
+    "skipOldCloseControl": {
+      "session": 75945,
+      "exitCode": 0
+    },
+    "focusedFinal": {
+      "session": 6165,
+      "exitCode": 1
+    },
+    "liveFinal": {
+      "session": 66535,
+      "exitCode": 0
+    },
+    "middlewareBrowserDiagnostic": {
+      "session": 51323,
+      "exitCode": 1
+    },
+    "initialLintTypes": {
+      "session": 60481,
+      "exitCode": 1,
+      "detail": "lint0,types1"
+    },
+    "finalLintTypes": {
+      "session": 73966,
+      "exitCode": 0
+    },
+    "fullViteSuite": {
+      "session": 34263,
+      "exitCode": 1
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

@@ -1,0 +1,121 @@
+{
+  "head": "8d40735be376c3aea029617bb94abe5c0818bbb7",
+  "goal": "active",
+  "batch": "0152 middleware restart normal cleanup and closed HMR server retention repaired",
+  "previousGoalTurn": "progress:0151 produced scoped live evidence,normal middleware failure andold-cleanup localization",
+  "validation": {
+    "viteTests": 173,
+    "testFiles": 33,
+    "newTests": 5,
+    "focusedInitial": 13,
+    "focusedScannerLifecycle": 17,
+    "focusedFinal": 25,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "middlewareBrowser": {
+      "comparisons": 72,
+      "failures": 0,
+      "ssrOutputs": 24,
+      "ssrFailures": 0
+    },
+    "standaloneBrowser": {
+      "comparisons": 72,
+      "failures": 0,
+      "ssrOutputs": 24,
+      "ssrFailures": 0
+    },
+    "totalBrowserRows": 144,
+    "totalSSROutputs": 48,
+    "ssrRendering": "Each output rendered in three browser shadow roots",
+    "normalCleanup": "All final tests/browser runs use normal disposal;no BH_SKIP_RESTART_DISPOSE",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2705 files (4 generated excluded, 1 bounded exception).",
+    "whitespace": "PASS authored files;raw logs unchanged"
+  },
+  "changes": {
+    "scannerOwnership": "WeakMap state percontext andResolvedConfig;oldconfig disposes onlyits scanner andcollection;pendinginit/sharedclose/failure retry protected",
+    "serverRetention": "HMR serverregistry keyedbyResolvedConfig;closedconfigremoved;newtestfailedbeforewitholdserverreloadcallandpassesafter",
+    "documentation": "ViteREADMEandexistingSitecontractdescribeverifiedreconnectandmiddlewarebehavior",
+    "publicAPI": "No public packageexports/config/virtualIDs changed",
+    "semantics": "No Rust/toolingsemantic orruntime changes"
+  },
+  "preservation": {
+    "baselineSources": 185,
+    "changedSources": 5,
+    "newSources": 2,
+    "priorSourcesPreserved": 180,
+    "totalSources": 187,
+    "productFilesChanged": 3,
+    "docsFilesChanged": 2,
+    "foreignSite": "byte-preserved exceptcontractprose",
+    "artifacts": "five byte-identical;gzip/brotli retainedfromsamebytes",
+    "index": "empty",
+    "unexpectedDirtySourcePaths": []
+  },
+  "classifications": {
+    "middleware": "Product regression confirmed0151;normalmode repair nowpassesactual-server andbrowsercontrols",
+    "hmrServerRetention": "New lifecycle regression failed becauseclosedserverstillreceivedreloadModule;fixedregistryremoval",
+    "controlOnly": "0151skipoldclose remainsdiagnostic evidence,neverusedtosupportfinalrepair",
+    "existingRootFailures": "Not refreshed orclosed;no publicAPI/ABI changes claimed"
+  },
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "limitations": [
+    "BH-0004overall delivery remainsunfinished",
+    "Customenvironment individual shutdown/sameplugininstanceconcurrentreuse/multirootsharedcontexts notprovenbytwoindependentfactories",
+    "Resource/referenceownership/otherpreprocessors/PostCSS/fullpublishedmaps/Webpack remainpending",
+    "0144nestedCSSModulesmissingcompositionhosttermination and0148Modules?url delivery remainopen",
+    "Webpack3build12browser/legacy39browserfailures and4rootgates/4candidates remain"
+  ],
+  "paused": "0038 requires explicit useridentity confirmation;none received",
+  "terminalJobs": {
+    "focusedInitial": {
+      "session": 1816,
+      "exitCode": 0
+    },
+    "scannerLifecycleLintTypes": {
+      "session": 24885,
+      "exitCode": 0
+    },
+    "firstBuild": {
+      "exitCode": 0
+    },
+    "firstMiddlewareBrowser": {
+      "session": 29615,
+      "exitCode": 0
+    },
+    "hmrRetentionBefore": {
+      "exitCode": 1
+    },
+    "finalFocusedLintTypesBuild": {
+      "session": 72631,
+      "exitCode": 0
+    },
+    "finalBrowserMatrices": {
+      "session": 35591,
+      "exitCode": 0
+    },
+    "siteAndExample": {
+      "session": 74485,
+      "exitCode": 0
+    },
+    "fullViteSuite": {
+      "session": 20285,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

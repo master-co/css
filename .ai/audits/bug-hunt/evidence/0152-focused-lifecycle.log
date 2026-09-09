@@ -1,0 +1,14 @@
+$ vitest --run tests/utils/bug-hunt-scanner-lifecycle.test.ts tests/plugins/bug-hunt-middleware-restart.test.ts tests/plugins/bug-hunt-sass-environment.test.ts tests/modes/scanner.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+
+ Test Files  4 passed (4)
+      Tests  17 passed (17)
+   Start at  23:17:15
+   Duration  2.36s (tests 74%, transform 17%, import 9%)
+

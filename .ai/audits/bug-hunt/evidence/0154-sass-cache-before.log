@@ -1,0 +1,39 @@
+$ vitest --run tests/plugins/bug-hunt-environment-replacement.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-environment-replacement.test.ts (8 tests | 1 failed) 9078ms
+   × BH-0004 late server environment startup preserves client Sass dependencies (perEnvironment=true) 5526ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-environment-replacement.test.ts > BH-0004 late server environment startup preserves client Sass dependencies (perEnvironment=true)
+AssertionError: expected "send" to be called with arguments: [ { type: 'update', …(1) } ]
+
+Number of calls: 0
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-environment-replacement.test.ts:94:41
+     92|     const send = vi.spyOn(server.environments.client.hot, 'send')
+     93|     writeFileSync(partial, '$tone:purple;')
+     94|     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: '…
+       |                                         ^
+     95|       { type: 'css-update', path: '/style.scss', acceptedPath: '/style…
+     96|     ]) }), { timeout: 5000 })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 7 passed (8)
+   Start at  23:44:24
+   Duration  9.55s (tests 96%, transform 3%, import 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

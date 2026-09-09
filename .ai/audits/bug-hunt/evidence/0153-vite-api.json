@@ -1,0 +1,22 @@
+{
+  "version": "8.2.2",
+  "source": "/Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js",
+  "sha256": "f64038f08022030b77efee87b6baa81933a7b77d820aaa64bc3262fda44d80b0",
+  "closeBundle": {
+    "line": 30966,
+    "excerpt": "\tasync close() {\n\t\tif (this._closed) return;\n\t\tthis._closed = true;\n\t\tawait Promise.allSettled(Array.from(this._processesing));\n\t\tconst config = this.environment.getTopLevelConfig();\n\t\tawait this.hookParallel(\"buildEnd\", (plugin) => this._getPluginContext(plugin), () => [], (plugin) => this.environment.name === \"client\" || config.server.perEnvironmentStartEndDuringDev || plugin.perEnvironmentStartEndDuringDev);\n\t\tawait this.hookParallel(\"closeBundle\", (plugin) => this._getPluginContext(plugin), () => []);\n\t}"
+  },
+  "publicTypes": "/Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/index.d.ts",
+  "perEnvironmentFlags": [
+    {
+      "line": 2609,
+      "excerpt": "  sourcemapIgnoreList?: false | ((sourcePath: string, sourcemapPath: string) => boolean);\n  /**\n   * Backward compatibility. The buildStart and buildEnd hooks were called only once for\n   * the client environment. This option enables per-environment buildStart and buildEnd hooks.\n   * @default false\n   * @experimental\n   */\n  perEnvironmentStartEndDuringDev?: boolean;\n  /**"
+    },
+    {
+      "line": 2960,
+      "excerpt": "  /**\n   * Opt-in this plugin into per-environment buildStart and buildEnd during dev.\n   * For backward-compatibility, the buildStart hook is called only once during\n   * dev, for the client environment. Plugins can opt-in to be called\n   * per-environment, aligning with the build hook behavior.\n   * @experimental\n   */\n  perEnvironmentStartEndDuringDev?: boolean;\n  /**"
+    }
+  ],
+  "correction": "Both ServerOptions and Plugin declare perEnvironmentStartEndDuringDev;prior assumption that only server options expose it was incomplete. No use of this opt-in was needed for this batch.",
+  "tested": "Three initial environments (client,ssr,custom runnable edge);individual close andsurvivingconsumer updates;dynamic registration/replacement andper-environment-hook opt-ins remain separate verification scopes"
+}

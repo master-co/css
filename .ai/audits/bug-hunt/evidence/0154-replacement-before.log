@@ -1,0 +1,48 @@
+$ vitest --run tests/plugins/bug-hunt-environment-replacement.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-environment-replacement.test.ts (4 tests | 2 failed) 942ms
+   × BH-0004 idle replacement survives old environments closing (managed=true, perEnvironment=false) 313ms
+   × BH-0004 idle replacement survives old environments closing (managed=true, perEnvironment=true) 278ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-environment-replacement.test.ts > BH-0004 idle replacement survives old environments closing (managed=true, perEnvironment=false)
+ FAIL  tests/plugins/bug-hunt-environment-replacement.test.ts > BH-0004 idle replacement survives old environments closing (managed=true, perEnvironment=true)
+AssertionError: expected "dispose" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st dispose call:
+
+    Array []
+
+
+Number of calls: 1
+
+ ❯ tests/plugins/bug-hunt-environment-replacement.test.ts:39:40
+     37|       await server.environments.client.close()
+     38|       await server.environments.ssr.close()
+     39|       if (managed) expect(dispose).not.toHaveBeenCalled()
+       |                                        ^
+     40|       expect((await replacement.runner.import('/later.js')).css).toCon…
+     41|       writeFileSync(join(root, 'later.scss'), (managed ? '@master entr…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  23:40:19
+   Duration  1.41s (tests 70%, transform 19%, import 11%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,69 @@
+{"managed":false,"closing":"edge","phase":"initial","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5709287360872439},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"initial","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5269544496907388},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"initial","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.021186588797216466},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"edge","phase":"initial","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"edge","phase":"initial","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"closed","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5709287360872439},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"closed","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5269544496907388},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"closed","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.021186588797216466},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"edge","phase":"closed","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"partial-update","browser":"chromium","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.5709287360872439},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"partial-update","browser":"firefox","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.5269544496907388},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"partial-update","browser":"webkit","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.021186588797216466},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"edge","phase":"partial-update","consumer":"ssr","css":".example {\n  color: green;\n}","rendered":["rgb(0, 128, 0)","rgb(0, 128, 0)","rgb(0, 128, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"second-update","browser":"chromium","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.5709287360872439},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"second-update","browser":"firefox","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.5269544496907388},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"edge","phase":"second-update","browser":"webkit","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.021186588797216466},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"edge","phase":"second-update","consumer":"ssr","css":".example {\n  color: purple;\n}","rendered":["rgb(128, 0, 128)","rgb(128, 0, 128)","rgb(128, 0, 128)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"initial","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.02659162640206847},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"initial","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5263878227706451},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"initial","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.7714141217715572},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"ssr","phase":"initial","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"ssr","phase":"initial","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"closed","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.02659162640206847},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"closed","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5263878227706451},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"closed","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.7714141217715572},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"ssr","phase":"closed","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"partial-update","browser":"chromium","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.02659162640206847},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"partial-update","browser":"firefox","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.5263878227706451},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"partial-update","browser":"webkit","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.7714141217715572},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"ssr","phase":"partial-update","consumer":"edge","css":".example {\n  color: green;\n}","rendered":["rgb(0, 128, 0)","rgb(0, 128, 0)","rgb(0, 128, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"second-update","browser":"chromium","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.02659162640206847},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"second-update","browser":"firefox","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.5263878227706451},"errors":[],"result":"PASS"}
+{"managed":false,"closing":"ssr","phase":"second-update","browser":"webkit","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.7714141217715572},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":false,"closing":"ssr","phase":"second-update","consumer":"edge","css":".example {\n  color: purple;\n}","rendered":["rgb(128, 0, 128)","rgb(128, 0, 128)","rgb(128, 0, 128)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"initial","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.15568985205045704},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"initial","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.9180111549878821},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"initial","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.28713577751617825},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"edge","phase":"initial","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"edge","phase":"initial","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"closed","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.15568985205045704},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"closed","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.9180111549878821},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"closed","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.28713577751617825},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"edge","phase":"closed","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"partial-update","browser":"chromium","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.15568985205045704},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"partial-update","browser":"firefox","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.9180111549878821},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"partial-update","browser":"webkit","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.28713577751617825},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"edge","phase":"partial-update","consumer":"ssr","css":".example {\n  color: green;\n}","rendered":["rgb(0, 128, 0)","rgb(0, 128, 0)","rgb(0, 128, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"second-update","browser":"chromium","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.15568985205045704},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"second-update","browser":"firefox","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.9180111549878821},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"edge","phase":"second-update","browser":"webkit","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.28713577751617825},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"edge","phase":"second-update","consumer":"ssr","css":".example {\n  color: purple;\n}","rendered":["rgb(128, 0, 128)","rgb(128, 0, 128)","rgb(128, 0, 128)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"initial","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.6817122024158199},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"initial","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.8712856513747553},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"initial","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5327242974360394},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"ssr","phase":"initial","consumer":"ssr","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"ssr","phase":"initial","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"closed","browser":"chromium","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.6817122024158199},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"closed","browser":"firefox","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.8712856513747553},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"closed","browser":"webkit","expected":"rgb(255, 0, 0)","value":{"color":"rgb(255, 0, 0)","bootID":0.5327242974360394},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"ssr","phase":"closed","consumer":"edge","css":".example {\n  color: red;\n}","rendered":["rgb(255, 0, 0)","rgb(255, 0, 0)","rgb(255, 0, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"partial-update","browser":"chromium","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.6817122024158199},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"partial-update","browser":"firefox","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.8712856513747553},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"partial-update","browser":"webkit","expected":"rgb(0, 128, 0)","value":{"color":"rgb(0, 128, 0)","bootID":0.5327242974360394},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"ssr","phase":"partial-update","consumer":"edge","css":".example {\n  color: green;\n}","rendered":["rgb(0, 128, 0)","rgb(0, 128, 0)","rgb(0, 128, 0)"],"serverCSS":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"second-update","browser":"chromium","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.6817122024158199},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"second-update","browser":"firefox","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.8712856513747553},"errors":[],"result":"PASS"}
+{"managed":true,"closing":"ssr","phase":"second-update","browser":"webkit","expected":"rgb(128, 0, 128)","value":{"color":"rgb(128, 0, 128)","bootID":0.5327242974360394},"errors":[],"result":"PASS"}
+{"kind":"ssr","managed":true,"closing":"ssr","phase":"second-update","consumer":"edge","css":".example {\n  color: purple;\n}","rendered":["rgb(128, 0, 128)","rgb(128, 0, 128)","rgb(128, 0, 128)"],"serverCSS":[],"result":"PASS"}
+{"browserComparisons":48,"browserFailures":0,"ssrOutputs":20,"ssrFailures":0,"hostErrors":0}
