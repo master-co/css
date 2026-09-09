@@ -1,0 +1,9 @@
+$ tsc -b tsconfig.typecheck.json
+src/utils/module-sources.ts(5,51): error TS2339: Property 'Once' does not exist on type 'HostPlugin'.
+src/utils/module-sources.ts(27,5): error TS2322: Type '({ root }: Result_<Document_ | Root_>) => void' is not assignable to type '(result: Result_<Document_ | Root_>) => Processors'.
+  Type 'void' is not assignable to type 'Processors'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

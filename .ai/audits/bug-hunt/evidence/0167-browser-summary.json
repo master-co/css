@@ -1,0 +1,35 @@
+{
+  "matrices": {
+    "0167-modules-dev-browser.log": {
+      "observations": 120,
+      "failures": 48,
+      "sha256": "6fed5e182f3ff27cd239312a95bec16c9dcc87120b631383e561944b0d2a60e8"
+    },
+    "0167-modules-build-browser.log": {
+      "observations": 120,
+      "failures": 48,
+      "sha256": "a68cf66bc0abb7826a43f512a81fe6b948ed87a16a325f86d7adf88cffd194a8"
+    },
+    "0167-module-leak-dev-browser.log": {
+      "observations": 24,
+      "failures": 12,
+      "sha256": "aaa786b12387e0a18283c84d091257224678dafb68d70d0c49d829124e121962"
+    },
+    "0167-module-leak-build-browser.log": {
+      "observations": 24,
+      "failures": 12,
+      "sha256": "61232081d7731bb32f11932f814dcf92c3c6344233e33603d5e9ab09ca856360"
+    }
+  },
+  "fullMatrix": {
+    "observations": 240,
+    "passed": 144,
+    "failed": 96
+  },
+  "leakExtension": {
+    "observations": 48,
+    "passed": 24,
+    "failed": 24
+  },
+  "status": "Product defect remains; not a passing final matrix"
+}

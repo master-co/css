@@ -293,15 +293,19 @@
 - [0164 Vite local graph publication](batches/0164-vite-local-graph-publication.md)：原8FAIL修復；279tests／252browser通過，其餘輸入及lifecycle待續。
 - [0165 Imported local directives](batches/0165-imported-local-directives.md)：plain-root漏判已修；242compiler／295Vite tests及360browser通過。
 
+- [0166 Local URL delivery](batches/0166-local-url-delivery.md)：三個交付缺口已修；338tests／324browser通過。
+
+- [0167 Imported module exports](batches/0167-imported-module-exports.md)：進行中；初版修正346項Vite測試PASS，重建與瀏覽器驗證待完成。
+
 ## 目前交接點
 
 - 使用者再次授權提交已完成部分：本次納入0163–0165已收尾的查核、原始證據、重現材料與逐字歷史。產品及套件測試仍依賴未完成的BH-0004 graph改動，與其他對話Site變更一併保留工作目錄；未推送。228來源及7份最終browser log雜湊一致；47historical／35fixed／12unresolved與0038身分暫停維持，目標active。下一步接local ?url／Modules跨import exports；各批歷史HEAD與未提交描述保留當時狀態。[提交核對](evidence/0165-commit-validation.json)。
 
 - 使用者再次授權提交已完成部分：BH-0047的pre-render manifest HMR修復、2項新回歸、既有測試補齊及對應README已提交`5e707ec75`；本次7項聚焦測試、Vite lint/types全通過。0159–0162已完成查核、重現與原始證據另作一筆提交；各批歷史HEAD及未提交描述保留當時狀態。BH-0004其餘產品／套件測試與其他對話Site變更留工作目錄。下一批接local-compose完整graph交付；47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制及0038身分暫停維持，目標active；未推送。[提交核對](evidence/0162-commit-validation.json)。
 
-- 0165：plain root／bridge只在leaf含local directives的漏判已修；原compiler2FAIL及Vite8FAIL皆通過。既有Rust-backed helper共用於整圖分類／delivery，純native圖不接管資源。完整compiler242／Vite295tests、lint/types/build、範例及360三瀏覽器觀測PASS：兩層CSS／Module／Sass imports、inline、media、child/resource HMR且無reload。3份公開文件同步，Site prepare/lint0errors／75warnings；5artifacts不變。下一批接local ?url、Modules跨import exports，再續owner／watch／base／lifecycle、Nuxt／Webpack、10個benchmark問題與全部原要求。47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host限制及0038身分暫停維持；HEAD282a9fb88，未commit/push。[0165](batches/0165-imported-local-directives.md)。
+- 使用者授權提交已完成部分：本次納入0166完成查核、0167完成的缺陷重現與驗證紀錄，並同步本交接；不將進行中修正標為完成。0167初版已讓Vite完成346tests／54files全PASS，Compiler243tests／33files及33項來源映射聚焦回歸PASS；初版曾有6項失敗，原始log保留。尚須重建Compiler/Vite、重跑Modules dev/build瀏覽器矩陣與來源資源控制，再更新公開文件及API契約檢查。BH-0004產品與套件測試仍依賴未完成的Rust/binding/graph變更，因此留在工作目錄；其他對話Site變更原樣保留。47historical／35fixed／12unresolved、10blocked／4root gates／4原候選+1host限制及0038身分確認暫停不變，目標active；未推送。舊的「尚未實作」交接為調查時點，已逐字保存於[歷史](progress-history-0167-implementation.md)。[提交核對](evidence/0167-commit-validation.json)。
 
-- 0164交接原文已逐字歸檔至[歷史紀錄](progress-history-0165.md)，既有證據與未完成範圍保留。
+- 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
 
 - 0163交接原文已逐字歸檔至[歷史紀錄](progress-history-0164.md)，既有證據與未完成範圍保留。
 

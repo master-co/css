@@ -1,0 +1,19 @@
+$ tsc -b tsconfig.typecheck.json
+src/utils/build-sass-source.ts(110,24): error TS2322: Type 'Promise<{ code: string; map?: RawSourceMap | SourceMapInput | undefined; modules?: Record<string, string> | undefined; deps: Set<string>; moduleSources?: Map<...> | undefined; }>' is not assignable to type 'Promise<PreparedSource>'.
+  Type '{ code: string; map?: RawSourceMap | SourceMapInput | undefined; modules?: Record<string, string>; deps: Set<string>; moduleSources?: Map<string, string> | undefined; }' is not assignable to type 'PreparedSource'.
+    Type '{ code: string; map?: RawSourceMap | SourceMapInput | undefined; modules?: Record<string, string>; deps: Set<string>; moduleSources?: Map<string, string> | undefined; }' is not assignable to type 'PreprocessCSSResult'.
+      Types of property 'map' are incompatible.
+        Type 'RawSourceMap | SourceMapInput | undefined' is not assignable to type 'SourceMapInput | undefined'.
+          Type 'RawSourceMap' is not assignable to type 'SourceMapInput | undefined'.
+            Type 'RawSourceMap' is not assignable to type 'ExistingRawSourceMap'.
+              Types of property 'version' are incompatible.
+                Type 'string' is not assignable to type 'number'.
+src/utils/build-sass-source.ts(111,21): error TS2345: Argument of type '{ source: string; prepared?: Promise<PreparedSource> | undefined; dependencies: Set<string>; } | undefined' is not assignable to parameter of type '{ source: string; prepared?: Promise<PreparedSource> | undefined; dependencies: Set<string>; }'.
+  Type 'undefined' is not assignable to type '{ source: string; prepared?: Promise<PreparedSource> | undefined; dependencies: Set<string>; }'.
+src/utils/build-sass-source.ts(113,36): error TS18048: 'entry' is possibly 'undefined'.
+src/utils/build-sass-source.ts(117,30): error TS18048: 'entry' is possibly 'undefined'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

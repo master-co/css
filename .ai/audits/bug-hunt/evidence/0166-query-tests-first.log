@@ -1,0 +1,318 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts (16 tests | 16 failed) 9458ms
+   × local imported directives survive serve/?url/static 492ms
+   × local imported directives survive serve/?url/runtime 429ms
+   × local imported directives survive serve/?url/pre-render 591ms
+   × local imported directives survive serve/?url/progressive 539ms
+   × local imported directives survive serve/?theme=dark/static 598ms
+   × local imported directives survive serve/?theme=dark/runtime 624ms
+   × local imported directives survive serve/?theme=dark/pre-render 740ms
+   × local imported directives survive serve/?theme=dark/progressive 705ms
+   × local imported directives survive build/?url/static 476ms
+   × local imported directives survive build/?url/runtime 568ms
+   × local imported directives survive build/?url/pre-render 597ms
+   × local imported directives survive build/?url/progressive 741ms
+   × local imported directives survive build/?theme=dark/static 452ms
+   × local imported directives survive build/?theme=dark/runtime 594ms
+   × local imported directives survive build/?theme=dark/pre-render 600ms
+   × local imported directives survive build/?theme=dark/progressive 713ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?url/static
+AssertionError: expected '@import "/_master-css/dev/d8929d51-51…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/d8929d51-5176-4040-bdfb-b3eb50013745/sheet-c14b7677cabd6bd333ec-04d677addd75867c2515.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/d8929d51-5176-4040-bdfb-b3eb50013745/sheet-22fb5da2133d3b94e364-04d677addd75867c2515.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?url/runtime
+AssertionError: expected '@import "/_master-css/dev/f7e3b7f3-48…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/f7e3b7f3-4885-4554-8506-035e1048e899/sheet-849cc4697fcfe80ccd9d-e926a6c51ab59fae4a13.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/f7e3b7f3-4885-4554-8506-035e1048e899/sheet-c91718459d4e81a850be-e926a6c51ab59fae4a13.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?url/pre-render
+AssertionError: expected '@import "/_master-css/dev/d23cfaa9-98…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/d23cfaa9-98bf-49c5-b560-ae8ead5ac5c5/sheet-a11c24503fbb5feb163c-957a003e7a17c653cfd1.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/d23cfaa9-98bf-49c5-b560-ae8ead5ac5c5/sheet-757594dda9fd8e118cd6-957a003e7a17c653cfd1.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?url/progressive
+AssertionError: expected '@import "/_master-css/dev/6b6df912-0b…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/6b6df912-0b46-445c-99cd-05f4bcb13e33/sheet-c1ce344acf82789474da-4b27546f188fcd5b4749.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/6b6df912-0b46-445c-99cd-05f4bcb13e33/sheet-d95d98408780e2e36f8e-4b27546f188fcd5b4749.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?theme=dark/static
+AssertionError: expected '@import "/_master-css/dev/69157320-6b…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/69157320-6bea-4c97-a760-870923df544c/sheet-c92b4860e2a2141ef398-8aa04e3c24fd81bad09b.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/69157320-6bea-4c97-a760-870923df544c/sheet-f07d5182700182698eba-8aa04e3c24fd81bad09b.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?theme=dark/runtime
+AssertionError: expected '@import "/_master-css/dev/fde39a99-97…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/fde39a99-9778-46c4-985c-72c6d12142bb/sheet-154dd41c8c19170b4e7d-4124497c8a1903250bfe.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/fde39a99-9778-46c4-985c-72c6d12142bb/sheet-8e909c7de5bc74543c04-4124497c8a1903250bfe.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?theme=dark/pre-render
+AssertionError: expected '@import "/_master-css/dev/48c87bba-27…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/48c87bba-2790-468f-a143-53c48637f70a/sheet-51df5e06aa72ab0a5cc4-e8717305e0fb617b0210.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/48c87bba-2790-468f-a143-53c48637f70a/sheet-8cb4b07911d7b69cb050-e8717305e0fb617b0210.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive serve/?theme=dark/progressive
+AssertionError: expected '@import "/_master-css/dev/8f3f8943-fd…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"/_master-css/dev/8f3f8943-fd4c-4f5f-bfb8-0797026377d7/sheet-8dd39e53a21500677b9f-3e6d1719be3df0b0a9d2.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+.local {
+  display: inline-flex;
+}
+@import \"/_master-css/dev/8f3f8943-fd4c-4f5f-bfb8-0797026377d7/sheet-138018980df00f26708b-3e6d1719be3df0b0a9d2.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?url/static
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?url/runtime
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?url/pre-render
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?url/progressive
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?theme=dark/static
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?theme=dark/runtime
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?theme=dark/pre-render
+ FAIL  tests/plugins/bug-hunt-local-query-graphs.test.ts > local imported directives survive build/?theme=dark/progressive
+AssertionError: expected '@import "./master-css-1bc091623344b41…' to match /(?:min-width:\s*700px)/
+
+- Expected:
+/(?:min-width:\s*700px)/
+
++ Received:
+"@import \"./master-css-1bc091623344b4178381-0.css\";
+@import \"./master-css-1bc091623344b4178381-1.css\";
+@import \"./master-css-1bc091623344b4178381-2.css\";
+@import \"./master-css-1bc091623344b4178381-3.css\" layer(guard) supports(display: grid) screen and (width >= 700px);
+
+.local {
+  display: inline-flex;
+}
+@import \"./master-css-1bc091623344b4178381-4.css\";
+
+.bridge {
+  display: block;
+}
+@import \"https://external.test/style.css\";
+
+.child{padding:2rem}"
+
+ ❯ tests/plugins/bug-hunt-local-query-graphs.test.ts:47:21
+     45|         expect(css).toContain('inline-flex')
+     46|         expect(css).toContain('external.test/style.css')
+     47|         expect(css).toMatch(/(?:min-width:\s*700px)/)
+       |                     ^
+     48|         expect(css).not.toContain('@compose')
+     49|         expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed (16)
+   Start at  03:47:02
+   Duration  9.99s (tests 95%, transform 3%, import 2%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

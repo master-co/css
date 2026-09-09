@@ -1,0 +1,170 @@
+{
+  "head": "fe170da1baf801992706ede6d4776d3f8bc600c4",
+  "goal": "active",
+  "previousGoalTurn": "Progress: completed 0163-0165 bookkeeping and user-authorized audit commit fe170da1b",
+  "batch": "0166 local query delivery and regression-discovered numeric slot fixes verified; full BH-0004 remains unfinished",
+  "implementation": [
+    "Sass retained CSS/resource HMR follows Vite importer graph from file-only nodes to owners and reuses served URL notifications",
+    "Build Sass URL resolves to proxy before Vite creates its token; Vite retains ownership of URL JavaScript and transform-only CSS",
+    "Local entry placeholders use unique CSS identifiers so optimizer cannot merge them or normalize numeric exponents"
+  ],
+  "validation": {
+    "queryFirst": "Initial process exited1 with no assertion summary; not classified as product failure or PASS",
+    "querySecond": "16 FAIL due test rejecting equivalent width >= 700px; corrected16 PASS",
+    "sassHmrBefore": "8 actual-server FAIL;72 browser observations=36 initial/viewport PASS and36 update FAIL, later failures depend on stale child color",
+    "sassFirstFix": "8 FAIL/2 PASS; id-only lookup insufficient; Vite trace identifies id=null node with Sass importer",
+    "sassHmrFixed": "10 focused PASS; final8 including unrelated URL isolation PASS",
+    "sassURLBuildBefore": "Pure Vite4 PASS/Master4 FAIL; browser probe fails before any observations",
+    "urlFixFocused": "32 PASS",
+    "rawAndModules": "Raw source preserved and Vite unsupported Modules URL behavior equal with/without plugin",
+    "numericSlotBefore": "Full suite336 PASS/1 FAIL, then deterministic actual-build1 FAIL",
+    "numericSlotFixed": "3 focused PASS",
+    "viteFinalSuite": "338 PASS/52 files",
+    "viteLint": "PASS",
+    "viteTypes": "PASS; earlier new spy assertion TS2339 corrected with matcher",
+    "viteBuild": "PASS",
+    "exampleBuild": "PASS",
+    "browserFinal": {
+      "matrices": {
+        "0166-css-url-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "4a59964fe74557a324767c5f6a91bdf84b9ef14c13de7de2e8574c20e0a86477"
+        },
+        "0166-css-url-dev-final-browser.log": {
+          "observations": 72,
+          "failures": 0,
+          "sha256": "88db0ebd9af437b9b55b1425c8f423085b3fde7d18dee5c0964319a1d15d9e62"
+        },
+        "0166-custom-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "49fbdd6f9fb9bce49cf3f149779a5ef79c09597e94f034c715a10dad76a2358c"
+        },
+        "0166-custom-dev-final-browser.log": {
+          "observations": 72,
+          "failures": 0,
+          "sha256": "d50e89619a61789ed5e93d39bcf1ebafadeb34f6cdec4791787df0a436c23a54"
+        },
+        "0166-scss-url-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "c229469022ee4b29dbf846e5393f342ebbbf6fd6d5c0160fd46f7361ddf22377"
+        },
+        "0166-scss-url-dev-final-browser.log": {
+          "observations": 72,
+          "failures": 0,
+          "sha256": "7f88fe8e699c88167ea22bb40445eaa38452e70e3753bdaf33ec8e619836918d"
+        }
+      },
+      "total": 324,
+      "failures": 0
+    },
+    "sitePrepare": "PASS",
+    "siteLint": "0 errors/75 existing warnings",
+    "aiContext": "AI context budget passed for 2774 files (4 generated excluded, 1 bounded exception).",
+    "whitespace": "PASS excluding raw logs",
+    "reproSyntax": "PASS",
+    "rootGates": "Not rerun: no public names/types or Rust/binding edits; all four original root gates remain unfinished"
+  },
+  "preservation": {
+    "head": "fe170da1baf801992706ede6d4776d3f8bc600c4",
+    "baseline": 228,
+    "preserved": 224,
+    "changed": [
+      "packages/vite/README.md",
+      "packages/vite/src/plugins/sass-source.ts",
+      "packages/vite/src/utils/local-stylesheet.ts",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSources": [
+      "packages/vite/tests/plugins/bug-hunt-local-query-graphs.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-local-sass-url-hmr.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-sass-url-build.test.ts",
+      "packages/vite/tests/utils/bug-hunt-local-slot-numbers.test.ts",
+      ".ai/audits/bug-hunt/repros/vite-local-query-resources.mjs"
+    ],
+    "totalSources": 233,
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "resourceCacheDirectories": [],
+    "indexEmpty": true,
+    "historyOccurrencesPreserved": 5
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 35,
+    "unresolved": 12,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "unresolvedHostShutdownLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0032",
+    "BH-0033",
+    "BH-0034",
+    "BH-0037",
+    "BH-0038",
+    "BH-0039",
+    "BH-0040",
+    "BH-0041",
+    "BH-0042",
+    "BH-0043"
+  ],
+  "next": [
+    "CSS Modules cross-import export ownership compared with pure Vite",
+    "Retained Sass/maps/reference/resource ownership; aliases/virtual sources and other preprocessors",
+    "Local build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/environment replacement/restart/close",
+    "Nuxt actual child CSS; Webpack graph migration/shared-dist race; all original findings, gates and candidates"
+  ],
+  "paused": "Batch0038 explicit identity confirmation not received; not equivalent to finding BH-0038",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "1461": 0,
+    "61188": 1,
+    "18898": 1,
+    "5779": 0,
+    "40808": 0,
+    "36439": 1,
+    "78177": 1,
+    "82997": 1,
+    "25536": 0,
+    "94343": 1,
+    "73368": 0,
+    "63967": 0,
+    "7499": 1,
+    "55987": 0,
+    "8491": 0,
+    "56921": 0,
+    "9345": 0,
+    "86120": 1,
+    "2931": 0,
+    "48301": 0,
+    "27106": 1,
+    "64864": 0,
+    "10834": 1,
+    "44069": 0,
+    "45781": 0,
+    "74104": 0,
+    "32554": 0,
+    "6214": 0,
+    "27526": 0,
+    "1695": 0
+  },
+  "synchronousTerminal": [
+    "Sass URL build browser before:1, missing transform-only CSS; no observations",
+    "Vite builds first/final:0",
+    "Repro syntax and AI context:0"
+  ],
+  "bookkeepingCorrection": "One Python heredoc encoding error occurred before mutation; corrected with ASCII-escaped JSON payload. No product conclusion drawn from that script error."
+}

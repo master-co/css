@@ -1,0 +1,145 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-url-build.test.ts (8 tests | 4 failed) 2456ms
+   × Sass URL build retains stylesheet identity with plugin=true/static 441ms
+   × Sass URL build retains stylesheet identity with plugin=true/runtime 578ms
+   × Sass URL build retains stylesheet identity with plugin=true/pre-render 590ms
+   × Sass URL build retains stylesheet identity with plugin=true/progressive 675ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-url-build.test.ts > Sass URL build retains stylesheet identity with plugin=true/static
+Error: Build failed with 1 error:
+
+[plugin vite:css-post]
+Error: css content for "/Users/aron/master/css/packages/vite/tmp/sass-url-build-G57eSG/style.scss?transform-only" was not found
+    at PluginContextImpl.renderChunk (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34)
+    at PluginContextImpl.handler (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.renderChunk ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34
+ ❯ PluginContextImpl.handler ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-url-build.test.ts:21:22
+     19|       writeFileSync(join(root, 'client.js'), 'import url from "./style…
+     20|       writeFileSync(join(root, 'index.html'), '<script type="module" s…
+     21|       const result = await build({ root, configFile: false, logLevel: …
+       |                      ^
+     22|       if (Array.isArray(result) || 'on' in result) throw new Error('Ex…
+     23|       const css = result.output.filter(asset => asset.type === 'asset'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-url-build.test.ts > Sass URL build retains stylesheet identity with plugin=true/runtime
+Error: Build failed with 1 error:
+
+[plugin vite:css-post]
+Error: css content for "/Users/aron/master/css/packages/vite/tmp/sass-url-build-RkmCex/style.scss?transform-only" was not found
+    at PluginContextImpl.renderChunk (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34)
+    at PluginContextImpl.handler (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.renderChunk ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34
+ ❯ PluginContextImpl.handler ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-url-build.test.ts:21:22
+     19|       writeFileSync(join(root, 'client.js'), 'import url from "./style…
+     20|       writeFileSync(join(root, 'index.html'), '<script type="module" s…
+     21|       const result = await build({ root, configFile: false, logLevel: …
+       |                      ^
+     22|       if (Array.isArray(result) || 'on' in result) throw new Error('Ex…
+     23|       const css = result.output.filter(asset => asset.type === 'asset'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-url-build.test.ts > Sass URL build retains stylesheet identity with plugin=true/pre-render
+Error: Build failed with 1 error:
+
+[plugin vite:css-post]
+Error: css content for "/Users/aron/master/css/packages/vite/tmp/sass-url-build-sBAsKC/style.scss?transform-only" was not found
+    at PluginContextImpl.renderChunk (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34)
+    at PluginContextImpl.handler (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.renderChunk ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34
+ ❯ PluginContextImpl.handler ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-url-build.test.ts:21:22
+     19|       writeFileSync(join(root, 'client.js'), 'import url from "./style…
+     20|       writeFileSync(join(root, 'index.html'), '<script type="module" s…
+     21|       const result = await build({ root, configFile: false, logLevel: …
+       |                      ^
+     22|       if (Array.isArray(result) || 'on' in result) throw new Error('Ex…
+     23|       const css = result.output.filter(asset => asset.type === 'asset'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-url-build.test.ts > Sass URL build retains stylesheet identity with plugin=true/progressive
+Error: Build failed with 1 error:
+
+[plugin vite:css-post]
+Error: css content for "/Users/aron/master/css/packages/vite/tmp/sass-url-build-DT3QHo/style.scss?transform-only" was not found
+    at PluginContextImpl.renderChunk (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34)
+    at PluginContextImpl.handler (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.renderChunk ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:22790:34
+ ❯ PluginContextImpl.handler ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34080:13
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1626:30
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-url-build.test.ts:21:22
+     19|       writeFileSync(join(root, 'client.js'), 'import url from "./style…
+     20|       writeFileSync(join(root, 'index.html'), '<script type="module" s…
+     21|       const result = await build({ root, configFile: false, logLevel: …
+       |                      ^
+     22|       if (Array.isArray(result) || 'on' in result) throw new Error('Ex…
+     23|       const css = result.output.filter(asset => asset.type === 'asset'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 4 passed (8)
+   Start at  03:58:42
+   Duration  2.95s (tests 85%, transform 10%, import 5%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

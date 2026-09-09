@@ -1,0 +1,9 @@
+{
+  "source": ".ai/audits/bug-hunt/repros/vite-imported-module-exports.mjs",
+  "sha256": "902312667136f9494f8a4d78b9f7f4b9b851465a920dfe955105c3340f919d7c",
+  "copy": ".ai/audits/bug-hunt/evidence/0167-module-browser-initial.mjs",
+  "logs": [
+    "0167-modules-dev-browser.log",
+    "0167-modules-build-browser.log"
+  ]
+}

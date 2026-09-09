@@ -1,0 +1,18 @@
+--- a/packages/vite/src/plugins/sass-source.ts
++++ b/packages/vite/src/plugins/sass-source.ts
+@@ -50,6 +50,15 @@
+       const urls = stylesheetURLs
+       await Promise.all(pendingStylesheetURLs)
+       const owners = new Set(invalidatePreparedSassSources(context, file))
++      // Vite also associates retained CSS/resource dependencies with their
++      // transformed owner. They are discovered after Sass preprocessing, so
++      // its cache alone cannot identify attached stylesheet URLs to update.
++      const pending = new Set(modules)
++      for (const module of pending) {
++        const owner = getSassSourceFile(module.id ?? '')
++        if (owner) owners.add(owner)
++        else for (const importer of module.importers) pending.add(importer)
++      }
+       if (!owners.size) return
+       const affected = new Set(modules)
+       for (const module of moduleGraph.idToModuleMap.values()) {

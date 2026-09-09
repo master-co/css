@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/utils/bug-hunt-local-slot-numbers.test.ts (1 test | 1 failed) 674ms
+   × local entry survives CSS optimization when its hash begins with an exponent 673ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/utils/bug-hunt-local-slot-numbers.test.ts > local entry survives CSS optimization when its hash begins with an exponent
+AssertionError: expected '@import "./master-css-568692f39815793…' to contain '.exponent{display:inline-flex}'
+
+- Expected
++ Received
+
+- .exponent{display:inline-flex}
++ @import "./master-css-568692f3981579309286-0.css";
++ @import "./master-css-568692f3981579309286-1.css";
++ @import "./master-css-568692f3981579309286-3.css";@import "./master-css-568692f3981579309286-2.css";
++ #master-css-local-470e398d2cbfdea26f7c{--slot:3.40282e38d2cbfdea26f7c}
++
++ .control{display:block}
+
+ ❯ tests/utils/bug-hunt-local-slot-numbers.test.ts:26:17
+     24|     if (Array.isArray(result) || 'on' in result) throw new Error('Expe…
+     25|     const css = result.output.filter(asset => asset.type === 'asset' &…
+     26|     expect(css).toContain('.exponent{display:inline-flex}')
+       |                 ^
+     27|     expect(css).toContain('.control{display:block}')
+     28|     expect(css).not.toContain('#master-css-local-')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  04:01:53
+   Duration  1.16s (tests 61%, transform 25%, import 14%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+
