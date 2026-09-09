@@ -1,0 +1,3 @@
+{"names":["index.css"],"source":"/* vite internal call, ignore */","sha":"qeM53Osr"}
+{"names":["index.css"],"source":".example {\n  color: red;\n}\n/*$vite$:1*/","sha":"2NYSJXBH"}
+{"file":"assets/index-2NYSJXBH.css","source":".example {\n  color: red;\n}\n"}

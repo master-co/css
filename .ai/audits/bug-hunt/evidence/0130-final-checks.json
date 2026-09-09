@@ -1,0 +1,46 @@
+{
+  "head": "2740faa60a13d7c7856b8291c64de5fde4071319",
+  "previousGoalTurn": "progress:0129Rustbundlecompositionand48browsercontrols",
+  "goal": "active",
+  "BH-0004": "partial: Rust namespace and ordinary resource/import context implemented; transports and actual adapters remain unfinished",
+  "validation": {
+    "newContextTests": 4,
+    "rustCompilerTests": 75,
+    "compilerHostTests": 205,
+    "namespaceResourceBrowser": {
+      "cases": 6,
+      "comparisons": 36,
+      "failures": 0,
+      "actualRequests": "SVG image-set plus CSS import with preserved query/fragment"
+    },
+    "priorBundleBrowser": 48,
+    "compilerLintTypesClippyFmtCodegen": "PASS",
+    "artifacts": "5unchangedFrom0129",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2616 files (4 generated excluded, 1 bounded exception).",
+    "sourceDocWhitespace": "PASS; README archive-boundary EOF blank removed"
+  },
+  "corrections": [
+    "Initial validnamespace regression failed and now passes",
+    "Intermediate3PASS/1FAIL: new test assumed filename in Display text; existing structured Import.filename was correct, assertion now checks it"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "sources": 9,
+    "preserved": 106,
+    "ledgerHistory": "3verbatim archive moves; hashes recorded,75coverage rows retained"
+  },
+  "next": "Native/compiler-Wasm/compilerhost graph composition and relocation; realVite/Webpackentry/collectionmigrationandfullassetpublicationpreservingBH-0045naming",
+  "remaining": "Other scopes/invalidrule handling, future diagnostics,legacy39andactualbuild6/browser24failures plus allotherunresolved/gates/blocked/candidates",
+  "paused": "0038additionalverificationawaitsexplicitidentityconfirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

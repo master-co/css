@@ -1,0 +1,26 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.25s
+     Running tests/bug_hunt_bundle_graph.rs (target/debug/deps/bug_hunt_bundle_graph-032ffe8b8ccbbb87)
+
+running 5 tests
+test complete_slot_matching_ignores_trivia_but_not_strings_or_larger_rules ... ok
+test separates_complete_rules_and_preserves_original_utf16_sources ... ok
+test leaves_absent_slots_untouched_and_reports_unimplemented_contexts ... ok
+test retains_every_occurrence_and_avoids_managed_id_collisions ... ok
+test keeps_nested_conditions_and_one_shared_anonymous_layer ... FAILED
+
+failures:
+
+---- keeps_nested_conditions_and_one_shared_anonymous_layer stdout ----
+
+thread 'keeps_nested_conditions_and_one_shared_anonymous_layer' (38083302) panicked at crates/mastercss-compiler/tests/bug_hunt_bundle_graph.rs:86:5:
+assertion failed: assets.iter().any(|a| a.css.contains("supports((display: grid))"))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    keeps_nested_conditions_and_one_shared_anonymous_layer
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_bundle_graph`

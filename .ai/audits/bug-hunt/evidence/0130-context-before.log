@@ -1,0 +1,22 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.30s
+     Running tests/bug_hunt_bundle_context.rs (target/debug/deps/bug_hunt_bundle_context-221cf42218b98d88)
+
+running 1 test
+test namespaces_follow_ordinary_fragments_without_leaking_into_managed_graph ... FAILED
+
+failures:
+
+---- namespaces_follow_ordinary_fragments_without_leaking_into_managed_graph stdout ----
+
+thread 'namespaces_follow_ordinary_fragments_without_leaking_into_managed_graph' (38099592) panicked at crates/mastercss-compiler/tests/bug_hunt_bundle_context.rs:17:80:
+called `Result::unwrap()` on an `Err` value: Parse { message: "Bundle namespace or late import requires source-context lowering", filename: "bundle", range: Some(SourceRange { start: 0, end: 0 }) }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    namespaces_follow_ordinary_fragments_without_leaking_into_managed_graph
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_bundle_context`

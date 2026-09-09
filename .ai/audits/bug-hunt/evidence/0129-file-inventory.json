@@ -1,0 +1,93 @@
+{
+  "head": "2740faa60a13d7c7856b8291c64de5fde4071319",
+  "files": {
+    ".ai/audits/bug-hunt/batches/0129-rust-bundle-composition.md": {
+      "bytes": 8367,
+      "sha256": "4c48a0d53fcb30fdeb985190cba9b17e7d9d56811fe29c627002e3a83d6e3e2a"
+    },
+    ".ai/audits/bug-hunt/repros/bundle-graph-probe.rs": {
+      "bytes": 4025,
+      "sha256": "5ca212f1cffc0dac4052335a67b09afba7500808a9561b3378fee1c246f97f24"
+    },
+    ".ai/audits/bug-hunt/repros/bundle-graph-browser.mjs": {
+      "bytes": 3633,
+      "sha256": "6bff743a5acae63bf8c4d842bdec52893fe9aff0da1438764adda010d3af87fa"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-ai-context.log": {
+      "bytes": 121,
+      "sha256": "3671dce6abf099e06b47b68cdc95697b7099be99eeb8b6a5452811a0d8f63efb"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-artifact-hashes.json": {
+      "bytes": 1557,
+      "sha256": "a96cc0f2be2f9e91b0903c74e68f8e23e4745560970fa988f948d83f85245389"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-before-hashes.json": {
+      "bytes": 13238,
+      "sha256": "0b6ca1bcd3c241669e141ce2b3659e0fce3193fb942d909b8987cbe19b50e342"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-bundle-browser.log": {
+      "bytes": 12599,
+      "sha256": "9e8fb7a9076636bb509fdddea16dce46a07126c2b240fe4e7ca6a93dbf244b67"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-bundle-rust.log": {
+      "bytes": 1313,
+      "sha256": "2f63cc1b2403d0024096dfb4b0d57f09f6bb25c3007dedd8a4a6e8b8f6054180"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-codegen.log": {
+      "bytes": 276,
+      "sha256": "260554532de991e91a9824eb43f2157c884fa9e898b04f3c121da213c0b48ae7"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-clippy-final.log": {
+      "bytes": 162,
+      "sha256": "5809e7d228035d8fb709f5ab1d8b397ccd8b7f8ed26c8b209f911389889ccbbb"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-clippy.log": {
+      "bytes": 162,
+      "sha256": "142993a891e8bef0f35cfb50323bab1399745ad1c7cde911517f8418e4d49d5e"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-rust-final.log": {
+      "bytes": 7902,
+      "sha256": "8b9aa53d7b0a9092cc154c32f88f2f0f99cddc0048ef951214ac09877d2baa07"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-rust.log": {
+      "bytes": 7832,
+      "sha256": "5707e21d61f895fd8eceb9a0832faa5ba4ab5a20fc7757618166fa979fc63865"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-tests.log": {
+      "bytes": 1692,
+      "sha256": "2effc52358f6628e43628cef6c91da7cfa635effe526fdddbd3d54170be778be"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-compiler-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-condition-diagnostic.log": {
+      "bytes": 1714,
+      "sha256": "7de67d8db0f3764ee04b90e5d2e2bfc183d6f3506d8e655ab67166f09f0bded3"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-final-checks.json": {
+      "bytes": 2011,
+      "sha256": "d75c554313435ce3035ea8861cefe4fa988618260aaa5f22dd8a0496b87d059c"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-fmt-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-source-hashes.json": {
+      "bytes": 13775,
+      "sha256": "dc3a5d88c0cf57cbacacfb907b2a6526b508f7c997c92754da1853c41001853c"
+    },
+    ".ai/audits/bug-hunt/evidence/0129-whitespace.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}
