@@ -1,0 +1,26 @@
+{
+  "coverage": {
+    "file": ".ai/audits/bug-hunt/coverage-history-0134.md",
+    "sourceTextBytes": 3704,
+    "sourceTextSha256": "c8c712f3566695e1aa264999563a2f48179762a1e4df6e96b1fc6861394410a0",
+    "verbatim": true
+  },
+  "findings": {
+    "file": ".ai/audits/bug-hunt/findings-history-0134.md",
+    "sourceTextBytes": 3704,
+    "sourceTextSha256": "c8c712f3566695e1aa264999563a2f48179762a1e4df6e96b1fc6861394410a0",
+    "verbatim": true
+  },
+  "changes": {
+    "file": ".ai/audits/bug-hunt/changes-history-0134.md",
+    "sourceTextBytes": 3704,
+    "sourceTextSha256": "c8c712f3566695e1aa264999563a2f48179762a1e4df6e96b1fc6861394410a0",
+    "verbatim": true
+  },
+  "report": {
+    "file": ".ai/audits/bug-hunt/report-history-0134.md",
+    "sourceTextBytes": 3704,
+    "sourceTextSha256": "c8c712f3566695e1aa264999563a2f48179762a1e4df6e96b1fc6861394410a0",
+    "verbatim": true
+  }
+}

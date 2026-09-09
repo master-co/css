@@ -234,7 +234,21 @@
 
 - [0132 Vite graph publication](batches/0132-vite-graph-publication.md)：actual Vite8builds/48browserPASS; Webpack3build/12browserFAIL, other Vite host capabilities pending.
 
+- [0133 Vite host file resolution](batches/0133-vite-host-file-resolution.md)：218compiler／110Vite／36host browser PASS；virtual/preprocessor與其他交付仍待完成。
+
+- [0134 Vite alias pruning](batches/0134-vite-alias-pruning.md)：裁剪回歸修復，219compiler／110Vite PASS；virtual／Sass仍1build／18browser FAIL。
+
+- [0135 Vite virtual sources](batches/0135-vite-virtual-sources.md)：223compiler／110Vite、virtual30與watch54 PASS；Sass仍1build／6browser FAIL。
+
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：此次納入0133–0135已完成的查核紀錄、重現材料與原始證據，以及0134逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試仍未完成整體交付，連同0136 Sass初步修改／證據保留於工作目錄。0136已新增Sass預處理與內部CSS入口、baseFile來源傳遞；compiler／Vite的首輪types與build日誌已寫出，但尚未完成Sass行為驗證，不能沿用0135的PASS宣稱目前修改全部通過。下一步先以`vite-host-inputs.mjs`的scss-entry／scss-import重現驗證，再補additionalData、條件CSS imports、aliases／partials、資源、診斷與watch。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停維持；其他對話Site變更原樣保存，未推送。[提交範圍與保存證據](evidence/0135-commit-validation.json)。
+
+- 0135：接通Vite virtual CSS來源載入，保留原始CSS、opaque ID/query與條件圖譜；graph-only loader子檔不再額外成為無條件入口。compiler223／Vite110、兩套件lint/types/build通過；13actual builds剩1SassFAIL，72browser為66PASS／6SassFAIL，其中virtual30與裁剪36全通過。既有resolver36／resource18／cache39、3種watch共54與純Vite控制18通過；早期watch非實體暫存路徑及錯用getWatchFiles屬harness問題，query截斷則已修復。Site prepare/lint通過（75warnings）；5artifacts不變，兩root API gates仍失敗。下一步接Sass入口／匯入預處理、virtual資源／reference與其他host路徑，再遷移Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEADef7887f76，本批未提交／推送。[0135](batches/0135-vite-virtual-sources.md)。
+
+- 0134：修復alias／custom resolver把專案CSS誤當套件而漏裁剪的回歸；改核對實際檔案是否在原名稱的套件根目錄。新增actual10build／54browser，修後36PASS／18FAIL及1Sass buildFAIL；36個裁剪／套件／明確保留控制全通過，剩餘為virtual匯入／入口與Sass入口／匯入。compiler219／Vite110、lint/types/build、既有resolver36／resource18及Site prepare/lint通過（75warnings）。下一批接非檔案來源載入與預處理，保留條件、資源、診斷與watch；不以拒絕計完成。歷史0131–0133交接逐字歸檔。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分暫停不變；HEADef7887f76，未提交／推送。[0134](batches/0134-vite-alias-pruning.md)。
+
+- 0133：Vite build 改用實際主機解析 CSS 檔案，涵蓋字串／regex alias、自訂resolveId、import／browser套件條件與間接入口。compiler218／Vite110、兩套件lint/types/build、6build／36browser、資源18／快取39及原範例通過；Site prepare/lint通過（75warnings）。新測試缺分號及blue／#00f斷言均為測試錯誤。原actual corpus仍3Webpack build／12browser失敗；5artifacts不變，API census仍原失敗，package golden另含2個新型別。下一批驗證virtual CSS／preprocessor、reference／resource aliases、local-compose及來源pruning／多入口／watch，再遷移Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停維持；HEADef7887f76，本批未提交／推送。[0133](batches/0133-vite-host-file-resolution.md)。
 
 - 使用者再次要求提交已完成部分：本次僅納入0131–0132已完成的查核紀錄、重現材料與原始證據；批次中的未提交／HEAD描述保留為當時狀態。BH-0004產品、套件測試及0133進行中材料留在工作目錄。0133最新完整compiler為217PASS／1FAIL（新host-resolution測試第30行未找到color:blue，原因待分類），Vite110PASS，兩套件lint/types通過；三個驗證程序均已結束。下一步先定位此失敗，再重建compiler／Vite並重跑host-resolution與actual build／resource／cache對照，完成0133證據及帳本；不得沿用0132的PASS宣稱目前修改全數通過。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變。其他對話Site變更原樣保留；此次未推送。[提交範圍與保存證據](evidence/0132-commit-validation.json)。
 
