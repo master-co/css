@@ -1,0 +1,49 @@
+$ vitest --run tests/plugins/bug-hunt-shared-plugin-roots.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-roots.test.ts (2 tests | 1 failed) 2031ms
+   × BH-0004 concurrent roots isolate styles when sharing plugins=true 694ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-roots.test.ts > BH-0004 concurrent roots isolate styles when sharing plugins=true
+AssertionError: expected '.example {\n  color: red;\n}\n\n.exam…' not to contain 'red'
+
+- Expected
++ Received
+
+- red
++ .example {
++   color: red;
++ }
++
++ .example {
++   color: green;
++ }
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-roots.test.ts:35:23
+     33|       const css = await response.text()
+     34|       expect(css).toContain(colors[index])
+     35|       expect(css).not.toContain(colors[1 - index])
+       |                       ^
+     36|       expect((await server.ssrLoadModule('/server.js')).css).toContain…
+     37|     }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  23:55:38
+   Duration  2.51s (tests 83%, transform 11%, import 6%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

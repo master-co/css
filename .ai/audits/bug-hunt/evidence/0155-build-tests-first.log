@@ -1,0 +1,132 @@
+$ vitest --run tests/plugins/bug-hunt-shared-plugin-builds.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts (8 tests | 8 failed) 13673ms
+   × BH-0004 shared static plugins isolate concurrent HTML builds and resources 1444ms
+   × BH-0004 shared runtime plugins isolate concurrent HTML builds and resources 1803ms
+   × BH-0004 shared pre-render plugins isolate concurrent HTML builds and resources 453ms
+   × BH-0004 shared progressive plugins isolate concurrent HTML builds and resources 414ms
+   × BH-0004 shared SSR/client plugins preserve base= with config file false 2396ms
+   × BH-0004 shared SSR/client plugins preserve base=./ with config file false 2365ms
+   × BH-0004 shared SSR/client plugins preserve base= with config file true 2426ms
+   × BH-0004 shared SSR/client plugins preserve base=./ with config file true 2372ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared static plugins isolate concurrent HTML builds and resources
+Error: Build failed with 1 error:
+
+[plugin master-css:inline-stylesheet]
+Error: Master CSS resolveFileUrl requires a Vite environment or server when plugins are shared
+    at PluginContextImpl.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:45:38)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.invoke src/utils/scoped-plugins.ts:45:38
+     43|         const config = hookConfig(name, this, args)
+     44|         // A context-free invocation is only unambiguous for one confi…
+     45|         if (!config && shared) throw new Error(`Master CSS ${name} req…
+       |                                      ^
+     46|         const owned = (config ? forConfig(config)[index] : template) a…
+     47|         const selected = owned[name] as Hook | HookObject
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:33:21
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:31:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared runtime plugins isolate concurrent HTML builds and resources
+Error: Build failed with 1 error:
+
+[plugin master-css:inline-stylesheet]
+Error: Master CSS resolveFileUrl requires a Vite environment or server when plugins are shared
+    at PluginContextImpl.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:45:38)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.invoke src/utils/scoped-plugins.ts:45:38
+     43|         const config = hookConfig(name, this, args)
+     44|         // A context-free invocation is only unambiguous for one confi…
+     45|         if (!config && shared) throw new Error(`Master CSS ${name} req…
+       |                                      ^
+     46|         const owned = (config ? forConfig(config)[index] : template) a…
+     47|         const selected = owned[name] as Hook | HookObject
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:33:21
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:31:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared pre-render plugins isolate concurrent HTML builds and resources
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared progressive plugins isolate concurrent HTML builds and resources
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base= with config file false
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base=./ with config file false
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base= with config file true
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base=./ with config file true
+Error: Build failed with 1 error:
+
+[plugin master-css:inline-stylesheet]
+Error: Master CSS resolveFileUrl requires a Vite environment or server when plugins are shared
+    at PluginContextImpl.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:45:38)
+    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18)
+    at file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18)
+ ❯ PluginContextImpl.invoke src/utils/scoped-plugins.ts:45:38
+     43|         const config = hookConfig(name, this, args)
+     44|         // A context-free invocation is only unambiguous for one confi…
+     45|         if (!config && shared) throw new Error(`Master CSS ${name} req…
+       |                                      ^
+     46|         const owned = (config ? forConfig(config)[index] : template) a…
+     47|         const selected = owned[name] as Hook | HookObject
+ ❯ plugin ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1687:18
+ ❯ ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1930:21
+ ❯ plugin.<computed> ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:18
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:59:23
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:57:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  00:09:00
+   Duration  14.14s (tests 97%, transform 2%, import 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,28 @@
+
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Error</title>
+            <script type="module">
+              const error = {"message":"Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first","stack":"    at normalizeBindingError (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:42:9)\n    at callBinding (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:53:9)\n    at invoke (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)\n    at Object.resolveCSSImportGraph (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:43:39)\n    at file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:38:60\n    at callCompilerBinding (file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:21:10)\n    at resolveCSSImportGraphSource (file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:38:17)\n    at resolveStylesheetImportGraph (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:77:9)\n    at resolveMasterStyleSource (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:126:29)\n    at resolveStylesheetSync (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:25:166)","id":"/Users/aron/master/css/packages/vite/tmp/qualified-prerender-Le51td/style.css","frame":"","plugin":"master-css:local-compose","pluginCode":"@layer fallback,shared;@import \"./styles/branch.css\" layer(shared) supports(display:grid) screen and (min-width:700px);@master entry;@preserve native;@theme{--color-accent:#123456}@components{card{color:var(--color-accent)}}@layer fallback{.external{margin-left:3px;outline:none}.conditional{background:rgb(1,2,3);padding-left:0}}"}
+              try {
+                const { ErrorOverlay } = await import("/base/@vite/client")
+                document.body.appendChild(new ErrorOverlay(error))
+              } catch {
+                const h = (tag, text) => {
+                  const el = document.createElement(tag)
+                  el.textContent = text
+                  return el
+                }
+                document.body.appendChild(h('h1', 'Internal Server Error'))
+                document.body.appendChild(h('h2', error.message))
+                document.body.appendChild(h('pre', error.stack))
+                document.body.appendChild(h('p', '(Error overlay failed to load)'))
+              }
+            </script>
+          </head>
+          <body>
+          </body>
+        </html>
+      

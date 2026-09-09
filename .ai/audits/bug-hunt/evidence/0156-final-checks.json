@@ -1,0 +1,222 @@
+{
+  "head": "9aefc18ac9033b00c3b2cd4e0bb47bddd29646e6",
+  "goal": "active",
+  "previousGoalTurn": "Progress:0155 shared-plugin repair,197 tests and384browser/128SSR evidence",
+  "batch": "0156 metadata graph repair verified; production qualified inputs unblocked, development graph remains incomplete",
+  "validation": {
+    "compilerTests": 235,
+    "compilerFiles": 30,
+    "newTests": 5,
+    "focused": 27,
+    "compilerLintTypesBuild": "PASS",
+    "viteTests": 197,
+    "viteFiles": 37,
+    "viteTestEnvironment": {
+      "BH_QUALIFIED": "1"
+    },
+    "independentQualifiedHTMLControls": 4,
+    "viteLintBuildExample": "PASS",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "finalProductionMatrices": {
+      "qualified-supports-false": {
+        "buildOnly": true,
+        "supported": false,
+        "builds": [
+          {
+            "mode": "pre-render",
+            "result": "PASS"
+          },
+          {
+            "mode": "progressive",
+            "result": "PASS"
+          }
+        ],
+        "browserComparisons": 18,
+        "browserFailures": 0
+      },
+      "qualified-supports-true": {
+        "buildOnly": true,
+        "supported": true,
+        "builds": [
+          {
+            "mode": "pre-render",
+            "result": "PASS"
+          },
+          {
+            "mode": "progressive",
+            "result": "PASS"
+          }
+        ],
+        "browserComparisons": 18,
+        "browserFailures": 0
+      }
+    },
+    "finalProductionBuilds": 4,
+    "finalProductionBrowserRows": 36,
+    "firstBrowserMatrix": {
+      "observations": 48,
+      "passed": 18,
+      "failed": 30,
+      "developmentFailures": 24,
+      "productionOracleFailures": 6
+    },
+    "aiContext": "AI context budget passed for 2721 files (4 generated excluded, 1 bounded exception).",
+    "reproSyntax": "PASS",
+    "whitespace": "PASS authored changes; raw logs preserved"
+  },
+  "downstream": {
+    "astro": {
+      "tests": 15,
+      "files": 2,
+      "result": "PASS"
+    },
+    "next": {
+      "tests": 58,
+      "files": 8,
+      "result": "PASS"
+    },
+    "webpack": {
+      "parallelPassed": 62,
+      "parallelFailed": 1,
+      "parallelSuiteLoadFailure": 1,
+      "serialPassed": 69,
+      "serialFiles": 6,
+      "classification": "Shared dist rebuild in runtime-e2e.test.ts is consistent with prior test race candidate; serial control passes; default parallel path not repaired"
+    },
+    "nuxt": {
+      "parallelPassed": 4,
+      "parallelFailed": 2,
+      "parallelSkipped": 4,
+      "parallelSetupFailures": 2,
+      "portCollisions": [
+        49102,
+        49103
+      ],
+      "serialPassed": 7,
+      "serialFailed": 3,
+      "serialFiles": 6,
+      "classification": "Remaining assertions expect.box in entryCSS whose text imports childCSS; actual graph/browser behavior still requires validation"
+    }
+  },
+  "changes": {
+    "products": [
+      "packages/compiler/src/stylesheet/index.ts",
+      "packages/compiler/src/stylesheet/delivery.ts"
+    ],
+    "behavior": "Use existing Rust graph/reference compilation for emitted globals; retain source identities and avoid import flattening; metadata leaves resource byte reads/publication to host",
+    "publicAPI": "No options or public exports changed",
+    "documentation": [
+      "packages/compiler/README.md",
+      "packages/vite/README.md",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newReproduction": ".ai/audits/bug-hunt/repros/vite-qualified-prerender.mjs"
+  },
+  "preservation": {
+    "baselineSources": 194,
+    "changedSources": 5,
+    "priorSourcesPreserved": 189,
+    "newSources": 2,
+    "totalSources": 196,
+    "fiveArtifacts": "Byte-identical, compressed sizes retained from identical bytes",
+    "originalBrowserSource": "0156-qualified-browser-first-source.mjs",
+    "foreignSite": "Unchanged hashes for next.config.js,AGENTS.md,CLAUDE.md",
+    "index": "empty",
+    "unexpectedDirtySourcePaths": []
+  },
+  "classifications": {
+    "before": "Four new API cases failed:3qualified flatten errors,1native compose/reference error; all5 current cases now pass",
+    "outlineOracle": "None style may retain computed outline width3px; original width0 assertion invalid; corrected style predicate passes both modes/allthree browsers",
+    "development500": "Actual HTTP response traces LocalComposePlugin resolution to legacy flattening; error response preserved",
+    "runtimeBase404": "New candidate seen in progressive dev under/base; isolated control still required; not a confirmed finding ID"
+  },
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "newCandidates": 1,
+    "totalCandidateFollowups": 5
+  },
+  "next": [
+    "Independently reproduce/classify dev runtime bootstrap under/base with simple runtime/progressive roots",
+    "Migrate Vite dev classification/registration/composition and child/resource serving together; preserve conditional/external graph and SSR",
+    "Rerun full build/dev/theme-update qualified browser matrix after dev repair",
+    "Validate Nuxt childCSS delivery in actual pages and resolve default-parallel Webpack test race",
+    "Continue all original resource/reference,preprocessor/maps,otherhost,Webpack,legacy,rootgate and blocked requirements"
+  ],
+  "paused": "0038 additional verification remains paused; explicit identity confirmation not received",
+  "terminalJobs": {
+    "apiBefore": {
+      "exitCode": 1
+    },
+    "apiFocused": {
+      "session": 68936,
+      "exitCode": 0
+    },
+    "compilerFull": {
+      "session": 90262,
+      "exitCode": 0
+    },
+    "compilerLintTypes": {
+      "session": 66925,
+      "exitCode": 0
+    },
+    "compilerViteBuild": {
+      "exitCode": 0
+    },
+    "qualifiedViteFull": {
+      "session": 4597,
+      "exitCode": 0
+    },
+    "downstreamParallel": {
+      "session": 70865,
+      "exitCode": 1
+    },
+    "firstBrowser": {
+      "session": 90641,
+      "exitCode": 1
+    },
+    "webpackNuxtSerial": {
+      "session": 16470,
+      "exitCode": 1
+    },
+    "site": {
+      "session": 33386,
+      "exitCode": 0
+    },
+    "independentAndExample": {
+      "session": 34296,
+      "exitCode": 0
+    },
+    "narrowProbe": {
+      "session": 37191,
+      "exitCode": 0
+    },
+    "outlineProbe": {
+      "exitCode": 0
+    },
+    "correctedProduction": {
+      "session": 55537,
+      "exitCode": 0
+    },
+    "supportsControls": {
+      "session": 33623,
+      "exitCode": 0
+    },
+    "viteLint": {
+      "session": 51392,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

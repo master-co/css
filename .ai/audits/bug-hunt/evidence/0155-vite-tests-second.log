@@ -1,0 +1,150 @@
+$ vitest --run
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts (8 tests | 4 failed) 19047ms
+   × BH-0004 shared SSR/client plugins preserve base= with config file false 2048ms
+   × BH-0004 shared SSR/client plugins preserve base=./ with config file false 2103ms
+   × BH-0004 shared SSR/client plugins preserve base= with config file true 2043ms
+   × BH-0004 shared SSR/client plugins preserve base=./ with config file true 2040ms
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts (3 tests | 1 failed) 61624ms
+   × BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response 60011ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response
+Error: Test timed out in 60000ms.
+If this is a long-running test, pass a timeout value as the last argument or configure it globally with "testTimeout".
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts:71:1
+     69| })
+     70|
+     71| test('BH-0004 HMR waits for pending stylesheet URL registration after …
+       | ^
+     72|   const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-pe…
+     73|   let server: Awaited<ReturnType<typeof createServer>> | undefined
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base= with config file false
+AssertionError: expected Map{ …(1) } to deeply equal Map{ …(1) }
+
+- Expected
++ Received
+
+  Map {
+-   "assets/master-css-inline-e0677e7e1ef1613e9957-3-2856a7c5c6fa9d8b0b2a.css" => "@import \"https://external.test/style.css\";
++   "assets/master-css-inline-ceced09314d383b544fc-3-d8d2f945db492f4d72c3.css" => "@import \"https://external.test/style.css\";
+
+  .child {
+    background: url(\"master-css-resource-92b906bc6b933ae8e5a3.svg\");
+  }",
+  }
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:80:27
+     78|         const inline = retained.map(assets => new Map([...assets].filt…
+     79|         expect(inline[0].size).toBeGreaterThan(0)
+     80|         expect(inline[1]).toEqual(inline[0])
+       |                           ^
+     81|         for (const css of inline[1].values()) {
+     82|           if (index) expect(css).toContain('/second/')
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:62:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base=./ with config file false
+AssertionError: expected Map{ …(1) } to deeply equal Map{ …(1) }
+
+- Expected
++ Received
+
+  Map {
+-   "assets/master-css-inline-4fae7b57e4fd0545c809-3-8034951411f07aff904e.css" => "@import \"https://external.test/style.css\";
++   "assets/master-css-inline-2e6492a4a2ebe157cc2c-3-fbdfee1946e1338200ed.css" => "@import \"https://external.test/style.css\";
+
+  .child {
+    background: url(\"master-css-resource-92b906bc6b933ae8e5a3.svg\");
+  }",
+  }
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:80:27
+     78|         const inline = retained.map(assets => new Map([...assets].filt…
+     79|         expect(inline[0].size).toBeGreaterThan(0)
+     80|         expect(inline[1]).toEqual(inline[0])
+       |                           ^
+     81|         for (const css of inline[1].values()) {
+     82|           if (index) expect(css).toContain('/second/')
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:62:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base= with config file true
+AssertionError: expected Map{ …(1) } to deeply equal Map{ …(1) }
+
+- Expected
++ Received
+
+  Map {
+-   "assets/master-css-inline-73c377e696ab2d9de030-3-30c626e221e1becd299b.css" => "@import \"https://external.test/style.css\";
++   "assets/master-css-inline-c4b08c5ee271c23f5806-3-db7acb5ba4e8fa022f8c.css" => "@import \"https://external.test/style.css\";
+
+  .child {
+    background: url(\"master-css-resource-92b906bc6b933ae8e5a3.svg\");
+  }",
+  }
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:80:27
+     78|         const inline = retained.map(assets => new Map([...assets].filt…
+     79|         expect(inline[0].size).toBeGreaterThan(0)
+     80|         expect(inline[1]).toEqual(inline[0])
+       |                           ^
+     81|         for (const css of inline[1].values()) {
+     82|           if (index) expect(css).toContain('/second/')
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:62:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts > BH-0004 shared SSR/client plugins preserve base=./ with config file true
+AssertionError: expected Map{ …(1) } to deeply equal Map{ …(1) }
+
+- Expected
++ Received
+
+  Map {
+-   "assets/master-css-inline-64db610e63617af2b4ce-3-d4fd27edc52acee82788.css" => "@import \"https://external.test/style.css\";
++   "assets/master-css-inline-cb85ce75c94e293d6976-3-38d696b95a72f6f13bc6.css" => "@import \"https://external.test/style.css\";
+
+  .child {
+    background: url(\"master-css-resource-92b906bc6b933ae8e5a3.svg\");
+  }",
+  }
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:80:27
+     78|         const inline = retained.map(assets => new Map([...assets].filt…
+     79|         expect(inline[0].size).toBeGreaterThan(0)
+     80|         expect(inline[1]).toEqual(inline[0])
+       |                           ^
+     81|         for (const css of inline[1].values()) {
+     82|           if (index) expect(css).toContain('/second/')
+ ❯ rootsFixture tests/plugins/bug-hunt-shared-plugin-builds.test.ts:21:5
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts:62:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  2 failed | 35 passed (37)
+      Tests  5 failed | 192 passed (197)
+   Start at  00:12:43
+   Duration  65.88s (tests 95%, import 3%, transform 2%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

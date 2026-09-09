@@ -1,0 +1,18 @@
+[
+  {
+    "package": "@master/css-astro",
+    "exitCode": 0
+  },
+  {
+    "package": "@master/css-next",
+    "exitCode": 0
+  },
+  {
+    "package": "@master/css-nuxt",
+    "exitCode": 1
+  },
+  {
+    "package": "@master/css-webpack",
+    "exitCode": 1
+  }
+]

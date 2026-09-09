@@ -9,9 +9,11 @@ const require = createRequire(new URL('../../../../packages/vite/package.json', 
 const { createServer } = await import(require.resolve('vite'))
 const engines = createRequire(new URL('../../../../packages/runtime/package.json', import.meta.url))('@playwright/test')
 const rows = [], ssrRows = [], liveRestart = process.env.BH_LIVE_RESTART === '1', middleware = process.env.BH_MIDDLEWARE === '1'
+const sharedPlugins = process.env.BH_SHARED_PLUGINS === '1'
 const cssColors = { red: 'rgb(255, 0, 0)', green: 'rgb(0, 128, 0)', blue: 'rgb(0, 0, 255)', purple: 'rgb(128, 0, 128)', orange: 'rgb(255, 165, 0)' }
 for (const managed of process.env.BH_MANAGED ? [process.env.BH_MANAGED === '1'] : [false, true]) {
   const hosts = []
+  const shared = managed && sharedPlugins ? createMasterCSSVitePlugin({ mode: 'static', runtime: false }) : undefined
   try {
     for (const name of ['edited', 'independent']) {
       const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-sass-environments-'))), clients = [], messages = []
@@ -25,7 +27,7 @@ for (const managed of process.env.BH_MANAGED ? [process.env.BH_MANAGED === '1'] 
       writeFileSync(join(root, 'server.js'), 'export {default as css} from "./style.scss?inline"')
       host.html = route => `<link id="style" rel="stylesheet" href="/${route}.scss"><div id="target" class="example" data-generation="__GEN__">test</div><script type="module">import '/@vite/client';window.ready=true;</script>`
       writeFileSync(join(root, 'index.html'), host.html(liveRestart ? '__ROUTE__' : 'old'))
-      const plugins = managed ? createMasterCSSVitePlugin({ mode: 'static', runtime: false }) : []
+      const plugins = managed ? shared ?? createMasterCSSVitePlugin({ mode: 'static', runtime: false }) : []
       if (middleware) host.httpServer = createHttpServer((request, response) => host.server.middlewares(request, response, error => { response.statusCode = error ? 500 : 404;response.end(error ? String(error) : undefined) }))
       host.server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: [...plugins, { name: 'audit:sass-route', resolveId(id) { const clean = id.replace(/[?#].*$/, '');if (['/old.scss', '/new.scss', '/new2.scss'].includes(clean)) return file + id.slice(clean.length) }, transformIndexHtml(html) { return html.replaceAll('__GEN__', String(host.generation)).replaceAll('__ROUTE__', host.generation === 0 ? 'old' : host.generation === 1 ? 'new' : 'new2') } }], server: { host: '127.0.0.1', port: 0, ...(middleware ? { middlewareMode: true, ws: { server: host.httpServer } } : {}) } })
       if (middleware) {
@@ -81,7 +83,7 @@ for (const managed of process.env.BH_MANAGED ? [process.env.BH_MANAGED === '1'] 
           const previousBootID = client.bootID
           const reloaded = value.bootID !== previousBootID
           if (phase === 'initial' || restarting && host.name === 'edited') client.bootID = value.bootID
-          const row = { liveRestart, middleware, managed, host: host.name, phase, previousBootID, reloaded, navigation: client.navigation, connections: [...client.connections], browser: client.browserName, expected, value, errors: [...client.errors], error, result: !error && value.color === expected && value.bootID === client.bootID && (!liveRestart || !restarting || host.name !== 'edited' || reloaded) && !client.errors.length ? 'PASS' : 'FAIL' }
+          const row = { liveRestart, middleware, sharedPlugins, managed, host: host.name, phase, previousBootID, reloaded, navigation: client.navigation, connections: [...client.connections], browser: client.browserName, expected, value, errors: [...client.errors], error, result: !error && value.color === expected && value.bootID === client.bootID && (!liveRestart || !restarting || host.name !== 'edited' || reloaded) && !client.errors.length ? 'PASS' : 'FAIL' }
           rows.push(row);console.log(JSON.stringify(row))
         }))
         let css = '', error, rendered, deadline = Date.now() + 7000
@@ -93,7 +95,7 @@ for (const managed of process.env.BH_MANAGED ? [process.env.BH_MANAGED === '1'] 
         } while (true)
         const serverCSS = host.messages.filter(message => message.consumer === 'server' && message.payload?.type === 'update' && message.payload.updates?.some(update => update.type === 'css-update'))
         const staleURL = host.name === 'edited' && host.generation > 0 && phase.endsWith('-update') && host.messages.some(message => message.payload?.updates?.some(update => update.path === '/old.scss' || host.generation > 1 && update.path === '/new.scss'))
-        const row = { middleware, managed, host: host.name, phase, expectedName, css, rendered, error, serverCSS, staleURL, result: !error && rendered.every(color => color === expected) && !serverCSS.length && !staleURL ? 'PASS' : 'FAIL' }
+        const row = { middleware, sharedPlugins, managed, host: host.name, phase, expectedName, css, rendered, error, serverCSS, staleURL, result: !error && rendered.every(color => color === expected) && !serverCSS.length && !staleURL ? 'PASS' : 'FAIL' }
         ssrRows.push(row);console.log(JSON.stringify({ kind: 'ssr', ...row }))
       }
     }

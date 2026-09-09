@@ -1,0 +1,43 @@
+$ vitest --run tests/plugins/bug-hunt-shared-plugin-builds.test.ts tests/plugins/bug-hunt-shared-plugin-roots.test.ts tests/plugins/pre-render.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-shared-plugin-builds.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-shared-plugin-builds.test.ts [ tests/plugins/bug-hunt-shared-plugin-builds.test.ts ]
+Error: Transform failed with 1 error:
+
+[31m[PARSE_ERROR] [0mUnexpected token
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m tests/plugins/bug-hunt-shared-plugin-builds.test.ts:57:3 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m57 │[0m [38;5;249m [0m[38;5;249m [0m,[38;5;249m [0m[38;5;249mp[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mc[0m[38;5;249me[0m[38;5;249ms[0m[38;5;249ms[0m[38;5;249m.[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mv[0m[38;5;249m.[0m[38;5;249mB[0m[38;5;249mH[0m[38;5;249m_[0m[38;5;249mQ[0m[38;5;249mU[0m[38;5;249mA[0m[38;5;249mL[0m[38;5;249mI[0m[38;5;249mF[0m[38;5;249mI[0m[38;5;249mE[0m[38;5;249mD[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m=[0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m'[0m[38;5;249m1[0m[38;5;249m'[0m[38;5;249m)[0m
+ [38;5;240m   │[0m   ┬  
+ [38;5;240m   │[0m   ╰── 
+[38;5;246m────╯[0m
+
+  Plugin: vite:oxc
+  File: /Users/aron/master/css/packages/vite/tests/plugins/bug-hunt-shared-plugin-builds.test.ts
+ ❯ transformWithOxc ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:4103:19
+ ❯ TransformPluginContext.transform ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:4174:26
+ ❯ EnvironmentPluginContainer.transform ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:30932:51
+ ❯ loadAndTransform ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:20671:26
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  7 passed (7)
+   Start at  00:10:52
+   Duration  2.99s (tests 85%, transform 9%, import 6%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+
