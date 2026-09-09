@@ -1,0 +1,22 @@
+{
+  "crates/mastercss-engine/src/lib.rs": "87f12a8056a6696375feae4589edf50d465c3a108fd324a66a737dd9f6fc53f7",
+  "crates/mastercss-engine/src/session.rs": "18394741c9cea055d59bb7008db587ff697b674b1c1ffc5011899c4b41144b1a",
+  "crates/mastercss-engine/src/stylesheet_resources.rs": "7ff68da52ebba8ca5590e7979f474440f721f278aea7d3cc6cc1ae1e4ad70457",
+  "crates/mastercss-engine/src/stylesheet_animation.rs": "6963879afbf27cfe9931001089096c1b5a09ec06278d4c029d98a41ebe2aeecc",
+  "crates/mastercss-lexer/src/lib.rs": "788d5ef8e7f289ddd4e4a08485dc670a54de41a66769490f1f9897840d362c28",
+  "crates/mastercss-lexer/src/css_syntax.rs": "fe6b57fb9b2f3961ac9f9929549f0a22b9218b3c95d74ea27447ffb2aa45eef0",
+  "crates/mastercss-lexer/tests/css_syntax.rs": "04952abdb24c68cd015d87dade7b7f883141dcdfed78ea43ff7432e96d97897f",
+  "crates/mastercss-render/tests/bug_hunt_animation_syntax.rs": "2ea041137eab52b06abb11e5e87cf4cdecbacaebaf4944441afff30877a7f89a",
+  "crates/mastercss-render/tests/bug_hunt_animation_values.rs": "5469393a705dafc660d57ad4318f12cd63e723d9b0ef195f669b884e6d78f1e5",
+  "crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs": "bcc06dcfba88adcf811227a6b9f8b7521f94ce2c5cb66bed9926f861073c3582",
+  ".ai/audits/bug-hunt/repros/animation-resource-bindings.mjs": "6d001114ac0d9eaebcd5e64fcc089cfa8b5f1ab80a462407698574038b40b8be",
+  ".ai/audits/bug-hunt/repros/animation-value-browser.mjs": "13749bc8340fca5d158a7b8a429e3d13da0772698a554392b488f149f3531856",
+  "crates/mastercss-engine/src/stylesheet_animation_value.rs": "0940b84841505384cc837d484983da7da0255db9ba9c8638ad2e39218eec82ec",
+  "crates/mastercss-render/tests/bug_hunt_animation_variables.rs": "98d90c7084c5ad3ac847d8b8cc9fead35ff77d8e470b74c9098ada0c69c44c5e",
+  ".ai/audits/bug-hunt/repros/animation-variable-browser.mjs": "67ea0c712aa1e7b82c92180efb43abc8631deef7f43eef977b861fbf1f6ede25",
+  ".ai/audits/bug-hunt/repros/animation-duration-feature.mjs": "ac117db4a7bfbdfe3e3efeedde63bbc773dca890dc8324b5533ad1f3c6681305",
+  ".ai/audits/bug-hunt/repros/animation-resource-cost.mjs": "edcb0bf7ff868864b88c4e86de7cb5b847eec6075c8cd0a2f598ddf9cc59aa81",
+  ".ai/audits/bug-hunt/repros/runtime-artifact-comparison.mjs": "3277ad6729d964a0951bf84b04023bfcc9791fc68b9469645a3e6379e328b881",
+  "packages/runtime/scripts/benchmark-runtime.js": "a9296932ac6edaf50e54104d9fd8fcd317bb8d164b27011799157f6f15bc72bc",
+  "crates/mastercss-render/tests/bug_hunt_animation_variables.json": "0eaf5d6483625cbca27b09cae7da20b8130ec8e814b2d5876b4589e216939432"
+}

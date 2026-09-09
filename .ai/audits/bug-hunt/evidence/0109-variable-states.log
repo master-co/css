@@ -1,0 +1,14 @@
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+     Running tests/bug_hunt_animation_variables.rs (target/debug/deps/bug_hunt_animation_variables-5ae7b4f70f56da67)
+
+running 6 tests
+test variable_modes_preserve_occupied_slots_and_known_values_do_not_use_fallbacks ... ok
+test a_valid_mode_branch_survives_another_branch_with_a_cycle ... ok
+test comma_lists_and_animation_name_have_distinct_slot_rules ... ok
+test cycles_are_invalid_even_with_internal_fallbacks_but_outer_fallbacks_work ... ok
+test nested_variables_do_not_merge_tokens_and_mode_branches_do_not_rescue_invalid_names ... ok
+test repeated_mode_diamonds_and_deep_chains_do_not_expand_cartesian_strings ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+

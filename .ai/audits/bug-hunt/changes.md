@@ -156,3 +156,9 @@
 0107新增Rust render animation syntax22tests及直接讀取同組case的browser repro，19Rust回歸FAIL、66browser controls支持預期；不改產品，不改既有fixtures/snapshots/依賴/lockfile/CI。engine36baseline/Clippy通過，BH-0001/0002仍未完成。保留0104–0106修復/0092及Site其他工作，未提交。
 
 本次提交以5dc6f2ad1為父提交：0104–0106三項完成修復BH-0016/0017/0030，連同必要測試/README/重現/帳本及0107已完成的語法調查證據。0107失敗回歸不代表產品修復；0092 compiler與0108 engine/lexer部分實作、新材料和Site其他工作均未提交。0108仍須重建Wasm及完成native/Wasm、下游、runtime/payload驗證。未推送，28fixed/16unresolved、10blocked保持。
+
+0108未提交部分修正：新增Rust lexer/engine CSS詞法與動畫位置判讀，新增lexer3/value3及value-slot9測試與兩個binding/browser重現。22syntax及native/Wasm/public/runtime檢查通過；新slot9tests仍5FAIL，包含4個未完成實作引入的漏產，需繼續修正，BH-0001未fixed。Engine Wasm gzip增4503bytes、global/manifest不變；benchmark history只保留/tmp，不納入repo。0092與Site工作保留，無依賴/lockfile/既有fixtures/snapshots/CI/release變更。詳見0108。
+
+0109完成BH-0001：Rust數值token、動畫欄位狀態及保留原位置的變數/mode/fallback/cycle處理；快取依incoming state重用，使用既有hash容器並排序最終名稱。擴充新tests/repros與共享10-case corpus，未動既有fixtures/snapshots/依賴/lockfile/CI/release。129Rust PASS及3個BH-0002/0003既有FAIL、CSS72/compiler127/server67/runtime273、87+42browser及auto語法差異控制均已分類。engine Wasm gzip增22484bytes；resource及runtime benchmark history只在/tmp。29fixed/15unresolved、10blocked不變；未commit/push，0092/Site工作保留。
+
+本次依使用者指示，以e71cce539為父提交，提交0108–0109完成的BH-0001修復與測試/重現/帳本證據。20項來源雜湊逐一符合0109最終驗證；與0110交疊的4個engine檔案僅暫存0109已驗證內容，工作區0110版本保持原樣。0092 compiler、0110部分修改與Site其他工作不納入，benchmark history仍只留/tmp，未推送。

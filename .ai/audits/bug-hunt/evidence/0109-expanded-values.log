@@ -1,0 +1,29 @@
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.67s
+     Running tests/css_syntax.rs (target/debug/deps/css_syntax-a49acb5f3dcbe6f9)
+
+running 4 tests
+test names_and_strings_decode_css_escapes_without_merging_comment_separated_tokens ... ok
+test balanced_components_keep_custom_values_and_feature_queries_out_of_declarations ... ok
+test numeric_components_keep_signs_exponents_units_and_identifier_boundaries ... FAILED
+test unicode_bytes_and_deep_blocks_do_not_recurse_on_the_call_stack ... ok
+
+failures:
+
+---- numeric_components_keep_signs_exponents_units_and_identifier_boundaries stdout ----
+
+thread 'numeric_components_keep_signs_exponents_units_and_identifier_boundaries' (36908281) panicked at crates/mastercss-lexer/tests/css_syntax.rs:13:5:
+assertion `left == right` failed
+  left: Dimension("1", "s1fade")
+ right: Dimension("1", "s")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    numeric_components_keep_signs_exponents_units_and_identifier_boundaries
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-lexer --test css_syntax`

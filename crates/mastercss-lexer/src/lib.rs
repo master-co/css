@@ -250,6 +250,7 @@ struct CssVariableReference<'a> {
 
 mod at_rules;
 mod class_list;
+mod css_syntax;
 mod directives;
 mod escape;
 mod functions;
@@ -263,6 +264,10 @@ pub(crate) use variables::skip_css_string_or_comment;
 
 pub use at_rules::extract_top_level_at_rule_blocks;
 pub use class_list::{collect_class_list_cursor_ranges, collect_class_list_token_ranges};
+pub use css_syntax::{
+    CssSyntaxKind, CssSyntaxStatement, CssSyntaxToken, collect_css_syntax_statements,
+    tokenize_css_syntax,
+};
 pub use directives::find_css_directive_ranges;
 pub use escape::{css_escape, escape_regexp};
 pub use functions::{collect_css_declaration_ranges, read_css_function};

@@ -6,7 +6,7 @@
 
 | ID | 嚴重度 | 驗證狀態 | 問題 | 範圍／證據 |
 |---|---|---|---|---|
-| BH-0001 | P2 | 已確認 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；0107擴充語法證據，19回歸仍FAIL，66browser controls支持預期；[0107](batches/0107-animation-syntax-evidence.md)；[0002](batches/0002-stylesheet-resources.md#bh-0001--p2-已確認動畫提取把字串與註解當作-css) |
+| BH-0001 | P2 | 已修復 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；0109語法位置、數值/簡寫欄位與變數上下文修復，87value/42variable browser及runtime273通過；[0109](batches/0109-animation-value-context.md)，[原始0002](batches/0002-stylesheet-resources.md) |
 | BH-0002 | P3 | 已確認 | raw stylesheet var() 非 space 空白漏掉依賴；compiler 正規化路徑不受影響 | engine/render；[0002](batches/0002-stylesheet-resources.md#bh-0002--p3-已確認raw-stylesheet-var-空白漏掉依賴) |
 | BH-0003 | P2 | 已確認 | static token 不保留動態依賴，初始化與最後 class 刪除後缺少 CSS 變數 | engine/compiler；[0003](batches/0003-static-resources.md) |
 | BH-0004 | P1 | 已確認 | 展開 CSS import 丟失 media/supports/layer，條件與 cascade 失真 | compiler/project；0092本機情境修正，nested unresolved imports仍未完成；[0005](batches/0005-project-graph.md#bh-0004--p1-已確認展開匯入丟失條件與-cascade-layer) |
@@ -134,3 +134,7 @@
 - 0106：BH-0030已修復；Webpack69tests serial/lint/types/build、36檔名矩陣與3原playground瀏覽器控制通過。44歷史確認：28已修復、16未解決；官方nested命令/依賴及parallel harness限制仍未完成。[批次](batches/0106-webpack-fixed-filename.md)。
 
 - 0107：BH-0001新增22獨立語法回歸（19FAIL/3PASS），三瀏覽器66對照支持預期；原BH-0001/0002仍FAIL。未修產品，28fixed/16unresolved不變；下批需詞法結構與名稱解碼，不能將新增證據視為修復。[批次](batches/0107-animation-syntax-evidence.md)。
+
+- 0108：BH-0001仍部分修正。22syntax與native/Wasm/public/runtime檢查通過，但9個value回歸5FAIL（其中4個由未完成實作引入），三瀏覽器支持預期；舊Wasm雜湊及行為對照已保存。28fixed/16unresolved保持，不將其他green tests視為本問題修復。[下一步](batches/0108-animation-syntax-partial.md)。
+
+- 0109：BH-0001已修復，包含0108的5個失敗。原22syntax、29value/8variable groups、native/Wasm22、87+42browser、CSS72/compiler127/server67及runtime273通過。全Rust另有BH-0002/0003既有3FAIL；29fixed/15unresolved，10blocked不變。[證據與效能代價](batches/0109-animation-value-context.md)。

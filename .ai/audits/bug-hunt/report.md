@@ -1,8 +1,8 @@
 # Master CSS 調查交付
 
-起始 commit `e66ba7236`，本次以 `5dc6f2ad1` 為父提交，包含0104–0106完成修復及0107調查證據；0092與0108部分實作留在工作區。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
+起始 commit `e66ba7236`，本次以 `e71cce539` 為父提交，納入0108–0109的BH-0001完成修復與證據；0092及0110部分修改和Site其他工作留在工作區。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-44個歷史確認問題：28已修復、16未解決。以下問題描述保留修復前重現歷史；當前狀態以findings與最新批次為準。BH-0004僅部分修復，仍未完成。0107擴充BH-0001語法證據（19回歸FAIL、66browser對照PASS），尚未完成修復；0108工作區局部測試已通過，Wasm與完整下游驗證仍待完成。
+44個歷史確認問題：29已修復、15未解決。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。全Rust仍有BH-0002/0003的3個既有失敗，10blocked coverage不變。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 

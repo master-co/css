@@ -1,0 +1,72 @@
+Scope: 3 of 54 workspace projects
+$ cargo xtask build-native && vitest --run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.07s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest-ci-config" without a file extension (vitest.config.ts:3:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/css
+
+
+ Test Files  4 passed (4)
+      Tests  72 passed (72)
+   Start at  08:48:22
+   Duration  16.01s (tests 99%, transform 1%)
+
+$ cargo xtask build-native && cargo xtask build-wasm compiler && vitest --run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-wasm compiler`
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
+    Finished `release` profile [optimized] target(s) in 17.00s
+Built /Users/aron/master/css/packages/binding-wasm-compiler/artifacts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] app/page.tsx 4 classes inserted in 0.6ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+ Test Files  15 passed (15)
+      Tests  127 passed (127)
+   Start at  08:48:59
+   Duration  10.43s (tests 94%, transform 4%, import 2%)
+
+$ cargo xtask build-native && vitest --run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/server
+
+
+ Test Files  12 passed (12)
+      Tests  67 passed (67)
+   Start at  08:49:11
+   Duration  2.94s (tests 74%, transform 13%, import 12%)
+

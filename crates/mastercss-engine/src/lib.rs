@@ -497,10 +497,12 @@ pub(crate) use state::{
     apply_forced_mode, find_group_close, resolve_state_branches, resolve_style_selector_aliases,
     selector_token_to_template, split_top_level,
 };
+mod stylesheet_animation;
+mod stylesheet_animation_value;
+pub(crate) use stylesheet_animation::stylesheet_animation_syntax;
 pub(crate) use stylesheet_resources::{
-    collect_animation_names, collect_stylesheet_animation_declarations,
-    collect_stylesheet_animation_names, collect_stylesheet_keyframe_names,
-    collect_stylesheet_variable_names, is_css_identifier_character,
+    collect_animation_names, collect_stylesheet_animation_names, collect_stylesheet_variable_names,
+    is_css_identifier_character,
 };
 pub(crate) use utility::{
     append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,

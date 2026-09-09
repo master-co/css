@@ -1,0 +1,12 @@
+{"browser":"chromium","value":"auto","name":"none","supported":true}
+{"browser":"chromium","value":"auto 1s","name":"none","supported":true}
+{"browser":"chromium","value":"auto fade","name":"fade","supported":true}
+{"browser":"firefox","value":"auto","name":"auto","supported":true}
+{"browser":"firefox","value":"auto 1s","name":"auto","supported":true}
+{"browser":"firefox","value":"auto fade","name":"none","supported":false}
+{"browser":"webkit","value":"auto","name":"none","supported":true}
+{"browser":"webkit","value":"auto 1s","name":"none","supported":true}
+{"browser":"webkit","value":"auto fade","name":"fade","supported":true}
+{"value":"auto","generated":["auto"],"expected":["auto"],"result":"PASS"}
+{"value":"auto 1s","generated":["auto"],"expected":["auto"],"result":"PASS"}
+{"value":"auto fade","generated":["fade"],"expected":["fade"],"result":"PASS"}

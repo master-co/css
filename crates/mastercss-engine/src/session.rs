@@ -5,10 +5,10 @@ use super::{
     ManifestProjection, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
     canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
-    collect_stylesheet_animation_declarations, collect_stylesheet_animation_names,
-    collect_stylesheet_keyframe_names, collect_stylesheet_variable_names, compare_stored_rules,
+    collect_stylesheet_animation_names, collect_stylesheet_variable_names, compare_stored_rules,
     compile_manifest, emit_declarations, engine_variable_ir, layer_index, layer_name,
     match_utility, normalize_dynamic_value, resolve_state_branches, resolve_style_selector_aliases,
+    stylesheet_animation_syntax,
 };
 
 impl EngineSession {
@@ -225,7 +225,8 @@ impl EngineSession {
     ) -> Result<EngineTransitionIr, EngineError> {
         self.ensure_active()?;
         let mut mutations = Vec::new();
-        let native_animation_names = collect_stylesheet_keyframe_names(native_css);
+        let (native_animation_names, animation_declarations) =
+            stylesheet_animation_syntax(native_css);
         for name in &native_animation_names {
             let count = self.emitted_globals.animation_count(name);
             self.emitted_globals
@@ -253,15 +254,11 @@ impl EngineSession {
             self.register_variable(variable_name, &mut mutations, &mut HashSet::new());
         }
 
-        let animation_declarations = collect_stylesheet_animation_declarations(native_css);
-        let animation_names = collect_stylesheet_animation_names(
-            &animation_declarations,
-            &variable_names,
-            &self.compiled,
-        )
-        .into_iter()
-        .filter(|name| !native_animation_names.contains(name))
-        .collect::<Vec<_>>();
+        let animation_names =
+            collect_stylesheet_animation_names(&animation_declarations, &self.compiled)
+                .into_iter()
+                .filter(|name| !native_animation_names.contains(name))
+                .collect::<Vec<_>>();
         self.register_rule_animations(&animation_names, &mut mutations);
         Ok(EngineTransitionIr::new(mutations))
     }

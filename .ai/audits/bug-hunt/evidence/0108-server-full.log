@@ -1,0 +1,23 @@
+$ cargo xtask build-native && vitest --run
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on shared package cache
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.18s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/server
+
+
+ Test Files  12 passed (12)
+      Tests  67 passed (67)
+   Start at  08:13:07
+   Duration  3.76s (tests 76%, transform 13%, import 11%)
+

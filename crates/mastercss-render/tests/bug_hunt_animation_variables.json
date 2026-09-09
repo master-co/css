@@ -1,0 +1,223 @@
+[
+  {
+    "id": "mode_easing",
+    "css": ".x{animation:var(--animation-ease,fade) linear 1s}",
+    "variables": [
+      {
+        "key": "ease",
+        "value": "linear",
+        "modes": {
+          "dark": {
+            "value": "ease"
+          }
+        },
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": [
+        "linear"
+      ],
+      "dark": [
+        "linear"
+      ]
+    },
+    "retained": [
+      "linear"
+    ]
+  },
+  {
+    "id": "nested_modes",
+    "css": ".x{animation:var(--animation-outer) linear 1s}",
+    "variables": [
+      {
+        "key": "outer",
+        "value": "var(--animation-inner)",
+        "dependencies": [
+          "animation-inner"
+        ]
+      },
+      {
+        "key": "inner",
+        "value": "linear",
+        "modes": {
+          "dark": {
+            "value": "fade"
+          }
+        },
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": [
+        "linear"
+      ],
+      "dark": [
+        "fade"
+      ]
+    },
+    "retained": [
+      "fade",
+      "linear"
+    ]
+  },
+  {
+    "id": "invalid_mode_names",
+    "css": ".x{animation:var(--animation-name) unexpected 1s}",
+    "variables": [
+      {
+        "key": "name",
+        "value": "fade",
+        "modes": {
+          "dark": {
+            "value": "running running"
+          }
+        },
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": [],
+      "dark": []
+    },
+    "retained": []
+  },
+  {
+    "id": "cycle_fallback",
+    "css": ".x{animation:var(--animation-a,fade 1s)}",
+    "variables": [
+      {
+        "key": "a",
+        "value": "var(--animation-b,linear)",
+        "dependencies": [
+          "animation-b"
+        ]
+      },
+      {
+        "key": "b",
+        "value": "var(--animation-a,running)",
+        "dependencies": [
+          "animation-a"
+        ]
+      }
+    ],
+    "controls": {
+      "": [
+        "fade"
+      ]
+    },
+    "retained": [
+      "fade"
+    ]
+  },
+  {
+    "id": "cycle_mode",
+    "css": ".x{animation:var(--animation-a,fade 1s)}",
+    "variables": [
+      {
+        "key": "a",
+        "value": "var(--animation-b)",
+        "dependencies": [
+          "animation-b"
+        ]
+      },
+      {
+        "key": "b",
+        "value": "linear linear 1s",
+        "modes": {
+          "dark": {
+            "value": "var(--animation-a)"
+          }
+        },
+        "dependencies": [
+          "animation-a"
+        ]
+      }
+    ],
+    "controls": {
+      "": [
+        "linear"
+      ],
+      "dark": [
+        "fade"
+      ]
+    },
+    "retained": [
+      "fade",
+      "linear"
+    ]
+  },
+  {
+    "id": "token_boundaries",
+    "css": ".x{animation:var(--animation-number)s fade}",
+    "variables": [
+      {
+        "key": "number",
+        "value": "1",
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": []
+    },
+    "retained": []
+  },
+  {
+    "id": "name_list",
+    "css": ".x{animation-name:var(--animation-list)}",
+    "variables": [
+      {
+        "key": "list",
+        "value": "linear,fade",
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": [
+        "linear",
+        "fade"
+      ]
+    },
+    "retained": [
+      "fade",
+      "linear"
+    ]
+  },
+  {
+    "id": "invalid_list",
+    "css": ".x{animation:fade 1s,linear unexpected extra}",
+    "variables": [],
+    "controls": {
+      "": []
+    },
+    "retained": []
+  },
+  {
+    "id": "initial_variable_fallback",
+    "css": ".x{animation:var(--animation-state,fade 1s)}",
+    "variables": [
+      {
+        "key": "state",
+        "value": "initial",
+        "dependencies": []
+      }
+    ],
+    "controls": {
+      "": [
+        "fade"
+      ]
+    },
+    "retained": [
+      "fade"
+    ]
+  },
+  {
+    "id": "initial_fallback",
+    "css": ".x{animation:var(--missing,initial)}",
+    "variables": [],
+    "controls": {
+      "": []
+    },
+    "retained": []
+  }
+]

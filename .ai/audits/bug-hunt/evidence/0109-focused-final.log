@@ -1,0 +1,95 @@
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+     Running tests/css_syntax.rs (target/debug/deps/css_syntax-a49acb5f3dcbe6f9)
+
+running 4 tests
+test numeric_components_keep_signs_exponents_units_and_identifier_boundaries ... ok
+test names_and_strings_decode_css_escapes_without_merging_comment_separated_tokens ... ok
+test balanced_components_keep_custom_values_and_feature_queries_out_of_declarations ... ok
+test unicode_bytes_and_deep_blocks_do_not_recurse_on_the_call_stack ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_animation_syntax.rs (target/debug/deps/bug_hunt_animation_syntax-b1613740ef4b5629)
+
+running 22 tests
+test custom_block_is_not_use ... ok
+test escaped_definition ... ok
+test native_definition ... ok
+test nested_definition ... ok
+test commented_fake_definition ... ok
+test plain_use ... ok
+test quoted_definition ... ok
+test comment_after_name ... ok
+test missing_definition_block ... ok
+test comment_separates_definition ... ok
+test commented_fake_use ... ok
+test escaped_animation_name ... ok
+test important_animation_name ... ok
+test custom_property_is_not_use ... ok
+test comment_before_colon ... ok
+test quoted_animation_name ... ok
+test quoted_fake_definition ... ok
+test quoted_fake_use ... ok
+test supports_is_not_use ... ok
+test uppercase_definition ... ok
+test url_fake_use ... ok
+test uppercase_property ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_animation_value_slots.rs (target/debug/deps/bug_hunt_animation_value_slots-0f1b6fa478ea7f75)
+
+running 28 tests
+test css_wide_mixed ... ok
+test fill_and_none_name ... ok
+test comment_separates_number_unit ... ok
+test fill_none_before_name ... ok
+test escaped_time_unit ... ok
+test css_wide_alone ... ok
+test math_duration ... ok
+test exponent_iteration ... ok
+test auto_duration ... ok
+test fallback_timing ... ok
+test invalid_dimension ... ok
+test math_iteration ... ok
+test decimal_iteration_before_name ... ok
+test compiled_variable_timing ... ok
+test duplicate_numbers ... ok
+test invalid_multiple_names ... ok
+test negative_delay ... ok
+test math_time_and_iteration ... ok
+test negative_iteration ... ok
+test numeric_iteration_before_name ... ok
+test negative_duration ... ok
+test quoted_keyword_name ... ok
+test repeated_timing ... ok
+test timing_keyword ... ok
+test trailing_comma ... ok
+test too_many_none_slots ... ok
+test signed_decimal_iteration ... ok
+test too_many_times ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_animation_values.rs (target/debug/deps/bug_hunt_animation_values-46b968f7d6239894)
+
+running 3 tests
+test nested_selectors_and_descriptor_blocks_do_not_create_fake_declarations ... ok
+test variables_are_followed_only_from_animation_values_and_include_fallbacks ... ok
+test timing_and_play_state_slots_take_priority_over_animation_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_animation_variables.rs (target/debug/deps/bug_hunt_animation_variables-5ae7b4f70f56da67)
+
+running 6 tests
+test variable_modes_preserve_occupied_slots_and_known_values_do_not_use_fallbacks ... ok
+test a_valid_mode_branch_survives_another_branch_with_a_cycle ... ok
+test cycles_are_invalid_even_with_internal_fallbacks_but_outer_fallbacks_work ... ok
+test comma_lists_and_animation_name_have_distinct_slot_rules ... ok
+test nested_variables_do_not_merge_tokens_and_mode_branches_do_not_rescue_invalid_names ... ok
+test repeated_mode_diamonds_and_deep_chains_do_not_expand_cartesian_strings ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s
+

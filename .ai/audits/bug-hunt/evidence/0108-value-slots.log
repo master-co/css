@@ -1,0 +1,64 @@
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.30s
+     Running tests/bug_hunt_animation_value_slots.rs (target/debug/deps/bug_hunt_animation_value_slots-0f1b6fa478ea7f75)
+
+running 9 tests
+test timing_keyword ... ok
+test quoted_keyword_name ... ok
+test repeated_timing ... ok
+test fallback_timing ... ok
+test compiled_variable_timing ... FAILED
+test decimal_iteration_before_name ... FAILED
+test fill_none_before_name ... FAILED
+test numeric_iteration_before_name ... FAILED
+test invalid_multiple_names ... FAILED
+
+failures:
+
+---- compiled_variable_timing stdout ----
+
+thread 'compiled_variable_timing' (36888194) panicked at crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs:44:1:
+assertion `left == right` failed: var(--animation-easing) linear 1s
+  left: []
+ right: ["linear"]
+
+---- decimal_iteration_before_name stdout ----
+
+thread 'decimal_iteration_before_name' (36888195) panicked at crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs:42:1:
+assertion `left == right` failed: .5 infinite 1s
+  left: []
+ right: ["infinite"]
+
+---- fill_none_before_name stdout ----
+
+thread 'fill_none_before_name' (36888197) panicked at crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs:43:1:
+assertion `left == right` failed: none backwards 1s
+  left: []
+ right: ["backwards"]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- numeric_iteration_before_name stdout ----
+
+thread 'numeric_iteration_before_name' (36888199) panicked at crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs:41:1:
+assertion `left == right` failed: 1 infinite 1s
+  left: []
+ right: ["infinite"]
+
+---- invalid_multiple_names stdout ----
+
+thread 'invalid_multiple_names' (36888198) panicked at crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs:50:1:
+assertion `left == right` failed: fade unexpected 1s
+  left: ["fade"]
+ right: []
+
+
+failures:
+    compiled_variable_timing
+    decimal_iteration_before_name
+    fill_none_before_name
+    invalid_multiple_names
+    numeric_iteration_before_name
+
+test result: FAILED. 4 passed; 5 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-render --test bug_hunt_animation_value_slots`

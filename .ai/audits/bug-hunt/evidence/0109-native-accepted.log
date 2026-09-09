@@ -1,0 +1,18 @@
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.99s
+     Running `target/debug/xtask build-native`
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
+   Compiling mastercss-language v0.0.0 (/Users/aron/master/css/crates/mastercss-language)
+   Compiling mastercss-lint v0.0.0 (/Users/aron/master/css/crates/mastercss-lint)
+   Compiling mastercss-validator v0.0.0 (/Users/aron/master/css/crates/mastercss-validator)
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.52s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss

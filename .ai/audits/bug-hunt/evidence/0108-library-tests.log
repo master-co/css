@@ -1,0 +1,63 @@
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.06s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_engine-daea196867eed72a)
+
+running 36 tests
+test tests::groups_multi_node_utilities_into_one_hydration_rule ... ok
+test tests::preserves_all_static_rules_for_the_same_class_across_layers ... ok
+test tests::commits_only_host_supported_native_declarations ... ok
+test tests::normalizes_base_units_inside_css_math_functions ... ok
+test tests::lets_native_key_aliases_handle_variables_outside_managed_namespaces ... ok
+test tests::disposed_sessions_fail_closed ... ok
+test tests::inspection_does_not_mutate_the_session ... ok
+test tests::preserves_math_function_names_that_overlap_inline_variables ... ok
+test tests::ensure_is_idempotent_and_delete_reports_exact_index ... ok
+test tests::creates_sorted_rule_transitions_and_css ... ok
+test tests::preserves_selector_templates_across_selectorless_variants ... ok
+test tests::host_globals_replace_locally_emitted_static_resources ... ok
+test tests::prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions ... ok
+test tests::preserves_native_alias_matchers_for_shared_declarations ... ok
+test tests::rejects_circular_inline_variable_references ... ok
+test tests::preserves_custom_property_names_inside_generated_math ... ok
+test tests::exposes_manifest_driven_class_semantics_without_mutating_the_session ... ok
+test tests::preserves_selector_priority_for_class_pseudo_and_attribute_states ... ok
+test tests::preserves_pattern_utility_precedence_inside_groups ... ok
+test tests::resolves_dependencies_of_inline_variables_without_emitting_resources ... ok
+test tests::refresh_replays_connected_classes_against_new_manifest ... ok
+test tests::registers_host_globals_transactionally_after_classes_are_ensured ... ok
+test tests::resolves_legacy_pseudo_elements_without_rewriting_explicit_double_colons ... ok
+test tests::parses_each_compound_condition_as_a_condition ... ok
+test tests::tracks_theme_variables_referenced_by_keyframes ... ok
+test tests::resolves_inline_dependencies_in_emitted_base_and_mode_variables ... ok
+test tests::separates_child_selectors_from_dynamic_values ... ok
+test tests::tracks_variable_resources_across_aliases_and_deletion ... ok
+test tests::suppresses_variables_already_emitted_by_the_host ... ok
+test tests::renders_selector_condition_layer_and_important_state ... ok
+test tests::executes_rc87_parser_parity_corpus ... ok
+test tests::tracks_keyframes_only_from_animation_declarations ... ok
+test tests::validates_native_value_namespaces_before_committing_rules ... ok
+test tests::registers_host_keyframes_after_animation_rules_are_ensured ... ok
+test tests::validates_and_saturates_host_globals_before_classes_are_ensured ... ok
+test tests::renders_the_compiled_condition_grammar ... ok
+
+test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_lexer-500608870c51879e)
+
+running 12 tests
+test tests::converts_only_valid_utf16_boundaries ... ok
+test tests::finds_removes_and_ranges_master_entry_directives_in_utf16 ... ok
+test tests::preserves_unclosed_css_variable_references ... ok
+test tests::class_ranges_use_javascript_utf16_offsets ... ok
+test tests::ignores_non_entry_and_nested_master_syntax ... ok
+test tests::extracts_only_top_level_keyframe_blocks_without_losing_lines ... ok
+test tests::transforms_balanced_css_variable_references_without_touching_literals ... ok
+test tests::collects_only_active_css_variable_references ... ok
+test tests::finds_top_level_imports_and_parses_quoted_semicolons ... ok
+test tests::matches_existing_css_escape_examples ... ok
+test tests::parses_and_removes_top_level_extraction_policy_directives ... ok
+test tests::executes_rc87_lexer_parity_corpus ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
