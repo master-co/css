@@ -1,0 +1,9 @@
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0mpackages/binding-wasm-compiler/dist/provider.js is dynamically imported by packages/binding/dist/compiler-binding-wasm.js but also statically imported by packages/binding/dist/compiler-binding-browser.js, dynamic import will not move module into another chunk.
+
+{"browser":"chromium","media":"screen","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 0)","fill":"rgb(0, 0, 255)","background":"rgba(0, 0, 0, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"browser":"chromium","media":"print","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 255)","fill":"rgb(0, 0, 255)","background":"rgb(255, 255, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"browser":"firefox","media":"screen","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 0)","fill":"rgb(0, 0, 255)","background":"rgba(0, 0, 0, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"browser":"firefox","media":"print","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 255)","fill":"rgb(0, 0, 255)","background":"rgb(255, 255, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"browser":"webkit","media":"screen","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 0)","fill":"rgb(0, 0, 255)","background":"rgba(0, 0, 0, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"browser":"webkit","media":"print","binding":"wasm","assets":6,"style":{"color":"rgb(0, 0, 255)","fill":"rgb(0, 0, 255)","background":"rgb(255, 255, 0)","image":"url(\"http://127.0.0.1:51081/original/pixel.svg?q=1#part\")"},"result":"PASS"}
+{"comparisons":6,"failures":0,"wasmFetched":true,"scope":"public compiler invoked inside all3browser realms; generic Vite packaging, no Master CSS build plugin"}

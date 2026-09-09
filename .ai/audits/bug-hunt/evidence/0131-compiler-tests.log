@@ -1,0 +1,30 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] app/page.tsx 4 classes inserted in 0.5ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms  (repeated 6 times)
+
+ Test Files  24 passed (24)
+      Tests  209 passed (209)
+   Start at  16:24:53
+   Duration  12.14s (tests 93%, transform 5%, import 2%)
+
