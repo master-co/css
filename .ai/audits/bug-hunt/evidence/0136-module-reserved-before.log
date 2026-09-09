@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-source.test.ts (4 tests | 1 failed) 1314ms
+   × BH-0004 managed Sass modules retain Vite scoped names and named/default exports 133ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-source.test.ts > BH-0004 managed Sass modules retain Vite scoped names and named/default exports
+Error: Build failed with 1 error:
+
+[31m[PARSE_ERROR] [0mA module cannot have multiple default exports.
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m \0master-css:sass-module:%2Fprivate%2Fvar%2Ffolders%2F_b%2F768dhtz56ns54x1r867j67280000gn%2FT%2Fmaster-css-sass-test-6w8jW1%2Fentry.module.scss.js:3:53 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m3 │[0m [38;5;249mc[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mv[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249mu[0m[38;5;249me[0m[38;5;249m1[0m[38;5;249m [0m[38;5;249m=[0m[38;5;249m [0m[38;5;249m"[0m[38;5;249ms[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mp[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249ma[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249mt[0m[38;5;249m"[0m[38;5;249m;[0m[38;5;249m [0m[38;5;249me[0m[38;5;249mx[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m{[0m[38;5;249m [0m[38;5;249mv[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249mu[0m[38;5;249me[0m[38;5;249m1[0m[38;5;249m [0m[38;5;249ma[0m[38;5;249ms[0m[38;5;249m [0m"default"[38;5;249m [0m[38;5;249m}[0m[38;5;249m;[0m
+ [38;5;240m  │[0m                                                     ────┬────  
+ [38;5;240m  │[0m                                                         ╰────── 
+ [38;5;246m4 │[0m [38;5;249me[0m[38;5;249mx[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0mdefault[38;5;249m [0m[38;5;249m{[0m[38;5;249m"[0m[38;5;249me[0m[38;5;249mx[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m"[0m[38;5;249m:[0m[38;5;249m"[0m[38;5;249ms[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mp[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249me[0m[38;5;249mx[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249m"[0m[38;5;249m,[0m[38;5;249m"[0m[38;5;249md[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249ma[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249mt[0m[38;5;249m"[0m[38;5;249m:[0m[38;5;249m"[0m[38;5;249ms[0m[38;5;249mc[0m[38;5;249mo[0m[38;5;249mp[0m[38;5;249me[0m[38;5;249md[0m[38;5;249m_[0m[38;5;249md[0m[38;5;249me[0m[38;5;249mf[0m[38;5;249ma[0m[38;5;249mu[0m[38;5;249ml[0m[38;5;249mt[0m[38;5;249m"[0m[38;5;249m}[0m[38;5;249m;[0m
+ [38;5;240m  │[0m        ───┬───  
+ [38;5;240m  │[0m           ╰───── 
+[38;5;246m───╯[0m
+
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ compile tests/plugins/bug-hunt-sass-source.test.ts:23:20
+     21|     writeFileSync(join(root, 'entry.js'), entry)
+     22|     writeFileSync(join(root, 'index.html'), '<div class="example"></di…
+     23|     const result = await build({ root, configFile: false, logLevel: 's…
+       |                    ^
+     24|     if ('on' in result || Array.isArray(result)) throw new Error('Expe…
+     25|     return result.output.map(output => output.type === 'asset' ? Strin…
+ ❯ tests/plugins/bug-hunt-sass-source.test.ts:57:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  18:14:13
+   Duration  1.83s (tests 75%, transform 16%, import 9%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

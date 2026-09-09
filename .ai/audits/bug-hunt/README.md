@@ -240,7 +240,13 @@
 
 - [0135 Vite virtual sources](batches/0135-vite-virtual-sources.md)：223compiler／110Vite、virtual30與watch54 PASS；Sass仍1build／6browser FAIL。
 
+- [0136 Vite Sass sources](batches/0136-vite-sass-sources.md)：225compiler／114Vite、原78與Sass84browser／watch54 PASS；managed-inline6FAIL。
+
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：此次僅納入0136已完成的Sass查核紀錄、兩個重現腳本及原始證據；BH-0004產品／套件測試與0137材料保留工作目錄。0137最新日誌已寫出inline14build／84browser、Sass15build／90browser及JS-only watch3build／18browser全PASS，相關程序已不在程序表；Site prepare/lint日誌完成（0errors／75warnings）。這些是尚未完成批次收尾的局部結果，不能宣稱整體修復完成。下一步補最後Vite變更的scoped驗證、root gates／example／預算檢查、來源保存核對，完成0137批次與索引，再續source maps、其他host與Webpack；保留early WebKit載入時序待查。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分暫停不變；未推送。[此次提交範圍與保存證據](evidence/0136-commit-validation.json)。
+
+- 0136：Vite Sass入口／匯入改用主機預處理，保留CSS import條件、來源owner與partial依賴；修復additionalData重複、raw解析及CSS Modules匯出，baseFile無custom resolver亦可用。compiler225／Vite114、lint/types/build與原Vite範例通過；原host-inputs13build／78browser全PASS。擴充Sass15build全成功、90browser為84PASS／6managed-inlineFAIL；partial直接／條件／錯誤恢復共54PASS，另驗證一次預期Sass錯誤及原partial路徑。小SVG內嵌造成的network斷言及color格式斷言屬測試錯誤。Site prepare/lint通過（75warnings）；5artifacts與兩root API失敗hash不變。下一步修managed `?inline`完整字串／資產交付，再補preprocessor位置對映、Modules／其他host路徑與Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEAD111046867，本批未提交／推送。[0136](batches/0136-vite-sass-sources.md)。
 
 - 使用者再次授權提交已完成部分：此次納入0133–0135已完成的查核紀錄、重現材料與原始證據，以及0134逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試仍未完成整體交付，連同0136 Sass初步修改／證據保留於工作目錄。0136已新增Sass預處理與內部CSS入口、baseFile來源傳遞；compiler／Vite的首輪types與build日誌已寫出，但尚未完成Sass行為驗證，不能沿用0135的PASS宣稱目前修改全部通過。下一步先以`vite-host-inputs.mjs`的scss-entry／scss-import重現驗證，再補additionalData、條件CSS imports、aliases／partials、資源、診斷與watch。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停維持；其他對話Site變更原樣保存，未推送。[提交範圍與保存證據](evidence/0135-commit-validation.json)。
 

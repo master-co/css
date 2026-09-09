@@ -1,0 +1,34 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-virtual-sources.test.ts (6 tests | 1 failed) 24ms
+   × BH-0004 a virtual entry baseFile supplies Node fallback and root resource ownership 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-virtual-sources.test.ts > BH-0004 a virtual entry baseFile supplies Node fallback and root resource ownership
+AssertionError: expected [ …(2) ] to include 'color:blue'
+ ❯ tests/bug-hunt-virtual-sources.test.ts:80:57
+     78|     const output = await collection.compose({ scanner: f.scanner, base…
+     79|     expect(output.resources).toEqual([{ file: join(f.root, 'image.svg'…
+     80|     expect(output.stylesheets?.map(asset => asset.css)).toContain('col…
+       |                                                         ^
+     81|   } finally { f.remove() }
+     82| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  18:10:30
+   Duration  294ms (transform 63%, import 27%, tests 10%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

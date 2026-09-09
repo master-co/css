@@ -1,0 +1,48 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-virtual-sources.test.ts (6 tests | 1 failed) 24ms
+   × BH-0004 a virtual entry baseFile supplies Node fallback and root resource ownership 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-virtual-sources.test.ts > BH-0004 a virtual entry baseFile supplies Node fallback and root resource ownership
+AssertionError: expected '@import "./2f7661722f666f6c646572732f…' to be 'DIAGNOSTIC' // Object.is equality
+
+- Expected
++ Received
+
+- DIAGNOSTIC
++ @import "./2f7661722f666f6c646572732f5f622f3736386468747a35366e7335347831723836376a3637323830303030676e2f542f6d61737465722d6373732d7669727475616c2d736f75726365732d5359426373792f6368696c642e6373730073686565742d30.css";
++
++ .example {
++   background: url("./resource.svg");
++ }
++ .example {
++   color: #00f;
++ }
+
+ ❯ tests/bug-hunt-virtual-sources.test.ts:80:68
+     78|     const output = await collection.compose({ scanner: f.scanner, base…
+     79|     expect(output.resources).toEqual([{ file: join(f.root, 'image.svg'…
+     80|     expect(output.stylesheets?.map(asset => asset.css).join('\n')).toB…
+       |                                                                    ^
+     81|   } finally { f.remove() }
+     82| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  18:11:21
+   Duration  291ms (transform 63%, import 26%, tests 10%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+
