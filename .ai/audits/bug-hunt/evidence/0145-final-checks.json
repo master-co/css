@@ -1,0 +1,122 @@
+{
+  "head": "eb6b479a3998aebc37af18523a1458225909d9dc",
+  "goal": "active",
+  "batch": "0145 bounded development CSS/Sass Modules export, usage and direct/nested HMR verified",
+  "previousGoalTurn": "progress:0143 fixed dependency tracking;0144 classified missing-host failure and verified direct mutation outputs",
+  "validation": {
+    "viteTests": 160,
+    "testFiles": 27,
+    "newTests": 2,
+    "expandedDependencyTests": 2,
+    "focusedTests": 5,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "development": {
+      "entryDirect": 18,
+      "localDirect": 18,
+      "entryNested": 18,
+      "localNested": 18,
+      "failures": 0,
+      "oracle": "new callback for every edit;stable page bootID;named/default exports agree;computed foreground/background;no pageerror/HTTP errors"
+    },
+    "production": {
+      "builds": 20,
+      "browserComparisons": 60,
+      "failures": 0
+    },
+    "finalBrowserComparisons": 132,
+    "sitePrepare": "PASS;rerun after final wording correction",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "PASS;new repro",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2685 files (4 generated excluded, 1 bounded exception)."
+  },
+  "classifications": {
+    "initial54": "12PASS/42FAIL includes incorrect localCSS blue-token oracle;not42 product failures",
+    "correctedLocalBaseline": "bridge-disabled current host path;CSS6PASS/3childHMRFAIL,SCSS9HTTP500FAIL",
+    "pureViteBaseline": "initial/root edits pass;child-only HMR does not update",
+    "intermediateIntegration": "baseFile without preserveImports caused2new failures;fixed by retaining production-only option",
+    "missingContentMDX": "current directives folder contains canonical contract and legacy redirect page;updated existing contract,not nonexistent historical content.mdx"
+  },
+  "preservation": {
+    "changedOrNewSources": 9,
+    "priorSourcesUnchanged": 163,
+    "totalSources": 172,
+    "foreignSite": "byte-preserved",
+    "artifacts": "five byte-identical to0144;raw/gzip/brotli unchanged",
+    "index": "empty"
+  },
+  "rootGates": "four remain incomplete;no public export/Rust contract change;0141 API failures retained without golden refresh",
+  "limitations": [
+    "Nested missing dependency crash from0144 remains incomplete",
+    "Development inline/raw/url,ordinary Sass,other preprocessors/PostCSS and ownership cases pending",
+    "Multiple roots,SSR/shared environments,published maps and other hosts pending",
+    "Webpack3build12browser andlegacy39browser failures remain"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 requires explicit user identity confirmation",
+  "terminalJobs": {
+    "initialDev": {
+      "session": 52150,
+      "exitCode": 1
+    },
+    "firstTests": {
+      "session": 28262,
+      "exitCode": 1
+    },
+    "fixedTestsLintTypesBuild": {
+      "session": 10469,
+      "exitCode": 0
+    },
+    "correctedLocalBaseline": {
+      "session": 71597,
+      "exitCode": 1
+    },
+    "entryHMR": {
+      "session": 21032,
+      "exitCode": 0
+    },
+    "localHMR": {
+      "session": 5983,
+      "exitCode": 0
+    },
+    "fullTests": {
+      "session": 47230,
+      "exitCode": 0
+    },
+    "nestedHMR": {
+      "session": 11057,
+      "exitCode": 0
+    },
+    "productionModules": {
+      "session": 90895,
+      "exitCode": 0
+    },
+    "example": {
+      "session": 22136,
+      "exitCode": 0
+    },
+    "sitePrepareLint": {
+      "session": 43302,
+      "exitCode": 0
+    },
+    "sitePrepareFinal": {
+      "session": 74969,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

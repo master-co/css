@@ -1,0 +1,124 @@
+{
+  "head": "eb6b479a3998aebc37af18523a1458225909d9dc",
+  "batch": "0143 bounded Modules dependency tracking and nested compiler-error recovery verified",
+  "goal": "active",
+  "previousGoalTurn": "progress:authorized105-file audit commit;128 excluded worktree files verified unchanged on resume",
+  "validation": {
+    "viteTests": 158,
+    "testFiles": 26,
+    "newTests": 4,
+    "focusedDependencies": 3,
+    "focusedModules": 9,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "modules": {
+      "builds": 20,
+      "browserComparisons": 60,
+      "failures": 0
+    },
+    "sass": {
+      "builds": 15,
+      "browserComparisons": 90,
+      "failures": 0
+    },
+    "inline": {
+      "builds": 14,
+      "browserComparisons": 84,
+      "failures": 0
+    },
+    "nestedRecovery": {
+      "builds": 6,
+      "browserComparisons": 18,
+      "failures": 0,
+      "expectedErrors": 2
+    },
+    "directWatchEarly": {
+      "builds": 6,
+      "browserComparisons": 18,
+      "failures": 0
+    },
+    "finalBrowserTotal": 252,
+    "resolverParityControls": 3,
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2680 files (4 generated excluded, 1 bounded exception).",
+    "syntax": "PASS;two changed repro scripts",
+    "whitespace": "PASS"
+  },
+  "classifications": {
+    "missingExportRejection": "Incorrect test assumption;pure Vite emits undefined class;host behavior retained",
+    "nestedRecovery404": "Harness consumed END after ERROR as success;event trace proves premature browser start;BUNDLE_END correction verifies18PASS",
+    "placeholderDiagnostic": "Product mapping guard now rejects NUL anywhere in origin or decoded source",
+    "wrongInlineCommand": "Harness path error before product execution;correct existing repro rerun PASS"
+  },
+  "preservation": {
+    "sourcesChangedOrNew": 10,
+    "priorSourcesUnchanged": 159,
+    "totalSources": 169,
+    "foreignSite": "byte-preserved",
+    "index": "empty",
+    "artifacts": "five identical to0142"
+  },
+  "rootGates": "Four remain incomplete;no public surface/Rust change;0141 API failures retained,not rerun or golden-refreshed",
+  "limitations": [
+    "Module dependency deletion/restoration and rename pending",
+    "Development HMR and broader preprocessor/PostCSS integration pending",
+    "Original source attribution unavailable when host map uses placeholder",
+    "Other aliases/virtual resources/reference/multi-environment/cycles and published maps pending",
+    "Original Webpack3build12browser andlegacy39browser failures remain"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 additional validation awaits explicit identity confirmation",
+  "terminalJobs": {
+    "eventTrace": {
+      "session": 52238,
+      "exitCode": 1
+    },
+    "recovery": {
+      "session": 54754,
+      "exitCode": 0
+    },
+    "viteTests": {
+      "session": 16364,
+      "exitCode": 0
+    },
+    "viteLintTypesBuild": {
+      "session": 13664,
+      "exitCode": 0
+    },
+    "modulesAndWrongInlineCommand": {
+      "session": 32718,
+      "exitCode": 1
+    },
+    "inlineCorrected": {
+      "session": 73160,
+      "exitCode": 0
+    },
+    "sass": {
+      "session": 74763,
+      "exitCode": 0
+    },
+    "example": {
+      "session": 86898,
+      "exitCode": 0
+    },
+    "site": {
+      "session": 89282,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

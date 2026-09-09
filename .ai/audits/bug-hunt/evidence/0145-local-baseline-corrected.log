@@ -1,0 +1,38 @@
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"chromium","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.8769031930679588},"expected":"rgb(255, 0, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"webkit","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.612625103784896},"expected":"rgb(255, 0, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"firefox","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.933016683260709},"expected":"rgb(255, 0, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"chromium","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.8769031930679588},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"webkit","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.612625103784896},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"firefox","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_c5w8x_1"},"named":"_example_1e1op_1 _shared_c5w8x_1","updates":0,"bootID":0.933016683260709},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"webkit","value":{"color":"rgb(0, 128, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_znt9f_1"},"named":"_example_1e1op_1 _shared_znt9f_1","updates":1,"bootID":0.612625103784896},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"chromium","value":{"color":"rgb(0, 128, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_znt9f_1"},"named":"_example_1e1op_1 _shared_znt9f_1","updates":1,"bootID":0.8769031930679588},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"firefox","value":{"color":"rgb(0, 128, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_1e1op_1 _shared_znt9f_1"},"named":"_example_1e1op_1 _shared_znt9f_1","updates":1,"bootID":0.933016683260709},"expected":"rgb(0, 128, 0)","errors":[],"requests":[],"result":"PASS"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"chromium","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.7015409950955632},"expected":"rgb(255, 0, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"webkit","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.4897693857113069},"expected":"rgb(255, 0, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"initial","browser":"firefox","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.8590244253725569},"expected":"rgb(255, 0, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"chromium","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.7015409950955632},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"webkit","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.4897693857113069},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"child-edit","browser":"firefox","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.8590244253725569},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"chromium","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.7015409950955632},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"webkit","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.4897693857113069},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","mode":"local","preprocessorBridge":false,"phase":"root-edit","browser":"firefox","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)","bootID":0.8590244253725569},"expected":"rgb(0, 128, 0)","errors":[],"requests":[{"url":"http://127.0.0.1:55026/style.module.scss","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"comparisons":18,"failures":12}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+12 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-module-hmr.mjs:67:46
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 12,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

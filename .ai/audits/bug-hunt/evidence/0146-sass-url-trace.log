@@ -1,0 +1,37 @@
+{"phase":"transform-before","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","code":"export default \"/style.scss\""}
+{"phase":"transform-after","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","code":"export default \"/style.scss\""}
+{"phase":"transform-before","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss.master-css-sass.css?direct","code":"@master entry;\n@preserve native;\n.example {\n  color: red;\n  background-color: blue;\n}"}
+{"phase":"transform-after","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss.master-css-sass.css?direct","code":".example {\n  color: red;\n  background-color: #00f;\n}"}
+{"extension":"scss","request":"url","managed":true,"color":"red","browser":"chromium","expected":"rgb(255, 0, 0)","expectedBootID":0.4024995355805998,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.4024995355805998},"errors":[],"requests":[],"result":"PASS"}
+{"extension":"scss","request":"url","managed":true,"color":"red","browser":"webkit","expected":"rgb(255, 0, 0)","expectedBootID":0.6445331554655428,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.6445331554655428},"errors":[],"requests":[],"result":"PASS"}
+{"extension":"scss","request":"url","managed":true,"color":"red","browser":"firefox","expected":"rgb(255, 0, 0)","expectedBootID":0.75853386284801,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.75853386284801},"errors":[],"requests":[],"result":"PASS"}
+{"phase":"master-hot-hook","plugin":"master-css:virtual-module:manifest","before":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url"]}
+{"phase":"master-hot-hook","plugin":"master-css:manifest-loader","before":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url"]}
+{"phase":"master-hot-hook","plugin":"master-css:sass-source","before":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url"],"returned":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss.master-css-sass.css?direct"]}
+{"phase":"master-hot-hook","plugin":"master-css:local-compose","before":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss.master-css-sass.css?direct"]}
+{"phase":"hot-update","file":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss","modules":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss.master-css-sass.css?direct"]}
+{"phase":"transform-before","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","code":"export default \"/style.scss\""}
+{"phase":"transform-after","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-dev-style-request-liQ7YY/style.scss?url","code":"export default \"/style.scss\""}
+{"extension":"scss","request":"url","managed":true,"color":"green","browser":"chromium","expected":"rgb(0, 128, 0)","expectedBootID":0.4024995355805998,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.4024995355805998},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","request":"url","managed":true,"color":"green","browser":"webkit","expected":"rgb(0, 128, 0)","expectedBootID":0.6445331554655428,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.6445331554655428},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"scss","request":"url","managed":true,"color":"green","browser":"firefox","expected":"rgb(0, 128, 0)","expectedBootID":0.75853386284801,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.75853386284801},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"comparisons":6,"failures":3}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+3 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs:93:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 3,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

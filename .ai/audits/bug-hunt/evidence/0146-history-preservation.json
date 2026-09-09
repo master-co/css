@@ -1,0 +1,95 @@
+{
+  "verbatimParagraphs": {
+    "README.md": [
+      {
+        "bytes": 740,
+        "sha256": "4ce26c34025a0668ff732c3dcfcc6744805676ce0294be29f79658f82e8a2e11"
+      },
+      {
+        "bytes": 777,
+        "sha256": "1b0e35003d68c60cb8227cbf85d0e4c65ad4e0e58b5926013ed5be1b92fc31f7"
+      },
+      {
+        "bytes": 699,
+        "sha256": "33d2d49af13922b999779a2632caf3b1537ddd7b6a42bd9a637cdf13d0b94af8"
+      },
+      {
+        "bytes": 790,
+        "sha256": "efaaee5f3bb675387a803f0b9e78856e8fbeed799b1c3c33073903dc8907cc66"
+      }
+    ],
+    "coverage.md": [
+      {
+        "bytes": 788,
+        "sha256": "5d05ffe8cb9c62245aca3d8305dccb52038775190eb1ae1b2e2b5a8eeccc30e6"
+      },
+      {
+        "bytes": 697,
+        "sha256": "f9e8170f894a4ceacd2a38088f73c8139931e020d46cdb4ddd220a3ad04664cc"
+      },
+      {
+        "bytes": 775,
+        "sha256": "2c24ee216347949380bcddc9599a5ac761736e937a3ade86be7011a60a8a0134"
+      },
+      {
+        "bytes": 738,
+        "sha256": "a584f626bb6bbfc2ec5f5a4599a042940010a4eea9a19786a3c5e65a675410c0"
+      }
+    ],
+    "findings.md": [
+      {
+        "bytes": 788,
+        "sha256": "5d05ffe8cb9c62245aca3d8305dccb52038775190eb1ae1b2e2b5a8eeccc30e6"
+      },
+      {
+        "bytes": 697,
+        "sha256": "f9e8170f894a4ceacd2a38088f73c8139931e020d46cdb4ddd220a3ad04664cc"
+      },
+      {
+        "bytes": 775,
+        "sha256": "2c24ee216347949380bcddc9599a5ac761736e937a3ade86be7011a60a8a0134"
+      },
+      {
+        "bytes": 738,
+        "sha256": "a584f626bb6bbfc2ec5f5a4599a042940010a4eea9a19786a3c5e65a675410c0"
+      }
+    ],
+    "report.md": [
+      {
+        "bytes": 788,
+        "sha256": "5d05ffe8cb9c62245aca3d8305dccb52038775190eb1ae1b2e2b5a8eeccc30e6"
+      },
+      {
+        "bytes": 697,
+        "sha256": "f9e8170f894a4ceacd2a38088f73c8139931e020d46cdb4ddd220a3ad04664cc"
+      },
+      {
+        "bytes": 775,
+        "sha256": "2c24ee216347949380bcddc9599a5ac761736e937a3ade86be7011a60a8a0134"
+      },
+      {
+        "bytes": 738,
+        "sha256": "a584f626bb6bbfc2ec5f5a4599a042940010a4eea9a19786a3c5e65a675410c0"
+      }
+    ],
+    "changes.md": [
+      {
+        "bytes": 788,
+        "sha256": "5d05ffe8cb9c62245aca3d8305dccb52038775190eb1ae1b2e2b5a8eeccc30e6"
+      },
+      {
+        "bytes": 697,
+        "sha256": "f9e8170f894a4ceacd2a38088f73c8139931e020d46cdb4ddd220a3ad04664cc"
+      },
+      {
+        "bytes": 775,
+        "sha256": "2c24ee216347949380bcddc9599a5ac761736e937a3ade86be7011a60a8a0134"
+      },
+      {
+        "bytes": 738,
+        "sha256": "a584f626bb6bbfc2ec5f5a4599a042940010a4eea9a19786a3c5e65a675410c0"
+      }
+    ]
+  },
+  "archive": "progress-history-0146.md"
+}

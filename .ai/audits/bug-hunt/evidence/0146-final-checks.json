@@ -1,0 +1,144 @@
+{
+  "head": "eb6b479a3998aebc37af18523a1458225909d9dc",
+  "goal": "active",
+  "batch": "0146 shared manifest HMR fix verified;Sass URL hot-update remains incomplete",
+  "previousGoalTurn": "progress:0145 Modules development fix,160 tests and132 browser comparisons completed",
+  "validation": {
+    "internalTests": 18,
+    "newTests": 2,
+    "viteTests": 160,
+    "astroTests": 15,
+    "lintTypesBuild": "internal,Vite,Astro PASS",
+    "examples": "Vite andAstro builds PASS;Astro sitemap site-option warning retained",
+    "managedCSSAfter": {
+      "comparisons": 6,
+      "failures": 0
+    },
+    "moduleHMRControl": {
+      "comparisons": 18,
+      "failures": 0
+    },
+    "requestMatrix": {
+      "hosts": 16,
+      "comparisons": 96,
+      "pass": 93,
+      "fail": 3,
+      "remaining": "managed Sass ?url after source edit;all3 browsers remain red"
+    },
+    "pureInlineIsolatedControl": {
+      "comparisons": 6,
+      "failures": 0
+    },
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "PASS",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2689 files (4 generated excluded, 1 bounded exception)."
+  },
+  "classifications": {
+    "manifestHook": "Product hook discarded incoming CSS/query modules;merge and dedupe fixes independently reproduced update failures",
+    "urlOracle": "text/plain returns Vite stylesheet JS module;corrected to text/css and real link rendering",
+    "coldStart": "5 pure-host initial boot changes observed in final matrix;recorded separately from edit HMR;no claim that startup never reloads",
+    "sassURL": "Structured module graph and websocket prove CSS update targets/style.scss.css?direct while link uses/style.scss;not repaired"
+  },
+  "preservation": {
+    "changedOrNewSources": 5,
+    "priorSourcesPreserved": 170,
+    "totalSources": 175,
+    "additionalBaselineScope": "internal source hash recorded before editing",
+    "historyParagraphsPreserved": 20,
+    "foreignSite": "byte-preserved",
+    "artifacts": "five identical to0145",
+    "index": "empty"
+  },
+  "rootGates": "four remain incomplete;no public API/Rust changes or golden refresh",
+  "limitations": [
+    "Sass direct stylesheet URL HMR mismatch:3 failures",
+    "Module request modes and other source/resource/reference/preprocessor/PostCSS/host boundaries pending",
+    "0144 nested missing composition still terminatesVite host",
+    "Webpack3build12browser andlegacy39browser failures remain",
+    "Astro actual browser HMR not proven by package/example build alone"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 awaits explicit user identity confirmation",
+  "terminalJobs": {
+    "firstMatrix": {
+      "session": 47527,
+      "exitCode": 1
+    },
+    "pureInline": {
+      "session": 9295,
+      "exitCode": 0
+    },
+    "urlCorrected": {
+      "session": 28259,
+      "exitCode": 1
+    },
+    "managedCSSConfirmed": {
+      "session": 28061,
+      "exitCode": 1
+    },
+    "cssTrace": {
+      "session": 59478,
+      "exitCode": 1
+    },
+    "hookTrace": {
+      "session": 36364,
+      "exitCode": 1
+    },
+    "internalChecksAndBuilds": {
+      "session": 48891,
+      "exitCode": 0
+    },
+    "cssAfter": {
+      "session": 28601,
+      "exitCode": 0
+    },
+    "moduleHMR": {
+      "session": 8569,
+      "exitCode": 0
+    },
+    "viteChecks": {
+      "session": 26421,
+      "exitCode": 0
+    },
+    "astroChecksBuild": {
+      "session": 7042,
+      "exitCode": 0
+    },
+    "finalMatrix": {
+      "session": 75175,
+      "exitCode": 1
+    },
+    "exampleBuilds": {
+      "session": 12137,
+      "exitCode": 0
+    },
+    "sassURLTrace": {
+      "session": 54673,
+      "exitCode": 1
+    },
+    "sassURLWebsocket": {
+      "session": 9620,
+      "exitCode": 1
+    },
+    "site": {
+      "session": 5121,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

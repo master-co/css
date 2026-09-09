@@ -1,0 +1,45 @@
+{"phase":"watch-event","extension":"css","code":"START","time":1788959380302}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_START","time":1788959380302}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_END","time":1788959380493}
+{"phase":"watch-event","extension":"css","code":"END","time":1788959380493}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":0,"browser":"chromium","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":0,"browser":"firefox","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":0,"browser":"webkit","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"phase":"watch-event","extension":"css","code":"START","time":1788959382340}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_START","time":1788959382340}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_END","time":1788959382621}
+{"phase":"watch-event","extension":"css","code":"END","time":1788959382621}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":1,"browser":"chromium","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":1,"browser":"firefox","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":1,"browser":"webkit","value":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_e2ybf_1"}},"expected":"rgb(255, 0, 0)","missing":[],"errors":[],"result":"PASS"}
+{"phase":"watch-event","extension":"css","code":"START","time":1788959384362}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_START","time":1788959384362}
+{"phase":"watch-event","extension":"css","code":"ERROR","time":1788959384623}
+{"managed":true,"extension":"css","phase":"expected-error","diagnostics":[{"version":2,"code":"invalid-compose-class","domain":"compiler","severity":"error","message":"Invalid @compose class: unknown-watch-utility","source":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-modules-watch-mJUxqH/style.module.css.master-css-sass.css","range":{"start":{"line":0,"character":26},"end":{"line":0,"character":47}},"notes":["Original CSS Modules location is unavailable; this range refers to preprocessed CSS."]}],"result":"PASS"}
+{"phase":"watch-event","extension":"css","code":"END","time":1788959384624}
+{"phase":"watch-event","extension":"css","code":"START","time":1788959384637}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_START","time":1788959384637}
+{"phase":"watch-event","extension":"css","code":"BUNDLE_END","time":1788959384939}
+{"phase":"watch-event","extension":"css","code":"END","time":1788959384940}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":2,"browser":"chromium","value":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"expected":"rgb(0, 128, 0)","missing":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-modules-watch-mJUxqH/dist/assets/index-BkjS71Jf.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-modules-watch-mJUxqH/dist/assets/index-9r6iPjma.css"],"errors":[],"result":"FAIL"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":2,"browser":"firefox","value":{"color":"rgb(0, 128, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_cqufx_1"}},"expected":"rgb(0, 128, 0)","missing":[],"errors":[],"result":"PASS"}
+{"managed":true,"nested":true,"recovery":true,"rootEdit":false,"extension":"css","index":2,"browser":"webkit","value":{"color":"rgb(0, 128, 0)","background":"rgb(0, 0, 255)","names":{"example":"_example_5vqpk_1 _shared_7371n_1 _leaf_cqufx_1"}},"expected":"rgb(0, 128, 0)","missing":[],"errors":[],"result":"PASS"}
+{"builds":3,"comparisons":9,"failures":1}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-css-modules-watch.mjs:79:46 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

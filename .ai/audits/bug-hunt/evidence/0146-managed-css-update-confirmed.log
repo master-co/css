@@ -1,0 +1,26 @@
+{"extension":"css","request":"normal","managed":true,"color":"red","browser":"chromium","expected":"rgb(255, 0, 0)","expectedBootID":0.37077835720556074,"correct":true,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.37077835720556074},"errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","request":"normal","managed":true,"color":"red","browser":"webkit","expected":"rgb(255, 0, 0)","expectedBootID":0.043250111594155816,"correct":true,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.043250111594155816},"errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","request":"normal","managed":true,"color":"red","browser":"firefox","expected":"rgb(255, 0, 0)","expectedBootID":0.38314330332374635,"correct":true,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.38314330332374635},"errors":[],"requests":[],"result":"PASS"}
+{"extension":"css","request":"normal","managed":true,"color":"green","browser":"chromium","expected":"rgb(0, 128, 0)","expectedBootID":0.37077835720556074,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.37077835720556074},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"css","request":"normal","managed":true,"color":"green","browser":"webkit","expected":"rgb(0, 128, 0)","expectedBootID":0.043250111594155816,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.043250111594155816},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"extension":"css","request":"normal","managed":true,"color":"green","browser":"firefox","expected":"rgb(0, 128, 0)","expectedBootID":0.38314330332374635,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"normal","updates":0,"bootID":0.38314330332374635},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"comparisons":6,"failures":3}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+3 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs:77:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 3,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

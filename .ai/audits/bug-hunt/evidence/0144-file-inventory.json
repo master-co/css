@@ -1,0 +1,102 @@
+{
+  ".ai/audits/bug-hunt/README.md": {
+    "bytes": 37731,
+    "sha256": "3b4c7e503270f20f2295ae1bd19e2028b0a913d3da3eaee6b6be21f514512587"
+  },
+  ".ai/audits/bug-hunt/batches/0144-module-missing-dependencies.md": {
+    "bytes": 4963,
+    "sha256": "3f027371dea6cc4db0fc968f7488bfb260c9024a41261937dd32c633e25b5c9f"
+  },
+  ".ai/audits/bug-hunt/changes.md": {
+    "bytes": 43742,
+    "sha256": "177857ed087b7d8fbce25d0b780dc75b0355a2532db362b5aec79630cdefefc0"
+  },
+  ".ai/audits/bug-hunt/coverage.md": {
+    "bytes": 39394,
+    "sha256": "5bf0e15f5562f1ecb74a77e75144e6f61077cfb401f38f9b653d7aab6ebf65aa"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-ai-context.log": {
+    "bytes": 121,
+    "sha256": "e6a9c94313938df0f77d068940c0c33cd6407944052ba4c647bff1a3900f7f9b"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-artifact-hashes.json": {
+    "bytes": 1238,
+    "sha256": "9c5b1eecc68cc2e2eaa04c6523feb4d7bcc12fc7473c847a11f88abb4d659f14"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-before-hashes.json": {
+    "bytes": 21176,
+    "sha256": "99a8f9000953232802b7f32832e48954b6ad60c6310dcbe025753ff807c22342"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-delete-direct-final.log": {
+    "bytes": 14833,
+    "sha256": "7799881feef1f82e4adee6fd3b79fd42cb8154db0bdae2dbe6d637346b24c771"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-delete-direct-verified.log": {
+    "bytes": 14028,
+    "sha256": "4b3bf5b3436fdf9d3fb6636188d91f079e044b98a960912cd6a8072b78e892dd"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-delete-direct.log": {
+    "bytes": 7932,
+    "sha256": "c12fade61dfd319811f12b1497b7d618e84097e90b35d53c468ee91f77ce5f56"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-delete-first.log": {
+    "bytes": 4783,
+    "sha256": "78a3510fa8e02be8db1b36513af9b3e60ba2b11e5c0e5dd745df29f5948f1c71"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-delete-pure-vite.log": {
+    "bytes": 4129,
+    "sha256": "b1854721ee29ffaadee5bce1966d7aef84d0a9c61b8107889f705e90c28d1699"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-final-checks.json": {
+    "bytes": 3057,
+    "sha256": "90d69ed632136926132745f9d9fcf2f61f52481a0a85421f51aec2a22747dfc9"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-pure-preprocess-missing.log": {
+    "bytes": 2262,
+    "sha256": "06f646ed72ef207386a2233c30b06395758210c439d2ce119f1b6807217a9085"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-recovery-control.log": {
+    "bytes": 10721,
+    "sha256": "b6f9f604f1f92a7f1ac51393eb2e2472e55136b02f3b1eb09baad4b9048e8338"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-rename-direct-final.log": {
+    "bytes": 18206,
+    "sha256": "c01b90137e8b017f89323f5711fbca498b5ab3d178eb76f82285aaefcf8eda8d"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-rename-direct-verified.log": {
+    "bytes": 17500,
+    "sha256": "45dde9c9856d12cbd84adb6c011ee4ec039301f3c1a51c7771d9317aaf1cb6ea"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-rename-first.log": {
+    "bytes": 4783,
+    "sha256": "a8d98aa9a12b756dd2819e6b492b79a91a7e7b31c23a5fbbf36be6d4a46794c0"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-source-hashes.json": {
+    "bytes": 21301,
+    "sha256": "c683e9a53f21d0524f89238e84792e091f428659fd1dd3286afffa6a1af27f2c"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-update-control.log": {
+    "bytes": 8680,
+    "sha256": "3af7c4752c27df6c2a44abc3ecec89b4bc39d5d6d9710d4ab13989ebd92128b6"
+  },
+  ".ai/audits/bug-hunt/evidence/0144-whitespace.log": {
+    "bytes": 49,
+    "sha256": "50ccac5f6465ef15f77de2793ec3724ecb23bad119a7b80472aad333202ef562"
+  },
+  ".ai/audits/bug-hunt/findings.md": {
+    "bytes": 43775,
+    "sha256": "8afff5a062ebe45e7981b41367a3718d7ae047cb96e6d4730ea2f62e3fa37575"
+  },
+  ".ai/audits/bug-hunt/report.md": {
+    "bytes": 38963,
+    "sha256": "1fca9e7e198b0c24576b7a6b0cfb5c571905aee4c359eb88c7695440e9cb65e9"
+  },
+  ".ai/audits/bug-hunt/repros/vite-css-modules-watch.mjs": {
+    "bytes": 8215,
+    "sha256": "784a63f885a6eec846a04e7f16516f032882a482f349caf94bf64c471592cf8a"
+  },
+  ".ai/audits/bug-hunt/repros/vite-missing-module-host.mjs": {
+    "bytes": 1756,
+    "sha256": "b807fced0cc135093a1ef0d431e9be80796d7859ca6ffbbc59dd9061aa5a4486"
+  }
+}
