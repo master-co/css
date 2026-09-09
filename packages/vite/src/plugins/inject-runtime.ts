@@ -4,6 +4,7 @@ import {
   RUNTIME_ENTRY_ID
 } from '../common'
 import { ResolvedMasterCSSVitePluginOptions } from '../options'
+import { toAssetHref } from '../utils/html'
 
 export default function InjectRuntimePlugin(
   _options: ResolvedMasterCSSVitePluginOptions
@@ -47,7 +48,7 @@ export function InjectRuntimeServePlugin(
     apply: 'serve',
     transformIndexHtml: {
       order: 'post',
-      handler(html) {
+      handler(html, htmlContext) {
         if (
           html.includes(RUNTIME_ENTRY_ID)
           || html.includes(DEV_RUNTIME_ENTRY_ID)
@@ -61,7 +62,7 @@ export function InjectRuntimeServePlugin(
               tag: 'script',
               attrs: {
                 type: 'module',
-                src: DEV_RUNTIME_ENTRY_ID
+                src: toAssetHref(DEV_RUNTIME_ENTRY_ID, htmlContext.server?.config?.base, htmlContext.path)
               },
               injectTo: 'body'
             }

@@ -58,7 +58,9 @@ export default function RuntimePreloadPlugin(context: MasterCSSVitePluginContext
           : undefined
         const href = fileName
           ? toAssetHref(fileName, context.config?.base, htmlContext.path)
-          : htmlContext.server ? DEV_RUNTIME_ENTRY_ID : undefined
+          : htmlContext.server
+            ? toAssetHref(DEV_RUNTIME_ENTRY_ID, htmlContext.server.config?.base ?? context.config?.base, htmlContext.path)
+            : undefined
         const wasmFileName = bundle ? findRuntimeWasmFileName(bundle) : undefined
         const wasmHref = wasmFileName
           ? toAssetHref(wasmFileName, context.config?.base, htmlContext.path)

@@ -79,6 +79,10 @@ Import the default stylesheet from the CSS entry your app already loads:
 @import '@master/css';
 ```
 
+During development, `runtime` and `progressive` modes load the injected runtime
+under Vite's resolved `base`, including nested HTML pages. The runtime preload
+uses the same URL. Relative or empty bases follow Vite's development normalization.
+
 ## Client types
 Add the client type reference when TypeScript source files import Master CSS virtual manifest, emittedGlobals, or generated CSS modules:
 
