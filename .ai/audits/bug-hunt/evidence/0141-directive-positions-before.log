@@ -1,0 +1,27 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+error[E0382]: borrow of partially moved value: `error`
+  --> crates/mastercss-compiler/tests/bug_hunt_directive_positions.rs:26:56
+   |
+25 |             let range = error.range.unwrap();
+   |                                     -------- `error.range` partially moved due to this method call
+26 |             assert_eq!(range.start, start, "{source}: {error:?}");
+   |                                                        ^^^^^ value borrowed here after partial move
+   |
+note: `Option::<T>::unwrap` takes ownership of the receiver `self`, which moves `error.range`
+  --> /rustc/48a229ceaefd4985c50990b14116b6d856af0985/library/core/src/option.rs:1011:24
+   = note: partial move occurs because `error.range` has type `Option<mastercss_schema::directives::SourceRange>`, which does not implement the `Copy` trait
+help: consider calling `.as_ref()` to borrow the value's contents
+   |
+25 |             let range = error.range.as_ref().unwrap();
+   |                                    +++++++++
+help: consider calling `.as_mut()` to mutably borrow the value's contents
+   |
+25 |             let range = error.range.as_mut().unwrap();
+   |                                    +++++++++
+help: you can `clone` the value and consume it, but this might not be your desired behavior
+   |
+25 |             let range = error.range.clone().unwrap();
+   |                                    ++++++++
+
+For more information about this error, try `rustc --explain E0382`.
+error: could not compile `mastercss-compiler` (test "bug_hunt_directive_positions") due to 1 previous error

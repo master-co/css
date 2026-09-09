@@ -1,0 +1,11 @@
+$ tsc -b tsconfig.typecheck.json
+src/utils/sass-diagnostics.ts(13,30): error TS2322: Type 'string | ExistingRawSourceMap' is not assignable to type 'object'.
+  Type 'string' is not assignable to type 'object'.
+src/utils/sass-diagnostics.ts(16,74): error TS2322: Type '(string | null)[]' is not assignable to type 'string[]'.
+  Type 'string | null' is not assignable to type 'string'.
+    Type 'null' is not assignable to type 'string'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

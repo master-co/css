@@ -1,0 +1,35 @@
+{"phase":"event","code":"START"}
+{"phase":"event","code":"BUNDLE_START"}
+{"phase":"event","code":"BUNDLE_END"}
+{"phase":"event","code":"END"}
+{"index":0,"color":"red","browser":"chromium","media":"screen","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"index":0,"color":"red","browser":"chromium","media":"print","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"index":0,"color":"red","browser":"firefox","media":"screen","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"index":0,"color":"red","browser":"firefox","media":"print","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"index":0,"color":"red","browser":"webkit","media":"screen","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"index":0,"color":"red","browser":"webkit","media":"print","actual":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","missing":[],"errors":[],"loads":1,"result":"PASS"}
+{"phase":"event","code":"START"}
+{"phase":"event","code":"BUNDLE_START"}
+{"phase":"event","code":"ERROR"}
+{"phase":"sass-error","result":"PASS","message":"Build failed with 1 error:\n\n[plugin master-css:sass-source]\nError: [sass] Undefined variable.\n  ╷\n1 │ .example{color:$undefined-paint}\n  │                ^^^^^^^^^^^^^^^^\n  ╵\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/styles/_paint.scss 1:16  @use\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/entry.scss 1:1           root stylesheet\n[sass] Undefined variable.\n  ╷\n1 │ .example{color:$undefined-paint}\n  │                ^^^^^^^^^^^^^^^^\n  ╵\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/styles/_paint.scss 1:16  @use\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/entry.scss 1:1           root stylesheet\nError: Undefined variable.\n  ╷\n1 │ .example{color:$undefined-paint}\n  │                ^^^^^^^^^^^^^^^^\n  ╵\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/styles/_paint.scss 1:16  @use\n  /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-sass-watch-ndga8L/entry.scss 1:1           root stylesheet\n    at Object.wrapException (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:2311:47)\n    at /Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:91638:23\n    at _wrapJsFunctionForAsync_closure.$protected (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:4982:15)\n    at _wrapJsFunctionForAsync_closure.call$2 (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:38841:12)\n    at Object._asyncStartSync (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:4946:20)\n    at _EvaluateVisitor2.visitVariableExpression$body$_EvaluateVisitor0 (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:91644:16)\n    at _EvaluateVisitor2.visitVariableExpression$1 (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:91618:19)\n    at VariableExpression0.accept$1$1 (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:129902:22)\n    at VariableExpression0.accept$1 (/Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:129905:19)\n    at /Users/aron/master/css/node_modules/.pnpm/sass@1.104.0/node_modules/sass/sass.dart.js:89653:41"}
+{"phase":"event","code":"START"}
+{"phase":"event","code":"BUNDLE_START"}
+{"phase":"event","code":"BUNDLE_END"}
+{"phase":"event","code":"END"}
+{"index":1,"color":"blue","browser":"chromium","media":"screen","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"index":1,"color":"blue","browser":"chromium","media":"print","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"index":1,"color":"blue","browser":"firefox","media":"screen","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"index":1,"color":"blue","browser":"firefox","media":"print","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"index":1,"color":"blue","browser":"webkit","media":"screen","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"index":1,"color":"blue","browser":"webkit","media":"print","actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","missing":[],"errors":[],"loads":3,"result":"PASS"}
+{"phase":"event","code":"START"}
+{"phase":"event","code":"BUNDLE_START"}
+{"phase":"event","code":"BUNDLE_END"}
+{"phase":"event","code":"END"}
+{"index":2,"color":"green","browser":"chromium","media":"screen","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"index":2,"color":"green","browser":"chromium","media":"print","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"index":2,"color":"green","browser":"firefox","media":"screen","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"index":2,"color":"green","browser":"firefox","media":"print","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"index":2,"color":"green","browser":"webkit","media":"screen","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"index":2,"color":"green","browser":"webkit","media":"print","actual":"rgb(0, 128, 0)","expected":"rgb(0, 128, 0)","missing":[],"errors":[],"loads":4,"result":"PASS"}
+{"builds":3,"comparisons":18,"failures":0,"loads":4}

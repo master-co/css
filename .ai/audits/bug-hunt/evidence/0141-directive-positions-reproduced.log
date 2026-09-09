@@ -1,0 +1,27 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running tests/bug_hunt_directive_positions.rs (target/debug/deps/bug_hunt_directive_positions-6f5e59e70049f7aa)
+
+running 1 test
+test diagnostics_after_removed_directives_retain_original_utf16_offsets ... FAILED
+
+failures:
+
+---- diagnostics_after_removed_directives_retain_original_utf16_offsets stdout ----
+
+thread 'diagnostics_after_removed_directives_retain_original_utf16_offsets' (38706577) panicked at crates/mastercss-compiler/tests/bug_hunt_directive_positions.rs:26:13:
+assertion `left == right` failed: @master entry;
+.example {
+  @compose unknown-utility;
+}: Diagnostic { code: InvalidComposeClass, message: "Invalid @compose class: unknown-utility", source: Some("entry.css"), range: Some(SourceRange { start: 23, end: 38 }), notes: [] }
+  left: 23
+ right: 37
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    diagnostics_after_removed_directives_retain_original_utf16_offsets
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_directive_positions`

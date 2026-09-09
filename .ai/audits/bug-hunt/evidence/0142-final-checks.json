@@ -1,0 +1,133 @@
+{
+  "head": "3e44f4fb3d747c2864ee6ff51c30de722b9d106d",
+  "previousGoalTurn": "progress:0141 fixes/validation/ledger completed;164 source hashes verified before this batch",
+  "goal": "active",
+  "batch": "0142 bounded production Modules exports/native usage verified;composition-only watch remains unfinished",
+  "validation": {
+    "viteTests": 154,
+    "newTests": 8,
+    "focusedModulesAndSassDiagnostics": 23,
+    "lintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "modules": {
+      "builds": 20,
+      "browserComparisons": 60,
+      "failures": 0
+    },
+    "sassControl": {
+      "builds": 15,
+      "browserComparisons": 90,
+      "failures": 0
+    },
+    "inlineControl": {
+      "builds": 14,
+      "browserComparisons": 84,
+      "failures": 0
+    },
+    "rootEditWatchControl": {
+      "builds": 6,
+      "browserComparisons": 18,
+      "failures": 0,
+      "scope": "CSS and Sass;initial,JS-only,and child change accompanied by explicit root edit"
+    },
+    "successfulMatrixBrowserTotal": 252,
+    "dependencyOnlyWatch": {
+      "managed": "CSS initial/JS-only six comparisons PASS;child-only edit times out;Sass not reached",
+      "pureVite": "Same CSS timeout after six initial/JS-only PASS",
+      "publicPreprocessCSS": "composed child absent from deps;child source map uses no-source placeholder",
+      "classification": "verified existing host limitation;requirement incomplete"
+    },
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2677 files (4 generated excluded, 1 bounded exception).",
+    "reproSyntax": "PASS;two scripts",
+    "whitespace": "PASS;source/docs/repros;raw logs retained"
+  },
+  "rootGates": "Two0141 API failures retain historical evidence;no public surface change/no golden refresh;all four gates remain open",
+  "artifacts": "All five0141 artifact hashes and raw/gzip/brotli sizes unchanged",
+  "preservation": {
+    "changedOrNewSources": 8,
+    "priorSourcesUnchanged": 159,
+    "totalSources": 167,
+    "foreignSite": "byte-preserved",
+    "index": "empty"
+  },
+  "limitations": [
+    "Composition-only dependency watch remains incomplete and matches pure Vite baseline",
+    "Development Modules/HMR and other modes not proven by production bridge",
+    "Other Modules scope/export options,nested composition,rename/delete/error recovery pending",
+    "Other preprocessors/user PostCSS/aliases/virtual resources/reference/multiple roots/cycles/SSR shared environments pending",
+    "Original Webpack3build12browser andlegacy39browser failures remain",
+    "No unused-export pruning or CPU/memory/runtime benchmark improvement claimed"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "paused": "0038 additional verification awaits explicit identity confirmation",
+  "terminalJobs": {
+    "originalModuleProbe": {
+      "session": 42435,
+      "exitCode": 1
+    },
+    "firstFixLintTypesBuildProbe": {
+      "session": 73252,
+      "exitCode": 0
+    },
+    "pruningProbe": {
+      "session": 69441,
+      "exitCode": 1
+    },
+    "firstPackageTests": {
+      "session": 17118,
+      "exitCode": 1
+    },
+    "finalModuleProbe": {
+      "session": 52659,
+      "exitCode": 0
+    },
+    "managedWatch": {
+      "session": 8647,
+      "exitCode": 1
+    },
+    "expandedTests": {
+      "session": 30091,
+      "exitCode": 0
+    },
+    "pureViteWatch": {
+      "session": 51359,
+      "exitCode": 1
+    },
+    "fullViteLintTypes": {
+      "session": 20166,
+      "exitCode": 0
+    },
+    "sassInlineControls": {
+      "session": 71061,
+      "exitCode": 0
+    },
+    "exampleBuild": {
+      "session": 71778,
+      "exitCode": 0
+    },
+    "rootEditWatchControl": {
+      "session": 72040,
+      "exitCode": 0
+    },
+    "sitePrepareLint": {
+      "session": 93002,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

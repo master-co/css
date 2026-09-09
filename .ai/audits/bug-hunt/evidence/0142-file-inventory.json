@@ -1,0 +1,158 @@
+{
+  ".ai/audits/bug-hunt/README.md": {
+    "bytes": 34886,
+    "sha256": "ccf2aae6ade326365a0a7264c27290bd075c89ad773a175050ac5d413979c3ae"
+  },
+  ".ai/audits/bug-hunt/batches/0142-css-modules.md": {
+    "bytes": 7365,
+    "sha256": "e2a9f15f20cac6b04b1192bd467144cea3ecd67722a2c46ab4caee10255c0f8c"
+  },
+  ".ai/audits/bug-hunt/changes.md": {
+    "bytes": 41216,
+    "sha256": "67fb231b4ad1328879117514d2203de1dba46c0898f8ea02e01130dd3e3590a4"
+  },
+  ".ai/audits/bug-hunt/coverage.md": {
+    "bytes": 36868,
+    "sha256": "3f047fa40a3163ed0fc44b469bdd7fa880f53ae079974897f16033dde51507e5"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-ai-context.log": {
+    "bytes": 121,
+    "sha256": "bdd715a7e231f175370c8fe58d91b00673919878338e2216030fb0edc75f487e"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-artifact-hashes.json": {
+    "bytes": 1243,
+    "sha256": "47d9cb25cf0be61fbc0101c8fb8bd501510a99d1ba25d9f481bf2245306f93d1"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-before-hashes.json": {
+    "bytes": 20521,
+    "sha256": "d92191cba122e8afd65eabac6ad6dbb41e69abb3ab63c24f1bb3b838770910a7"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-css-modules-after.log": {
+    "bytes": 10245,
+    "sha256": "1ed97ac27bb35527d690a4968cd22ff75c0d1ee2954c4e505d03db75aee6ab39"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-css-modules-before.log": {
+    "bytes": 23770,
+    "sha256": "0f639a25a44ed14db76d53f1d2d350f122865d1ebe9517a581dfd8351c9c2207"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-css-modules-final.log": {
+    "bytes": 17361,
+    "sha256": "2cea295f18ae3ccdd133411125778c44cadc2ff3c565d93fe7169942bcd36697"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-css-modules-pruning-before.log": {
+    "bytes": 17740,
+    "sha256": "27f7bab1cc00544032c8a8e370a18f7da900c9c1868ea5709a5365f474a49cee"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-example-build.log": {
+    "bytes": 1185,
+    "sha256": "cc80ea5f5cfd56a13ee7981eda75298760c207ace738843c6f967ce72b46c2b0"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-final-checks.json": {
+    "bytes": 4088,
+    "sha256": "cec20df52ee201450e0591fd3e9001a5e66ad5308c1b43c63b833dca360d8a53"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-inline-control.log": {
+    "bytes": 33242,
+    "sha256": "2e7a0123eb32c9a2259c7f915ca58a539ec6f2f7b78e35055178de2c5aa3dc2f"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-module-dependencies.log": {
+    "bytes": 559,
+    "sha256": "843b7a66de7d02cb611ab95448e832512f421d47ec16d6d28c2ad838ad75c262"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-tests-after.log": {
+    "bytes": 704,
+    "sha256": "c1331fc79b71d6258410c9e557d8de536e9a5df2a5d3f4300906462c3f1adddc"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-tests-expanded.log": {
+    "bytes": 753,
+    "sha256": "7a8f855b43ffc7c5e1b3ff54b9a7156abd8388a042457c33dab5ed728bb6c5ff"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-tests-first.log": {
+    "bytes": 1824,
+    "sha256": "e8a2c76da37aa6d41a16f9e8b830549551b471d4b9e5b2a88849d927b3f39d8e"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-watch-first.log": {
+    "bytes": 1960,
+    "sha256": "8eb9e5b0627a816c0df68a5653c0a8d07c13f30eb6d2162306f159a79f2352d9"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-watch-root-control.log": {
+    "bytes": 4912,
+    "sha256": "fb7d7017035075f96e9c0c118f937e639f4bb00ec8788ae9b0b6e19a711a4f71"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-modules-watch-vite-control.log": {
+    "bytes": 2056,
+    "sha256": "a4496cba3324cd701ecbf1bcc060b7c1fb2674cc26ff7f49aa9d1c3d1707c9b4"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-sass-control.log": {
+    "bytes": 28884,
+    "sha256": "afe2cb64d6a5798a459edd6038bb32bcfdcb33fb0fe479488d5513f53bc2794b"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-site-lint.log": {
+    "bytes": 11775,
+    "sha256": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-site-prepare.log": {
+    "bytes": 1208,
+    "sha256": "4603b6f761c3cbe3d7af61cf1d310f1f1b48979ac6d763fe3053b47ba2249fdf"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-source-hashes.json": {
+    "bytes": 20899,
+    "sha256": "47dbcc6b57c3ad90d2a087834ce3ce5ca5616c48a9400c4461405e43e7ba34eb"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-build-first.log": {
+    "bytes": 8456,
+    "sha256": "3778de5f93c9a131f5abac1185bb3c615bb4ab18c073862518fb59373f6cc109"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-build-second.log": {
+    "bytes": 8456,
+    "sha256": "b67c692cb7427001fd3cd3c11be8eb75bac11618b3b67e3adc35233ea77c779a"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-lint-final.log": {
+    "bytes": 9,
+    "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-lint-first.log": {
+    "bytes": 9,
+    "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-lint-second.log": {
+    "bytes": 9,
+    "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-tests-final.log": {
+    "bytes": 667,
+    "sha256": "c70003b075fc5f2bbe88bb9a913f261ece2cc24d1cd0a073ad260649f165c710"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-types-final.log": {
+    "bytes": 33,
+    "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-types-first.log": {
+    "bytes": 33,
+    "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-vite-types-second.log": {
+    "bytes": 33,
+    "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+  },
+  ".ai/audits/bug-hunt/evidence/0142-whitespace.log": {
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  ".ai/audits/bug-hunt/findings.md": {
+    "bytes": 41128,
+    "sha256": "36f75b202018646c72bbbaa781d740899aa5ea1310b355a2a010566dac2bc1de"
+  },
+  ".ai/audits/bug-hunt/report.md": {
+    "bytes": 36437,
+    "sha256": "cd0cdb22f912c6989a413d9a90c70f8af61e4098c703a47bf1d4d201a9be83d2"
+  },
+  ".ai/audits/bug-hunt/repros/vite-css-modules-watch.mjs": {
+    "bytes": 4624,
+    "sha256": "4867cc33ee4c273ccad7db158c1257ce59403d489a0077e984d757fa3ded5d77"
+  },
+  ".ai/audits/bug-hunt/repros/vite-css-modules.mjs": {
+    "bytes": 5154,
+    "sha256": "99340fae68f75487165730f29192848c8fb9404e8da966ae243f274cf04b313a"
+  }
+}

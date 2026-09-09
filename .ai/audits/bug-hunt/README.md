@@ -252,6 +252,12 @@
 
 ## 目前交接點
 
+- 使用者再次授權提交已完成部分：本次納入0141–0142已完成的查核紀錄、重現材料與原始證據；歷史HEAD／未提交描述保留為當時狀態。共用watch腳本僅提交與0142 inventory SHA-256一致的已驗證版本，0143擴充保留工作目錄。BH-0004產品／套件測試與其他對話Site變更未納入。0143直接子檔watch已6build／18browser PASS，新增dependency3tests與Modules9tests通過；但巢狀錯誤恢復最新6build／18browser為16PASS／2FAIL，Chromium恢復時請求不存在的JS／CSS資產，尚須區分watch事件時序、發布行為與腳本因素，不能宣稱修復完成。相關命令已結束；下一步先查事件與資產發布時序，再補穩定的恢復驗證及0143整批收尾，續dev/HMR、其他host與Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分驗證暫停不變，目標保持active；此次未推送。[提交範圍與保存證據](evidence/0142-commit-validation.json)。
+
+- 0142：修復managed CSS Modules匯出遺失，以及CSS／Sass Modules scoped names未進入scanner導致預設裁剪漏CSS；共用Vite預處理與既有scanner，cached模組重新登記usage。154Vite／lint/types/build／範例、20build／60Modules與Sass90／inline84browser通過；CSS/Sass root-edit watch6build／18browser通過。composition子檔單獨變更不觸發watch，純Vite亦重現且public preprocessCSS deps為空，仍未完成；下一步追依賴與dev/HMR，再續其他host與Webpack。5artifacts不變；33fixed／12unresolved、10blocked／4gates／4候選與0038身分暫停不變。HEAD3e44f4fb3，本批未提交／推送。[0142](batches/0142-css-modules.md)。
+
+- 0141：Sass診斷已接原始partial位置、插值粗略位置及additionalData對映；另修Rust移除entry／reference指令造成位移、compiler local lowering漏傳source text。84Rust／230compiler／146Vite、lint/types/build、Sass90／watch18／public native-Wasm198browser與5build診斷／發布控制通過；Site通過（75warnings）。compiler-Wasm+2665raw／726gzip／458brotli，runtime四產物不變；兩root API失敗hash不變。下一批續Modules／其他預處理與PostCSS／virtual resources／local-compose／HMR，再接Webpack；完整發布map與其他host情境仍未完成。33fixed／12unresolved、10blocked／4gates／4候選及0038身分暫停不變；HEAD3e44f4fb3，本批未提交／推送。[0141](batches/0141-sass-diagnostic-locations.md)。
+
 - 使用者再次授權提交已完成部分：此次納入0137–0140已完成的查核紀錄、10個重現腳本、原始證據與0139逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試、0141進行中材料及其他對話Site變更保留工作目錄。0141已重現三個Sass入口的診斷指向代理CSS，新增來源對映尚未完成；lint日誌通過，type-check有兩個TS2322錯誤（map可能是字串、sources可能含null），相關命令已結束。下一步先修正型別並新增原partial結構化位置測試，再build／重現／回歸驗證，完成0141帳本；不得將0140的PASS沿用至目前修改。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變，目標持續active；此次未推送。[提交範圍與保存證據](evidence/0140-commit-validation.json)。
 
 - 0140：inline已接renderBuiltUrl的js／css主機映射、runtime URL與URI編碼；修復映射改變卻沿用CSS檔名、relative base的client／SSR資產不一致。Vite131／lint/types/build、最終URL36／paired12／inline84／pruning30／watch18browser全PASS；Site通過（75warnings）。來源序列化仍由Rust負責，automatic hooks／multi-environment／cycles仍待驗證；下一批Sass原始位置對映，再續其他host與Webpack。33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0140](batches/0140-inline-built-urls.md)。 automatic stylesheet hooks、特殊路徑／callback、multi-environment／cycles仍待驗證；HEAD087655705，未提交／推送。
