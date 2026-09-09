@@ -416,11 +416,11 @@ export function activate(context: ExtensionContext) {
       }
       if (shouldRestart) {
         semanticTokensFeature.configure()
-        window.withProgress({
-          location: ProgressLocation.Notification,
-          title: `Setting "${affectedProperties}"`,
-        }, async () => await client.restart())
-        commands.executeCommand('eslint.restart')
+        try {
+          await restart({ title: `Setting "${affectedProperties}"` })
+        } catch (error) {
+          outputChannel.error('Failed to restart after a Master CSS setting change', error)
+        }
       }
     }),
   )
