@@ -9,7 +9,7 @@
 | BH-0001 | P2 | 已修復 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；0109語法位置、數值/簡寫欄位與變數上下文修復，87value/42variable browser及runtime273通過；[0109](batches/0109-animation-value-context.md)，[原始0002](batches/0002-stylesheet-resources.md) |
 | BH-0002 | P3 | 已修復 | raw stylesheet var() 空白、註解、跳脫與名稱邊界漏掉／誤收依賴 | engine/render；0110共用CSS tokens，25cases/75browser、native/Wasm及runtime273通過；[0110](batches/0110-variable-syntax.md)；[原始0002](batches/0002-stylesheet-resources.md) |
 | BH-0003 | P2 | 已修復 | static token 初始化與最後class刪除後遺失動態／transitive依賴 | engine/compiler；0111共用依賴圖保留與釋放，12Rust groups/132compiler/279runtime及72browser通過；[0111](batches/0111-static-retention.md)；[原始0003](batches/0003-static-resources.md) |
-| BH-0004 | P1 | 已確認 | 展開 CSS import 丟失 media/supports/layer，條件與 cascade 失真 | compiler/project；0092本機情境修正；0112確認external hoist的21browser cascade錯誤及18nested拒絕，仍未完成；[0112](batches/0112-external-import-order.md)；[0005](batches/0005-project-graph.md#bh-0004--p1-已確認展開匯入丟失條件與-cascade-layer) |
+| BH-0004 | P1 | 已確認 | 展開 CSS import 丟失 media/supports/layer，條件與 cascade 失真 | compiler/project；0092本機情境修正；0112確認external hoist的21browser cascade錯誤及18nested拒絕；0114新公開graph編譯126browserPASS但舊source graph入口仍39FAIL，仍未完成；[0112](batches/0112-external-import-order.md)；[0005](batches/0005-project-graph.md#bh-0004--p1-已確認展開匯入丟失條件與-cascade-layer) |
 | BH-0005 | P2 | 已修復 | numeric HTML references 未 decode，SSR class 與瀏覽器不同 | server；[0007](batches/0007-server-render.md) |
 | BH-0006 | P1 | 已修復 | encoded class 經 SSR style 注入變成可執行 script | server；[0007](batches/0007-server-render.md#bh-0006--p1-已確認html-encoded-class-可逃出-style-並執行腳本) |
 | BH-0007 | P2 | 已修復 | HTML 無 class 屬性時完全遺漏 static theme/keyframe 初始資源 | server；[0007](batches/0007-server-render.md) |
@@ -144,3 +144,7 @@
 - 0111：BH-0003已修復；145Rust全PASS、CSS72/compiler132/server67/runtime279、72static browser控制通過。31fixed/13unresolved，10blocked保持。另列standalone Node預設Wasm file-URL載入失敗為待分類候選；明確bytes控制不等於該API預設行為完成。[0111](batches/0111-static-retention.md)。
 
 - 0112：BH-0004新增直接證據，native/Wasm10cases一致，60browser21PASS/39FAIL；31fixed/13unresolved不變。完整保留stylesheet邊界與交付仍待實作，詳見[0112](batches/0112-external-import-order.md)。
+
+- 0113：BH-0004僅Rust graph/renderer初步實作，42Rust/132compiler/108graph browserPASS；重建後public baseline仍21PASS/39FAIL。未接既有入口、相對URL base與directive/native資產編譯，31fixed/13unresolved保持。[0113](batches/0113-stylesheet-boundaries.md)。
+
+- 0114：BH-0004仍部分修復；新公開compileStylesheets的native/Wasm/同步Node與126browser對照通過，50Rust/153compilerPASS。既有file/build/CLI路徑及相對URL未完成，root API檢查仍FAIL。31fixed/13unresolved保持；legacy string compiler native compose位置另留待入口分類。[0114](batches/0114-compiled-stylesheets.md)。

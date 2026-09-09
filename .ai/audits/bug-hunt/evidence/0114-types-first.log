@@ -1,0 +1,16 @@
+$ tsc -b tsconfig.typecheck.json
+$ tsc -b tsconfig.typecheck.json
+$ tsc -b tsconfig.typecheck.json
+src/compiler.ts(214,57): error TS2345: Argument of type 'MasterCSSDirectiveCompilation' is not assignable to parameter of type 'CSSDirectiveResult'.
+  The types of 'extractionPolicy.blocklist' are incompatible between these types.
+    Type '(string | MasterCSSRegex)[]' is not assignable to type '(string | RegExp)[]'.
+      Type 'string | MasterCSSRegex' is not assignable to type 'string | RegExp'.
+        Type 'MasterCSSRegex' is not assignable to type 'string | RegExp'.
+          Type 'MasterCSSRegex' is missing the following properties from type 'RegExp': exec, test, global, ignoreCase, and 13 more.
+src/index.ts(61,89): error TS2694: Namespace '"/Users/aron/master/css/packages/binding/.tsbuild/typecheck/src/compiler-binding"' has no exported member 'MasterCSSCompileStylesheetGraphRequest'.
+src/index.ts(66,82): error TS2694: Namespace '"/Users/aron/master/css/packages/binding/.tsbuild/typecheck/src/compiler-binding"' has no exported member 'MasterCSSCompiledStylesheet'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/compiler
+

@@ -1,0 +1,9 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/binding-wasm-compiler
+
+
+ Test Files  2 passed (2)
+      Tests  4 passed (4)
+   Start at  10:40:33
+   Duration  303ms (tests 64%, transform 26%, import 8%, worker 2%)
+

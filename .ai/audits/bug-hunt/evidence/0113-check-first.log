@@ -1,0 +1,5 @@
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.37s

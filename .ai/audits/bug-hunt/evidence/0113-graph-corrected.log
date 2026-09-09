@@ -1,0 +1,16 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.37s
+     Running tests/bug_hunt_stylesheet_graph.rs (target/debug/deps/bug_hunt_stylesheet_graph-ec0f3a8ccaf676cd)
+
+running 8 tests
+test preserves_duplicate_edges_and_loads_diamond_nodes_once ... ok
+test references_are_reported_with_original_filename_and_removed_before_ranges ... ok
+test renderer_rejects_missing_targets_urls_and_stale_ranges ... ok
+test provider_failures_and_cycles_retain_actionable_paths ... ok
+test decoded_imports_keep_utf16_ranges_and_opaque_text ... ok
+test renderer_preserves_external_bytes_and_escapes_host_urls ... ok
+test browser_corpus_assets ... ok
+test deep_graph_does_not_recurse_on_the_rust_call_stack ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+

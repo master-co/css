@@ -194,10 +194,18 @@
 
 - [0112](batches/0112-external-import-order.md) External import order：native/Wasm10一致，60browser對照21PASS/39FAIL；BH-0004仍未修復。
 
+- [0113](batches/0113-stylesheet-boundaries.md) Stylesheet boundaries：Rust graph/renderer初步實作，108browser與42Rust/132compilerPASS；既有public仍39FAIL，BH-0004未完成。
+
+- [0114](batches/0114-compiled-stylesheets.md) Compiled stylesheets：共用manifest、保留native compose位置，native/Wasm公開compileStylesheets的126browser、50Rust/153compiler通過；BH-0004尚未接既有file/build入口。
+
 ## 目前交接點
 
+- 本次依使用者「把已完成的部分 commit」指示，以 bece2e120 為父提交，僅提交 0113–0114 已完成的調查紀錄、驗證證據與重現材料。0092/0113/0114 的 compiler、binding、公開 API、測試及文件實作尚未完成整體交付，全部留在工作區；Site 其他工作亦不納入。證據描述的是來源雜湊所標識的工作區版本，重現腳本依賴尚未提交的 graph 原始碼與測試 corpus，不能在本次提交的乾淨 checkout 單獨重跑。45 個來源／保留雜湊均與 0114 最終記錄一致。BH-0004、13 個未解決問題、10 個受阻單位及四項 root gates 保持未完成；0038 追加驗證繼續暫停。未推送。
+
+- 0114當前交接：Rust graph編譯與native/Wasm/同步Node公開compileStylesheets已接通，共用完成後manifest解析跨檔managed compose，保留每檔native規則與compose位置。21cases/126browser、50Rust/153compiler、binding17/Wasm4與build/lint/types/Clippy/codegen/parity通過；root API檢查仍FAIL，新增公開型別亦有golden差異。BH-0004保持未完成：下一步來源URL ownership/base、prepared reference/import discovery、既有file/project/stylesheet/build/CLI實際交付。[0114](batches/0114-compiled-stylesheets.md)。本批未提交，HEADbece2e120。
+
 - 本次依使用者「把已完成的部分 commit」指示，以7e225b3da為父提交，納入0110–0111的BH-0002/0003完成修復、回歸測試、重現及0110–0112帳本證據。0112只代表追加診斷完成，BH-0004仍未修復；0092與0113的compiler產品/測試以及Site其他工作不納入，未推送。提交前確認完成來源與0112記錄的最終hash一致。
-- 0113工作區接續點：已新增Rust stylesheet_graph.rs與compiler lib exports，從imports.rs抽出共用source/reference載入；cargo check通過，但尚無新graph測試、binding/host串接或實際多樣式表交付驗證，全部保留未提交。下一步先補ordered edges、條件、外部參照、UTF-16、cycle及render測試，再接既有public/host輸出；不得將新增未被消費的API視為BH-0004完成。
+- 0113工作區接續點：Rust ordered stylesheet graph與URL renderer已實作，8新Rust groups、完整42Rust/132compiler及108三瀏覽器graph資產對照通過；保留重複邊、條件/layer、UTF-16、external及cycle行為。既有public入口重跑仍21PASS/39FAIL，BH-0004未修復。接著完成directive/native編譯、URL base保留、native/Wasm transport與compiler/project/stylesheet/build/CLI實際消費；不能以Rust-only API結案。[0113](batches/0113-stylesheet-boundaries.md)。所有本批修改未提交。
 
 - 0112續查BH-0004：三瀏覽器60對照21PASS/39FAIL（21實際cascade錯誤、18既有qualified nested external拒絕）；native/compiler-Wasm10cases一致。新增重現與邊界保留實作路徑，未改產品；不能以hoist或明確error視為完成。
 - 0111已完成BH-0003：static根節點保留完整依賴圖，inline中介只傳遞依賴；145Rust全通過，CSS72/compiler132/server67/runtime279及72三瀏覽器控制通過。本次納入提交，詳見0111。
@@ -208,11 +216,11 @@
 - 0094：runtime CSP native JSON import與iframe Document/ShadowRoot mutation修復；273browser tests、lint/types/build通過。標準Chromium benchmark前後均完成；global gzip減112bytes，manifest/Wasm hashes不變。原始benchmark history保留/tmp/mastercss-0094-{before,after}.{json,log}，不納入repo/commit。
 - 0095：scanner及Node/native CLI.mjs來源發現修復；scanner80、NodeCLI28、RustCLI3、Vite99tests与3browser實際static build通過。上批0092新test缺baseManifest的型別錯誤已修正，3tests及下游型別檢查通過，最新test hash見0095。
 - BH-0004仍部分修復：本機qualified/nested imports已驗證，但含未展開external import的條件/圖層/cascade保留未完成，目前明確回報限制，不能標fixed。
-- 下一步BH-0004：依0112從Rust graph保留ordered edges與stylesheet boundaries，核對compiler/project/stylesheet與build/CLI輸出契約，實作可保留外部import位置的交付方式，再用現有60失敗對照與0092本機96控制驗證。單一source字串直接hoist已證實錯誤；不得只改成error就結案。13已確認未解決、四root檢查失敗、10blocked及未分類候選保持。
+- 下一步BH-0004：依0114完成來源URL ownership/base、prepared references與decoded imports，將新graph編譯接到既有file/project/stylesheet/build/CLI入口；再用原public60對照、擴充21cases及0092本機96控制驗證。單一source字串直接hoist已證實錯誤；不得只改成error就結案。13已確認未解決、四root檢查失敗、10blocked及未分類候選保持。
 - Integration lab0038追加驗證仍等待使用者明確確認身分驗證已通過；目標更新不是身分確認，不重試該追加驗證。
 - 上次依使用者要求提交已完成部分：以dba77281f為父提交，提交0093–0095的5項修復（BH-0008/0009/0012/0018/0022）及已整理的帳本/證據。0092的compiler產品修改與測試仍保留未提交；其帳本與證據只記錄工作目錄的部分進度，不代表本提交包含該修復。其他工作site/next.config.js、site/AGENTS.md、site/CLAUDE.md保持原樣。未改fixtures/snapshots、依賴、lockfile、CI/release。
 - 目前HEAD b056fbf33已提交0096–0100的5項完成修復（上次使用者提交指示）：BH-0019/0026/0020/0011/0010，包含必要產品修改、回歸測試與帳本/證據。來源及測試雜湊均與各批最終驗證一致。0092 compiler部分修復及Site其他工作不納入。
-- 待查候選（尚未建立問題ID）：compiler diagnostics與MCP resolveSourceFiles的預設glob仍缺.mjs，需實際inspect/scan確認；Webpack parallel suite共享dist失敗；0111獨立Node public createEngine(binding:wasm)預設file-URL fetch失敗，需核對預設載入契約。指定bytes成功或已記錄限制均不能將這些候選結案。
+- 待查候選（尚未建立問題ID）：compiler diagnostics與MCP resolveSourceFiles的預設glob仍缺.mjs，需實際inspect/scan確認；Webpack parallel suite共享dist失敗；0111獨立Node public createEngine(binding:wasm)預設file-URL fetch失敗，需核對預設載入契約。0114另留legacy string compiler的native @compose插入位置待直接入口分類；新graph位置修復不等於舊入口完成。指定bytes成功或已記錄限制均不能將這些候選結案。
 - 0099已完成BH-0011：走訪Svelte else/await分支；tooling208tests加原始回歸、lint/types/build與三瀏覽器static分支互動通過。BH-0010當時仍FAIL，現已由0100修復；新scanner測試缺manifest已修正，不列產品問題。所有command/browser jobs已terminal，暫存專案已清理。
 - 0100已完成BH-0010：Rust HTML attribute解碼與token讀取；23312cases三瀏覽器/native/Wasm一致、Rust14/tooling212/CLI34/inspection4/Vite99及實際static browser通過。本次提交包含產品/測試/帳本；所有jobs terminal。Tooling Wasm gzip增14360bytes，runtime engine Wasm hash未變；資料表無新依賴。
 - 0101修復後仍保留20未解決與10blocked coverage，不清理帳本、不推送。未修改fixtures/snapshots、依賴、lockfile、CI/release；Site其他工作hash保持原樣。

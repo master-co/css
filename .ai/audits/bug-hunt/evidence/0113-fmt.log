@@ -1,0 +1,106 @@
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:4:
+ mod manifest;
+ 
+ pub use lower::{
+-    LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
+-    lower_css_directives, lower_css_directives_request,
++    lower_css_directives, lower_css_directives_request, LowerCssDirectivesOptions,
++    LowerCssDirectivesRequest, LowerCssDirectivesResult,
+ };
+ pub use manifest::{
+-    CompileDefaultPresetRequest, CompileDefaultPresetResult, CompileManifestOptions,
+-    CompileManifestResult, compile_default_preset_manifest, compile_manifest_input,
+-    compile_manifest_input_with_styles, normalize_default_manifest_for_json,
+-    normalize_manifest_for_json,
++    compile_default_preset_manifest, compile_manifest_input, compile_manifest_input_with_styles,
++    normalize_default_manifest_for_json, normalize_manifest_for_json, CompileDefaultPresetRequest,
++    CompileDefaultPresetResult, CompileManifestOptions, CompileManifestResult,
+ };
+ 
+ use std::collections::{HashMap, HashSet};
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:22:
+ use lightningcss::error::{PrinterError, PrinterErrorKind};
+ use lightningcss::printer::Printer;
+ use lightningcss::properties::Property;
+-use lightningcss::rules::CssRule;
+ use lightningcss::rules::keyframes::KeyframesName;
+ use lightningcss::rules::style::StyleRule;
+ use lightningcss::rules::unknown::UnknownAtRule;
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:29:
++use lightningcss::rules::CssRule;
+ use lightningcss::selector::{Component, Selector};
+ use lightningcss::stylesheet::{MinifyOptions, ParserOptions, PrinterOptions, StyleSheet};
+ use lightningcss::traits::{AtRuleParser, ToCss};
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:32:
+ use lightningcss::visit_types;
+ use lightningcss::visitor::{Visit, VisitTypes, Visitor};
+ use mastercss_lexer::{
+-    StandaloneCssDirectiveStatement, byte_to_utf16_offset, collect_class_list_token_ranges,
+-    extract_top_level_at_rule_blocks, find_css_directive_ranges, find_css_import_statements,
+-    find_master_directive_statements, parse_css_import_source, remove_css_reference_statements,
+-    remove_master_directive_statements, remove_standalone_css_directives, utf16_to_byte_offset,
++    byte_to_utf16_offset, collect_class_list_token_ranges, extract_top_level_at_rule_blocks,
++    find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
++    parse_css_import_source, remove_css_reference_statements, remove_master_directive_statements,
++    remove_standalone_css_directives, utf16_to_byte_offset, StandaloneCssDirectiveStatement,
+ };
+ use mastercss_schema::{
+     CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy,
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:631:
+ };
+ pub(crate) use managed::lower_managed_rule_list;
+ pub(crate) use native_style::{
+-    NativeStyleContext, lower_native_rule_list, lower_native_style_rule,
+-    native_rule_list_has_directives,
++    lower_native_rule_list, lower_native_style_rule, native_rule_list_has_directives,
++    NativeStyleContext,
+ };
+ pub(crate) use pattern::{
+-    ParsedManagedPattern, condition_properties, css_block_end, css_statement_delimiter,
+-    lower_managed_pattern_style, mask_managed_pattern_names, minified_css, trim_byte_range,
++    condition_properties, css_block_end, css_statement_delimiter, lower_managed_pattern_style,
++    mask_managed_pattern_names, minified_css, trim_byte_range, ParsedManagedPattern,
+ };
+ pub(crate) use syntax::{
+     collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/lib.rs:657:
+     compile_native_css, inspect_css, resolve_css_import_graph, resolve_prepared_css_import_graph,
+ };
+ pub use stylesheet_graph::{
+-    CssStylesheetAsset, CssStylesheetGraph, CssStylesheetImport, CssStylesheetNode,
+     render_css_stylesheet_graph, resolve_css_stylesheet_graph,
+-    resolve_prepared_css_stylesheet_graph,
++    resolve_prepared_css_stylesheet_graph, CssStylesheetAsset, CssStylesheetGraph,
++    CssStylesheetImport, CssStylesheetNode,
+ };
+ 
+ #[cfg(test)]
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/imports.rs:1:
+ use super::{
++    filter_native_css_rules, find_css_directive_ranges, find_css_import_statements,
++    find_master_directive_statements, normalize_stylesheet_value, parse_css_import_source,
++    remove_css_reference_statements, remove_master_directive_statements, utf16_to_byte_offset,
+     CompileNativeCssOptions, CompileNativeCssResult, CompilerError, CssDirectiveBlocklistEntry,
+     CssDirectiveExtractionPolicy, CssDirectiveReferenceStatement, CssImportGraphRequest,
+     CssImportProvider, HashSet, InspectCssDirective, InspectCssResult, MinifyOptions,
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/imports.rs:5:
+     ParserOptions, PreparedCssImportProvider, PrinterOptions, ResolvedCssImportGraph,
+-    StandaloneCssDirectiveStatement, StyleSheet, filter_native_css_rules,
+-    find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
+-    normalize_stylesheet_value, parse_css_import_source, remove_css_reference_statements,
+-    remove_master_directive_statements, utf16_to_byte_offset,
++    StandaloneCssDirectiveStatement, StyleSheet,
+ };
+ use lightningcss::{rules::CssRule, traits::ToCss};
+ 
+Diff in /Users/aron/master/css/crates/mastercss-compiler/src/stylesheet_graph.rs:6:
+     traits::ToCss,
+ };
+ use mastercss_lexer::{
+-    CssSyntaxKind, byte_to_utf16_offset, collect_css_syntax_statements, tokenize_css_syntax,
+-    utf16_to_byte_offset,
++    byte_to_utf16_offset, collect_css_syntax_statements, tokenize_css_syntax, utf16_to_byte_offset,
++    CssSyntaxKind,
+ };
+ use serde::{Deserialize, Serialize};
+ 

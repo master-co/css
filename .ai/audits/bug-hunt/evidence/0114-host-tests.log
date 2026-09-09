@@ -1,0 +1,37 @@
+$ cargo xtask build-native && cargo xtask build-wasm compiler && vitest --run
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.79s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.08s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running `/Users/aron/master/css/target/debug/xtask build-wasm compiler`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
+    Finished `release` profile [optimized] target(s) in 15.30s
+Built /Users/aron/master/css/packages/binding-wasm-compiler/artifacts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] app/page.tsx 4 classes inserted in 0.5ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.2ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+ Test Files  17 passed (17)
+      Tests  152 passed (152)
+   Start at  10:38:25
+   Duration  10.50s (tests 95%, transform 3%, import 2%)
+

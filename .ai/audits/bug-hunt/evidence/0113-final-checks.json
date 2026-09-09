@@ -1,0 +1,52 @@
+{
+  "head": "bece2e120",
+  "previousGoalTurn": "progress: committed and verified completed BH-0002/0003 as bece2e120",
+  "goal": "active",
+  "BH-0004": "partial: Rust graph renderer validated; actual public path remains unfixed",
+  "validation": {
+    "rustCompiler": 42,
+    "newGraphGroups": 8,
+    "compilerHost": 132,
+    "graphBrowser": 108,
+    "existingLocalBrowser": 96,
+    "publicExternalBaseline": {
+      "nativeWasmParityCases": 10,
+      "browserPass": 21,
+      "browserFail": 39,
+      "wrongCascade": 21,
+      "typedRefusals": 18
+    },
+    "clippy": "PASS",
+    "compilerLint": "PASS",
+    "compilerTypes": "PASS",
+    "codegen": "PASS",
+    "edition2024Rustfmt": "PASS",
+    "aiContext": "PASS",
+    "missingLedgerLinks": []
+  },
+  "materialErrors": [
+    "New reference test used filename instead of file; corrected",
+    "Standalone Rustfmt omitted edition2024; corrected invocation",
+    "Plain Node and compiler-API wrapper do not resolve extensionless TS imports; original local-browser driver succeeded with node --import tsx",
+    "Initial ledger-link check treated :line suffixes as filenames; corrected path parser, all file targets exist"
+  ],
+  "fixedFindings": 31,
+  "unresolvedFindings": 13,
+  "coverage": {
+    "checked": 65,
+    "blocked": 10
+  },
+  "remaining": [
+    "Actual directive/native compilation per stylesheet and manifest graph orchestration",
+    "Relative declaration URL/base preservation",
+    "Native/Wasm transport and decoded prepared edges",
+    "Existing compiler/project/stylesheet/build/CLI consumption and actual delivery",
+    "Other indexed findings, blocked coverage, four root checks and three unclassified candidates"
+  ],
+  "integrationLab": "0038additional verification paused pending explicit identity confirmation",
+  "activeJobs": [],
+  "index": "empty",
+  "newCommit": false,
+  "push": false,
+  "preservation": "0113-source-hashes.json verifies16completed/excluded source/test/Site files unchanged"
+}

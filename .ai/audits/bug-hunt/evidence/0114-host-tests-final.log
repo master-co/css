@@ -1,0 +1,66 @@
+$ cargo xtask build-native && cargo xtask build-wasm compiler && vitest --run
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.11s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.37s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-wasm compiler`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
+    Finished `release` profile [optimized] target(s) in 15.47s
+Built /Users/aron/master/css/packages/binding-wasm-compiler/artifacts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] app/page.tsx 4 classes inserted in 0.6ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+ ❯ tests/bug-hunt-compiled-stylesheets.test.ts (21 tests | 1 failed) 10242ms
+   × BH-0004 reference context is explicit and is not merged into the emitted manifest 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-compiled-stylesheets.test.ts > BH-0004 reference context is explicit and is not merged into the emitted manifest
+AssertionError: expected undefined to deeply equal []
+
+- Expected:
+[]
+
++ Received:
+undefined
+
+ ❯ tests/bug-hunt-compiled-stylesheets.test.ts:71:39
+     69|     const result = compiler.compileStylesheets({ ...request, resolutio…
+     70|     expect(result.css).toContain('color:red')
+     71|     expect(result.manifest.utilities).toEqual([])
+       |                                       ^
+     72|   }
+     73| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 16 passed (17)
+      Tests  1 failed | 152 passed (153)
+   Start at  10:39:45
+   Duration  10.45s (tests 95%, transform 3%, import 2%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/compiler
+

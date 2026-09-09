@@ -170,3 +170,9 @@
 0112新增external-import-order重現與帳本診斷，沒有產品修改：native/compiler-Wasm10cases同結果，60三瀏覽器對照21PASS/39FAIL，區分21實際cascade錯誤與18typed拒絕。保持BH-0004未完成，具體graph/stylesheet-boundary與host交付下一步見[0112](batches/0112-external-import-order.md)。既有0092/0110/0111及Site來源hash保持、未commit/push，不重跑暫停的0038追加驗證。
 
 本次依使用者指示提交0110–0111的BH-0002/0003完成修復及0110–0112調查證據，以7e225b3da為父提交。完成來源與既有最終hash一致；提交前重跑engine/lexer/render測試。0092/0113 compiler部分修改、新graph及未完成測試與Site其他工作保留未提交；未推送，未納入benchmark原始history。當前0113接續點見README；goal仍active，0038追加驗證仍暫停。
+
+0113新增compiler Rust stylesheet graph/renderer與共用source/reference載入，8Rust test groups/18-case corpus和108三瀏覽器資產控制通過；42Rust/132compiler、Clippy/lint/types/codegen通過。原public入口39FAIL保持，BH-0004未完成；未動binding protocol/host入口、依賴或runtime。本批不commit/push，下一步及測試材料錯誤分類見[0113](batches/0113-stylesheet-boundaries.md)。
+
+0114新增Rust圖編譯、private native compose位置、native/Wasm ABI與公開compileStylesheets，透過xtask template產生protocol，未手改生成檔。50Rust/153compiler、binding17/Wasm4、126browser、built native/Wasm/Node sync及lint/types/build/Clippy/parity通過；原API golden與census仍FAIL，未改golden。既有file/build入口及URL ownership/base待接通，BH-0004未結案。runtime產物hash不變；compilerWasm當前大小與測試材料/實作錯誤分類見[0114](batches/0114-compiled-stylesheets.md)。未commit/push，保留Site與既有工作。
+
+本次依使用者「把已完成的部分 commit」指示，以 bece2e120 為父提交，僅提交 0113–0114 已完成的調查紀錄、驗證證據與重現材料。0092/0113/0114 的 compiler、binding、公開 API、測試及文件實作尚未完成整體交付，全部留在工作區；Site 其他工作亦不納入。證據描述的是來源雜湊所標識的工作區版本，重現腳本依賴尚未提交的 graph 原始碼與測試 corpus，不能在本次提交的乾淨 checkout 單獨重跑。45 個來源／保留雜湊均與 0114 最終記錄一致。BH-0004、13 個未解決問題、10 個受阻單位及四項 root gates 保持未完成；0038 追加驗證繼續暫停。未推送。

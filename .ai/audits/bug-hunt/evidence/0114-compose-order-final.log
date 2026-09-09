@@ -1,0 +1,9 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.30s
+     Running tests/bug_hunt_compiled_stylesheet_graph.rs (target/debug/deps/bug_hunt_compiled_stylesheet_graph-792003b7d407ad9b)
+
+running 1 test
+test native_compose_keeps_its_position_before_later_native_rules ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.01s
+

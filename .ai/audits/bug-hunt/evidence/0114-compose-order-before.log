@@ -1,0 +1,22 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.28s
+     Running tests/bug_hunt_compiled_stylesheet_graph.rs (target/debug/deps/bug_hunt_compiled_stylesheet_graph-792003b7d407ad9b)
+
+running 1 test
+test native_compose_keeps_its_position_before_later_native_rules ... FAILED
+
+failures:
+
+---- native_compose_keeps_its_position_before_later_native_rules stdout ----
+
+thread 'native_compose_keeps_its_position_before_later_native_rules' (37464461) panicked at crates/mastercss-compiler/tests/bug_hunt_compiled_stylesheet_graph.rs:146:104:
+called `Option::unwrap()` on a `None` value
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    native_compose_keeps_its_position_before_later_native_rules
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_compiled_stylesheet_graph`

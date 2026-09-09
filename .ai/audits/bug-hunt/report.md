@@ -1,8 +1,8 @@
 # Master CSS 調查交付
 
-起始 commit `e66ba7236`，本次以 `7e225b3da` 為父提交，納入0110–0111的BH-0002/0003完成修復、測試與0110–0112帳本證據。0092/0113的BH-0004未完成產品/測試與Site其他工作留在工作區，未推送。0112僅完成追加診斷。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
+起始 commit `e66ba7236`。本次以 `bece2e120` 為父提交，僅保存 0113–0114 調查、證據及重現材料；compiler/binding 的部分實作、測試與 Site 其他工作保留未提交。證據對應工作區來源雜湊，並非本提交可獨立重現的產品版本。進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-44個歷史確認問題：31已修復、13未解決。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
+44個歷史確認問題：31已修復、13未解決。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
