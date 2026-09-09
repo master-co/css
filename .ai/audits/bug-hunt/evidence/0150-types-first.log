@@ -1,0 +1,11 @@
+$ tsc -b tsconfig.typecheck.json
+tests/plugins/bug-hunt-sass-environment.test.ts(32,96): error TS2339: Property 'type' does not exist on type 'never'.
+tests/plugins/bug-hunt-sass-environment.test.ts(32,124): error TS2339: Property 'updates' does not exist on type 'never'.
+tests/plugins/bug-hunt-sass-environment.test.ts(59,97): error TS2339: Property 'type' does not exist on type 'never'.
+tests/plugins/bug-hunt-sass-environment.test.ts(59,125): error TS2339: Property 'updates' does not exist on type 'never'.
+tests/plugins/bug-hunt-sass-environment.test.ts(59,137): error TS7006: Parameter 'update' implicitly has an 'any' type.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

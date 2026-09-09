@@ -1,5 +1,13 @@
 # 覆蓋清單
 
+- 0150：修復Sass browser CSS訊息送進SSR channel、restart scanner初始化競速、舊URL回呼污染新server與HTTP回應後URL尚未登記的競速。新增3actual-server回歸；Vite166tests／lint/types/build／範例及Site PASS。環境48browser＋16SSR、原request96、partial36通過；舊連線重啟重連仍待驗，新請求控制不替代它。raw alias／顏色序列化oracle與本輪編輯錯誤分開留證。下一批live reconnect、middleware／custom environment，再續資源／reference與其他host／Webpack；12unresolved／10blocked／4gates／4候選及0038身分暫停保持。HEAD45747c24a，未提交／推送。[0150](batches/0150-sass-environments-restart.md)。
+
+- 0149：修復普通Sass partial刪除／恢復：改用接收create/delete的公開hotUpdate，失效／預處理失敗時保留最後依賴，成功時替換。修前72觀測18FAIL；修後direct／nested partial144、原request96、Modules36與build watch18共294browser PASS；Vite163tests與focused6通過。小SVG內嵌的初版資源oracle錯誤分開保留；partial相對資源實際URL與內容通過。下一批client／SSR與restart隔離，再續資源／reference與其他host／Webpack；0144缺檔、0148Modules URL及12unresolved／10blocked／4gates／4候選仍未完成，0038身分暫停不變。HEAD45747c24a，未提交／推送。[0149](batches/0149-sass-partial-recovery.md)。
+
+- 0148：CSS/Sass Modules的inline／raw初始與更新48browser、普通Sass URL控制6browser PASS；Vite8.2.2拒絕.module.css／.module.scss的?url，modules:false亦同。8個公開主機控制確認限制，24個瀏覽器失敗保留；不將拒絕視為交付完成。初版要求不存在的error.plugin屬oracle錯誤，已更正；本批僅重現與文件。下一批普通Sass partial／resource/reference ownership；Modules URL、0144巢狀缺檔、其他host／Webpack與12unresolved／10blocked／4gates／4候選仍未完成，0038身分暫停維持。HEAD45747c24a，未提交／推送。[0148](batches/0148-module-request-modes.md)。
+
+- 0147：Sass ?url以公開middleware／module graph追蹤實際stylesheet URL並補送匹配link的CSS HMR；Vite162tests／lint/types/build／範例PASS，持續link的request96、Modules18、nested路徑24與連續更新9共147browser PASS。停用tracking對照3更新FAIL；精確alias不匹配query在pure Vite亦失敗，改目錄alias後通過，屬腳本設定錯誤。下一批Module request modes、partial／其他host與Webpack；0144巢狀缺檔仍未修復。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變。HEAD45747c24a，本批未提交／推送。[0147](batches/0147-sass-url-hmr.md)。
+
 固定 ID 不重新編號；狀態只用未開始／進行中／已檢查／受阻。已檢查只代表所列行為完成，不代表沒有其他 bug。
 
 總計：75 單位（53 pnpm 子工作區、18 crates、4 補充單位）。優先順序見 README。

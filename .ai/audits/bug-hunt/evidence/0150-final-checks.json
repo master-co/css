@@ -1,0 +1,163 @@
+{
+  "head": "45747c24a7fe8d175b13af54bc5bcdb2a9feb07e",
+  "goal": "active",
+  "batch": "0150 client/server HMR isolation and restarted-server request lifecycle repaired;live reconnect remains unverified",
+  "previousGoalTurn": "progress:0149 partial recovery fix and294browser/163tests",
+  "validation": {
+    "viteTests": 166,
+    "testFiles": 30,
+    "newTests": 3,
+    "focusedLifecycle": 17,
+    "focusedPending": 3,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "environmentBrowserSSR": {
+      "browserComparisons": 48,
+      "browserFailures": 0,
+      "ssrComparisons": 16,
+      "ssrFailures": 0
+    },
+    "requestControl": {
+      "comparisons": 96,
+      "failures": 0
+    },
+    "partialControl": {
+      "comparisons": 36,
+      "failures": 0
+    },
+    "totalBrowserRows": 180,
+    "ssrOutputs": 16,
+    "ssrRendering": "Each SSR output rendered independently in three browser shadow roots",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "New repro PASS",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2700 files (4 generated excluded, 1 bounded exception)."
+  },
+  "classifications": {
+    "serverChannel": "New actual-server test reproduced CSS browser payload sent to SSR channel;filter only stylesheet payloads by consumer;module invalidation retained",
+    "restartScanner": "Newserver configured before oldserver closes;parallel buildStart consumers now share andawaitexisting scanner init capability",
+    "oldURL": "Clear alone failed;old async callbacks contaminatedsharedMap;per-serverMap identity repaired",
+    "pendingURL": "Fullsuite164PASS/1FAIL;controlledpendingregistration test passeswithwait, failswithout;source restoredbyte-identically",
+    "harness": "Exactalias rawHTTP route didnot exercisegraph;customresolver+processedCSS assertions corrected;overloadspytype assumptions andduplicateimport fixed",
+    "restartClient": "Purehost firstloop3FAIL involvedreconnect/reload timing;newrequest verification detachesoldpages;doesnot prove live reconnect",
+    "ssrColor": "blue legitimatelyserialized#00f;corrected to realbrowserCSS rendering"
+  },
+  "preservation": {
+    "originalBaselineSources": 179,
+    "additionalBaselineBeforeEdit": 3,
+    "changedOrNewSources": 8,
+    "priorSourcesPreserved": 176,
+    "totalSources": 184,
+    "foreignSite": "byte-preserved exceptcontractprose",
+    "artifacts": "five byte-identical",
+    "index": "empty",
+    "unexpectedDirtySourcePaths": []
+  },
+  "limitations": [
+    "Live browser reconnection acrossserverrestart remains pending",
+    "Middleware/customenvironments andconcurrentreuse ofsameplugininstances not proven by twoindependentroots",
+    "Resource mutations/referenceownership,other preprocessors/PostCSS andfullpublishedmaps pending",
+    "0144 nestedCSSModules missingcomposition hosttermination and0148Modules?url delivery stillopen",
+    "Webpack3build12browser/legacy39browser failures,4rootgates/4candidates remain"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 requires explicit useridentity confirmation",
+  "terminalJobs": {
+    "environmentBefore": {
+      "session": 35106,
+      "exitCode": 1
+    },
+    "restartBefore": {
+      "session": 54258,
+      "exitCode": 1
+    },
+    "firstLifecycleParse": {
+      "exitCode": 1
+    },
+    "secondLifecycle": {
+      "session": 68078,
+      "exitCode": 1
+    },
+    "restartTrace": {
+      "session": 94838,
+      "exitCode": 1
+    },
+    "firstTypesLint": {
+      "session": 78666,
+      "exitCode": 0,
+      "note": "collector continued aftertypes1;lint0"
+    },
+    "correctedRoute": {
+      "session": 88536,
+      "exitCode": 1
+    },
+    "clearOnly": {
+      "session": 23846,
+      "exitCode": 1
+    },
+    "mapIsolationChecks": {
+      "session": 18862,
+      "exitCode": 0
+    },
+    "firstBrowser": {
+      "session": 70303,
+      "exitCode": 1
+    },
+    "firstFullSuite": {
+      "session": 38271,
+      "exitCode": 1
+    },
+    "pendingWaitChecksBuild": {
+      "session": 55934,
+      "exitCode": 0
+    },
+    "finalBrowser": {
+      "session": 64419,
+      "exitCode": 0
+    },
+    "secondSuite165": {
+      "session": 70470,
+      "exitCode": 0
+    },
+    "partialControl": {
+      "session": 5161,
+      "exitCode": 0
+    },
+    "requestControl": {
+      "session": 80661,
+      "exitCode": 0
+    },
+    "pendingTest": {
+      "session": 72349,
+      "exitCode": 0
+    },
+    "withoutWaitControl": {
+      "session": 26262,
+      "exitCode": 0,
+      "note": "collector assertedinnerfocusedtestexit1 andrestoredsource"
+    },
+    "finalSuite166TypesLint": {
+      "session": 8490,
+      "exitCode": 0
+    },
+    "siteExample": {
+      "session": 68819,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

@@ -1,0 +1,36 @@
+$ vitest --run tests/utils/bug-hunt-sass-missing-dependency.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/utils/bug-hunt-sass-missing-dependency.test.ts (1 test | 1 failed) 128ms
+   × BH-0004 a missing Sass partial retains recovery edges until a successful source removes them 127ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/utils/bug-hunt-sass-missing-dependency.test.ts > BH-0004 a missing Sass partial retains recovery edges until a successful source removes them
+AssertionError: expected [] to include '/private/var/folders/_b/768dhtz56ns54…'
+ ❯ tests/utils/bug-hunt-sass-missing-dependency.test.ts:25:26
+     23|     const dependencies: string[] = []
+     24|     await expect(prepareBuildSassSource(context, entry, file => depend…
+     25|     expect(dependencies).toContain(partial)
+       |                          ^
+     26|     writeFileSync(partial, '$tone:blue;')
+     27|     expect(invalidatePreparedSassSources(context, partial)).toEqual([e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  22:22:05
+   Duration  267ms (tests 63%, import 29%, transform 8%, worker 1%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

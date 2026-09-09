@@ -1,0 +1,5 @@
+{"extension":"css","managed":false,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-AtyVmU/style.module.css?url\")"},"classification":"HOST_UNSUPPORTED"}
+{"extension":"css","managed":true,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-hmPMR0/style.module.css?url\")"},"classification":"HOST_UNSUPPORTED"}
+{"extension":"scss","managed":false,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-vW55Ih/style.module.scss?url\")"},"classification":"HOST_UNSUPPORTED"}
+{"extension":"scss","managed":true,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-mQtdo8/style.module.scss?url\")"},"classification":"HOST_UNSUPPORTED"}
+{"controls":4,"hostUnsupported":4}

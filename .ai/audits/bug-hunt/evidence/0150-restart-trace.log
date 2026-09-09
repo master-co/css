@@ -1,0 +1,48 @@
+$ vitest --run tests/plugins/bug-hunt-sass-environment.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 server restart discards stylesheet URLs served by the previous server
+MODULES []
+
+stdout | tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 server restart discards stylesheet URLs served by the previous server
+GRAPH undefined
+
+stdout | tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 server restart discards stylesheet URLs served by the previous server
+WATCH change /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-sass-restart-TFmsxf/style.scss
+
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts (2 tests | 1 failed) 2077ms
+   × BH-0004 server restart discards stylesheet URLs served by the previous server 1261ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 server restart discards stylesheet URLs served by the previous server
+AssertionError: expected "send" to be called with arguments: [ { type: 'update', …(1) } ]
+
+Number of calls: 0
+
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts:56:41
+     54|     }
+     55|     writeFileSync(file, source('blue'))
+     56|     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: '…
+       |                                         ^
+     57|       { type: 'css-update', path: '/new.scss', acceptedPath: '/new.scs…
+     58|     ]) }))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  22:34:43
+   Duration  2.57s (tests 83%, transform 11%, import 6%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

@@ -258,7 +258,25 @@
 
 - [0146](batches/0146-development-style-requests.md) Development requests：共用manifest HMR修復驗證通過；Sass URL更新仍3FAIL，待續。
 
+- [0147 Sass URL HMR](batches/0147-sass-url-hmr.md)：限定URL更新驗證完成；其他交付未完成。
+
+- [0148 Module request modes](batches/0148-module-request-modes.md)：inline/raw已驗證；url主機拒絕，交付仍未完成。
+
+- [0149 Sass partial recovery](batches/0149-sass-partial-recovery.md)：普通Sass限定恢復完成，多環境與其他交付待驗。
+
+- [0150 Sass environments/restart](batches/0150-sass-environments-restart.md)：環境與新請求驗證完成，live reconnect待驗。
+
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：此次僅納入0147–0150已收尾的查核帳本、原始證據、已驗證重現材料與0149逐字歷史歸檔；歷史HEAD／未提交描述保留為當時狀態。BH-0004產品／套件測試、其他對話Site變更，以及0151材料留在工作目錄；共用`vite-sass-environments.mjs`已加入0151擴充，未納入此次提交，0150的原版本雜湊仍見原inventory。0151一般server live reconnect首輪48browser／16SSR與連續兩次restart72browser／24SSR通過；middleware矩陣pure控制通過，managed重啟後頁面缺失，新增actual-server測試重啟後HTTP404。根因尚未確認，不能歸咎scanner或宣稱修復完成；新增失敗頁面診斷尚未重跑。相關命令已結束；下一步核對middleware stack、共用server.close包裝與新舊server生命週期，再完成0151驗證及帳本。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分驗證暫停不變，目標保持active；此次未推送。[提交範圍與保存證據](evidence/0150-commit-validation.json)。
+
+- 0150：修復Sass browser CSS訊息送進SSR channel、restart scanner初始化競速、舊URL回呼污染新server與HTTP回應後URL尚未登記的競速。新增3actual-server回歸；Vite166tests／lint/types/build／範例及Site PASS。環境48browser＋16SSR、原request96、partial36通過；舊連線重啟重連仍待驗，新請求控制不替代它。raw alias／顏色序列化oracle與本輪編輯錯誤分開留證。下一批live reconnect、middleware／custom environment，再續資源／reference與其他host／Webpack；12unresolved／10blocked／4gates／4候選及0038身分暫停保持。HEAD45747c24a，未提交／推送。[0150](batches/0150-sass-environments-restart.md)。
+
+- 0149：修復普通Sass partial刪除／恢復：改用接收create/delete的公開hotUpdate，失效／預處理失敗時保留最後依賴，成功時替換。修前72觀測18FAIL；修後direct／nested partial144、原request96、Modules36與build watch18共294browser PASS；Vite163tests與focused6通過。小SVG內嵌的初版資源oracle錯誤分開保留；partial相對資源實際URL與內容通過。下一批client／SSR與restart隔離，再續資源／reference與其他host／Webpack；0144缺檔、0148Modules URL及12unresolved／10blocked／4gates／4候選仍未完成，0038身分暫停不變。HEAD45747c24a，未提交／推送。[0149](batches/0149-sass-partial-recovery.md)。
+
+- 0148：CSS/Sass Modules的inline／raw初始與更新48browser、普通Sass URL控制6browser PASS；Vite8.2.2拒絕.module.css／.module.scss的?url，modules:false亦同。8個公開主機控制確認限制，24個瀏覽器失敗保留；不將拒絕視為交付完成。初版要求不存在的error.plugin屬oracle錯誤，已更正；本批僅重現與文件。下一批普通Sass partial／resource/reference ownership；Modules URL、0144巢狀缺檔、其他host／Webpack與12unresolved／10blocked／4gates／4候選仍未完成，0038身分暫停維持。HEAD45747c24a，未提交／推送。[0148](batches/0148-module-request-modes.md)。
+
+- 0147：Sass ?url以公開middleware／module graph追蹤實際stylesheet URL並補送匹配link的CSS HMR；Vite162tests／lint/types/build／範例PASS，持續link的request96、Modules18、nested路徑24與連續更新9共147browser PASS。停用tracking對照3更新FAIL；精確alias不匹配query在pure Vite亦失敗，改目錄alias後通過，屬腳本設定錯誤。下一批Module request modes、partial／其他host與Webpack；0144巢狀缺檔仍未修復。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變。HEAD45747c24a，本批未提交／推送。[0147](batches/0147-sass-url-hmr.md)。
 
 - 使用者再次授權提交已完成部分：此次僅納入0143–0146查核紀錄、重現腳本、原始證據與逐字歷史歸檔；各批次的HEAD／未提交描述保留為當時狀態。BH-0004產品／套件測試、0147進行中材料與其他對話Site變更留在工作目錄。0147以公開middleware及module graph追蹤實際stylesheet URL，補送匹配link的CSS HMR；目前focused2tests與Sass URL三瀏覽器初始／更新6觀測通過，相關命令已結束，但尚未完成完整request96、base／alias／外部root邊界及最終回歸，不能宣稱整體修復完成。下一步先補這些驗證與0147批次收尾，再續其他host、Webpack及0144巢狀缺檔恢復。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分驗證暫停不變；目標維持active，此次未推送。[提交範圍與保存證據](evidence/0146-commit-validation.json)。
 
@@ -270,17 +288,17 @@
 
 - 使用者再次授權提交已完成部分：此次納入0137–0140已完成的查核紀錄、10個重現腳本、原始證據與0139逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試、0141進行中材料及其他對話Site變更保留工作目錄。0141已重現三個Sass入口的診斷指向代理CSS，新增來源對映尚未完成；lint日誌通過，type-check有兩個TS2322錯誤（map可能是字串、sources可能含null），相關命令已結束。下一步先修正型別並新增原partial結構化位置測試，再build／重現／回歸驗證，完成0141帳本；不得將0140的PASS沿用至目前修改。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變，目標持續active；此次未推送。[提交範圍與保存證據](evidence/0140-commit-validation.json)。
 
-- 0140：inline已接renderBuiltUrl的js／css主機映射、runtime URL與URI編碼；修復映射改變卻沿用CSS檔名、relative base的client／SSR資產不一致。Vite131／lint/types/build、最終URL36／paired12／inline84／pruning30／watch18browser全PASS；Site通過（75warnings）。來源序列化仍由Rust負責，automatic hooks／multi-environment／cycles仍待驗證；下一批Sass原始位置對映，再續其他host與Webpack。33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0140](batches/0140-inline-built-urls.md)。 automatic stylesheet hooks、特殊路徑／callback、multi-environment／cycles仍待驗證；HEAD087655705，未提交／推送。
 
-- 0139：修復SSR inline輸出本機file URL及繞過emitAssets設定；改用public base，關閉發布時搭配client資產。Vite125、SSR24build／36browser、Node16loads、worker6及原inline84browser全PASS；Site prepare/lint通過（75warnings）。首輪library格式設定與SSR弱斷言屬harness錯誤。自訂URL映射／maps／其他host與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0139](batches/0139-inline-server-hosts.md)。 下一批驗證自訂URL映射與來源位置對映，續接其他host與Webpack；HEAD087655705，未提交／推送。
 
-- 0138：修復inline無條件發布，依Rust URL參照及實際輸出chunk裁剪子CSS／資源，保留共用anchor。Vite121／lint/types/build、10build／30browser與watch18PASS；純Vite兩筆閒置資源保留列BASELINE。used字串仍有35byte anchor，其他格式／cycles／maps與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0138](batches/0138-inline-asset-pruning.md)。 原inline14build／84browser全PASS；HEAD087655705，未提交／推送。
 
-- 0137：managed CSS／Sass `?inline`改為獨立完整字串，Rust安全展開import並保留namespace／external邊界；修復URL誤改作者字串、IIFE／UMD路徑與graph-only假警告。83Rust／227compiler／118Vite及198public、84inline、90Sass、36watch瀏覽器對照PASS。early WebKit時序、pruning／lazy／其他格式、source maps與Webpack仍待驗證；compiler-Wasm+9642raw／2868gzip／1947brotli，runtime四產物不變。33fixed／12unresolved、10blocked、4root gates／4候選與0038暫停不變；HEAD087655705，未提交／推送。[0137](batches/0137-inline-css-delivery.md)。 下一批先驗證unused／shared／lazy資產與其他輸出主機，再補Sass來源對映、Modules及其他host路徑。
+
+
+
+
 
 - 使用者再次授權提交已完成部分：此次僅納入0136已完成的Sass查核紀錄、兩個重現腳本及原始證據；BH-0004產品／套件測試與0137材料保留工作目錄。0137最新日誌已寫出inline14build／84browser、Sass15build／90browser及JS-only watch3build／18browser全PASS，相關程序已不在程序表；Site prepare/lint日誌完成（0errors／75warnings）。這些是尚未完成批次收尾的局部結果，不能宣稱整體修復完成。下一步補最後Vite變更的scoped驗證、root gates／example／預算檢查、來源保存核對，完成0137批次與索引，再續source maps、其他host與Webpack；保留early WebKit載入時序待查。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分暫停不變；未推送。[此次提交範圍與保存證據](evidence/0136-commit-validation.json)。
 
-- 0136：Vite Sass入口／匯入改用主機預處理，保留CSS import條件、來源owner與partial依賴；修復additionalData重複、raw解析及CSS Modules匯出，baseFile無custom resolver亦可用。compiler225／Vite114、lint/types/build與原Vite範例通過；原host-inputs13build／78browser全PASS。擴充Sass15build全成功、90browser為84PASS／6managed-inlineFAIL；partial直接／條件／錯誤恢復共54PASS，另驗證一次預期Sass錯誤及原partial路徑。小SVG內嵌造成的network斷言及color格式斷言屬測試錯誤。Site prepare/lint通過（75warnings）；5artifacts與兩root API失敗hash不變。下一步修managed `?inline`完整字串／資產交付，再補preprocessor位置對映、Modules／其他host路徑與Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEAD111046867，本批未提交／推送。[0136](batches/0136-vite-sass-sources.md)。
+
 
 - 使用者再次授權提交已完成部分：此次納入0133–0135已完成的查核紀錄、重現材料與原始證據，以及0134逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試仍未完成整體交付，連同0136 Sass初步修改／證據保留於工作目錄。0136已新增Sass預處理與內部CSS入口、baseFile來源傳遞；compiler／Vite的首輪types與build日誌已寫出，但尚未完成Sass行為驗證，不能沿用0135的PASS宣稱目前修改全部通過。下一步先以`vite-host-inputs.mjs`的scss-entry／scss-import重現驗證，再補additionalData、條件CSS imports、aliases／partials、資源、診斷與watch。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停維持；其他對話Site變更原樣保存，未推送。[提交範圍與保存證據](evidence/0135-commit-validation.json)。
 
@@ -310,3 +328,5 @@
 歷史進度原文移至 [歷史交接（0130整理）](handoff-history-0130.md)；目前狀態以原檔的最新交接為準。
 
 0141–0144歷史進度逐字移至 [歷史進度（0146整理）](progress-history-0146.md)；目前狀態以本檔最新批次為準。
+
+0136–0140歷史進度逐字移至 [歷史進度（0149整理）](progress-history-0149.md)；目前狀態以最新交接為準。

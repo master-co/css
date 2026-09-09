@@ -1,0 +1,24 @@
+{"extension":"css","managed":false,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-xUdU4Y/style.module.css?url\")"},"classification":"UNEXPECTED"}
+{"extension":"css","managed":true,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-dBsS7O/style.module.css?url\")"},"classification":"UNEXPECTED"}
+{"extension":"scss","managed":false,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-L4VjVp/style.module.scss?url\")"},"classification":"UNEXPECTED"}
+{"extension":"scss","managed":true,"status":500,"error":{"message":"?url is not supported with CSS modules. (tried to import \"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-module-url-host-g3eOde/style.module.scss?url\")"},"classification":"UNEXPECTED"}
+{"controls":4,"hostUnsupported":0}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+0 !== 4
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-module-url-host.mjs:30:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 0,
+  expected: 4,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

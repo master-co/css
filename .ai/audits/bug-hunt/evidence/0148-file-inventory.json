@@ -1,0 +1,106 @@
+{
+  ".ai/audits/bug-hunt/README.md": {
+    "bytes": 39251,
+    "sha256": "608b2c315217dc044592d3fcc9dcc790779953a865145cf99c24226104ef01ca"
+  },
+  ".ai/audits/bug-hunt/batches/0148-module-request-modes.md": {
+    "bytes": 3778,
+    "sha256": "846881d6dec9dec51c484a566a92ba534997f4cb8312d407363564653132f635"
+  },
+  ".ai/audits/bug-hunt/changes.md": {
+    "bytes": 43795,
+    "sha256": "a3f5d45b41c084a5d58ccc53c07187f6a875cbcc58307e06fb346b23a7cded35"
+  },
+  ".ai/audits/bug-hunt/coverage.md": {
+    "bytes": 39447,
+    "sha256": "99be9157832da309feb9a47985e3387b7a7baa9dcc5893a1e7b7d55d31181621"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-ai-context.log": {
+    "bytes": 121,
+    "sha256": "75880cfa919731466db2dc5fb6d071e16f838925254ab41648010c15fb5330a4"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-artifact-hashes.json": {
+    "bytes": 1253,
+    "sha256": "fe021a7b48815bb972522b8285f4260001939b884862b762ca23153e90cc774b"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-before-hashes.json": {
+    "bytes": 22084,
+    "sha256": "310c2e6a19f56edd7ce527bdcbd5f6cbce8e053290170b6ed2124483ebe67ec2"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-final-checks.json": {
+    "bytes": 3296,
+    "sha256": "e46c5566be48a0239c19d7b9d34f56013d25f3027c0ab87652091fc090956ade"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-inline-final.log": {
+    "bytes": 13517,
+    "sha256": "3e1e7073aba1186d797b9cbc09369216f18ad5c4948f563d150bf313be63720b"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-inline-first.log": {
+    "bytes": 12950,
+    "sha256": "5cd9ed8a4db0de491cc934f9890007b8ad55611a1949f55c58f2ad1d94b867f7"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-raw-final.log": {
+    "bytes": 12568,
+    "sha256": "d5ee0686a420ad1c743c5353d62c9f73d4bf3e07a5847e8b3a4e11d0ee5a7988"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-raw-first.log": {
+    "bytes": 12000,
+    "sha256": "97abb14cd0e95007e6d94c53d4605d5671607d7a8658a127e3067c4004e65eaf"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-url-disabled-host.log": {
+    "bytes": 2443,
+    "sha256": "3603f8f807fafb1b900632ee2bc1a2dbf23709e389310f92f163ea44e36d581e"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-url-disabled.log": {
+    "bytes": 15346,
+    "sha256": "f8a0fd935625c9a2181c4bda7c45a988af90f3d1bc78741c23bd5056c3ef2297"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-url-host-final.log": {
+    "bytes": 1145,
+    "sha256": "7c44b521236eec6c994cc4fb89be68d4329c1b38bc69ef20ad262a3ce9838562"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-module-url-host.log": {
+    "bytes": 1596,
+    "sha256": "b2512f04564ada2bb00ff0dbadaf322efe6598457093f993f90a9c1025b39acf"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-ordinary-url-control.log": {
+    "bytes": 3445,
+    "sha256": "4fe447c225f4bc9f24309544fa53028f500556929a5f2eac30901a83afc754b2"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-site-lint.log": {
+    "bytes": 11775,
+    "sha256": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-site-prepare.log": {
+    "bytes": 1208,
+    "sha256": "4603b6f761c3cbe3d7af61cf1d310f1f1b48979ac6d763fe3053b47ba2249fdf"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-source-hashes.json": {
+    "bytes": 21757,
+    "sha256": "bcc842cecb257b02de9a0f248ba7e6b690ed1f0ff6eca108476df6b4c2088a98"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-vite-lint.log": {
+    "bytes": 9,
+    "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+  },
+  ".ai/audits/bug-hunt/evidence/0148-whitespace.log": {
+    "bytes": 79,
+    "sha256": "daeb554a91514b139a305255f20d59f20c6b8b09499036a27430129436d3f9fb"
+  },
+  ".ai/audits/bug-hunt/findings.md": {
+    "bytes": 43951,
+    "sha256": "82e5831beaa585db2a2c67abe7fe8ac800be518e047f9fc9839f347c994cbb03"
+  },
+  ".ai/audits/bug-hunt/report.md": {
+    "bytes": 39016,
+    "sha256": "79b4117c379d1aa46a610ccde7e5f4e56f5364059b4a1890aaf7808c26ea410b"
+  },
+  ".ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs": {
+    "bytes": 10569,
+    "sha256": "8427e108937fcfd199126e0656b57ee3f080982a45be00721f73f2d24fec1906"
+  },
+  ".ai/audits/bug-hunt/repros/vite-module-url-host.mjs": {
+    "bytes": 2257,
+    "sha256": "7559d045ae0fe0f06d6532d48da006f94b21454b5c3f22b3a209b2b8493f4499"
+  }
+}

@@ -1,0 +1,65 @@
+$ vitest --run
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-url-hmr.test.ts (2 tests | 1 failed) 2908ms
+   × BH-0004 Sass direct CSS HMR uses the served stylesheet URL under /nested/ 1594ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-url-hmr.test.ts > BH-0004 Sass direct CSS HMR uses the served stylesheet URL under /nested/
+AssertionError: expected "send" to be called with arguments: [ { type: 'update', …(1) } ]
+
+Received:
+
+  1st send call:
+
+  [
+    {
+      "type": "update",
+-     "updates": ArrayContaining [
++     "updates": [
+        {
+-         "acceptedPath": "/style.scss",
+-         "path": "/style.scss",
+-         "timestamp": Any<Number>,
++         "acceptedPath": "/style.scss.css?direct",
++         "explicitImportRequired": false,
++         "firstInvalidatedBy": undefined,
++         "isWithinCircularImport": false,
++         "path": "/style.scss.css?direct",
++         "timestamp": 1788964765800,
+          "type": "css-update",
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/plugins/bug-hunt-sass-url-hmr.test.ts:28:41
+     26|     const send = vi.spyOn(server.ws, 'send')
+     27|     writeFileSync(file, source('green'))
+     28|     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: '…
+       |                                         ^
+     29|       { type: 'css-update', path: '/style.scss', acceptedPath: '/style…
+     30|     ]) }))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 29 passed (30)
+      Tests  1 failed | 164 passed (165)
+   Start at  22:39:22
+   Duration  34.44s (tests 89%, transform 7%, import 4%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

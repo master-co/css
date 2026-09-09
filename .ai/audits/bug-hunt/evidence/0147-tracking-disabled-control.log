@@ -1,0 +1,26 @@
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"red","browser":"chromium","expected":"rgb(255, 0, 0)","expectedBootID":0.759664899362148,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.759664899362148,"linkCount":1},"errors":[],"requests":[],"result":"PASS"}
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"red","browser":"webkit","expected":"rgb(255, 0, 0)","expectedBootID":0.5304262067654791,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.5304262067654791,"linkCount":1},"errors":[],"requests":[],"result":"PASS"}
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"red","browser":"firefox","expected":"rgb(255, 0, 0)","expectedBootID":0.09274836908873241,"coldStartReload":false,"correct":true,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"fetched":{"status":200,"body":".example {\n  color: red;\n  background-color: #00f;\n}"},"payload":"/style.scss","updates":0,"bootID":0.09274836908873241,"linkCount":1},"errors":[],"requests":[],"result":"PASS"}
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"green","browser":"chromium","expected":"rgb(0, 128, 0)","expectedBootID":0.759664899362148,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"/style.scss","updates":0,"bootID":0.759664899362148,"linkCount":1},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"green","browser":"webkit","expected":"rgb(0, 128, 0)","expectedBootID":0.5304262067654791,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"/style.scss","updates":0,"bootID":0.5304262067654791,"linkCount":1},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/","pathMode":"relative","extension":"scss","request":"url","managed":true,"color":"green","browser":"firefox","expected":"rgb(0, 128, 0)","expectedBootID":0.09274836908873241,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"after":{"color":"rgb(255, 0, 0)","background":"rgb(0, 0, 255)"},"payload":"/style.scss","updates":0,"bootID":0.09274836908873241,"linkCount":1},"errors":[],"requests":[],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"comparisons":6,"failures":3}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+3 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs:105:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 3,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

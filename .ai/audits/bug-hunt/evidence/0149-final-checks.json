@@ -1,0 +1,133 @@
+{
+  "head": "45747c24a7fe8d175b13af54bc5bcdb2a9feb07e",
+  "goal": "active",
+  "batch": "0149 ordinary Sass partial deletion/recovery repaired;broader delivery remains incomplete",
+  "previousGoalTurn": "progress:0147 repaired URL HMR;0148 verified Modules modes andhost limits",
+  "validation": {
+    "viteTests": 163,
+    "testFiles": 29,
+    "focusedTests": 6,
+    "newTests": 1,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "beforeBrowser": {
+      "comparisons": 72,
+      "failures": 18
+    },
+    "finalBrowser": {
+      "0149-partial-direct-after.log": {
+        "comparisons": 72,
+        "failures": 0
+      },
+      "0149-partial-nested-after.log": {
+        "comparisons": 72,
+        "failures": 0
+      },
+      "0149-requests-control.log": {
+        "comparisons": 96,
+        "failures": 0
+      },
+      "0149-modules-entry-control.log": {
+        "comparisons": 18,
+        "failures": 0
+      },
+      "0149-modules-local-control.log": {
+        "comparisons": 18,
+        "failures": 0
+      },
+      "0149-build-watch-control.log": {
+        "builds": 6,
+        "comparisons": 18,
+        "failures": 0
+      }
+    },
+    "finalBrowserTotal": 294,
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "New repro PASS",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2697 files (4 generated excluded, 1 bounded exception)."
+  },
+  "classifications": {
+    "initialSVG": "Small resource was legally inlined;networkpathname/exactauthorSVG oracle invalid;larger SVG used for resource ownership verification",
+    "missingEdges": "New focused regression reproduces lost callback dependencies after missing-partial error;retain last edges until successful compilation",
+    "events": "InstalledVite legacyhandleHotUpdate ignorescreate/delete;publichotUpdate receivesalltypes",
+    "pureControl": "PureVite ordinarySass deletion/recovery passed before productfix;managed18failures were product integration issue",
+    "summaryCommand": "One ad hoc Python summary command had an unmatched parenthesis;corrected without rerunning underlying tests"
+  },
+  "preservation": {
+    "changedOrNewSources": 6,
+    "priorSourcesPreserved": 173,
+    "totalSources": 179,
+    "foreignSite": "byte-preserved except contract prose",
+    "artifacts": "five byte-identical",
+    "historyParagraphsPreserved": 5,
+    "index": "empty",
+    "unexpectedDirtySourcePaths": []
+  },
+  "limitations": [
+    "Client/SSR environment andserver restart isolation requires dedicated verification after hotUpdate migration",
+    "Resource content mutation/reference ownership,other preprocessors/PostCSS,multi-root andfull published maps pending",
+    "0144 nestedCSSModules missing composition still not repaired",
+    "0148 Modules?url delivery unsupported;hostrejection not completion",
+    "Webpack3build12browser andlegacy39browser failures remain",
+    "Four root gates andfour candidates remain;no golden refresh"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 awaits explicit user identity confirmation",
+  "terminalJobs": {
+    "initialURL": {
+      "session": 68758,
+      "exitCode": 1
+    },
+    "beforeMatrix": {
+      "session": 40347,
+      "exitCode": 1
+    },
+    "missingEdgeBefore": {
+      "exitCode": 1
+    },
+    "focusedTypesLintBuild": {
+      "session": 51963,
+      "exitCode": 0
+    },
+    "directMatrix": {
+      "session": 10529,
+      "exitCode": 0
+    },
+    "nestedMatrix": {
+      "session": 44783,
+      "exitCode": 0
+    },
+    "viteTests": {
+      "session": 21645,
+      "exitCode": 0
+    },
+    "requestControl": {
+      "session": 72401,
+      "exitCode": 0
+    },
+    "moduleAndBuildWatch": {
+      "session": 88871,
+      "exitCode": 0
+    },
+    "siteAndExample": {
+      "session": 92548,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

@@ -1,0 +1,153 @@
+{
+  "head": "45747c24a7fe8d175b13af54bc5bcdb2a9feb07e",
+  "goal": "active",
+  "batch": "0147 bounded Sass served URL HMR completed;broader delivery remains incomplete",
+  "previousGoalTurn": "progress:commit0143–0146 and verify preserved worktree",
+  "validation": {
+    "viteTests": 162,
+    "testFiles": 28,
+    "newTests": 2,
+    "viteLintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "finalBrowser": {
+      "0147-requests-final.log": {
+        "comparisons": 96,
+        "failures": 0
+      },
+      "0147-modules-control.log": {
+        "comparisons": 18,
+        "failures": 0
+      },
+      "0147-url-relative-nested.log": {
+        "comparisons": 6,
+        "failures": 0
+      },
+      "0147-url-encoded-nested.log": {
+        "comparisons": 6,
+        "failures": 0
+      },
+      "0147-url-alias-corrected.log": {
+        "comparisons": 6,
+        "failures": 0
+      },
+      "0147-url-external-corrected.log": {
+        "comparisons": 6,
+        "failures": 0
+      },
+      "0147-url-repeat.log": {
+        "comparisons": 9,
+        "failures": 0
+      }
+    },
+    "finalBrowserTotal": 147,
+    "persistentRootControl": {
+      "comparisons": 6,
+      "failures": 0
+    },
+    "trackingDisabledControl": {
+      "comparisons": 6,
+      "failures": 3
+    },
+    "invalidAliasPureControl": {
+      "comparisons": 6,
+      "failures": 6
+    },
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "PASS",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2691 files (4 generated excluded, 1 bounded exception)."
+  },
+  "classifications": {
+    "tracking": "CSS HMR path mismatch repaired via public served URL owner mapping;disabled tracking reintroduces3failures",
+    "alias": "Harness exact alias does not match queried specifier;pure Vite reproduces;directory alias fixes both root and external controls",
+    "oracle": "Initial repro recreated link;final keeps same stylesheet across edits with stable bootID",
+    "querySerialization": "direct= draft corrected before first browser execution;not an observed failure"
+  },
+  "preservation": {
+    "changedOrNewSources": 5,
+    "priorSourcesPreserved": 171,
+    "totalSources": 176,
+    "foreignSite": "byte-preserved except authorized contract prose",
+    "artifacts": "five byte-identical to0146",
+    "index": "empty"
+  },
+  "limitations": [
+    "Modules query modes;other preprocessor/PostCSS,partial/resource/reference ownership pending",
+    "Server restart,multi-root,SSR/shared environment and full published sourcemaps unverified",
+    "0144 nested missing composition still terminates Vite host",
+    "Webpack3build12browser andlegacy39browser failures remain",
+    "Four root gates remain incomplete;goldens unchanged"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 awaits explicit identity confirmation",
+  "terminalJobs": {
+    "firstFocused": {
+      "session": 38143,
+      "exitCode": 0
+    },
+    "persistentLink": {
+      "session": 44093,
+      "exitCode": 0
+    },
+    "initialBoundaries": {
+      "session": 58560,
+      "exitCode": 0,
+      "note": "Collector continued past alias/external failures;individual logs classify results"
+    },
+    "trackingDisabled": {
+      "session": 26427,
+      "exitCode": 1
+    },
+    "viteChecks": {
+      "session": 20745,
+      "exitCode": 0
+    },
+    "aliasDiagnostic": {
+      "session": 32238,
+      "exitCode": 1
+    },
+    "pureInvalidAlias": {
+      "session": 90993,
+      "exitCode": 1
+    },
+    "correctedBoundaries": {
+      "session": 96214,
+      "exitCode": 0
+    },
+    "requestMatrix": {
+      "session": 73873,
+      "exitCode": 0
+    },
+    "moduleControl": {
+      "session": 8250,
+      "exitCode": 0
+    },
+    "repeat": {
+      "session": 12979,
+      "exitCode": 0
+    },
+    "site": {
+      "session": 5599,
+      "exitCode": 0
+    },
+    "buildAndExample": {
+      "session": 73462,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

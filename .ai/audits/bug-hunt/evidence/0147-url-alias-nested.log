@@ -1,0 +1,26 @@
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"red","browser":"chromium","expected":"rgb(255, 0, 0)","expectedBootID":0.8555998937078451,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.8555998937078451,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"red","browser":"webkit","expected":"rgb(255, 0, 0)","expectedBootID":0.9284419957636495,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.9284419957636495,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"red","browser":"firefox","expected":"rgb(255, 0, 0)","expectedBootID":0.5070288422625687,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.5070288422625687,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"green","browser":"chromium","expected":"rgb(0, 128, 0)","expectedBootID":0.8555998937078451,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.8555998937078451,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"green","browser":"webkit","expected":"rgb(0, 128, 0)","expectedBootID":0.9284419957636495,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.9284419957636495,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"base":"/nested/","pathMode":"alias","extension":"scss","request":"url","managed":true,"color":"green","browser":"firefox","expected":"rgb(0, 128, 0)","expectedBootID":0.5070288422625687,"coldStartReload":false,"correct":false,"value":{"before":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"after":{"color":"rgb(0, 0, 0)","background":"rgba(0, 0, 0, 0)"},"bootID":0.5070288422625687,"linkCount":0},"errors":[],"requests":[{"url":"http://127.0.0.1:56743/nested/entry.js","status":500}],"waitError":"page.waitForFunction: Timeout 7000ms exceeded.","result":"FAIL"}
+{"comparisons":6,"failures":6}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+6 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs:105:45
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 6,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

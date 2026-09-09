@@ -1,0 +1,103 @@
+{
+  "head": "45747c24a7fe8d175b13af54bc5bcdb2a9feb07e",
+  "goal": "active",
+  "batch": "0148 Modules request-mode verification;Modules url delivery remains unsupported",
+  "previousGoalTurn": "progress:0147 URL HMR repaired and verified;this turn also gathered new Modules contract evidence",
+  "validation": {
+    "browser": {
+      "0148-module-inline-final.log": {
+        "comparisons": 24,
+        "failures": 0
+      },
+      "0148-module-raw-final.log": {
+        "comparisons": 24,
+        "failures": 0
+      },
+      "0148-ordinary-url-control.log": {
+        "comparisons": 6,
+        "failures": 0
+      }
+    },
+    "finalSupportedBrowserTotal": 54,
+    "disabledModulesURLBrowser": {
+      "comparisons": 24,
+      "failures": 24
+    },
+    "hostURLControls": {
+      "controls": 8,
+      "hostUnsupported": 8
+    },
+    "viteLint": "PASS",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75
+    },
+    "syntax": "Two repro scripts PASS",
+    "whitespace": "PASS",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2693 files (4 generated excluded, 1 bounded exception).",
+    "packageTests": "Not rerun;no product/test changes since0147 verified162tests",
+    "build": "Not rerun;product unchanged since0147 built/examplePASS"
+  },
+  "classifications": {
+    "inlineRaw": "Scoped inline CSS requires manual injection;raw remains author source;updates checked under pure/managed CSS/Sass",
+    "moduleURL": "Vite8.2.2 rejects module filenames with ?url even css.modules:false;8host controls and24browser failures retained;not repaired delivery",
+    "firstOracle": "Expected plugin metadata absent from public thrown Error;corrected to exact host message and realHTTP500;originalfailurelog retained"
+  },
+  "preservation": {
+    "changedOrNewSources": 4,
+    "priorSourcesPreserved": 173,
+    "totalSources": 177,
+    "productionSourceChanges": 0,
+    "foreignSite": "byte-preserved except contract prose",
+    "artifacts": "five byte-identical",
+    "index": "empty"
+  },
+  "limitations": [
+    "Modules ?url delivery unsupported;host rejection not counted as completion",
+    "Ordinary Sass partial/resource/reference ownership remains next",
+    "Nested missing composition host termination,other preprocessor/PostCSS,server restart,multi-root/SSR/shared environments andpublished maps pending",
+    "Webpack3build12browser andlegacy39browser failures remain",
+    "Four root gates andfour candidates remain"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "candidates": 4
+  },
+  "paused": "0038 awaits explicit user identity confirmation",
+  "terminalJobs": {
+    "firstInlineRaw": {
+      "session": 45080,
+      "exitCode": 0
+    },
+    "disabledURLBrowser": {
+      "session": 67021,
+      "exitCode": 1
+    },
+    "firstHostOracle": {
+      "exitCode": 1
+    },
+    "correctedFourHostControls": {
+      "exitCode": 0
+    },
+    "eightHostControls": {
+      "exitCode": 0
+    },
+    "finalBrowser": {
+      "session": 13878,
+      "exitCode": 0
+    },
+    "siteAndViteLint": {
+      "session": 63849,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

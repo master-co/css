@@ -1,0 +1,65 @@
+$ vitest --run tests/plugins/bug-hunt-sass-environment.test.ts -t 'waits for pending'
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts (3 tests | 1 failed | 2 skipped) 1445ms
+   × BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response 1445ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-environment.test.ts > BH-0004 HMR waits for pending stylesheet URL registration after the HTTP response
+AssertionError: expected "send" to be called with arguments: [ { type: 'update', …(1) } ]
+
+Received:
+
+  1st send call:
+
+  [
+    {
+      "type": "update",
+-     "updates": ArrayContaining [
++     "updates": [
+        {
+-         "acceptedPath": "/style.scss",
+-         "path": "/style.scss",
+-         "timestamp": Any<Number>,
++         "acceptedPath": "/style.scss.css?direct",
++         "explicitImportRequired": false,
++         "firstInvalidatedBy": undefined,
++         "isWithinCircularImport": false,
++         "path": "/style.scss.css?direct",
++         "timestamp": 1788965086551,
+          "type": "css-update",
+        },
+      ],
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/plugins/bug-hunt-sass-environment.test.ts:107:41
+    105|     await updating
+    106|     release()
+    107|     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: '…
+       |                                         ^
+    108|       { type: 'css-update', path: '/style.scss', acceptedPath: '/style…
+    109|     ]) }))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 skipped (3)
+   Start at  22:44:45
+   Duration  1.96s (tests 77%, transform 15%, import 9%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+
