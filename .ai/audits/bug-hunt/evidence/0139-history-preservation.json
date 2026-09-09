@@ -1,0 +1,26 @@
+{
+  "changes.md": {
+    "beforeSHA256": "66f54c81d2e0dfe0d8b1814c90e8d043ca2fafd1faa8765de22b75c0b703661c",
+    "archivedSHA256": "4bc5426180770caa5e15572761eb5d78dd6865a209d33c84e623bb2097e818d8",
+    "paragraphs": 3,
+    "verbatimVerified": true
+  },
+  "coverage.md": {
+    "beforeSHA256": "7647ce46acabc6b52e0ef38c5713738090da0ef388681c9bd0d85a70321d5e75",
+    "archivedSHA256": "4bc5426180770caa5e15572761eb5d78dd6865a209d33c84e623bb2097e818d8",
+    "paragraphs": 3,
+    "verbatimVerified": true
+  },
+  "findings.md": {
+    "beforeSHA256": "ceaf008f28958c3bb255a5042657e57eb5fc3796bcb52fe1fc381c9f7fe7bef8",
+    "archivedSHA256": "4bc5426180770caa5e15572761eb5d78dd6865a209d33c84e623bb2097e818d8",
+    "paragraphs": 3,
+    "verbatimVerified": true
+  },
+  "report.md": {
+    "beforeSHA256": "ee9bfc626f49d56563417d0b7296045c3c109edf49c51d898d73d6838225d72c",
+    "archivedSHA256": "4bc5426180770caa5e15572761eb5d78dd6865a209d33c84e623bb2097e818d8",
+    "paragraphs": 3,
+    "verbatimVerified": true
+  }
+}

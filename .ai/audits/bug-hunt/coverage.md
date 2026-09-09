@@ -87,11 +87,8 @@
 
 
 
-0128：BH-0045 已修復；在 Vite 命名階段納入完成的 managed CSS，沿用 Vite 產生所有引用，亦涵蓋不分割 CSS。Vite110tests／lint/types/build、原始快取重現6、7模式21builds／39三瀏覽器（含獨立lazy CSS）、36hydration及原範例build通過；重複輸出穩定。固定檔名仍由呼叫端處理快取。45歷史問題現33fixed/12unresolved；65checked/10blocked、4root gates、4候選與0038身分暫停保持。兩root API失敗hash及5artifacts不變；BH-0004舊39browser與0127 build6/browser24失敗未結案。下一批接續Rust來源範圍感知bundle分段、真實graph註冊與Vite/Webpack全資產交付。HEAD2740faa60；本批未提交／推送。[0128](batches/0128-vite-final-css-hashes.md)。
 
-0129：Rust 已新增來源範圍感知 bundle graph composition，重用 CSS tokens/import renderer，保留前後規則、重複 slot 與共用匿名 layer；71Rust／205compiler、48三瀏覽器對照及lint/types/Clippy/fmt/codegen通過。新supports斷言多一層括號已依實際parser輸出更正。尚未接native/Wasm或Vite/Webpack；namespace、其他scope與ordinary resource URL來源處理仍待完成，拒絕不計修復。下一批先補來源上下文，再接bindings與真實asset publisher；BH-0004及12unresolved／10blocked／4root gates／4候選保持，0038仍暫停。HEAD2740faa60；未提交／推送。[0129](batches/0129-rust-bundle-composition.md)。
 
-0130：Rust bundle 已支援一般片段的 namespace 前綴／預設／覆寫上下文，以及 resource/import URL 搬移；沿用既有parser，保留原始UTF-16參照且不改managed graph。75Rust／205compiler、新36與既有48三瀏覽器對照及lint/types/Clippy/fmt/codegen通過。新錯誤測試改查既有structured filename，非產品格式變更。下一批接native/Wasm與compiler host，再遷移實際Vite/Webpack註冊和資產發布；其他scope／invalid-rule處理及原始失敗仍未完成。33fixed/12unresolved、10blocked、4root gates／4候選與0038身分暫停保持。HEAD2740faa60，未提交／推送。[0130](batches/0130-bundle-source-context.md)。
 
 0131–0133批次與提交交接原文移至 [coverage history0134](coverage-history-0134.md)；當前狀態以本檔最新紀錄為準。
 
@@ -100,3 +97,13 @@
 0135：接通Vite virtual CSS來源載入，保留原始CSS、opaque ID/query與條件圖譜；graph-only loader子檔不再額外成為無條件入口。compiler223／Vite110、兩套件lint/types/build通過；13actual builds剩1SassFAIL，72browser為66PASS／6SassFAIL，其中virtual30與裁剪36全通過。既有resolver36／resource18／cache39、3種watch共54與純Vite控制18通過；早期watch非實體暫存路徑及錯用getWatchFiles屬harness問題，query截斷則已修復。Site prepare/lint通過（75warnings）；5artifacts不變，兩root API gates仍失敗。下一步接Sass入口／匯入預處理、virtual資源／reference與其他host路徑，再遷移Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEADef7887f76，本批未提交／推送。[0135](batches/0135-vite-virtual-sources.md)。
 
 0136：Vite Sass入口／匯入改用主機預處理，保留CSS import條件、來源owner與partial依賴；修復additionalData重複、raw解析及CSS Modules匯出，baseFile無custom resolver亦可用。compiler225／Vite114、lint/types/build與原Vite範例通過；原host-inputs13build／78browser全PASS。擴充Sass15build全成功、90browser為84PASS／6managed-inlineFAIL；partial直接／條件／錯誤恢復共54PASS，另驗證一次預期Sass錯誤及原partial路徑。小SVG內嵌造成的network斷言及color格式斷言屬測試錯誤。Site prepare/lint通過（75warnings）；5artifacts與兩root API失敗hash不變。下一步修managed `?inline`完整字串／資產交付，再補preprocessor位置對映、Modules／其他host路徑與Webpack。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變；HEAD111046867，本批未提交／推送。[0136](batches/0136-vite-sass-sources.md)。
+
+0137：managed CSS／Sass `?inline`改為獨立完整字串，Rust安全展開import並保留namespace／external邊界；修復URL誤改作者字串、IIFE／UMD路徑與graph-only假警告。83Rust／227compiler／118Vite及198public、84inline、90Sass、36watch瀏覽器對照PASS。early WebKit時序、pruning／lazy／其他格式、source maps與Webpack仍待驗證；compiler-Wasm+9642raw／2868gzip／1947brotli，runtime四產物不變。33fixed／12unresolved、10blocked、4root gates／4候選與0038暫停不變；HEAD087655705，未提交／推送。[0137](batches/0137-inline-css-delivery.md)。
+
+0138：修復inline無條件發布，依Rust URL參照及實際輸出chunk裁剪子CSS／資源，保留共用anchor。Vite121／lint/types/build、10build／30browser、原inline84與watch18PASS；純Vite兩筆閒置資源保留列BASELINE。used字串仍有35byte anchor，其他格式／cycles／maps與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0138](batches/0138-inline-asset-pruning.md)。
+
+0128–0130歷史進度逐字移至 [歷史進度（0139整理）](progress-history-0139.md)；目前狀態以本檔最新批次為準。
+
+0139：修復SSR inline輸出本機file URL及繞過emitAssets設定；改用public base，關閉發布時搭配client資產。Vite125、SSR24build／36browser、Node16loads、worker6及原inline84browser全PASS；Site prepare/lint通過（75warnings）。首輪library格式設定與SSR弱斷言屬harness錯誤。自訂URL映射／maps／其他host與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0139](batches/0139-inline-server-hosts.md)。
+
+0140：inline已接renderBuiltUrl的js／css主機映射、runtime URL與URI編碼；修復映射改變卻沿用CSS檔名、relative base的client／SSR資產不一致。Vite131／lint/types/build、最終URL36／paired12／inline84／pruning30／watch18browser全PASS；Site通過（75warnings）。來源序列化仍由Rust負責，automatic hooks／multi-environment／cycles仍待驗證；下一批Sass原始位置對映，再續其他host與Webpack。33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0140](batches/0140-inline-built-urls.md)。

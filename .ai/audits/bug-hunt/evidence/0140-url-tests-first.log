@@ -1,0 +1,49 @@
+$ vitest --run tests/plugins/bug-hunt-inline-built-urls.test.ts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-inline-built-urls.test.ts (5 tests | 1 failed) 2579ms
+   × BH-0004 changing the URL hook does not reuse a filename for different CSS bytes 1074ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-inline-built-urls.test.ts > BH-0004 changing the URL hook does not reuse a filename for different CSS bytes
+AssertionError: expected '@import "https://external.test/style.…' to be '@import "https://external.test/style.…' // Object.is equality
+
+- Expected
++ Received
+
+  @import "https://external.test/style.css";
+
+  .child {
+-   background: url("https://one.test/assets/master-css-resource-d4dc56669143034f31aa.svg");
++   background: url("https://two.test/assets/master-css-resource-d4dc56669143034f31aa.svg");
+  }
+
+ ❯ tests/plugins/bug-hunt-inline-built-urls.test.ts:52:72
+     50|     }
+     51|     for (const [filename, source] of versions[0]) {
+     52|       if (versions[1].has(filename)) expect(versions[1].get(filename))…
+       |                                                                        ^
+     53|     }
+     54|     expect(versions[2]).toEqual(versions[0])
+ ❯ fixture tests/plugins/bug-hunt-inline-built-urls.test.ts:17:5
+ ❯ tests/plugins/bug-hunt-inline-built-urls.test.ts:44:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  19:44:44
+   Duration  3.02s (tests 87%, transform 9%, import 4%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,17 @@
+$ tsdown --config ../../shared/tsdown-package.config.ts
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/shared/tsdown-package.config.ts 
+ℹ entry: src/provider.ts, src/provider-node.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 7 files
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+ℹ dist/provider-node.js                               0.96 kB │ gzip: 0.46 kB
+ℹ dist/provider.js                                    0.56 kB │ gzip: 0.29 kB
+ℹ dist/artifacts/mastercss_binding_wasm_compiler.js  22.82 kB │ gzip: 5.17 kB
+ℹ dist/index.js                                       4.40 kB │ gzip: 1.31 kB
+ℹ dist/provider.d.ts                                  0.49 kB │ gzip: 0.26 kB
+ℹ dist/provider-node.d.ts                             0.39 kB │ gzip: 0.19 kB
+ℹ 6 files, total: 29.62 kB
+✔ Build complete in 68ms

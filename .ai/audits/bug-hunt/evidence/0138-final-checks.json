@@ -1,0 +1,98 @@
+{
+  "head": "087655705a1315723bab782ddcfa53fdfd2bbecc",
+  "previousGoalTurn": "progress:0137 validation/ledger completed;this batch resolves inline asset publication regressions",
+  "goal": "active",
+  "batch": "0138 bounded inline asset reachability verified;BH-0004 incomplete",
+  "validation": {
+    "viteTests": 121,
+    "newTests": 3,
+    "lintTypesBuild": "PASS",
+    "exampleBuild": "PASS",
+    "pruning": {
+      "builds": 10,
+      "assetPasses": 8,
+      "pureViteBaselineAssetObservations": 2,
+      "browserComparisons": 30,
+      "failures": 0
+    },
+    "inlineControl": {
+      "builds": 14,
+      "browserComparisons": 84,
+      "failures": 0
+    },
+    "jsOnlyWatch": {
+      "builds": 3,
+      "browserComparisons": 18,
+      "failures": 0
+    },
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2656 files (4 generated excluded, 1 bounded exception).",
+    "reproSyntax": "PASS",
+    "whitespace": "PASS;source/docs/repro;raw logs unchanged"
+  },
+  "rootGates": "Two0137 API failures remain historical/unchanged surface;not rerun;other two gates open;no golden refresh",
+  "artifacts": "All five0137 artifact hashes and compressed sizes identical",
+  "preservation": {
+    "changedOrNewSources": 4,
+    "priorSourcesUnchanged": 147,
+    "foreignSite": "byte-preserved",
+    "index": "empty"
+  },
+  "limitations": [
+    "Used strings still emit35byteURL-base anchor",
+    "Unused roots still composed/analyzed before final tree shaking",
+    "No build CPU/memory gain claimed",
+    "CJS/SSR/workers/other formats/cycles/root back-references unverified",
+    "EarlyWebKit automatic CSS timing unresolved",
+    "Sass original-source maps and broaderModules/preprocessor/PostCSS/host routes pending",
+    "Webpack3build/12browser failures historical0133",
+    "Legacy39browser failures historical0125",
+    "Other unresolved/blocked/gates/candidates untouched"
+  ],
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 33,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "paused": "0038 requires explicit identity confirmation",
+  "terminalJobs": {
+    "beforeRepro": {
+      "session": 95930,
+      "exitCode": 1
+    },
+    "beforeRegression": {
+      "session": 56512,
+      "exitCode": 1
+    },
+    "focusedAfterLintTypes": {
+      "session": 28670,
+      "exitCode": 0
+    },
+    "fullViteLintTypes": {
+      "session": 30473,
+      "exitCode": 0
+    },
+    "pruningBrowser": {
+      "session": 20504,
+      "exitCode": 0
+    },
+    "inlineBrowser": {
+      "session": 97682,
+      "exitCode": 0
+    },
+    "watchBrowser": {
+      "session": 75372,
+      "exitCode": 0
+    },
+    "exampleBuild": {
+      "session": 68039,
+      "exitCode": 0
+    }
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

@@ -1,0 +1,25 @@
+{"id":"managed-inline-sass","phase":"browser","browser":"chromium","media":"screen","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"id":"managed-inline-sass","phase":"browser","browser":"chromium","media":"print","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"id":"managed-inline-sass","phase":"browser","browser":"firefox","media":"screen","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"id":"managed-inline-sass","phase":"browser","browser":"firefox","media":"print","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"id":"managed-inline-sass","phase":"browser","browser":"webkit","media":"screen","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"id":"managed-inline-sass","phase":"browser","browser":"webkit","media":"print","value":{"color":"rgb(0, 0, 0)","className":"example","background":"none","imageLoaded":false},"expected":"rgb(0, 0, 255)","calls":[],"missing":[],"errors":[],"resources":[],"result":"FAIL"}
+{"builds":1,"buildFailures":0,"comparisons":6,"browserFailures":6}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+6 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-sass-inputs.mjs:85:48 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 6,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

@@ -242,7 +242,25 @@
 
 - [0136 Vite Sass sources](batches/0136-vite-sass-sources.md)：225compiler／114Vite、原78與Sass84browser／watch54 PASS；managed-inline6FAIL。
 
+- [0137 Inline CSS delivery](batches/0137-inline-css-delivery.md)：83Rust／227compiler／118Vite、198public／84inline／90Sass／36watch browser PASS；其餘BH-0004邊界未完成。
+
+- [0138 Inline asset pruning](batches/0138-inline-asset-pruning.md)：Vite121／30browser／18watchPASS；原inline84矩陣全PASS。
+
+- [0139 Inline server hosts](batches/0139-inline-server-hosts.md)：Vite125／SSR36／worker6／inline84browser與16Node loadsPASS；完整BH-0004仍未完成。
+
+- [0140 Inline built URLs](batches/0140-inline-built-urls.md)：Vite131／180final browser PASS；URL映射、檔名與paired asset回歸已修，其他BH-0004需求未完成。
+
 ## 目前交接點
+
+- 使用者再次授權提交已完成部分：此次納入0137–0140已完成的查核紀錄、10個重現腳本、原始證據與0139逐字歷史歸檔；批次中的HEAD／未提交描述保留為當時狀態。BH-0004產品與套件測試、0141進行中材料及其他對話Site變更保留工作目錄。0141已重現三個Sass入口的診斷指向代理CSS，新增來源對映尚未完成；lint日誌通過，type-check有兩個TS2322錯誤（map可能是字串、sources可能含null），相關命令已結束。下一步先修正型別並新增原partial結構化位置測試，再build／重現／回歸驗證，完成0141帳本；不得將0140的PASS沿用至目前修改。33fixed／12unresolved、10blocked、4root gates／4候選及0038身分暫停不變，目標持續active；此次未推送。[提交範圍與保存證據](evidence/0140-commit-validation.json)。
+
+- 0140：inline已接renderBuiltUrl的js／css主機映射、runtime URL與URI編碼；修復映射改變卻沿用CSS檔名、relative base的client／SSR資產不一致。Vite131／lint/types/build、最終URL36／paired12／inline84／pruning30／watch18browser全PASS；Site通過（75warnings）。來源序列化仍由Rust負責，automatic hooks／multi-environment／cycles仍待驗證；下一批Sass原始位置對映，再續其他host與Webpack。33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0140](batches/0140-inline-built-urls.md)。 automatic stylesheet hooks、特殊路徑／callback、multi-environment／cycles仍待驗證；HEAD087655705，未提交／推送。
+
+- 0139：修復SSR inline輸出本機file URL及繞過emitAssets設定；改用public base，關閉發布時搭配client資產。Vite125、SSR24build／36browser、Node16loads、worker6及原inline84browser全PASS；Site prepare/lint通過（75warnings）。首輪library格式設定與SSR弱斷言屬harness錯誤。自訂URL映射／maps／其他host與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0139](batches/0139-inline-server-hosts.md)。 下一批驗證自訂URL映射與來源位置對映，續接其他host與Webpack；HEAD087655705，未提交／推送。
+
+- 0138：修復inline無條件發布，依Rust URL參照及實際輸出chunk裁剪子CSS／資源，保留共用anchor。Vite121／lint/types/build、10build／30browser與watch18PASS；純Vite兩筆閒置資源保留列BASELINE。used字串仍有35byte anchor，其他格式／cycles／maps與Webpack未完成；33fixed／12unresolved、10blocked／4gates／4候選及0038暫停不變。[0138](batches/0138-inline-asset-pruning.md)。 原inline14build／84browser全PASS；HEAD087655705，未提交／推送。
+
+- 0137：managed CSS／Sass `?inline`改為獨立完整字串，Rust安全展開import並保留namespace／external邊界；修復URL誤改作者字串、IIFE／UMD路徑與graph-only假警告。83Rust／227compiler／118Vite及198public、84inline、90Sass、36watch瀏覽器對照PASS。early WebKit時序、pruning／lazy／其他格式、source maps與Webpack仍待驗證；compiler-Wasm+9642raw／2868gzip／1947brotli，runtime四產物不變。33fixed／12unresolved、10blocked、4root gates／4候選與0038暫停不變；HEAD087655705，未提交／推送。[0137](batches/0137-inline-css-delivery.md)。 下一批先驗證unused／shared／lazy資產與其他輸出主機，再補Sass來源對映、Modules及其他host路徑。
 
 - 使用者再次授權提交已完成部分：此次僅納入0136已完成的Sass查核紀錄、兩個重現腳本及原始證據；BH-0004產品／套件測試與0137材料保留工作目錄。0137最新日誌已寫出inline14build／84browser、Sass15build／90browser及JS-only watch3build／18browser全PASS，相關程序已不在程序表；Site prepare/lint日誌完成（0errors／75warnings）。這些是尚未完成批次收尾的局部結果，不能宣稱整體修復完成。下一步補最後Vite變更的scoped驗證、root gates／example／預算檢查、來源保存核對，完成0137批次與索引，再續source maps、其他host與Webpack；保留early WebKit載入時序待查。33fixed／12unresolved、10blocked、4root gates／4候選與0038身分暫停不變；未推送。[此次提交範圍與保存證據](evidence/0136-commit-validation.json)。
 

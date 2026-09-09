@@ -1,0 +1,7 @@
+# Progress history archived in0139
+
+The following0128–0130 paragraphs were identical in changes.md, coverage.md, findings.md and report.md. They are preserved verbatim here; the latest status remains in each original file.
+
+0128：BH-0045 已修復；在 Vite 命名階段納入完成的 managed CSS，沿用 Vite 產生所有引用，亦涵蓋不分割 CSS。Vite110tests／lint/types/build、原始快取重現6、7模式21builds／39三瀏覽器（含獨立lazy CSS）、36hydration及原範例build通過；重複輸出穩定。固定檔名仍由呼叫端處理快取。45歷史問題現33fixed/12unresolved；65checked/10blocked、4root gates、4候選與0038身分暫停保持。兩root API失敗hash及5artifacts不變；BH-0004舊39browser與0127 build6/browser24失敗未結案。下一批接續Rust來源範圍感知bundle分段、真實graph註冊與Vite/Webpack全資產交付。HEAD2740faa60；本批未提交／推送。[0128](batches/0128-vite-final-css-hashes.md)。
+0129：Rust 已新增來源範圍感知 bundle graph composition，重用 CSS tokens/import renderer，保留前後規則、重複 slot 與共用匿名 layer；71Rust／205compiler、48三瀏覽器對照及lint/types/Clippy/fmt/codegen通過。新supports斷言多一層括號已依實際parser輸出更正。尚未接native/Wasm或Vite/Webpack；namespace、其他scope與ordinary resource URL來源處理仍待完成，拒絕不計修復。下一批先補來源上下文，再接bindings與真實asset publisher；BH-0004及12unresolved／10blocked／4root gates／4候選保持，0038仍暫停。HEAD2740faa60；未提交／推送。[0129](batches/0129-rust-bundle-composition.md)。
+0130：Rust bundle 已支援一般片段的 namespace 前綴／預設／覆寫上下文，以及 resource/import URL 搬移；沿用既有parser，保留原始UTF-16參照且不改managed graph。75Rust／205compiler、新36與既有48三瀏覽器對照及lint/types/Clippy/fmt/codegen通過。新錯誤測試改查既有structured filename，非產品格式變更。下一批接native/Wasm與compiler host，再遷移實際Vite/Webpack註冊和資產發布；其他scope／invalid-rule處理及原始失敗仍未完成。33fixed/12unresolved、10blocked、4root gates／4候選與0038身分暫停保持。HEAD2740faa60，未提交／推送。[0130](batches/0130-bundle-source-context.md)。

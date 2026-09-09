@@ -1,0 +1,15 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.29s
+     Running tests/bug_hunt_inline_delivery.rs (target/debug/deps/bug_hunt_inline_delivery-7b9742620c2c172e)
+
+running 7 tests
+test invalid_late_import_is_not_activated_by_inlining ... ok
+test earlier_external_import_can_precede_an_inlined_suffix ... ok
+test leaf_graph_becomes_a_real_css_string_and_default_delivery_stays_split ... ok
+test parent_and_child_namespaces_are_not_merged ... ok
+test retained_later_import_prevents_earlier_rules_from_invalidating_it ... ok
+test conditional_external_children_remain_stylesheet_assets ... ok
+test qualified_and_repeated_anonymous_layers_keep_distinct_wrappers ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
