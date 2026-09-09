@@ -1,0 +1,63 @@
+{
+  "head": "1c65955861084abb6a07e5f1caf6a9e9acf95881",
+  "previousGoalTurn": "progress:0125projectmanifestgraphimplementationandproductionqueryverification",
+  "goal": "active",
+  "BH-0004": "partial: public file API explicit delivery overload verified; no-delivery and legacy/build/native CLI consumers unfinished",
+  "validation": {
+    "focusedFileControls": 6,
+    "compilerTests": 205,
+    "sourceFileBrowserComparisons": 66,
+    "builtFileBrowserComparisons": 66,
+    "serverTests": 67,
+    "mcpTests": 34,
+    "cliTests": 71,
+    "compilerLintTypesBuild": "PASS",
+    "legacyFileQualifiedExternalRefusalsStillPresent": 3,
+    "latestLegacyFullBrowserCorpus": "0125:21PASS/39FAILof60,notrerunthisbatch",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "existingWarnings": 75
+    },
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "sha256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "previousSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchanged": true
+      },
+      "package-check": {
+        "exit": 1,
+        "sha256": "f9639a2aa06e5f161c529dcbdcd7f1407ab4f6d117f35c5c4927cb6bb0417c02",
+        "previousSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchanged": false
+      }
+    },
+    "compilerRuntimeArtifactHashes": "5unchangedFrom0125",
+    "aiContext": "PASS2596files",
+    "sourceDocWhitespace": "PASS"
+  },
+  "publicAPIAddition": [
+    "MasterCSSCompileManifestFileDeliveryOptions",
+    "MasterCSSCompileManifestFileResult",
+    "compileManifestFileSyncdeliveryoverload"
+  ],
+  "correction": "Initialafter2PASS/1FAIL: newtestexpectedno-space supports(display:grid), actualRustcanonicaloutputsupports(display: grid); testassertioncorrected and132realbrowsercomparisonsPASS",
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "sources": 6,
+    "preserved": 94
+  },
+  "remaining": "Migrate actualexistingCSSbuildconsumer/assetpublisher; no-deliveryfile,legacyinternalproject,nativeCLI,no-export,39legacybrowserfailuresandothercontracts/gates",
+  "paused": "0038additionalverificationawaitsexplicitidentityconfirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

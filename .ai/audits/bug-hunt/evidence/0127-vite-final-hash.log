@@ -1,0 +1,22 @@
+{"browser":"chromium","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"browser":"firefox","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"browser":"webkit","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"webkit","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"outputs":[{"color":"red","file":"assets/index-Dkrc8kIN.css","css":".example {\n  color: red;\n}\n","sha256":"14cfb44fea6212455448b2089a04da9f8a999eeb8da63e610dd6eb9b7f0cca46","html":"<script type=\"module\" crossorigin src=\"./assets/index-JbTDVQ9Q.js\"></script>\n<link rel=\"stylesheet\" crossorigin href=\"./assets/index-Dkrc8kIN.css\">\n<div class=\"example\">test</div>"},{"color":"blue","file":"assets/index-Dkrc8kIN.css","css":".example {\n  color: #00f;\n}\n","sha256":"3c8a68911ff5df492b2f84ef1dcad44d40ac187f193bef7de5637880933d96a8","html":"<script type=\"module\" crossorigin src=\"./assets/index-JbTDVQ9Q.js\"></script>\n<link rel=\"stylesheet\" crossorigin href=\"./assets/index-Dkrc8kIN.css\">\n<div class=\"example\">test</div>"}],"controls":[{"browser":"chromium","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true},{"browser":"chromium","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false},{"browser":"firefox","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true},{"browser":"firefox","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false},{"browser":"webkit","retainedCachedResponse":false,"actual":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true},{"browser":"webkit","retainedCachedResponse":true,"actual":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}],"sameFilename":true,"changedContent":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Content-hashed CSS filename must change when final CSS content changes
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-final-css-hash.mjs:49:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'assets/index-Dkrc8kIN.css',
+  expected: 'assets/index-Dkrc8kIN.css',
+  operator: 'notStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

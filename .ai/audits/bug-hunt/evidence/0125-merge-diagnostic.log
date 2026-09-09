@@ -1,0 +1,19 @@
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.33s
+     Running tests/bug_hunt_manifest_graphs.rs (target/debug/deps/bug_hunt_manifest_graphs-6870090f202102ba)
+
+running 1 test
+
+thread 'structured_project_entries_merge_in_order' (37975689) panicked at crates/mastercss-project/tests/bug_hunt_manifest_graphs.rs:184:5:
+CSS=@layer utilities{.choice{color:#00f}} manifest={"version":1,"utilities":[{"id":".choice","name":"choice","type":-2,"order":0,"layer":"utilities","emit":{"type":"static","rules":[{"declarations":{"color":"#00f"}}]},"matchers":[{"type":"static","name":"choice"}]}]}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+test structured_project_entries_merge_in_order ... FAILED
+
+failures:
+
+failures:
+    structured_project_entries_merge_in_order
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-project --test bug_hunt_manifest_graphs`

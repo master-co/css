@@ -1,0 +1,18 @@
+$ tsx ./prepare
+產生 /Users/aron/master/css/site/public/search/en.json (283 search pages)
+產生 /Users/aron/master/css/site/public/search/tw.json (283 search pages)
+產生 /Users/aron/master/css/site/.pages.json (283 pages)
+產生 /Users/aron/master/css/site/.categories/guide.json (9 categories)
+產生 /Users/aron/master/css/site/.categories/reference.json (15 categories)
+產生 /Users/aron/master/css/site/.categories/blog.json (1 categories)
+產生 /Users/aron/master/css/site/.categories/examples.json (0 categories)
+產生 /Users/aron/master/css/site/.categories/play.json (1 categories)
+產生 /Users/aron/master/css/site/.categories/roadmap.json (0 categories)
+產生 /Users/aron/master/css/site/.categories/sponsor.json (1 categories)
+產生 /Users/aron/master/css/site/.categories/brand.json (1 categories)
+產生 /Users/aron/master/css/site/.categories/design-system.json (1 categories)
+
+Symlink folder created at: /Users/aron/master/css/site/public/images
+Symlink folder created at: /Users/aron/master/css/site/public/icons
+Symlink folder created at: /Users/aron/master/css/site/public/fonts
+產生 /Users/aron/master/css/site/.translations/content-registry.ts (0 translated content modules)

@@ -1,0 +1,62 @@
+{
+  "head": "1c65955861084abb6a07e5f1caf6a9e9acf95881",
+  "previousGoalTurn": "progress:0126publicfiledeliveryand132browsercomparisonverification",
+  "goal": "active",
+  "batch": "diagnosisandactualbuildpublicationevidence; no product fixes claimed",
+  "validation": {
+    "actualViteWebpackBuilds": 16,
+    "buildPass": 10,
+    "buildFail": 6,
+    "actualBuildBrowserComparisons": 60,
+    "browserPass": 36,
+    "browserFail": 24,
+    "slotBoundaryProof": {
+      "graph": {
+        "pass": 18,
+        "fail": 0
+      },
+      "insertion": {
+        "pass": 6,
+        "fail": 12
+      },
+      "hoist": {
+        "pass": 6,
+        "fail": 12
+      }
+    },
+    "BH-0045": {
+      "redBlueBuilds": 2,
+      "sameHashedFilename": "assets/index-Dkrc8kIN.css",
+      "differentFinalCSS": true,
+      "freshBrowserPass": 3,
+      "retainedResponseBrowserFail": 3,
+      "cacheScope": "test-controlledresponse replay; no realCDNtested"
+    },
+    "scriptSyntax": 3,
+    "sourceDocWhitespace": "PASS",
+    "aiContext": "PASS2600files",
+    "artifacts": "5unchangedFrom0126",
+    "rootGates": "notrerun; no product changes;4gatesremainincomplete"
+  },
+  "correction": "InitialViteoutputinventoryincludedearlierunreferencedassets; ownedoutputnowclearedbeforeeachbuild, cleanrerunhasidentical6build/24browserfailures",
+  "counts": {
+    "historicalFindings": 45,
+    "fixed": 32,
+    "unresolved": 13,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "sources": 3,
+    "preserved": 100,
+    "productEdits": 0
+  },
+  "next": "Compiler source-aware bundle segment/slot representation; actual collection graph registration and Vite/Webpack publishing; finalCSScontenthash withHTML/JS/preloadreferenceupdates",
+  "remaining": "BH-0004actualbuild/legacydelivery andnewBH-0045plusallotherunresolved/gates; graphprototypeisnotadapterfix",
+  "paused": "0038additionalverificationawaitsexplicitidentityconfirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

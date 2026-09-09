@@ -1,0 +1,36 @@
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.34s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_project-e681271e098e08d7)
+
+running 5 tests
+test tests::matches_source_globs_with_fast_glob_compatible_primitives ... ok
+test tests::resolves_bare_source_patterns_from_the_project_root ... ok
+test tests::discovers_entries_and_compiles_local_imports ... ok
+test tests::resolves_entry_owned_source_plans_and_arbitrary_extensions ... ok
+test tests::lowers_compose_definitions_against_the_base_manifest ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/bug_hunt_manifest_graphs.rs (target/debug/deps/bug_hunt_manifest_graphs-6870090f202102ba)
+
+running 4 tests
+test prepared_reference_cycles_and_missing_edges_remain_errors ... ok
+test structured_project_entries_merge_in_order ... FAILED
+test references_resolve_managed_definitions_without_importing_their_sources_or_classes ... ok
+test qualified_external_imports_do_not_block_manifest_or_source_plan_compilation ... ok
+
+failures:
+
+---- structured_project_entries_merge_in_order stdout ----
+
+thread 'structured_project_entries_merge_in_order' (37968744) panicked at crates/mastercss-project/tests/bug_hunt_manifest_graphs.rs:183:5:
+assertion failed: css(&result.manifest, "choice").contains(".choice{color:blue}")
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    structured_project_entries_merge_in_order
+
+test result: FAILED. 3 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-project --test bug_hunt_manifest_graphs`

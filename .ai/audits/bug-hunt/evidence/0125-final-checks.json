@@ -1,0 +1,62 @@
+{
+  "head": "1c65955861084abb6a07e5f1caf6a9e9acf95881",
+  "previousGoalTurn": "progress: committed completed0123\u20130124audit evidence while preserving unfinished implementation",
+  "goal": "active",
+  "BH-0004": "partial: Node project manifest graph and production manifest queries verified; native CSS delivery in legacy consumers unfinished",
+  "validation": {
+    "rustProjectTests": 9,
+    "compilerTests": 199,
+    "bindingTests": 17,
+    "cliTests": 71,
+    "viteTests": 106,
+    "webpackTestsSerial": 69,
+    "actualProductionManifestQueryBrowserComparisons": 18,
+    "legacyBrowser": {
+      "comparisons": 60,
+      "pass": 21,
+      "fail": 39,
+      "nativeWasmCases": 10
+    },
+    "compilerBindingLintTypesBuild": "PASS",
+    "projectNativeClippyFmtCodegenParity": "PASS",
+    "sitePrepare": "PASS",
+    "siteLint": {
+      "errors": 0,
+      "existingWarnings": 75
+    },
+    "aiContext": "PASS2593files",
+    "sourceDocWhitespace": "PASS",
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "sha256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchangedFrom0124": true
+      },
+      "package-check": {
+        "exit": 1,
+        "sha256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchangedFrom0124": true
+      }
+    },
+    "compilerRuntimeArtifactHashes": "5unchangedFrom0124"
+  },
+  "correction": "New cross-entry assertion expected blue, actual canonical output was #00f; corrected assertion plus reverse-order control; not a product merge bug",
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "sources": 11,
+    "preserved": 87
+  },
+  "remaining": "Existing file-manifest nativeCSS contract, file/build/no-export/native CLI delivery,39legacybrowserfailures and allotherunresolved/gates",
+  "next": "Reproduce compileManifestFileSync qualified external import; inspect nativeCSS result promise before routing to existing prepared graph/reference capabilities",
+  "paused": "0038additionalverificationawaitsexplicitidentityconfirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}
