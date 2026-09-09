@@ -107,6 +107,10 @@ When Vite uses an `assetFileNames` pattern containing `[hash]`, managed CSS part
 
 Custom `assetFileNames` callbacks receive the extracted managed CSS in the CSS asset source at the naming stage. Hash length and `hashCharacters` settings are honored. Vite can still include its own naming metadata and perform later output processing, so the filename hash is not a checksum of the final file on disk. Fixed filename patterns remain fixed and require the application's own cache invalidation policy.
 
+In pre-render mode, changing the project manifest reloads the page to refresh
+server-rendered rules; progressive mode applies the update through its runtime.
+Native-only CSS edits do not require a manifest reload.
+
 ## Runtime input imports
 
 The plugin exposes canonical project-level runtime input modules:

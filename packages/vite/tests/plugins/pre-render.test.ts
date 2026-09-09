@@ -154,7 +154,9 @@ describe('PreRenderPlugin', () => {
         '    card { color: #abcdef; }',
         '}'
       ].join('\n'))
-      await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath })
+      const send = vi.fn()
+      await (preRenderPlugin as any).handleHotUpdate.call({}, { file: themePath, server: { ws: { send } } })
+      expect(send).toHaveBeenCalledWith({ type: 'full-reload' })
       expect(dispose).toHaveBeenCalledOnce()
 
       result = await (preRenderPlugin as any).transformIndexHtml.call(

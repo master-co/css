@@ -24,6 +24,7 @@ const HYDRATION_MANIFEST_ASSET_DIR = '_master-css/hydration'
 export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let cssManifest: MasterCSSManifest | undefined = undefined
   let cssManifestDependencies: string[] = []
+  let manifestSignature: string | undefined
   let enabled = true
   let renderer: ReturnType<typeof createServerRenderer> | undefined
   const hydrationManifestAssets = new Map<string, string>()
@@ -57,6 +58,9 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       baseManifest: result.manifest,
       projectDir: root
     })
+    const nextSignature = JSON.stringify([result.manifest, emittedGlobalsResult.emittedGlobals])
+    const changed = manifestSignature !== undefined && manifestSignature !== nextSignature
+    manifestSignature = nextSignature
     cssManifest = result.manifest
     const nextRenderer = createServerRenderer({
       manifest: cssManifest,
@@ -77,6 +81,7 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
     }
     cssManifestDependencies = [...dependencies]
     addServerAllow(cssManifestDependencies)
+    return changed
   }
   const toBuildHydrationManifestAssetFileName = (fileName: string) => {
     const assetsDir = context.config?.build.assetsDir ?? 'assets'
@@ -113,9 +118,10 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       if (!enabled) return
       await loadCSSManifest(this)
     },
-    async handleHotUpdate({ file }) {
+    async handleHotUpdate({ file, server }) {
       if (!enabled || !includesFile(cssManifestDependencies, file)) return
-      await loadCSSManifest()
+      const changed = await loadCSSManifest()
+      if (changed && options.mode === 'pre-render') server.ws.send({ type: 'full-reload' })
     },
     configureServer(server) {
       server.httpServer?.once('close', () => renderer?.dispose())
