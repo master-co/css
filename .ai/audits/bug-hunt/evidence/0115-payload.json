@@ -1,0 +1,26 @@
+{
+  "before": {
+    "bytes": 6999685,
+    "gzip": 1550858,
+    "brotli": 965200,
+    "sha256": "4f04f6ce294408d618fbd8f7853469d764e695c666e55377db4bd7119a49ca36"
+  },
+  "after": {
+    "bytes": 7023187,
+    "gzip": 1558988,
+    "brotli": 970103,
+    "sha256": "628540d8d751c261f4faa1eff7c1af9e01852b15257e26c2449437901d5d8338"
+  },
+  "delta": {
+    "bytes": 23502,
+    "gzip": 8130,
+    "brotli": 4903
+  },
+  "runtime": {
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": true,
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": true,
+    "packages/runtime/dist/global.min.js": true,
+    "packages/runtime/dist/default-manifest.json": true
+  },
+  "runtimeBenchmark": "Not run: compiler resource analysis and relocation only; engine/runtime sources and payload unchanged"
+}

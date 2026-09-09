@@ -1,0 +1,20 @@
+{
+  "productCommit": "79eea0d8f13306baa2d57f18504549023eb35f09",
+  "verifiedPriorHashes": 60,
+  "changedTest": "packages/vscode/tests/bug-hunt-settings-host.cjs",
+  "changedTestSHA256": "3aa0231c00bee8a1a55fb2a1d091e29d9aef6bd9c925b4a7dd6a7d19aa9f91d8",
+  "testChange": "ESLint globals and CommonJS import annotation only; executable statements unchanged",
+  "lintCorrection": {
+    "original": "0117-lint.log: FAIL, 13 CJS environment errors; earlier PASS claims incorrect",
+    "current": "0117-commit-lint.log: PASS, exit 0"
+  },
+  "preserved": "All 57 preserved sources unchanged; unfinished compiler/binding/tests/docs and foreign Site changes excluded",
+  "remaining": {
+    "unresolved": 12,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "identityVerification": "not confirmed; 0038 additional verification paused",
+  "push": false
+}

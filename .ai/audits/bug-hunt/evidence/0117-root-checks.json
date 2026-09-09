@@ -1,0 +1,12 @@
+{
+  "api-census": {
+    "exit": 1,
+    "sha256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+    "sameAs0116": true
+  },
+  "package-check": {
+    "exit": 1,
+    "sha256": "c2ff1100f86162aa522095c6ad1dd47b5743fd5781c78871c037155f464d0e10",
+    "sameAs0116": true
+  }
+}

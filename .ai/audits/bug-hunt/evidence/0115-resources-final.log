@@ -1,0 +1,12 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.17s
+     Running tests/bug_hunt_resource_urls.rs (target/debug/deps/bug_hunt_resource_urls-e81c1b04dcd5be83)
+
+running 4 tests
+test opaque_url_payloads_and_invalid_values_do_not_create_nested_resources ... ok
+test resources_use_css_url_and_image_set_grammar_including_authoring_bodies ... ok
+test relocation_requires_complete_independent_mappings_and_preserves_local_fragments ... ok
+test source_owner_is_retained_when_managed_definition_is_composed_in_another_file ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

@@ -1,0 +1,65 @@
+$ cargo xtask build-native && cargo xtask build-wasm compiler && vitest --run
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.83s
+     Running `/Users/aron/master/css/target/debug/xtask build-native`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.32s
+Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
+Built /Users/aron/master/css/packages/binding/artifacts/mcss
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
+     Running `/Users/aron/master/css/target/debug/xtask build-wasm compiler`
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
+    Finished `release` profile [optimized] target(s) in 15.30s
+Built /Users/aron/master/css/packages/binding-wasm-compiler/artifacts
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-node-import-discovery.test.ts (7 tests | 1 failed) 1004ms
+   × BH-0004 actual referenced CSS with encoded filename and query keeps context-only definitions 6ms
+[success] app/page.tsx 4 classes inserted in 0.5ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-node-import-discovery.test.ts > BH-0004 actual referenced CSS with encoded filename and query keeps context-only definitions
+Error: ENOENT: no such file or directory, open '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-0116-reference-8jL6QU/tokens '
+ ❯ compileCSSManifestFileInternal src/node-compiler.ts:720:17
+    718|     ...options,
+    719|     from: absoluteFile,
+    720|     sourceText: readFileSync(stripRequest(absoluteFile), 'utf8'),
+       |                 ^
+    721|     referenceStack: [...(options.referenceStack || []), absoluteFile]
+    722|   })
+ ❯ resolveCSSReferenceContext src/node-compiler.ts:630:20
+ ❯ toCompileCSSManifestResult src/node-compiler.ts:654:28
+ ❯ compileCSSManifestFileInternal src/node-compiler.ts:717:10
+ ❯ compileCSSManifestFile src/node-compiler.ts:726:10
+ ❯ compileManifestFileSync src/node.ts:71:5
+ ❯ tests/bug-hunt-node-import-discovery.test.ts:53:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 18 passed (19)
+      Tests  1 failed | 163 passed (164)
+   Start at  11:16:27
+   Duration  11.02s (tests 94%, transform 4%, import 2%)
+
+[ELIFECYCLE] Test failed. See above for more details.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/compiler
+
