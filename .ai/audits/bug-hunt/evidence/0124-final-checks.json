@@ -1,0 +1,61 @@
+{
+  "head": "74e47191715b3211dd3a9f002beb1d72425ed98b",
+  "previousGoalTurn": "progress:0123immutable CLI publication implemented and verified",
+  "goal": "active",
+  "BH-0004": "partial: new Node CLI ownership/retention/recovery verified; legacy consumers and other contract edges unfinished",
+  "validation": {
+    "cliTests": 71,
+    "actualCLIOwnershipRegression": "PASS",
+    "ownershipCleanupTests": 13,
+    "actualSIGKILLWorkers": 4,
+    "liveOwnerTimeout": "PASS",
+    "sourcePublisherCriticalSections": 120,
+    "builtPublisherCriticalSections": 120,
+    "sourceRetentionBrowser": 18,
+    "builtRetentionBrowser": 18,
+    "sourcePublicationBrowser": 12,
+    "builtPublicationBrowser": 12,
+    "builtExportBrowser": 18,
+    "builtWatchBrowser": 12,
+    "totalBrowserComparisons": 90,
+    "sourceBuiltPublishedBytes": "identical, excluding local ownership metadata",
+    "cliLintTypesBuild": "PASS",
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "previousSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "currentSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchanged": true
+      },
+      "package-check": {
+        "exit": 1,
+        "previousSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "currentSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchanged": true
+      }
+    },
+    "compilerRuntimeArtifactHashes": "5 unchanged from0123",
+    "scriptSyntax": "3 PASS",
+    "sourceDocWhitespace": "PASS",
+    "aiContext": "PASS"
+  },
+  "verificationCorrection": "Initial9PASS/1FAIL compared the changing ownership journal as immutable published CSS; asset-byte protection remains asserted and journal transitions have dedicated tests",
+  "retentionPreference": "Optional question unanswered; previously stated default of24hours plus current/previous generation used; not identity confirmation",
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "current": 12,
+    "preserved": 80
+  },
+  "remaining": "Legacy file/project/build/no-export consumers and latest39public browser failures; other contracts and expressly unclaimed lifecycle/environment cases",
+  "paused": "0038 additional verification awaits explicit identity confirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

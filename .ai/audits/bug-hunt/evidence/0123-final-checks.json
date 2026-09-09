@@ -1,0 +1,56 @@
+{
+  "head": "74e47191715b3211dd3a9f002beb1d72425ed98b",
+  "previousGoalTurn": "progress: committed completed0120-0122audit materials as74e471917 while preserving unfinished implementation",
+  "goal": "active",
+  "BH-0004": "partial: immutable CLI assets and atomic entry replacement verified; ownership/cleanup, legacy consumers and other contract edges unfinished",
+  "validation": {
+    "originalPublicationFailures": 2,
+    "originalPublicationAfter": 2,
+    "expandedPublicationControls": 9,
+    "cliTests": 52,
+    "cliLintTypesBuild": "PASS",
+    "sourcePublicationBrowser": 12,
+    "builtPublicationBrowser": 12,
+    "sourceBuiltOutputBytes": "identical",
+    "previousBuiltExportBrowser": 18,
+    "previousBuiltWatchRecoveryBrowser": 12,
+    "legacyExternalFailures": "39 from latest0121corpus; consumers unchanged here",
+    "rootChecks": {
+      "api-census": {
+        "exit": 1,
+        "previousSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "currentSHA256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4",
+        "unchanged": true
+      },
+      "package-check": {
+        "exit": 1,
+        "previousSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "currentSHA256": "7bb42c513600a36162ef6694d5927938b03bbc092eafb0be959fe0f23ed057f7",
+        "unchanged": true
+      }
+    },
+    "compilerRuntimeArtifactHashes": "5 unchanged from0122",
+    "scriptSyntax": "PASS",
+    "aiContext": "PASS"
+  },
+  "verificationErrors": {
+    "firstFullCLI": "44PASS/1FAIL: old test concatenated all retained generations; active-entry graph assertion and browser requests now verify no old resource in the current graph"
+  },
+  "counts": {
+    "fixed": 32,
+    "unresolved": 12,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "unclassifiedCandidates": 4
+  },
+  "preservation": {
+    "current": 7,
+    "preserved": 78
+  },
+  "remaining": "Persistent ownership, old-reader retention policy, interruption-safe cleanup, multiple output and cross-process deletion; existing file/project/build/no-export consumers and remaining contracts",
+  "paused": "0038 additional verification awaits explicit identity confirmation",
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

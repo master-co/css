@@ -1,0 +1,49 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/cli
+
+master.css exported 825B
+ ❯ tests/bug-hunt-stylesheet-delivery.test.ts (3 tests | 1 failed) 2680ms
+   × BH-0004 CLI watch republishes changed resources and ignores its output files 902ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-stylesheet-delivery.test.ts > BH-0004 CLI watch republishes changed resources and ignores its output files
+AssertionError: expected '.example {\n  background-image: url("…' not to contain 'master-2d8fd1f45e0288a97263-707fe1f19…'
+
+- Expected
++ Received
+
+- master-2d8fd1f45e0288a97263-707fe1f19951bc519a53.svg
++ .example {
++   background-image: url("./master-2d8fd1f45e0288a97263-707fe1f19951bc519a53.svg");
++ }
++ .example {
++   background-image: url("./master-2d8fd1f45e0288a97263-3dbca34626ec2f5fc851.svg");
++ }
++ @import "./master-2d8fd1f45e0288a97263-fc98b44d0fddff34a03e-48542243f715425efa2c.css";
++ @layer utilities{.block{display:block}}
+
+ ❯ tests/bug-hunt-stylesheet-delivery.test.ts:84:21
+     82|     const css = readdirSync(join(cwd, 'dist')).filter(file => file.end…
+     83|     expect(css).toContain(after)
+     84|     expect(css).not.toContain(before)
+       |                     ^
+     85|     const restarts = stderr.match(/Restart watching source changes/g)?…
+     86|     await new Promise(resolve => setTimeout(resolve, 400))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 11 passed (12)
+      Tests  1 failed | 44 passed (45)
+   Start at  13:54:26
+   Duration  9.30s (tests 97%, transform 2%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/cli
+

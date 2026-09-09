@@ -1,0 +1,58 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/cli
+
+ ❯ tests/bug-hunt-publication.test.ts (2 tests | 2 failed) 1614ms
+   × BH-0004 publication failure preserves every previously published asset 785ms
+   × BH-0004 immutable sidecar collision preserves user-modified files 829ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-publication.test.ts > BH-0004 publication failure preserves every previously published asset
+AssertionError: expected { …(3) } to deeply equal { …(3) }
+
+- Expected
++ Received
+
+  {
+-   "master-2d8fd1f45e0288a97263-48542243f715425efa2c.css": "LmV4YW1wbGUgewogIGNvbG9yOiByZWQ7CiAgYmFja2dyb3VuZC1pbWFnZTogdXJsKCIuL21hc3Rlci0yZDhmZDFmNDVlMDI4OGE5NzI2My03MDdmZTFmMTk5NTFiYzUxOWE1My5zdmciKTsKfQ==",
++   "master-2d8fd1f45e0288a97263-48542243f715425efa2c.css": "LmV4YW1wbGUgewogIGNvbG9yOiAjMDBmOwogIGJhY2tncm91bmQtaW1hZ2U6IHVybCgiLi9tYXN0ZXItMmQ4ZmQxZjQ1ZTAyODhhOTcyNjMtM2RiY2EzNDYyNmVjMmY1ZmM4NTEuc3ZnIik7Cn0=",
+    "master-2d8fd1f45e0288a97263-707fe1f19951bc519a53.svg": "PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGZpbGw9InJlZCIvPjwvc3ZnPg==",
+    "output.css": "QGltcG9ydCAiLi9tYXN0ZXItMmQ4ZmQxZjQ1ZTAyODhhOTcyNjMtNDg1NDIyNDNmNzE1NDI1ZWZhMmMuY3NzIjsKQGxheWVyIHV0aWxpdGllc3suYmxvY2t7ZGlzcGxheTpibG9ja319",
+  }
+
+ ❯ tests/bug-hunt-publication.test.ts:32:33
+     30|     expect(failure.status, failure.stderr).not.toBe(0)
+     31|     expect(failure.stderr).toMatch(/EACCES|EPERM/)
+     32|     expect(snapshot(directory)).toEqual(before)
+       |                                 ^
+     33|     chmodSync(directory, 0o755)
+     34|     const recovered = run(cwd); expect(recovered.status, recovered.std…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-publication.test.ts > BH-0004 immutable sidecar collision preserves user-modified files
+AssertionError: expected +0 not to be +0 // Object.is equality
+ ❯ tests/bug-hunt-publication.test.ts:49:52
+     47|     const before = snapshot(directory)
+     48|     const collision = run(cwd)
+     49|     expect(collision.status, collision.stderr).not.toBe(0)
+       |                                                    ^
+     50|     expect(collision.stderr).toContain('Refusing to overwrite styleshe…
+     51|     expect(snapshot(directory)).toEqual(before)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  13:46:37
+   Duration  1.69s (tests 99%, transform 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/cli
+
