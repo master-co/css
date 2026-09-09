@@ -1,0 +1,396 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-8rx_tb3_/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-runtime-readers.mjs"]}
+{"engine":"chromium","family":"delivery","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"chromium","family":"interaction","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"chromium","family":"delivery","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"pass":false}
+{"engine":"chromium","family":"interaction","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"firefox","family":"delivery","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"firefox","family":"interaction","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"firefox","family":"delivery","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"pass":false}
+{"engine":"firefox","family":"interaction","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"webkit","family":"delivery","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"webkit","family":"interaction","modeId":"master-runtime","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":0},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+{"engine":"webkit","family":"delivery","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":54,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":1940,"progressiveAdopted":1},"pass":false}
+{"engine":"webkit","family":"interaction","modeId":"master-progressive","expected":{"runtimeGeneratedRuleCount":49,"runtimeStyleRawBytes":1687,"progressiveAdopted":1},"actual":{"runtimeGeneratedRuleCount":0,"runtimeStyleRawBytes":0,"progressiveAdopted":0},"pass":false}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ [
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'chromium',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'chromium',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 1940
++     },
++     engine: 'chromium',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-progressive'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'chromium',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-progressive'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'firefox',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'firefox',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 1940
++     },
++     engine: 'firefox',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-progressive'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'firefox',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-progressive'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'webkit',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'webkit',
++     expected: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-runtime'
++   },
++   {
++     actual: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 1940
++     },
++     engine: 'webkit',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 54,
++       runtimeStyleRawBytes: 1940
++     },
++     family: 'delivery',
++     modeId: 'master-progressive'
++   },
++   {
++     actual: {
++       progressiveAdopted: 0,
++       runtimeGeneratedRuleCount: 0,
++       runtimeStyleRawBytes: 0
++     },
++     engine: 'webkit',
++     expected: {
++       progressiveAdopted: 1,
++       runtimeGeneratedRuleCount: 49,
++       runtimeStyleRawBytes: 1687
++     },
++     family: 'interaction',
++     modeId: 'master-progressive'
++   }
++ ]
+- []
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-runtime-readers.mjs:43:8) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [
+    {
+      engine: 'chromium',
+      family: 'delivery',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'chromium',
+      family: 'interaction',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'chromium',
+      family: 'delivery',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      }
+    },
+    {
+      engine: 'chromium',
+      family: 'interaction',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'firefox',
+      family: 'delivery',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'firefox',
+      family: 'interaction',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'firefox',
+      family: 'delivery',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      }
+    },
+    {
+      engine: 'firefox',
+      family: 'interaction',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'webkit',
+      family: 'delivery',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'webkit',
+      family: 'interaction',
+      modeId: 'master-runtime',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 0
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    },
+    {
+      engine: 'webkit',
+      family: 'delivery',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 54,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 1940,
+        progressiveAdopted: 1
+      }
+    },
+    {
+      engine: 'webkit',
+      family: 'interaction',
+      modeId: 'master-progressive',
+      expected: {
+        runtimeGeneratedRuleCount: 49,
+        runtimeStyleRawBytes: 1687,
+        progressiveAdopted: 1
+      },
+      actual: {
+        runtimeGeneratedRuleCount: 0,
+        runtimeStyleRawBytes: 0,
+        progressiveAdopted: 0
+      }
+    }
+  ],
+  expected: [],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-8rx_tb3_"}

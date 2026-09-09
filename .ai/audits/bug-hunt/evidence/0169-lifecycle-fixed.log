@@ -1,0 +1,50 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-f3tln_g_/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-wasm-report.mjs", "browser-lifecycle"]}
+$ vitest bench browser-lifecycle --run
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-f3tln_g_/benchmarks
+
+Browser lifecycle selection: scenarios=initial-load modes=master-static,master-runtime,master-progressive,tailwind-static variants=4 rounds=1 warmupRounds=0 longSessionMs=1000 traceArtifactMode=off
+Launching Chromium for browser lifecycle benchmark
+Preparing browser lifecycle page 1/4: initial-load-master-static-docs
+Prepared browser lifecycle page 1/4: initial-load-master-static-docs in 3.38s
+Measuring browser lifecycle 1/4: initial-load-master-static-docs, round 1/1
+Measured browser lifecycle 1/4: initial-load-master-static-docs, round 1/1 in 294ms
+Finished browser lifecycle variant 1/4: initial-load-master-static-docs in 3.68s
+Preparing browser lifecycle page 2/4: initial-load-master-runtime-docs
+Prepared browser lifecycle page 2/4: initial-load-master-runtime-docs in 2.9s
+Measuring browser lifecycle 2/4: initial-load-master-runtime-docs, round 1/1
+Measured browser lifecycle 2/4: initial-load-master-runtime-docs, round 1/1 in 231.2ms
+Finished browser lifecycle variant 2/4: initial-load-master-runtime-docs in 3.13s
+Preparing browser lifecycle page 3/4: initial-load-master-progressive-docs
+Prepared browser lifecycle page 3/4: initial-load-master-progressive-docs in 3.05s
+Measuring browser lifecycle 3/4: initial-load-master-progressive-docs, round 1/1
+Measured browser lifecycle 3/4: initial-load-master-progressive-docs, round 1/1 in 234.1ms
+Finished browser lifecycle variant 3/4: initial-load-master-progressive-docs in 3.29s
+Preparing browser lifecycle page 4/4: initial-load-tailwind-static-docs
+Prepared browser lifecycle page 4/4: initial-load-tailwind-static-docs in 313.4ms
+Measuring browser lifecycle 4/4: initial-load-tailwind-static-docs, round 1/1
+Measured browser lifecycle 4/4: initial-load-tailwind-static-docs, round 1/1 in 236ms
+Finished browser lifecycle variant 4/4: initial-load-tailwind-static-docs in 549.5ms
+Wrote browser lifecycle report JSON to /Users/aron/master/css/tmp/master-css-bh-isolated-f3tln_g_/benchmarks/.results/browser-lifecycle/report.json
+Wrote browser lifecycle report Markdown to /Users/aron/master/css/tmp/master-css-bh-isolated-f3tln_g_/benchmarks/.results/browser-lifecycle/report.md
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  05:36:29
+   Duration  11.29s (tests 100%)
+
+{"suite":"browser-lifecycle","commandExit":0}
+{"suite":"browser-lifecycle","variants":[{"id":"initial-load-master-static-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":2},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-master-runtime-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":0},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-master-progressive-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":0},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]},{"id":"initial-load-tailwind-static-docs","samples":54,"legacyRuntimeCounts":[{"metricId":"cssom-rule-count","value":22},{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0},{"metricId":"computed-style-valid","value":1}]}],"artifactCount":31,"wasmArtifacts":2,"wasm":{"raw":929757,"gzip":286205,"brotli":218273,"hash":"4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"},"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"chromium","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"chromium","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"chromium","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"chromium","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"firefox","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"firefox","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"firefox","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"firefox","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-master-progressive-docs","engine":"webkit","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-runtime-docs","engine":"webkit","responses":[{"status":200,"mime":"application/wasm"}],"pass":true}
+{"lifecyclePage":"initial-load-master-static-docs","engine":"webkit","responses":[],"pass":true}
+{"lifecyclePage":"initial-load-tailwind-static-docs","engine":"webkit","responses":[],"pass":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-f3tln_g_"}

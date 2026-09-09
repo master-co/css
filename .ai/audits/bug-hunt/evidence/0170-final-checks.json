@@ -1,0 +1,93 @@
+{
+  "head": "ac24c0f965aad6acae0a18d274b79912ae2c22ef",
+  "goal": "active",
+  "previousGoalTurn": "Progress: BH-0032 delivery/accounting fixed and verified",
+  "batch": "0170 public snapshot readers/guards verified; BH-0033 remains unfinished",
+  "validation": {
+    "unitTests": "9 PASS",
+    "types": "PASS after removing two stale conflicting global declarations",
+    "lint": "No package-local lint script",
+    "browser": "36 PASS;12 before-change reader failures retained",
+    "originalReports": {
+      "browser-lifecycle": "initial-load4 variants PASS",
+      "master-delivery-modes": "16 variants PASS",
+      "progressive-hydration-diagnostics": "4 variants PASS",
+      "interaction-cost": "54 variants PASS",
+      "runtime-style-invalidation-diagnostics": "32 variants complete; private preparation/measurement still invalid",
+      "report-smoke": "PASS"
+    },
+    "knownFailure": "runtime-mutation-diagnostics: retained classes still present after absent private forced-cleanup call",
+    "syntax": "3 new repro scripts PASS",
+    "aiContext": "PASS",
+    "whitespace": "PASS for authored benchmark/ledger changes"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 36,
+    "unresolved": 11,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0033",
+    "BH-0034",
+    "BH-0037",
+    "BH-0038",
+    "BH-0039",
+    "BH-0040",
+    "BH-0041",
+    "BH-0042",
+    "BH-0043"
+  ],
+  "preservation": {
+    "baselineHashes": 344,
+    "unchanged": 331,
+    "changedBenchmarkFiles": 13,
+    "newSourceFiles": 5,
+    "finalSourceHashes": 349,
+    "priorExcluded151FilesByteIdentical": true,
+    "fiveArtifactsByteIdentical": true,
+    "snapshotsFixturesDependenciesLockfileCIUnchanged": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Missing original imported Sass maps, partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "All11 unresolved findings,10 blocked coverage rows,4 root gates and4 original candidates",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "BH-0033 private forced cleanup, observer pause, retained volume setup and inaccessible Set-operation measurement; original mutation suite fails with actual retained classes"
+  ],
+  "next": "0171 forced cleanup, observer pause, retained-volume setup and unavailable private Set-operation counters; finish BH-0033 before closing it",
+  "paused": "0038 explicit identity confirmation not received",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "18405": 1,
+    "90093": 0,
+    "13473": 0,
+    "31844": 1,
+    "7637": 0,
+    "84260": 0,
+    "31798": 0,
+    "28049": 0,
+    "97920": 0,
+    "20038": 0,
+    "32039": 0
+  },
+  "limits": [
+    "Output-entry counts now use an explicit consistent snapshot-layer definition; historical mixed class/CSSOM values are not directly comparable",
+    "Private observer/retention/cleanup preparation and instrumentation still unfinished",
+    "BH-0034 CSSOM andBH-0042/0043 scenario failures remain; successful reports are not full validity evidence",
+    "No review-grade300s performance claim, snapshot regeneration, product runtime change, commit or push"
+  ]
+}

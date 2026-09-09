@@ -1,0 +1,101 @@
+{
+  "head": "ac24c0f965aad6acae0a18d274b79912ae2c22ef",
+  "goal": "active",
+  "previousGoalTurn": "progress: requested audit commit ac24c0f96 and verified151 excluded files unchanged",
+  "batch": "0169 BH-0032 benchmark Wasm delivery fixed",
+  "validation": {
+    "focusedTests": "5 PASS",
+    "benchmarkTypes": "PASS",
+    "lint": "No package-local script",
+    "originalReports": {
+      "browser-lifecycle": "initial-load4 modes PASS",
+      "master-delivery-modes": "16 variants PASS",
+      "progressive-hydration-diagnostics": "4 variants PASS",
+      "report-smoke": "PASS"
+    },
+    "knownFailures": {
+      "interaction-cost": "BH-0033 removed progressive facade field",
+      "runtime-mutation-diagnostics": "BH-0033 removed progressive facade field",
+      "runtime-style-invalidation-diagnostics": "BH-0033 removed progressive facade field"
+    },
+    "before": "2 original reports fail at readiness;4 actual missing-sidecar browser controls confirm404",
+    "browserControls": "36 delivery/readiness plus6 public progressive state controls PASS",
+    "compressionBytes": {
+      "raw": 929757,
+      "gzip": 286205,
+      "brotli": 218273
+    },
+    "syntax": "2 repro scripts and2 snapshot generation scripts PASS",
+    "authoredWhitespace": "PASS",
+    "aiContext": "PASS",
+    "ledgerLinks": "PASS after correctly stripping Codex :line suffixes; initial checker treated line suffixes as filenames"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 36,
+    "unresolved": 11,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0033",
+    "BH-0034",
+    "BH-0037",
+    "BH-0038",
+    "BH-0039",
+    "BH-0040",
+    "BH-0041",
+    "BH-0042",
+    "BH-0043"
+  ],
+  "preservation": {
+    "baselineHashes": 340,
+    "unchanged": 328,
+    "changedBenchmarkSourceFiles": 12,
+    "newSourceFiles": 4,
+    "priorExcluded151FilesByteIdentical": true,
+    "fiveArtifactsByteIdentical": true,
+    "snapshotsFixturesDependenciesLockfileCIUnchanged": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Missing original imported Sass maps, partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "All11 unresolved findings,10 blocked coverage rows,4 root gates and4 original candidates",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent"
+  ],
+  "next": "0170 BH-0033 public snapshot metric/retention/hydration readers and original guards; then BH-0034 and other findings",
+  "paused": "0038 explicit identity confirmation not received",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "28196": 1,
+    "76157": 1,
+    "8165": 0,
+    "93579": 0,
+    "73193": 0,
+    "12028": 0,
+    "48256": 1,
+    "15778": 0,
+    "48115": 0,
+    "91078": 1,
+    "64309": 1,
+    "1297": 0
+  },
+  "limits": [
+    "No speed claims; suites ran concurrently on local macOS/Node24.20.0",
+    "Existing invalid metric readers prevent trustworthy full performance conclusions",
+    "No review-grade300s evidence or historical snapshot regeneration",
+    "Compression estimates are not actual HTTP content encoding"
+  ]
+}

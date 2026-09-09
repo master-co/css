@@ -1,0 +1,3 @@
+# Handoff before0169
+
+- 0168限定的Sass Module匯入與診斷驗證完成：相同預處理輸出保留各檔scope／資源目錄，additionalData不因fallback重跑；子CSS錯誤回到原始位置，Vite未保留原始Sass map時明示預處理位置。完整Vite386tests／57files、lint/types/build、原範例及10個三瀏覽器矩陣600observations全PASS；Site0errors／75既有warnings。BH-0004仍未完成，Sass精確原始maps、partial/reference/virtual、watch/recovery/base/SSR/lifecycle及Nuxt/Webpack保留。下一批0169先處理BH-0032：核對benchmark產生頁面的Wasm sidecar與payload accounting，再續其他benchmark問題。47historical／35fixed／12unresolved、10blocked／4root gates／4原候選及host shutdown限制維持；0038未收到身分確認，目標active。上輪中斷前已有有效修正與驗證，本輪補齊收尾；未commit/push。[0168](batches/0168-sass-module-import-contexts.md)／[最終核對](evidence/0168-final-checks.json)。先前交接逐字見[歷史](progress-history-0168-final.md)。

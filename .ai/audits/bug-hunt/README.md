@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 47 historical confirmed findings; 35 fixed, 12 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 47 historical confirmed findings; 36 fixed, 11 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -299,15 +299,19 @@
 
 - [0168 Sass Module import contexts](batches/0168-sass-module-import-contexts.md)：相同Sass輸出及子檔診斷修正通過386tests／600browser；缺失原始map等邊界仍保留。
 
+- [0169 Benchmark Wasm delivery](batches/0169-benchmark-wasm-delivery.md): BH-0032 fixed;42 browser controls,5 tests and3 original reports complete; remaining readers next0170.
+
+- [0170 Runtime snapshot readers](batches/0170-benchmark-runtime-snapshot.md): bounded readers/guards verified;9tests/36browser controls; BH-0033 private preparation/cleanup remains.
+
 ## 目前交接點
 
 - 使用者再次授權提交已完成部分：本次納入0163–0165已收尾的查核、原始證據、重現材料與逐字歷史。產品及套件測試仍依賴未完成的BH-0004 graph改動，與其他對話Site變更一併保留工作目錄；未推送。228來源及7份最終browser log雜湊一致；47historical／35fixed／12unresolved與0038身分暫停維持，目標active。下一步接local ?url／Modules跨import exports；各批歷史HEAD與未提交描述保留當時狀態。[提交核對](evidence/0165-commit-validation.json)。
 
 - 使用者再次授權提交已完成部分：BH-0047的pre-render manifest HMR修復、2項新回歸、既有測試補齊及對應README已提交`5e707ec75`；本次7項聚焦測試、Vite lint/types全通過。0159–0162已完成查核、重現與原始證據另作一筆提交；各批歷史HEAD及未提交描述保留當時狀態。BH-0004其餘產品／套件測試與其他對話Site變更留工作目錄。下一批接local-compose完整graph交付；47historical／35fixed／12unresolved、10blocked／4gates／4原候選+1host shutdown限制及0038身分暫停維持，目標active；未推送。[提交核對](evidence/0162-commit-validation.json)。
 
-- 0168限定的Sass Module匯入與診斷驗證完成：相同預處理輸出保留各檔scope／資源目錄，additionalData不因fallback重跑；子CSS錯誤回到原始位置，Vite未保留原始Sass map時明示預處理位置。完整Vite386tests／57files、lint/types/build、原範例及10個三瀏覽器矩陣600observations全PASS；Site0errors／75既有warnings。BH-0004仍未完成，Sass精確原始maps、partial/reference/virtual、watch/recovery/base/SSR/lifecycle及Nuxt/Webpack保留。下一批0169先處理BH-0032：核對benchmark產生頁面的Wasm sidecar與payload accounting，再續其他benchmark問題。47historical／35fixed／12unresolved、10blocked／4root gates／4原候選及host shutdown限制維持；0038未收到身分確認，目標active。上輪中斷前已有有效修正與驗證，本輪補齊收尾；未commit/push。[0168](batches/0168-sass-module-import-contexts.md)／[最終核對](evidence/0168-final-checks.json)。先前交接逐字見[歷史](progress-history-0168-final.md)。
+- 0170完成BH-0033的公開snapshot讀取與guard限定修正：統一輸出規則項目數、UTF-8 CSS bytes、usage／retained與hydration狀態；marker class不算生成規則，共用規則依layer/key去重。9tests、types、36個三瀏覽器讀取／retention／fallback控制及原始lifecycle4、delivery16、progressive4、interaction54變體完成，report-smoke通過；invalidation原始報表完成但舊準備工具碼仍無效。mutation原始報表暴露未實際執行的private強制清理後仍有retained類別。BH-0033仍未完成：下一批0171處理強制清理、observer暫停、retained-volume準備與不可觀測內部計數，禁止以0冒充成功；BH-0034／0042／0043續驗。47historical／36fixed／11unresolved、65checked／10blocked、4root gates／4原候選及host shutdown限制不變；BH-0004完整graph／Sass maps／virtual／watch／base／SSR／lifecycle與Nuxt/Webpack全部保留，0038仍無身分確認。上輪BH-0032修復是有效進展，本輪未commit/push，目標active。[0170](batches/0170-benchmark-runtime-snapshot.md)／[核對](evidence/0170-final-checks.json)；0169交接逐字見[歷史](progress-history-0170.md)。
 
-- 使用者再次授權提交已完成部分：本次提交0167、0168已完成的帳本、驗證證據與重現材料。BH-0004產品及套件測試仍依賴未完成的跨層graph變更，留在工作目錄；其他對話變更保留。提交前247項來源hash與10份瀏覽器證據hash一致，151個排除檔案已記錄保全hash；本次不推送，也不將任何未完成或受阻項目結案。[提交核對](evidence/0168-commit-validation.json)。
+- 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
 
 - 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
 

@@ -1,0 +1,151 @@
+{
+  "0169-ai-context.log": {
+    "sha256": "c74032f03397c84f7aef6e9a65be9ef04964a8be11a2073d49a7db5fd746777c",
+    "browserControls": 0,
+    "commands": [],
+    "isolatedExit": []
+  },
+  "0169-browser-before.log": {
+    "sha256": "45c72d2c7f9a3a234575b75fac6b86a0b339570dbc6fded364c5589b4756c341",
+    "browserControls": 4,
+    "commands": [],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-browser-fixed.log": {
+    "sha256": "496366fccbdf72cc0525d217ca132d03a826794e2464a61f628e53ad708f5a55",
+    "browserControls": 24,
+    "commands": [],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-delivery-before.log": {
+    "sha256": "26c270fea60798568a23afd8e7d285aa7a589d14f0d38db559c43a7f7d8d8422",
+    "browserControls": 0,
+    "commands": [],
+    "isolatedExit": [
+      1
+    ]
+  },
+  "0169-delivery-fixed.log": {
+    "sha256": "5915e062575f9c4cfd732f31167d9b420720a929b023d54f9beb8553ec9015d1",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "master-delivery-modes",
+        "commandExit": 0
+      }
+    ],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-interaction-fixed.log": {
+    "sha256": "3dc1224b574148106b6b9312498d4057fe1e56eef7a71df470863e9d6a2759ae",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "interaction-cost",
+        "commandExit": 1
+      }
+    ],
+    "isolatedExit": [
+      1
+    ]
+  },
+  "0169-invalidation-fixed.log": {
+    "sha256": "f89b927a75dd2dbb103f02923fe7c03b1255be06995460ff7c88c28dfa1487df",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "runtime-style-invalidation-diagnostics",
+        "commandExit": 1
+      }
+    ],
+    "isolatedExit": [
+      1
+    ]
+  },
+  "0169-lifecycle-before.log": {
+    "sha256": "1ee63a539f79548df85b63ed5a3467bc1018b0ab6fe3f9a5f603c8b4ddd9629a",
+    "browserControls": 0,
+    "commands": [],
+    "isolatedExit": [
+      1
+    ]
+  },
+  "0169-lifecycle-fixed.log": {
+    "sha256": "cfc1ae9bdfeb32cd24418fad4819a7c032c3e193fac40db77db1005df7c89774",
+    "browserControls": 12,
+    "commands": [
+      {
+        "suite": "browser-lifecycle",
+        "commandExit": 0
+      }
+    ],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-mutation-fixed.log": {
+    "sha256": "a5e7f93aa85791f451662247bef1df148f0a21f6f63d6549f3f2816c2c864545",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "runtime-mutation-diagnostics",
+        "commandExit": 1
+      }
+    ],
+    "isolatedExit": [
+      1
+    ]
+  },
+  "0169-payload-tests.log": {
+    "sha256": "db9d950998264fbb8dd94f844672713268bb96a7bca2537e4351d21e02603728",
+    "browserControls": 0,
+    "commands": [],
+    "isolatedExit": []
+  },
+  "0169-progressive-fixed.log": {
+    "sha256": "4e008ab4a3dd5c3e358e38794bf100ed3e702a9e6a06bcec4526cccde8a0e4c6",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "progressive-hydration-diagnostics",
+        "commandExit": 0
+      }
+    ],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-progressive-public-state.log": {
+    "sha256": "d24aa4b75d63641073f3806f41220c00605e38aaf5a93788a7351d87a8222be2",
+    "browserControls": 6,
+    "commands": [],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-report-smoke.log": {
+    "sha256": "a1e4b18564ee7402da62a8ea4b81b823ebff499e9b5c88ac13bd4f000f319fa3",
+    "browserControls": 0,
+    "commands": [
+      {
+        "suite": "report-smoke",
+        "commandExit": 0
+      }
+    ],
+    "isolatedExit": [
+      0
+    ]
+  },
+  "0169-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "browserControls": 0,
+    "commands": [],
+    "isolatedExit": []
+  }
+}

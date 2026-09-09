@@ -1,0 +1,14 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-pigbyo64/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-wasm-report.mjs", "progressive-hydration-diagnostics"]}
+$ vitest bench progressive-hydration-diagnostics --run
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-pigbyo64/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  05:37:21
+   Duration  13.30s (tests 100%)
+
+{"suite":"progressive-hydration-diagnostics","commandExit":0}
+{"suite":"progressive-hydration-diagnostics","variants":[{"id":"minimal-master-progressive","samples":8,"legacyRuntimeCounts":[{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0}]},{"id":"docs-master-progressive","samples":8,"legacyRuntimeCounts":[{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0}]},{"id":"dashboard-master-progressive","samples":8,"legacyRuntimeCounts":[{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0}]},{"id":"stress-css-master-progressive","samples":8,"legacyRuntimeCounts":[{"metricId":"runtime-generated-rule-count","value":0},{"metricId":"runtime-style-raw-bytes","value":0}]}],"artifactCount":32,"wasmArtifacts":4,"wasm":{"raw":929757,"gzip":286205,"brotli":218273,"hash":"4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"},"pass":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-pigbyo64"}

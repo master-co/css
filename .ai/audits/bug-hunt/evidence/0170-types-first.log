@@ -1,0 +1,6 @@
+shared/delivery-modes.ts(894,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'MasterCSSRuntime' must be of type 'typeof MasterCSSRuntime', but here has type '{ prototype: { observe: (...args: unknown[]) => unknown; }; }'.
+shared/delivery-modes.ts(899,7): error TS2403: Subsequent variable declarations must have the same type.  Variable 'masterCSSRuntime' must be of type 'MasterCSSRuntimeFacade | undefined', but here has type '{ progressive?: boolean | undefined; }'.
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/benchmarks
+
