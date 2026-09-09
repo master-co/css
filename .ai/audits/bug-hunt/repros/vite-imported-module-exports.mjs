@@ -26,7 +26,7 @@ for (const relation of relations) for (const childModule of [false, true]) {
         : `.local{composes:child from "./${child}";display:inline-flex}`)
       writeFileSync(join(root, 'index.html'), '<!doctype html><div id="target">child</div><div id="local">local</div><div id="leak" class="child">global</div><script type="module" src="./client.js"></script>')
       writeFileSync(join(root, 'client.js'), `import names from './style.module.css';window.names=names;document.querySelector('#target').className=names.${relation === 'import' ? 'child' : 'local'}??'MISSING';document.querySelector('#local').className=names.local;window.ready=true`)
-      const config = { root, base: '/base/', configFile: false, logLevel: 'silent', plugins: mode === 'pure' ? [] : createMasterCSSVitePlugin({ mode }), css: { modules: { generateScopedName: (name, file) => basename(file.split('?')[0]).replaceAll('.', '_') + '_' + name } }, server: { host: '127.0.0.1', port: 0 } }
+      const config = { root, cacheDir: join(root, '.vite'), base: '/base/', configFile: false, logLevel: 'silent', plugins: mode === 'pure' ? [] : createMasterCSSVitePlugin({ mode }), css: { modules: { generateScopedName: (name, file) => basename(file.split('?')[0]).replaceAll('.', '_') + '_' + name } }, server: { host: '127.0.0.1', port: 0 } }
       if (command === 'serve') { server = await createServer(config);await server.listen() }
       else { await build(config);previewServer = await preview({ ...config, preview: { host: '127.0.0.1', port: 0 } }) }
       for (const browserName of ['chromium', 'firefox', 'webkit']) {

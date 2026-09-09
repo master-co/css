@@ -1,0 +1,188 @@
+{
+  "head": "7b404ee4ead7ae881d58a11032bfbd063df1e2db",
+  "goal": "active",
+  "previousGoalTurn": "Progress: completed user-authorized audit commit7b404ee4e and preserved all excluded changes",
+  "batch": "0167 bounded local CSS Modules import/export implementation verified; full BH-0004 unfinished",
+  "implementation": [
+    "One Vite Modules context projected onto original per-file ASTs, retaining Rust-owned import edges and Vite source-map chaining",
+    "Per-root opaque child identities and original resource bases",
+    "Explicit transformNativeStylesheets delivery option; default native host ownership and no-delivery behavior preserved",
+    "Byte-identical CSS inputs omitted by postcss-import reuse the same host transformation under distinct file owners"
+  ],
+  "verification": {
+    "compilerTests": "243 PASS/33 files; compiler implementation unchanged since this run",
+    "viteTests": "350 PASS/55 files; complete run after per-root cache isolation",
+    "compilerLintTypesBuild": "PASS; lint/types session11770 exit0; build synchronous exit0",
+    "viteLintTypesBuild": "PASS; final lint/types95493 exit0; final build synchronous exit0",
+    "exampleBuild": "PASS;70430 exit0",
+    "sitePrepareLint": "PASS;81461 exit0;0 errors/75 existing warnings",
+    "browser": {
+      "finalMatrices": {
+        "0167-modules-dev-final-browser.log": {
+          "observations": 120,
+          "failures": 0,
+          "sha256": "00804b6d3184bc1665cfc414403cca9e27c15d69dbe0e554f4d15762bcab475a"
+        },
+        "0167-modules-build-final-browser.log": {
+          "observations": 120,
+          "failures": 0,
+          "sha256": "125bc9c86657c839dff6b97516add8162cbb21173115ac9f119bc3e3bb66f262"
+        },
+        "0167-module-resources-dev-retry-browser.log": {
+          "observations": 84,
+          "failures": 0,
+          "sha256": "db6ec68ae2187818b296a53e69db902343114e09f0e2fa8186fda2c8b3c4c7c3"
+        },
+        "0167-module-resources-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "37a1404aa453fe8fb763ee3824de4466c21b586fb94474caf7499b2ff6c2be0a"
+        },
+        "0167-module-duplicates-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "e85fc156d63765ee93e8e258d5bc461b49129a00eb41c5f6abec4c89d06d4f59"
+        },
+        "0167-module-native-dev-final-browser.log": {
+          "observations": 84,
+          "failures": 0,
+          "sha256": "69b48524504b689603374b9c796f0361ea9964686bbdfa2fda2e287e16401c2d"
+        },
+        "0167-module-native-build-final-browser.log": {
+          "observations": 36,
+          "failures": 0,
+          "sha256": "03030fdb4baf58c2be073acd4e29ddb57136e52eb19ca83f44512ddea9901de4"
+        }
+      },
+      "observations": 516,
+      "failures": 0,
+      "pureHMRConsumerControl": {
+        "observations": 6,
+        "failures": 0,
+        "sha256": "b4c850dfe6dcce9e787016ecdb85ac08a1536f9298a4ddfe52f097ca1cc549d4"
+      },
+      "earlierFailures": "Retained as historical product/script/host/environment evidence; not included in final total"
+    },
+    "hostControls": "Pure Vite nested ICSS/public-base controls sync exit0; HMR boundary controls6 PASS/43977 exit0",
+    "apiGates": {
+      "api-census": {
+        "exitCode": 1,
+        "assertionDiffIdenticalTo0163": true,
+        "assertionDiffSha256": "9ef2690c4bdf8c57ff6102cda5ebe0bb738c4b699836cf492d1bb2d6db5f3aa6"
+      },
+      "package-contracts": {
+        "exitCode": 1,
+        "assertionDiffIdenticalTo0163": true,
+        "assertionDiffSha256": "567e25d5c3df992c9e01b1b60cf1cce17e1bd845377d42315c5dbe05662f9fc4"
+      }
+    },
+    "reproSyntax": "Four current scripts checked, exit0",
+    "whitespace": "PASS; raw terminal logs preserved",
+    "aiContext": "$ node scripts/check-ai-context.mjs\nAI context budget passed for 2793 files (4 generated excluded, 1 bounded exception)."
+  },
+  "preservation": {
+    "baseline": "0167-commit-source-hashes.json",
+    "baselineCount": 240,
+    "unchanged": 232,
+    "changed": [
+      ".ai/audits/bug-hunt/repros/vite-imported-module-exports.mjs",
+      "packages/compiler/README.md",
+      "packages/vite/README.md",
+      "packages/vite/src/utils/build-sass-source.ts",
+      "packages/vite/src/utils/module-sources.ts",
+      "packages/vite/tests/plugins/bug-hunt-imported-module-exports.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-module-import-contexts.test.ts",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSources": [
+      ".ai/audits/bug-hunt/repros/vite-imported-module-resources.mjs",
+      ".ai/audits/bug-hunt/repros/vite-module-hmr-consumer.mjs",
+      ".ai/audits/bug-hunt/repros/vite-module-import-host-controls.mjs",
+      "packages/vite/tests/plugins/bug-hunt-module-duplicate-inputs.test.ts"
+    ],
+    "totalSources": 244,
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "resourceCacheDirectories": [],
+    "indexEmpty": true
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 35,
+    "unresolved": 12,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "unresolvedHostShutdownLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0032",
+    "BH-0033",
+    "BH-0034",
+    "BH-0037",
+    "BH-0038",
+    "BH-0039",
+    "BH-0040",
+    "BH-0041",
+    "BH-0042",
+    "BH-0043"
+  ],
+  "notCompleted": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Imported Sass Module contexts, identical preprocessed outputs, maps and retained resource/reference ownership",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "All other unresolved findings,10 blocked coverage rows,4 root gates and4 original candidates",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent"
+  ],
+  "next": "Open0168 for imported Sass Module scopes/equal preprocessed input/source-map/resource ownership, then continue every original unresolved requirement",
+  "classifications": {
+    "product": "Imported export/global leakage and duplicate-input scope omission repaired for local CSS",
+    "script": "Missing Module HMR acceptance and nested-layer ICSS export expectations; original failures retained",
+    "testIsolation": "One350-test run failed ENOTEMPTY in shared Vite deps cache; current-batch tests/repros now isolated and full rerun passes; historical tests not globally claimed fixed",
+    "environment": "One dev launch had no available ephemeral port and zero observations; terminal unchanged-source retry passed84",
+    "host": "public-base nested Module import ENOENT also reproduced in pure Vite",
+    "existingGates": "API census/package contract assertion diffs identical to0163; no golden updates"
+  },
+  "terminalSessions": {
+    "93133": 0,
+    "31226": 0,
+    "41942": 1,
+    "11770": 0,
+    "26148": 0,
+    "95989": 1,
+    "86182": 1,
+    "37070": 0,
+    "29171": 0,
+    "16118": 0,
+    "49162": 1,
+    "83636": 1,
+    "69513": 0,
+    "23633": 1,
+    "87058": 0,
+    "81461": 0,
+    "43977": 0,
+    "5603": 0,
+    "95493": 0,
+    "56014": 0,
+    "38542": 0,
+    "35110": 0,
+    "70430": 0,
+    "44567": 0,
+    "61878": 0,
+    "82849": 0,
+    "87784": 0
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false
+}

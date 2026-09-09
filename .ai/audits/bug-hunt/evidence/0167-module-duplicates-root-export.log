@@ -1,0 +1,121 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-module-duplicate-inputs.test.ts (4 tests | 4 failed) 3291ms
+   × identical imported files retain module scope and distinct resource owners in static 791ms
+   × identical imported files retain module scope and distinct resource owners in runtime 757ms
+   × identical imported files retain module scope and distinct resource owners in pre-render 879ms
+   × identical imported files retain module scope and distinct resource owners in progressive 862ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-module-duplicate-inputs.test.ts > identical imported files retain module scope and distinct resource owners in static
+AssertionError: expected '@layer guard{.scope_same{padding:2rem…' not to match /\.same\s*\{/
+
+- Expected:
+/\.same\s*\{/
+
++ Received:
+"@layer guard{.scope_same{padding:2rem;background:url(\"/_master-css/dev/9578bdfc-c325-4fc2-ac16-8963aed62cca/resource/606eafc2542fad5cdd94/pixel.svg\")}}
+@layer guard{.same{padding:2rem;background:url(\"/_master-css/dev/9578bdfc-c325-4fc2-ac16-8963aed62cca/resource/842c8665f33c1ffab222/pixel.svg\")}}
+
+.scope_local {
+  display: block;
+}"
+
+ ❯ tests/plugins/bug-hunt-module-duplicate-inputs.test.ts:31:21
+     29|     }
+     30|     const css = sources.join('\n')
+     31|     expect(css).not.toMatch(/\.same\s*\{/)
+       |                     ^
+     32|     expect(css.match(/\.scope_same\s*\{/g)).toHaveLength(2)
+     33|     expect(css).not.toContain(':export')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-module-duplicate-inputs.test.ts > identical imported files retain module scope and distinct resource owners in runtime
+AssertionError: expected '@layer guard{.scope_same{padding:2rem…' not to match /\.same\s*\{/
+
+- Expected:
+/\.same\s*\{/
+
++ Received:
+"@layer guard{.scope_same{padding:2rem;background:url(\"/_master-css/dev/2daf65c1-5cb5-47ac-9cc5-aa1b7bb454aa/resource/dbee69ad14f1b5f0f1b7/pixel.svg\")}}
+@layer guard{.same{padding:2rem;background:url(\"/_master-css/dev/2daf65c1-5cb5-47ac-9cc5-aa1b7bb454aa/resource/072441708ac59203db19/pixel.svg\")}}
+
+.scope_local {
+  display: block;
+}"
+
+ ❯ tests/plugins/bug-hunt-module-duplicate-inputs.test.ts:31:21
+     29|     }
+     30|     const css = sources.join('\n')
+     31|     expect(css).not.toMatch(/\.same\s*\{/)
+       |                     ^
+     32|     expect(css.match(/\.scope_same\s*\{/g)).toHaveLength(2)
+     33|     expect(css).not.toContain(':export')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-module-duplicate-inputs.test.ts > identical imported files retain module scope and distinct resource owners in pre-render
+AssertionError: expected '@layer guard{.scope_same{padding:2rem…' not to match /\.same\s*\{/
+
+- Expected:
+/\.same\s*\{/
+
++ Received:
+"@layer guard{.scope_same{padding:2rem;background:url(\"/_master-css/dev/b26ddab4-95b9-4a4a-b917-cfd83c2ef63d/resource/340c800841763dddef2f/pixel.svg\")}}
+@layer guard{.same{padding:2rem;background:url(\"/_master-css/dev/b26ddab4-95b9-4a4a-b917-cfd83c2ef63d/resource/bbb93b6df86f22190ddd/pixel.svg\")}}
+
+.scope_local {
+  display: block;
+}"
+
+ ❯ tests/plugins/bug-hunt-module-duplicate-inputs.test.ts:31:21
+     29|     }
+     30|     const css = sources.join('\n')
+     31|     expect(css).not.toMatch(/\.same\s*\{/)
+       |                     ^
+     32|     expect(css.match(/\.scope_same\s*\{/g)).toHaveLength(2)
+     33|     expect(css).not.toContain(':export')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-module-duplicate-inputs.test.ts > identical imported files retain module scope and distinct resource owners in progressive
+AssertionError: expected '@layer guard{.scope_same{padding:2rem…' not to match /\.same\s*\{/
+
+- Expected:
+/\.same\s*\{/
+
++ Received:
+"@layer guard{.scope_same{padding:2rem;background:url(\"/_master-css/dev/572a96c8-f198-475a-aa7a-a56d0515fb56/resource/5e4068f812c8a53dcb6f/pixel.svg\")}}
+@layer guard{.same{padding:2rem;background:url(\"/_master-css/dev/572a96c8-f198-475a-aa7a-a56d0515fb56/resource/828e564c7ee924e6e005/pixel.svg\")}}
+
+.scope_local {
+  display: block;
+}"
+
+ ❯ tests/plugins/bug-hunt-module-duplicate-inputs.test.ts:31:21
+     29|     }
+     30|     const css = sources.join('\n')
+     31|     expect(css).not.toMatch(/\.same\s*\{/)
+       |                     ^
+     32|     expect(css.match(/\.scope_same\s*\{/g)).toHaveLength(2)
+     33|     expect(css).not.toContain(':export')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  04:52:06
+   Duration  3.76s (tests 89%, transform 7%, import 4%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

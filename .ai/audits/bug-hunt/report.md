@@ -1,6 +1,8 @@
 # Master CSS 調查交付
 
-- 使用者授權提交已完成部分：本次納入0166完成查核、0167完成的缺陷重現與驗證紀錄，並同步本交接；不將進行中修正標為完成。0167初版已讓Vite完成346tests／54files全PASS，Compiler243tests／33files及33項來源映射聚焦回歸PASS；初版曾有6項失敗，原始log保留。尚須重建Compiler/Vite、重跑Modules dev/build瀏覽器矩陣與來源資源控制，再更新公開文件及API契約檢查。BH-0004產品與套件測試仍依賴未完成的Rust/binding/graph變更，因此留在工作目錄；其他對話Site變更原樣保留。47historical／35fixed／12unresolved、10blocked／4root gates／4原候選+1host限制及0038身分確認暫停不變，目標active；未推送。舊的「尚未實作」交接為調查時點，已逐字保存於[歷史](progress-history-0167-implementation.md)。[提交核對](evidence/0167-commit-validation.json)。
+- 0168限定的Sass Module匯入與診斷驗證完成：相同預處理輸出保留各檔scope／資源目錄，additionalData不因fallback重跑；子CSS錯誤回到原始位置，Vite未保留原始Sass map時明示預處理位置。完整Vite386tests／57files、lint/types/build、原範例及10個三瀏覽器矩陣600observations全PASS；Site0errors／75既有warnings。BH-0004仍未完成，Sass精確原始maps、partial/reference/virtual、watch/recovery/base/SSR/lifecycle及Nuxt/Webpack保留。下一批0169先處理BH-0032：核對benchmark產生頁面的Wasm sidecar與payload accounting，再續其他benchmark問題。47historical／35fixed／12unresolved、10blocked／4root gates／4原候選及host shutdown限制維持；0038未收到身分確認，目標active。上輪中斷前已有有效修正與驗證，本輪補齊收尾；未commit/push。[0168](batches/0168-sass-module-import-contexts.md)／[最終核對](evidence/0168-final-checks.json)。先前交接逐字見[歷史](progress-history-0168-final.md)。
+
+- 使用者再次授權提交已完成部分：本次提交0167、0168已完成的帳本、驗證證據與重現材料。BH-0004產品及套件測試仍依賴未完成的跨層graph變更，留在工作目錄；其他對話變更保留。提交前247項來源hash與10份瀏覽器證據hash一致，151個排除檔案已記錄保全hash；本次不推送，也不將任何未完成或受阻項目結案。[提交核對](evidence/0168-commit-validation.json)。
 
 - 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
 
