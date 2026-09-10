@@ -23,6 +23,7 @@ import {
   resolveStaticStatePath,
 } from './static'
 import { registerOptions, resolveOptions, type MasterCSSNextOptions } from './options'
+import { createWebpackVirtualModulesPlugin } from './webpack-virtual-modules'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
 type WebpackConfig = Parameters<NonNullable<NextConfig['webpack']>>[0]
@@ -301,15 +302,20 @@ function applyMasterCSSWebpackConfig(
     ]
   })
   config.resolve ??= {}
+  const virtualModules = {
+    [VIRTUAL_CSS_ID]: virtualCSSPath,
+    [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
+    [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath
+  }
+  config.plugins ??= []
+  config.plugins.push(createWebpackVirtualModulesPlugin(virtualModules))
   const aliases = config.resolve.alias || {}
   const userInstrumentationAlias = aliases[NEXT_INSTRUMENTATION_CLIENT_ID]
     || resolveUserInstrumentationClientPath(projectDir)
     || resolveEmptyModulePath()
   config.resolve.alias = {
     ...aliases,
-    [VIRTUAL_CSS_ID]: virtualCSSPath,
-    [VIRTUAL_MANIFEST_ID]: virtualManifestPath,
-    [VIRTUAL_EMITTED_GLOBALS_ID]: virtualEmittedGlobalsPath,
+    ...virtualModules,
     ...(runtimeInstrumentationPath
       ? {
         [MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID]: userInstrumentationAlias,
