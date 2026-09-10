@@ -1,0 +1,173 @@
+{
+  "head": "4d7274050",
+  "goal": "active",
+  "previousGoalTurn": "Progress:0181explicitbaseFileownershipfixedandverified",
+  "batch": "0182mappedcross-directorySasspartialreferences",
+  "validation": {
+    "before": "6buildFAIL/2pureVitePASS",
+    "additionalDataBefore": "8FAIL/12PASS;Vitesingle-sourcechainisolated",
+    "focusedCompiler": "16PASS",
+    "newViteTests": "22PASS:18buildcasesand4pureVitecontrols",
+    "compilerTests": "269PASS/35files",
+    "viteTests": "479PASS/61files",
+    "cliTests": "71PASS/16files",
+    "lint": "Compiler/VitePASS;Site0errors/75existingwarnings;finalguidetargetPASS",
+    "types": "Compiler/VitePASS",
+    "build": "Compiler/Vite/originalViteexamplePASS",
+    "sitePrepare": "PASS;rerunafterfinalprose",
+    "browser": "120observationsPASS:96devwithpartial/reference/resourceHMRand24productioninitial;2syntaxes/4modes/3browsers;actualbuiltplugin",
+    "rootAPI": "CensusandpackagegoldenFAIL;before/afterbuildsameerrors;censusnormalizedmatches0167",
+    "aiContext": "PASS",
+    "syntaxWhitespaceJSONLedgerLinks": "PASS",
+    "finalSourceRecheck": "397sourcehashesmatch;147exclusionsunchanged;0181rawlogspreserved;onlylistedchanges;HEADandindexunchanged"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1,
+    "browserNamespaceValidationLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "preservation": {
+    "head": "4d7274050c0acb159dc756af45d6fd0c57509866",
+    "baselineSources": 392,
+    "finalSources": 397,
+    "changed": {
+      "packages/compiler/README.md": {
+        "before": "5c48069e4fda4a50dabdc92db8c0858fe4ea9e8aadc71e91f5c353c66b7b1837",
+        "after": "b6cfc161dfe932ee68927071e61e3bbf90336f33935efb8d90785fc4f87829a9"
+      },
+      "packages/compiler/src/node-imports.ts": {
+        "before": "7fb36fa2247b70739a1de0d462d922452ca0aae53a40cb4cd8ad38f8e78b4a11",
+        "after": "314144ded1d7a2551a53fc7e261ab0eeaa9b6ba1f687585f4bc33862114a6ec5"
+      },
+      "packages/compiler/src/stylesheet/delivery.ts": {
+        "before": "f6579d63d372685c2e227c60e48f1011bea72fd648d769d5bc3179cc5949300d",
+        "after": "bf7422303977e3a1643f60f275133dcd06354e3284c09c5895fa11f4a02634f8"
+      },
+      "packages/vite/README.md": {
+        "before": "f97b0457ac2045a0e8cab4eb053b6066aeaa8847de64d318b58eec9e79717ea1",
+        "after": "26a25edd238f6d009d4f1bdda30169c4895eb21a474d3ea5ae9b1d10724355f6"
+      },
+      "packages/vite/src/plugins/local-compose.ts": {
+        "before": "f8805209bb5b3ce50591f142f582092b4fbe1fda08b833ca55aa26459fc8d677",
+        "after": "ede20f6e2ec433ca8b04f54f172c63a88d678e7547a37f3622dbd329486887e7"
+      },
+      "packages/vite/src/utils/build-import-resolver.ts": {
+        "before": "6d669e9ef655266ef49bd320e9df5fcc0bcfd0f5b0166b965885bca35ddf4b29",
+        "after": "2f7fcc878d204baffd0c407e72960bf5f01628f876ef05f12a3922d1a5422968"
+      },
+      "packages/vite/src/utils/build-sass-source.ts": {
+        "before": "79d58f74729572d73a372b4048ac2decfaeb2b341895c86a2f48734d3a411495",
+        "after": "877bd1a66b511adcf4d0042dd78f121bd25c9611e521bd4a8a29488e1ee05db4"
+      },
+      "packages/vite/src/utils/module-sources.ts": {
+        "before": "c2e797297c33afed9cd1361e9c7d0326a500c07841b338b550bda3be4f3f2bfe",
+        "after": "be4f602c97f091b66adc5d40096812d53a980ba97c015fa2002285aec0f912b6"
+      },
+      "packages/vite/src/utils/register-style-source.ts": {
+        "before": "dde9c2824158739a56fc983cb027552fe25371b65acd28201f8c67971aa068ce",
+        "after": "89b174d274cd0282943839f7258aba5cee980e7b7c925d7c25ae2b6875074638"
+      },
+      "site/app/[locale]/guide/directives/contract.mdx": {
+        "before": "e47babb641f13ce0900fdee72da7b150695feaac2d2cc8efd3fc58b93c54a3f1",
+        "after": "c5e7eaf8267589bbc7ef2f5e99831469d946c271870aaf6ed33bac4624bffca2"
+      }
+    },
+    "newSources": [
+      "packages/compiler/src/stylesheet/reference-origins.ts",
+      "packages/vite/src/utils/sass-source-markers.ts",
+      "packages/compiler/tests/bug-hunt-reference-source-maps.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-sass-partial-references.test.ts",
+      ".ai/audits/bug-hunt/repros/vite-sass-partial-references.mjs"
+    ],
+    "previousExclusions": {
+      "count": 157,
+      "unchanged": 147,
+      "intendedChanges": [
+        "packages/compiler/README.md",
+        "packages/compiler/src/node-imports.ts",
+        "packages/compiler/src/stylesheet/delivery.ts",
+        "packages/vite/README.md",
+        "packages/vite/src/plugins/local-compose.ts",
+        "packages/vite/src/utils/build-import-resolver.ts",
+        "packages/vite/src/utils/build-sass-source.ts",
+        "packages/vite/src/utils/module-sources.ts",
+        "packages/vite/src/utils/register-style-source.ts",
+        "site/app/[locale]/guide/directives/contract.mdx"
+      ]
+    },
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "threeCLIArtifactsByteIdentical": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Other Sass partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed",
+    "All2unresolved findings,10blockedcoverage,4rootgates and4originalcandidates",
+    "Detailedowner-levelRustprofiling/fullbenchmarkmatrices/reliablelong-session/history remain unfinished",
+    "Actual host missing reference/resource deletion-restoration recovery",
+    "Virtual relative reference without explicit baseFile remains unverified",
+    "Emitted internal Modules proxy plus ?direct HTTP500 path needs ownership/contract classification",
+    "Actual dev/build-watch reference deletion/restoration andstartupmissingfile",
+    "Plain/ModulesSassroot developmentbrowser coverage andunreliable/absentmapownership"
+  ],
+  "limits": [
+    "Mappedpartialreferencesrepaired;fullBH-0004 migration remainsunfinished",
+    "BrowsermatrixretainedModules;ordinary/Modulerootscoveredby18buildtests,notclaimedbrowservalidated",
+    "OptionalserializedsourceMapv3hostcontractisintentional;noCSSsemanticfallback",
+    "TemporaryrootinputmarkerfixesVitemapcomposition;removedbeforeoutput",
+    "Noengine/runtimehotpathchange orperformanceclaim"
+  ],
+  "next": "0183actualhostmissingreference recovery;plain/Modulesrootbrowsercases;retaininternaldirectproxy500boundary",
+  "paused": "Batch0038 additional verification still requires explicit identity confirmation",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "76092": 1,
+    "16880": 0,
+    "82140": 0,
+    "48943": 0,
+    "95063": 1,
+    "99142": 0,
+    "23198": 0,
+    "69810": 0,
+    "96039": 0,
+    "97289": 0,
+    "62886": 0,
+    "50173": 0,
+    "13912": 0,
+    "52965": 0,
+    "51209": 0,
+    "43805": 0,
+    "29105": 0,
+    "93334": 0,
+    "76183": 0
+  },
+  "classifiedIntermediateFailures": {
+    "referenceBefore": "Productpartialoriginlostandentrydirectorydecoyread",
+    "additionalData": "Vitepartial-onlymapincorrectlychainedthroughentryadditionalDatamap;rootidentitymarkerfixverifiedwithpureVitecontrols",
+    "rootAPI": "Existingunfinishedgraphpublicsurface;intentionalnewoptionalmapcontract;goldensunchanged",
+    "documentationPatch": "OnepatchusednonexistentViteREADMEheading;validationfailedbeforeanywrite;correctedactualparagraph"
+  }
+}

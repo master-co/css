@@ -1,0 +1,142 @@
+{
+  "head": "4d7274050",
+  "goal": "active",
+  "previousGoalTurn": "Progress:completed authorized commits and preservation verification",
+  "batch": "0181 explicit virtual reference filesystem ownership",
+  "validation": {
+    "originalReproduction": "4FAIL/2physical controlsPASS",
+    "focusedCompiler": "10PASS",
+    "compilerTests": "253PASS/34files",
+    "viteTests": "457PASS/60files",
+    "focusedVite": "16PASS",
+    "cliTests": "71PASS/16files",
+    "lint": "Compiler/VitePASS;Site0errors/75existingwarnings",
+    "types": "Compiler/VitePASS",
+    "build": "Compiler/Vite/originalViteexamplePASS",
+    "sitePrepare": "PASS",
+    "browser": "96observationsPASS:72dev withreference/resource HMR,24production initial;2syntaxes/4modes/3browsers;actualbuiltplugin",
+    "aiContext": "PASS",
+    "syntaxWhitespaceJSONLedgerLinks": "PASS",
+    "finalSourceRecheck": "392sourcehashesmatch;153exclusionsunchanged;onlylistedchanges;HEADandindexunchanged"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1,
+    "browserNamespaceValidationLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "preservation": {
+    "head": "4d7274050c0acb159dc756af45d6fd0c57509866",
+    "baselineSources": 389,
+    "finalSources": 392,
+    "changed": {
+      "packages/compiler/README.md": {
+        "before": "f8ba1681dae1212c3145c27f37de9b8bc8a71cfa3b72670019ced6d43d10a72b",
+        "after": "5c48069e4fda4a50dabdc92db8c0858fe4ea9e8aadc71e91f5c353c66b7b1837"
+      },
+      "packages/compiler/src/node-imports.ts": {
+        "before": "762253bd4704bfc00cd22200137ceb7dc2308185c1bc83b08e0cf45f9da15d93",
+        "after": "7fb36fa2247b70739a1de0d462d922452ca0aae53a40cb4cd8ad38f8e78b4a11"
+      },
+      "packages/compiler/src/stylesheet/delivery.ts": {
+        "before": "b7a74141993b23433ffa818809f1d4f14cc949430522de84a699dd2882291cdd",
+        "after": "f6579d63d372685c2e227c60e48f1011bea72fd648d769d5bc3179cc5949300d"
+      },
+      "site/app/[locale]/guide/directives/contract.mdx": {
+        "before": "ae2a3d8f852d7769f886a95ec7cbf4ce3d751980354a400b41b83708ad833503",
+        "after": "e47babb641f13ce0900fdee72da7b150695feaac2d2cc8efd3fc58b93c54a3f1"
+      }
+    },
+    "newSources": [
+      "packages/compiler/tests/bug-hunt-virtual-reference-ownership.test.ts",
+      "packages/vite/tests/plugins/bug-hunt-retained-sass-references.test.ts",
+      ".ai/audits/bug-hunt/repros/vite-retained-sass-references.mjs"
+    ],
+    "previousExclusions": {
+      "count": 157,
+      "unchanged": 153,
+      "intendedChanges": [
+        "packages/compiler/README.md",
+        "packages/compiler/src/node-imports.ts",
+        "packages/compiler/src/stylesheet/delivery.ts",
+        "site/app/[locale]/guide/directives/contract.mdx"
+      ]
+    },
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "threeCLIArtifactsByteIdentical": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Other Sass partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed",
+    "All2unresolved findings,10blockedcoverage,4rootgates and4originalcandidates",
+    "Detailedowner-levelRustprofiling/fullbenchmarkmatrices/reliablelong-session/history remain unfinished",
+    "Cross-directory Sass partial reference source origins",
+    "Actual host missing reference/resource deletion-restoration recovery",
+    "Virtual relative reference without explicit baseFile remains unverified",
+    "Emitted internal Modules proxy plus ?direct HTTP500 path needs ownership/contract classification"
+  ],
+  "limits": [
+    "Explicit baseFile ownership repaired;fullBH-0004 migration remainsunfinished",
+    "Source tests andbuilt-browser checks coverdifferenthosts;no cleancheckoutclaim",
+    "Source-onlyfocusedVite test briefly overlappedcompilerJSbuild;builtconsumers ranonlyafterbuildcompletion",
+    "Noengine/runtimehotpathchange orperformanceclaim"
+  ],
+  "next": "0182 cross-directory Sass partial references andactualhostmissingreference recovery; retaininternaldirectproxy boundary",
+  "paused": "Batch0038 additional verification still requires explicit identity confirmation",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "40117": 1,
+    "58517": 0,
+    "66075": 0,
+    "18408": 1,
+    "84995": 1,
+    "8980": 0,
+    "50720": 1,
+    "4870": 1,
+    "31222": 1,
+    "59373": 0,
+    "92548": 0,
+    "69901": 0,
+    "74126": 0,
+    "97273": 0,
+    "93974": 0,
+    "74894": 0,
+    "18935": 0,
+    "42963": 0,
+    "9032": 0,
+    "17256": 0,
+    "32963": 0,
+    "86682": 0
+  },
+  "classifiedIntermediateFailures": {
+    "referenceBefore": "Productwrongowner:rootdecoyreadinsteadexplicitbaseFile;fixed",
+    "devFacade": "HarnessreadModulesJSasCSS",
+    "devLayers": "Harnessrequiredimportlayerformdespitecorrectdevlayerblocks",
+    "hmr": "Harnessomittedactualcliententryandacceptgraph;allpasswithproperclientgraph",
+    "directProxy": "SeparateexistingHTTP500boundarypreservedasincomplete",
+    "ledgerScript": "Assumedtableindex;stoppedbeforewrite;correctedbulletindex"
+  }
+}

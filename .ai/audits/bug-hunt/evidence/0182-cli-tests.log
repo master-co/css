@@ -1,0 +1,15 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/cli
+
+Cannot clean stylesheet assets: Error: injected cleanup permission failure
+master.css exported 825B
+
+ Test Files  16 passed (16)
+      Tests  71 passed (71)
+   Start at  09:50:05
+   Duration  10.46s (tests 95%, transform 3%, import 2%)
+

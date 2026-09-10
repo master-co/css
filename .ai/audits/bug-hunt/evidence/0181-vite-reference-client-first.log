@@ -1,0 +1,76 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in serve
+{"command":"serve","syntax":"scss","clientModule":"import \"/style.module.css.master-css-sass.css\";\nconst value0 = \"_a_1yjon_1\"; export { value0 as \"a\" };\nconst value1 = \"_b_1yjon_1\"; export { value1 as \"b\" };\nexport default {\"a\":\"_a_1yjon_1\",\"b\":\"_b_1yjon_1\"};"}
+
+stdout | tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in serve
+{"command":"serve","syntax":"sass","clientModule":"import \"/style.module.css.master-css-sass.css\";\nconst value0 = \"_a_i3nfj_1\"; export { value0 as \"a\" };\nconst value1 = \"_b_i3nfj_1\"; export { value1 as \"b\" };\nexport default {\"a\":\"_a_i3nfj_1\",\"b\":\"_b_i3nfj_1\"};"}
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts (4 tests | 2 failed) 3097ms
+   × BH-0004 retained scss references keep child owners in serve 747ms
+   × BH-0004 retained sass references keep child owners in serve 708ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in serve
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in serve
+AssertionError: 
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Error</title>
+            <script type="module">
+              const error = {"message":"ENOENT: no such file or directory, open '/style.module.css'","stack":"    at readFileSync (node:fs:484:20)\n    at prepareBuildSassSource (/Users/aron/master/css/packages/vite/src/utils/build-sass-source.ts:93:20)\n    at LoadPluginContext.load (/Users/aron/master/css/packages/vite/src/plugins/sass-source.ts:107:28)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:50:79)\n    at /Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:101\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:65:14)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:75)\n    at EnvironmentPluginContainer.load (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:30890:56)\n    at loadAndTransform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:20624:21)","frame":""}
+              try {
+                const { ErrorOverlay } = await import("/@vite/client")
+                document.body.appendChild(new ErrorOverlay(error))
+              } catch {
+                const h = (tag, text) => {
+                  const el = document.createElement(tag)
+                  el.textContent = text
+                  return el
+                }
+                document.body.appendChild(h('h1', 'Internal Server Error'))
+                document.body.appendChild(h('h2', error.message))
+                document.body.appendChild(h('pre', error.stack))
+                document.body.appendChild(h('p', '(Error overlay failed to load)'))
+              }
+            </script>
+          </head>
+          <body>
+          </body>
+        </html>
+      : expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts:53:39
+     51|         seen.add(url)
+     52|         const response = await fetch(url, { headers: { accept: 'text/c…
+     53|         expect(response.status, text).toBe(200)
+       |                                       ^
+     54|         expect(response.headers.get('content-type')).toContain('text/c…
+     55|         sources.push(text)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  09:25:27
+   Duration  3.59s (tests 88%, transform 8%, import 4%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

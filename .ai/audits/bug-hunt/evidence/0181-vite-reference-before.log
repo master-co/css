@@ -1,0 +1,67 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts (4 tests | 2 failed) 5603ms
+   × BH-0004 retained scss references keep child owners in serve 1263ms
+   × BH-0004 retained sass references keep child owners in serve 1295ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in serve
+AssertionError: expected 'import "/style.module.css.master-css-…' to match /padding:\s*2rem/
+
+- Expected:
+/padding:\s*2rem/
+
++ Received:
+"import \"/style.module.css.master-css-sass.css\";
+const value0 = \"_a_1yjon_1\"; export { value0 as \"a\" };
+const value1 = \"_b_1yjon_1\"; export { value1 as \"b\" };
+export default {\"a\":\"_a_1yjon_1\",\"b\":\"_b_1yjon_1\"};"
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts:64:18
+     62|     }
+     63|     const text = sources.join('\n')
+     64|     expect(text).toMatch(/padding:\s*2rem/)
+       |                  ^
+     65|     expect(text).toMatch(/padding:\s*3rem/)
+     66|     expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in serve
+AssertionError: expected 'import "/style.module.css.master-css-…' to match /padding:\s*2rem/
+
+- Expected:
+/padding:\s*2rem/
+
++ Received:
+"import \"/style.module.css.master-css-sass.css\";
+const value0 = \"_a_i3nfj_1\"; export { value0 as \"a\" };
+const value1 = \"_b_i3nfj_1\"; export { value1 as \"b\" };
+export default {\"a\":\"_a_i3nfj_1\",\"b\":\"_b_i3nfj_1\"};"
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts:64:18
+     62|     }
+     63|     const text = sources.join('\n')
+     64|     expect(text).toMatch(/padding:\s*2rem/)
+       |                  ^
+     65|     expect(text).toMatch(/padding:\s*3rem/)
+     66|     expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  09:24:17
+   Duration  7.33s (tests 77%, transform 18%, import 4%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

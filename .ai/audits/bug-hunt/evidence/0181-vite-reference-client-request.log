@@ -1,0 +1,73 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in serve
+{"command":"serve","syntax":"scss","clientModule":"import \"/style.module.css.master-css-sass.css\";\nconst value0 = \"_a_1yjon_1\"; export { value0 as \"a\" };\nconst value1 = \"_b_1yjon_1\"; export { value1 as \"b\" };\nexport default {\"a\":\"_a_1yjon_1\",\"b\":\"_b_1yjon_1\"};"}
+
+stdout | tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in serve
+{"command":"serve","syntax":"sass","clientModule":"import \"/style.module.css.master-css-sass.css\";\nconst value0 = \"_a_i3nfj_1\"; export { value0 as \"a\" };\nconst value1 = \"_b_i3nfj_1\"; export { value1 as \"b\" };\nexport default {\"a\":\"_a_i3nfj_1\",\"b\":\"_b_i3nfj_1\"};"}
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts (4 tests | 2 failed) 4060ms
+   × BH-0004 retained scss references keep child owners in serve 1217ms
+   × BH-0004 retained sass references keep child owners in serve 1204ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in serve
+AssertionError: expected '@layer owner-a{._a_1yjon_1{padding:2r…' to contain 'layer(owner-a)'
+
+- Expected
++ Received
+
+- layer(owner-a)
++ @layer owner-a{._a_1yjon_1{padding:2rem;background:url("/_master-css/dev/18f23b09-8d9a-4ce4-94df-995725565671/resource/ff441bfce3497f212efc/pixel.svg?v=a#icon")}}
++ @layer owner-b{._b_1yjon_1{padding:3rem;background:url("/_master-css/dev/18f23b09-8d9a-4ce4-94df-995725565671/resource/5d76d3df02a2a665a901/pixel.svg?v=b#icon")}}
++ <svg xmlns="http://www.w3.org/2000/svg" data-owner="a"/>
++ <svg xmlns="http://www.w3.org/2000/svg" data-owner="b"/>
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts:74:20
+     72|     expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+     73|     for (const side of ['a', 'b']) {
+     74|       expect(text).toContain(`layer(owner-${side})`)
+       |                    ^
+     75|       expect(text).toContain(`data-owner="${side}"`)
+     76|       expect(text).toContain(`?v=${side}#icon`)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in serve
+AssertionError: expected '@layer owner-a{._a_i3nfj_1{padding:2r…' to contain 'layer(owner-a)'
+
+- Expected
++ Received
+
+- layer(owner-a)
++ @layer owner-a{._a_i3nfj_1{padding:2rem;background:url("/_master-css/dev/7bb2a6e9-6797-40a4-a0f8-f8c8d38eac15/resource/aae6c01b8ba2a763d76c/pixel.svg?v=a#icon")}}
++ @layer owner-b{._b_i3nfj_1{padding:3rem;background:url("/_master-css/dev/7bb2a6e9-6797-40a4-a0f8-f8c8d38eac15/resource/e5a7a70f4b4918581331/pixel.svg?v=b#icon")}}
++ <svg xmlns="http://www.w3.org/2000/svg" data-owner="a"/>
++ <svg xmlns="http://www.w3.org/2000/svg" data-owner="b"/>
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts:74:20
+     72|     expect(text).not.toMatch(/99rem|never-|@reference|@compose/)
+     73|     for (const side of ['a', 'b']) {
+     74|       expect(text).toContain(`layer(owner-${side})`)
+       |                    ^
+     75|       expect(text).toContain(`data-owner="${side}"`)
+     76|       expect(text).toContain(`?v=${side}#icon`)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 2 passed (4)
+   Start at  09:26:02
+   Duration  4.56s (tests 90%, transform 6%, import 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

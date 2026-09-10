@@ -1,0 +1,131 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts (8 tests | 6 failed) 3357ms
+   × BH-0004 partial scss reference retains original owner in plain-root 571ms
+   × BH-0004 partial scss reference retains original owner in module-root 533ms
+   × BH-0004 partial scss reference retains original owner in retained-module 546ms
+   × BH-0004 partial sass reference retains original owner in plain-root 519ms
+   × BH-0004 partial sass reference retains original owner in module-root 542ms
+   × BH-0004 partial sass reference retains original owner in retained-module 530ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference retains original owner in plain-root
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference retains original owner in plain-root
+AssertionError: expected '@import "./master-css-3fdfdb23d3ace6e…' to match /padding:\s*7rem/
+
+- Expected:
+/padding:\s*7rem/
+
++ Received:
+"@import \"./master-css-3fdfdb23d3ace6e92757-0.css\";
+<script type=\"module\" crossorigin src=\"/assets/index-bgzY096h.js\"></script>
+<link rel=\"stylesheet\" crossorigin href=\"/assets/index-WeLKO70M.css\">
+<div class=\"target\"></div>
+@import \"./master-css-3fdfdb23d3ace6e92757-1.css\";
+@import \"./master-css-3fdfdb23d3ace6e92757-2.css\";
+.target{padding:99rem}"
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:59:17
+     57|     }
+     58|     const css = assets.join('\n')
+     59|     expect(css).toMatch(/padding:\s*7rem/)
+       |                 ^
+     60|     expect(css).not.toMatch(/99rem|\.never|@reference|@compose/)
+     61|     expect(css).toContain('?v=partial#icon')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference retains original owner in module-root
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference retains original owner in module-root
+AssertionError: expected '@import "./master-css-c4a4a7a336e3059…' to match /padding:\s*7rem/
+
+- Expected:
+/padding:\s*7rem/
+
++ Received:
+"@import \"./master-css-c4a4a7a336e305995b07-0.css\";
+<script type=\"module\" crossorigin src=\"/assets/index-CtBRpe1f.js\"></script>
+<link rel=\"stylesheet\" crossorigin href=\"/assets/index-dSeqHFVy.css\">
+<div class=\"target\"></div>
+@import \"./master-css-c4a4a7a336e305995b07-1.css\";
+@import \"./master-css-c4a4a7a336e305995b07-2.css\";
+._target_15vkb_2{padding:99rem}"
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:59:17
+     57|     }
+     58|     const css = assets.join('\n')
+     59|     expect(css).toMatch(/padding:\s*7rem/)
+       |                 ^
+     60|     expect(css).not.toMatch(/99rem|\.never|@reference|@compose/)
+     61|     expect(css).toContain('?v=partial#icon')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/6]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference retains original owner in retained-module
+AssertionError: expected '@import "./master-css-7c876708164aa0b…' to match /padding:\s*7rem/
+
+- Expected:
+/padding:\s*7rem/
+
++ Received:
+"@import \"./master-css-7c876708164aa0b05f07-0.css\";
+<script type=\"module\" crossorigin src=\"/assets/index-id1gODOg.js\"></script>
+<link rel=\"stylesheet\" crossorigin href=\"/assets/index-3E7dTAjl.css\">
+<div class=\"target\"></div>
+@import \"./master-css-7c876708164aa0b05f07-1.css\";
+@import \"./master-css-7c876708164aa0b05f07-2.css\";
+@import \"./master-css-7c876708164aa0b05f07-3.css\" layer(owner);
+._target_1ah5h_1{padding:99rem}"
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:59:17
+     57|     }
+     58|     const css = assets.join('\n')
+     59|     expect(css).toMatch(/padding:\s*7rem/)
+       |                 ^
+     60|     expect(css).not.toMatch(/99rem|\.never|@reference|@compose/)
+     61|     expect(css).toContain('?v=partial#icon')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/6]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference retains original owner in retained-module
+AssertionError: expected '@import "./master-css-81b0420dd4bc2ed…' to match /padding:\s*7rem/
+
+- Expected:
+/padding:\s*7rem/
+
++ Received:
+"@import \"./master-css-81b0420dd4bc2edf7c36-0.css\";
+<script type=\"module\" crossorigin src=\"/assets/index-CtQPadZK.js\"></script>
+<link rel=\"stylesheet\" crossorigin href=\"/assets/index-p_Gydn8x.css\">
+<div class=\"target\"></div>
+@import \"./master-css-81b0420dd4bc2edf7c36-1.css\";
+@import \"./master-css-81b0420dd4bc2edf7c36-2.css\";
+@import \"./master-css-81b0420dd4bc2edf7c36-3.css\" layer(owner);
+._target_bc305_1{padding:99rem}"
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:59:17
+     57|     }
+     58|     const css = assets.join('\n')
+     59|     expect(css).toMatch(/padding:\s*7rem/)
+       |                 ^
+     60|     expect(css).not.toMatch(/99rem|\.never|@reference|@compose/)
+     61|     expect(css).toContain('?v=partial#icon')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/6]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  6 failed | 2 passed (8)
+   Start at  09:37:52
+   Duration  3.87s (tests 88%, transform 8%, import 4%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

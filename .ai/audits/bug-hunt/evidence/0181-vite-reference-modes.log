@@ -1,0 +1,269 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-retained-sass-references.test.ts (16 tests | 8 failed) 60439ms
+   × BH-0004 retained scss references keep child owners in static/serve 6213ms
+   × BH-0004 retained sass references keep child owners in static/serve 6189ms
+   × BH-0004 retained scss references keep child owners in runtime/serve 6175ms
+   × BH-0004 retained sass references keep child owners in runtime/serve 6231ms
+   × BH-0004 retained scss references keep child owners in pre-render/serve 6367ms
+   × BH-0004 retained sass references keep child owners in pre-render/serve 6806ms
+   × BH-0004 retained scss references keep child owners in progressive/serve 7599ms
+   × BH-0004 retained sass references keep child owners in progressive/serve 6371ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in static/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-Molx9H/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in static/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-UZZbnC/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in runtime/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-x07ZCk/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in runtime/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-Hx34Fm/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in pre-render/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-HyFVVj/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in pre-render/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-xZOOkL/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained scss references keep child owners in progressive/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-sz3lHW/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-retained-sass-references.test.ts > BH-0004 retained sass references keep child owners in progressive/serve
+AssertionError: expected "send" to be called with arguments: [ ObjectContaining {"type": "update"} ]
+
+Received:
+
+  1st send call:
+
+  [
+-   ObjectContaining {
+-     "type": "update",
++   {
++     "path": "*",
++     "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-retained-reference-5Iqu65/a/tokens.css",
++     "type": "full-reload",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-retained-sass-references.test.ts:85:43
+     83|       const send = vi.spyOn(server.ws, 'send')
+     84|       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{pa…
+     85|       await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.…
+       |                                           ^
+     86|       await vi.waitFor(async () => expect((await collect!()).join('\n'…
+     87|       send.mockClear()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 8 passed (16)
+   Start at  09:26:59
+   Duration  60.94s (tests 99%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

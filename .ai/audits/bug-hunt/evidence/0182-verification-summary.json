@@ -1,0 +1,117 @@
+{
+  "logHashes": {
+    ".ai/audits/bug-hunt/evidence/0182-api-census-final.log": "94b83b7b0131cfc6455de7199fcdf06cfa72baa056bf391b608e8c81a23ad34b",
+    ".ai/audits/bug-hunt/evidence/0182-api-census.log": "94b83b7b0131cfc6455de7199fcdf06cfa72baa056bf391b608e8c81a23ad34b",
+    ".ai/audits/bug-hunt/evidence/0182-cli-tests.log": "2562067a1d3638822a52bf88a0a59278e3117c33f45866f3c4171bdf9c7e08c3",
+    ".ai/audits/bug-hunt/evidence/0182-compiler-build.log": "2eb2cb5ceb15464ca804851523dcf9db16219eb5ba552926dafeb49520cc3351",
+    ".ai/audits/bug-hunt/evidence/0182-compiler-lint-first.log": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+    ".ai/audits/bug-hunt/evidence/0182-compiler-tests.log": "02027249a8585ae5f120a18bcd48f2616efe03d14f6a14338fe47863bc654ce6",
+    ".ai/audits/bug-hunt/evidence/0182-compiler-types-first.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0182-compiler-types.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0182-example-build.log": "b146634304e26c612c1df8ad9616e700524fcd92e3ae219176eabf52657d349b",
+    ".ai/audits/bug-hunt/evidence/0182-package-api-final.log": "dc11cd3da8e07c0eddaf00a700c56093d12bd5deb477ee9eadbc0e9c69f2037b",
+    ".ai/audits/bug-hunt/evidence/0182-package-api.log": "dc11cd3da8e07c0eddaf00a700c56093d12bd5deb477ee9eadbc0e9c69f2037b",
+    ".ai/audits/bug-hunt/evidence/0182-partial-reference-before.log": "65dbb9df4cf2113868101f4164fc634c2cf06c21782a62a7b52d5962f00e1ef6",
+    ".ai/audits/bug-hunt/evidence/0182-partial-reference-expanded.log": "cdce78b8541cc34bfc520b2a211b72c20ac60e9157c9d3799053d43b428c6aa1",
+    ".ai/audits/bug-hunt/evidence/0182-partial-reference-first.log": "55a59780687ff9eb40d021e5aa225126a7284bc727f92704ea80025d3ae6a761",
+    ".ai/audits/bug-hunt/evidence/0182-partial-reference-markers.log": "732cbe25dea75e7cc225f649f8e56556490214745b8a56d71df9142eb83cf8a4",
+    ".ai/audits/bug-hunt/evidence/0182-reference-map-controls.log": "e62373aa045c8655d6df9fba0edf5479c894e026a1df3860f90f23c9d9fe02ed",
+    ".ai/audits/bug-hunt/evidence/0182-sass-build-browser.log": "91c6f1c56686835faa75d76e31aaa8854c531af5c3b5b1a3e9de9ff32c706911",
+    ".ai/audits/bug-hunt/evidence/0182-sass-dev-browser.log": "23f5768e59ecf7e037807fd3b9186629890d5f3bdb5f2edc8abd5be1522ce364",
+    ".ai/audits/bug-hunt/evidence/0182-scss-build-browser.log": "48186bbcfb355a32f5e69f0ca23cc31ddeb32a269cd016a4218dd3e252a0b62f",
+    ".ai/audits/bug-hunt/evidence/0182-scss-dev-browser.log": "abdae7c45ce1e04e6aedd57063736dcc165f1dee26f136948576c20a17d6257d",
+    ".ai/audits/bug-hunt/evidence/0182-site-guide-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    ".ai/audits/bug-hunt/evidence/0182-site-lint.log": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a",
+    ".ai/audits/bug-hunt/evidence/0182-site-prepare-final.log": "4603b6f761c3cbe3d7af61cf1d310f1f1b48979ac6d763fe3053b47ba2249fdf",
+    ".ai/audits/bug-hunt/evidence/0182-site-prepare.log": "4603b6f761c3cbe3d7af61cf1d310f1f1b48979ac6d763fe3053b47ba2249fdf",
+    ".ai/audits/bug-hunt/evidence/0182-vite-build.log": "d91ffdc4e65d516091a349feedf7b7e3b1532f1b1698432ce0c58762fd361685",
+    ".ai/audits/bug-hunt/evidence/0182-vite-lint.log": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+    ".ai/audits/bug-hunt/evidence/0182-vite-tests.log": "819eceff91219dc2986d9a5f1309f5c03f62e8af9928946fb614b17b5a02480c",
+    ".ai/audits/bug-hunt/evidence/0182-vite-types-first.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0182-vite-types.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0182-ai-context.log": "bcf22830a10e4c3c0e41e68a3ab617a8ffba1995421f806a76ae671b601a960f"
+  },
+  "checkedSummaries": {
+    "compilerTests": [
+      "0182-compiler-tests.log",
+      "269 passed"
+    ],
+    "viteTests": [
+      "0182-vite-tests.log",
+      "479 passed"
+    ],
+    "cliTests": [
+      "0182-cli-tests.log",
+      "71 passed"
+    ],
+    "focusedCompiler": [
+      "0182-reference-map-controls.log",
+      "16 passed"
+    ],
+    "focusedMaps": [
+      "0182-partial-reference-markers.log",
+      "75 passed"
+    ],
+    "siteLint": [
+      "0182-site-lint.log",
+      "0 errors, 75 warnings"
+    ]
+  },
+  "browser": {
+    "observations": 120,
+    "failures": 0,
+    "sources": [
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0182-scss-dev-browser.log",
+        "sha256": "abdae7c45ce1e04e6aedd57063736dcc165f1dee26f136948576c20a17d6257d",
+        "summary": {
+          "summary": true,
+          "command": "serve",
+          "syntax": "scss",
+          "observations": 48,
+          "failures": 0
+        }
+      },
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0182-scss-build-browser.log",
+        "sha256": "48186bbcfb355a32f5e69f0ca23cc31ddeb32a269cd016a4218dd3e252a0b62f",
+        "summary": {
+          "summary": true,
+          "command": "build",
+          "syntax": "scss",
+          "observations": 12,
+          "failures": 0
+        }
+      },
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0182-sass-dev-browser.log",
+        "sha256": "23f5768e59ecf7e037807fd3b9186629890d5f3bdb5f2edc8abd5be1522ce364",
+        "summary": {
+          "summary": true,
+          "command": "serve",
+          "syntax": "sass",
+          "observations": 48,
+          "failures": 0
+        }
+      },
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0182-sass-build-browser.log",
+        "sha256": "91c6f1c56686835faa75d76e31aaa8854c531af5c3b5b1a3e9de9ff32c706911",
+        "summary": {
+          "summary": true,
+          "command": "build",
+          "syntax": "sass",
+          "observations": 12,
+          "failures": 0
+        }
+      }
+    ],
+    "scope": "Built retained Modules plugin,2Sasssyntaxes/4modes/3browsers;96dev initial/partialtargetswitch/referenceupdate/resourceupdate,24productioninitial;normalrootandModulerootbuilds additionallycoveredby18source tests,notclaimedbrowservalidated"
+  },
+  "apiCensusNormalizedMatches0167": true,
+  "sourceHashes": {
+    "count": 397,
+    "path": ".ai/audits/bug-hunt/evidence/0182-source-hashes.json",
+    "sha256": "de1db858eaa369dfba33fe89b549d8612c85e4b296a75d55fa12f55196142e2f"
+  }
+}

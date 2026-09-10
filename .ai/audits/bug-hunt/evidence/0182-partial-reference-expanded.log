@@ -1,0 +1,333 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts (20 tests | 8 failed) 8957ms
+   × BH-0004 partial scss reference with string additionalData retains original owner in plain-root 177ms
+   × BH-0004 partial scss reference with string additionalData retains original owner in module-root 195ms
+   × BH-0004 partial sass reference with string additionalData retains original owner in plain-root 167ms
+   × BH-0004 partial sass reference with string additionalData retains original owner in module-root 171ms
+   × BH-0004 partial scss reference with mapped additionalData retains original owner in plain-root 164ms
+   × BH-0004 partial scss reference with mapped additionalData retains original owner in module-root 167ms
+   × BH-0004 partial sass reference with mapped additionalData retains original owner in plain-root 186ms
+   × BH-0004 partial sass reference with mapped additionalData retains original owner in module-root 163ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference with string additionalData retains original owner in plain-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-O2y2i6/main/style.scss.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference with string additionalData retains original owner in module-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-F0iAe7/main/style.module.scss.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference with string additionalData retains original owner in plain-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-Lf6MxL/main/style.sass.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference with string additionalData retains original owner in module-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-62KUdm/main/style.module.sass.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference with mapped additionalData retains original owner in plain-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-OFsC7Q/main/style.scss.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial scss reference with mapped additionalData retains original owner in module-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-lu3Ba7/main/style.module.scss.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference with mapped additionalData retains original owner in plain-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-cF4Vny/main/style.sass.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-partial-references.test.ts > BH-0004 partial sass reference with mapped additionalData retains original owner in module-root
+Error: Build failed with 1 error:
+
+[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-partial-reference-UdZMSi/main/style.module.sass.master-css-sass.css
+TypeError: Original source unavailable for mapped CSS reference: ./tokens.css
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:20:13
+    at Array.map (<anonymous>)
+    at resolveReferenceOrigins (/Users/aron/master/css/packages/compiler/src/stylesheet/reference-origins.ts:13:21)
+    at /Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:82:12
+    at Array.flatMap (<anonymous>)
+    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:77:50)
+    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)
+    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)
+    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)
+    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24
+ ❯ ../compiler/src/stylesheet/reference-origins.ts:20:13
+     18|     const origin = map.findEntry(line, column)
+     19|     if (!('originalSource' in origin) || !origin.originalSource || ori…
+     20|       throw new TypeError(`Original source unavailable for mapped CSS …
+       |             ^
+     21|     }
+     22|     const url = new URL(origin.originalSource, base)
+ ❯ resolveReferenceOrigins ../compiler/src/stylesheet/reference-origins.ts:13:21
+ ❯ ../compiler/src/stylesheet/delivery.ts:82:12
+ ❯ compileGraph ../compiler/src/stylesheet/delivery.ts:77:50
+ ❯ compileDeliveredSource ../compiler/src/stylesheet/delivery.ts:168:18
+ ❯ transformLocalStylesheet ../compiler/src/stylesheet/index.ts:499:22
+ ❯ transformStylesheet ../compiler/src/stylesheet/public.ts:345:18
+ ❯ src/plugins/local-compose.ts:132:24
+ ❯ aggregateBindingErrorsIntoJsError ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:48:18
+ ❯ unwrapBindingResult ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/error-BP8lJHle.mjs:18:128
+ ❯ RolldownBuild.#build ../../node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/rolldown-DfXO5K1m.mjs:133:34
+ ❯ buildEnvironment ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:33821:66
+ ❯ Object.build ../../node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:34242:19
+ ❯ tests/plugins/bug-hunt-sass-partial-references.test.ts:58:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed | 12 passed (20)
+   Start at  09:43:40
+   Duration  9.87s (tests 91%, transform 7%, import 2%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+
