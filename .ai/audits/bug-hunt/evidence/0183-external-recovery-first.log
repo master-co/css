@@ -1,0 +1,49 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts (25 tests | 1 failed | 24 skipped) 1849ms
+   × BH-0004 external missing reference survives SSR close and removes obsolete recovery edges 1848ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 external missing reference survives SSR close and removes obsolete recovery edges
+AssertionError: expected [ [ { type: 'full-reload', …(2) } ] ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   [
++     {
++       "path": "*",
++       "triggeredBy": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-external-reference-k96IGL/external/tokens.css",
++       "type": "full-reload",
++     },
++   ],
++ ]
+
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts:152:187
+    150|     await observed
+    151|     await new Promise(resolve => setTimeout(resolve, 200))
+    152|     expect(send.mock.calls.filter((args: readonly unknown[]) => args[0…
+       |                                                                                                                                                                                           ^
+    153|     expect((await server.environments.client.transformRequest('/style.…
+    154|   } finally { await server?.environments.client.waitForRequestsIdle();…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 24 skipped (25)
+   Start at  10:18:05
+   Duration  2.52s (tests 76%, transform 17%, import 8%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

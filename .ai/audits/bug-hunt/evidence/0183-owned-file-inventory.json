@@ -1,0 +1,32 @@
+{
+  "files": [
+    ".ai/audits/bug-hunt/README.md",
+    ".ai/audits/bug-hunt/batches/0183-reference-host-recovery.md",
+    ".ai/audits/bug-hunt/changes.md",
+    ".ai/audits/bug-hunt/coverage.md",
+    ".ai/audits/bug-hunt/evidence/0183-owned-ai-context.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-browser-summary.json",
+    ".ai/audits/bug-hunt/evidence/0183-owned-dependencies-build.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-dependencies-focused.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-dependencies-lint.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-dependencies-suite.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-dependencies-types.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-example-build.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-file-inventory.json",
+    ".ai/audits/bug-hunt/evidence/0183-owned-final-checks.json",
+    ".ai/audits/bug-hunt/evidence/0183-owned-preservation.json",
+    ".ai/audits/bug-hunt/evidence/0183-owned-sass-browser.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-scss-browser.log",
+    ".ai/audits/bug-hunt/evidence/0183-owned-source-hashes.json",
+    ".ai/audits/bug-hunt/evidence/0183-owned-verification-summary.json",
+    ".ai/audits/bug-hunt/evidence/0183-ownership-before-hashes.json",
+    ".ai/audits/bug-hunt/evidence/0183-rolldown-watch-source.json",
+    ".ai/audits/bug-hunt/findings.md",
+    ".ai/audits/bug-hunt/progress-history-0183-owned.md",
+    ".ai/audits/bug-hunt/report.md",
+    "packages/vite/README.md",
+    "packages/vite/src/plugins/local-compose.ts",
+    "packages/vite/src/plugins/stylesheet-recovery.ts",
+    "packages/vite/src/utils/failed-stylesheet-dependencies.ts"
+  ]
+}

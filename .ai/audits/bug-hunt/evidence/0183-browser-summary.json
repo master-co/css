@@ -1,0 +1,27 @@
+{
+  "observations": 216,
+  "failures": 0,
+  "sources": [
+    {
+      "path": ".ai/audits/bug-hunt/evidence/0183-scss-browser-final.log",
+      "sha256": "e1e83c13b43a9ec49cff1d418128d3dc7756020eac50694aed03ac9f755e8e83",
+      "summary": {
+        "summary": true,
+        "syntax": "scss",
+        "observations": 108,
+        "failures": 0
+      }
+    },
+    {
+      "path": ".ai/audits/bug-hunt/evidence/0183-sass-browser-final.log",
+      "sha256": "74efd87bd03c922b80c2c27bfd0b6906e8619ab8e58a2017f7150e956a3285d5",
+      "summary": {
+        "summary": true,
+        "syntax": "sass",
+        "observations": 108,
+        "failures": 0
+      }
+    }
+  ],
+  "scope": "Built Vite plugin,2syntaxes/3rootkinds/4modes/3browsers;startup-restored,existing-reference-restored,resource-update; initialexpectedHTTP500; no unexpected pageerrors; samebootIDafterinitialrecovery"
+}

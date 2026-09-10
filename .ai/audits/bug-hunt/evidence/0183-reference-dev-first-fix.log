@@ -1,0 +1,61 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts (24 tests | 2 failed | 12 skipped) 19599ms
+   × BH-0004 dev reference recovery scss/plain-root/startup=true 5191ms
+   × BH-0004 dev reference recovery sass/plain-root/startup=true 5179ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 dev reference recovery scss/plain-root/startup=true
+AssertionError: {"observed":[{"event":"add","file":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-z1oDCL/shared/tokens.css"}],"messages":[]}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-reference-host-recovery.test.ts:64:66
+     62|       const message = args[0]
+     63|       return Boolean(message && typeof message === 'object' && 'type' …
+     64|     }), JSON.stringify({ observed, messages: send.mock.calls })).toBe(…
+       |                                                                  ^
+     65|     if (!startupMissing) {
+     66|       rmSync(f.reference)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 dev reference recovery sass/plain-root/startup=true
+AssertionError: {"observed":[{"event":"add","file":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-u4lEAn/shared/tokens.css"}],"messages":[]}: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-reference-host-recovery.test.ts:64:66
+     62|       const message = args[0]
+     63|       return Boolean(message && typeof message === 'object' && 'type' …
+     64|     }), JSON.stringify({ observed, messages: send.mock.calls })).toBe(…
+       |                                                                  ^
+     65|     if (!startupMissing) {
+     66|       rmSync(f.reference)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 10 passed | 12 skipped (24)
+   Start at  10:12:34
+   Duration  20.13s (tests 98%, transform 2%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

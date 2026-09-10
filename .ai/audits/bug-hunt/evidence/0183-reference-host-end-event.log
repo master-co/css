@@ -1,0 +1,46 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+build-event {"kind":"plain-root","syntax":"scss","startupMissing":true,"code":"START"}
+
+stdout | tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+build-event {"kind":"plain-root","syntax":"scss","startupMissing":true,"code":"BUNDLE_START"}
+
+stdout | tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+build-event {"kind":"plain-root","syntax":"scss","startupMissing":true,"code":"ERROR","error":"Error: Build failed with 1 error:\n\n[plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-Tvx6wW/main/style.scss.master-css-sass.css\nError: ENOENT: no such file or directory, lstat '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-Tvx6wW/shared/tokens.css'\n    at realpathSync (node:fs:2848:29)\n    at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:91:24)\n    at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:168:18)\n    at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:499:22)\n    at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:345:18)\n    at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:132:24\n    at withSassDiagnostics (/Users/aron/master/css/packages/vite/src/utils/sass-diagnostics.ts:51:16)\n    at plugin (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:1539:16)\n    at plugin.<computed> (file:///Users/aron/master/css/node_modules/.pnpm/rolldown@1.2.7/node_modules/rolldown/dist/shared/bindingify-input-options-DrImMHKQ.mjs:2127:12)","details":{"errors":[{"errno":-2,"code":"PLUGIN_ERROR","syscall":"lstat","path":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-Tvx6wW/shared/tokens.css","pluginCode":"ENOENT","plugin":"master-css:local-compose","hook":"transform","id":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-reference-recovery-Tvx6wW/main/style.scss.master-css-sass.css"}]}}
+
+stdout | tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+build-event {"kind":"plain-root","syntax":"scss","startupMissing":true,"code":"END"}
+
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts (24 tests | 1 failed | 23 skipped) 5336ms
+   × BH-0004 build-watch reference recovery scss/plain-root/startup=true 5335ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+AssertionError: restored: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-reference-host-recovery.test.ts:104:102
+    102|       if (event.code === 'END' && terminal) { events.push(terminal); t…
+    103|     })
+    104|     const nextEvent = async (phase: string) => { await vi.waitFor(() =…
+       |                                                                                                      ^
+    105|     const initial = await nextEvent('initial')
+    106|     expect(initial.code).toBe(startupMissing ? 'ERROR' : 'BUNDLE_END')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 23 skipped (24)
+   Start at  10:08:41
+   Duration  5.82s (tests 93%, transform 5%, import 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,4 @@
+{"command":"serve","watchParent":false,"version":"8.2.2","attempts":[{"watched":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-failed-watch-control-9EDki7/shared/tokens.txt"]}],"fsEvents":["add"],"notifications":[],"recoveryNotified":false}
+{"command":"serve","watchParent":true,"version":"8.2.2","attempts":[{"watched":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-failed-watch-control-5LupAq/shared/tokens.txt","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-failed-watch-control-5LupAq/shared"]}],"fsEvents":["add"],"notifications":[],"recoveryNotified":false}
+{"command":"build","watchParent":false,"version":"8.2.2","attempts":[],"events":[],"recovered":false}
+{"command":"build","watchParent":true,"version":"8.2.2","attempts":[],"events":[],"recovered":false}

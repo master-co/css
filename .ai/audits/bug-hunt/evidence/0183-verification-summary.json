@@ -1,0 +1,92 @@
+{
+  "logHashes": {
+    ".ai/audits/bug-hunt/evidence/0183-ai-context.log": "7d727cef15879a2b79b42449fe3e783e73b32f34c3d1611e163bec3887bfc01d",
+    ".ai/audits/bug-hunt/evidence/0183-browser-smoke-response.log": "193d65250753b23344eaafdeeed1da08de87b95ded365474510837d390693294",
+    ".ai/audits/bug-hunt/evidence/0183-browser-smoke.log": "5e54b1483822f0c75a13480f2f5a8a7a3eca515e1a2d8c8151df0c0c16c2d42f",
+    ".ai/audits/bug-hunt/evidence/0183-example-build.log": "e7c9345f724959824db372c04101111884406f01a233035eea89aa2b6984a9b5",
+    ".ai/audits/bug-hunt/evidence/0183-external-recovery-first.log": "143567cd93c63948a5d9e5958d00eade9e48b673f5ca143dfa6e9a6dd4dbe8a9",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-stale-dependency.log": "f277160c5297cdf4b36813128052d8ee78005373a82732314f9e739712235d43",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-watch-build-end.log": "47f588748329220213d3ab0c10de51de15603cd0b0293cfc1f3bbce3549b6198",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-watch-build-start.log": "8d820466bec8484fb5cca49a4c0ffbd53e66b841cfe966660f6b79eccd3fea3d",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-watch-corrected.log": "36bd86616711252185578a6eda56248939f746616d5d02fb0714a96d0b4c4231",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-watch-existing-edit.log": "4c6087b6145947a5fc354d9ac7d1c9848e7174de811a4b8497f3a69b8c6d330d",
+    ".ai/audits/bug-hunt/evidence/0183-pure-vite-watch.log": "da876a5d155c8c07f32c23a938fa38784d9428ab7fb0f0a7686bad18971a003c",
+    ".ai/audits/bug-hunt/evidence/0183-reference-dev-first-fix.log": "4bf5b10f2f5c8b309588e7a47576abf8dbb1004a649c0a91d21a74308f281425",
+    ".ai/audits/bug-hunt/evidence/0183-reference-dev-fix-trace.log": "4ff912d095f20fc3a185f8c947810e76e8cd84ca33870753eaae48982dcc07f2",
+    ".ai/audits/bug-hunt/evidence/0183-reference-dev-recovery.log": "6da364e44bfc8ddff1a57e6cfed31887a856ebcd7cffa7107d3da7ae9fa060b1",
+    ".ai/audits/bug-hunt/evidence/0183-reference-host-before.log": "6622cb278ba2761af3e6cf81715f5febe61d13ade28c0039426a811161e74578",
+    ".ai/audits/bug-hunt/evidence/0183-reference-host-end-event.log": "fda98973ff1d2fe95d0289ea0608fc9b7d772c3edecade77ed4fe3ccb372f566",
+    ".ai/audits/bug-hunt/evidence/0183-reference-host-trace.log": "ac3131573b719ab71dc0cdfec4a5ec220f923b85e838f2c761ea615edf2628ef",
+    ".ai/audits/bug-hunt/evidence/0183-sass-browser-final.log": "74efd87bd03c922b80c2c27bfd0b6906e8619ab8e58a2017f7150e956a3285d5",
+    ".ai/audits/bug-hunt/evidence/0183-sass-browser.log": "2a3dfa199bd181b13d3e901ecec8aa50ceca00b23faedad39d2c7f835e769612",
+    ".ai/audits/bug-hunt/evidence/0183-scss-browser-final.log": "e1e83c13b43a9ec49cff1d418128d3dc7756020eac50694aed03ac9f755e8e83",
+    ".ai/audits/bug-hunt/evidence/0183-scss-browser.log": "3fdae8abe018f7622812e5567237b7506450a533844d115736a56732aa6968f5",
+    ".ai/audits/bug-hunt/evidence/0183-vite-build-first.log": "c2cd854b88e85da3470a7ad083324d8e6edd6816f60dd0775365afe32ddd12c6",
+    ".ai/audits/bug-hunt/evidence/0183-vite-lint-final.log": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+    ".ai/audits/bug-hunt/evidence/0183-vite-lint-first-fix.log": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+    ".ai/audits/bug-hunt/evidence/0183-vite-tests-first.log": "b1e8465828617c1dfe42310e212d8d47e5ad4081174cfa67aed67cc9785c742c",
+    ".ai/audits/bug-hunt/evidence/0183-vite-types-final.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0183-vite-types-first-fix.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0183-vite-types-first.log": "dc04bc3927eecaa695ae68aa45a9eb58738e538e18abd81c7c6aa3427457a2b1",
+    ".ai/audits/bug-hunt/evidence/0183-vite-types-observer.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+    ".ai/audits/bug-hunt/evidence/0183-vite-types-recovery.log": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+  },
+  "checkedSummaries": {
+    "viteTests": [
+      "0183-vite-tests-first.log",
+      "7 failed | 498 passed (505)"
+    ],
+    "focusedDev": [
+      "0183-reference-dev-recovery.log",
+      "12 passed | 12 skipped (24)"
+    ],
+    "lint": [
+      "0183-vite-lint-final.log",
+      "$ eslint"
+    ],
+    "types": [
+      "0183-vite-types-final.log",
+      "$ tsc"
+    ],
+    "example": [
+      "0183-example-build.log",
+      "built"
+    ]
+  },
+  "browser": {
+    "observations": 216,
+    "failures": 0,
+    "sources": [
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0183-scss-browser-final.log",
+        "sha256": "e1e83c13b43a9ec49cff1d418128d3dc7756020eac50694aed03ac9f755e8e83",
+        "summary": {
+          "summary": true,
+          "syntax": "scss",
+          "observations": 108,
+          "failures": 0
+        }
+      },
+      {
+        "path": ".ai/audits/bug-hunt/evidence/0183-sass-browser-final.log",
+        "sha256": "74efd87bd03c922b80c2c27bfd0b6906e8619ab8e58a2017f7150e956a3285d5",
+        "summary": {
+          "summary": true,
+          "syntax": "sass",
+          "observations": 108,
+          "failures": 0
+        }
+      }
+    ],
+    "scope": "Built Vite plugin,2syntaxes/3rootkinds/4modes/3browsers;startup-restored,existing-reference-restored,resource-update; initialexpectedHTTP500; no unexpected pageerrors; samebootIDafterinitialrecovery"
+  },
+  "sourceHashes": {
+    "count": 402,
+    "path": ".ai/audits/bug-hunt/evidence/0183-source-hashes.json",
+    "sha256": "04fc0eee1f05b23499d22de8a94f160ba6bf422588059ed0fa14503316497a53"
+  },
+  "knownFailuresNotCompleted": [
+    "6startup-missingbuild-watchreference recovery tests fail afterERROR/END;pureVitealsofailsfile/parent/buildStart/buildEndregistrations;existingowneredit recovers",
+    "1obsolete-reference-dependency notification test fails;pureVitealso keeps notifying aftersource dropsdependency"
+  ]
+}

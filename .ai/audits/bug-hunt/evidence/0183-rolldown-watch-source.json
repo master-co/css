@@ -1,0 +1,34 @@
+{
+  "installedVersion": "1.2.7",
+  "publicContextDocumentation": "https://rolldown.rs/reference/Interface.PluginContext",
+  "upstreamChange": "https://github.com/rolldown/rolldown/pull/8562",
+  "sources": [
+    {
+      "url": "https://raw.githubusercontent.com/rolldown/rolldown/v1.2.7/crates/rolldown_watcher/src/watch_task.rs",
+      "sha256": "9c2164a01f92edee0b1ef13e36eeedf5e5ea1fab87688896ebe3bce701e0963c",
+      "lines": [
+        [
+          277,
+          "if !path.exists() {"
+        ],
+        [
+          307,
+          "pub(crate) fn mark_needs_rebuild(&mut self, path: &str) -> bool {"
+        ]
+      ]
+    },
+    {
+      "url": "https://raw.githubusercontent.com/rolldown/rolldown/v1.2.7/crates/rolldown/src/module_loader/resolve_utils.rs",
+      "sha256": "12b864842b050ca2d5f0972a67a34550158e61c3c7bc799060a98ecb80889d5d",
+      "lines": []
+    }
+  ],
+  "inference": "The installed-version v1.2.7 source skips absent regular watch paths and marks rebuilds only for paths in its watched-file set. It has no active_missing_dirs tracking. Watching the existing parent therefore cannot make its child path a watched-file match. This matches local addWatchFile/parent/buildStart/buildEnd failures and successful existing-owner-edit controls. No public watcher invalidate method was found in installed type declarations. A separately inspected upstream PR is not treated as installed-version capability.",
+  "upstreamChangeStatus": {
+    "state": "closed",
+    "merged": true,
+    "merged_at": "2026-03-07T12:11:54Z",
+    "merge_commit_sha": "ae219fc237596dbdbb697e04a2ccae0eb3d0d051",
+    "html_url": "https://github.com/rolldown/rolldown/pull/8562"
+  }
+}

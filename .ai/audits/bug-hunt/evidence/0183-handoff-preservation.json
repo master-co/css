@@ -1,0 +1,46 @@
+{
+  "head": "058f67ae7bb1cebf3f6efd1d5dcb5a42b1533e98",
+  "baselineSources": 397,
+  "finalSources": 402,
+  "changed": {
+    "packages/vite/README.md": {
+      "before": "26a25edd238f6d009d4f1bdda30169c4895eb21a474d3ea5ae9b1d10724355f6",
+      "after": "d1e1dde64634f6f62c5b2e7119e19c37e0fa1c522004aeb15ad2895c1aff8424"
+    },
+    "packages/vite/src/core.ts": {
+      "before": "79079c79640991927f42e7f7d420f95ff67667325cb763ee65a1021b10245c09",
+      "after": "ce6cce408b4bef6d416e8ba24b10b8d581b98f31d5884bb8066bea3b5febb9a9"
+    },
+    "packages/vite/src/plugins/local-compose.ts": {
+      "before": "ede20f6e2ec433ca8b04f54f172c63a88d678e7547a37f3622dbd329486887e7",
+      "after": "6d0152bca22b09bf5dd73d343a4ed73a58014e764bf6737eefd8d3033674d90b"
+    }
+  },
+  "newSources": [
+    "packages/vite/src/plugins/stylesheet-recovery.ts",
+    "packages/vite/src/utils/failed-stylesheet-dependencies.ts",
+    "packages/vite/tests/plugins/bug-hunt-reference-host-recovery.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-failed-watch-control.mjs",
+    ".ai/audits/bug-hunt/repros/vite-reference-recovery-browser.mjs"
+  ],
+  "previousExclusions": {
+    "count": 167,
+    "unchanged": 162,
+    "intendedChanges": [
+      "packages/vite/README.md",
+      "packages/vite/src/core.ts",
+      "packages/vite/src/plugins/local-compose.ts",
+      ".ai/audits/bug-hunt/batches/0183-reference-host-recovery.md",
+      "packages/vite/tests/plugins/bug-hunt-reference-host-recovery.test.ts"
+    ]
+  },
+  "foreignSite": {
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+  },
+  "fiveArtifactsByteIdentical": true,
+  "threeCLIArtifactsByteIdentical": true,
+  "priorRawLogsByteIdentical": true,
+  "indexEmpty": true
+}

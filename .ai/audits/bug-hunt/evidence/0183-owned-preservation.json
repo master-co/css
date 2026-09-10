@@ -1,0 +1,28 @@
+{
+  "head": "058f67ae7",
+  "sourceCount": 402,
+  "changed": {
+    "packages/vite/README.md": {
+      "before": "d1e1dde64634f6f62c5b2e7119e19c37e0fa1c522004aeb15ad2895c1aff8424",
+      "after": "726579b1441705186251083aef183832eb1c7a44015064fa18aa2908cbbb0fff"
+    },
+    "packages/vite/src/plugins/local-compose.ts": {
+      "before": "6d0152bca22b09bf5dd73d343a4ed73a58014e764bf6737eefd8d3033674d90b",
+      "after": "8da4ec9464ac1ed81a1c5545db0da61e09aab29b96c34392806b276979416402"
+    },
+    "packages/vite/src/plugins/stylesheet-recovery.ts": {
+      "before": "2448381a50831bd9a50b2072c9e4a52bfa2c88117947ba0b07d39e31852fde34",
+      "after": "ede49e3d7452c9f8d355e6b1bd0dcb03dcc2bfd736095a3a5bbfb5ea86a2f67c"
+    },
+    "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+      "before": "133cf443d96fca56cf284a2a98ecd66ff18f96f2d96004779b670d5a3fdc0f19",
+      "after": "afa3e717f4afdd376bb660d383bcf6aed50c20b388f84a98c48019aa1832b8ef"
+    }
+  },
+  "newSources": [],
+  "prior0183RawLogsUnchanged": true,
+  "previousCommitExclusionsUnchanged": 162,
+  "fiveArtifactsUnchanged": true,
+  "threeCLIArtifactsUnchanged": true,
+  "foreignSiteUnchanged": true
+}

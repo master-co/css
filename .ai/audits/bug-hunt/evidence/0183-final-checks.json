@@ -1,0 +1,130 @@
+{
+  "head": "058f67ae7",
+  "goal": "active",
+  "batch": "0183reference-host-recovery",
+  "batchComplete": false,
+  "previousGoalTurn": "Progress:completed audit commit058f67ae7 andpreservation verified",
+  "validation": {
+    "viteTests": "498PASS/7FAIL(505tests/62files);all479prior testsPASS",
+    "newTests": "19PASS/7FAIL;no disabledor expected-failure assertions",
+    "browser": "216PASS;0unexpectedpageerrors;2syntaxes/3roots/4modes/3browsers/3phases",
+    "lint": "VitePASS",
+    "types": "VitePASS",
+    "build": "Vite/originalViteexamplePASS",
+    "compilerRustCLI": "No source change;0182verifiedsourcehashesunchanged",
+    "site": "No changes this batch;foreignSitepreserved",
+    "aiContext": "PASS",
+    "syntaxWhitespaceJSONLedgerLinks": "PASS"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "remainingHostFailures": [
+    "6startup-missingbuild-watchreference recovery tests fail afterERROR/END;pureVitealsofailsfile/parent/buildStart/buildEndregistrations;existingowneredit recovers",
+    "1obsolete-reference-dependency notification test fails;pureVitealso keeps notifying aftersource dropsdependency"
+  ],
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Other Sass partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed",
+    "All2unresolved findings,10blockedcoverage,4rootgates and4originalcandidates",
+    "Detailedowner-levelRustprofiling/fullbenchmarkmatrices/reliablelong-session/history remain unfinished",
+    "Startupmissingresources/missingdirectories/sharedserver recovery;devCSSreference recovery verified0183",
+    "Virtual relative reference without explicit baseFile remains unverified",
+    "Emitted internal Modules proxy plus ?direct HTTP500 path needs ownership/contract classification",
+    "Build-watchstartupmissingCSSreference remains6FAIL;existing-filedelete/restoration verified",
+    "Unreliable/absentmapownership remains;plain/ModulesSassrootbrowser recovery verified0183",
+    "Obsolete Vite addWatchFile dependencies still trigger notifications after successful source change;pureVitecontrol reproduces",
+    "Multiplefailed-owner concurrency andshared-server failurelifecycle require validation"
+  ],
+  "next": "Keep0183active:missing-pathbuild-watchandobsolete-dependency publichostcontracts;thenmissingresource/directory/sharedserverconcurrency/internalproxy?direct;allotherunfinishedrequirementsremain",
+  "paused": "Batch0038 additionalverification requires explicitidentityconfirmation;none received",
+  "preservation": {
+    "head": "058f67ae7bb1cebf3f6efd1d5dcb5a42b1533e98",
+    "baselineSources": 397,
+    "finalSources": 402,
+    "changed": {
+      "packages/vite/README.md": {
+        "before": "26a25edd238f6d009d4f1bdda30169c4895eb21a474d3ea5ae9b1d10724355f6",
+        "after": "d1e1dde64634f6f62c5b2e7119e19c37e0fa1c522004aeb15ad2895c1aff8424"
+      },
+      "packages/vite/src/core.ts": {
+        "before": "79079c79640991927f42e7f7d420f95ff67667325cb763ee65a1021b10245c09",
+        "after": "ce6cce408b4bef6d416e8ba24b10b8d581b98f31d5884bb8066bea3b5febb9a9"
+      },
+      "packages/vite/src/plugins/local-compose.ts": {
+        "before": "ede20f6e2ec433ca8b04f54f172c63a88d678e7547a37f3622dbd329486887e7",
+        "after": "6d0152bca22b09bf5dd73d343a4ed73a58014e764bf6737eefd8d3033674d90b"
+      }
+    },
+    "newSources": [
+      "packages/vite/src/plugins/stylesheet-recovery.ts",
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts",
+      "packages/vite/tests/plugins/bug-hunt-reference-host-recovery.test.ts",
+      ".ai/audits/bug-hunt/repros/vite-failed-watch-control.mjs",
+      ".ai/audits/bug-hunt/repros/vite-reference-recovery-browser.mjs"
+    ],
+    "previousExclusions": {
+      "count": 167,
+      "unchanged": 162,
+      "intendedChanges": [
+        "packages/vite/README.md",
+        "packages/vite/src/core.ts",
+        "packages/vite/src/plugins/local-compose.ts",
+        ".ai/audits/bug-hunt/batches/0183-reference-host-recovery.md",
+        "packages/vite/tests/plugins/bug-hunt-reference-host-recovery.test.ts"
+      ]
+    },
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "threeCLIArtifactsByteIdentical": true,
+    "priorRawLogsByteIdentical": true,
+    "indexEmpty": true
+  },
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "74481": 1,
+    "94778": 1,
+    "32777": 0,
+    "40728": 0,
+    "48760": 0,
+    "1181": 0,
+    "89509": 1,
+    "48764": 0,
+    "55002": 1,
+    "53006": 0,
+    "46672": 0,
+    "67761": 1,
+    "30051": 1,
+    "89733": 0,
+    "78242": 0,
+    "99478": 0,
+    "26074": 0,
+    "66764": 1,
+    "25580": 0,
+    "51044": 0,
+    "69274": 0,
+    "10289": 0
+  }
+}
