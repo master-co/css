@@ -1,0 +1,6 @@
+{
+  "path": "packages/vite/src/plugins/stylesheet-recovery.ts",
+  "sha256": "dfdb29a4cfc0733c2a3891aaad0d05319c7fea08fda3ff05b0b32d51eb4d62fa",
+  "browserObservationsBeforeErrorReporting": 504,
+  "errorReportingControl": "0183-reconcile-diagnostics-before.log"
+}

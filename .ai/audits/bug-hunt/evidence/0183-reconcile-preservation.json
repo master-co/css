@@ -1,0 +1,35 @@
+{
+  "head": "aecfcb051",
+  "baselineSources": 409,
+  "finalSources": 413,
+  "changed": {
+    "packages/vite/README.md": {
+      "before": "510cdcbceba482b660278f72b6010d0679fb3072215f897dcb0cebc920ebc89b",
+      "after": "192af002d08fc193f515969efc53f5067e9f911930f03b27f48f98c24d0ecb3c"
+    },
+    "packages/vite/src/plugins/stylesheet-recovery.ts": {
+      "before": "ede49e3d7452c9f8d355e6b1bd0dcb03dcc2bfd736095a3a5bbfb5ea86a2f67c",
+      "after": "db142095f9224fe31fb8ec84c021a65a5c5a51235af2e416a1bf053b5869a514"
+    },
+    "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+      "before": "1e8cbc9813638802bb22b6d2f5d1fb727eb64b71decbf61b872183b13ede92ee",
+      "after": "0b4c792405b121bc716998184ebaf9ecd3f512a89a1eade9b8d16c027f385799"
+    },
+    "packages/vite/tests/plugins/bug-hunt-missing-directory-watch.test.ts": {
+      "before": "b52bfc998e7d9ec9083de5cc08807ede92ae6e30761ead2ecf9cc12c8f7451df",
+      "after": "f1e3e5150d1ec7cd94d3bb1d4565a35260751413a17b56d5d449e4d307ebab53"
+    }
+  },
+  "newSources": [
+    "packages/vite/src/utils/failed-dependency-reconciliation.ts",
+    "packages/vite/tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-obsolete-reconciliation-events.mjs",
+    ".ai/audits/bug-hunt/repros/vite-reconciliation-diagnostics-browser.mjs"
+  ],
+  "priorDirectoryRawLogsUnchanged": true,
+  "priorCommittedRawLogsUnchanged": true,
+  "previousCommitExclusionsUnchanged": 166,
+  "foreignSiteUnchanged": true,
+  "fiveArtifactsUnchanged": true,
+  "threeCLIArtifactsUnchanged": true
+}

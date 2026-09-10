@@ -1,0 +1,58 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-missing-directory-watch.test.ts (24 tests | 12 failed) 63915ms
+   × BH-0004 registered missing directory recovers reference-one in static via node 3181ms
+   × BH-0004 registered missing directory recovers reference-three in static via node 3209ms
+   × BH-0004 registered missing directory recovers entry-resource-three in static via node 3381ms
+   × BH-0004 registered missing directory recovers reference-one in runtime via node 3175ms
+   × BH-0004 registered missing directory recovers entry-resource-three in runtime via node 3372ms
+   × BH-0004 registered missing directory recovers reference-one in pre-render via node 3359ms
+   × BH-0004 registered missing directory recovers reference-three in pre-render via node 3369ms
+   × BH-0004 registered missing directory recovers entry-resource-three in pre-render via node 4533ms
+   × BH-0004 registered missing directory recovers reference-one in progressive via default 3294ms
+   × BH-0004 registered missing directory recovers reference-one in progressive via node 3372ms
+   × BH-0004 registered missing directory recovers reference-three in progressive via node 3353ms
+   × BH-0004 registered missing directory recovers entry-resource-three in progressive via node 4563ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-one in static via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-three in static via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers entry-resource-three in static via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-one in runtime via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers entry-resource-three in runtime via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-one in pre-render via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-three in pre-render via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers entry-resource-three in pre-render via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-one in progressive via default
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-one in progressive via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers reference-three in progressive via node
+ FAIL  tests/plugins/bug-hunt-missing-directory-watch.test.ts > BH-0004 registered missing directory recovers entry-resource-three in progressive via node
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-missing-directory-watch.test.ts:37:98
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed | 12 passed (24)
+   Start at  10:59:56
+   Duration  64.42s (tests 99%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

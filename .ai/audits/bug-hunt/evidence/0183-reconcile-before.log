@@ -1,0 +1,55 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts (8 tests | 8 failed) 28835ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in static (resource=false) 3209ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in runtime (resource=false) 3176ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in pre-render (resource=false) 3338ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in progressive (resource=false) 3290ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in static (resource=true) 3386ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in runtime (resource=true) 3421ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in pre-render (resource=true) 4487ms
+   × BH-0004 reconciles failed dependency without delivered watcher events in progressive (resource=true) 4527ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in static (resource=false)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in runtime (resource=false)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in pre-render (resource=false)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in progressive (resource=false)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in static (resource=true)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in runtime (resource=true)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in pre-render (resource=true)
+ FAIL  tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts > BH-0004 reconciles failed dependency without delivered watcher events in progressive (resource=true)
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts:38:62
+     36|     const send = vi.spyOn(server.ws, 'send')
+     37|     f.restore()
+     38|     await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true…
+       |                                                              ^
+     39|     expect(observed).toEqual([])
+     40|     const recovered = await fetch(new URL('style.css', origin));expect…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  8 failed (8)
+   Start at  11:15:23
+   Duration  29.34s (tests 98%, transform 1%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

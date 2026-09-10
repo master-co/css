@@ -1,0 +1,45 @@
+{
+  "reason": "Owned fixtures left by the deliberately interrupted lifecycle harness; its four known process IDs were confirmed absent",
+  "removed": [
+    {
+      "path": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-failed-reconcile-q4634z",
+      "files": {
+        "app/index.html": "abe3095073dea9a11e609c40fb29d13ca5c6805e0d1aa791aec93bbc84df56f8",
+        "app/style.css": "32a00ad2b4d587eb513baf1d82ce064e4ba67f3ab3e65027c544c5ff2e4e7f32",
+        "app/entry.js": "9d9486667581f0cef01116d0c1a642c26a9ee938910aa52117e90389bc9abe50",
+        "external/one/two/tokens.css": "7cae280bef4be24d3cdb882f581e88f8ac4220a2687370da3fca76d9fab9a78e"
+      }
+    },
+    {
+      "path": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-failed-reconcile-GoofDn",
+      "files": {
+        "app/index.html": "abe3095073dea9a11e609c40fb29d13ca5c6805e0d1aa791aec93bbc84df56f8",
+        "app/style.css": "32a00ad2b4d587eb513baf1d82ce064e4ba67f3ab3e65027c544c5ff2e4e7f32",
+        "app/entry.js": "9d9486667581f0cef01116d0c1a642c26a9ee938910aa52117e90389bc9abe50",
+        "external/one/two/tokens.css": "7cae280bef4be24d3cdb882f581e88f8ac4220a2687370da3fca76d9fab9a78e"
+      }
+    },
+    {
+      "path": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-failed-reconcile-yeKcmJ",
+      "files": {
+        "app/index.html": "abe3095073dea9a11e609c40fb29d13ca5c6805e0d1aa791aec93bbc84df56f8",
+        "app/style.css": "32a00ad2b4d587eb513baf1d82ce064e4ba67f3ab3e65027c544c5ff2e4e7f32",
+        "app/entry.js": "9d9486667581f0cef01116d0c1a642c26a9ee938910aa52117e90389bc9abe50",
+        "app/.vite/deps/_metadata.json": "a37f4607892ff1a76630d86e0cfb35e3bbe0dc43c33f727307ec27d2936a524a",
+        "app/.vite/deps/package.json": "3ca9d4afd21425087cf31893b8f9f63c81b0b8408db5e343ca76e5f8aa26ab9a",
+        "external/one/two/tokens.css": "7cae280bef4be24d3cdb882f581e88f8ac4220a2687370da3fca76d9fab9a78e"
+      }
+    },
+    {
+      "path": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-css-failed-reconcile-bk87Fz",
+      "files": {
+        "app/index.html": "abe3095073dea9a11e609c40fb29d13ca5c6805e0d1aa791aec93bbc84df56f8",
+        "app/style.css": "98794d01f8e9df65fc94ab875f18d7a3eeb27ecc0454b963ccf04703f1d5d0f7",
+        "app/entry.js": "9d9486667581f0cef01116d0c1a642c26a9ee938910aa52117e90389bc9abe50",
+        "app/.vite/deps_temp_fdb68c27/package.json": "3ca9d4afd21425087cf31893b8f9f63c81b0b8408db5e343ca76e5f8aa26ab9a",
+        "external/tokens.css": "3abfc2039fae7ea5ce5f1a416dd60cb4462f3e0a97d10d49973094a25da80562",
+        "external/one/two/pixel.svg": "900fbe934249ad120004bd24adf66aad8817d89586273c0cc50e187bddebb601"
+      }
+    }
+  ]
+}

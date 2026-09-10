@@ -1,0 +1,123 @@
+{
+  "head": "aecfcb051",
+  "goal": "active",
+  "batch": "0183reference-host-recovery",
+  "batchComplete": false,
+  "previousGoalTurn": "Progress: partial parent registration plus directory/browser evidence; this turn implements state reconciliation",
+  "validation": {
+    "viteTests": "567PASS/12FAIL (579tests/65files);all479pre-0183testsPASS",
+    "newTests": "22reconciliation cases and24directory behavior casesPASS in finalfullsuite;state/lifecycle/inflight close/watch disabled andexclusions covered",
+    "browser": "528PASS/0unexpectedpageerrors onfinalcode",
+    "lint": "VitePASS",
+    "types": "VitePASS",
+    "build": "FinalVitepackage/originalexamplePASS",
+    "compilerRustCLI": "No source changes;hash-preserved",
+    "site": "No changes this batch;foreignSitepreserved",
+    "aiContext": "PASS",
+    "syntaxWhitespaceJSONLedgerLinks": "PASS"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "remainingHostFailures": [
+    "6startup-missing build-watch CSSreferences",
+    "6managed manifest startup failures before HTTP; recoverycontract andsafeerrorpresentation remain unfinished"
+  ],
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Other Sass partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed",
+    "All2unresolved findings,10blockedcoverage,4rootgates and4originalcandidates",
+    "Detailedowner-levelRustprofiling/fullbenchmarkmatrices/reliablelong-session/history remain unfinished",
+    "Virtual relative reference without explicit baseFile remains unverified",
+    "Emitted internal Modules proxy plus ?direct HTTP500 path needs ownership/contract classification",
+    "Build-watchstartupmissingCSSreference remains6FAIL;existing-filedelete/restoration verified",
+    "Unreliable/absentmapownership remains;plain/ModulesSassrootbrowser recovery verified0183",
+    "Reconciliation verifies listed local/entry failures andlifecycle controls; remaining bootstrap/otherhost contracts arestillopen"
+  ],
+  "next": "Continue0183: classify and implement managed manifest startup recovery without publishing a fallback manifest; preserve fail-fast production behavior. Keep6startup build-watch cases open while resolving host capability constraints; allother requirements remain.",
+  "paused": "Batch0038 additionalverification requires explicitidentityconfirmation;none received",
+  "preservation": {
+    "head": "aecfcb051",
+    "baselineSources": 409,
+    "finalSources": 413,
+    "changed": {
+      "packages/vite/README.md": {
+        "before": "510cdcbceba482b660278f72b6010d0679fb3072215f897dcb0cebc920ebc89b",
+        "after": "192af002d08fc193f515969efc53f5067e9f911930f03b27f48f98c24d0ecb3c"
+      },
+      "packages/vite/src/plugins/stylesheet-recovery.ts": {
+        "before": "ede49e3d7452c9f8d355e6b1bd0dcb03dcc2bfd736095a3a5bbfb5ea86a2f67c",
+        "after": "db142095f9224fe31fb8ec84c021a65a5c5a51235af2e416a1bf053b5869a514"
+      },
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+        "before": "1e8cbc9813638802bb22b6d2f5d1fb727eb64b71decbf61b872183b13ede92ee",
+        "after": "0b4c792405b121bc716998184ebaf9ecd3f512a89a1eade9b8d16c027f385799"
+      },
+      "packages/vite/tests/plugins/bug-hunt-missing-directory-watch.test.ts": {
+        "before": "b52bfc998e7d9ec9083de5cc08807ede92ae6e30761ead2ecf9cc12c8f7451df",
+        "after": "f1e3e5150d1ec7cd94d3bb1d4565a35260751413a17b56d5d449e4d307ebab53"
+      }
+    },
+    "newSources": [
+      "packages/vite/src/utils/failed-dependency-reconciliation.ts",
+      "packages/vite/tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts",
+      ".ai/audits/bug-hunt/repros/vite-obsolete-reconciliation-events.mjs",
+      ".ai/audits/bug-hunt/repros/vite-reconciliation-diagnostics-browser.mjs"
+    ],
+    "priorDirectoryRawLogsUnchanged": true,
+    "priorCommittedRawLogsUnchanged": true,
+    "previousCommitExclusionsUnchanged": 166,
+    "foreignSiteUnchanged": true,
+    "fiveArtifactsUnchanged": true,
+    "threeCLIArtifactsUnchanged": true
+  },
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "85552": 1,
+    "80243": 0,
+    "16910": "interrupted after confirmed harness cleanup deadlock; all four known PIDs absent",
+    "85243": 0,
+    "14231": 1,
+    "25775": 0,
+    "3503": 0,
+    "30784": 0,
+    "92810": 1,
+    "82759": 0,
+    "12351": 0,
+    "51851": 0,
+    "85296": 0,
+    "13337": 0,
+    "48017": 0,
+    "94538": 0,
+    "91987": 0,
+    "38889": 1,
+    "39993": 0,
+    "28455": 0,
+    "50981": 0,
+    "4146": 0,
+    "21464": 1,
+    "77578": 0,
+    "92337": 0,
+    "10071": 0,
+    "95761": 0
+  },
+  "completedFollowup": "Failed stylesheet dependencies reconcile changed filesystem state, recover through public environment APIs and update diagnostics; lifecycle andwatchconfiguration controlsPASS"
+}
