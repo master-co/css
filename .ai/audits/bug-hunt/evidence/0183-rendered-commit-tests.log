@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-commit-nu7dmlsw/packages/compiler
+
+ ❯ tests/session.test.ts (0 test)
+[success] app/page.tsx 4 classes inserted in 0.5ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/session.test.ts [ tests/session.test.ts ]
+Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-commit-nu7dmlsw/parity/rust-semantic-corpus.json'
+ ❯ tests/session.test.ts:24:41
+     22|
+     23| const defaultManifest = defaultManifestJSON as unknown as MasterCSSMan…
+     24| const semanticParityCorpus = JSON.parse(readFileSync(
+       |                                         ^
+     25|   new URL('../../../parity/rust-semantic-corpus.json', import.meta.url…
+     26|   'utf8'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 15 passed (16)
+      Tests  130 passed (130)
+   Start at  16:07:45
+   Duration  9.33s (tests 92%, transform 6%, import 2%)
+

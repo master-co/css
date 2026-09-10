@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-prepared-diagnostic-columns.test.ts (3 tests | 1 failed) 23ms
+   × prepared diagnostic columns identify an original segment: $bad: '"block"'; .card { @compose #{$bad}; } 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-prepared-diagnostic-columns.test.ts > prepared diagnostic columns identify an original segment: $bad: '"block"'; .card { @compose #{$bad}; }
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/bug-hunt-prepared-diagnostic-columns.test.ts:26:73
+     24|     expect(end.character).toBeLessThanOrEqual(source.length)
+     25|     const original = source.slice(start.character, end.character)
+     26|     expect(original === '"block"' || start.character === end.character…
+       |                                                                         ^
+     27|     if (start.character === end.character) expect(diagnostic.notes?.jo…
+     28|   }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  15:31:03
+   Duration  370ms (transform 49%, import 44%, tests 7%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

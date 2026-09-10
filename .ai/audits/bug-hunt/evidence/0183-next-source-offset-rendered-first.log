@@ -1,0 +1,81 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-rendered-compose.test.ts (3 tests | 3 failed) 14ms
+   × rendered stylesheet includes lowered native compose declarations 8ms
+   × rendered stylesheet includes referenced compose without exporting reference definitions 3ms
+   × rendered stylesheet preserves native rules alongside lowered rules without duplication 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-rendered-compose.test.ts > rendered stylesheet includes lowered native compose declarations
+AssertionError: expected '' to contain '.card{padding:2rem}'
+
+- Expected
++ Received
+
+- .card{padding:2rem}
+
+ ❯ tests/bug-hunt-rendered-compose.test.ts:13:24
+     11|   expect((await compileStylesheet('/tmp/compose.css', source, options)…
+     12|   const rendered = await compileRenderedStylesheet('/tmp/compose.css',…
+     13|   expect(rendered.css).toContain('.card{padding:2rem}')
+       |                        ^
+     14|   expect(rendered.css.match(/padding:2rem/g)).toHaveLength(1)
+     15| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/bug-hunt-rendered-compose.test.ts > rendered stylesheet includes referenced compose without exporting reference definitions
+AssertionError: expected '' to contain '.card{padding:3rem}'
+
+- Expected
++ Received
+
+- .card{padding:3rem}
+
+ ❯ tests/bug-hunt-rendered-compose.test.ts:21:24
+     19|     writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:…
+     20|     const result = await compileRenderedStylesheet(join(root, 'entry.c…
+     21|     expect(result.css).toContain('.card{padding:3rem}')
+       |                        ^
+     22|     expect(JSON.stringify(result.manifest)).not.toContain('paint')
+     23|     expect(result.dependencies).toContain(join(root, 'tokens.css'))
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/bug-hunt-rendered-compose.test.ts > rendered stylesheet preserves native rules alongside lowered rules without duplication
+AssertionError: expected '.plain {\n  margin: 1rem;\n}' to contain 'margin:1rem'
+
+- Expected
++ Received
+
+- margin:1rem
++ .plain {
++   margin: 1rem;
++ }
+
+ ❯ tests/bug-hunt-rendered-compose.test.ts:28:22
+     26| test('rendered stylesheet preserves native rules alongside lowered rul…
+     27|   const result = await compileRenderedStylesheet('/tmp/compose.css', '…
+     28|   expect(result.css).toContain('margin:1rem')
+       |                      ^
+     29|   expect(result.css).toContain('padding:2rem')
+     30|   expect(result.css.match(/margin:1rem/g)).toHaveLength(1)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  15:36:22
+   Duration  296ms (transform 66%, import 28%, tests 6%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

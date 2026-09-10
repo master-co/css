@@ -37,3 +37,31 @@
 
 修正方向：使用 root 所屬 realm 或適當 DOM 能力判斷節點。 [重現與證據](batches/0009-runtime-mutations.md)。
 
+
+## BH-0010 · P2 · HTML extraction 未解 character references
+
+[crates/mastercss-source/src/lib.rs:263](/Users/aron/master/css/crates/mastercss-source/src/lib.rs:263)。HTML class 含 character references；static extraction 應取得實際 class，實際保留 encoded 字串而漏產 CSS。與 BH-0005 根因獨立。
+
+修正方向：在 Rust HTML adapter 解碼，維持來源位置契約。 [重現與證據](batches/0010-source-extraction.md)。
+
+
+## BH-0011 · P2 · Svelte else 分支未提取
+
+[packages/tooling/src/source/adapters/svelte.ts:75](/Users/aron/master/css/packages/tooling/src/source/adapters/svelte.ts:75)。class 只在 else 分支；應進入 static CSS，實際只遍歷 children，分支沒有样式。
+
+修正方向：依實際 Svelte AST 遍歷 else 等分支並防止重複。 [重現與證據](batches/0010-source-extraction.md)。
+
+
+## BH-0012 · P2 · scanModule 漏收 .mjs
+
+[packages/tooling/src/scanner/core.ts:32](/Users/aron/master/css/packages/tooling/src/scanner/core.ts:32)。透過 scanModule 處理 .mjs；應如 .js 產生 CSS，實際 extension 快速篩選直接跳過。
+
+修正方向：補齊並共用受支援副檔名契約。 [重現與證據](batches/0011-scanner-state.md)。
+
+
+## BH-0014 · P2 · 跳脫字元後 semantic token 範圍偏移
+
+[crates/mastercss-language/src/session.rs:267](/Users/aron/master/css/crates/mastercss-language/src/session.rs:267)。JS class 字串含 escaped quotes；高亮應對應 raw source，實際使用 decoded 長度，後續 token 前移。
+
+修正方向：保留 decoded-to-raw mapping，再轉為 UTF-16 範圍。 [重現與證據](batches/0012-language-ir.md)。
+

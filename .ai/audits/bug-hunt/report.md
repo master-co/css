@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0183: BH-0054 CSS Module exports fixed by preserving both Turbopack css-module type and *.module.css output; type alone failed actual browsers. Working-tree Turbopack CSS/SCSS/Sass dev9 and production9 browser checks PASS; final Webpack LightningCSS partial-Sass HMR3PASS. Raw Sass now prepares before classification with original partial references, diagnostics and failed dependency recovery; BH-0053 remains partial for output/entry map composition, additionalData offsets and broader host/options boundaries. Compiler287PASS; Next99PASS/3existing config-shape assertions FAIL, e2e3PASS; lint/types PASS.54historical/50fixed/4unresolved(BH-0004/BH-0029/BH-0051/BH-0053);65checked/10blocked. Six Vite build-watch cases,4rootgates,4originalcandidates and all earlier scope remain open;0038identity pause unchanged. Isolated BH-0054 commit candidate also passes actual CSS Module dev/build6browser checks using existing workspace dependencies. [Checks](evidence/0183-next-raw-final-checks.json); [previous checkpoint](progress-history-0183-next-raw.md). `16735503c` commits only the isolated BH-0054 CSS Module rule repair and4focused regressions. Fresh isolated32tests,lint,build and actual dev/production6browser checks PASS using existing workspace dependencies. Raw Sass/Webpack/compiler/graph work and foreign Site changes remain in the working tree. Audit snapshots record tested partial progress, not completion of the open requirements.0038identity pause remains; no push. [Commit validation](evidence/0183-css-module-commit-validation.json).
+- 0183 commit checkpoint: `c25c1c6dc` delivers the isolated BH-0056 renderer fix and3regressions; HEAD-source snapshot132tests/lint/types/buildPASS using existing installed dependencies/artifacts (not a clean dependency rebuild). Completed source-offset/entry-reference evidence is recorded; BH-0055 and Sass/compiler fixes still depend on unfinished graph work and remain uncommitted.201non-audit working files preserved byte-for-byte. Prior [checkpoint](progress-history-0183-rendered-commit.md) retains296compiler/110NextPASS with3oldassertionFAIL and12browserPASS. New output-map work is unfinished: Rust currently has2lifetime compile errors; do not apply prior Rust PASS to it.56historical/52fixed/4unresolved,65checked/10blocked; all prior gates/candidates/host/graph/benchmark/Site requirements remain.0038stillawaits explicitidentityconfirmation;goalactive;no push. Next fix output-map lifetimes, then verify mappings through lowering/Sass/hosts. [Commit checks](evidence/0183-rendered-commit-validation.json).
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
@@ -100,11 +100,19 @@ Three official virtual IDs bypassed resolve.alias and failed independently of CS
 
 ## BH-0053 · P1 · Next/Turbopack Sass classification (partial)
 
-Raw Sass now prepares before CSS classification. Imported partial references and diagnostics preserve ownership, and missing partial creation recovers in actual Turbopack. Dev/build SCSS/Sass pass. Output-map composition after lowering, flattened entry maps, additionalData offsets and full host/options boundaries remain unfinished. [Checks and next steps](evidence/0183-next-raw-final-checks.json).
+Raw Sass prepares before classification; partial references, missing recovery and additionalData root/injected diagnostics now pass. Exact columns are retained only for unchanged mapped text; expanded interpolation uses an explicit segment anchor. Output-map composition, expanded-graph lowering diagnostics and full Sass option/host boundaries remain unfinished. [Checks](evidence/0183-next-source-offset-final-checks.json).
 
 ## BH-0054 · P1 · Turbopack CSS Module exports (fixed)
 
 Forcing general CSS type/output produced empty class exports even for pure CSS. Both css-module type and *.module.css suffix are required; type-only repair failed actual browsers. Working-tree CSS/SCSS/Sass dev/build and isolated CSS dev/build pass in Chromium, Firefox and WebKit. Isolated repair excludes unfinished Sass/Webpack/compiler changes and reuses existing workspace dependencies. [Evidence](evidence/0183-next-raw-turbo-module-discovery.json).
+
+## BH-0055 · P1 · Entry reference metadata lost during expansion (fixed)
+
+Pure CSS exposed the same loss as Sass. Next now renders original prepared input; compiler retains references through graph expansion and stylesheet collection registration/composition. Production initially failed in onBuildComplete, then passed after fixing the shared collection path. [Evidence](evidence/0183-next-source-offset-findings.json).
+
+## BH-0056 · P1 · Rendered compose rules omitted (fixed)
+
+Renderer received parser nativeCSS alone, dropping lowered compose rules. Rendering finalized CSS preserves both without duplication or exporting reference-only definitions. Compiler controls and actual Next dev/production pass. [Evidence](evidence/0183-next-source-offset-findings.json).
 
 ## BH-0001 · P2 · CSS 字串與註解被當成動畫宣告
 
@@ -132,27 +140,19 @@ Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0010 · P2 · HTML extraction 未解 character references
 
-[crates/mastercss-source/src/lib.rs:263](/Users/aron/master/css/crates/mastercss-source/src/lib.rs:263)。HTML class 含 character references；static extraction 應取得實際 class，實際保留 encoded 字串而漏產 CSS。與 BH-0005 根因獨立。
-
-修正方向：在 Rust HTML adapter 解碼，維持來源位置契約。 [重現與證據](batches/0010-source-extraction.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0011 · P2 · Svelte else 分支未提取
 
-[packages/tooling/src/source/adapters/svelte.ts:75](/Users/aron/master/css/packages/tooling/src/source/adapters/svelte.ts:75)。class 只在 else 分支；應進入 static CSS，實際只遍歷 children，分支沒有样式。
-
-修正方向：依實際 Svelte AST 遍歷 else 等分支並防止重複。 [重現與證據](batches/0010-source-extraction.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0012 · P2 · scanModule 漏收 .mjs
 
-[packages/tooling/src/scanner/core.ts:32](/Users/aron/master/css/packages/tooling/src/scanner/core.ts:32)。透過 scanModule 處理 .mjs；應如 .js 產生 CSS，實際 extension 快速篩選直接跳過。
-
-修正方向：補齊並共用受支援副檔名契約。 [重現與證據](batches/0011-scanner-state.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0014 · P2 · 跳脫字元後 semantic token 範圍偏移
 
-[crates/mastercss-language/src/session.rs:267](/Users/aron/master/css/crates/mastercss-language/src/session.rs:267)。JS class 字串含 escaped quotes；高亮應對應 raw source，實際使用 decoded 長度，後續 token 前移。
-
-修正方向：保留 decoded-to-raw mapping，再轉為 UTF-16 範圍。 [重現與證據](batches/0012-language-ir.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0015 · P2 · 合法 Unicode escape 被 ESLint 誤報（部分修復）
 

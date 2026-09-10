@@ -32,7 +32,7 @@ if (sassImplementation) {
   symlinkSync(dirname(sassImplementation), join(root, 'node_modules/sass'), 'dir')
 }
 writeFileSync(join(root, 'package.json'), '{"private":true,"type":"module"}')
-const options = { ...(sassImplementation ? { sassOptions: { implementation: sassImplementation, ...(process.env.BH_SASS_STYLE ? { style: process.env.BH_SASS_STYLE } : {}) } } : {}), ...(lightning ? { experimental: { useLightningcss: true } } : {}) }
+const options = { ...(sassImplementation ? { sassOptions: { implementation: sassImplementation, ...(process.env.BH_SASS_STYLE ? { style: process.env.BH_SASS_STYLE } : {}), ...(process.env.BH_SASS_ADDITIONAL_DATA ? { additionalData: process.env.BH_SASS_ADDITIONAL_DATA } : {}) } } : {}), ...(lightning ? { experimental: { useLightningcss: true } } : {}) }
 const captureFile = join(root, 'prepared.jsonl'), captureLoader = join(root, 'capture-prepared.cjs')
 let captureConfig = ''
 if (process.env.BH_CAPTURE_PREPARED === '1') {
@@ -52,9 +52,18 @@ writeFileSync(join(root, 'app/master.css'), '@master entry;')
 writeFileSync(join(root, 'app/imported.css'), '@reference "./master.css";.global{@compose p:1rem;}')
 writeFileSync(join(root, 'app/dot.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="red"/></svg>')
 function write(margin, padding) {
-  const global = syntax === 'sass'
+  let global = syntax === 'sass'
     ? `@import "./imported.css"\n$space: ${margin}rem\n.global\n  margin: $space\n  background-image: url("./dot.svg")\n`
     : `@import "./imported.css";${syntax === 'scss' ? `$space:${margin}rem;` : ''}.global{margin:${syntax === 'scss' ? '$space' : `${margin}rem`};background-image:url("./dot.svg")}`
+  if (process.env.BH_ENTRY_REFERENCE === '1') {
+    assert.equal(syntax, 'css')
+    writeFileSync(join(root, 'app/tokens.css'), `@utilities{audit-margin{margin:${margin}rem}}`)
+    global = '@master entry;@reference "./tokens.css";' + global.replace(`margin:${margin}rem;`, '@compose audit-margin;')
+  }
+  if (process.env.BH_ENTRY_COMPOSE === '1') {
+    assert.equal(syntax, 'css')
+    global = '@master entry;' + global.replace(`margin:${margin}rem;`, `@compose m:${margin}rem;`)
+  }
   let module = syntax === 'sass'
     ? `$padding: ${padding}rem\n@reference "./master.css"\n.card\n  @compose p:#{$padding}\n`
     : `${syntax === 'scss' ? `$padding:${padding}rem;` : ''}@reference "./master.css";.card{@compose p:${syntax === 'scss' ? '#{$padding}' : `${padding}rem`};}`
@@ -78,7 +87,7 @@ function runNext(args) {
   childProcess.stdout.on('data', chunk => { output += chunk });childProcess.stderr.on('data', chunk => { output += chunk })
   return childProcess
 }
-console.log(JSON.stringify({ syntax, lightning, production, backend, partial, recovery, moduleAs: process.env.BH_MODULE_AS === '1', captureTransformed: process.env.BH_CAPTURE_TRANSFORMED === '1', sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js', 'prepare-stylesheet.js'].filter(name => existsSync(join(packageDir, 'dist', name))).map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
+console.log(JSON.stringify({ syntax, lightning, production, backend, partial, recovery, entryCompose: process.env.BH_ENTRY_COMPOSE === '1', entryReference: process.env.BH_ENTRY_REFERENCE === '1', additionalData: process.env.BH_SASS_ADDITIONAL_DATA, moduleAs: process.env.BH_MODULE_AS === '1', captureTransformed: process.env.BH_CAPTURE_TRANSFORMED === '1', sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js', 'prepare-stylesheet.js', 'sass-source-context.js'].filter(name => existsSync(join(packageDir, 'dist', name))).map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
 try {
   if (production) {
     child = runNext(['build', backend])
