@@ -1,0 +1,11 @@
+{"starting": "0180-css-root-sass-dev-browser.log", "config": {"BH_COMMAND": "serve", "BH_ROOT": "css", "BH_SYNTAX": "sass", "BH_DATA": "map", "BH_STYLE": "compressed", "BH_NATIVE": "0"}}
+{"log": "0180-css-root-sass-dev-browser.log", "exit": 0}
+{"starting": "0180-css-root-scss-dev-browser.log", "config": {"BH_COMMAND": "serve", "BH_ROOT": "css", "BH_SYNTAX": "scss", "BH_DATA": "string", "BH_STYLE": "expanded", "BH_NATIVE": "0"}}
+{"log": "0180-css-root-scss-dev-browser.log", "exit": 0}
+{"starting": "0180-native-sass-dev-browser.log", "config": {"BH_COMMAND": "serve", "BH_ROOT": "scss", "BH_SYNTAX": "sass", "BH_DATA": "map", "BH_STYLE": "compressed", "BH_NATIVE": "1"}}
+{"log": "0180-native-sass-dev-browser.log", "exit": 0}
+{"starting": "0180-scss-root-sass-dev-browser.log", "config": {"BH_COMMAND": "serve", "BH_ROOT": "scss", "BH_SYNTAX": "sass", "BH_DATA": "none", "BH_STYLE": "expanded", "BH_NATIVE": "0"}}
+{"log": "0180-scss-root-sass-dev-browser.log", "exit": 0}
+{"starting": "0180-scss-root-scss-dev-browser.log", "config": {"BH_COMMAND": "serve", "BH_ROOT": "scss", "BH_SYNTAX": "scss", "BH_DATA": "string", "BH_STYLE": "expanded", "BH_NATIVE": "0"}}
+{"log": "0180-scss-root-scss-dev-browser.log", "exit": 0}
+{"matrixGroup": "dev", "terminalRuns": [{"log": "0180-css-root-sass-dev-browser.log", "exit": 0}, {"log": "0180-css-root-scss-dev-browser.log", "exit": 0}, {"log": "0180-native-sass-dev-browser.log", "exit": 0}, {"log": "0180-scss-root-sass-dev-browser.log", "exit": 0}, {"log": "0180-scss-root-scss-dev-browser.log", "exit": 0}]}

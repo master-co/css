@@ -1,0 +1,30 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-2ybm8c08/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-phase-report.mjs", "final"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-2ybm8c08/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:33:19
+   Duration  29.04s (tests 99%, transform 1%)
+
+{"suite":"compiler-diagnostics","variant":"minimal-master-static-compiler","samples":30,"cssBytes":5178,"cssHash":"2a5e9c947b33ed1578bb3aa0351de71af1a8f7d8032ef00fd821fd69453b0bbe","pass":true}
+{"suite":"compiler-diagnostics","variant":"docs-master-static-compiler","samples":30,"cssBytes":5903,"cssHash":"c16cebc977bd76962a00cf242dee77d1c8c9499f79bd713d1555ee80837bddef","pass":true}
+{"suite":"compiler-diagnostics","variant":"dashboard-master-static-compiler","samples":30,"cssBytes":6101,"cssHash":"532685761c7d543fc19f868c58fc19d836ee24a2dd31806e7a45e2a9f638a028","pass":true}
+{"suite":"compiler-diagnostics","variant":"stress-css-master-static-compiler","samples":30,"cssBytes":11779,"cssHash":"d9bc2c0b229418f275487aea26172fd3f0d3cda33375f52bdec46b048f819cf4","pass":true}
+{"suite":"compiler-diagnostics","variants":4,"metrics":30,"samples":120,"summary":120,"missingMetricIds":[],"mode":"final"}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-2ybm8c08/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:33:48
+   Duration  28.80s (tests 99%, transform 1%)
+
+{"suite":"extraction-diagnostics","variant":"minimal-master-static-extraction","samples":30,"cssBytes":5178,"cssHash":"2a5e9c947b33ed1578bb3aa0351de71af1a8f7d8032ef00fd821fd69453b0bbe","pass":true}
+{"suite":"extraction-diagnostics","variant":"docs-master-static-extraction","samples":30,"cssBytes":5903,"cssHash":"c16cebc977bd76962a00cf242dee77d1c8c9499f79bd713d1555ee80837bddef","pass":true}
+{"suite":"extraction-diagnostics","variant":"dashboard-master-static-extraction","samples":30,"cssBytes":6101,"cssHash":"532685761c7d543fc19f868c58fc19d836ee24a2dd31806e7a45e2a9f638a028","pass":true}
+{"suite":"extraction-diagnostics","variant":"stress-css-master-static-extraction","samples":30,"cssBytes":11779,"cssHash":"d9bc2c0b229418f275487aea26172fd3f0d3cda33375f52bdec46b048f819cf4","pass":true}
+{"suite":"extraction-diagnostics","variants":4,"metrics":30,"samples":120,"summary":120,"missingMetricIds":[],"mode":"final"}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-2ybm8c08"}

@@ -1,0 +1,128 @@
+{
+  "head": "e0f13cd44c906e7f518888dfc4b62e32a85d15c7",
+  "goal": "active",
+  "previousGoalTurn": "Progress:0179report contract repaired andverified",
+  "batch": "0180 bounded imported Sass original-map recovery verified",
+  "validation": {
+    "before": "8strict original-sourceFAIL/2pureVitepublicpreprocessingPASS",
+    "focused": "55PASS:48dev/build exactpositions,4precisioncontrols,2pureVite,1cache/cleanup/recovery",
+    "viteTests": "441PASS/59files",
+    "lint": "VitePASS;Site0errors/75existingwarnings",
+    "types": "VitePASS",
+    "build": "ViteandoriginalexamplePASS",
+    "sitePrepare": "PASS",
+    "browser": "10originalmatrices/600observationsPASS;actualbuiltVite plugin",
+    "aiContext": "PASS",
+    "authoredWhitespace": "PASS",
+    "jsonAndLedgerLinks": "PASS"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1,
+    "browserNamespaceValidationLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "preservation": {
+    "head": "e0f13cd44c906e7f518888dfc4b62e32a85d15c7",
+    "baselineSources": 387,
+    "finalSources": 389,
+    "changed": {
+      "packages/vite/README.md": {
+        "before": "e2374770222a8a74614b3dcce98630646d123d36188290409628c2652495e21d",
+        "after": "f97b0457ac2045a0e8cab4eb053b6066aeaa8847de64d318b58eec9e79717ea1"
+      },
+      "packages/vite/src/utils/build-sass-source.ts": {
+        "before": "c7ce5cd5c727252a6f9e4b4599929add14b9c41cdfacee646bbe8bd5c772fa0f",
+        "after": "79d58f74729572d73a372b4048ac2decfaeb2b341895c86a2f48734d3a411495"
+      },
+      "packages/vite/src/utils/module-sources.ts": {
+        "before": "8369b45ed70c592eae9617cdc40b4ee8230932506a99a3387f938c5fa1297e91",
+        "after": "c2e797297c33afed9cd1361e9c7d0326a500c07841b338b550bda3be4f3f2bfe"
+      },
+      "site/app/[locale]/guide/directives/contract.mdx": {
+        "before": "ec4d2c96d2abe39662b33afb1b9484be2d3dfa8695e5112e97598b7174a50a7f",
+        "after": "ae2a3d8f852d7769f886a95ec7cbf4ce3d751980354a400b41b83708ad833503"
+      }
+    },
+    "newSources": [
+      "packages/vite/tests/plugins/bug-hunt-imported-sass-original-maps.test.ts",
+      "packages/vite/tests/utils/bug-hunt-sass-import-preparation.test.ts"
+    ],
+    "priorExcluded151": {
+      "unchanged": 147,
+      "intentionalChanges": [
+        "packages/vite/README.md",
+        "packages/vite/src/utils/build-sass-source.ts",
+        "packages/vite/src/utils/module-sources.ts",
+        "site/app/[locale]/guide/directives/contract.mdx"
+      ]
+    },
+    "foreignSite": {
+      "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a",
+      "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+      "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49"
+    },
+    "fiveArtifactsByteIdentical": true,
+    "threeCLIArtifactsByteIdentical": true,
+    "indexEmpty": true,
+    "finalSourceRecheck": "All389 hashes match;147 previous exclusions unchanged;4 intended edits;3 foreignSite unchanged"
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Other Sass partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed",
+    "All2unresolved findings,10blockedcoverage,4rootgates and4originalcandidates",
+    "Detailedowner-levelRustprofiling/fullbenchmarkmatrices/reliablelong-session/history remain unfinished"
+  ],
+  "limits": [
+    "BoundedimportedSassmapgapclosed;fullBH-0004graph/publicpath/hostscope remainsunfinished",
+    "Mappedinterpolationhassegmentprecision;changedadditionalDatawithoutmapretainsgeneratedlocation",
+    "TemporaryhostCSS/mapdiskI/O added;no duplicateSasscustomfunction/additionalDatacalls,noengine/runtimehotpathchange",
+    "No performanceclaim,fixture/snapshot/CI/release/dependencychanges",
+    "Fullbenchmarkmatrices/longsession/history remainunfinished"
+  ],
+  "next": "0181 retained Sass reference/virtual source andresourceownership throughactualVite dev/build; dependency invalidation/error recovery",
+  "paused": "Batch0038 additional verification still requires explicit identity confirmation",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "74405": 1,
+    "1617": 1,
+    "5189": 0,
+    "38326": 1,
+    "96965": 1,
+    "85972": 0,
+    "72755": 0,
+    "80572": 0,
+    "16256": 0,
+    "56182": 0,
+    "84771": 0,
+    "31482": 0,
+    "34843": 0,
+    "46841": 0,
+    "3666": 0,
+    "85139": 0,
+    "94382": 0
+  },
+  "classifiedIntermediateFailures": {
+    "before": "8strict originalSasslocation failures;2pureVitecontrolsPASS",
+    "initialRepair": "4relative-source names resolvedagainsttemporarydirectory;normalizeagainstoriginalsource",
+    "expandedRepair": "Inline mapannotation remainedinprojectedCSS andunmappedsegments referenceddeletedtempfile;bothcorrected andregressioncovered",
+    "existingChecks": "No existingtestsfailed;Site75priorwarnings retained"
+  }
+}
