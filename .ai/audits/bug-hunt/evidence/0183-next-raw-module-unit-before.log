@@ -1,0 +1,57 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-turbopack-css-module.test.ts (7 tests | 5 failed) 6ms
+   × Turbopack preserves CSS Module type for .module.css 4ms
+   × Turbopack preserves CSS Module type for .module.scss 1ms
+   × Turbopack preserves CSS Module type for .module.sass 0ms
+   × Turbopack handles imported directives in .module.scss once 0ms
+   × Turbopack handles imported directives in .module.sass once 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-turbopack-css-module.test.ts > Turbopack preserves CSS Module type for .module.css
+ FAIL  tests/bug-hunt-turbopack-css-module.test.ts > Turbopack preserves CSS Module type for .module.scss
+ FAIL  tests/bug-hunt-turbopack-css-module.test.ts > Turbopack preserves CSS Module type for .module.sass
+AssertionError: expected 'css' to be 'css-module' // Object.is equality
+
+Expected: "css-module"
+Received: "css"
+
+ ❯ tests/bug-hunt-turbopack-css-module.test.ts:24:25
+     22|   const rules = stylesheetRules(`card.module.${extension}`, '.card{@co…
+     23|   expect(rules).toHaveLength(1)
+     24|   expect(rules[0].type).toBe('css-module')
+       |                         ^
+     25| })
+     26| for (const extension of ['scss', 'sass']) test(`Turbopack handles impo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/bug-hunt-turbopack-css-module.test.ts > Turbopack handles imported directives in .module.scss once
+ FAIL  tests/bug-hunt-turbopack-css-module.test.ts > Turbopack handles imported directives in .module.sass once
+AssertionError: expected 'css' to be 'css-module' // Object.is equality
+
+Expected: "css-module"
+Received: "css"
+
+ ❯ tests/bug-hunt-turbopack-css-module.test.ts:29:25
+     27|   const rules = stylesheetRules(`card.module.${extension}`, '@use "par…
+     28|   expect(rules).toHaveLength(1)
+     29|   expect(rules[0].type).toBe('css-module')
+       |                         ^
+     30| })
+     31| test('Turbopack keeps global Sass global and forwards configured optio…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 2 passed (7)
+   Start at  15:00:34
+   Duration  393ms (transform 70%, import 28%, tests 2%)
+

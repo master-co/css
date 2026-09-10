@@ -1,0 +1,32 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-raw-sass-context.test.ts (6 tests | 1 failed) 2419ms
+   × Next watches a Sass partial that throws before loadedUrls are returned 21ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-raw-sass-context.test.ts > Next watches a Sass partial that throws before loadedUrls are returned
+AssertionError: expected [ Array(1) ] to include '/var/folders/_b/768dhtz56ns54x1r867j6…'
+ ❯ tests/bug-hunt-raw-sass-context.test.ts:70:26
+     68|     writeFileSync(partial, '.card{padding:$missing}')
+     69|     await expect(compile(root, file, '@use "parts/rules";', dependenci…
+     70|     expect(dependencies).toContain(partial)
+       |                          ^
+     71|     writeFileSync(partial, '.card{padding:2rem}')
+     72|     expect(await compile(root, file, '@use "parts/rules";', [])).toMat…
+ ❯ fixture tests/bug-hunt-raw-sass-context.test.ts:16:5
+ ❯ tests/bug-hunt-raw-sass-context.test.ts:66:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  14:54:58
+   Duration  2.76s (tests 90%, transform 8%, import 3%)
+

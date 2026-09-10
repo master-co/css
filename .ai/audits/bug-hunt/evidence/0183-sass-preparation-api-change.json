@@ -1,0 +1,36 @@
+{
+  "finding": "BH-0053",
+  "scope": "Compiler-owned preparation prerequisite, Next integration still pending",
+  "newPublicExports": [
+    "@master/css-compiler/stylesheet#prepareStylesheet",
+    "@master/css-compiler/stylesheet#MasterCSSPreparedStylesheet",
+    "@master/css-compiler/stylesheet#MasterCSSStylesheetPreparationOptions"
+  ],
+  "existingPublicTypeExtended": "MasterCSSSassCompiler accepts sourceMap/sourceMapIncludeSources and optional loadedUrls/sourceMap result; source-only callbacks remain supported",
+  "behavior": "Preparation does not require a manifest or classify/lower CSS. Expanded Sass preserves directives. Return original physical base, loaded file dependencies and serialized original map; preserve host callback/importers and cancellation. Virtual sources require explicit physical baseFile. CSS compile paths still bypass Sass preparation.",
+  "verified": [
+    "SCSS/indented Sass interpolation and updated partials",
+    "file dependency registration",
+    "sourceMap source content and mappings",
+    "custom importer configured sourceMapUrl preserved; non-file URLs omitted from file dependencies",
+    "virtual baseFile and SFC language query",
+    "Sass original error spans and root registered before failure",
+    "cancellation before and after async preparation",
+    "actual mapped-reference consumer resolves tokens relative to imported partial, rejecting incorrect root-directory99rem control"
+  ],
+  "limitations": [
+    "Next raw-input loader not yet connected",
+    "Missing Sass import candidates are not reported by Sass loadedUrls on failure; automatic watch recovery remains unproven",
+    "Output CSS after semantic lowering needs a correctly composed host map; returning the raw Sass map for rewritten CSS would be incorrect",
+    "Public API census and package golden gates remain failing with earlier differences plus this deliberate addition; no golden/snapshot updates"
+  ],
+  "testDevelopment": [
+    "Seven initial failures demonstrate missing API, not a new product finding",
+    "First implementation5PASS/2FAIL: virtual syntax determination corrected; importer-only variables do not emit a mapped CSS source",
+    "Sass non-file importer maps default to data URLs; test supplies sourceMapUrl explicitly and emits CSS to verify host map preservation",
+    "First broad compiler suite11FAIL exposed an introduced CSS virtual-input regression; fixed by retaining existing non-Sass bypass, subsequent serial full suite282PASS",
+    "Initial full suite and build overlapped; only subsequent serial suite is authoritative"
+  ],
+  "next": "Integrate raw preparation in Next before classification with dependencies, Sass host options, map-aware reference/diagnostic ownership, missing/edit recovery; actual Turbopack dev/build matrices required before closing BH-0053",
+  "commit": false
+}

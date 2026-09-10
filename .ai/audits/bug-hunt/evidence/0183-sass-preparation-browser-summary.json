@@ -1,0 +1,152 @@
+{
+  "lightningProduction": [
+    {
+      "syntax": "css",
+      "browser": "chromium",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__T5ml_G__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63357/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "css",
+      "browser": "firefox",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__T5ml_G__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63357/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "css",
+      "browser": "webkit",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__T5ml_G__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63357/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "scss",
+      "browser": "chromium",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__tOS8Iq__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63360/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "scss",
+      "browser": "firefox",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__tOS8Iq__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63360/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "scss",
+      "browser": "webkit",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__tOS8Iq__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63360/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "sass",
+      "browser": "chromium",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__i6ckgG__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63362/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "sass",
+      "browser": "firefox",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__i6ckgG__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63362/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    },
+    {
+      "syntax": "sass",
+      "browser": "webkit",
+      "pass": true,
+      "state": {
+        "marker": "retained",
+        "manifest": "1",
+        "className": "card-module__i6ckgG__card",
+        "margin": "48px",
+        "padding": "32px",
+        "importedPadding": "16px",
+        "assetWidth": 1,
+        "assetURL": "http://127.0.0.1:63362/_next/static/media/dot.214e8abd.svg"
+      },
+      "errors": []
+    }
+  ],
+  "observations": 9,
+  "defaultProductionPrior": "0183-next-sass-production-{css,scss,sass}.log,9PASS",
+  "noInstrumentation": true,
+  "explicitSassStyle": "compressed"
+}

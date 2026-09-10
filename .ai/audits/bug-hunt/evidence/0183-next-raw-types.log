@@ -1,0 +1,12 @@
+$ tsc -b tsconfig.typecheck.json
+../compiler/src/stylesheet/delivery.ts(167,79): error TS2345: Argument of type '(source: string, from?: string | undefined) => boolean' is not assignable to parameter of type '(value: string, index: number, array: string[]) => unknown'.
+  Types of parameters 'from' and 'index' are incompatible.
+    Type 'number' is not assignable to type 'string'.
+../compiler/src/stylesheet/public.ts(230,31): error TS2345: Argument of type '(source: string, from?: string | undefined) => boolean' is not assignable to parameter of type '(value: string, index: number, array: string[]) => unknown'.
+  Types of parameters 'from' and 'index' are incompatible.
+    Type 'number' is not assignable to type 'string'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/next
+

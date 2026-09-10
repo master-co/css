@@ -8,11 +8,15 @@ import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { createHash } from 'node:crypto'
 
-const packageDir = fileURLToPath(new URL('../../../../packages/next/', import.meta.url))
+const packageDir = process.env.BH_NEXT_PACKAGE_DIR ?? fileURLToPath(new URL('../../../../packages/next/', import.meta.url))
 const require = createRequire(new URL('../../../../packages/runtime/package.json', import.meta.url))
 const browsers = require('@playwright/test'), rows = [], delay = ms => new Promise(resolve => setTimeout(resolve, ms))
 const syntax = process.env.BH_CSS_SYNTAX ?? 'css', lightning = process.env.BH_LIGHTNING === '1'
 const production = process.env.BH_NEXT_PHASE === 'build'
+const partial = process.env.BH_SASS_PARTIAL === '1'
+const recovery = process.env.BH_SASS_RECOVERY === '1'
+assert.ok(!recovery || partial && !production)
+assert.ok(!partial || syntax !== 'css')
 const backend = process.env.BH_NEXT_BACKEND === 'turbo' ? '--turbo' : '--webpack'
 assert.ok(['css', 'scss', 'sass'].includes(syntax))
 const viteRequire = createRequire(new URL('../../../../packages/vite/package.json', import.meta.url))
@@ -22,6 +26,7 @@ const port = server.address().port;await new Promise(resolve => server.close(res
 const workspace = join(packageDir, 'e2e');mkdirSync(workspace, { recursive: true })
 const root = mkdtempSync(join(workspace, 'bug-hunt-webpack-css-')), url = `http://127.0.0.1:${port}`
 mkdirSync(join(root, 'app'))
+if (partial) mkdirSync(join(root, 'app/parts'))
 if (sassImplementation) {
   mkdirSync(join(root, 'node_modules'))
   symlinkSync(dirname(sassImplementation), join(root, 'node_modules/sass'), 'dir')
@@ -34,9 +39,15 @@ if (process.env.BH_CAPTURE_PREPARED === '1') {
   writeFileSync(captureLoader, `const fs=require('node:fs');module.exports=function(source,map){fs.appendFileSync(${JSON.stringify(captureFile)},JSON.stringify({file:this.resourcePath,source,loaders:this.loaders.map(l=>({path:l.path,options:l.options}))})+'\\n');this.callback(null,source,map)};`)
   captureConfig = `config.webpack=function(value){function visit(rule){if(!rule||typeof rule!=='object')return;for(const key of ['rules','oneOf'])for(const child of rule[key]||[])visit(child);if(Array.isArray(rule.use)){const index=rule.use.findIndex(item=>/postcss-loader|lightningcss-loader/.test(item?.loader||''));if(index>=0){for(const item of rule.use)if(typeof item?.options?.importLoaders==='number')item.options={...item.options,importLoaders:item.options.importLoaders+1};rule.use.splice(index+1,0,{loader:${JSON.stringify(captureLoader)}})}}}for(const rule of value.module?.rules||[])visit(rule);return value};`
 }
-writeFileSync(join(root, 'next.config.js'), `import { withMasterCSS } from ${JSON.stringify(relative(root, join(packageDir, 'dist/index.js')))};const config=${JSON.stringify(options)};${captureConfig}export default withMasterCSS(config, {mode:'pre-render'});`)
+let configuredSuffix = ''
+if (process.env.BH_MODULE_AS === '1') configuredSuffix += `for(const rule of configured.turbopack.rules['*'])if(rule.type==='css-module')rule.as='*.module.css';`
+if (process.env.BH_CAPTURE_TRANSFORMED === '1') {
+  writeFileSync(captureLoader, `const fs=require('node:fs');module.exports=function(source,map){fs.appendFileSync(${JSON.stringify(captureFile)},JSON.stringify({file:this.resourcePath,source,map})+'\\n');this.callback(null,source,map)};`)
+  configuredSuffix += `for(const rule of configured.turbopack.rules['*'])if(rule.loaders?.some(l=>String(typeof l==='string'?l:l.loader).endsWith('stylesheet-loader.js')))rule.loaders.unshift({loader:${JSON.stringify(captureLoader)}});`
+}
+writeFileSync(join(root, 'next.config.js'), `import { withMasterCSS } from ${JSON.stringify(relative(root, join(packageDir, 'dist/index.js')))};const config=${JSON.stringify(options)};${captureConfig}const configured=withMasterCSS(config, {mode:'pre-render'});${configuredSuffix}export default configured;`)
 writeFileSync(join(root, 'app/layout.jsx'), `import "./master.css";import "./globals.${syntax}";export default function Layout({children}){return <html><body>{children}</body></html>}`)
-writeFileSync(join(root, 'app/page.jsx'), `"use client";import styles from "./card.module.${syntax}";import manifest from "./master.css?master-css-manifest";export default function Page(){return <div id="global" className="global"><div id="module" className={styles.card} data-manifest={manifest.version}>Probe</div></div>}`)
+writeFileSync(join(root, 'app/page.jsx'), `"use client";import styles from "./card.module.${syntax}";import manifest from "./master.css?master-css-manifest";export default function Page(){return <div id="global" className="global"><div id="module" className={styles.card} data-manifest={manifest.version} data-exports={JSON.stringify(styles)}>Probe</div></div>}`)
 writeFileSync(join(root, 'app/master.css'), '@master entry;')
 writeFileSync(join(root, 'app/imported.css'), '@reference "./master.css";.global{@compose p:1rem;}')
 writeFileSync(join(root, 'app/dot.svg'), '<svg xmlns="http://www.w3.org/2000/svg" width="1" height="1"><rect width="1" height="1" fill="red"/></svg>')
@@ -44,22 +55,30 @@ function write(margin, padding) {
   const global = syntax === 'sass'
     ? `@import "./imported.css"\n$space: ${margin}rem\n.global\n  margin: $space\n  background-image: url("./dot.svg")\n`
     : `@import "./imported.css";${syntax === 'scss' ? `$space:${margin}rem;` : ''}.global{margin:${syntax === 'scss' ? '$space' : `${margin}rem`};background-image:url("./dot.svg")}`
-  const module = syntax === 'sass'
+  let module = syntax === 'sass'
     ? `$padding: ${padding}rem\n@reference "./master.css"\n.card\n  @compose p:#{$padding}\n`
     : `${syntax === 'scss' ? `$padding:${padding}rem;` : ''}@reference "./master.css";.card{@compose p:${syntax === 'scss' ? '#{$padding}' : `${padding}rem`};}`
-  for (const [name, source] of [[`globals.${syntax}`, global], [`card.module.${syntax}`, module]]) {
+  const files = [[`globals.${syntax}`, global]]
+  if (partial) {
+    files.push(['parts/_card.scss', `$padding:${padding}rem;@reference "../master.css";.card{@compose p:#{$padding};}`])
+    module = syntax === 'sass' ? '@use "./parts/card"\n' : '@use "./parts/card";'
+  }
+  files.push([`card.module.${syntax}`, module])
+  for (const [name, source] of files) {
     const file = join(root, 'app', name)
     if (!existsSync(file) || readFileSync(file, 'utf8') !== source) writeFileSync(file, source)
   }
 }
 write(3, 2)
+if (recovery) rmSync(join(root, 'app/parts/_card.scss'))
+let restored = false
 let output = '', browser, child, activePage, phase = 'server', activeErrors = []
 function runNext(args) {
   const childProcess = spawn(process.execPath, [join(packageDir, 'node_modules/next/dist/bin/next'), ...args], { cwd: root, env: { ...process.env, NODE_ENV: production ? 'production' : 'development', NEXT_TELEMETRY_DISABLED: '1' }, stdio: ['ignore', 'pipe', 'pipe'] })
   childProcess.stdout.on('data', chunk => { output += chunk });childProcess.stderr.on('data', chunk => { output += chunk })
   return childProcess
 }
-console.log(JSON.stringify({ syntax, lightning, production, backend, sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js'].map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
+console.log(JSON.stringify({ syntax, lightning, production, backend, partial, recovery, moduleAs: process.env.BH_MODULE_AS === '1', captureTransformed: process.env.BH_CAPTURE_TRANSFORMED === '1', sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js', 'prepare-stylesheet.js'].filter(name => existsSync(join(packageDir, 'dist', name))).map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
 try {
   if (production) {
     child = runNext(['build', backend])
@@ -74,9 +93,13 @@ try {
     let response
     try { response = await fetch(url, { signal: AbortSignal.timeout(10000) }) } catch {}
     if (response?.status === 200) break
-    if (response?.status >= 500 && /Module parse failed|Module not found|Module build failed|MasterCSSError|first need to install|Error evaluating Node.js code|Expected newline|Invalid empty selector/.test(output)) throw new Error('Next compilation failed before browser startup')
+    if (response?.status >= 500 && /Module parse failed|Module not found|Module build failed|MasterCSSError|first need to install|Error evaluating Node.js code|Expected newline|Invalid empty selector/.test(output)) {
+      if (!recovery) throw new Error('Next compilation failed before browser startup')
+      if (!restored) { write(3, 2);restored = true;console.log(JSON.stringify({ recovery: 'created missing partial after observed failure' })) }
+    }
     assert.ok(Date.now() < deadline, 'Next did not become ready');await delay(200)
   }
+  if (recovery) assert.ok(restored, 'Missing partial failure must be observed before recovery')
   for (const name of ['chromium', 'firefox', 'webkit']) {
     if (!production) write(3, 2)
     browser = await browsers[name].launch()
@@ -105,7 +128,7 @@ try {
 } catch (error) {
   const state = await activePage?.evaluate(() => {
     const global = document.querySelector('#global'), module = document.querySelector('#module')
-    return { marker: window.cssPipelineMarker, margin: global && getComputedStyle(global).marginTop, padding: module && getComputedStyle(module).paddingTop, className: module?.className, manifest: module?.dataset.manifest }
+    return { marker: window.cssPipelineMarker, margin: global && getComputedStyle(global).marginTop, padding: module && getComputedStyle(module).paddingTop, className: module?.className, exports: module?.dataset.exports, manifest: module?.dataset.manifest }
   }).catch(() => undefined)
   rows.push({ pass: false });console.log(JSON.stringify({ pass: false, phase, state, errors: activeErrors, error: String(error), output }))
 } finally {

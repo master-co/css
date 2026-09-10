@@ -1,0 +1,32 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-stylesheet-preparation.test.ts (7 tests | 1 failed) 51ms
+   × host Sass callback receives preparation options and keeps host importers 5ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-stylesheet-preparation.test.ts > host Sass callback receives preparation options and keeps host importers
+AssertionError: expected [ …(2) ] to include 'host:tokens'
+ ❯ tests/bug-hunt-stylesheet-preparation.test.ts:76:53
+     74|     expect(prepared.source).toContain('@compose p:3rem;')
+     75|     expect(prepared.dependencies).toEqual([file])
+     76|     expect(JSON.parse(prepared.sourceMap!).sources).toContain('host:to…
+       |                                                     ^
+     77|   })
+     78| })
+ ❯ fixture tests/bug-hunt-stylesheet-preparation.test.ts:18:5
+ ❯ tests/bug-hunt-stylesheet-preparation.test.ts:61:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 6 passed (7)
+   Start at  14:38:08
+   Duration  402ms (transform 45%, import 40%, tests 15%)
+

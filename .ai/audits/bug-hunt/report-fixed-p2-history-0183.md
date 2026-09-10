@@ -24,3 +24,16 @@
 
 修正方向：讓空 class 集合也建立必要初始快照。 [重現與證據](batches/0007-server-render.md)。
 
+
+## BH-0008 · P2 · 嚴格 CSP 下 external hydration 啟動失敗
+
+[packages/runtime/src/hydration.ts:70](/Users/aron/master/css/packages/runtime/src/hydration.ts:70)。CSP 禁止動態程式求值；應可讀取 hydration 資料，實際 Function constructor 拋錯而中止 startup。既有證據不重跑。
+
+修正方向：採可由 bundler 處理的載入或明確 JSON 讀取，維持 CSP 限制。 [重現與證據](batches/0008-runtime-hydration.md)。
+
+## BH-0009 · P2 · iframe root 漏掉 class mutation
+
+[packages/runtime/src/class-tracker.ts:67](/Users/aron/master/css/packages/runtime/src/class-tracker.ts:67)。Root 是其他 realm 的 iframe Document；class 更新應改 CSS，實際 instanceof Element 不成立而跳過。三瀏覽器重現。
+
+修正方向：使用 root 所屬 realm 或適當 DOM 能力判斷節點。 [重現與證據](batches/0009-runtime-mutations.md)。
+
