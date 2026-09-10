@@ -402,6 +402,7 @@ function applyMasterCSSTurbopackConfig(
     condition: {
       all: [
         { path: /\.(css|scss|sass)$/ },
+        { not: { path: /\.module\.(css|scss|sass)$/ } },
         { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
         { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
       ]
@@ -409,6 +410,16 @@ function applyMasterCSSTurbopackConfig(
     loaders: [stylesheetLoaderPath],
     type: 'css' as const,
     as: '*.css'
+  }
+  const cssModuleRule = {
+    ...masterCSSStyleRule,
+    type: 'css-module' as const,
+    as: '*.module.css',
+    condition: { all: [
+      { path: /\.module\.(css|scss|sass)$/ },
+      { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
+      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+    ] }
   }
   return {
     ...nextConfig.turbopack,
@@ -438,7 +449,7 @@ function applyMasterCSSTurbopackConfig(
         masterCSSVirtualManifestRule,
         masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
-        ...(includeStyleRule ? [masterCSSStyleRule] : []),
+        ...(includeStyleRule ? [masterCSSStyleRule, cssModuleRule] : []),
         ...toRuleArray(configRules)
       ]
     } satisfies TurbopackRules
