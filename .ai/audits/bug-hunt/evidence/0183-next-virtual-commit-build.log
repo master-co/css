@@ -1,0 +1,5 @@
+Error:   × installing dependencies
+  ╰─▶ Failed to resolve dependency tree: Failed to resolve dependency: Cannot
+      resolve package from workspace because workspace packages were not
+      loaded into the resolver
+

@@ -1,0 +1,19 @@
+{
+  "head": "be7193ad9e5e305b827a10fd241669e7166e3975",
+  "previousSourceCount": 437,
+  "changed": [
+    "packages/next/src/index.ts"
+  ],
+  "added": [
+    "packages/next/src/webpack-stylesheets.ts",
+    "packages/next/tests/bug-hunt-webpack-css-pipeline.test.ts",
+    ".ai/audits/bug-hunt/repros/next-webpack-css-pipeline-browser.mjs"
+  ],
+  "sourceCount": 440,
+  "unchangedBaselineSources": 436,
+  "excludedFilesUnchanged": 182,
+  "foreignSitePreserved": true,
+  "productCommit": false,
+  "push": false,
+  "artifacts": "0183-next-css-artifacts.json"
+}

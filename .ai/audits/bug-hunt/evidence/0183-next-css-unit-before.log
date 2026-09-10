@@ -1,0 +1,71 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-webpack-css-pipeline.test.ts (5 tests | 5 failed) 9ms
+   × BH-0051 preserves Next CSS processing, sass=false, lightning=false 5ms
+   × BH-0051 preserves Next CSS processing, sass=false, lightning=true 1ms
+   × BH-0051 preserves Next CSS processing, sass=true, lightning=false 1ms
+   × BH-0051 preserves Next CSS processing, sass=true, lightning=true 1ms
+   × BH-0051 preserves user rules, nested host conditions and manifest JavaScript route 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-webpack-css-pipeline.test.ts > BH-0051 preserves Next CSS processing, sass=false, lightning=false
+ FAIL  tests/bug-hunt-webpack-css-pipeline.test.ts > BH-0051 preserves Next CSS processing, sass=false, lightning=true
+ FAIL  tests/bug-hunt-webpack-css-pipeline.test.ts > BH-0051 preserves Next CSS processing, sass=true, lightning=false
+ FAIL  tests/bug-hunt-webpack-css-pipeline.test.ts > BH-0051 preserves Next CSS processing, sass=true, lightning=true
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/bug-hunt-webpack-css-pipeline.test.ts:17:88
+     15|   const config = withMasterCSS({}).webpack!(original, {} as never)
+     16|   const rules = config.module.rules
+     17|   expect(rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp…
+       |                                                                                        ^
+     18|   const group = rules[0], chain = group.oneOf[0].use
+     19|   const master = chain.findIndex((item: { loader: string }) => item.lo…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/bug-hunt-webpack-css-pipeline.test.ts > BH-0051 preserves user rules, nested host conditions and manifest JavaScript route
+AssertionError: expected /inline/ to deeply equal { and: [ /inline/, …(1) ] }
+
+- Expected:
+{
+  "and": [
+    /inline/,
+    {
+      "not": [
+        /master-css-manifest/,
+      ],
+    },
+  ],
+}
+
++ Received:
+/inline/
+
+ ❯ tests/bug-hunt-webpack-css-pipeline.test.ts:32:48
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  13:37:49
+   Duration  386ms (transform 69%, import 28%, tests 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/next
+

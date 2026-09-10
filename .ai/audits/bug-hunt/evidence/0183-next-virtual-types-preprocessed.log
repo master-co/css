@@ -1,0 +1,9 @@
+$ tsc -b tsconfig.typecheck.json
+tests/bug-hunt-preprocessed-stylesheet.test.ts(20,76): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'LoaderContext'.
+tests/bug-hunt-preprocessed-stylesheet.test.ts(23,21): error TS7006: Parameter 'error' implicitly has an 'any' type.
+tests/bug-hunt-preprocessed-stylesheet.test.ts(23,28): error TS7006: Parameter 'result' implicitly has an 'any' type.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/next
+

@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-sass-directive-terminators.test.ts (4 tests | 4 failed) 34ms
+   × Next preserves Sass directive terminators: scss, explicitCompressed=false 21ms
+   × Next preserves Sass directive terminators: scss, explicitCompressed=true 5ms
+   × Next preserves Sass directive terminators: indented, explicitCompressed=false 4ms
+   × Next preserves Sass directive terminators: indented, explicitCompressed=true 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-sass-directive-terminators.test.ts > Next preserves Sass directive terminators: scss, explicitCompressed=false
+Unknown Error: @compose requires a semicolon
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-sass-directive-terminators.test.ts > Next preserves Sass directive terminators: scss, explicitCompressed=true
+Unknown Error: @compose requires a semicolon
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/bug-hunt-sass-directive-terminators.test.ts > Next preserves Sass directive terminators: indented, explicitCompressed=false
+Unknown Error: @compose requires a semicolon
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/bug-hunt-sass-directive-terminators.test.ts > Next preserves Sass directive terminators: indented, explicitCompressed=true
+Unknown Error: @compose requires a semicolon
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  14:18:07
+   Duration  437ms (transform 53%, import 38%, tests 9%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/next
+

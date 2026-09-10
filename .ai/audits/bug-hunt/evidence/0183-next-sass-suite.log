@@ -1,0 +1,167 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-preprocessed-stylesheet.test.ts (2 tests | 1 failed) 328ms
+   × Next preserves the host Sass preprocessing boundary, preprocessed=false 9ms
+ ❯ tests/next-config.test.ts (14 tests | 2 failed) 245ms
+   ❯ withMasterCSS (14)
+     × adds a CSS manifest webpack loader 5ms
+     × adds CSS manifest loaders without runtime aliases or the adapter when mode is null 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-preprocessed-stylesheet.test.ts > Next preserves the host Sass preprocessing boundary, preprocessed=false
+Unknown Error: Invalid empty selector at master.css:0:28
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest webpack loader
+AssertionError: expected [ { …(2) }, { …(2) }, { …(2) } ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++ [
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-manifest\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+            "external": true,
+            "module": true,
+            "virtual": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "resourceQuery": /master-css-manifest/,
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "external": true,
+-           "module": true,
++           "emittedGlobals": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++   {
++     "resourceQuery": /master-css-manifest/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "emittedGlobals": true,
++           "external": true,
++           "module": true,
+          },
+        },
+      ],
+-   },
+-   ObjectContaining {
+-     "resourceQuery": {
+-       "not": [
+-         /master-css-manifest/,
+-       ],
+-     },
+-     "test": /\.(css|scss|sass)$/,
+    },
+  ]
+
+ ❯ tests/next-config.test.ts:121:41
+    119|     const resolvedConfig = nextConfig.webpack(webpackConfig as any, {}…
+    120|
+    121|     expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining…
+       |                                         ^
+    122|       expect.objectContaining({
+    123|         test: expect.any(RegExp),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds CSS manifest loaders without runtime aliases or the adapter when mode is null
+AssertionError: expected [ { …(2) }, { …(2) }, { …(2) } ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++ [
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-manifest\.js$/,
++     "use": [
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++         "options": {
++           "external": true,
++           "module": true,
++           "virtual": true,
++         },
++       },
++     ],
++   },
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++     "use": [
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++         "options": {
++           "emittedGlobals": true,
++         },
++       },
++     ],
+    },
+-   ObjectContaining {
++   {
+      "resourceQuery": /master-css-manifest/,
++     "use": [
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++         "options": {
++           "external": true,
++           "module": true,
+          },
+-   ObjectContaining {
+-     "test": /\.(css|scss|sass)$/,
++       },
++     ],
+    },
+  ]
+
+ ❯ tests/next-config.test.ts:465:8
+    463|     })
+    464|     expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).modul…
+    465|       .toEqual(expect.arrayContaining([
+       |        ^
+    466|         expect.objectContaining({ test: expect.any(RegExp) }),
+    467|         expect.objectContaining({ resourceQuery: /master-css-manifest/…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed | 11 passed (13)
+      Tests  3 failed | 86 passed (89)
+   Start at  14:21:11
+   Duration  63.31s (tests 98%, import 2%, transform 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/next
+

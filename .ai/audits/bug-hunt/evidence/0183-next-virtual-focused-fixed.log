@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-preprocessed-stylesheet.test.ts (2 tests | 1 failed) 315ms
+   × Next preserves the host Sass preprocessing boundary, preprocessed=false 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-preprocessed-stylesheet.test.ts > Next preserves the host Sass preprocessing boundary, preprocessed=false
+AssertionError: expected '@reference "./master.css"\n.card\n  @…' to contain 'padding:2rem'
+
+- Expected
++ Received
+
+- padding:2rem
++ @reference "./master.css"
++ .card
++   @compose p:2rem
++
+
+ ❯ tests/bug-hunt-preprocessed-stylesheet.test.ts:25:17
+     23|       async: () => (error, result) => error ? reject(error) : resolve(…
+     24|     } as Parameters<typeof loader.call>[0], source))
+     25|     expect(css).toContain('padding:2rem')
+       |                 ^
+     26|     expect(css).not.toContain('@compose')
+     27|   } finally { rmSync(root, { recursive: true, force: true }) }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 15 passed (16)
+   Start at  14:00:42
+   Duration  665ms (transform 47%, tests 28%, import 25%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/next
+

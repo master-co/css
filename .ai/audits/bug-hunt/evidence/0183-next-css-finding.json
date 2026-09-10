@@ -1,0 +1,23 @@
+{
+  "id": "BH-0051",
+  "status": "confirmed; partially repaired; not closed",
+  "rootCause": "Top-level adapter CSS rule triggers Next custom CSS detection and removal of native CSS handling",
+  "fix": "Augment existing CSS/PostCSS/LightningCSS chains; preserve host conditions/descriptors, import loader count, Sass ordering and query JavaScript bypass",
+  "unitBefore": "5FAIL",
+  "unitAfter": "5PASS including descriptor preservation",
+  "realCSSScope": "3 browsers: pre-render mode, global CSS/CSS Modules/local compose/manifest query/HMR/state retention",
+  "remaining": [
+    "Runtime mode now fails with virtual:master-css-emitted-globals UnhandledSchemeError; isolate against original URI alias path before assigning independent finding ID",
+    "Actual Sass/LightningCSS processing and resource/import/production matrices",
+    "Two unchanged legacy tests assert the removed top-level rule"
+  ],
+  "harnessErrors": [
+    "Initial new browser CSS fixture omitted required @compose semicolon; corrected without product change",
+    "New test TypeScript typings corrected",
+    "Initial full suite deliberately cancelled143 due scheduling overlap; no pass claim, later runs serialized"
+  ],
+  "scopeNotes": [
+    "Separate helper emitted as its own dist module; index.js hash alone does not identify its content; final delivery run hashes index/helper/stylesheet loader",
+    "No engine/runtime hot path or browser payload changes; benchmark not run; no performance claim"
+  ]
+}

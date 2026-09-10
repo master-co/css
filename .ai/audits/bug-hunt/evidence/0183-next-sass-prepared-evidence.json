@@ -1,0 +1,12 @@
+{
+  "before": [
+    "@reference \"./master.css\";.card{@compose p:2rem}"
+  ],
+  "after": [
+    "@reference \"./master.css\";\n.card {\n  @compose p:2rem;\n}"
+  ],
+  "nextSassLoaderSHA256": "7b01810dd947224eaf5c60a3f97f995f3a5a0ea4296fa1a1d46cb86ce3f03775",
+  "nextSassDefault": "if(!i.style&&isProductionLikeMode(e)){i.style=\"compressed\"}if(o){i.sourceMap=true;i.sourceMapIn",
+  "classification": "Confirmed host preprocessing compression removes a required Master directive terminator; expanded intermediate CSS retains it. Final Next minification remains configured by Next.",
+  "probe": "Identity audit loader records source and returns source/map unchanged. Subsequent probe revision also increments importLoaders to account for its extra step; initial root Sass capture is independent of child-import loader count. Uninstrumented matrix must establish final behavior."
+}

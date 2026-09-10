@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0183: BH-0050 fixed. Separate manifest/emittedGlobals HMR previously restored the originally imported counterpart:6newcontrols4FAIL/2PASS and12runtime/progressive three-browser failures (9rem revertedto7rem,or emitted variable duplicated). Bootstrap now retains each latest accepted input;6newcontrolsPASS,internal29/Astro15PASS,Vite603PASS/6FAIL retains the6build-watchstartup cases. Final168VitebrowserobservationsPASS/0unexpectedpageerrors(12new+156startup/lifecycle reruns);internal lint/types/build,Vite/Astro builds andoriginalexamplesPASS. Next --webpack could not reach browser startup:top-level adapter CSS rule causes Next to remove its nativeCSS loaders;returnedCSS is parsed asJS. Relative config imports removed the fixture file-URL cache warning but not the compile failure,confirming P1 BH-0051,stillunfixed. Updated driver fails promptly on compile errors;3Next/Turbopack harness controlsPASS on unchangedNextsource.437sourcehashes:internalbootstrap andexistingNextdriver changed,2newtest/driver files;433baseline sources,181exclusions,foreignSite and8Wasm/runtime/CLIartifacts unchanged.51historical/48fixed/3unresolved(BH-0004/BH-0029/BH-0051),65checked/10blocked. Next repair Next/Webpack CSS loader composition with globalCSS/CSSModules/Sass andmanifest-query controls,then resume its pending-HMR verification and internalModules proxy?directHTTP500. All6build-watchcases,4rootgates,4originalcandidates,fullgraph/host/benchmark/long-session/history/profiling,native-shutdown/WebKitlimits and0038identitypause remain unfinished.0183 andgoalactive;HEADe9584fb10;no newcommit/push. [Batch](batches/0183-reference-host-recovery.md),[checks](evidence/0183-runtime-inputs-final-checks.json),[BH0050](evidence/0183-runtime-inputs-finding.json),[BH0051](evidence/0183-runtime-inputs-next-webpack-css.json),[previoushandoff](progress-history-0183-runtime-inputs.md).
+- Commit checkpoint: `37fb77937` delivers only the completed BH-0052 virtual-module resolver, nine regression controls and standalone reproduction. An isolated HEAD + BH-0052 Next package passes33tests,lint,build and installed-Next static/dynamic imports; shared dependencies use the existing workspace. Other product changes remain uncommitted. Current working-tree Sass preparation preserves directive semicolons: four new cases fail before repair, five pass after; default CSS/SCSS/indented-Sass production builds and9browser checks pass. Instrumented LightningCSS/Sass production passes3browsers, but final uninstrumented LightningCSS matrix and intermittent Sass timeout classification remain pending. Working-tree Next89tests86PASS/3FAIL(two unchanged config assertions and BH-0053 raw SCSS);e2e3PASS,playground/lint/types/buildPASS.53historical/49fixed/4unresolved(BH-0004/BH-0029/BH-0051/BH-0053);6Vite build-watch,10blocked,4rootgates,4originalcandidates and every earlier open requirement remain unfinished.0038 still awaits explicit identity confirmation. No push; goal/batch active. [Commit validation](evidence/0183-next-virtual-commit-validation.json); [previous checkpoint](progress-history-0183-next-sass.md).
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
@@ -90,33 +90,33 @@
 
 修正方向：使用支援的 Rspack source API/時機，完成掃描再輸出；追加驗證目前暫停。 [重現與證據](batches/0038-integration-lab.md)。
 
-## BH-0051 · P1 · Next/Webpack native CSS compilation (unfixed)
+## BH-0051 · P1 · Next/Webpack native CSS compilation (partial)
 
-The adapter CSS rule triggers Next removal of built-in CSS loaders; transformed CSS is parsed as JavaScript before browser startup. Relative config imports remove the harness cache warning but preserve the failure. [Evidence and required repair](evidence/0183-runtime-inputs-next-webpack-css.json).
+The top-level CSS rule disabled Next CSS support. The adapter now composes existing loader chains; five configuration controls and three-browser CSS/Modules/manifest-query/HMR checks pass. The separate runtime URI failure is repaired as BH-0052; dev Sass/LightningCSS/import/resource controls pass. Working-tree expanded Sass preparation preserves semicolons and default CSS/SCSS/Sass production passes9browser checks. Final uninstrumented LightningCSS production and full host validation remain pending; this partial product repair is not committed. Two unchanged config tests assert the obsolete top-level rule. BH-0051 remains open. [Checkpoint](evidence/0183-next-css-final-checks.json).
+
+## BH-0052 · P1 · Next/Webpack virtual URI resolution (fixed)
+
+Three official virtual IDs bypassed resolve.alias and failed independently of CSS rules. Exact pre-resolution mapping preserves unrelated requests and user plugins;9controls,installed compiler and3browser runtime HMR pass. [Evidence](evidence/0183-next-virtual-findings.json).
+
+## BH-0053 · P1 · Next/Turbopack Sass classification (unfixed)
+
+Actual SCSS and indented Sass fail with Invalid empty selector before preprocessing. A retained raw-SCSS loader regression reproduces the classification error. Prepare the host source before compiler classification while preserving imports,dependencies,maps and the final filename. [Evidence and next steps](evidence/0183-next-virtual-findings.json).
 
 ## BH-0001 · P2 · CSS 字串與註解被當成動畫宣告
 
-[crates/mastercss-engine/src/stylesheet_resources.rs:93](/Users/aron/master/css/crates/mastercss-engine/src/stylesheet_resources.rs:93)。raw CSS 字串或註解含動畫關鍵字；應只分析有效語法，實際遺漏或多產 keyframes，影響動畫與 emitted globals。
-
-修正方向：使用 CSS lexer/結構化宣告分析，排除字串與註解。 [重現與證據](batches/0002-stylesheet-resources.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0003 · P2 · static token 的依賴未保留
 
-[crates/mastercss-engine/src/resources.rs:160](/Users/aron/master/css/crates/mastercss-engine/src/resources.rs:160)。static variable 引用其他 token；初始化或最後 class 刪除後，應仍有依賴 CSS，實際依賴消失而無法解析變數。
-
-修正方向：static 資源也遞迴保留及計數依賴。 [重現與證據](batches/0003-static-resources.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0005 · P2 · SSR 未解碼 numeric HTML references
 
-[packages/server/src/decode-html.ts:7](/Users/aron/master/css/packages/server/src/decode-html.ts:7)。class 含十進位或十六進位 character reference；應與瀏覽器 class 一致，實際 class 不同或缺 CSS。
-
-修正方向：完整解碼 HTML character references，核對分詞順序。 [重現與證據](batches/0007-server-render.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0007 · P2 · 無 class 的 HTML 缺 static 初始資源
 
-[packages/server/src/create-server-renderer.ts:56](/Users/aron/master/css/packages/server/src/create-server-renderer.ts:56)。Manifest 有 static theme/keyframes、HTML 無 class 屬性；應仍輸出初始資源，實際略過 snapshot 而缺樣式。
-
-修正方向：讓空 class 集合也建立必要初始快照。 [重現與證據](batches/0007-server-render.md)。
+Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
 
 ## BH-0008 · P2 · 嚴格 CSP 下 external hydration 啟動失敗
 

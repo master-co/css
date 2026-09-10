@@ -1,0 +1,22 @@
+{
+  "packages/next/dist/adapter.js": "1400b374035edc59b4531df8f67dec5fc6f5ec16eef5f4eab36b60bb5deedf93",
+  "packages/next/dist/build-state.js": "0e63cadd38ce30dfb05dc35e0057b93d8f16a2804b9a9c70492f8e90d2d55234",
+  "packages/next/dist/css-manifest-import-loader.js": "d04b66c5206ff43d0b3c01a350c4bd69e77e761de9290ebe905d0eaf9589c6ba",
+  "packages/next/dist/css-manifest-loader.js": "5293e70bc06ddb33ef5c2c04113e598f173c885c9595532950f4efb81d410ea5",
+  "packages/next/dist/empty.js": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+  "packages/next/dist/index.js": "65e57a3fce651f80a3bd82a3cc3285483d06988a75889e7e50fa15d7fcd79e81",
+  "packages/next/dist/internal/src/emitted-globals-module.js": "fccec07cd4b12563a5ce16cca06581916db686f77d2d9a1fb2de9beb14ba8965",
+  "packages/next/dist/internal/src/manifest-facade.js": "adec18f1f11d9f8ce40af0d3671656ee5092caf0e1260825c8864f073edc3bc6",
+  "packages/next/dist/internal/src/manifest-loader.js": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567",
+  "packages/next/dist/internal/src/manifest-module.js": "088165920d737126068fbad8a934e1c69f7952c71ade410093f330c0f0c376d3",
+  "packages/next/dist/internal/src/node.js": "a8747f937db99d893ff83e818c9f2956a04ba908b27c520178bd88dbf8ec099b",
+  "packages/next/dist/internal/src/project.js": "26daa0caa3aa739b74e7b9f3de3a1c5123630b88db7c9dcbb3c352b16b3ee324",
+  "packages/next/dist/internal/src/style-module.js": "65a32ce2dd07b9588a0fc5e08d8f9fbadee3c17907ef5eab0fe12ce5cc04e9f5",
+  "packages/next/dist/options.js": "35606b783e7947c6006e7a68f943d82d21273db6a2be5846fe02059eb93651df",
+  "packages/next/dist/preset/src/default-manifest.js": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2",
+  "packages/next/dist/static-css-loader.js": "9fcd3e2db2a6b8c79b7175d6090e4b632d898d850fdbf54f19f30e30b18f7881",
+  "packages/next/dist/static-loader.js": "5da53696ca929a2e3a180c73c388a5dc6ee3a02fbc3e0b66df82f4f8bb9c0a04",
+  "packages/next/dist/static.js": "904645b9035652f7827ce8485966688c7827f55d5227af739b21b68dea24553f",
+  "packages/next/dist/stylesheet-loader.js": "6537fb91c5479704a80bbb28925b6a045748d37889ed80963b3e8a5b4fe6f566",
+  "packages/next/dist/webpack-stylesheets.js": "47f10f46f578ee6cfcffa6d54268179a4a135d6e98bb1649227383cd51477e47"
+}

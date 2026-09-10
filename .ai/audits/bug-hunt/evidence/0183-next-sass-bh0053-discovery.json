@@ -1,0 +1,19 @@
+{
+  "finding": "BH-0053",
+  "readOnlyDiscovery": true,
+  "owner": "Compiler owns existing stylesheet preprocessing; Next supplies host context/options/dependency registration. Rust remains semantic owner.",
+  "existingCapabilities": {
+    "packages/compiler/src/stylesheet/index.ts": "Private preprocessStylesheet invokes Sass compileStringAsync before compileStylesheetResult; returns CSS only. Existing stylesheet compilation and collection APIs include semantic lowering/scanner work and cannot simply stand in for source preparation.",
+    "packages/compiler/src/stylesheet/public.ts": "Public loadSass callback exists on compile/transform options. resolveStylesheet classifies CSS without preprocessing; composeStylesheetHost only wraps master import/source, not Sass. No standalone preparation surface found.",
+    "packages/compiler/src/node-imports.ts": "CSSImportSource already models source/baseFile/sourceMap for prepared host imports.",
+    "packages/next/src/stylesheet-loader.ts": "Classification and dependency inspection currently precede raw-Sass preprocessing; Webpack prepared:true path now avoids double processing, while Turbopack raw input still fails."
+  },
+  "nextRequirements": [
+    "Design or extract the smallest intentional compiler-owned preparation capability, rather than importing private modules or invoking unrelated scanner/semantic compilation as a workaround.",
+    "Return/register Sass loaded-file dependencies and source maps, retain original filename/base-file semantics, and preserve host Sass options.",
+    "Use expanded intermediate output so Master directives retain semicolons; final host minification stays separate.",
+    "Validate direct and imported raw SCSS/Sass, variables/interpolation, missing/edited partials, diagnostic origins and actual Turbopack dev/build before closing BH-0053.",
+    "Record deliberate API changes in existing root API gates; do not rewrite golden/snapshot fixtures."
+  ],
+  "implemented": false
+}

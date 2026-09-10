@@ -1,0 +1,54 @@
+{
+  "head": "be7193ad9e5e305b827a10fd241669e7166e3975",
+  "goal": "active",
+  "batch": "0183",
+  "batchComplete": false,
+  "counts": {
+    "historical": 51,
+    "fixed": 48,
+    "unresolved": 3,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "partiallyRepaired": [
+    "BH-0051"
+  ],
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0051"
+  ],
+  "validation": {
+    "newConfigTests": "5FAIL before;5PASS after, including retained non-enumerable host descriptors",
+    "nextSourceSuite": "70PASS/2FAIL/72; two unchanged old top-level-rule assertions",
+    "nextE2E": "3PASS/3files",
+    "playground": "1PASS/buildPASS",
+    "lintTypesBuild": "PASS",
+    "actualBrowser": "Final3PASS/0pageerrors, global CSS/Modules/local compose/manifest query/HMR in pre-render mode; hashes for index/helper/stylesheet loader verified",
+    "runtimeWebpack": "Fails before browser: UnhandledSchemeError for virtual emittedGlobals; candidate pending independent isolation",
+    "aiContext": "PASS",
+    "sourceHashes": 440,
+    "excludedPreserved": 182
+  },
+  "terminalSessions": {
+    "82144": 1,
+    "47105": 143,
+    "42713": 1,
+    "82777": 0,
+    "99088": 1,
+    "40109": 0,
+    "56846": 0,
+    "56383": 0,
+    "15337": 0
+  },
+  "activeJobs": [],
+  "next": "Isolate virtual URI resolution with original alias setup without native CSS imports, repair Next Webpack virtual-module handling and re-run actual runtime HMR; complete Sass/LightningCSS/assets/imports/production boundaries and obsolete assertion handling",
+  "remaining": "All full BH-0004/BH-0029/BH-0051 requirements, six Vite build-watch startup failures, 10 blocked coverage, four root gates, four original candidates, graph/host/benchmark/full matrix/long session/history/profiling/native shutdown/WebKit requirements remain",
+  "paused": "0038 additional validation awaiting explicit identity confirmation",
+  "preservation": "0183-next-css-preservation.json",
+  "finding": "0183-next-css-finding.json",
+  "commit": false,
+  "push": false
+}
