@@ -1,0 +1,55 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+EVENT static 1789044602294 START
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+EVENT static 1789044602294 BUNDLE_START
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+EVENT static 1789044602325 ERROR
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+EVENT static 1789044602325 END
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+EVENT static 1789044607481 START
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+EVENT static 1789044607481 BUNDLE_START
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+EVENT static 1789044607521 ERROR
+
+stdout | tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+EVENT static 1789044607521 END
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts (12 tests | 2 failed) 43926ms
+   × watch filters allow reference recovery with authored-file include 5194ms
+   × watch filters allow reference recovery with cache-directory exclude 5186ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+AssertionError: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:30:65
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  2 failed | 59 passed (61)
+   Start at  20:49:28
+   Duration  44.49s (tests 97%, transform 2%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

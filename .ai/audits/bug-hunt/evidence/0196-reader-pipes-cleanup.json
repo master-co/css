@@ -1,0 +1,25 @@
+{
+  "status": "First reader process has exited, but parent awaits close while its piped stdout/stderr are not drained. Remaining three readers have not received shutdown. Add stream drains; results completed before cleanup.",
+  "processes": [
+    {
+      "pid": 653,
+      "ppid": 7429,
+      "command": "node .ai/audits/bug-hunt/repros/webpack-shared-dist.mjs"
+    },
+    {
+      "pid": 687,
+      "ppid": 653,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    },
+    {
+      "pid": 704,
+      "ppid": 653,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    },
+    {
+      "pid": 732,
+      "ppid": 653,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    }
+  ]
+}

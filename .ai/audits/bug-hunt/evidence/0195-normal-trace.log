@@ -1,0 +1,224 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts (12 tests | 5 failed) 24875ms
+   × build recovery replaces failures and forgets successful dependencies in static (managed=false) 875ms
+   × build recovery replaces failures and forgets successful dependencies in pre-render (managed=true) 684ms
+   × build recovery replaces failures and forgets successful dependencies in progressive (managed=true) 728ms
+   × watch filters allow reference recovery with authored-file include 5167ms
+   × watch filters allow reference recovery with cache-directory exclude 5166ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in static (managed=false)
+AssertionError: expected [ { code: 'ERROR', …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "code": "ERROR",
++     "error": Error {
++       "message": "Build failed with 1 error:
++
++ [plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/style.css
++ MasterCSSError: Invalid @compose class: definitely-missing
++     at normalizeBindingError (/Users/aron/master/css/packages/binding/src/normalize-error.ts:95:10)
++     at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:111:11)
++     at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++     at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++     at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++     at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++     at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)
++     at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:134:24
++ Caused by:
++   Error: {\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler.ts:80:29)
++       at /Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:43
++       at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:109:12)
++       at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++       at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++       at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++       at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)",
++       "errors": [
++         MasterCSSError {
++           "message": "Invalid @compose class: definitely-missing",
++           "cause": Error {
++             "message": "{\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}",
++             "code": "GenericFailure",
++           },
++           "code": "PLUGIN_ERROR",
++           "domain": "compiler",
++           "diagnostics": [
++             {
++               "code": "invalid-compose-class",
++               "domain": "compiler",
++               "message": "Invalid @compose class: definitely-missing",
++               "range": {
++                 "end": {
++                   "character": 44,
++                   "line": 0,
++                 },
++                 "start": {
++                   "character": 26,
++                   "line": 0,
++                 },
++               },
++               "severity": "error",
++               "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/missing/nested/tokens.css",
++               "version": 2,
++             },
++           ],
++           "payload": {
++             "code": "invalid-compose-class",
++             "diagnostics": [
++               {
++                 "code": "invalid-compose-class",
++                 "domain": "compiler",
++                 "message": "Invalid @compose class: definitely-missing",
++                 "range": {
++                   "end": {
++                     "character": 44,
++                     "line": 0,
++                   },
++                   "start": {
++                     "character": 26,
++                     "line": 0,
++                   },
++                 },
++                 "severity": "error",
++                 "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/missing/nested/tokens.css",
++                 "version": 2,
++               },
++             ],
++             "domain": "compiler",
++             "message": "Invalid @compose class: definitely-missing",
++           },
++           "name": "MasterCSSError",
++           "pluginCode": "invalid-compose-class",
++           "plugin": "master-css:local-compose",
++           "hook": "transform",
++           "id": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-4sR0e6/style.css",
++         },
++       ],
++     },
++     "result": BindingWatcherBundler {},
++   },
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:47:81
+     45|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     46|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+     47|       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(stat…
+       |                                                                                 ^
+     48|       state.write('@utilities{paint{padding:3rem}}')
+     49|       expect((await state.next()).code).toBe('BUNDLE_END');expect(stat…
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:43:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in pre-render (managed=true)
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in progressive (managed=true)
+AssertionError: expected [ { code: 'ERROR', …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "code": "ERROR",
++     "error": Error {
++       "message": "Build failed with 1 error:
++
++ [plugin master-css:pre-render]
++ MasterCSSError: Invalid @compose class: definitely-missing
++     at normalizeBindingError (/Users/aron/master/css/packages/binding/dist/normalize-error.js:42:9)
++     at callBinding (/Users/aron/master/css/packages/binding/dist/normalize-error.js:53:9)
++     at invoke (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
++     at Object.loadPreparedProjectManifest (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:70)
++     at loadBindingProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/binding-project.js:60:26)
++     at loadProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/manifest.js:40:17)
++     at /Users/aron/master/css/packages/vite/src/plugins/pre-render.ts:54:28
++     at withStylesheetDependencies (/Users/aron/master/css/packages/vite/src/utils/failed-stylesheet-dependencies.ts:49:20)
++     at /Users/aron/master/css/packages/vite/src/utils/manifest-recovery.ts:31:24
++ Caused by:
++   Error: Invalid @compose class: definitely-missing
++       at Object.loadPreparedProjectManifest (/Users/aron/master/css/packages/binding/dist/compiler.js:26:91)
++       at /Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:134
++       at callBinding (/Users/aron/master/css/packages/binding/dist/normalize-error.js:51:10)
++       at invoke (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
++       at Object.loadPreparedProjectManifest (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:70)
++       at loadBindingProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/binding-project.js:60:26)
++       at loadProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/manifest.js:40:17)
++       at /Users/aron/master/css/packages/vite/src/plugins/pre-render.ts:54:28
++       at withStylesheetDependencies (/Users/aron/master/css/packages/vite/src/utils/failed-stylesheet-dependencies.ts:49:20)
++       at /Users/aron/master/css/packages/vite/src/utils/manifest-recovery.ts:31:24",
++       "errors": [
++         MasterCSSError {
++           "message": "Invalid @compose class: definitely-missing",
++           "cause": Error {
++             "message": "Invalid @compose class: definitely-missing",
++             "code": "GenericFailure",
++           },
++           "code": "PLUGIN_ERROR",
++           "domain": "project",
++           "diagnostics": [],
++           "payload": {
++             "code": "GenericFailure",
++             "domain": "project",
++             "message": "Invalid @compose class: definitely-missing",
++           },
++           "name": "MasterCSSError",
++           "pluginCode": "GenericFailure",
++           "plugin": "master-css:pre-render",
++           "hook": "buildStart",
++         },
++       ],
++     },
++     "result": BindingWatcherBundler {},
++   },
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:47:81
+     45|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     46|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+     47|       await delay(process.env.BH_WATCH_TRACE ? 2000 : 250);expect(stat…
+       |                                                                                 ^
+     48|       state.write('@utilities{paint{padding:3rem}}')
+     49|       expect((await state.next()).code).toBe('BUNDLE_END');expect(stat…
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:43:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+AssertionError: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:34:65
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed | 3 passed (4)
+      Tests  5 failed | 58 passed (63)
+   Start at  21:03:51
+   Duration  29.65s (tests 96%, transform 3%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

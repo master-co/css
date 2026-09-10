@@ -1,0 +1,373 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts (20 tests | 16 failed) 2762ms
+   × failed config-sync releases unstarted recovery material (static) 117ms
+   × failed config-async releases unstarted recovery material (static) 105ms
+   × failed factory releases unstarted recovery material (static) 107ms
+   × failed environment-init releases unstarted recovery material (static) 109ms
+   × failed config-sync releases unstarted recovery material (runtime) 110ms
+   × failed config-async releases unstarted recovery material (runtime) 109ms
+   × failed factory releases unstarted recovery material (runtime) 109ms
+   × failed environment-init releases unstarted recovery material (runtime) 108ms
+   × failed config-sync releases unstarted recovery material (pre-render) 106ms
+   × failed config-async releases unstarted recovery material (pre-render) 105ms
+   × failed factory releases unstarted recovery material (pre-render) 149ms
+   × failed environment-init releases unstarted recovery material (pre-render) 105ms
+   × failed config-sync releases unstarted recovery material (progressive) 104ms
+   × failed config-async releases unstarted recovery material (progressive) 105ms
+   × failed factory releases unstarted recovery material (progressive) 105ms
+   × failed environment-init releases unstarted recovery material (progressive) 106ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-eHRdQP/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-TQM7Hl/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-CmPt4j/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-qMod76/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-QYdb5q/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-vsvoJ2/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-Hsvuv3/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-4MRrdB/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-9re0gI/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-BTJZGD/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-uqSHww/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-cfHY1x/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-cdpaV6/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-8O26iy/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-UbhLXl/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-6AFrOF/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed | 4 passed (20)
+   Start at  20:44:04
+   Duration  3.26s (tests 86%, transform 9%, import 5%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

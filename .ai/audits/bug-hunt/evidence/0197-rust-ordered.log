@@ -1,0 +1,13 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.21s
+     Running tests/bug_hunt_ordered_output.rs (target/debug/deps/bug_hunt_ordered_output-c205c2f1b1541477)
+
+running 6 tests
+test stale_or_overlapping_serialized_slots_report_errors ... ok
+test slot_markers_cannot_collide_with_authored_rules_or_strings ... ok
+test disabling_native_output_preserves_only_composed_rules_and_their_containers ... ok
+test ordered_maps_anchor_each_retained_and_composed_rule_after_replacement ... ok
+test direct_slots_keep_repeated_selectors_separate_and_retain_important_order ... ok
+test overlapping_slots_and_backwards_mapping_ranges_are_rejected ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+

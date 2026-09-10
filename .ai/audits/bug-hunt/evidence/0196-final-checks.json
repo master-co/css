@@ -1,0 +1,146 @@
+{
+  "batch": "0196-webpack-shared-dist",
+  "status": "candidate classified as test build/read overlap; default parallel harness repair remains incomplete",
+  "head": "c77756b138ade149be6ec8da2f6f99cf6d36b4b9",
+  "previousGoalTurn": "progress;0195candidate rejected with native-host/peer-config evidence",
+  "findingId": "No new product finding ID; counts unchanged",
+  "results": {
+    "actualBuildOverlap": {
+      "beforePublicImport": "PASS;default export function",
+      "duringPublicImport": "Expected ERR_MODULE_NOT_FOUND while real build removed dist/index.js",
+      "duringOriginalLeafImport": "Expected ERR_MODULE_NOT_FOUND for dist/plugins/usage-graph.js",
+      "afterFreshPublicImport": "PASS;default export function",
+      "manualDistDeletion": false
+    },
+    "copiedOriginalParallelSuite": {
+      "passedTests": 67,
+      "failedTests": 1,
+      "failedSuites": 1,
+      "uncollectedTests": 6,
+      "files": "2failed/5passed",
+      "error": "Original /dist/plugins/usage-graph.js cannot load from copied dist/plugin.js in relative-assets and fixed-filename tests"
+    },
+    "copiedOriginalSerialSuite": {
+      "passedTests": 74,
+      "files": 7,
+      "exitCode": 0
+    },
+    "finalDriver": "exit0; same four overlap controls, explicit termination of owned idle persistent reader processes, scratch tree removed",
+    "scopeLimits": [
+      "No complete current clean-checkout/native-Wasm rebuild; external installed dependencies and root dependency artifacts reused",
+      "No broad publicPath,host,SSR,graph,hydration or graceful reader/runtime shutdown completion claim",
+      "Original parallel suite remains unsafe; serial success classifies cause without repairing official test isolation"
+    ]
+  },
+  "harnessNotes": [
+    "First three probe orchestration processes completed assertions/suites but stalled during reader cleanup; raw logs and verified own process cleanup records retained.",
+    "Explicit IPC disconnect and stream-drain attempts were insufficient. Pipe-causation hypothesis remains unproven. Final driver terminates its own persistent readers with SIGTERM only after all replies; this is not a graceful-exit test.",
+    "First original copied suite commands finished exit1/exit0 before parent cleanup stop; final replay validates reader lifecycle without repeating unchanged full suites."
+  ],
+  "preservation": {
+    "sources": 534,
+    "priorSourcesMatched": 533,
+    "sourceHashes": "0196-source-hashes-final.json",
+    "artifacts": 405,
+    "prior358Artifacts": "unchanged",
+    "rootWebpack47Artifacts": "unchanged from additional capture during isolated controls",
+    "artifactHashes": "0196-artifacts-final.json",
+    "productExistingTestsFixturesSnapshotsDependenciesLockfilesCIReleaseSite": "unchanged; only new repro/evidence/ledger files",
+    "index": "empty",
+    "commitOrPush": false
+  },
+  "counts": {
+    "historical": 60,
+    "fixed": 56,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "One original unclassified candidate: legacy-native-compose insertion. Webpack shared-dist classified0196 as test build/read overlap; default parallel suite isolation is still unfinished. Node Wasm excluded0192;compiler/MCP .mjs fixed0193 as BH-0059",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim."
+  ],
+  "identityConfirmation": "Not received;0038additional verification paused",
+  "next": "Retain formal parallel harness isolation as unresolved; classify legacy-native-compose candidate next, then continue BH-0004/0195 and full host/maps/gates/benchmarks/Site requirements",
+  "goal": "active",
+  "logs": {
+    "0196-drained-controls.log": {
+      "bytes": 888,
+      "sha256": "3dbd8935835f66a117fa5e0104ded4477fe76380c80ca3a8809482f3828051df"
+    },
+    "0196-drained-initial-build.log": {
+      "bytes": 6175,
+      "sha256": "9b97410f4bf3fbc400cc7aedfa6f757183f7c8374ff74b2d38702edd91069a15"
+    },
+    "0196-drained-overlap-build.log": {
+      "bytes": 6175,
+      "sha256": "29e23d0b959616fa110e791086535287f91be93ef25bb1c6f2e1701eab50c5c4"
+    },
+    "0196-final-controls.log": {
+      "bytes": 887,
+      "sha256": "2a79299dfa84e9913d92dd1bd233934acabd7e1d90b7e2151730de4c512b2673"
+    },
+    "0196-final-initial-build.log": {
+      "bytes": 6175,
+      "sha256": "ccdd2aefe15a422d352c22dd86ec4146fb46d52bb58c77377a17def23fbfb96a"
+    },
+    "0196-final-overlap-build.log": {
+      "bytes": 6175,
+      "sha256": "0187bbe3b24889c064c1502eb3fda53187dcc2e3426d3305e38ce6552fb97890"
+    },
+    "0196-initial-build.log": {
+      "bytes": 6175,
+      "sha256": "e96b3e0a040f485f7eca200c752a82e4ab106420fc986c199d658cc3615e8624"
+    },
+    "0196-overlap-build.log": {
+      "bytes": 6175,
+      "sha256": "706400d5d85e13cfcd795758af380a6796ddd10a3f366460321bb5962dc9eb82"
+    },
+    "0196-parallel-suite.log": {
+      "bytes": 1906,
+      "sha256": "f98d5bc6c6a5e93dba89bd2f872b7ef546b298c67b73108616f1e9d225e95cb7"
+    },
+    "0196-serial-suite.log": {
+      "bytes": 828,
+      "sha256": "27eed85a89606ba9b69e8b4e01bca41b535873e5897672347cc782d266949a74"
+    },
+    "0196-shared-dist-controls.log": {
+      "bytes": 1050,
+      "sha256": "2825b07eade7c1cd9d47090069ed73d7e85946c4e9448276833d4893b71c7f2a"
+    },
+    "0196-worker-controls.log": {
+      "bytes": 886,
+      "sha256": "72e191726123b58f3673ddcb71ca5b0a93426ef08f6d89415e845152d6769986"
+    },
+    "0196-worker-initial-build.log": {
+      "bytes": 6175,
+      "sha256": "0b44ea95faa8d5724d60f95f077ecb714d1448435afb287f3420501e6db48d38"
+    },
+    "0196-worker-overlap-build.log": {
+      "bytes": 6175,
+      "sha256": "6c70052e77cfaaee1e8b76816a89d58b93025700ce4f690f65b2e4ccbd62deac"
+    },
+    "0196-context-final.log": {
+      "bytes": 121,
+      "sha256": "28db8b172405f3b06d23e4a95ee0ac401a2eb1cb418622613cbd98b2834dca8f"
+    }
+  },
+  "checks": {
+    "context": "PASS;0196-context-final.log",
+    "newReproSyntax": "PASS;final cleanup removed unused imports only",
+    "authoredLedgerWhitespace": "PASS",
+    "index": "empty"
+  }
+}

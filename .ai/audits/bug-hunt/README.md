@@ -215,7 +215,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 使用者授權提交已完成部分：BH-0059/0060修復與27項新回歸已提交`a80ba1b50`；隔離來源驗證148tests及三套件lint/types通過，沿用既有native/Wasm產物。同步0191–0194已完成查核及0190未完成檢查紀錄；graph產品、0195與Site變更保留。0195最新57PASS/4FAIL（兩項篩選、兩項managed額外重建），下一步查事件來源；不計修復完成。60historical/56fixed/4unresolved、10blocked及全部未完成範圍、0038身分暫停維持，目標active；未推送。[核對](evidence/0194-commit-validation.json)；[原交接](progress-history-0194-commit.md)。
+- 使用者授權提交已完成部分：本次納入0196–0197已完成分類、0195已取得證據與五個重現腳本；0195修復仍未完成。產品、相依套件測試及其他對話Site變更保留工作區；證據對應工作區來源，非乾淨checkout驗證。537來源、405產物與44原始紀錄雜湊一致。60historical/56fixed/4unresolved、10blocked及0038身分暫停不變，目標active；未推送。下一步接BH-0004 qualified字串入口20失敗；其餘清理／篩選、Webpack平行隔離、hosts/maps/gates/benchmarks/Site待辦維持。[提交核對](evidence/0197-commit-validation.json)；[前次交接](progress-history-0197-commit.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 

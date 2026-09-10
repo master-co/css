@@ -1,0 +1,25 @@
+{
+  "status": "All build/suite children finished;reader process cleanup remained live after results. Terminate only four verified own probe processes, then fix explicit IPC reader shutdown. Not classified as a product error.",
+  "processes": [
+    {
+      "pid": 249,
+      "ppid": 7429,
+      "command": "node .ai/audits/bug-hunt/repros/webpack-shared-dist.mjs"
+    },
+    {
+      "pid": 268,
+      "ppid": 249,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    },
+    {
+      "pid": 269,
+      "ppid": 249,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    },
+    {
+      "pid": 286,
+      "ppid": 249,
+      "command": "/Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/.ai/audits/bug-hunt/repros/webpack-shared-dist.mjs --reader"
+    }
+  ]
+}
