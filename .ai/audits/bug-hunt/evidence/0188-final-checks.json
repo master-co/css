@@ -1,0 +1,289 @@
+{
+  "batch": "0188-mapped-inline-graph",
+  "recordedAt": "2026-09-10T10:56:46.349704+00:00",
+  "head": "d3d58eacdadb35154cc1193b99171ef7939b9f1c",
+  "previousGoalTurn": "progress: committed completed audit checkpoint without changing product work",
+  "status": "bounded mapped inlining and Node rendered/manifest-file migration verified; full graph consumer migration remains incomplete; goal active",
+  "counts": {
+    "historical": 58,
+    "fixed": 54,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "rustCompiler": {
+      "pass": 114,
+      "fail": 0,
+      "log": "0188-rust-final.log"
+    },
+    "compilerFull": {
+      "pass": 319,
+      "fail": 0,
+      "log": "0188-compiler-full-final.log"
+    },
+    "additionalFileReference": {
+      "pass": 3,
+      "log": "0188-file-reference-test.log",
+      "scope": "two tests already in full319 plus one new public file/reference test with five qualifiers"
+    },
+    "qualifiedMatrix": {
+      "observations": 60,
+      "pass": 40,
+      "fail": 20,
+      "renderedNodePass": 12,
+      "renderedNodeFail": 0,
+      "directNativeFail": 10,
+      "directWasmFail": 10,
+      "log": "0188-qualified-matrix-explicit-wasm.log"
+    },
+    "graphInlineBrowser": {
+      "comparisons": 126,
+      "cases": 21,
+      "fail": 0,
+      "log": "0188-inline-graph-browser.log"
+    },
+    "renderedBrowser": {
+      "comparisons": 72,
+      "cases": 12,
+      "fail": 0,
+      "log": "0188-rendered-browser.log"
+    },
+    "viteFocused": {
+      "pass": 55,
+      "fail": 0,
+      "log": "0188-vite-scoped.log"
+    },
+    "nextFocused": {
+      "pass": 17,
+      "fail": 0,
+      "log": "0188-next-scoped.log"
+    },
+    "bindingTests": {
+      "pass": 17,
+      "log": "0188-binding-tests.log"
+    },
+    "siteReference": {
+      "pass": 13,
+      "log": "0188-site-reference.log"
+    },
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75,
+      "log": "0188-site-lint.log"
+    },
+    "compilerBindingLintTypes": "PASS; final compiler lint and wrapup types logs; binding lint/types logs",
+    "clippyFmtCodegenParity": "PASS;0188-clippy/fmt/codegen-check/parity logs",
+    "sourceBudget": "PASS;0188-context-final.log",
+    "reproSyntaxAndAuthoredDiff": "PASS; index empty"
+  },
+  "changes": [
+    "Rust boundary-aware inliner transports original outputMappings through child promotion, ordered replacements and qualifier wrappers",
+    "Existing compileStylesheets transport accepts optional inlineImports, returns remaining reachable assets; native/generatedCSS remain per-file metadata",
+    "Guard relative resource and unresolved import bases before moving child CSS; explicit resource relocation remains supported",
+    "Node rendered and manifest-file/reference paths merge parsed original-file definitions before native inlining; qualified utilities no longer trigger CSS_PRINT_ERROR in rendered Node",
+    "Remove unused wrap_imported_css helper; fix root error context filename and new test optional utility type"
+  ],
+  "preservation": {
+    "sourceBaseline": "0187-source-hashes-final.json",
+    "baselineSources": 498,
+    "changedSources": [
+      ".ai/audits/bug-hunt/repros/compiled-stylesheets-browser.mjs",
+      ".ai/audits/bug-hunt/repros/qualified-managed-matrix.mjs",
+      "crates/mastercss-binding-native/src/compiler.rs",
+      "crates/mastercss-binding-wasm-compiler/src/lib.rs",
+      "crates/mastercss-compiler/src/imports.rs",
+      "crates/mastercss-compiler/src/lib.rs",
+      "crates/mastercss-compiler/src/stylesheet_inline.rs",
+      "crates/xtask/templates/rust-contract.ts",
+      "packages/binding/src/protocol.ts",
+      "packages/compiler/README.md",
+      "packages/compiler/src/node-compiler.ts",
+      "packages/compiler/src/stylesheet/compiled-source.ts",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSources": [
+      "crates/mastercss-compiler/src/graph_inline.rs",
+      "crates/mastercss-compiler/tests/bug_hunt_inline_graph_maps.rs",
+      "packages/compiler/tests/bug-hunt-inline-graph-mappings.test.ts",
+      ".ai/audits/bug-hunt/repros/qualified-rendered-browser.mjs"
+    ],
+    "sources": "0188-source-hashes-final.json",
+    "artifacts": "0188-artifacts-final.json",
+    "foreignSiteContent": "Removing only the added three-line paragraph matches0187 SHA256; other Site content unchanged"
+  },
+  "limits": [
+    "Single-output rendered path still rejects retained assets with CSS_IMPORT_ERROR; delivery options are required, not a claim that all consumers are migrated",
+    "Raw flatten+compile entrypoints retain20 qualified failures; legacy external-import39 failures, original full host/matrix requirements remain",
+    "Default standalone Node Wasm file URL fetch fails before matrix execution; explicit Wasm bytes used for semantic matrix. Keep default-loader candidate open",
+    "First full compiler run overlapped compiler JS build; final full run occurred after all artifacts were terminal and is authoritative",
+    "Compiler full319 predates only one additional test; new file/reference test subsequently PASS. No production change after full319",
+    "No engine/runtime hot-path change or performance gain claim. Compiler graph/inlining adds work/data; full benchmark/profiling scope remains",
+    "Broader Next/Webpack, Site, Vite startup recovery, asset maps and all gates are not completed by focused suites"
+  ],
+  "remaining": [
+    "BH-0004 full import graph/public path/host delivery; legacy60 external-import browser baseline remains21PASS/39FAIL and must be rerun through remaining migrated consumers",
+    "BH-0004 qualified managed definitions: rendered Node12PASS now; low-level native/Wasm flatten+compile still20FAIL/4PASS. Manifest-file/reference focused controls PASS; Node project/raw universal/delivery boundaries remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Six Vite build-watch startup missing-reference failures",
+    "Internal emittedModules CSS proxy ?direct HTTP500",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Four original candidates: compiler/MCP .mjs discovery; parallel Webpack shared dist; standalone Node Wasm file URL fetch; legacy-native-compose insertion",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "next": "Continue existing raw/project/direct graph consumer migration and retained asset delivery without authoring-text flattening. Rerun legacy60 external-import browsers through real consumers; carry maps through separate assets and bundle host transforms. Retain all gates/candidates and0038 pause.",
+  "identityConfirmation": "not received;0038 remains paused",
+  "commitOrPush": false,
+  "artifactByteDeltas": {
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm": 51315,
+    "packages/binding/artifacts/mastercss.node": 219376,
+    "packages/binding/artifacts/mcss": -96,
+    "packages/compiler/dist/node-compiler.js": 1821,
+    "packages/compiler/dist/stylesheet/compiled-source.js": 961,
+    "packages/compiler/dist/stylesheet/delivery.js": 0
+  },
+  "logs": {
+    "0188-binding-build.log": {
+      "bytes": 3296,
+      "sha256": "ea983c34ff75fe1147e9453beab62fe5300ae53b12e454a244c2f5326fff967b"
+    },
+    "0188-binding-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0188-binding-tests.log": {
+      "bytes": 650,
+      "sha256": "e88a4b06acfb775dc94214a40dd0dd3c7d3ff263f73c2d00117e61b2424abbde"
+    },
+    "0188-binding-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0188-clippy.log": {
+      "bytes": 162,
+      "sha256": "1527f78f3c6c1358641a108e36dcc5abce1f6089afb7c229f0d41a3401dce59e"
+    },
+    "0188-codegen-check.log": {
+      "bytes": 122,
+      "sha256": "58b83d74244cceb8277c239bac9ffc8e7283942422f8d291875a595836ffb351"
+    },
+    "0188-codegen.log": {
+      "bytes": 589,
+      "sha256": "28267bad03a721338dce85eef90a20e165fe330a3261c25b4a66d65e04fb3219"
+    },
+    "0188-compiler-build.log": {
+      "bytes": 5485,
+      "sha256": "1a42e51e911aee8a9cdc53d5fc50dae8d7cce012bb32572d18d0a4bef28a8d33"
+    },
+    "0188-compiler-focused.log": {
+      "bytes": 651,
+      "sha256": "7ff946d1523b11c225d068bbeb05953d2da7a7fa23fb758da84c6a26d84b14ed"
+    },
+    "0188-compiler-full-final.log": {
+      "bytes": 1642,
+      "sha256": "3f40ce90be283485526592e820b875d20c4d7d3a4d2c4f7710de6f25803709e0"
+    },
+    "0188-compiler-full.log": {
+      "bytes": 1773,
+      "sha256": "de817e69fb9054f32e780afa73c782c3e98a4e94e98466ef49da3edff452a0cc"
+    },
+    "0188-compiler-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0188-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0188-compiler-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0188-compiler-types-wrapup.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0188-compiler-types.log": {
+      "bytes": 320,
+      "sha256": "70255bf3e44a06acaa75b7bab59d3756a89d6de6fbbdf752157342a79688aa07"
+    },
+    "0188-file-reference-test.log": {
+      "bytes": 651,
+      "sha256": "2ac98badf71867d81c85f28f1f170c927cb7e66d747972679513babdb3dde1b7"
+    },
+    "0188-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0188-inline-before.log": {
+      "bytes": 2030,
+      "sha256": "048479981a4fd8828873740b46e1974cf087cb16ac145da8d0fc996156543737"
+    },
+    "0188-inline-graph-browser.log": {
+      "bytes": 18667,
+      "sha256": "86384256b0228243c30adc3e8e3d05d44fc99ac623cad95b62f8399fd8838e23"
+    },
+    "0188-native-build.log": {
+      "bytes": 837,
+      "sha256": "66bd9ab1c6db2a07dbd644a278e4dacecb04cbf3c4338af08c518385f4e896c5"
+    },
+    "0188-next-scoped.log": {
+      "bytes": 648,
+      "sha256": "4cc9ae35432156762c05fb43c9d050490da152039d4ed2800b6da13f0b74ac75"
+    },
+    "0188-parity.log": {
+      "bytes": 113,
+      "sha256": "0dca719e10cc1314902c2d91fb3372cd49923abf71e20aa8a476b69c3cc14de5"
+    },
+    "0188-qualified-matrix-explicit-wasm.log": {
+      "bytes": 59386,
+      "sha256": "b728ab5467a2abc4e4418812fcccc2dd65db79518a1f9645ab9d009f0d449bc4"
+    },
+    "0188-qualified-matrix.log": {
+      "bytes": 2226,
+      "sha256": "add68e0b5bd70c5d66a98d8c40f9b5b37b30e0883739ea760e244191239ab332"
+    },
+    "0188-rendered-browser.log": {
+      "bytes": 15041,
+      "sha256": "df053f5d262d9aee73ed03848fec65b65643aeaa7df6495ba1c9591f1e13c4ba"
+    },
+    "0188-rust-final.log": {
+      "bytes": 12845,
+      "sha256": "8de0f4d6ecf080596efff3d25de674b4c63839ad263d0bed9dcf8b973be5d159"
+    },
+    "0188-rust-first.log": {
+      "bytes": 12795,
+      "sha256": "53a58edd53bde423fcc53fc8fa43ba7bc24a87988f802b353996c67a0f7e3f67"
+    },
+    "0188-rust-full.log": {
+      "bytes": 13241,
+      "sha256": "23c40646f29961586ebf494011037938d00358eda655199c0e3f1038bd8e2d8f"
+    },
+    "0188-site-lint.log": {
+      "bytes": 11775,
+      "sha256": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a"
+    },
+    "0188-site-reference.log": {
+      "bytes": 1530,
+      "sha256": "0b3b32b2b2d36cddab469e1f762c0ccd0a9cd0e985da3b39016f28bbb6b538b3"
+    },
+    "0188-vite-scoped.log": {
+      "bytes": 648,
+      "sha256": "2a0c6b7b1a6978f4f71501d719cb5b56591892ed7917be5df3e014d7bb34102a"
+    },
+    "0188-wasm-build.log": {
+      "bytes": 465,
+      "sha256": "f5f1df7670c1b08ae107c3f1561eb445f091e5ef4b1567053dec7ee749aad0c9"
+    },
+    "0188-context-final.log": {
+      "bytes": 85,
+      "sha256": "cc943c9e640aabce53cd5531b521bdbfdb794331b142aeadfa3a7c40464b40f4"
+    }
+  }
+}

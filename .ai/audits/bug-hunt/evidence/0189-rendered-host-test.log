@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-rendered-delivery.test.ts (4 tests | 1 failed) 22ms
+   × rendered delivery preserves host maps, supplied references, native pruning and dependency callbacks 4ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-rendered-delivery.test.ts > rendered delivery preserves host maps, supplied references, native pruning and dependency callbacks
+Error: Circular CSS reference: /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-host-G8hf4l/entry.css -> /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-host-G8hf4l/entry.css -> /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-host-G8hf4l/tokens.css -> /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-rendered-host-G8hf4l/tokens.css
+ ❯ compileGraph src/stylesheet/delivery.ts:95:51
+
+ ❯ compileGraph src/stylesheet/delivery.ts:97:22
+ ❯ compileDeliveredSource src/stylesheet/delivery.ts:172:18
+ ❯ compileRenderedDelivery src/stylesheet/render-delivery.ts:7:19
+ ❯ tests/bug-hunt-rendered-delivery.test.ts:40:20
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  19:02:36
+   Duration  304ms (transform 64%, import 26%, tests 9%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

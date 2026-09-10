@@ -1,0 +1,22 @@
+$ NODE_OPTIONS=--conditions=react-server tsx --test reference/reference.test.ts utils/legacy-syntax.test.ts
+✔ Reference and shared search styles use defined site theme variables (4056.270583ms)
+✔ every existing utility has a document and no component silently loses its text (8.412084ms)
+✔ 30 acceptance queries find the intended document in the first three results (923.785208ms)
+✔ padding and opacity syntax rows have the same identifiers and declarations in the page renderer and Markdown (154.86025ms)
+✔ pilot examples reproduce full CSS and the prose states the correct breakpoint and dependencies (6.753542ms)
+✔ explicit anchors survive renamed headings and are exported as portable Markdown anchors (2.673917ms)
+✔ all pre-migration utility and Guide anchors remain available (108.512708ms)
+✔ Reference links and preserved Guide anchors resolve to real documents and sections (13.982875ms)
+✔ all 120 retired Guide anchors target an existing Reference section (0.617167ms)
+✔ Syntax Tutorial exports its complete configured button, CSS, headings and searchable output (181.498ms)
+✔ machine index and localized Markdown identify the same content and source revision (2.084125ms)
+✔ changing a configured token updates class output, extracted Markdown and search together (405.317333ms)
+✔ old syntax entrypoints and all fragments resolve deterministically in every locale (1.0445ms)
+ℹ tests 13
+ℹ suites 0
+ℹ pass 13
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6751.692417

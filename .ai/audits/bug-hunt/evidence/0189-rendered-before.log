@@ -1,0 +1,36 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-rendered-delivery.test.ts (3 tests | 3 failed) 16ms
+   × rendered delivery preserves external import boundaries  9ms
+   × rendered delivery preserves external import boundaries  layer(cards) 4ms
+   × rendered delivery preserves external import boundaries  layer supports(display:grid) screen 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-rendered-delivery.test.ts > rendered delivery preserves external import boundaries 
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/bug-hunt-rendered-delivery.test.ts > rendered delivery preserves external import boundaries  layer(cards)
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/bug-hunt-rendered-delivery.test.ts > rendered delivery preserves external import boundaries  layer supports(display:grid) screen
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  19:00:02
+   Duration  292ms (transform 65%, import 27%, tests 7%, worker 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

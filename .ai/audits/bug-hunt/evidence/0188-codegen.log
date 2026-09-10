@@ -1,0 +1,13 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+warning: function `wrap_imported_css` is never used
+  --> crates/mastercss-compiler/src/imports.rs:14:15
+   |
+14 | pub(crate) fn wrap_imported_css(
+   |               ^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: `mastercss-compiler` (lib) generated 1 warning
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.25s
+     Running `target/debug/xtask codegen`

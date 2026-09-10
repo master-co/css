@@ -1,18 +1,19 @@
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, rmSync, writeFileSync, readFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createCompiler } from '../../../../packages/compiler/dist/index.js'
 import { createCompilerBindingSession } from '../../../../packages/compiler/src/session.ts'
 import { compileRenderedStylesheet } from '../../../../packages/compiler/dist/stylesheet/index-public.js'
+const wasm = { input: readFileSync(new URL('../../../../packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url)) }
 const baseManifest = { version: 1, utilities: [] }
 const root = mkdtempSync(join(tmpdir(), 'master-qualified-matrix-'))
 const entry = join(root, 'entry.css'), child = join(root, 'child.css')
 const compilers = {}, sessions = {}, results = []
 try {
   for (const binding of ['native', 'wasm']) {
-    compilers[binding] = await createCompiler({ binding })
-    sessions[binding] = await createCompilerBindingSession({ binding })
+    compilers[binding] = await createCompiler({ binding, ...(binding === 'wasm' ? { wasm } : {}) })
+    sessions[binding] = await createCompilerBindingSession({ binding, ...(binding === 'wasm' ? { wasm } : {}) })
   }
   for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' screen', ' layer(cards) supports(display:grid) screen']) {
     for (const compose of [false, true]) {

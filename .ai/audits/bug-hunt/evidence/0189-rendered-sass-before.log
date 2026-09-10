@@ -1,0 +1,34 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-rendered-delivery.test.ts (5 tests | 1 failed) 117ms
+   × rendered delivery retains real Sass dependencies and original output maps 94ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-rendered-delivery.test.ts > rendered delivery retains real Sass dependencies and original output maps
+AssertionError: expected [ …(2) ] to include '/var/folders/_b/768dhtz56ns54x1r867j6…'
+ ❯ tests/bug-hunt-rendered-delivery.test.ts:70:33
+     68|       delivery: { entryURL: '/entry.css', stylesheetURL: file => `/${b…
+     69|     })
+     70|     expect(result.dependencies).toContain(partial)
+       |                                 ^
+     71|     const lines = result.css.slice(0, result.css.indexOf('.card')).spl…
+     72|     expect(new SourceMap(JSON.parse(result.sourceMap!)).findEntry(line…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  19:03:40
+   Duration  400ms (transform 46%, tests 34%, import 19%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

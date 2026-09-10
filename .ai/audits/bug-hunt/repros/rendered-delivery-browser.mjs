@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readFileSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { basename, join } from 'node:path'
 import { createRequire } from 'node:module'
-import { createCompiler } from '../../../../packages/compiler/src/index.ts'
+import { compileRenderedStylesheet } from '../../../../packages/compiler/dist/stylesheet/index-public.js'
 
 const browsers = createRequire(new URL('../../../../packages/runtime/package.json', import.meta.url))('@playwright/test')
 const cases = JSON.parse(readFileSync(new URL('../../../../crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.json', import.meta.url)))
@@ -10,19 +12,21 @@ cases.push(
   { id: 'compose-in-conditional-layer', entry: "@import './local.css' layer(shared) supports(display:grid) screen;@utilities{paint{color:red}}", local: '.example{@compose paint;}', referenceEntry: "@import './local.css' layer(shared) supports(display:grid) screen;", referenceLocal: '.example{color:red}', expected: 'red', printExpected: 'black' },
   { id: 'compose-cross-file-override', entry: "@import './local.css';@utilities{paint{color:blue}}", local: '@utilities{paint{color:red}}.example{@compose paint;}', referenceEntry: "@import './local.css';", referenceLocal: '.example{color:blue}', expected: 'blue' }
 )
-const wasmBytes = readFileSync(new URL('../../../../packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm', import.meta.url))
 const compiled = new Map()
-const native = await createCompiler({ binding: 'native' })
-const wasm = await createCompiler({ binding: 'wasm', wasm: { input: wasmBytes } })
+const root = mkdtempSync(join(tmpdir(), 'master-rendered-boundaries-'))
 try {
   for (const test of cases) {
-    const request = { inlineImports: process.env.BH_INLINE_IMPORTS === '1', graph: { entry: 'entry', files: { entry: test.entry, local: test.local || '.example{color:red}' }, edges: [{ from: 'entry', specifier: './local.css', resolved: 'local' }] }, urls: { entry: '/delivered/entry.css', local: '/delivered/local.css' }, baseManifest: { version: 1, utilities: [] }, options: { classes: ['example'] } }
-    const result = native.compileStylesheets(request)
-    assert.deepEqual(wasm.compileStylesheets(request), result, `${test.id}: public native/Wasm parity`)
+    const entry = join(root, 'entry.css'), child = join(root, 'local.css')
+    writeFileSync(child, test.local || '.example{color:red}')
+    const result = await compileRenderedStylesheet(entry, test.entry, { projectDir: root,
+      baseManifest: { version: 1, utilities: [] }, classes: ['example'],
+      delivery: { entryURL: '/delivered/entry.css', stylesheetURL: file => `/delivered/${basename(file)}`, resourceURL: file => `/resources/${basename(file)}` }
+    })
+    assert.equal(result.stylesheets.find(asset => asset.id === entry).css, result.css)
     compiled.set(test.id, result)
-    console.log(JSON.stringify({ id: test.id, parity: 'PASS', assets: result.stylesheets.length }))
+    console.log(JSON.stringify({ id: test.id, assets: result.stylesheets.length, sourceMaps: result.stylesheets.every(asset => Boolean(asset.sourceMap)) }))
   }
-} finally { native.dispose(); wasm.dispose() }
+} finally { rmSync(root, { recursive: true, force: true }) }
 let comparisons = 0
 for (const name of ['chromium', 'firefox', 'webkit']) {
   const browser = await browsers[name].launch()
@@ -53,4 +57,4 @@ for (const name of ['chromium', 'firefox', 'webkit']) {
     }
   } finally { await browser.close() }
 }
-console.log(JSON.stringify({ inlineImports: process.env.BH_INLINE_IMPORTS === '1', cases: cases.length, comparisons, failures: 0, scope: 'Public compileStylesheets; existing file/project/build/CLI entrypoints still require integration' }))
+console.log(JSON.stringify({ cases: cases.length, comparisons, failures: 0, scope: 'Built Node compileRenderedStylesheet with actual asset delivery; includes original10 external-import cases plus11 boundary/compose controls' }))

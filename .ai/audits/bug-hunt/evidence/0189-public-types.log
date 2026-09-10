@@ -1,0 +1,7 @@
+$ tsc -b tsconfig.typecheck.json
+tests/bug-hunt-rendered-delivery.test.ts(42,7): error TS2353: Object literal may only specify known properties, and 'references' does not exist in type 'MasterCSSStylesheetCompileOptions'.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/compiler
+

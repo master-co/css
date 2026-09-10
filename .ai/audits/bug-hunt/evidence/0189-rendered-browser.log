@@ -1,0 +1,8 @@
+file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/rendered-delivery-browser.mjs:25
+    assert.equal(result.stylesheets.find(asset => asset.id === entry).css, result.css)
+                                    ^
+
+TypeError: Cannot read properties of undefined (reading 'find')
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/rendered-delivery-browser.mjs:25:37
+
+Node.js v24.20.0
