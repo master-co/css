@@ -76,5 +76,13 @@ Managed stylesheet composition is available from
 its explicit subpaths. Complete project inspection reports are exposed from
 `@master/css-compiler/diagnostics`.
 
+Inspection reports associate each file's `discovered` classes with that file's
+actual extracted candidates, including classes repeated across files. Class
+classification still comes from the shared Rust scanner after all sources finish.
+Invalid-class diagnostics point to the first containing file in report input
+order. Safelisted classes absent from source do not create file occurrences.
+The per-file `changed` flag reports scanner changes, so it can be false even when
+that file contains classes already discovered in another file.
+
 These are cohesive compiler host responsibilities. The former project, stylesheet,
 and diagnostics package identities are retired.

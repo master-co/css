@@ -1,6 +1,7 @@
 export {
   MasterCSSScanner,
-  createScanner
+  createScanner,
+  type MasterCSSScannerSourceResult
 } from './core'
 export {
   defaultScannerOptions,

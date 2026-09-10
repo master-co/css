@@ -10,7 +10,7 @@ import type MasterCSSMCPContext from './context'
 import { loadWorkspaceManifest } from './project'
 import { compactClassInspection, createMCPToolingSession } from './tooling-session'
 
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 const require = createRequire(import.meta.url)
 const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest

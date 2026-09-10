@@ -60,6 +60,12 @@ interface ScannerResetOptions {
   emit?: boolean
 }
 
+export interface MasterCSSScannerSourceResult {
+  readonly changed: boolean
+  /** All candidates extracted from this input, including previously scanned classes. */
+  readonly candidates: readonly string[]
+}
+
 function createSourceMatchers(patterns?: MasterCSSScannerConfiguration['exclude']) {
   return (patterns || []).map((pattern) => new Minimatch(String(pattern), sourceMatchOptions))
 }
@@ -349,8 +355,13 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
    * @returns string[] Latent classes
    */
   async scan(source: string, content: string): Promise<boolean> {
+    return (await this.scanSource(source, content)).changed
+  }
+
+  /** Scan through the built-in adapters and retain this input's candidates. */
+  async scanSource(source: string, content: string): Promise<MasterCSSScannerSourceResult> {
     if (!content) {
-      return false
+      return { changed: false, candidates: [] }
     }
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
@@ -385,7 +396,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       }
       this.emit('change')
     }
-    return update.changed
+    return { changed: update.changed, candidates: extractedClasses }
   }
 
   async scanModule(source: string, content: string): Promise<boolean> {

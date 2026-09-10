@@ -17,6 +17,7 @@ import {
 } from '@master/css-binding/compiler'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
+  MasterCSSDiscoveredClasses,
   MasterCSSInspectionReport,
   MasterCSSSourceInspection,
   MasterCSSStylesheetError,
@@ -40,7 +41,7 @@ export type {
 
 export const MASTER_CSS_INSPECTION_REPORT_VERSION = MASTER_CSS_DIAGNOSTICS_REPORT_VERSION
 
-const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
+const DEFAULT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,mjs,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
 
 export interface CreateMasterCSSInspectionReportOptions {
@@ -75,10 +76,6 @@ function resolveSourcePaths(cwd: string, sourcePatterns: readonly string[], igno
     ignore: normalizeGlobPatterns(ignore),
     onlyFiles: true
   }).filter(Boolean)
-}
-
-function diffSet(after: Iterable<string>, before: { has(value: string): boolean }) {
-  return [...after].filter((value) => !before.has(value))
 }
 
 function parseClassChecks(value: readonly string[] | string | undefined) {
@@ -160,21 +157,18 @@ async function registerManagedCSSEntries(
   }
 }
 
-async function scanSourceFile(
-  scanner: MasterCSSScanner,
+function inspectSourceFile(
+  classes: Readonly<Record<keyof MasterCSSDiscoveredClasses, ReadonlySet<string>>>,
   source: string,
   filePath: string,
+  scan: Awaited<ReturnType<MasterCSSScanner['scanSource']>>,
   firstSourceByClass: Map<string, string>
-): Promise<MasterCSSSourceInspection> {
-  const beforeLatent = new Set(scanner.latentClasses)
-  const beforeValid = new Set(scanner.validClasses)
-  const beforeInvalid = new Set(scanner.invalidClasses)
-  const beforeUsedNative = new Set(scanner.usedNativeClasses)
-  const changed = await scanner.scan(source, fs.readFileSync(filePath, 'utf8'))
-  const latent = diffSet(scanner.latentClasses, beforeLatent)
-  const valid = diffSet(scanner.validClasses, beforeValid)
-  const invalid = diffSet(scanner.invalidClasses, beforeInvalid)
-  const usedNative = diffSet(scanner.usedNativeClasses, beforeUsedNative)
+): MasterCSSSourceInspection {
+  const candidates = [...new Set(scan.candidates)]
+  const latent = candidates.filter((value) => classes.latent.has(value))
+  const valid = candidates.filter((value) => classes.valid.has(value))
+  const invalid = candidates.filter((value) => classes.invalid.has(value))
+  const usedNative = candidates.filter((value) => classes.usedNative.has(value))
   for (const className of [...latent, ...valid, ...invalid, ...usedNative]) {
     if (!firstSourceByClass.has(className)) firstSourceByClass.set(className, filePath)
   }
@@ -182,7 +176,7 @@ async function scanSourceFile(
     filePath,
     source,
     scanned: true,
-    changed,
+    changed: scan.changed,
     discovered: {
       latent,
       valid,
@@ -225,7 +219,18 @@ export async function createMasterCSSInspectionReport(
       options.ignore ?? (specifiedPatterns?.length ? [] : scanner.options.exclude)
     )
     const resolvedSourcePaths = await Promise.all(sourcePaths.map((source) => resolveFilePath(cwd, source, options.resolveExistingFile)))
-    const files = await Promise.all(sourcePaths.map((source, index) => scanSourceFile(scanner, source, resolvedSourcePaths[index], firstSourceByClass)))
+    const scans = await Promise.all(sourcePaths.map((source, index) => scanner.scanSource(
+      source, fs.readFileSync(resolvedSourcePaths[index], 'utf8')
+    )))
+    const classes = {
+      latent: new Set(scanner.latentClasses),
+      valid: new Set(scanner.validClasses),
+      invalid: new Set(scanner.invalidClasses),
+      usedNative: new Set(scanner.usedNativeClasses)
+    }
+    const files = sourcePaths.map((source, index) => inspectSourceFile(
+      classes, source, resolvedSourcePaths[index], scans[index], firstSourceByClass
+    ))
     const cssResult = await createExtractedCSSResult({
       scanner,
       stylesheetSources,

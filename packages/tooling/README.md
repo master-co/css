@@ -28,6 +28,13 @@ lint, and language operations. Feature subpaths provide async one-shot APIs; the
 `MasterCSSScanner` is available only from `./scanner/node` and owns filesystem/watch
 graph lifecycle.
 
+`scanner.scanSource(source, content)` uses the same built-in adapters and Rust
+scanner as `scan`, returning a `MasterCSSScannerSourceResult` with `changed` and
+all `candidates` extracted from that input. Candidates include repeated classes,
+cache hits and blocklisted candidates; they are source occurrences, not a list of
+newly generated rules. Use the scanner state for final classification. `scan` and
+`scanModule` continue to return a boolean indicating a scanner change.
+
 For host parsers that decode enclosing HTML before parsing expressions,
 `session.decodeHTMLAttribute(source)` decodes attribute contents without their
 delimiters and returns `{ value, spans }`. Each span maps a decoded UTF-16 `range`
