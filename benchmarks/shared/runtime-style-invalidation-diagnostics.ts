@@ -1,3 +1,4 @@
+import { forceRetainedCleanup, preseedRuntimeTempRules, seedRetainedRuntimeRules, pauseRuntimeObserver } from './runtime-preparation'
 import { createServer, type Server } from 'node:http'
 import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
@@ -101,6 +102,7 @@ interface RuntimeStyleInvalidationMeasurement {
 }
 
 export interface RuntimeStyleInvalidationResult {
+  temporaryClassNames: string[]
   interaction: InteractionResult
   traceMetrics: {
     styleRecalculationMs: number
@@ -256,7 +258,8 @@ async function createRuntimeStyleInvalidationDiagnosticsReport(): Promise<Benchm
       'The dynamic and stress-dom fixtures use the interaction-cost mutation-cleanup-cycle page harness.',
       'Runtime/progressive variants are measured with benchmark-injected instrumentation; @master/css-runtime source behavior is not changed by this suite.',
       'Observer-paused variants intentionally disconnect the runtime MutationObserver inside the benchmark page only.',
-      'Retained-volume variants seed inactive generated rules into runtime state to isolate retained stylesheet volume cost.',
+      'Retained-volume variants append and remove real DOM classes, then verify newly retained rules; historical manually backdated private-state seeding is not comparable.',
+      'Retained Set operation counts use benchmark-only instrumentation captured from the real observe instance; the readonly global facade is unchanged.',
       'Trace-derived event names can change across Chromium versions; raw trace artifacts are kept for review before optimization work.'
     ],
     artifacts
@@ -284,7 +287,6 @@ async function measureRuntimeStyleInvalidationDiagnostic(options: {
       await page.goto(server.origin, { waitUntil: 'load' })
       await waitForBenchmarkReady(page)
       await assertDiagnosticPageReady(page, options.variant.modeId)
-      await installRetainedSetInstrumentation(page)
       const preparation = await prepareRuntimeDiagnosticPage(page, options.variant)
 
       const traceResult = await traceRuntimeStyleInvalidationDiagnostic(page, options.variant.action)
@@ -369,153 +371,15 @@ async function prepareRuntimeDiagnosticPage(page: Page, variant: RuntimeStyleDia
   }
 }
 
-async function installRetainedSetInstrumentation(page: Page) {
-  await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as {
-      retainedClassNames?: Set<string> & {
-        __benchmarkInstrumented?: boolean
-      }
-    } | undefined
-    const metrics = globalThis.__interactionMetrics as (typeof globalThis.__interactionMetrics & {
-      retainedSetAddCount?: number
-      retainedSetDeleteCount?: number
-      retainedSetClearCount?: number
-    })
-    const retainedClassNames = runtime?.retainedClassNames
-    if (!retainedClassNames || retainedClassNames.__benchmarkInstrumented) return
-    retainedClassNames.__benchmarkInstrumented = true
-
-    const nativeAdd = retainedClassNames.add.bind(retainedClassNames)
-    const nativeDelete = retainedClassNames.delete.bind(retainedClassNames)
-    const nativeClear = retainedClassNames.clear.bind(retainedClassNames)
-
-    retainedClassNames.add = (value) => {
-      if (metrics?.collectInteractionMutations) metrics.retainedSetAddCount = (metrics.retainedSetAddCount || 0) + 1
-      return nativeAdd(value)
-    }
-    retainedClassNames.delete = (value) => {
-      if (metrics?.collectInteractionMutations) metrics.retainedSetDeleteCount = (metrics.retainedSetDeleteCount || 0) + 1
-      return nativeDelete(value)
-    }
-    retainedClassNames.clear = () => {
-      if (metrics?.collectInteractionMutations) metrics.retainedSetClearCount = (metrics.retainedSetClearCount || 0) + 1
-      return nativeClear()
-    }
-  })
-}
-
-async function preseedRuntimeTempRules(page: Page) {
-  return page.evaluate(() => {
-    const config = globalThis.__interactionConfig as {
-      classes?: {
-        temp?: string[]
-      }
-    }
-    const runtime = globalThis.masterCSSRuntime as {
-      classUtilities?: {
-        size?: number
-      }
-      ensureClassRules?: (...classNames: string[]) => unknown
-    } | undefined
-    const tempClassNames = config.classes?.temp || []
-    if (!runtime?.ensureClassRules || !tempClassNames.length) return 0
-
-    const before = runtime.classUtilities?.size || 0
-    runtime.ensureClassRules(...tempClassNames)
-    const after = runtime.classUtilities?.size || 0
-
-    return Math.max(0, after - before)
-  })
-}
-
-async function seedRetainedRuntimeRules(page: Page, count: number) {
-  return page.evaluate((classCount) => {
-    const runtime = globalThis.masterCSSRuntime as {
-      ensureClassRules?: (...classNames: string[]) => unknown
-      classUtilities?: Map<string, {
-        text?: string
-        nodes?: {
-          text?: string
-        }[]
-      }[]>
-      retainedClassNames?: Set<string>
-      retainedClassRules?: Map<string, {
-        retainedAt: number
-        rawBytes: number
-        ruleCount: number
-      }>
-    } | undefined
-    if (!runtime?.ensureClassRules || !runtime.classUtilities || !runtime.retainedClassNames || !runtime.retainedClassRules) {
-      return {
-        classCount: 0,
-        ruleCount: 0,
-        rawBytes: 0
-      }
-    }
-
-    const classNames = Array.from({ length: classCount }, (_, index) => `z:${10000 + index}`)
-    runtime.ensureClassRules(...classNames)
-    const retainedAt = Date.now() - 2000
-    let ruleCount = 0
-    let rawBytes = 0
-
-    for (const className of classNames) {
-      const summary = summarizeRuntimeClassRules(runtime.classUtilities.get(className) || [])
-      runtime.retainedClassNames.add(className)
-      runtime.retainedClassRules.set(className, {
-        retainedAt,
-        rawBytes: summary.rawBytes,
-        ruleCount: summary.ruleCount
-      })
-      ruleCount += summary.ruleCount
-      rawBytes += summary.rawBytes
-    }
-
-    return {
-      classCount: classNames.length,
-      ruleCount,
-      rawBytes
-    }
-
-    function summarizeRuntimeClassRules(rules: {
-      text?: string
-      nodes?: {
-        text?: string
-      }[]
-    }[]) {
-      let ruleCount = 0
-      let rawBytes = 0
-      for (const rule of rules) {
-        const nodes = Array.isArray(rule.nodes) ? rule.nodes : []
-        if (nodes.length) {
-          for (const node of nodes) {
-            ruleCount++
-            rawBytes += new TextEncoder().encode(node.text || '').length
-          }
-        } else {
-          ruleCount++
-          rawBytes += new TextEncoder().encode(rule.text || '').length
-        }
-      }
-      return { ruleCount, rawBytes }
-    }
-  }, count)
-}
-
-async function pauseRuntimeObserver(page: Page) {
-  return page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as {
-      observer?: {
-        disconnect?: () => void
-      }
-    } | undefined
-    if (!runtime?.observer?.disconnect) return 0
-    runtime.observer.disconnect()
-    return 1
-  })
-}
-
 async function traceRuntimeStyleInvalidationDiagnostic(page: Page, action: RuntimeStyleDiagnosticAction) {
+  const temporaryClassNames = await page.evaluate(() => {
+    const config = globalThis.__interactionConfig as { classes?: { temp?: string[] } }
+    const names = config.classes?.temp
+    if (!Array.isArray(names) || !names.length || !names.every(name => typeof name === 'string' && name.length)) {
+      throw new Error('Missing configured temporary classes for style invalidation validation.')
+    }
+    return [...names]
+  })
   const context = page.context()
   const client = await context.newCDPSession(page)
   const events: ChromeTraceEvent[] = []
@@ -571,7 +435,7 @@ async function traceRuntimeStyleInvalidationDiagnostic(page: Page, action: Runti
         domNodeCount: after.domNodeCount,
         affectedElementCount: 0,
         computedStyleValid: probe && getComputedStyle(probe).textAlign === 'center' ? 1 : 0,
-        cleanupValid: 1,
+        cleanupValid: document.getElementById('interaction-scratch')?.children.length === 0 ? 1 : 0,
         progressiveAdopted: after.progressiveAdopted,
         runtimeStyleText: after.runtimeStyleText,
         details: {
@@ -646,22 +510,13 @@ async function traceRuntimeStyleInvalidationDiagnostic(page: Page, action: Runti
   await page.evaluate(() => globalThis.__waitInteractionFrames(3))
   const afterFlushState = await page.evaluate(() => globalThis.__readInteractionState())
   const afterFlushRuntimeStyleRuleCount = afterFlushState.runtimeGeneratedRuleCount
-  const forcedRetainedCleanup = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as {
-      flushRetainedClassRules?: () => number
-    } | undefined
-    const startedAt = performance.now()
-    const removedClassCount = runtime?.flushRetainedClassRules?.() || 0
-    return {
-      removedClassCount,
-      durationMs: performance.now() - startedAt
-    }
-  })
+  const forcedRetainedCleanup = await forceRetainedCleanup(page)
   const afterForcedCleanupState = await page.evaluate(() => globalThis.__readInteractionState())
   const afterForcedCleanupRuntimeStyleRuleCount = afterForcedCleanupState.runtimeGeneratedRuleCount
 
   return {
     events,
+    temporaryClassNames,
     interaction,
     beforeState,
     afterTraceState,
@@ -685,6 +540,7 @@ async function writeRuntimeStyleInvalidationArtifacts(options: {
 }) {
   const { runtimeStyleText, ...interaction } = options.result.interaction
   await writeFile(options.file, `${JSON.stringify({
+    temporaryClassNames: options.result.temporaryClassNames,
     variant: {
       id: options.variant.id,
       kind: options.variant.kind,
@@ -732,7 +588,7 @@ function assertRuntimeStyleInvalidationResult(
     throw new Error(`${variant.id} unexpectedly reported progressive adoption.`)
   }
 
-  const tempClassNames = getTemporaryClassNames()
+  const tempClassNames = result.temporaryClassNames
   const retainedTemporaryClassNames = tempClassNames.filter((className) => result.afterForcedCleanupState.retainedClassNames.includes(className))
   if (retainedTemporaryClassNames.length) {
     throw new Error(`${variant.id} left retained temporary classes after forced cleanup: ${retainedTemporaryClassNames.join(', ')}.`)
@@ -748,7 +604,7 @@ async function assertDiagnosticPageReady(page: Page, modeId: InteractionModeId) 
     ready: document.documentElement.dataset.benchmarkReady,
     textAlign: getComputedStyle(document.getElementById('interaction-style-probe')!).textAlign,
     runtimeAvailable: Boolean(globalThis.masterCSSRuntime),
-    progressive: Boolean(globalThis.masterCSSRuntime?.progressive),
+    progressive: globalThis.masterCSSRuntime?.snapshot().hydration.state === 'progressive',
     htmlHidden: document.documentElement.hasAttribute('hidden')
   }))
 
@@ -871,6 +727,8 @@ function getContentType(file: string) {
       return 'text/javascript; charset=utf-8'
     case '.json':
       return 'application/json; charset=utf-8'
+    case '.wasm':
+      return 'application/wasm'
     case '.png':
       return 'image/png'
     default:
@@ -909,10 +767,6 @@ function getWarmupRounds() {
   const value = Number(process.env.RUNTIME_STYLE_INVALIDATION_DIAGNOSTIC_WARMUP_ROUNDS || 1)
   if (!Number.isFinite(value) || value < 0) return 1
   return Math.floor(value)
-}
-
-function getTemporaryClassNames() {
-  return ['outline:blue-60|2', 'shadow:0|0|0|2|rgb(59_130_246/.25)']
 }
 
 function omitRuntimeStyleText(state: RuntimeState) {

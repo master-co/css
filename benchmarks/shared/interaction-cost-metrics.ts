@@ -17,13 +17,13 @@ export const interactionCostMetrics = [
     id: 'runtime-generated-rule-count-delta',
     label: 'Runtime rule delta',
     unit: 'count',
-    description: 'Change in recursive style#master-css CSSOM rule count after the interaction.'
+    description: 'Change in public snapshot output rule entries across layers (including keyframes blocks) after the interaction.'
   },
   {
     id: 'runtime-style-raw-bytes-delta',
     label: 'Runtime style byte delta',
     unit: 'B',
-    description: 'Change in raw bytes for style#master-css after the interaction.'
+    description: 'Change in UTF-8 bytes for public snapshot cssText after the interaction.'
   },
   {
     id: 'style-recalculation-ms',
@@ -65,13 +65,13 @@ export const interactionCostMetrics = [
     id: 'computed-style-valid',
     label: 'Computed style valid',
     unit: 'count',
-    description: '1 when the scenario computed-style assertion passed, otherwise 0.'
+    description: '1 when the scenario assertion passes; cleanup checks alignment and temporary width during every cycle. These reads are included in measured work.'
   },
   {
     id: 'cleanup-valid',
     label: 'Cleanup valid',
     unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after scenarios that remove nodes.'
+    description: '1 when temporary DOM nodes are removed and temporary classes are absent from public snapshot usageCounts after scenarios that remove nodes.'
   },
   {
     id: 'progressive-adopted',

@@ -65,13 +65,13 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'runtime-ensured-class-count',
     label: 'Runtime ensured classes',
     unit: 'count',
-    description: 'Total class arguments passed to CSSRuntime.ensureClassRules(...).'
+    description: 'Total entries in readonly class-name arrays passed to ensureClassRules during collection; repeated entries count separately and empty arrays add zero.'
   },
   {
     id: 'runtime-deleted-class-count',
     label: 'Runtime deleted classes',
     unit: 'count',
-    description: 'Total class arguments passed to CSSRuntime.deleteClassRules(...).'
+    description: 'Total entries in readonly class-name arrays passed to deleteClassRules during collection, including queued calls; this is a requested-entry count, not a successful-rule deletion count.'
   },
   {
     id: 'runtime-deferred-remove-call-count',
@@ -107,7 +107,7 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'runtime-flush-remove-class-count',
     label: 'Flush removed classes',
     unit: 'count',
-    description: 'Unique class arguments removed by the benchmark-only flush strategy.'
+    description: 'Unique class names per runtime passed as one array to the original deleteClassRules method by the benchmark-only flush strategy.'
   },
   {
     id: 'runtime-flush-remove-duration-ms',
@@ -197,25 +197,25 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'runtime-class-count-before',
     label: 'Runtime class counts before',
     unit: 'count',
-    description: 'Runtime classCounts.size before the cleanup scenario.'
+    description: 'Public snapshot usageCounts key count before the cleanup scenario.'
   },
   {
     id: 'runtime-class-count-after',
     label: 'Runtime class counts after',
     unit: 'count',
-    description: 'Runtime classCounts.size after the cleanup scenario.'
+    description: 'Public snapshot usageCounts key count after the cleanup scenario.'
   },
   {
     id: 'runtime-utility-count-before',
     label: 'Runtime utility count before',
     unit: 'count',
-    description: 'Runtime classUtilities.size before the cleanup scenario.'
+    description: 'Public snapshot generated class-name count before the cleanup scenario.'
   },
   {
     id: 'runtime-utility-count-after',
     label: 'Runtime utility count after trace',
     unit: 'count',
-    description: 'Runtime classUtilities.size after trace collection and before the post-trace product cleanup flush wait.'
+    description: 'Public snapshot generated class-name count after trace collection and before the post-trace product cleanup flush wait.'
   },
   {
     id: 'temporary-class-count-before',
@@ -233,37 +233,37 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'runtime-class-count-after-flush',
     label: 'Runtime class counts after flush',
     unit: 'count',
-    description: 'Runtime classCounts.size after the post-trace product cleanup flush wait.'
+    description: 'Public snapshot usageCounts key count after the post-trace product cleanup flush wait.'
   },
   {
     id: 'runtime-utility-count-after-flush',
     label: 'Runtime utility count after flush',
     unit: 'count',
-    description: 'Runtime classUtilities.size after the post-trace product cleanup flush wait.'
+    description: 'Public snapshot generated class-name count after the post-trace product cleanup flush wait.'
   },
   {
     id: 'retained-class-count-before',
     label: 'Retained classes before',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size before the cleanup scenario.'
+    description: 'Public snapshot retained class count before the cleanup scenario.'
   },
   {
     id: 'retained-class-count-after',
     label: 'Retained classes after trace',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size after trace collection.'
+    description: 'Public snapshot retained class count after trace collection.'
   },
   {
     id: 'retained-class-count-after-flush',
     label: 'Retained classes after flush',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size after the product retained-rule settle window.'
+    description: 'Public snapshot retained class count after the product retained-rule settle window.'
   },
   {
     id: 'retained-class-count-after-forced-cleanup',
     label: 'Retained classes after forced cleanup',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size after the out-of-trace forced retained-rule cleanup.'
+    description: 'Public snapshot retained class count after the out-of-trace forced public deletion of inactive retained rules.'
   },
   {
     id: 'retained-rule-count-after-flush',
@@ -281,13 +281,13 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'retained-cleanup-removed-class-count',
     label: 'Forced retained cleanup classes',
     unit: 'count',
-    description: 'Class count removed by the out-of-trace flushRetainedClassRules() validation.'
+    description: 'Inactive retained class count explicitly removed through public deleteClassRules() outside trace collection.'
   },
   {
     id: 'retained-cleanup-duration-ms',
     label: 'Forced retained cleanup duration',
     unit: 'ms',
-    description: 'Duration of the out-of-trace flushRetainedClassRules() validation.'
+    description: 'Duration of the explicit public deleteClassRules() operation outside trace collection; excludes the product settle window.'
   },
   {
     id: 'temporary-class-count-after-flush',
@@ -299,37 +299,37 @@ export const runtimeMutationDiagnosticMetrics = [
     id: 'runtime-generated-rule-count-delta',
     label: 'Runtime rule delta',
     unit: 'count',
-    description: 'Change in runtime classUtilities size after cleanup.'
+    description: 'Change in public snapshot output rule entries across layers (including keyframes blocks) after cleanup.'
   },
   {
     id: 'runtime-style-raw-bytes-delta',
     label: 'Runtime style byte delta',
     unit: 'B',
-    description: 'Change in raw bytes for style#master-css after cleanup.'
+    description: 'Change in UTF-8 bytes for public snapshot cssText after cleanup.'
   },
   {
     id: 'computed-style-valid',
     label: 'Computed style valid',
     unit: 'count',
-    description: '1 when the cleanup scenario computed-style assertion passed, otherwise 0.'
+    description: '1 when the scenario assertion passes; cleanup checks alignment and temporary width during every cycle. These reads are included in measured work.'
   },
   {
     id: 'cleanup-valid',
     label: 'Cleanup valid',
     unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after the product cleanup wait.'
+    description: '1 when temporary DOM nodes are removed and temporary classes are absent from public snapshot usageCounts after the product cleanup wait.'
   },
   {
     id: 'cleanup-valid-during-trace',
     label: 'Cleanup valid during trace',
     unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts before trace collection ended.'
+    description: '1 when temporary DOM nodes are removed and temporary classes are absent from public snapshot usageCounts before trace collection ended.'
   },
   {
     id: 'cleanup-valid-after-flush',
     label: 'Cleanup valid after flush',
     unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after the product cleanup wait.'
+    description: '1 when temporary DOM nodes are removed and temporary classes are absent from public snapshot usageCounts after the product cleanup wait.'
   },
   {
     id: 'progressive-adopted',

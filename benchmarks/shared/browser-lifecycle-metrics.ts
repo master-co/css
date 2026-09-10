@@ -1,3 +1,4 @@
+import { runtimeWasmMetrics } from './runtime-payload'
 import type { BenchmarkMetric } from './types'
 
 export const browserLifecycleMetrics = [
@@ -73,6 +74,7 @@ export const browserLifecycleMetrics = [
     unit: 'B',
     description: 'Brotli bytes for the Master CSS browser runtime bundle.'
   },
+  ...runtimeWasmMetrics,
   {
     id: 'manifest-json-raw-bytes',
     label: 'Manifest JSON raw bytes',
@@ -215,7 +217,7 @@ export const browserLifecycleMetrics = [
     id: 'cssom-rule-count',
     label: 'CSSOM rules',
     unit: 'count',
-    description: 'Recursive CSSOM rule count across accessible stylesheets after the measured scenario.'
+    description: 'Recursive native CSSOM style and leaf rule count across accessible stylesheets, including nested styles and keyframe steps; grouping wrappers are excluded.'
   },
   {
     id: 'runtime-ready-ms',
@@ -245,7 +247,7 @@ export const browserLifecycleMetrics = [
     id: 'runtime-generated-rule-count',
     label: 'Runtime generated rules',
     unit: 'count',
-    description: 'Runtime class utility count or recursive style#master-css rule count after the measured scenario.'
+    description: 'Output rule entries across public runtime snapshot layers, including keyframes blocks and excluding CSSOM layer wrappers.'
   },
   {
     id: 'runtime-generated-rule-count-delta',
@@ -257,7 +259,7 @@ export const browserLifecycleMetrics = [
     id: 'runtime-style-raw-bytes',
     label: 'Runtime style raw bytes',
     unit: 'B',
-    description: 'Raw bytes of style#master-css after the measured scenario.'
+    description: 'UTF-8 bytes of public runtime snapshot cssText after the measured scenario.'
   },
   {
     id: 'runtime-style-raw-bytes-delta',
@@ -269,13 +271,13 @@ export const browserLifecycleMetrics = [
     id: 'retained-class-count',
     label: 'Retained classes',
     unit: 'count',
-    description: 'Runtime retainedClassNames count after the measured scenario.'
+    description: 'Public snapshot retained class count after the measured scenario.'
   },
   {
     id: 'retained-rule-count',
     label: 'Retained rules',
     unit: 'count',
-    description: 'Estimated retained generated rule count after the measured scenario.'
+    description: 'Distinct retained output rule entries identified by layer/key after the measured scenario.'
   },
   {
     id: 'mutation-observer-callback-count',

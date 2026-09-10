@@ -1,3 +1,4 @@
+import { createRuntimeWasmSamples } from './runtime-payload'
 import { summarizeBytes } from './bytes'
 import { analyzeCSSStructure } from './css-structure'
 import type { BenchmarkSample } from './types'
@@ -8,6 +9,7 @@ export function createPayloadSamples(variantId: string, payload: {
   externalCSS: Buffer
   inlineCSS: Buffer
   runtimeJS: Buffer
+  runtimeWasm: Buffer
   manifestJSON: Buffer
   hydrationManifestJSON: Buffer
 }): BenchmarkSample[] {
@@ -16,6 +18,7 @@ export function createPayloadSamples(variantId: string, payload: {
     ...createByteSamples(variantId, 'external-css', payload.externalCSS),
     ...createByteSamples(variantId, 'inline-css', payload.inlineCSS),
     ...createByteSamples(variantId, 'runtime-js', payload.runtimeJS),
+    ...createRuntimeWasmSamples(variantId, payload.runtimeWasm),
     ...createByteSamples(variantId, 'manifest-json', payload.manifestJSON),
     ...createByteSamples(variantId, 'hydration-manifest', payload.hydrationManifestJSON)
   ]

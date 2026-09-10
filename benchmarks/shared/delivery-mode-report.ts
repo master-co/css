@@ -91,7 +91,7 @@ async function createMasterDeliveryModeReport(): Promise<BenchmarkReport> {
     limits: [
       'This suite measures local Chromium initial payload, page load, and Master CSS runtime/progressive adoption cost only.',
       'Master static and Tailwind static variants use CLI-generated external CSS from equivalent rendered fixture intent, not identical class strings.',
-      'Master runtime uses the built browser runtime bundle and default manifest JSON; no upfront generated CSS is delivered.',
+      'Master runtime uses the built browser runtime bundle, Wasm sidecar and default manifest JSON; no upfront generated CSS is delivered.',
       'Master progressive uses @master/css-server to inline style#master-css and hydration manifest, then the built browser runtime adopts that CSS.',
       'Progressive fallback is reported as progressive-adopted = 0 so fixture-specific hydration issues remain visible in the report.',
       'This suite does not measure post-load mutation, route transition, HMR, dev workflow, Vite injection cost, CDN behavior, or public real-world page variance.',

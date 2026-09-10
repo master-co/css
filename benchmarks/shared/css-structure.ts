@@ -1,5 +1,6 @@
 import { generate, parse } from 'css-tree'
 import type { BenchmarkMetric, BenchmarkSample } from './types'
+import { emptySpecificity, maxSpecificity, selectorSpecificity, toSpecificityScore, type SelectorSpecificity, type SelectorNode } from './selector-specificity'
 
 const knownLayers = ['theme', 'base', 'defaults', 'components', 'utilities'] as const
 type KnownLayer = typeof knownLayers[number]
@@ -20,6 +21,7 @@ export interface CSSStructureSummary {
   layerStyleRuleCounts: Record<KnownLayer, number>
   otherLayerStyleRuleCount: number
   selectorCombinatorCount: number
+  maxSelectorSpecificity: SelectorSpecificity
   maxSelectorSpecificityScore: number
   maxSelectorComplexityScore: number
 }
@@ -119,7 +121,7 @@ export const cssStructureMetrics: BenchmarkMetric[] = [
     id: 'max-selector-specificity-score',
     label: 'Max selector specificity score',
     unit: 'score',
-    description: 'Maximum selector specificity represented as ID * 100 + class/attribute/pseudo-class * 10 + type/pseudo-element.'
+    description: 'Lexicographically greatest selector specificity projected as ID * 100 + class * 10 + type. This display score can collide or reverse numeric order when a component exceeds nine; it is not a cascade rank.'
   },
   {
     id: 'max-selector-complexity-score',
@@ -172,7 +174,7 @@ export function createCSSStructureSamples(variantId: string, summary: CSSStructu
   }))
 }
 
-interface CSSNode {
+interface CSSNode extends SelectorNode {
   type?: string
   name?: string
   property?: string
@@ -189,12 +191,7 @@ interface CSSNodeList {
 interface CSSVisitContext {
   inKeyframes: boolean
   layerName: string | undefined
-}
-
-interface SelectorSpecificity {
-  id: number
-  class: number
-  type: number
+  parentSpecificity?: SelectorSpecificity
 }
 
 function createEmptySummary(): CSSStructureSummary {
@@ -220,6 +217,7 @@ function createEmptySummary(): CSSStructureSummary {
     },
     otherLayerStyleRuleCount: 0,
     selectorCombinatorCount: 0,
+    maxSelectorSpecificity: emptySpecificity(),
     maxSelectorSpecificityScore: 0,
     maxSelectorComplexityScore: 0
   }
@@ -227,6 +225,17 @@ function createEmptySummary(): CSSStructureSummary {
 
 function visitCSSNode(node: CSSNode | undefined, context: CSSVisitContext, summary: CSSStructureSummary) {
   if (!node) return
+
+  // CSS Tree style blocks only recognize nesting that begins with &. Reparse
+  // recovered raw rule sequences through its stylesheet grammar, preserving context.
+  if (node.type === 'Raw') {
+    const nested = parse(node.value || '', {
+      positions: false,
+      onParseError(error) { throw new Error(`Cannot analyze recovered CSS: ${error.message}`) }
+    }) as CSSNode
+    visitCSSNode(nested, context, summary)
+    return
+  }
 
   if (node.type === 'Atrule') {
     visitAtRule(node, context, summary)
@@ -254,6 +263,8 @@ function visitAtRule(node: CSSNode, context: CSSVisitContext, summary: CSSStruct
   const hasBlock = Boolean(node.block)
   const nextContext = { ...context }
 
+  if (name === 'scope') nextContext.parentSpecificity = undefined
+
   if (name === 'layer' && hasBlock) {
     summary.layerBlockCount += 1
     nextContext.layerName = getLayerName(node.prelude)
@@ -274,13 +285,14 @@ function visitAtRule(node: CSSNode, context: CSSVisitContext, summary: CSSStruct
 }
 
 function visitRule(node: CSSNode, context: CSSVisitContext, summary: CSSStructureSummary) {
+  const nextContext = { ...context }
   if (!context.inKeyframes) {
     summary.styleRuleCount += 1
     incrementLayerRuleCount(summary, context.layerName)
-    analyzeRulePrelude(node.prelude, summary)
+    nextContext.parentSpecificity = analyzeRulePrelude(node.prelude, summary, context.parentSpecificity)
   }
 
-  visitCSSNode(node.block, context, summary)
+  visitCSSNode(node.block, nextContext, summary)
 }
 
 function incrementLayerRuleCount(summary: CSSStructureSummary, layerName: string | undefined) {
@@ -296,24 +308,24 @@ function incrementLayerRuleCount(summary: CSSStructureSummary, layerName: string
   }
 }
 
-function analyzeRulePrelude(prelude: CSSNode | undefined, summary: CSSStructureSummary) {
+function analyzeRulePrelude(prelude: CSSNode | undefined, summary: CSSStructureSummary, parent?: SelectorSpecificity) {
   const selectors = getTopLevelSelectors(prelude)
 
-  if (!selectors.length && prelude) {
-    summary.selectorCount += 1
-    return
-  }
+  if (!selectors.length && prelude) throw new Error('Cannot calculate specificity for an unparsed selector prelude.')
+  let greatest = emptySpecificity()
 
   for (const selector of selectors) {
-    const specificity = calculateSelectorSpecificity(selector)
-    const specificityScore = toSpecificityScore(specificity)
+    const specificity = selectorSpecificity(selector, parent)
+    greatest = maxSpecificity(greatest, specificity)
     const complexityScore = calculateSelectorComplexity(selector)
 
     summary.selectorCount += 1
     summary.selectorCombinatorCount += countSelectorCombinators(selector)
-    summary.maxSelectorSpecificityScore = Math.max(summary.maxSelectorSpecificityScore, specificityScore)
+    summary.maxSelectorSpecificity = maxSpecificity(summary.maxSelectorSpecificity, specificity)
+    summary.maxSelectorSpecificityScore = toSpecificityScore(summary.maxSelectorSpecificity)
     summary.maxSelectorComplexityScore = Math.max(summary.maxSelectorComplexityScore, complexityScore)
   }
+  return greatest
 }
 
 function getTopLevelSelectors(prelude: CSSNode | undefined) {
@@ -324,84 +336,6 @@ function getTopLevelSelectors(prelude: CSSNode | undefined) {
   const selectors: CSSNode[] = []
   prelude.children?.forEach((child) => {
     if (child.type === 'Selector') selectors.push(child)
-  })
-
-  return selectors
-}
-
-function calculateSelectorSpecificity(selector: CSSNode): SelectorSpecificity {
-  const specificity: SelectorSpecificity = {
-    id: 0,
-    class: 0,
-    type: 0
-  }
-
-  addSelectorSpecificity(selector, specificity)
-  return specificity
-}
-
-function addSelectorSpecificity(node: CSSNode, specificity: SelectorSpecificity) {
-  if (node.type === 'IdSelector') {
-    specificity.id += 1
-    return
-  }
-
-  if (node.type === 'ClassSelector' || node.type === 'AttributeSelector') {
-    specificity.class += 1
-    return
-  }
-
-  if (node.type === 'TypeSelector' || node.type === 'PseudoElementSelector') {
-    specificity.type += 1
-    return
-  }
-
-  if (node.type === 'PseudoClassSelector') {
-    addPseudoClassSpecificity(node, specificity)
-    return
-  }
-
-  forEachChild(node, (child) => addSelectorSpecificity(child, specificity))
-}
-
-function addPseudoClassSpecificity(node: CSSNode, specificity: SelectorSpecificity) {
-  if (node.name === 'where') return
-
-  specificity.class += 1
-  const nestedSpecificity = getNestedSelectorSpecificity(node)
-  specificity.id += nestedSpecificity.id
-  specificity.class += nestedSpecificity.class
-  specificity.type += nestedSpecificity.type
-}
-
-function getNestedSelectorSpecificity(node: CSSNode): SelectorSpecificity {
-  const nested = getNestedSelectors(node)
-  let maxSpecificity: SelectorSpecificity = {
-    id: 0,
-    class: 0,
-    type: 0
-  }
-
-  for (const selector of nested) {
-    const specificity = calculateSelectorSpecificity(selector)
-    if (toSpecificityScore(specificity) > toSpecificityScore(maxSpecificity)) {
-      maxSpecificity = specificity
-    }
-  }
-
-  return maxSpecificity
-}
-
-function getNestedSelectors(node: CSSNode) {
-  const selectors: CSSNode[] = []
-
-  forEachChild(node, function visit(child) {
-    if (child.type === 'Selector') {
-      selectors.push(child)
-      return
-    }
-
-    forEachChild(child, visit)
   })
 
   return selectors
@@ -437,10 +371,6 @@ function countSelectorCombinators(selector: CSSNode) {
 function walkSelector(node: CSSNode, callback: (node: CSSNode) => void) {
   callback(node)
   forEachChild(node, (child) => walkSelector(child, callback))
-}
-
-function toSpecificityScore(specificity: SelectorSpecificity) {
-  return specificity.id * 100 + specificity.class * 10 + specificity.type
 }
 
 function getLayerName(prelude: CSSNode | undefined) {

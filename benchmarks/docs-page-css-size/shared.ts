@@ -27,12 +27,16 @@ type CSSAsset = ByteSummary & {
   url?: string
   resolvedUrl?: string
   tag?: string
+  status?: number
+  contentType?: string
 }
 
 type PageCSSSize = {
   name: string
   url: string
   resolvedUrl: string
+  status: number
+  contentType: string
   css: {
     total: ByteSummary
     inline: ByteSummary
@@ -46,24 +50,31 @@ export type DocsPageCSSSizeSnapshot = {
   suite: 'docs-page-css-size'
   generatedAt: string
   pages: PageCSSSize[]
+  limits: string[]
 }
 
 type FetchedResource = {
   buffer: Buffer
   resolvedUrl: string
   status: number
+  contentType: string
   text: string
 }
 
 export async function collectDocsPageCSSSizeSnapshot(): Promise<DocsPageCSSSizeSnapshot> {
   const input = JSON.parse(await readFile(inputFile, 'utf8')) as PageInput[]
-  const pages = await Promise.all(input.map(collectPageCSSSize))
+  const pages = await requireAllResources(input.map(collectPageCSSSize))
 
   return {
     schemaVersion: 1,
     suite: 'docs-page-css-size',
     generatedAt: new Date().toISOString(),
-    pages: pages.sort((a, b) => b.css.total.rawBytes - a.css.total.rawBytes)
+    pages: pages.sort((a, b) => b.css.total.rawBytes - a.css.total.rawBytes),
+    limits: [
+      'All documents and linked stylesheets must complete successfully with an expected MIME type; any failure rejects the complete snapshot.',
+      'This measures static inline style and linked stylesheet bodies, not browser transfer sizes, JavaScript-injected CSS, CSS import graphs, or applied-rule validity.',
+      'Brotli totals sum independently compressed asset bodies; linked occurrences and inline tags are counted as authored.'
+    ]
   }
 }
 
@@ -101,7 +112,7 @@ export function printSnapshotSummary(snapshot: DocsPageCSSSizeSnapshot) {
 }
 
 async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
-  const page = await fetchResource(input.url)
+  const page = await fetchResource(input.url, 'HTML')
   const $ = load(page.text)
   const inlineAssets = $('style')
     .map((_: number, element: any) => {
@@ -121,14 +132,16 @@ async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
     .get()
     .filter((href: unknown): href is string => typeof href === 'string' && href.length > 0)
 
-  const externalAssets = await Promise.all(externalHrefs.map(async (href: string) => {
+  const externalAssets = await requireAllResources(externalHrefs.map(async (href: string) => {
     const resolvedUrl = new URL(href, page.resolvedUrl).toString()
-    const resource = await fetchResource(resolvedUrl)
+    const resource = await fetchResource(resolvedUrl, 'CSS')
 
     return {
       kind: 'external' as const,
       url: href,
       resolvedUrl: resource.resolvedUrl,
+      status: resource.status,
+      contentType: resource.contentType,
       ...summarizeBytes(resource.buffer)
     }
   }))
@@ -140,6 +153,8 @@ async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
     name: input.name,
     url: input.url,
     resolvedUrl: page.resolvedUrl,
+    status: page.status,
+    contentType: page.contentType,
     css: {
       total: addByteSummaries(inline, external),
       inline,
@@ -152,28 +167,39 @@ async function collectPageCSSSize(input: PageInput): Promise<PageCSSSize> {
   }
 }
 
-async function fetchResource(url: string): Promise<FetchedResource> {
-  let response: Response
+async function requireAllResources<T>(resources: Promise<T>[]): Promise<T[]> {
+  const results = await Promise.allSettled(resources)
+  const errors = results.filter((result): result is PromiseRejectedResult => result.status === 'rejected')
+  if (errors.length) {
+    const causes = errors.map(result => result.reason)
+    throw new AggregateError(causes, causes.map(error => error instanceof Error ? error.message : String(error)).join('\n'))
+  }
+  return results.map(result => (result as PromiseFulfilledResult<T>).value)
+}
 
+async function fetchResource(url: string, kind: 'HTML' | 'CSS'): Promise<FetchedResource> {
   try {
-    response = await fetch(url, {
-      signal: AbortSignal.timeout(fetchTimeoutMS)
-    })
+    const response = await fetch(url, { signal: AbortSignal.timeout(fetchTimeoutMS) })
+    const contentType = response.headers.get('content-type') || ''
+    const mime = contentType.split(';')[0].trim().toLowerCase()
+    const expected = kind === 'CSS' ? ['text/css'] : ['text/html', 'application/xhtml+xml']
+    const failure = !response.ok || response.status === 206
+      ? `HTTP ${response.status} ${response.statusText}`
+      : !expected.includes(mime) ? `Expected ${kind} MIME ${expected.join(' or ')}, received ${contentType || '(missing Content-Type)'}` : undefined
+    if (failure) {
+      await response.body?.cancel().catch(() => undefined)
+      throw new Error(failure)
+    }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    return {
+      buffer,
+      resolvedUrl: response.url || url,
+      status: response.status,
+      contentType,
+      text: buffer.toString('utf8')
+    }
   } catch (error) {
-    throw new Error(`Failed to fetch ${url}: ${error instanceof Error ? error.message : String(error)}`)
-  }
-
-  if (!response.ok && response.status !== 404) {
-    throw new Error(`Failed to fetch ${url}: ${response.status} ${response.statusText}`)
-  }
-
-  const buffer = Buffer.from(await response.arrayBuffer())
-
-  return {
-    buffer,
-    resolvedUrl: response.url || url,
-    status: response.status,
-    text: buffer.toString('utf8')
+    throw new Error(`Failed to fetch ${kind} ${url}: ${error instanceof Error ? error.message : String(error)}`, { cause: error })
   }
 }
 

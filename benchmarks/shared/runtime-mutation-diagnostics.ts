@@ -1,3 +1,4 @@
+import { forceRetainedCleanup, preseedRuntimeTempRules as prepareTempRules } from './runtime-preparation'
 import { createServer, type Server } from 'node:http'
 import { readFile, writeFile } from 'node:fs/promises'
 import { extname, isAbsolute, relative, resolve } from 'node:path'
@@ -360,27 +361,7 @@ async function measureRuntimeMutationDiagnostic(options: {
 async function preseedRuntimeTempRules(page: Page, ruleState: RuntimeMutationRuleStateDescriptor) {
   if (!ruleState.preseedTempRules) return 0
 
-  return page.evaluate(() => {
-    const config = globalThis.__interactionConfig as {
-      classes?: {
-        temp?: string[]
-      }
-    }
-    const runtime = globalThis.masterCSSRuntime as {
-      classUtilities?: {
-        size?: number
-      }
-      ensureClassRules?: (...classNames: string[]) => unknown
-    } | undefined
-    const tempClassNames = config.classes?.temp || []
-    if (!runtime?.ensureClassRules || !tempClassNames.length) return 0
-
-    const before = runtime.classUtilities?.size || 0
-    runtime.ensureClassRules(...tempClassNames)
-    const after = runtime.classUtilities?.size || 0
-
-    return Math.max(0, after - before)
-  })
+  return prepareTempRules(page)
 }
 
 async function traceRuntimeMutationDiagnostic(page: Page) {
@@ -454,17 +435,7 @@ async function traceRuntimeMutationDiagnostic(page: Page) {
       scratchChildCount: scratch?.children.length || 0
     }
   })
-  const forcedRetainedCleanup = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as {
-      flushRetainedClassRules?: () => number
-    } | undefined
-    const startedAt = performance.now()
-    const removedClassCount = runtime?.flushRetainedClassRules?.() || 0
-    return {
-      removedClassCount,
-      durationMs: performance.now() - startedAt
-    }
-  })
+  const forcedRetainedCleanup = await forceRetainedCleanup(page)
   const afterForcedCleanupState = await page.evaluate(() => globalThis.__readInteractionState())
   return {
     events,
@@ -499,6 +470,7 @@ async function writeRuntimeMutationDiagnosticArtifacts(options: {
     beforeState: omitRuntimeStyleText(options.result.beforeState),
     afterTraceState: omitRuntimeStyleText(options.result.afterTraceState),
     afterFlushState: omitRuntimeStyleText(options.result.afterFlushState),
+    afterForcedCleanupState: omitRuntimeStyleText(options.result.afterForcedCleanupState),
     strategyFlush: options.result.strategyFlush,
     cleanupAfterFlush: options.result.cleanupAfterFlush,
     consoleWarnings: options.result.consoleWarnings,
@@ -554,7 +526,7 @@ async function assertRuntimeModeReady(page: Page, modeId: InteractionModeId) {
     ready: document.documentElement.dataset.benchmarkReady,
     textAlign: getComputedStyle(document.getElementById('interaction-style-probe')!).textAlign,
     runtimeAvailable: Boolean(globalThis.masterCSSRuntime),
-    progressive: Boolean(globalThis.masterCSSRuntime?.progressive),
+    progressive: globalThis.masterCSSRuntime?.snapshot().hydration.state === 'progressive',
     htmlHidden: document.documentElement.hasAttribute('hidden')
   }))
 
@@ -677,6 +649,8 @@ function getContentType(file: string) {
       return 'text/javascript; charset=utf-8'
     case '.json':
       return 'application/json; charset=utf-8'
+    case '.wasm':
+      return 'application/wasm'
     case '.png':
       return 'image/png'
     default:

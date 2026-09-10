@@ -118,7 +118,10 @@ async function createStartupDiagnosticsReport(): Promise<BenchmarkReport> {
       'This suite is diagnostic and does not replace end-user production command timing from build-performance.',
       'Module import probes run in separate child processes, so each import metric is a cold diagnostic approximation, not an additive flamegraph.',
       'CLI runProgram probes use the built package core entry to split import and execution while the full CLI command metric still uses the published bin entry.',
+      'The executable CLI bin has no passive import metric: importing it runs argument parsing and the command. Historical cli-bin-module-import-ms is invalid and is not emitted.',
       'Vite diagnostics include a baseline command metric because most full Vite build time is unrelated to Master CSS plugin work.',
+      'Vite source files are unique normalized paths from completed nonempty scanner calls; unchanged scans count, queries/repeats are deduplicated, and the scanned-sources artifact lists them.',
+      'Hook metrics measure the named hooks including declined requests. The unscheduled vite-css-project-entries-import-ms declaration was removed; the existing project-module import probe remains.',
       'Do not use diagnostic numbers as permission to change CSS output, cascade order, source detection, hydration, or public behavior.'
     ],
     artifacts
@@ -174,6 +177,7 @@ function toMetricLabel(id: string) {
 }
 
 function toMetricDescription(id: string) {
+  if (id === 'source-file-count') return 'Unique completed nonempty Vite scan source paths (queries/repeats deduplicated), or the explicit CLI fixture input count.'
   if (id.includes('import')) return 'Cold child-process module import timing for startup diagnostics.'
   if (id.includes('command')) return 'Full child-process command timing measured by the benchmark parent process.'
   if (id.includes('probe')) return 'Benchmark-local probe timing used to split startup and execution costs.'

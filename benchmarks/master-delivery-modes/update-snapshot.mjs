@@ -25,7 +25,7 @@ const modes = [
     family: 'tailwind-css'
   }
 ]
-const byteGroups = ['html', 'external-css', 'inline-css', 'runtime-js', 'manifest-json', 'hydration-manifest']
+const byteGroups = ['html', 'external-css', 'inline-css', 'runtime-js', 'runtime-wasm', 'manifest-json', 'hydration-manifest']
 const byteMetricIds = byteGroups.flatMap((group) => [
   `${group}-raw-bytes`,
   `${group}-gzip-bytes`,
@@ -147,6 +147,7 @@ function createModeResult(fixtureId, modeId) {
       externalCSS: createByteSummary(variantId, 'external-css'),
       inlineCSS: createByteSummary(variantId, 'inline-css'),
       runtimeJS: createByteSummary(variantId, 'runtime-js'),
+      runtimeWasm: createByteSummary(variantId, 'runtime-wasm'),
       manifestJSON: createByteSummary(variantId, 'manifest-json'),
       hydrationManifest: createByteSummary(variantId, 'hydration-manifest')
     },

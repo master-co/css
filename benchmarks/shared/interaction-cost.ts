@@ -1,3 +1,5 @@
+import { forceRetainedCleanup } from './runtime-preparation'
+import { readRuntimeWasm, runtimeWasmFile } from './runtime-payload'
 import { createServer, type Server } from 'node:http'
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
@@ -419,21 +421,7 @@ async function traceInteraction(page: Page, scenarioId: InteractionScenarioId) {
   await client.detach()
 
   if (scenarioId === 'mutation-cleanup-cycle') {
-    const forcedRetainedCleanup = await page.evaluate(() => {
-      const runtime = globalThis.masterCSSRuntime as {
-        flushRetainedClassRules?: () => number
-        retainedClassNames?: Set<string>
-      } | undefined
-      const beforeRetainedClassCount = runtime?.retainedClassNames?.size || 0
-      const startedAt = performance.now()
-      const removedClassCount = runtime?.flushRetainedClassRules?.() || 0
-      return {
-        beforeRetainedClassCount,
-        removedClassCount,
-        durationMs: performance.now() - startedAt,
-        afterRetainedClassCount: runtime?.retainedClassNames?.size || 0
-      }
-    })
+    const forcedRetainedCleanup = await forceRetainedCleanup(page)
     result.details = {
       ...result.details,
       forcedRetainedCleanup
@@ -448,15 +436,31 @@ async function traceInteraction(page: Page, scenarioId: InteractionScenarioId) {
 }
 
 async function measureViewportResizeInteraction(page: Page): Promise<InteractionResult> {
+  const readLayout = () => {
+    const grid = document.querySelector<HTMLElement>('.interaction-grid')!
+    const style = getComputedStyle(grid)
+    const probe = document.getElementById('interaction-style-probe')
+    const textAlign = probe && getComputedStyle(probe).textAlign
+    const columns = style.gridTemplateColumns.split(' ').filter(Boolean)
+    return {
+      width: grid.getBoundingClientRect().width,
+      display: style.display,
+      columns,
+      textAlign,
+      valid: style.display === 'grid' && columns.length === 4 && textAlign === 'center'
+    }
+  }
   const before = await page.evaluate(() => globalThis.__readInteractionState())
-  const beforeWidth = await page.evaluate(() => document.querySelector<HTMLElement>('.interaction-grid')!.getBoundingClientRect().width)
+  const beforeLayout = await page.evaluate(readLayout)
+  const beforeWidth = beforeLayout.width
   const startedAt = performance.now()
   await page.setViewportSize({
     width: 920,
     height: fixedViewport.height
   })
   await page.evaluate(() => globalThis.__waitInteractionFrames(3))
-  const resizedWidth = await page.evaluate(() => document.querySelector<HTMLElement>('.interaction-grid')!.getBoundingClientRect().width)
+  const resizedLayout = await page.evaluate(readLayout)
+  const resizedWidth = resizedLayout.width
   await page.setViewportSize(fixedViewport)
   await page.evaluate(() => globalThis.__waitInteractionFrames(2))
 
@@ -464,6 +468,8 @@ async function measureViewportResizeInteraction(page: Page): Promise<Interaction
     before,
     beforeWidth,
     resizedWidth,
+    beforeLayout,
+    resizedLayout,
     elapsedMs: performance.now() - startedAt
   })
 }
@@ -481,13 +487,17 @@ async function writeInteractionPage(options: {
   const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'interaction-cost', 'pages', options.variantId)
   await resetDirectory(root)
 
-  const files: Record<string, string> = {
+  const runtimeWasm = options.runtimeJS ? await readRuntimeWasm() : Buffer.alloc(0)
+  const files: Record<string, string | Buffer> = {
     'index.html': options.html
   }
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
-  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS.toString('utf8')
+  if (options.runtimeJS) {
+    files['global.min.js'] = options.runtimeJS
+    files[runtimeWasmFile] = runtimeWasm
+  }
   if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
 
   await writeWorkspaceFiles(root, files)
@@ -676,17 +686,13 @@ async function waitForBenchmarkReady(page: Page) {
 
 async function assertInteractionPageReady(page: Page, modeId: InteractionModeId) {
   const state = await page.evaluate(() => {
-    const runtime = (globalThis as typeof globalThis & {
-      masterCSSRuntime?: {
-        progressive?: boolean
-      }
-    }).masterCSSRuntime
+    const runtime = globalThis.masterCSSRuntime
 
     return {
       ready: document.documentElement.dataset.benchmarkReady,
       textAlign: getComputedStyle(document.getElementById('interaction-style-probe')!).textAlign,
       runtimeAvailable: Boolean(runtime),
-      progressive: Boolean(runtime?.progressive),
+      progressive: runtime?.snapshot().hydration.state === 'progressive',
       htmlHidden: document.documentElement.hasAttribute('hidden')
     }
   })
@@ -810,6 +816,8 @@ function getContentType(file: string) {
       return 'text/javascript; charset=utf-8'
     case '.json':
       return 'application/json; charset=utf-8'
+    case '.wasm':
+      return 'application/wasm'
     case '.png':
       return 'image/png'
     default:

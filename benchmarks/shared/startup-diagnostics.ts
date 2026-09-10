@@ -8,6 +8,7 @@ import {
 } from '../fixtures/static'
 import { summarizeBytes } from './bytes'
 import {
+  benchmarkRoot,
   findCSSFiles,
   measureRelativeArtifact,
   readFiles,
@@ -57,7 +58,6 @@ export const startupDiagnosticMetricIds = [
   'cli-entry-import-ms',
   'cli-run-program-ms',
   'cli-child-process-uptime-ms',
-  'cli-bin-module-import-ms',
   'cli-commander-import-ms',
   'cli-commander-parse-ms',
   'cli-core-module-import-ms',
@@ -104,7 +104,6 @@ export const startupDiagnosticMetricIds = [
   'vite-css-scanner-import-ms',
   'vite-css-stylesheet-import-ms',
   'vite-css-project-manifest-import-ms',
-  'vite-css-project-entries-import-ms',
   'vite-css-integration-node-import-ms',
   'vite-css-server-import-ms',
   'vite-css-runtime-import-ms',
@@ -215,7 +214,6 @@ async function runMasterCLIStartupDiagnostic(workspace: string, fixtureId: Bench
 
   const cliPackageFile = resolveBenchmarkPackageFile('@master/css-cli', 'package.json')
   await runImportProbeBatch(workspace, recorder, [
-    ['cli-bin-module-import-ms', fileSpecifier(resolveBenchmarkPackageFile('@master/css-cli', 'dist/bin/index.js'))],
     ['cli-commander-import-ms', 'commander', cliPackageFile],
     ['cli-core-module-import-ms', fileSpecifier(resolveBenchmarkPackageFile('@master/css-cli', 'dist/core.js'))],
     ['cli-generate-module-import-ms', fileSpecifier(resolveBenchmarkPackageFile('@master/css-cli', 'dist/generate.js'))],
@@ -265,7 +263,9 @@ async function runMasterViteStartupDiagnostic(workspace: string, fixtureId: Benc
   recorder.addMeasurements(viteProbe.metrics)
   recorder.addTiming('total-diagnostic-ms', performance.now() - totalStartedAt)
 
-  return collectDiagnosticOutput(workspace, fixtureId, recorder)
+  const result = await collectDiagnosticOutput(workspace, fixtureId, recorder)
+  result.artifacts.push(await measureRelativeArtifact(resolve(workspace, 'scanned-sources.json')))
+  return result
 }
 
 async function runViteBaselineCommand(workspace: string, fixtureId: BenchmarkFixtureId) {
@@ -451,9 +451,12 @@ function renderCLIRunProgramProbe(coreFile: string) {
 function renderViteStartupProbe() {
   return [
     'import { performance } from "node:perf_hooks"',
+    'import { resolve, relative } from "node:path"',
+    'import { writeFile } from "node:fs/promises"',
+    `import { installScannedSourceCounter } from ${JSON.stringify(fileSpecifier(resolve(benchmarkRoot, 'shared/scanned-sources.mjs')))}`,
+    `import { instrumentMasterVitePlugins } from ${JSON.stringify(fileSpecifier(resolve(benchmarkRoot, 'shared/vite-diagnostic-instrumentation.mjs')))}`,
     '',
     'const metrics = {}',
-    'const counts = {}',
     'metrics["vite-node-first-userland-ms"] = performance.now()',
     'const viteImportStartedAt = performance.now()',
     'const vite = await import("vite")',
@@ -462,9 +465,12 @@ function renderViteStartupProbe() {
     'const masterCSSModule = await import("@master/css-vite")',
     'metrics["master-vite-import-ms"] = performance.now() - masterViteImportStartedAt',
     'const pluginFactoryStartedAt = performance.now()',
-    'const plugins = instrumentMasterVitePlugins(masterCSSModule.default({ mode: "static" }))',
+    'const plugins = instrumentMasterVitePlugins(masterCSSModule.default({ mode: "static" }), time)',
     'metrics["master-vite-plugin-factory-ms"] = performance.now() - pluginFactoryStartedAt',
+    'const { MasterCSSScanner } = await import("@master/css-tooling/scanner/node")',
+    'const observed = installScannedSourceCounter(MasterCSSScanner.prototype, process.cwd(), (cwd, source) => resolve(cwd, source.split("?")[0]))',
     'const buildStartedAt = performance.now()',
+    'try {',
     'await vite.build({',
     '    root: process.cwd(),',
     '    configFile: false,',
@@ -478,60 +484,12 @@ function renderViteStartupProbe() {
     '        }',
     '    }',
     '})',
+    '} finally { observed.restore() }',
     'metrics["vite-build-with-master-ms"] = performance.now() - buildStartedAt',
-    'metrics["source-file-count"] = (counts["vite-html-scan-count"] || 0) + (counts["vite-module-scan-count"] || 0)',
+    'metrics["source-file-count"] = observed.files.size',
     'metrics["vite-child-process-uptime-ms"] = performance.now()',
+    'await writeFile(resolve("scanned-sources.json"), JSON.stringify([...observed.files].map(file => relative(process.cwd(), file)).sort(), null, 2) + "\\n")',
     `console.log(${JSON.stringify(probeMarker)} + JSON.stringify(metrics))`,
-    '',
-    'function instrumentMasterVitePlugins(plugins) {',
-    '    return plugins.map((plugin) => {',
-    '        const next = { ...plugin }',
-    '        if (plugin.name === "master-css:scanner") {',
-    '            wrapPluginHook(next, "configResolved", "vite-master-scanner-init-ms")',
-    '        }',
-    '        if (plugin.name === "master-css:usage-graph") {',
-    '            wrapPluginHook(next, "transform", "vite-master-module-scan-ms", () => addCount("vite-module-scan-count"))',
-    '            wrapTransformIndexHtml(next)',
-    '        }',
-    '        if (plugin.name === "master-css:style-entry") {',
-    '            wrapPluginHook(next, "load", "vite-master-style-entry-ms")',
-    '            wrapPluginHook(next, "transform", "vite-master-style-entry-ms")',
-    '        }',
-    '        if (plugin.name === "master-css:style-entry:build") {',
-    '            wrapPluginHook(next, "generateBundle", "vite-master-generate-bundle-ms")',
-    '        }',
-    '        return next',
-    '    })',
-    '}',
-    '',
-    'function wrapPluginHook(plugin, hookName, metricId, before) {',
-    '    const original = plugin[hookName]',
-    '    if (typeof original !== "function") return',
-    '    plugin[hookName] = async function wrappedPluginHook(...args) {',
-    '        before?.()',
-    '        return time(metricId, () => original.apply(this, args))',
-    '    }',
-    '}',
-    '',
-    'function wrapTransformIndexHtml(plugin) {',
-    '    const original = plugin.transformIndexHtml',
-    '    if (!original || typeof original === "string") return',
-    '    if (typeof original === "function") {',
-    '        plugin.transformIndexHtml = async function wrappedTransformIndexHtml(...args) {',
-    '            addCount("vite-html-scan-count")',
-    '            return time("vite-master-html-scan-ms", () => original.apply(this, args))',
-    '        }',
-    '        return',
-    '    }',
-    '    if (!original || typeof original !== "object" || typeof original.handler !== "function") return',
-    '    plugin.transformIndexHtml = {',
-    '        ...original,',
-    '        async handler(...args) {',
-    '            addCount("vite-html-scan-count")',
-    '            return time("vite-master-html-scan-ms", () => original.handler.apply(this, args))',
-    '        }',
-    '    }',
-    '}',
     '',
     'async function time(metricId, callback) {',
     '    const startedAt = performance.now()',
@@ -542,10 +500,6 @@ function renderViteStartupProbe() {
     '    }',
     '}',
     '',
-    'function addCount(metricId) {',
-    '    counts[metricId] = (counts[metricId] || 0) + 1',
-    '}',
-    ''
   ].join('\n')
 }
 

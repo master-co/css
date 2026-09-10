@@ -95,6 +95,8 @@ async function createCSSStructureReport(): Promise<BenchmarkReport> {
       'This suite measures generated CSS artifact structure only; it does not measure browser parse, style recalculation, layout, paint, or interaction cost.',
       'Metrics are derived from a CSS AST, not string matching.',
       'Selector specificity and complexity scores are explanatory structure metrics and are not browser timing measurements.',
+      'Specificity maxima compare ID/class/type tuples before projecting to the legacy decimal score; projected scores are not a total cascade ordering. Historical incorrect scores are not comparable.',
+      'Selector arguments, implicit/explicit nesting and scope boundaries are analyzed from parsed CSS; unparsed selector preludes or unsupported selector-argument nodes fail rather than silently report zero.',
       'Master CSS and Tailwind CSS fixtures target equivalent rendered UI intent, not identical class strings.'
     ],
     artifacts

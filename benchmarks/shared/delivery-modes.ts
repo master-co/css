@@ -1,3 +1,4 @@
+import { readRuntimeWasm, runtimeWasmFile } from './runtime-payload'
 import { createServer, type Server } from 'node:http'
 import { existsSync } from 'node:fs'
 import { readFile, writeFile } from 'node:fs/promises'
@@ -387,14 +388,18 @@ async function writeDeliveryModePage(options: {
   const root = resolve(benchmarkRoot, '.results', options.pageSuite || 'master-delivery-modes', 'pages', options.variantId)
   await resetDirectory(root)
 
-  const files: Record<string, string> = {
+  const runtimeWasm = options.runtimeJS ? await readRuntimeWasm() : Buffer.alloc(0)
+  const files: Record<string, string | Buffer> = {
     'index.html': options.html
   }
 
   if (options.externalCSS !== undefined) files['style.css'] = options.externalCSS
   if (options.inlineCSS !== undefined) files['inline-master-css.css'] = options.inlineCSS
   if (options.hydrationManifestJSON !== undefined) files['hydration-manifest.json'] = options.hydrationManifestJSON
-  if (options.runtimeJS) files['global.min.js'] = options.runtimeJS.toString('utf8')
+  if (options.runtimeJS) {
+    files['global.min.js'] = options.runtimeJS
+    files[runtimeWasmFile] = runtimeWasm
+  }
   if (options.manifestJSON) files['default-manifest.json'] = options.manifestJSON.toString('utf8')
 
   await writeWorkspaceFiles(root, files)
@@ -409,6 +414,7 @@ async function writeDeliveryModePage(options: {
         externalCSS: Buffer.from(options.externalCSS || ''),
         inlineCSS: Buffer.from(options.inlineCSS || ''),
         runtimeJS: options.runtimeJS || Buffer.alloc(0),
+        runtimeWasm,
         manifestJSON: options.manifestJSON || Buffer.alloc(0),
         hydrationManifestJSON: Buffer.from(options.hydrationManifestJSON || '')
       }),
@@ -431,13 +437,8 @@ function collectConsoleWarnings(page: Page) {
 
 async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): Promise<DeliveryModeDiagnostics> {
   const diagnostics = await page.evaluate(() => {
-    const runtime = globalThis.masterCSSRuntime as unknown as {
-      progressive?: boolean
-      hydrationFailureReason?: string
-      style?: HTMLStyleElement | null
-      text?: string
-      classUtilities?: Map<string, unknown>
-    } | undefined
+    const runtime = globalThis.masterCSSRuntime
+    const runtimeState = globalThis.__readBenchmarkRuntimeSnapshot()
     const styleElement = document.querySelector<HTMLStyleElement>('style#master-css')
     const styleRules = styleElement?.sheet?.cssRules
     const hydrationManifestScript = document.getElementById('master-css-hydration-manifest')
@@ -445,12 +446,12 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
     const hydrationManifestRules = Array.isArray(hydrationManifest?.rules) ? hydrationManifest.rules : []
     const hydrationManifestLayerRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules)
     const hydrationManifestLayerExpandedRuleCounts = countHydrationManifestLayerRules(hydrationManifestRules, true)
-    const runtimeStyleText = runtime?.style?.textContent || runtime?.text || ''
-    const runtimeClassUtilityNames = [...(runtime?.classUtilities?.keys?.() || [])].map(String).sort()
+    const runtimeStyleText = runtimeState.runtimeStyleText
+    const runtimeClassUtilityNames = runtimeState.classUtilityNames
     const connectedClassNames = collectConnectedClassNames()
     const runtimeClassUtilityNameSet = new Set(runtimeClassUtilityNames)
     const missingHydratedClassNames = connectedClassNames.filter((className) => !runtimeClassUtilityNameSet.has(className))
-    const cssom = summarizeCSSOM(styleRules)
+    const cssom = globalThis.__benchmarkCSSOM.summarize(styleRules)
     const layerRuleCountMismatches = findLayerRuleCountMismatches(
       hydrationManifestLayerRuleCounts,
       hydrationManifestLayerExpandedRuleCounts,
@@ -465,8 +466,8 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       ready: document.documentElement.dataset.benchmarkReady,
       textAlign: getComputedStyle(document.getElementById('benchmark-style-probe')!).textAlign,
       runtimeAvailable: Boolean(runtime),
-      progressive: Boolean(runtime?.progressive),
-      hydrationFailureReason: runtime?.hydrationFailureReason || '',
+      progressive: runtimeState.progressiveAdopted === 1,
+      hydrationFailureReason: runtimeState.hydrationFailureReason,
       htmlHidden: document.documentElement.hasAttribute('hidden'),
       hydrationManifestRuleCount: hydrationManifestRules.length,
       hydrationManifestLayerRuleCounts,
@@ -479,7 +480,7 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       hydrationManifestSelectorsMissingFromCSSOM,
       runtimeClassUtilityCount: runtimeClassUtilityNames.length,
       runtimeClassUtilityNames,
-      runtimeGeneratedRuleCount: cssom.totalRuleCount,
+      runtimeGeneratedRuleCount: runtimeState.runtimeGeneratedRuleCount,
       runtimeStyleRawBytes: new TextEncoder().encode(runtimeStyleText).length,
       runtimeStyleText,
       connectedClassCount: connectedClassNames.length,
@@ -575,58 +576,6 @@ async function readDeliveryDiagnostics(page: Page, consoleWarnings: string[]): P
       return [...names].sort()
     }
 
-    function summarizeCSSOM(rules?: CSSRuleList) {
-      const layerRuleCounts: Record<string, number> = {}
-      const layerSelectorTexts: Record<string, string[]> = {}
-      let layerRuleCount = 0
-      let totalRuleCount = 0
-
-      if (rules) {
-        for (const rule of rules) {
-          const childRules = 'cssRules' in rule ? (rule as CSSGroupingRule).cssRules : undefined
-          if (childRules) {
-            const name = 'name' in rule ? String((rule as CSSGroupingRule & { name?: string }).name || 'anonymous') : rule.constructor.name
-            layerRuleCounts[name] = childRules.length
-            layerSelectorTexts[name] = collectSelectorTexts(childRules)
-            layerRuleCount += childRules.length
-            totalRuleCount += countCSSRules(childRules)
-          } else {
-            totalRuleCount++
-          }
-        }
-      }
-
-      return {
-        layerRuleCount,
-        layerRuleCounts,
-        layerSelectorTexts,
-        totalRuleCount
-      }
-    }
-
-    function collectSelectorTexts(rules?: CSSRuleList) {
-      if (!rules) return []
-      const selectors: string[] = []
-      for (const rule of rules) {
-        if ('selectorText' in rule) {
-          selectors.push(String((rule as CSSStyleRule).selectorText))
-        } else if ('cssRules' in rule) {
-          selectors.push(...collectSelectorTexts((rule as CSSGroupingRule).cssRules))
-        }
-      }
-      return selectors
-    }
-
-    function countCSSRules(rules?: CSSRuleList): number {
-      if (!rules) return 0
-      let total = 0
-      for (const rule of rules) {
-        total += 'cssRules' in rule
-          ? countCSSRules((rule as CSSGroupingRule).cssRules)
-          : 1
-      }
-      return total
-    }
   })
 
   return {
@@ -711,7 +660,7 @@ async function assertDeliveryModeCorrect(page: Page, modeId: DeliveryModeId) {
     ready: document.documentElement.dataset.benchmarkReady,
     textAlign: getComputedStyle(document.getElementById('benchmark-style-probe')!).textAlign,
     runtimeAvailable: Boolean(globalThis.masterCSSRuntime),
-    progressive: Boolean(globalThis.masterCSSRuntime?.progressive),
+    progressive: globalThis.masterCSSRuntime?.snapshot().hydration.state === 'progressive',
     htmlHidden: document.documentElement.hasAttribute('hidden')
   }))
 
@@ -858,6 +807,8 @@ function getContentType(file: string) {
       return 'text/javascript; charset=utf-8'
     case '.json':
       return 'application/json; charset=utf-8'
+    case '.wasm':
+      return 'application/wasm'
     case '.png':
       return 'image/png'
     default:
@@ -888,14 +839,6 @@ function assertExistingFile(file: string, message: string) {
 }
 
 declare global {
-  var MasterCSSRuntime: {
-    prototype: {
-      observe: (...args: unknown[]) => unknown
-    }
-  }
-  var masterCSSRuntime: {
-    progressive?: boolean
-  }
   var __deliveryMetrics: {
     error?: string
     runtimeScriptLoadedMs?: number

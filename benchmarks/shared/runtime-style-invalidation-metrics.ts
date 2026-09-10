@@ -71,7 +71,7 @@ export const runtimeStyleInvalidationMetrics = [
     id: 'runtime-generated-rule-count-delta',
     label: 'Runtime rule delta',
     unit: 'count',
-    description: 'Change in runtime classUtilities size after the diagnostic action.'
+    description: 'Change in public snapshot output rule entries across layers (including keyframes blocks) after the diagnostic action.'
   },
   {
     id: 'preseeded-runtime-rule-count',
@@ -143,37 +143,37 @@ export const runtimeStyleInvalidationMetrics = [
     id: 'runtime-utility-count-before',
     label: 'Runtime utility count before',
     unit: 'count',
-    description: 'Runtime classUtilities.size before trace collection.'
+    description: 'Public snapshot generated class-name count before trace collection.'
   },
   {
     id: 'runtime-utility-count-after',
     label: 'Runtime utility count after trace',
     unit: 'count',
-    description: 'Runtime classUtilities.size after trace collection.'
+    description: 'Public snapshot generated class-name count after trace collection.'
   },
   {
     id: 'runtime-utility-count-after-flush',
     label: 'Runtime utility count after flush',
     unit: 'count',
-    description: 'Runtime classUtilities.size after the post-trace product settle window.'
+    description: 'Public snapshot generated class-name count after the post-trace product settle window.'
   },
   {
     id: 'retained-class-count-before',
     label: 'Retained classes before',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size before trace collection.'
+    description: 'Public snapshot retained class count before trace collection.'
   },
   {
     id: 'retained-class-count-after',
     label: 'Retained classes after trace',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size after trace collection.'
+    description: 'Public snapshot retained class count after trace collection.'
   },
   {
     id: 'retained-class-count-after-flush',
     label: 'Retained classes after flush',
     unit: 'count',
-    description: 'Runtime retainedClassNames.size after the post-trace product settle window.'
+    description: 'Public snapshot retained class count after the post-trace product settle window.'
   },
   {
     id: 'retained-rule-count-after-flush',
@@ -191,25 +191,25 @@ export const runtimeStyleInvalidationMetrics = [
     id: 'retained-cleanup-removed-class-count',
     label: 'Forced retained cleanup classes',
     unit: 'count',
-    description: 'Class count removed by the out-of-trace flushRetainedClassRules() validation.'
+    description: 'Inactive retained class count explicitly removed through public deleteClassRules() outside trace collection.'
   },
   {
     id: 'retained-cleanup-duration-ms',
     label: 'Forced retained cleanup duration',
     unit: 'ms',
-    description: 'Duration of the out-of-trace flushRetainedClassRules() validation.'
+    description: 'Duration of the explicit public deleteClassRules() operation outside trace collection; excludes the product settle window.'
   },
   {
     id: 'computed-style-valid',
     label: 'Computed style valid',
     unit: 'count',
-    description: '1 when the computed-style smoke check passed.'
+    description: '1 when every cleanup cycle passes alignment and temporary-width checks, or the idle alignment probe passes. Correctness reads are part of measured work.'
   },
   {
     id: 'cleanup-valid',
     label: 'Cleanup valid',
     unit: 'count',
-    description: '1 when temporary DOM nodes are removed and temporary classes are absent from runtime classCounts after product settle.'
+    description: '1 when temporary DOM nodes are removed and temporary classes are absent from public snapshot usageCounts after product settle.'
   },
   {
     id: 'progressive-adopted',

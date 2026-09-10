@@ -43,19 +43,19 @@ const progressiveHydrationDiagnosticMetrics = [
     id: 'cssom-layer-rule-count',
     label: 'CSSOM layer rules',
     unit: 'count',
-    description: 'Nested CSSOM rules inside top-level layer/grouping rules.'
+    description: 'Direct CSSOM child rules summed across top-level CSSLayerBlockRule blocks; repeated layer names are combined and other grouping rules are excluded.'
   },
   {
     id: 'runtime-generated-rule-count',
     label: 'Runtime style rules',
     unit: 'count',
-    description: 'Recursive CSSOM rule count in style#master-css after runtime observe/hydration.'
+    description: 'Output rule entries across public runtime snapshot layers, including keyframes blocks and excluding CSSOM layer wrappers.'
   },
   {
     id: 'runtime-style-raw-bytes',
     label: 'Runtime style raw bytes',
     unit: 'B',
-    description: 'Raw bytes of style#master-css after runtime observe/hydration.'
+    description: 'UTF-8 bytes of public runtime snapshot cssText after runtime observe/hydration.'
   },
   {
     id: 'connected-class-count',
@@ -67,7 +67,7 @@ const progressiveHydrationDiagnosticMetrics = [
     id: 'missing-hydrated-class-count',
     label: 'Missing hydrated classes',
     unit: 'count',
-    description: 'Connected class names not represented in runtime classUtilities after observe/hydration.'
+    description: 'Connected class names without generated rules in the public runtime snapshot after observe/hydration; includes non-utility marker classes.'
   }
 ] satisfies BenchmarkMetric[]
 

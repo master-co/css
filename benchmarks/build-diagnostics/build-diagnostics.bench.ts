@@ -50,7 +50,7 @@ const metricMetadata: Record<typeof buildDiagnosticMetricIds[number], Omit<Bench
   'source-file-count': {
     label: 'Source files scanned',
     unit: 'count',
-    description: 'Number of fixture source files scanned by the diagnostic path.'
+    description: 'Vite counts unique normalized source paths whose nonempty scanner scan completed, including unchanged scans; queries and repeated calls are deduplicated. CLI counts its explicit fixture inputs.'
   },
   'css-entry-count': {
     label: 'CSS entries',
@@ -105,22 +105,22 @@ const metricMetadata: Record<typeof buildDiagnosticMetricIds[number], Omit<Bench
   'vite-master-html-scan-ms': {
     label: 'Vite HTML scan',
     unit: 'ms',
-    description: 'Time spent scanning transformed HTML.'
+    description: 'Total HTML usage-graph hook time, including eligibility checks.'
   },
   'vite-master-module-scan-ms': {
     label: 'Vite module scan',
     unit: 'ms',
-    description: 'Time spent scanning transformed Vite modules.'
+    description: 'Total usage-graph transform hook time, including skipped module requests.'
   },
   'vite-master-style-entry-ms': {
     label: 'Vite style entry',
     unit: 'ms',
-    description: 'Time spent handling Master CSS style entry transforms and virtual CSS loads.'
+    description: 'Total style-entry load and transform hook time, including declined requests.'
   },
   'vite-master-generate-bundle-ms': {
-    label: 'Vite bundle CSS extraction',
+    label: 'Vite generateBundle hook',
     unit: 'ms',
-    description: 'Time spent extracting generated CSS and splicing it into the final CSS bundle.'
+    description: 'Time spent in the Master CSS generateBundle hook; other output hooks are measured only within total build time.'
   }
 }
 

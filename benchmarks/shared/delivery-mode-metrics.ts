@@ -1,3 +1,4 @@
+import { runtimeWasmMetrics } from './runtime-payload'
 import type { BenchmarkMetric } from './types'
 
 export const masterDeliveryModeMetrics = [
@@ -73,6 +74,7 @@ export const masterDeliveryModeMetrics = [
     unit: 'B',
     description: 'Brotli bytes for the Master CSS browser runtime bundle.'
   },
+  ...runtimeWasmMetrics,
   {
     id: 'manifest-json-raw-bytes',
     label: 'Manifest JSON raw bytes',
@@ -203,12 +205,12 @@ export const masterDeliveryModeMetrics = [
     id: 'runtime-generated-rule-count',
     label: 'Runtime generated rules',
     unit: 'count',
-    description: 'CSSOM rule count in style#master-css after runtime observe/hydration.'
+    description: 'Output rule entries across public runtime snapshot layers, including keyframes blocks and excluding CSSOM layer wrappers.'
   },
   {
     id: 'runtime-style-raw-bytes',
     label: 'Runtime style raw bytes',
     unit: 'B',
-    description: 'Raw bytes of style#master-css after runtime observe/hydration.'
+    description: 'UTF-8 bytes of public runtime snapshot cssText after runtime observe/hydration.'
   }
 ] satisfies BenchmarkMetric[]

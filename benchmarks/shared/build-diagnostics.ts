@@ -1,5 +1,7 @@
+import { installScannedSourceCounter } from './scanned-sources.mjs'
+import { instrumentMasterVitePlugins } from './vite-diagnostic-instrumentation.mjs'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
-import { dirname, resolve } from 'node:path'
+import { dirname, relative, resolve } from 'node:path'
 import { performance } from 'node:perf_hooks'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
@@ -221,27 +223,34 @@ async function runMasterViteDiagnostic(workspace: string, fixtureId: BenchmarkFi
 
   const totalStartedAt = performance.now()
   const masterCSS = await loadMasterCSSVite()
-  const plugins = instrumentMasterVitePlugins(masterCSS({ mode: 'static' }), recorder)
+  const plugins = instrumentMasterVitePlugins(masterCSS({ mode: 'static' }), (id, callback) => recorder.time(id, callback))
 
   const build = await loadViteBuild()
-  await recorder.time('vite-total-build-ms', () => build({
-    root: workspace,
-    configFile: false,
-    logLevel: 'silent',
-    plugins,
-    build: {
-      outDir: 'dist',
-      emptyOutDir: true,
-      rollupOptions: {
-        input: 'index.html'
+  const observed = installScannedSourceCounter(MasterCSSScanner.prototype, workspace, (cwd, source) => resolve(cwd, source.split('?')[0]))
+  try {
+    await recorder.time('vite-total-build-ms', () => build({
+      root: workspace,
+      configFile: false,
+      logLevel: 'silent',
+      plugins,
+      build: {
+        outDir: 'dist',
+        emptyOutDir: true,
+        rollupOptions: {
+          input: 'index.html'
+        }
       }
-    }
-  }))
+    }))
+  } finally { observed.restore() }
 
   recorder.addTiming('total-diagnostic-ms', performance.now() - totalStartedAt)
-  recorder.setCount('source-file-count', (recorder.counts['vite-html-scan-count'] || 0) + (recorder.counts['vite-module-scan-count'] || 0))
+  recorder.setCount('source-file-count', observed.files.size)
+  const sourceFile = resolve(workspace, 'scanned-sources.json')
+  await writeFile(sourceFile, JSON.stringify([...observed.files].map(file => relative(workspace, file)).sort(), null, 2) + '\n')
 
-  return collectDiagnosticOutput(workspace, fixtureId, recorder)
+  const result = await collectDiagnosticOutput(workspace, fixtureId, recorder)
+  result.artifacts.push(await measureRelativeArtifact(sourceFile))
+  return result
 }
 
 async function runViteBaselineDiagnostic(workspace: string, fixtureId: BenchmarkFixtureId) {
@@ -273,72 +282,6 @@ async function runViteBaselineDiagnostic(workspace: string, fixtureId: Benchmark
   })
 
   return performance.now() - startedAt
-}
-
-function instrumentMasterVitePlugins(plugins: VitePlugin[], recorder: DiagnosticRecorder): VitePlugin[] {
-  return plugins.map((plugin) => {
-    const next = { ...plugin } as VitePlugin
-
-    if (plugin.name === 'master-css:scanner') {
-      wrapPluginHook(next, 'configResolved', 'vite-master-scanner-init-ms', recorder)
-    }
-
-    if (plugin.name === 'master-css:usage-graph') {
-      wrapPluginHook(next, 'transform', 'vite-master-module-scan-ms', recorder, () => {
-        recorder.addCount('vite-module-scan-count')
-      })
-      wrapTransformIndexHtml(next, recorder)
-    }
-
-    if (plugin.name === 'master-css:style-entry') {
-      wrapPluginHook(next, 'load', 'vite-master-style-entry-ms', recorder)
-      wrapPluginHook(next, 'transform', 'vite-master-style-entry-ms', recorder)
-    }
-
-    if (plugin.name === 'master-css:style-entry:build') {
-      wrapPluginHook(next, 'generateBundle', 'vite-master-generate-bundle-ms', recorder)
-    }
-
-    return next
-  })
-}
-
-function wrapPluginHook(plugin: VitePlugin, hookName: string, metricId: string, recorder: DiagnosticRecorder, before?: () => void) {
-  const original = plugin[hookName]
-  if (typeof original !== 'function') return
-
-  Object.assign(plugin, {
-    [hookName]: async function wrappedPluginHook(this: unknown, ...args: unknown[]) {
-      before?.()
-      return recorder.time(metricId, () => original.apply(this, args))
-    }
-  })
-}
-
-function wrapTransformIndexHtml(plugin: VitePlugin, recorder: DiagnosticRecorder) {
-  const original = plugin.transformIndexHtml
-  if (!original || typeof original === 'string') return
-
-  if (typeof original === 'function') {
-    plugin.transformIndexHtml = async function wrappedTransformIndexHtml(this: unknown, ...args: unknown[]) {
-      recorder.addCount('vite-html-scan-count')
-      return recorder.time('vite-master-html-scan-ms', () => original.apply(this, args))
-    }
-    return
-  }
-
-  if (!isHookObject(original) || typeof original.handler !== 'function') return
-  plugin.transformIndexHtml = {
-    ...original,
-    async handler(this: unknown, ...args: unknown[]) {
-      recorder.addCount('vite-html-scan-count')
-      return recorder.time('vite-master-html-scan-ms', () => original.handler.apply(this, args))
-    }
-  }
-}
-
-function isHookObject(value: unknown): value is { handler: (...args: unknown[]) => unknown } & Record<string, unknown> {
-  return !!value && typeof value === 'object'
 }
 
 async function collectDiagnosticOutput(workspace: string, fixtureId: BenchmarkFixtureId, recorder: DiagnosticRecorder): Promise<DiagnosticRunResult> {

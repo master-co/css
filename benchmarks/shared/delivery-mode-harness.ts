@@ -1,3 +1,5 @@
+import { renderRuntimeSnapshotReader } from './runtime-state'
+import { renderCSSOMReader } from './cssom'
 export function addStaticHarness(html: string) {
   return addReadyHarness(
     addStyleProbe(
@@ -15,6 +17,8 @@ export function addRuntimeHarness(html: string, options: {
 
   return insertBeforeHeadEnd(withVisibility, [
     '    <script>',
+    renderRuntimeSnapshotReader(),
+    renderCSSOMReader(),
     '        window.__benchmarkReady = false;',
     '        window.__deliveryMetrics = {',
     '            runtimeScriptLoadedMs: 0,',
@@ -28,6 +32,7 @@ export function addRuntimeHarness(html: string, options: {
     '    </script>',
     '    <script src="/global.min.js"></script>',
     '    <script>',
+    renderRuntimeSnapshotReader(),
     '        (() => {',
     '            const metrics = window.__deliveryMetrics;',
     '            metrics.runtimeScriptLoadedMs = performance.now();',
@@ -41,9 +46,10 @@ export function addRuntimeHarness(html: string, options: {
     '                metrics.runtimeObserveMs = finishedAt - startedAt;',
     '                metrics.runtimeReadyMs = finishedAt;',
     '                metrics.runtimeBootstrapMs = finishedAt - metrics.runtimeScriptLoadedMs;',
-    '                metrics.progressiveAdopted = this.progressive ? 1 : 0;',
-    '                metrics.runtimeGeneratedRuleCount = countCSSRules(this.style?.sheet?.cssRules);',
-    '                metrics.runtimeStyleRawBytes = new TextEncoder().encode(this.style?.textContent || this.text || "").length;',
+    '                const state = globalThis.__readBenchmarkRuntimeSnapshot(this.snapshot());',
+    '                metrics.progressiveAdopted = state.progressiveAdopted;',
+    '                metrics.runtimeGeneratedRuleCount = state.runtimeGeneratedRuleCount;',
+    '                metrics.runtimeStyleRawBytes = state.runtimeStyleRawBytes;',
     '                requestAnimationFrame(() => requestAnimationFrame(() => {',
     '                    const marker = document.getElementById("benchmark-loaded");',
     '                    marker.dataset.ready = "true";',
@@ -52,18 +58,6 @@ export function addRuntimeHarness(html: string, options: {
     '                }));',
     '                return result;',
     '            };',
-    '            function countCSSRules(rules) {',
-    '                if (!rules) return 0;',
-    '                let total = 0;',
-    '                for (const rule of rules) {',
-    '                    if ("cssRules" in rule) {',
-    '                        total += countCSSRules(rule.cssRules);',
-    '                    } else {',
-    '                        total++;',
-    '                    }',
-    '                }',
-    '                return total;',
-    '            }',
     '        })();',
     '    </script>'
   ].join('\n'))
@@ -72,6 +66,8 @@ export function addRuntimeHarness(html: string, options: {
 function addReadyHarness(html: string) {
   return insertBeforeBodyEnd(html, [
     '    <script>',
+    renderRuntimeSnapshotReader(),
+    renderCSSOMReader(),
     '        window.__benchmarkReady = false;',
     '        requestAnimationFrame(() => requestAnimationFrame(() => {',
     '            const marker = document.getElementById("benchmark-loaded");',
