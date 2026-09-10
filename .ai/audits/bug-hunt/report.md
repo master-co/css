@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 提交交接：依使用者要求，本次保存0183 source-map及0184 conditional compose已收尾的有界查核、原始證據與2個重現腳本。產品／套件測試仍依賴未完成graph實作，0185新工作與其他對話Site變更保留工作區。50份歷史log雜湊一致；0184的483來源中467仍一致，16份已由0185更新，故舊PASS不代表目前版本。證據依賴記錄的工作區來源，非乾淨checkout驗證。57historical/52fixed/5unresolved、10blocked、4gates/4candidates及0038身分暫停維持；目標active，未推送。0185已改善直接輸出順序，但qualified managed import仍FAIL；接續核對最終native CLI／browser、來源與產物並同步帳本後，才能結案BH-0057。[提交核對](evidence/0184-commit-validation.json)；[0184原交接](progress-history-0184-commit.md)。
+- 0187：Rust graph 已提供每檔 outputMappings，保留長 import URL、資源改寫與 compose 的原始位置；直接入口遷移仍未完成。BH-0058 marker 誤改作者字串已修復；BH-0057 補充修復 preserveNativeCSS:false 丟失條件／匿名 layer。Rust111、compiler316PASS/1個既有 qualified import FAIL；最終 marker15／suppression18／graph126browser PASS。Vite112PASS/6個0183既有啟動缺檔恢復 FAIL；binding17、Site13及lint/types/Clippy/fmt/codegen/parity PASS（Site75warnings）。58historical/54fixed/4unresolved、65checked/10blocked；全scope及0038身分暫停維持。下一步將 graph mappings 帶過 bundle／inline／資產交付，再遷移既有 file/rendered/project；不能以局部 graph 成功宣稱原入口完成。目標active；本次提交0185–0187帳本／重現，產品改動與0188保留工作區，未推送。[提交核對](evidence/0187-commit-validation.json)。[證據](evidence/0187-final-checks.json)；[批次](batches/0187-graph-output-mappings.md)；[前次交接](progress-history-0187-graph-maps.md)。
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
@@ -114,9 +114,13 @@ Pure CSS exposed the same loss as Sass. Next now renders original prepared input
 
 Renderer received parser nativeCSS alone, dropping lowered compose rules. Rendering finalized CSS preserves both without duplication or exporting reference-only definitions. Compiler controls and actual Next dev/production pass. [Evidence](evidence/0183-next-source-offset-findings.json).
 
-## BH-0057 · P1 · Outer native conditions leave compose unlowered
+## BH-0057 · P1 · 原生條件內 compose 與直接輸出順序
 
-0184 repairs traversal of ordinary media/supports/container/layer/starting-style and preserves arbitrary native children in graph output. Native/Wasm graph and authored CSS controls pass72browserobservations. Direct output now expands compose but still appends lowered rules after native CSS, reversing sibling order and splitting anonymous layers:15browserPASS/9FAIL,32px instead of48px. Rust98PASS/2newFAIL andcompiler305PASS/1newFAIL retain these regressions. BH-0057 remains partial; reuse structural Rust output assembly for Node/universal direct APIs while retaining original maps. [Evidence](evidence/0184-final-checks.json);[repro](repros/native-conditional-matrix.mjs);[original finding](evidence/0183-output-maps-findings.json).
+已修復。Rust保留條件與匿名layer內的輸出位置；Node、universal native/Wasm、Rust project與mcss使用完整css，metadata維持獨立視圖。106compiler／14project+CLI Rust tests及180browser、原生CLI3、Next6驗證通過。Qualified child managed imports仍屬BH-0004，compiler全套311PASS/1FAIL保留。[0185證據](evidence/0185-final-checks.json)；[原始報告](progress-history-0185-ordered.md)。0187再修復graph native suppression丟失條件／匿名layer，18browserPASS；[補充證據](evidence/0187-suppression-finding.json)。
+
+## BH-0058 · P2 · Graph compose marker 誤改作者字串
+
+已修復。原先 raw replacen 選中字串內的 marker，將 composed CSS 寫入 content 並漏掉實際規則；改由 Rust lexer 定位真實 at-rule。Native/Wasm graph 修前6個browserFAIL，修後含原生／direct控制15PASS。[0187證據](evidence/0187-marker-finding.json)。
 
 ## BH-0001 · P2 · CSS 字串與註解被當成動畫宣告
 
@@ -359,7 +363,6 @@ Fixed0178: strict complete resource collection withstatus/MIME checks,URL body-f
 - 目標重新啟用後，依規則重設停滯計數。恢復後第一次核對仍無解除條件；目標目前active、未完成，先前blocked紀錄保留。[新核對](evidence/0087-resumed-1-check-1.json)。
 
 - 恢復後再連續三輪確認條件未變，目標已再次標為blocked；所有未完成要求與接續步驟保留於0087。
-
 
 歷史進度原文移至 [修復報告歷史進度（0130整理）](report-history-0130.md)；目前狀態以原檔的最新交接為準。
 

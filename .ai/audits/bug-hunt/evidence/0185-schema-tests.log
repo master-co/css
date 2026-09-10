@@ -1,0 +1,9 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/schema
+
+
+ Test Files  2 passed (2)
+      Tests  3 passed (3)
+   Start at  17:35:04
+   Duration  93ms (transform 62%, import 24%, tests 7%, worker 7%)
+

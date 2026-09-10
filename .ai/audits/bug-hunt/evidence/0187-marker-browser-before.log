@@ -1,0 +1,17 @@
+{"source":"@utilities{paint{padding:2rem}}.label::before{content:\"@--master-css-compose-slot-0;\"}.card{@compose paint;}","css":{"authored":".label::before{content:\"@--master-css-compose-slot-0;\"}.card{padding:2rem}","direct-native":".label:before {\n  content: \"@--master-css-compose-slot-0;\";\n}\n\n.card{padding:2rem}","graph-native":".label:before {\n  content: \".card{padding:2rem}\";\n}\n\n@--master-css-compose-slot-0;","direct-wasm":".label:before {\n  content: \"@--master-css-compose-slot-0;\";\n}\n\n.card{padding:2rem}","graph-wasm":".label:before {\n  content: \".card{padding:2rem}\";\n}\n\n@--master-css-compose-slot-0;"}}
+{"browser":"chromium","path":"authored","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"chromium","path":"direct-native","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"chromium","path":"graph-native","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"browser":"chromium","path":"direct-wasm","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"chromium","path":"graph-wasm","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"browser":"firefox","path":"authored","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"firefox","path":"direct-native","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"firefox","path":"graph-native","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"browser":"firefox","path":"direct-wasm","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"firefox","path":"graph-wasm","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"browser":"webkit","path":"authored","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"webkit","path":"direct-native","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"webkit","path":"graph-native","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"browser":"webkit","path":"direct-wasm","actual":{"content":"\"@--master-css-compose-slot-0;\"","padding":"32px"},"pass":true}
+{"browser":"webkit","path":"graph-wasm","actual":{"content":"\".card{padding:2rem}\"","padding":"0px"},"pass":false}
+{"observations":15,"failures":6}

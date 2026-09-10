@@ -1,0 +1,12 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.71s
+     Running tests/bug_hunt_graph_output_mappings.rs (target/debug/deps/bug_hunt_graph_output_mappings-ad2c11f0f8cd9994)
+
+running 4 tests
+test graph_native_anchor_survives_import_url_length_change ... ok
+test graph_resource_relocation_preserves_later_authored_ranges ... ok
+test graph_compose_slot_does_not_replace_a_quoted_marker ... ok
+test graph_compose_and_native_siblings_keep_original_child_anchors ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+

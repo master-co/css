@@ -1,0 +1,108 @@
+{
+  "batch": "0186-qualified-managed-imports",
+  "recordedAt": "2026-09-10T10:06:13.328794+00:00",
+  "head": "75b348d07fafe87c3b804e3fb56dfe4ee4340d04",
+  "status": "bounded verification complete; BH0004 remains unresolved; goal active",
+  "results": {
+    "legacy": {
+      "comparisons": 60,
+      "pass": 21,
+      "fail": 39,
+      "cascadeFailure": 21,
+      "typedRefusal": 18,
+      "nativeWasmParityCases": 10
+    },
+    "qualifiedManaged": {
+      "observations": 60,
+      "failures": 30,
+      "byPath": {
+        "direct-native": {
+          "pass": 2,
+          "fail": 10
+        },
+        "prepared-native": {
+          "pass": 12,
+          "fail": 0
+        },
+        "direct-wasm": {
+          "pass": 2,
+          "fail": 10
+        },
+        "prepared-wasm": {
+          "pass": 12,
+          "fail": 0
+        },
+        "rendered-node": {
+          "pass": 2,
+          "fail": 10
+        }
+      }
+    }
+  },
+  "classification": "All new qualified failures are product CSS_PRINT_ERROR; no harness/build/environment failure. Legacy39 remains current after0185. Successful prepared controls prove compilation and retained manifest/native nodes, not full browser resource/map delivery.",
+  "rootCause": "Rust resolve_css_import_graph_file wraps entire authored child including managed definitions into import condition/layer blocks. Direct compiler only consumes managed definitions at stylesheet top level. Native conditional traversal is for native compose/variant and cannot make nested managed authoring correct. Prepared compile_css_stylesheet_graph independently parses each original file and merges graph manifest before rendering native output in original import boundaries.",
+  "next": [
+    "Migrate existing direct file/rendered/project consumers onto graph manifest/native-output separation rather than hoisting authoring text or a TypeScript semantic fallback.",
+    "Extend/reuse Rust graph output mappings and existing bundle inlining/asset delivery while retaining references, resource ownership, class pruning and original source maps.",
+    "Preserve original anonymous-layer identity, qualified external imports and namespace boundaries; retaining a typed refusal does not complete support.",
+    "Rerun retained qualified regression plus legacy60 and direct/graph/native/Wasm/actual file/CLI/host browsers after implementation."
+  ],
+  "counts": {
+    "historical": 57,
+    "fixed": 53,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "remaining": [
+    "BH-0004 full import graph/public path/host delivery; legacy60browser rerun0186:21PASS/39FAIL (21cascade errors/18typed refusals)",
+    "BH-0004 qualified imported child managed definitions: direct CSS_PRINT_ERROR with/without compose; prepared native/Wasm controls PASS; retained new regression fails",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Six Vite build-watch startup missing-reference failures",
+    "Internal emittedModules CSS proxy ?direct HTTP500",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Four original candidates: compiler/MCP .mjs discovery; parallel Webpack shared dist; standalone Node Wasm file URL fetch; legacy-native-compose insertion",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "preservation": {
+    "baselineSourceCount": 492,
+    "unchangedBaselineSources": 492,
+    "onlyNewExecutableSource": ".ai/audits/bug-hunt/repros/qualified-managed-matrix.mjs",
+    "sources": "0186-source-hashes-final.json",
+    "artifacts": "0185-artifacts-final.json unchanged",
+    "productEdits": false,
+    "index": "empty"
+  },
+  "identityConfirmation": "not received;0038paused",
+  "commitOrPush": false,
+  "logs": {
+    "0186-legacy-import-browser.log": {
+      "sha256": "852f0e97dd62c21bb8a2bc080920b4718a95cebc622fb770547785aaa7463e06",
+      "bytes": 21825
+    },
+    "0186-qualified-managed-matrix.log": {
+      "sha256": "b1a755164dbfe86c9af4ab2621e0025a697d287ba8b31daaccaf88a74a226a4b",
+      "bytes": 33535
+    },
+    "0186-context-final.log": {
+      "sha256": "c1693aaf238ef7dcdc87f87479a10484e28ac9e590815621aa6d874aa821ce50",
+      "bytes": 121
+    }
+  },
+  "auditChecks": {
+    "context": "PASS",
+    "JSON": "PASS",
+    "localLinks": "PASS",
+    "budgets": "PASS",
+    "reproSyntax": "PASS",
+    "gitDiffCheck": "PASS",
+    "index": "empty",
+    "allStartedProcesses": "terminal"
+  }
+}

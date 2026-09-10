@@ -1,0 +1,36 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.49s
+     Running tests/bug_hunt_graph_output_mappings.rs (target/debug/deps/bug_hunt_graph_output_mappings-ad2c11f0f8cd9994)
+
+running 3 tests
+test graph_native_anchor_survives_import_url_length_change ... FAILED
+test graph_compose_and_native_siblings_keep_original_child_anchors ... FAILED
+test graph_resource_relocation_preserves_later_authored_ranges ... FAILED
+
+failures:
+
+---- graph_native_anchor_survives_import_url_length_change stdout ----
+
+thread 'graph_native_anchor_survives_import_url_length_change' (42507013) panicked at crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs:10:40:
+graph output mappings
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- graph_compose_and_native_siblings_keep_original_child_anchors stdout ----
+
+thread 'graph_compose_and_native_siblings_keep_original_child_anchors' (42507012) panicked at crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs:10:40:
+graph output mappings
+
+---- graph_resource_relocation_preserves_later_authored_ranges stdout ----
+
+thread 'graph_resource_relocation_preserves_later_authored_ranges' (42507014) panicked at crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs:10:40:
+graph output mappings
+
+
+failures:
+    graph_compose_and_native_siblings_keep_original_child_anchors
+    graph_native_anchor_survives_import_url_length_change
+    graph_resource_relocation_preserves_later_authored_ranges
+
+test result: FAILED. 0 passed; 3 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_graph_output_mappings`

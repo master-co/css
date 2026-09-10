@@ -1,3 +1,4 @@
+import { verifyNextCSSSourceMaps } from './next-css-source-map.mjs'
 import assert from 'node:assert/strict'
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
@@ -32,7 +33,7 @@ if (sassImplementation) {
   symlinkSync(dirname(sassImplementation), join(root, 'node_modules/sass'), 'dir')
 }
 writeFileSync(join(root, 'package.json'), '{"private":true,"type":"module"}')
-const options = { ...(sassImplementation ? { sassOptions: { implementation: sassImplementation, ...(process.env.BH_SASS_STYLE ? { style: process.env.BH_SASS_STYLE } : {}), ...(process.env.BH_SASS_ADDITIONAL_DATA ? { additionalData: process.env.BH_SASS_ADDITIONAL_DATA } : {}) } } : {}), ...(lightning ? { experimental: { useLightningcss: true } } : {}) }
+const options = { ...(process.env.BH_PRODUCTION_SOURCE_MAPS === '1' ? { productionBrowserSourceMaps: true } : {}), ...(sassImplementation ? { sassOptions: { implementation: sassImplementation, ...(process.env.BH_SASS_STYLE ? { style: process.env.BH_SASS_STYLE } : {}), ...(process.env.BH_SASS_ADDITIONAL_DATA ? { additionalData: process.env.BH_SASS_ADDITIONAL_DATA } : {}) } } : {}), ...(lightning ? { experimental: { useLightningcss: true } } : {}) }
 const captureFile = join(root, 'prepared.jsonl'), captureLoader = join(root, 'capture-prepared.cjs')
 let captureConfig = ''
 if (process.env.BH_CAPTURE_PREPARED === '1') {
@@ -69,7 +70,10 @@ function write(margin, padding) {
     : `${syntax === 'scss' ? `$padding:${padding}rem;` : ''}@reference "./master.css";.card{@compose p:${syntax === 'scss' ? '#{$padding}' : `${padding}rem`};}`
   const files = [[`globals.${syntax}`, global]]
   if (partial) {
-    files.push(['parts/_card.scss', `$padding:${padding}rem;@reference "../master.css";.card{@compose p:#{$padding};}`])
+    const partialSource = process.env.BH_ORDERED_COMPOSE === '1'
+      ? `$padding:${padding}rem;@reference "../master.css";\n@layer { @media(min-width:1px) {\n.card{@compose p:1rem;}\n.card{padding:$padding;}\n} }`
+      : `$padding:${padding}rem;@reference "../master.css";.card{@compose p:#{$padding};}`
+    files.push(['parts/_card.scss', partialSource])
     module = syntax === 'sass' ? '@use "./parts/card"\n' : '@use "./parts/card";'
   }
   files.push([`card.module.${syntax}`, module])
@@ -87,7 +91,7 @@ function runNext(args) {
   childProcess.stdout.on('data', chunk => { output += chunk });childProcess.stderr.on('data', chunk => { output += chunk })
   return childProcess
 }
-console.log(JSON.stringify({ syntax, lightning, production, backend, partial, recovery, entryCompose: process.env.BH_ENTRY_COMPOSE === '1', entryReference: process.env.BH_ENTRY_REFERENCE === '1', additionalData: process.env.BH_SASS_ADDITIONAL_DATA, moduleAs: process.env.BH_MODULE_AS === '1', captureTransformed: process.env.BH_CAPTURE_TRANSFORMED === '1', sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js', 'prepare-stylesheet.js', 'sass-source-context.js'].filter(name => existsSync(join(packageDir, 'dist', name))).map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
+console.log(JSON.stringify({ syntax, lightning, production, backend, partial, recovery, orderedCompose: process.env.BH_ORDERED_COMPOSE === '1', entryCompose: process.env.BH_ENTRY_COMPOSE === '1', entryReference: process.env.BH_ENTRY_REFERENCE === '1', additionalData: process.env.BH_SASS_ADDITIONAL_DATA, moduleAs: process.env.BH_MODULE_AS === '1', captureTransformed: process.env.BH_CAPTURE_TRANSFORMED === '1', sassImplementation, artifacts: Object.fromEntries(['index.js', 'webpack-stylesheets.js', 'webpack-virtual-modules.js', 'stylesheet-loader.js', 'prepare-stylesheet.js', 'sass-source-context.js', 'stylesheet-source-map.js'].filter(name => existsSync(join(packageDir, 'dist', name))).map(name => [name, createHash('sha256').update(readFileSync(join(packageDir, 'dist', name))).digest('hex')])) }))
 try {
   if (production) {
     child = runNext(['build', backend])
@@ -131,7 +135,8 @@ try {
     })
     assert.equal(state.marker, 'retained');assert.equal(state.manifest, '1');assert.notEqual(state.className, 'card');assert.deepEqual(errors, [])
     assert.equal(state.importedPadding, '16px');assert.equal(state.assetWidth, 1)
-    const row = { browser: name, pass: true, state, errors };rows.push(row);console.log(JSON.stringify(row))
+    const sourceMaps = process.env.BH_VERIFY_SOURCE_MAPS === '1' ? await verifyNextCSSSourceMaps(page, partial ? 'parts/_card.scss' : `card.module.${syntax}`) : undefined
+    const row = { browser: name, pass: true, state, errors, sourceMaps };rows.push(row);console.log(JSON.stringify(row))
     await browser.close();browser = undefined
   }
 } catch (error) {

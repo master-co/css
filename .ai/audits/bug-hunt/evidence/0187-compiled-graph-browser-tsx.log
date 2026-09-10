@@ -1,0 +1,148 @@
+{"id":"external-first","parity":"PASS","assets":2}
+{"id":"external-last","parity":"PASS","assets":2}
+{"id":"same-layer","parity":"PASS","assets":2}
+{"id":"different-layers","parity":"PASS","assets":2}
+{"id":"predeclared-layers","parity":"PASS","assets":2}
+{"id":"conditional-local","parity":"PASS","assets":2}
+{"id":"nested-plain","parity":"PASS","assets":2}
+{"id":"nested-named","parity":"PASS","assets":2}
+{"id":"nested-anonymous","parity":"PASS","assets":2}
+{"id":"nested-supports-media","parity":"PASS","assets":2}
+{"id":"external-last-important","parity":"PASS","assets":2}
+{"id":"different-layers-important","parity":"PASS","assets":2}
+{"id":"nested-shared-anonymous-important","parity":"PASS","assets":2}
+{"id":"repeated-anonymous","parity":"PASS","assets":2}
+{"id":"nested-negated-media","parity":"PASS","assets":2}
+{"id":"nested-media-lists","parity":"PASS","assets":2}
+{"id":"false-supports-layer","parity":"PASS","assets":2}
+{"id":"anonymous-before-named","parity":"PASS","assets":2}
+{"id":"compose-before-native","parity":"PASS","assets":2}
+{"id":"compose-in-conditional-layer","parity":"PASS","assets":2}
+{"id":"compose-cross-file-override","parity":"PASS","assets":2}
+{"browser":"chromium","id":"external-first","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"external-first","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"external-last","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"external-last","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"same-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"same-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"different-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"different-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"predeclared-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"predeclared-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"conditional-local","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"conditional-local","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"nested-plain","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-plain","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-named","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-named","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-supports-media","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-supports-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"external-last-important","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"external-last-important","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"different-layers-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"different-layers-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-shared-anonymous-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-shared-anonymous-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"repeated-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"repeated-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-negated-media","media":"screen","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-negated-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"nested-media-lists","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"nested-media-lists","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"false-supports-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"false-supports-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"anonymous-before-named","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"anonymous-before-named","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"compose-before-native","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"compose-before-native","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"compose-in-conditional-layer","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"compose-in-conditional-layer","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"chromium","id":"compose-cross-file-override","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"chromium","id":"compose-cross-file-override","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"external-first","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"external-first","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"external-last","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"external-last","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"same-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"same-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"different-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"different-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"predeclared-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"predeclared-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"conditional-local","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"conditional-local","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"nested-plain","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-plain","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-named","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-named","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-supports-media","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-supports-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"external-last-important","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"external-last-important","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"different-layers-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"different-layers-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-shared-anonymous-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-shared-anonymous-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"repeated-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"repeated-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-negated-media","media":"screen","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-negated-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"nested-media-lists","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"nested-media-lists","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"false-supports-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"false-supports-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"anonymous-before-named","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"anonymous-before-named","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"compose-before-native","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"compose-before-native","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"compose-in-conditional-layer","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"compose-in-conditional-layer","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"firefox","id":"compose-cross-file-override","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"firefox","id":"compose-cross-file-override","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"external-first","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"external-first","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"external-last","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"external-last","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"same-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"same-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"different-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"different-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"predeclared-layers","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"predeclared-layers","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"conditional-local","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"conditional-local","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"nested-plain","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-plain","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-named","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-named","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-supports-media","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-supports-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"external-last-important","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"external-last-important","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"different-layers-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"different-layers-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-shared-anonymous-important","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-shared-anonymous-important","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"repeated-anonymous","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"repeated-anonymous","media":"print","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-negated-media","media":"screen","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-negated-media","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"nested-media-lists","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"nested-media-lists","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"false-supports-layer","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"false-supports-layer","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"anonymous-before-named","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"anonymous-before-named","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"compose-before-native","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"compose-before-native","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"compose-in-conditional-layer","media":"screen","original":"rgb(255, 0, 0)","compiled":"rgb(255, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"compose-in-conditional-layer","media":"print","original":"rgb(0, 0, 0)","compiled":"rgb(0, 0, 0)","result":"PASS"}
+{"browser":"webkit","id":"compose-cross-file-override","media":"screen","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"browser":"webkit","id":"compose-cross-file-override","media":"print","original":"rgb(0, 0, 255)","compiled":"rgb(0, 0, 255)","result":"PASS"}
+{"cases":21,"comparisons":126,"failures":0,"scope":"Public compileStylesheets; existing file/project/build/CLI entrypoints still require integration"}

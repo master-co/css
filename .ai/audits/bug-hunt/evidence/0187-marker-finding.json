@@ -1,0 +1,30 @@
+{
+  "id": "BH-0058",
+  "severity": "P2",
+  "title": "Graph compose substitution overwrites quoted marker content and omits the composed style",
+  "status": "fixed and verified in working tree; goal remains active",
+  "source": "crates/mastercss-compiler/src/compiled_stylesheet_graph.rs",
+  "trigger": "Quoted @--master-css-compose-slot-0; before a native @compose slot",
+  "before": {
+    "rustRegression": "0187-rust-maps-marker-before.log",
+    "browser": "0187-marker-browser-before.log",
+    "browserPass": 9,
+    "browserFail": 6,
+    "actual": "content becomes .card{padding:2rem}; card padding0px; live slot remains"
+  },
+  "after": {
+    "rustRegression": "0187-rust-maps-first.log",
+    "browser": "0187-marker-browser-final.log",
+    "browserPass": 15,
+    "browserFail": 0,
+    "actual": "literal content retained; card padding32px"
+  },
+  "rootCause": "replacen searches raw output bytes and can select a quoted occurrence; Rust lexer now provides actual AtKeyword slot ranges",
+  "separateFrom": "BH0004 qualified managed imports still fail; BH0053 full maps/host delivery remains incomplete",
+  "logs": {
+    "0187-rust-maps-marker-before.log": "ec7fc3cc631ac2a3445c46a1aecc6a5e52dfc4a80e83a9316829d8605647e59f",
+    "0187-marker-browser-before.log": "7a0fc11b9e4727cb5bca38323d2edf15eef128c17c9300c3022d400bdb5b125b",
+    "0187-rust-maps-first.log": "287828eb9b73d25a1d12ef08b1b706da9a4ae59244f9f030a336fc0dfb78fb83",
+    "0187-marker-browser-after.log": "bbc91112de690d58ad0c05f89bc4f691cb663a28097eefdb70c00c41a33f5604"
+  }
+}

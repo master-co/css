@@ -1,0 +1,15 @@
+{
+  "baseline": "0183-manifest-lifecycle-suite-final.log",
+  "current": "0187-vite-maps-references.log",
+  "sameFailures": [
+    "BH-0004 build-watch reference recovery scss/plain-root/startup=true",
+    "BH-0004 build-watch reference recovery scss/module-root/startup=true",
+    "BH-0004 build-watch reference recovery scss/retained-module/startup=true",
+    "BH-0004 build-watch reference recovery sass/plain-root/startup=true",
+    "BH-0004 build-watch reference recovery sass/module-root/startup=true",
+    "BH-0004 build-watch reference recovery sass/retained-module/startup=true"
+  ],
+  "currentPass": 112,
+  "currentFail": 6,
+  "classification": "existing BH0004 build-watch startup missing-reference recovery; remains unresolved"
+}

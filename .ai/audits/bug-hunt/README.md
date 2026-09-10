@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 57 historical confirmed findings; 52 fixed, 5 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 58 historical confirmed findings; 54 fixed, 4 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -201,6 +201,12 @@
 
 - [0184 Native conditional compose](batches/0184-native-conditional-compose.md): traversal repaired; direct output order and anonymous-layer identity still fail.
 
+- [0185 Ordered direct output](batches/0185-ordered-direct-output.md)：BH-0057修復；qualified managed imports沿用BH-0004待修。
+
+- [0186 Qualified managed imports](batches/0186-qualified-managed-imports.md)：legacy39失敗已重驗；直接qualified managed imports 30FAIL，prepared24PASS；修復待續。
+
+- [0187 Graph output mappings](batches/0187-graph-output-mappings.md)：graph原始位置、BH-0058字串及BH-0057 suppression條件修復；既有直接入口待遷移。
+
 ## 目前交接點
 
 - Commit checkpoint: `50caa3e20` delivers the isolated BH-0048/BH-0049/BH-0050 runtime fixes and four regression files. Fresh 26 tests and internal/Next/Webpack lint PASS. BH-0004, BH-0029, BH-0051 and all other open requirements remain unfinished; 0038 still awaits explicit identity confirmation. Other working changes are preserved. Historical no-commit statements describe their original checkpoints. [Commit validation](evidence/0183-runtime-commit-validation.json).
@@ -209,7 +215,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 提交交接：依使用者要求，本次保存0183 source-map及0184 conditional compose已收尾的有界查核、原始證據與2個重現腳本。產品／套件測試仍依賴未完成graph實作，0185新工作與其他對話Site變更保留工作區。50份歷史log雜湊一致；0184的483來源中467仍一致，16份已由0185更新，故舊PASS不代表目前版本。證據依賴記錄的工作區來源，非乾淨checkout驗證。57historical/52fixed/5unresolved、10blocked、4gates/4candidates及0038身分暫停維持；目標active，未推送。0185已改善直接輸出順序，但qualified managed import仍FAIL；接續核對最終native CLI／browser、來源與產物並同步帳本後，才能結案BH-0057。[提交核對](evidence/0184-commit-validation.json)；[0184原交接](progress-history-0184-commit.md)。
+- 0187：Rust graph 已提供每檔 outputMappings，保留長 import URL、資源改寫與 compose 的原始位置；直接入口遷移仍未完成。BH-0058 marker 誤改作者字串已修復；BH-0057 補充修復 preserveNativeCSS:false 丟失條件／匿名 layer。Rust111、compiler316PASS/1個既有 qualified import FAIL；最終 marker15／suppression18／graph126browser PASS。Vite112PASS/6個0183既有啟動缺檔恢復 FAIL；binding17、Site13及lint/types/Clippy/fmt/codegen/parity PASS（Site75warnings）。58historical/54fixed/4unresolved、65checked/10blocked；全scope及0038身分暫停維持。下一步將 graph mappings 帶過 bundle／inline／資產交付，再遷移既有 file/rendered/project；不能以局部 graph 成功宣稱原入口完成。目標active；本次提交0185–0187帳本／重現，產品改動與0188保留工作區，未推送。[提交核對](evidence/0187-commit-validation.json)。[證據](evidence/0187-final-checks.json)；[批次](batches/0187-graph-output-mappings.md)；[前次交接](progress-history-0187-graph-maps.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 

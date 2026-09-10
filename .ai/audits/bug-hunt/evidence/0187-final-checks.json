@@ -1,0 +1,326 @@
+{
+  "batch": "0187-graph-output-mappings",
+  "recordedAt": "2026-09-10T10:27:01.338001+00:00",
+  "head": "75b348d07fafe87c3b804e3fb56dfe4ee4340d04",
+  "previousGoalTurn": "progress",
+  "status": "bounded graph mapping and output fixes verified; direct consumer migration remains incomplete; goal active",
+  "counts": {
+    "historical": 58,
+    "fixed": 54,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "rustCompiler": {
+      "pass": 111,
+      "fail": 0,
+      "log": "0187-rust-suppression-full.log"
+    },
+    "compilerFull": {
+      "pass": 316,
+      "fail": 1,
+      "files": 44,
+      "log": "0187-compiler-final.log",
+      "failure": "BH0004 qualified child managed imports; retained regression"
+    },
+    "binding": {
+      "pass": 17,
+      "log": "0187-binding-tests.log"
+    },
+    "markerBrowser": {
+      "beforePass": 9,
+      "beforeFail": 6,
+      "afterPass": 15,
+      "afterFail": 0,
+      "log": "0187-marker-browser-final.log"
+    },
+    "suppressionBrowser": {
+      "beforePass": 12,
+      "beforeFail": 6,
+      "afterPass": 18,
+      "afterFail": 0,
+      "log": "0187-suppression-browser-after.log"
+    },
+    "graphPublicBrowser": {
+      "pass": 126,
+      "fail": 0,
+      "cases": 21,
+      "log": "0187-compiled-graph-browser-final.log"
+    },
+    "conditionalBrowserEarlierBuild": {
+      "pass": 180,
+      "fail": 0,
+      "log": "0187-conditional-browser.log",
+      "scope": "before supplementary preserveNativeCSS:false fix; defaulttrue paths unchanged"
+    },
+    "viteFocused": {
+      "pass": 112,
+      "fail": 6,
+      "files": 4,
+      "log": "0187-vite-maps-references.log",
+      "classification": "exact same six startup missing-reference failure titles as0183-manifest-lifecycle-suite-final.log"
+    },
+    "siteReference": {
+      "pass": 13,
+      "log": "0187-site-reference.log"
+    },
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75,
+      "log": "0187-site-lint.log"
+    },
+    "bindingCompilerLintTypes": "PASS;0187-binding-lint/types and0187-compiler-lint/types-final logs",
+    "compilerClippy": "PASS;0187-clippy-final.log",
+    "fmt": "PASS;0187-fmt-final.log",
+    "codegenParity": "PASS;0187-codegen-check.log/0187-parity.log",
+    "xtaskTests": {
+      "pass": 3,
+      "log": "0187-xtask-tests.log"
+    }
+  },
+  "changes": [
+    "Rust graph stylesheets include outputMappings addressing original input through import URL reprinting, resource relocation and compose slot assembly",
+    "New output edit helper moves generated UTF16 anchors without shifting authored references",
+    "BH0058 actual AtKeyword slot replacement preserves quoted marker content; native/Wasm graph browser failure repaired",
+    "BH0057 supplementary preserveNativeCSS:false graph path retains actual parser containers instead of bare markers; print-only styles no longer leak to screen",
+    "Generated protocol updated only through xtask template/codegen; compiler README and one directive guide sentence updated"
+  ],
+  "preservation": {
+    "baselineSources": 493,
+    "unchangedBaselineSources": 485,
+    "changedSources": [
+      "crates/mastercss-compiler/src/compiled_stylesheet_graph.rs",
+      "crates/mastercss-compiler/src/lib.rs",
+      "crates/mastercss-compiler/src/stylesheet_graph.rs",
+      "crates/mastercss-compiler/src/stylesheet_resources.rs",
+      "crates/xtask/templates/rust-contract.ts",
+      "packages/binding/src/protocol.ts",
+      "packages/compiler/README.md",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSources": [
+      ".ai/audits/bug-hunt/repros/graph-compose-marker-browser.mjs",
+      ".ai/audits/bug-hunt/repros/graph-suppressed-conditions.mjs",
+      "crates/mastercss-compiler/src/output_edits.rs",
+      "crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs",
+      "packages/compiler/tests/bug-hunt-graph-output-mappings.test.ts"
+    ],
+    "sources": "0187-source-hashes-final.json",
+    "artifacts": "0187-artifacts-final.json",
+    "engineRuntimePresetAndJSArtifacts": "unchanged from0185/0186",
+    "siteChange": "Only one sentence added after existing ordered-output paragraph; foreign Site changes retained",
+    "preexistingSiteContentVerified": true
+  },
+  "limits": [
+    "Graph mappings are original compiler input anchors; host preprocessor maps and later bundle/inline/delivery rewrites must still be chained",
+    "Existing direct file/rendered/project consumer migration is unfinished; qualified managed imports still fail",
+    "Raw native/generated metadata remain separate views; use complete CSS output",
+    "No engine/runtime benchmark; compiler-only mapping data and work added. No performance gain claim; full profiling remains required",
+    "Original plain Node source-driver invocation failed extensionless TS import resolution; installedtsx invocation passed126; raw failed log retained",
+    "No full Site/Next/Webpack/options/SSR or four root gates completion claim"
+  ],
+  "remaining": [
+    "BH-0004 full import graph/public path/host delivery; legacy60browser rerun0186:21PASS/39FAIL (21cascade errors/18typed refusals)",
+    "BH-0004 qualified imported child managed definitions: direct CSS_PRINT_ERROR with/without compose; prepared native/Wasm controls PASS; retained new regression fails",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Six Vite build-watch startup missing-reference failures",
+    "Internal emittedModules CSS proxy ?direct HTTP500",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Four original candidates: compiler/MCP .mjs discovery; parallel Webpack shared dist; standalone Node Wasm file URL fetch; legacy-native-compose insertion",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "next": "Carry these Rust-owned graph mappings through existing bundle inlining/asset delivery, then migrate existing direct file/rendered/project consumers to shared graph manifest/native-output separation. Preserve original qualified regression, legacy external-import browsers, resources, references, namespaces and host maps.",
+  "identityConfirmation": "not received;0038 remains paused",
+  "commitOrPush": false,
+  "logs": {
+    "0187-binding-build.log": {
+      "sha256": "604b9eca8bf1a4a673dade82e950c3bb03d24003e46e71f5587be2ee57209ae6",
+      "bytes": 3296
+    },
+    "0187-binding-lint.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0187-binding-tests.log": {
+      "sha256": "c7416de85f86b1bd6ba7a5f480cd3a6ccd81e4fa32135b92227239cdb0d451f7",
+      "bytes": 650
+    },
+    "0187-binding-types.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0187-clippy-final.log": {
+      "sha256": "6865dd5ae42711a35d2bc047c47b89b61cdf8993799672d5e936c473940c817d",
+      "bytes": 162
+    },
+    "0187-clippy.log": {
+      "sha256": "0281a6007938ea5567102e8b5535713416a5ff752f62eeb1a7b10888dad03937",
+      "bytes": 162
+    },
+    "0187-codegen-check.log": {
+      "sha256": "4885519d0d3304c7d64700351baaf35d31d14d24b6559b1646d5eff58a3abecf",
+      "bytes": 122
+    },
+    "0187-codegen.log": {
+      "sha256": "dddb7ac540776166c69e0535f8831b5f2f4ca5bbb38fef0090a559eb8a45d6bd",
+      "bytes": 268
+    },
+    "0187-compiled-graph-browser-final.log": {
+      "sha256": "091f806b13e9e20bfa18d75c8a9c249d61ecbddd47da288d82bfdc72b3658f23",
+      "bytes": 18646
+    },
+    "0187-compiled-graph-browser-tsx.log": {
+      "sha256": "091f806b13e9e20bfa18d75c8a9c249d61ecbddd47da288d82bfdc72b3658f23",
+      "bytes": 18646
+    },
+    "0187-compiled-graph-browser.log": {
+      "sha256": "f72d713505cb206938296e978e58ee152c826b03b353953e3747c3b330785c4f",
+      "bytes": 1111
+    },
+    "0187-compiler-build.log": {
+      "sha256": "6e209ba5181583288412c34ee8ffbf470cf2b92090e24df30b5ebe2933463e51",
+      "bytes": 5485
+    },
+    "0187-compiler-final.log": {
+      "sha256": "fd6915e726c5081ac6dce48f39c422560e8818e8a2c96526bf9550f15e97fddb",
+      "bytes": 2379
+    },
+    "0187-compiler-full.log": {
+      "sha256": "f4d23aedea7ea7305a4db531637ea9f500940022e4bb51d005d69f7f662043b9",
+      "bytes": 2078
+    },
+    "0187-compiler-lint-final.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0187-compiler-lint.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0187-compiler-types-final.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0187-compiler-types.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0187-conditional-browser.log": {
+      "sha256": "3c00e020912abfb49570271662e77e814f3eee9c01cfdf876d9d5f8680ccd8ab",
+      "bytes": 26121
+    },
+    "0187-fmt-final.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "0187-fmt.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "0187-marker-browser-after.log": {
+      "sha256": "bbc91112de690d58ad0c05f89bc4f691cb663a28097eefdb70c00c41a33f5604",
+      "bytes": 2609
+    },
+    "0187-marker-browser-before.log": {
+      "sha256": "7a0fc11b9e4727cb5bca38323d2edf15eef128c17c9300c3022d400bdb5b125b",
+      "bytes": 2549
+    },
+    "0187-marker-browser-final.log": {
+      "sha256": "bbc91112de690d58ad0c05f89bc4f691cb663a28097eefdb70c00c41a33f5604",
+      "bytes": 2609
+    },
+    "0187-native-build.log": {
+      "sha256": "db246e008c4d894175e152676ed547148a291307902d71c967a472a2ab9add3e",
+      "bytes": 735
+    },
+    "0187-native-suppression-build.log": {
+      "sha256": "3d3792ce7bb39b1fc93989b26485a63e2ebe12b27acb1e1a27ec69af1bc73df5",
+      "bytes": 1047
+    },
+    "0187-parity.log": {
+      "sha256": "0dca719e10cc1314902c2d91fb3372cd49923abf71e20aa8a476b69c3cc14de5",
+      "bytes": 113
+    },
+    "0187-qualified-managed-matrix.log": {
+      "sha256": "765846bf87a148abcc755975bea6a50f46f0a7cf5fa7590dd7a54ce08816c522",
+      "bytes": 56671
+    },
+    "0187-rust-full.log": {
+      "sha256": "b92d97bfa8aea6d064273136908abbd39fa1243b9e974fffb9c80f77ede5af0b",
+      "bytes": 12317
+    },
+    "0187-rust-maps-before.log": {
+      "sha256": "af615d7b3411ce5cf5764e7938d6001dbd812574012cca768c40b35eda48555b",
+      "bytes": 1792
+    },
+    "0187-rust-maps-first.log": {
+      "sha256": "287828eb9b73d25a1d12ef08b1b706da9a4ae59244f9f030a336fc0dfb78fb83",
+      "bytes": 671
+    },
+    "0187-rust-maps-marker-before.log": {
+      "sha256": "ec7fc3cc631ac2a3445c46a1aecc6a5e52dfc4a80e83a9316829d8605647e59f",
+      "bytes": 2219
+    },
+    "0187-rust-suppression-full.log": {
+      "sha256": "ceec9216c0a501c351e2c16fe3ab248ee53e8f1403e2f9d2112b9777e202b79b",
+      "bytes": 12399
+    },
+    "0187-site-lint.log": {
+      "sha256": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a",
+      "bytes": 11775
+    },
+    "0187-site-reference.log": {
+      "sha256": "1ab6a620d244bf3494019ac512e08c33a418e9274023531ef32c9edc9219ef4a",
+      "bytes": 1532
+    },
+    "0187-suppression-before.log": {
+      "sha256": "bf324faef69dfb6aed6a7358027ddde90f9557111b6bf8d2aefb52a7ed818c88",
+      "bytes": 1335
+    },
+    "0187-suppression-browser-after.log": {
+      "sha256": "bd1e6faddad9632764c534d5fc4c44bc8669303d1d1fa46064512f57508f81fd",
+      "bytes": 2499
+    },
+    "0187-suppression-browser-before.log": {
+      "sha256": "b959fbf31ec9dc6fef713f72243f8de09bb953fc5a3c0ef5b4e658f1844e563e",
+      "bytes": 2415
+    },
+    "0187-vite-maps-references.log": {
+      "sha256": "fb4cbdf3de643be88a9eede4ffb52b48e7dcb971cd005454f08dd7b33d0d0461",
+      "bytes": 2901
+    },
+    "0187-wasm-build.log": {
+      "sha256": "c19c32a6efad7973d9d16b0d48a5daf6ce2cac60c404e48e0c3c1f21cbb3ed16",
+      "bytes": 517
+    },
+    "0187-wasm-suppression-build.log": {
+      "sha256": "943017f65babecb1950718bb52f6c2a24ff1afbe1d3c5bea00e54748634a2cf4",
+      "bytes": 675
+    },
+    "0187-xtask-tests.log": {
+      "sha256": "fdd7c765f75839c2fe6bb57826eb92603a5d68c957342810bd081d18b9653937",
+      "bytes": 533
+    },
+    "0187-context-final.log": {
+      "sha256": "c7acc0851912623a5033f8d1fd983732e4379ae1878a625397ad0e9fbd512dc8",
+      "bytes": 121
+    }
+  },
+  "auditChecks": {
+    "context": "PASS;0187-context-final.log",
+    "JSON": "PASS",
+    "localLinks": "PASS",
+    "sourceAndDocBudgets": "PASS",
+    "reproSyntax": "PASS",
+    "gitDiffCheck": "PASS",
+    "allStartedToolSessions": "terminal",
+    "index": "empty"
+  }
+}

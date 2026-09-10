@@ -1,0 +1,410 @@
+{
+  "batch": "0185-ordered-direct-output",
+  "recordedAt": "2026-09-10T10:01:54.273914+00:00",
+  "head": "75b348d07fafe87c3b804e3fb56dfe4ee4340d04",
+  "previousGoalTurn": "progress; completed authorized bounded audit commit",
+  "status": "BH-0057 fixed; goal active; all other requirements retained",
+  "counts": {
+    "historical": 57,
+    "fixed": 53,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "rustCompiler": {
+      "pass": 106,
+      "fail": 0,
+      "log": "0185-rust-complete.log"
+    },
+    "rustProjectAndCLI": {
+      "pass": 14,
+      "fail": 0,
+      "log": "0185-native-hosts-after.log",
+      "newBeforeFailures": 2
+    },
+    "compilerFull": {
+      "pass": 311,
+      "fail": 1,
+      "files": 43,
+      "log": "0185-compiler-all-hosts-final.log",
+      "failure": "BH-0004 qualified child managed definitions"
+    },
+    "actualNativeCLI": {
+      "beforeFail": 3,
+      "afterPass": 3,
+      "log": "0185-native-cli-browser-after.log"
+    },
+    "actualOrderedMatrix": {
+      "pass": 180,
+      "fail": 0,
+      "log": "0185-browser-all-hosts-final.log"
+    },
+    "actualNextTurbopackDevHMRMaps": {
+      "pass": 3,
+      "log": "0185-next-turbo-all-hosts-final.log"
+    },
+    "actualNextWebpackProductionMaps": {
+      "pass": 3,
+      "log": "0185-next-webpack-all-hosts-final.log"
+    },
+    "nextFull": {
+      "pass": 116,
+      "fail": 3,
+      "log": "0185-next-full.log",
+      "classification": "unchanged old config-shape assertions; run before project/CLI-only extension"
+    },
+    "nextE2E": {
+      "pass": 3,
+      "log": "0185-next-e2e.log"
+    },
+    "binding": {
+      "pass": 17,
+      "log": "0185-binding-tests.log"
+    },
+    "schema": {
+      "pass": 3,
+      "log": "0185-schema-tests.log"
+    },
+    "viteScoped": {
+      "pass": 107,
+      "log": "0185-vite-scoped.log"
+    },
+    "webpackSerial": {
+      "pass": 74,
+      "log": "0185-webpack-serial.log"
+    },
+    "siteReference": {
+      "pass": 13,
+      "log": "0185-site-reference.log"
+    },
+    "siteLint": {
+      "errors": 0,
+      "warnings": 75,
+      "log": "0185-site-lint.log"
+    },
+    "xtaskTests": {
+      "pass": 3,
+      "log": "0185-xtask-tests.log"
+    },
+    "schemaBindingCompilerLintTypes": "PASS; respective0185 logs",
+    "rustAllHostClippy": "PASS;0185-all-hosts-clippy.log",
+    "fmt": "PASS;0185-fmt-all-hosts.log",
+    "codegenParity": "PASS;0185-codegen-check.log/0185-parity.log",
+    "auditContext": "PASS;0185-context-final.log",
+    "auditLocalLinksAndJSON": "PASS",
+    "index": "empty"
+  },
+  "preservation": {
+    "sourceBaselineCount": 483,
+    "unchangedBaselineSources": 467,
+    "changedSources": [
+      ".ai/audits/bug-hunt/repros/native-conditional-matrix.mjs",
+      ".ai/audits/bug-hunt/repros/next-webpack-css-pipeline-browser.mjs",
+      "crates/mastercss-compiler/src/directives.rs",
+      "crates/mastercss-compiler/src/lib.rs",
+      "crates/mastercss-compiler/src/lower/api.rs",
+      "crates/mastercss-compiler/src/lower/mod.rs",
+      "crates/mastercss-compiler/tests/bug_hunt_native_conditionals.rs",
+      "crates/mastercss-project/src/lib.rs",
+      "crates/xtask/templates/rust-contract.ts",
+      "packages/binding/src/protocol.ts",
+      "packages/compiler/README.md",
+      "packages/compiler/src/compiler.ts",
+      "packages/compiler/src/node-compiler.ts",
+      "packages/compiler/src/stylesheet/compiled-source.ts",
+      "packages/schema/src/css-directives.ts",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSnapshotSources": [
+      ".ai/audits/bug-hunt/repros/native-cli-ordered.mjs",
+      ".ai/audits/bug-hunt/repros/qualified-managed-direct.mjs",
+      "crates/mastercss-cli/src/main.rs",
+      "crates/mastercss-cli/tests/bug_hunt_ordered_output.rs",
+      "crates/mastercss-compiler/src/lower/output.rs",
+      "crates/mastercss-compiler/src/native_output.rs",
+      "crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs",
+      "crates/mastercss-project/tests/bug_hunt_ordered_output.rs",
+      "packages/compiler/tests/bug-hunt-ordered-direct-output.test.ts"
+    ],
+    "sourceSnapshot": "0185-source-hashes-final.json",
+    "artifacts": "0185-artifacts-final.json",
+    "engineRuntimePresetAndJSCLIArtifacts": "byte-identical to0184",
+    "foreignWorkingChanges": "preserved; this wrap-up changed only audit records; prior commit validation hashes retained"
+  },
+  "limits": [
+    "Direct metadata nativeCSS/generatedCSS remain independent views; use finalcss and forward nativeOutput for raw lower calls",
+    "Starting-style checked structurally/transport/maps rather than static padding",
+    "No complete performance, engine/runtime benchmark or full Site claim",
+    "Original mixed-build consumer scheduling mistake and invalid import-order test setup logs retained",
+    "Historical source/log checks are scoped to their recorded sources; project/CLI-only extension validated separately and final compiler/browser/Next rerun"
+  ],
+  "remaining": [
+    "BH-0004 full import graph/public path/host delivery; historical60browser/39failures require revalidation after ordered output changes",
+    "BH-0004 qualified imported child managed definitions: direct CSS_PRINT_ERROR with/without compose; prepared native/Wasm controls PASS; retained new regression fails",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Six Vite build-watch startup missing-reference failures",
+    "Internal emittedModules CSS proxy ?direct HTTP500",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Four original candidates: compiler/MCP .mjs discovery; parallel Webpack shared dist; standalone Node Wasm file URL fetch; legacy-native-compose insertion",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "identityConfirmation": "not received;0038 paused",
+  "commit": "75b348d07 committed only previous0183/0184 audit checkpoint;0185 products/evidence remain uncommitted; no new commit or push",
+  "logs": {
+    "0185-all-hosts-clippy.log": {
+      "sha256": "a8ce164f3e519855f687a05ac85d9a1a0899b9d59c3354077f8e3e8e5dcdb46d",
+      "bytes": 760
+    },
+    "0185-binding-build.log": {
+      "sha256": "c9b9abb0f6d535cf97fbf91403f13691ee4fd474b9f623a14a15a383a579bcb3",
+      "bytes": 3296
+    },
+    "0185-binding-lint.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0185-binding-tests.log": {
+      "sha256": "db16aa858183723366c59e948b7a092cbbc13435d0821a4604f77d4f537a5f70",
+      "bytes": 662
+    },
+    "0185-binding-types.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0185-browser-all-hosts-final.log": {
+      "sha256": "3c00e020912abfb49570271662e77e814f3eee9c01cfdf876d9d5f8680ccd8ab",
+      "bytes": 26121
+    },
+    "0185-browser-matrix.log": {
+      "sha256": "3c00e020912abfb49570271662e77e814f3eee9c01cfdf876d9d5f8680ccd8ab",
+      "bytes": 26121
+    },
+    "0185-clippy-check.log": {
+      "sha256": "72ebea71a8ba3012776257d89e9c31a68e409cd3689b3b4ca3324406d227ca3f",
+      "bytes": 162
+    },
+    "0185-clippy-final.log": {
+      "sha256": "679442ba37fa0ae183d4514a4ae50305803fe0f6e126fdb296f1d79f1267ead6",
+      "bytes": 162
+    },
+    "0185-clippy-shared-tree.log": {
+      "sha256": "097f1fda121a252cae01e8479d546fd6d0f2c9ad9cb18087bd21c34c2966793d",
+      "bytes": 216
+    },
+    "0185-clippy.log": {
+      "sha256": "f803f15a77a77992e107334c6227dfd00018a0a6122d9eb31b2d7302a6be3c36",
+      "bytes": 671
+    },
+    "0185-codegen-check.log": {
+      "sha256": "939ea7bfafb1c45e3e7fd0a4b9b6b1cd781afeaa8e159b6b8c2f86260d7adfb2",
+      "bytes": 122
+    },
+    "0185-codegen.log": {
+      "sha256": "5b363cd965ab7ab4b9c3b7d63036e0704cf6bc0f9bbe75d29a24f22d46112e48",
+      "bytes": 268
+    },
+    "0185-compiler-all-hosts-final.log": {
+      "sha256": "8ecf574a2f0ac16654120019de9341579dca5634b8630b06ecbb0ea347d67861",
+      "bytes": 2129
+    },
+    "0185-compiler-build.log": {
+      "sha256": "6e209ba5181583288412c34ee8ffbf470cf2b92090e24df30b5ebe2933463e51",
+      "bytes": 5485
+    },
+    "0185-compiler-full-final.log": {
+      "sha256": "e3d9c17b8b15506a6ba2083a3976e7af1c32fba4fc2888bde34ba6613996deeb",
+      "bytes": 2127
+    },
+    "0185-compiler-full.log": {
+      "sha256": "ee4892df93dea30ba54f7c7048c5099fe4a01289ebee262e7712efba23bfb125",
+      "bytes": 2093
+    },
+    "0185-compiler-lint-final.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0185-compiler-lint.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0185-fmt-all-hosts.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "0185-fmt-check.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "0185-import-control.log": {
+      "sha256": "881bb59e9e60d56ad66177a13bb100e19bd905eb64bd7d81e1e5aa4fea8b6d1a",
+      "bytes": 1753
+    },
+    "0185-native-all-hosts-build.log": {
+      "sha256": "a107a1501c619573f8f8defb9fe1d89ffaa78f7ed1c450b0c2b6ba53854f063c",
+      "bytes": 647
+    },
+    "0185-native-build-final.log": {
+      "sha256": "773df04d9451454ce36cc6895003092197b0e510213b6c4236af458c89e3f869",
+      "bytes": 891
+    },
+    "0185-native-build.log": {
+      "sha256": "17819741d9f9d124111306d6ab1baccf9681c38f82af70eeeb8eae6d74a8bd6f",
+      "bytes": 1785
+    },
+    "0185-native-cli-browser-after.log": {
+      "sha256": "14329a61002fc36733670849bd9f23b1931f389743da751da05a267ebf0391e7",
+      "bytes": 462
+    },
+    "0185-native-cli-browser-before.log": {
+      "sha256": "1931cf293674547ecd4c5a0c4eaf99c4cad79ee25b4ad80ccbdea453abd67597",
+      "bytes": 460
+    },
+    "0185-native-hosts-after.log": {
+      "sha256": "d34889013ee96ba5282d69e625846ea9676b0b1a281d1db9fa483a185eee2497",
+      "bytes": 2641
+    },
+    "0185-native-hosts-before.log": {
+      "sha256": "64a592c687ff09160fa3f8bb6da7f127db91442a1336e9cc9446ce9f6afe4381",
+      "bytes": 2479
+    },
+    "0185-native-shared-tree.log": {
+      "sha256": "987dfe5f9515c474d318da01da7d223e699ba95797a46b4f904f629b39d8c6c4",
+      "bytes": 837
+    },
+    "0185-next-build.log": {
+      "sha256": "d3df1a8b9a6c5e0315cf5998fb6883d28af257f43179c17e51c4c04166464d6d",
+      "bytes": 3936
+    },
+    "0185-next-e2e.log": {
+      "sha256": "80c51abd647a4d2acdfa45ad5cea330708f77bc9beaaa19a2078f31c82fa415d",
+      "bytes": 687
+    },
+    "0185-next-full.log": {
+      "sha256": "dde39e070ecaaff0f16cc220b7ba9d0471190a71ec92ad5805ead3126487d38b",
+      "bytes": 11903
+    },
+    "0185-next-turbo-all-hosts-final.log": {
+      "sha256": "4adc5d659e3013509430ad2eaa514862a513fda9794831c3997aa86ba63a1109",
+      "bytes": 3315
+    },
+    "0185-next-turbo-browser.log": {
+      "sha256": "d5d01a244a5997b47c4b85f26d1d3c8e4c3f5ed71e8c2f144331fc7857b877bb",
+      "bytes": 3315
+    },
+    "0185-next-webpack-all-hosts-final.log": {
+      "sha256": "3a399acc224c4a6669b04a7d7c90062a35953b4b9bd92e895db37f6ad5fe8184",
+      "bytes": 3031
+    },
+    "0185-next-webpack-browser.log": {
+      "sha256": "96c5837f8d8bcbdf78821d97c23725a179e1d2b6a3629ef34db341e4886a058b",
+      "bytes": 3031
+    },
+    "0185-node-first.log": {
+      "sha256": "2c3c5bec1c7f547307ab764d1ec846ca832fc3bb8c6caea2d57fe1d4aca8965c",
+      "bytes": 4410
+    },
+    "0185-parity.log": {
+      "sha256": "d9d167315dfeaa289ae767ac30c5f5972998b8e0197812955c2c0ed6c5295b84",
+      "bytes": 113
+    },
+    "0185-qualified-managed.log": {
+      "sha256": "ce417a59cf68608d284d0667743958ea0b74eed2fb67aca529f85ba43436b968",
+      "bytes": 3380
+    },
+    "0185-rust-complete.log": {
+      "sha256": "5c623a4d5c82fb24a97b54a241962b206580faa12cc5ea1d8efb1d534dca8a33",
+      "bytes": 11719
+    },
+    "0185-rust-final.log": {
+      "sha256": "bea1704cbd453bbb83491d22d99c5544fa22569385f78b5468647d6a76e802ac",
+      "bytes": 12259
+    },
+    "0185-rust-first.log": {
+      "sha256": "4970a48c1e28cfaa4b438a591dd4b346a837c7520ff16deeca83b09799044b54",
+      "bytes": 1755
+    },
+    "0185-rust-full-first.log": {
+      "sha256": "69e908ce5fb44bcc2341ca0a6273b0ff5fd5b8174fd72551ca3582d6619b552a",
+      "bytes": 11737
+    },
+    "0185-rust-shared-tree.log": {
+      "sha256": "34bb6091624626d74dd46815d54c69f0c3f34a9ee0521d05650208309bd87ebd",
+      "bytes": 11737
+    },
+    "0185-rust-slot-validation.log": {
+      "sha256": "cdd103a9ee861d057277b78e66987cf5c7225356aa27bede986e70473446c00c",
+      "bytes": 844
+    },
+    "0185-schema-build.log": {
+      "sha256": "7c60a3f6371182aea031e477e188f9a71bbc2e7802b3d4ec28c61a29c157b237",
+      "bytes": 2326
+    },
+    "0185-schema-lint.log": {
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78",
+      "bytes": 9
+    },
+    "0185-schema-tests.log": {
+      "sha256": "675df429b47f2e79ddfb31804be31150a51ee859478c18519556f965b3e35374",
+      "bytes": 197
+    },
+    "0185-schema-types.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0185-site-lint.log": {
+      "sha256": "3b34c7bc70a7cdfaf3fa2926e94cb42711ee384ddbce8ba3ed19543f81cb2a9a",
+      "bytes": 11775
+    },
+    "0185-site-reference.log": {
+      "sha256": "3ee78f8b48b4b4574cceb5cbb116c5f20e9bf0a6db68bda43de434b11466d529",
+      "bytes": 1528
+    },
+    "0185-types-final.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0185-types-first.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0185-types.log": {
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307",
+      "bytes": 33
+    },
+    "0185-vite-scoped.log": {
+      "sha256": "8f40cb34a16cc4a0d719a92e8bef6b449060b3dce5315b65affa4dbe2b01eb5c",
+      "bytes": 650
+    },
+    "0185-wasm-build-final.log": {
+      "sha256": "1e3ca587154c62e2d6a01e8867e8b1c80878115cffaae733c7a45a07c29e6a85",
+      "bytes": 465
+    },
+    "0185-wasm-build.log": {
+      "sha256": "0be6852160629d2190167aeaa4c1ea92087aa7997968060053b8387db4ebced7",
+      "bytes": 1359
+    },
+    "0185-wasm-shared-tree.log": {
+      "sha256": "c507f7438679af77c6e73e29edbad80fc99248706225bcdef022b633a7250b34",
+      "bytes": 465
+    },
+    "0185-webpack-serial.log": {
+      "sha256": "bf506a9e3641d41a12ec85a5741c5e887434baf23d1b11f30c95f4ce14d0f917",
+      "bytes": 759
+    },
+    "0185-xtask-tests.log": {
+      "sha256": "8241f2d68027e617f06ca7de86b2d674a9374432b9f973af51fb1335acbaa4ca",
+      "bytes": 533
+    },
+    "0185-context-final.log": {
+      "sha256": "2cab623bd676f1df664426f73b89140165a3ca0fbb0ec084aa1d7433c8980d39",
+      "bytes": 121
+    }
+  }
+}
