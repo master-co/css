@@ -1,0 +1,89 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-manifest-startup-recovery.test.ts (13 tests | 7 failed) 26015ms
+   × BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in static 4174ms
+   × BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in runtime 4147ms
+   × BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in pre-render 4190ms
+   × BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in progressive 4146ms
+   × BH-0004 manifest bootstrap recovery respects ssr close 4808ms
+   × BH-0004 invalid manifest after good render never serves the old renderer in pre-render 1451ms
+   × BH-0004 invalid manifest after good render never serves the old renderer in progressive 1418ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in static
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in runtime
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in pre-render
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in progressive
+AssertionError: expected '[]' to contain 'definitely-missing-class'
+
+Expected: "definitely-missing-class"
+Received: "[]"
+
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-manifest-startup-recovery.test.ts:43:68
+     41|     const send = vi.spyOn(server.ws, 'send')
+     42|     f.write('@utilities{paint{@compose definitely-missing-class;}}')
+     43|     await vi.waitFor(() => expect(JSON.stringify(send.mock.calls)).toC…
+       |                                                                    ^
+     44|     expect(hasReload(send.mock.calls)).toBe(false)
+     45|     const invalid = await response(server)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 manifest bootstrap recovery respects ssr close
+AssertionError: expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ tests/plugins/bug-hunt-manifest-startup-recovery.test.ts:77:90
+     75|     if (closing === 'ssr') {
+     76|       await vi.waitFor(() => expect(hasReload(send.mock.calls)).toBe(t…
+     77|       await expect.poll(async () => (await response(server!)).status, …
+       |                                                                                          ^
+     78|       expect((await response(server)).text).toContain('.card{padding:7…
+     79|     } else { await delay(350);expect(send).not.toHaveBeenCalled() }
+
+Caused by: Error: Matcher did not succeed in time.
+ ❯ tests/plugins/bug-hunt-manifest-startup-recovery.test.ts:77:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 invalid manifest after good render never serves the old renderer in pre-render
+ FAIL  tests/plugins/bug-hunt-manifest-startup-recovery.test.ts > BH-0004 invalid manifest after good render never serves the old renderer in progressive
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/plugins/bug-hunt-manifest-startup-recovery.test.ts:98:40
+     96|     const send = vi.spyOn(server.ws, 'send');f.write('@utilities{paint…
+     97|     await hook.call({} as never, { file: f.dependency, server } as nev…
+     98|     expect(hasReload(send.mock.calls)).toBe(true);expect((await respon…
+       |                                        ^
+     99|   } finally { await server?.environments.client.waitForRequestsIdle();…
+    100| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 6 passed (13)
+   Start at  11:53:46
+   Duration  26.50s (tests 98%, transform 1%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

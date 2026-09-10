@@ -1,0 +1,3 @@
+$ tsc -b tsconfig.typecheck.json
+$ tsc -b tsconfig.typecheck.json
+$ tsc -b tsconfig.typecheck.json

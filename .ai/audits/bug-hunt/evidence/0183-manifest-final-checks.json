@@ -1,0 +1,157 @@
+{
+  "head": "a19516d15",
+  "goal": "active",
+  "batch": "0183-reference-host-recovery",
+  "batchComplete": false,
+  "previousGoalTurn": "Progress: committed completed audit evidence; this turn fixes managed manifest startup recovery",
+  "validation": {
+    "vite": "586PASS/6FAIL (592tests/66files); all479pre-0183testsPASS",
+    "compiler": "275PASS/36files, including6newdependencyobserver tests",
+    "internal": "18PASS/5files",
+    "newVite": "13PASS; all6previousmanifest-startup cases pass in fullsuite",
+    "browser": "600PASS/0unexpectedpageerrors on final product sources",
+    "lintTypes": "Compiler/internal/Vite PASS",
+    "build": "Compiler/internal/Vite/originalViteexample PASS",
+    "apiCensus": "FAIL; baseline not updated",
+    "packageContracts": "FAIL; optional project onDependency type addition intentional; baseline not updated",
+    "aiContext": "PASS",
+    "syntaxJSONWhitespaceLedgerLinksSourceBudgets": "PASS",
+    "sourcePreservation": "423SHA-256 matches final tested sources;163prior exclusions preserved;foreignSite and8artifacts unchanged"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "remainingHostFailures": [
+    "6 build-watch startup missing CSS references"
+  ],
+  "remaining": [
+    "Full original import graph and Vite/Webpack/other-host migration",
+    "Manifest in-flight closure/restart ownership and remaining lifecycle boundaries",
+    "Internal emitted Modules proxy?direct HTTP500 contract classification",
+    "Remaining Sass/virtual/base/resource/asset/renderBuiltUrl/SSR/Nuxt andWebpack shared-dist cases",
+    "All10blockedcoverage,4rootgates,4originalcandidates",
+    "Native immediate-close shutdown andWebKitnamespace validation limitations",
+    "Fullbenchmarkmatrices/reliablelongsession/history/owner-levelRustprofiling",
+    "Batch0038 additionalverification remains paused pendingexplicitidentityconfirmation"
+  ],
+  "next": "Verify manifest in-flight environment closure/restart ownership, then internal emitted Modules proxy?direct and other host boundaries; retain6build-watch missing-dependency failures",
+  "paused": "Batch0038 explicitidentityconfirmation absent",
+  "sourceCount": 423,
+  "preservation": {
+    "head": "a19516d15",
+    "baselineSources": 413,
+    "finalSources": 423,
+    "changedBaseline": {
+      "packages/compiler/README.md": {
+        "before": "b6cfc161dfe932ee68927071e61e3bbf90336f33935efb8d90785fc4f87829a9",
+        "after": "6cd8f8c5131ead0b9ea795d4394169fb2969bbda7ebd2f158853874d45e7a576"
+      },
+      "packages/compiler/src/project/binding-project.ts": {
+        "before": "1ab99e9d82f0cabd152aff2c2fb8d50f00bb9db6125224a6238c4d88da88c127",
+        "after": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8"
+      },
+      "packages/vite/README.md": {
+        "before": "192af002d08fc193f515969efc53f5067e9f911930f03b27f48f98c24d0ecb3c",
+        "after": "20367ab80c36091f3b329b5504fe087aa39b027a388f8581c81e893c6e7fa2d8"
+      },
+      "packages/vite/src/plugins/pre-render.ts": {
+        "before": "63eef9f85fa1c501641f3c5e3551ad7f678ac7fd6dfb3973a5fd5e560d46fbc9",
+        "after": "8f2c390989ce7e4853324578011cb489e719536de5cca2ddcb2c9ddb8e5a1b99"
+      },
+      "packages/vite/src/plugins/stylesheet-recovery.ts": {
+        "before": "db142095f9224fe31fb8ec84c021a65a5c5a51235af2e416a1bf053b5869a514",
+        "after": "8bd6966f684b0bddd1b06ea855ae4fe384b18ccd8b8e77417093cbfb953620c7"
+      },
+      "packages/vite/src/utils/failed-dependency-reconciliation.ts": {
+        "before": "675bc50602b38bd5b9d8b0490dd21543ebcb9a8b6e311054fa3b9a89a515a436",
+        "after": "0d03af947741e796189d69e4cc7b1e4034debc1a1917f053892c251f38abc87e"
+      },
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+        "before": "0b4c792405b121bc716998184ebaf9ecd3f512a89a1eade9b8d16c027f385799",
+        "after": "b892df1dddea44f8830e7b3920dbba719dcb87fbe260585f337fd97417bd594e"
+      }
+    },
+    "addedToSourceInventory": [
+      ".ai/audits/bug-hunt/repros/vite-manifest-startup-browser.mjs",
+      "packages/compiler/src/project/manifest-sync.ts",
+      "packages/compiler/src/project/manifest.ts",
+      "packages/compiler/src/project/options.ts",
+      "packages/compiler/tests/bug-hunt-project-dependency-observer.test.ts",
+      "packages/internal/src/manifest-loader.ts",
+      "packages/vite/src/plugins/manifest-virtual-module.ts",
+      "packages/vite/src/utils/manifest-recovery.ts",
+      "packages/vite/src/utils/recovery-error.ts",
+      "packages/vite/tests/plugins/bug-hunt-manifest-startup-recovery.test.ts"
+    ],
+    "previousCommitExclusionsUnchanged": 163,
+    "changedExclusions": {
+      "packages/compiler/README.md": {
+        "before": "b6cfc161dfe932ee68927071e61e3bbf90336f33935efb8d90785fc4f87829a9",
+        "after": "6cd8f8c5131ead0b9ea795d4394169fb2969bbda7ebd2f158853874d45e7a576"
+      },
+      "packages/compiler/src/project/binding-project.ts": {
+        "before": "1ab99e9d82f0cabd152aff2c2fb8d50f00bb9db6125224a6238c4d88da88c127",
+        "after": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8"
+      },
+      "packages/vite/README.md": {
+        "before": "192af002d08fc193f515969efc53f5067e9f911930f03b27f48f98c24d0ecb3c",
+        "after": "20367ab80c36091f3b329b5504fe087aa39b027a388f8581c81e893c6e7fa2d8"
+      },
+      "packages/vite/src/plugins/stylesheet-recovery.ts": {
+        "before": "db142095f9224fe31fb8ec84c021a65a5c5a51235af2e416a1bf053b5869a514",
+        "after": "8bd6966f684b0bddd1b06ea855ae4fe384b18ccd8b8e77417093cbfb953620c7"
+      },
+      "packages/vite/src/utils/failed-dependency-reconciliation.ts": {
+        "before": "675bc50602b38bd5b9d8b0490dd21543ebcb9a8b6e311054fa3b9a89a515a436",
+        "after": "0d03af947741e796189d69e4cc7b1e4034debc1a1917f053892c251f38abc87e"
+      },
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+        "before": "0b4c792405b121bc716998184ebaf9ecd3f512a89a1eade9b8d16c027f385799",
+        "after": "b892df1dddea44f8830e7b3920dbba719dcb87fbe260585f337fd97417bd594e"
+      }
+    },
+    "priorCommittedRawEvidenceUnchanged": true,
+    "foreignSiteUnchanged": true,
+    "fiveArtifactsUnchanged": true,
+    "threeCLIArtifactsUnchanged": true
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false,
+  "linkValidationNote": "Initial validator treated an existing absolute file link :201 line suffix as part of the filename; checker corrected, no document link changed.",
+  "terminalSessions": {
+    "94436": 0,
+    "56985": 0,
+    "83654": 1,
+    "32646": 1,
+    "99232": 0,
+    "44705": 1,
+    "93525": 1,
+    "62154": 0,
+    "17377": 0,
+    "33161": 0,
+    "82228": 1,
+    "14187": 1,
+    "78948": 0,
+    "83677": 1,
+    "74658": 1,
+    "97052": 0,
+    "6446": 0,
+    "77162": 0,
+    "93691": 0,
+    "35933": 0,
+    "21374": 0,
+    "14131": 0,
+    "41560": 0
+  }
+}

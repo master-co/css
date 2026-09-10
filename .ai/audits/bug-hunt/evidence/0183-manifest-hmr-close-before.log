@@ -1,0 +1,74 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-manifest-lifecycle.test.ts (16 tests | 3 failed | 12 skipped) 7572ms
+   × BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in pre-render (failure=false) 1963ms
+   × BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in pre-render (failure=true) 1868ms
+   × BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in progressive (failure=true) 1843ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-lifecycle.test.ts > BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in pre-render (failure=false)
+AssertionError: expected "send" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st send call:
+
+    Array [
+      Object {
+        "type": "full-reload",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/plugins/bug-hunt-manifest-lifecycle.test.ts:95:60
+     93|     const send = vi.spyOn(server.ws, 'send'), closing = server.close()
+     94|     gate.release();await closing
+     95|     expect(await pending).toBeUndefined();expect(send).not.toHaveBeenC…
+       |                                                            ^
+     96|   } finally { gate?.release();await pending;await server?.environments…
+     97| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-lifecycle.test.ts > BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in pre-render (failure=true)
+ FAIL  tests/plugins/bug-hunt-manifest-lifecycle.test.ts > BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in progressive (failure=true)
+AssertionError: expected { …(1) } to be undefined
+
+- Expected:
+undefined
+
++ Received:
+{
+  "error": Error {
+    "message": "controlled late manifest response failure",
+  },
+}
+
+ ❯ tests/plugins/bug-hunt-manifest-lifecycle.test.ts:95:27
+     93|     const send = vi.spyOn(server.ws, 'send'), closing = server.close()
+     94|     gate.release();await closing
+     95|     expect(await pending).toBeUndefined();expect(send).not.toHaveBeenC…
+       |                           ^
+     96|   } finally { gate?.release();await pending;await server?.environments…
+     97| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed | 1 passed | 12 skipped (16)
+   Start at  12:18:03
+   Duration  8.09s (tests 94%, transform 4%, import 2%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

@@ -1,0 +1,75 @@
+{
+  "observations": 600,
+  "failures": 0,
+  "unexpectedPageErrors": 0,
+  "runs": [
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-browser-final.log",
+      "sha256": "1a8ef97576119f55febafc826b26ee8328cc6a9e45a17d8d10ef146be474cd75",
+      "summary": true,
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-scss-browser.log",
+      "sha256": "e8c9b31d35cc7984514ab11cfc130c06a84519b2d5ebaab62e6a3325175b3114",
+      "summary": true,
+      "syntax": "scss",
+      "observations": 108,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-sass-browser.log",
+      "sha256": "eaba5389ba6b0f4cf10e163049e29297caec633abc716a465b5224920818c1d2",
+      "summary": true,
+      "syntax": "sass",
+      "observations": 108,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-resource-file-browser.log",
+      "sha256": "5f83a1649e212132ddb2dc238b9f20da28ba5b7f17d2b9dbda8956881967f42c",
+      "summary": true,
+      "syntax": "css",
+      "missing": "file",
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-resource-directory-browser.log",
+      "sha256": "ee0f38a9748914c98b60e8d500e847f919ae44e2f4a7fc798795245af3f3d537",
+      "summary": true,
+      "syntax": "css",
+      "missing": "directory",
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-external-default-browser.log",
+      "sha256": "013b11c561c98238685eae08895015c5d153e4b4c177cadb5055f548e4408544",
+      "summary": true,
+      "syntax": "css",
+      "missing": "directory",
+      "backend": "default",
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-external-node-browser.log",
+      "sha256": "d0a91da8d2b18a1409360d5d5fc96b51b9f668715d6080d3840a92e5c485e4cd",
+      "summary": true,
+      "syntax": "css",
+      "missing": "directory",
+      "backend": "node",
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-manifest-diagnostics-browser.log",
+      "sha256": "08a4b9b535183602fe477f916d3e49f7e4bfcec055e2d8b80f9cc394ea798dbd",
+      "summary": true,
+      "observations": 24,
+      "failures": 0
+    }
+  ]
+}

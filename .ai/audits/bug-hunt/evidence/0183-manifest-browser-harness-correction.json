@@ -1,0 +1,5 @@
+{
+  "firstSourceSHA256": "8e1f43cdeb2a4840801889528d941439bee1b06465c0569d9ebec4ce73a04dd8",
+  "classification": "Harness error: manifest components are lowered into utilities; the test page accessed nonexistent manifest.components.card. Runtime-disabled runtime mode also requires authored CSS to test pixels. Correct page uses utilities.some and an explicit composed target rule; product code unchanged.",
+  "secondFailure": "External temporary app lacked node_modules, so injected runtime import could not resolve @master/css-runtime. Trace showed ready=true and padding=112px, but Vite overlay correctly reported the missing installed app dependency. Fixture now links existing Vite package node_modules; no install/dependency/product change."
+}

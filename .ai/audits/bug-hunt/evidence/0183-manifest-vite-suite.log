@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts (26 tests | 6 failed) 59510ms
+   × BH-0004 build-watch reference recovery scss/plain-root/startup=true 5251ms
+   × BH-0004 build-watch reference recovery scss/module-root/startup=true 5258ms
+   × BH-0004 build-watch reference recovery scss/retained-module/startup=true 5302ms
+   × BH-0004 build-watch reference recovery sass/plain-root/startup=true 5192ms
+   × BH-0004 build-watch reference recovery sass/module-root/startup=true 5163ms
+   × BH-0004 build-watch reference recovery sass/retained-module/startup=true 5169ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 6 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/module-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/retained-module/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/plain-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/module-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/retained-module/startup=true
+AssertionError: restored: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-reference-host-recovery.test.ts:104:102
+    102|       if (event.code === 'END' && terminal) { events.push(terminal); t…
+    103|     })
+    104|     const nextEvent = async (phase: string) => { await vi.waitFor(() =…
+       |                                                                                                      ^
+    105|     const initial = await nextEvent('initial')
+    106|     expect(initial.code).toBe(startupMissing ? 'ERROR' : 'BUNDLE_END')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/6]⎯
+
+
+ Test Files  1 failed | 65 passed (66)
+      Tests  6 failed | 586 passed (592)
+   Start at  12:02:08
+   Duration  60.25s (tests 97%, import 2%, transform 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

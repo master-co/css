@@ -1,0 +1,47 @@
+{"mode":"static","browser":"chromium","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"firefox","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"webkit","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"chromium","phase":"recovered-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"recovered-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"recovered-owner","pass":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+[TypeError: fetch failed] {
+  [cause]: Error: unknown scheme
+      at makeNetworkError (node:internal/deps/undici/undici:11806:35)
+      at schemeFetch (node:internal/deps/undici/undici:13366:34)
+      at mainFetch (node:internal/deps/undici/undici:13207:30)
+      at fetching (node:internal/deps/undici/undici:13176:7)
+      at fetch (node:internal/deps/undici/undici:13040:20)
+      at fetch (node:internal/deps/undici/undici:17708:10)
+      at fetch (node:internal/bootstrap/web/exposed-window-or-worker:83:12)
+      at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-manifest-lifecycle-browser.mjs:64:29
+}
+
+Node.js v24.20.0

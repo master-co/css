@@ -1,0 +1,10 @@
+{
+  "typeCheck": "New send-spy assertion inferred only the string overload, producing never for object payloads. Reused unknown-payload helper; runtime assertion unchanged.",
+  "browserRestart": "Manual goto raced Vite automatic restart navigation; driver now observes that actual navigation and verifies HTTP500 from replacement server.",
+  "browserManifestRequest": "Environment module.url was a raw virtual identifier, not an HTTP URL; Node fetch rejected its scheme. Driver now requests the existing /@id/__x00__ virtual-module HTTP route.",
+  "hmrContract": "The test app explicitly accepts the virtual manifest update, as required for preserving state along that importer. The adapter delegates loaded-module propagation to Vite; applications without an accepting boundary can still require a full reload.",
+  "productionChangesForHarness": false,
+  "historicalLogsRetained": true,
+  "firstUpdate": "Vite client reloads itself when its first update sees an overlay; server emitted only js-update. Added explicit successful HMR setup to match the existing recovery/state-preservation contract, retaining the first-update observation and source evidence.",
+  "runtimeReadiness": "Authored CSS pixels and JS entry readiness do not prove runtime initialization. Added runtime-only CSS probe before steady-state HMR; HMR during initialization remains a separate unverified candidate with its original trace retained."
+}

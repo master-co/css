@@ -1,0 +1,10 @@
+{
+  "status": "unverified; not completed",
+  "finding": "BH-0004 host lifecycle candidate; not a newly confirmed independent finding",
+  "observation": "During a first valid HMR control immediately after startup recovery, WebKit accepted manifest8rem (manifestUpdates=1) and retained application state, but runtime CSSOM was empty and runtime-only probe padding0px. Authored target CSS9rem remained present. No server full-reload occurred.",
+  "evidence": "0183-manifest-lifecycle-valid-hmr-trace.log",
+  "limits": "The fixture only awaited authored target pixels and JS entry readiness before issuing HMR; it had not established that runtime initialization had completed. Earlier full-run timeout lacks this state snapshot. This evidence does not yet distinguish runtime-startup ordering from steady-state HMR.",
+  "steadyStateControl": "Added a runtime-only probe144px readiness barrier before later valid/invalid HMR assertions. All original HMR/state assertions retained; this establishes their initialization precondition.",
+  "remainingRequirement": "HMR arriving during initial runtime startup remains unverified, not declared fixed or dismissed as a harness error.",
+  "next": "Add a controlled delayed-Wasm/runtime initialization reproduction, issue real manifest HMR before and after runtime readiness, compare browser CSSOM and runtime bootstrap init/destroy ordering. Keep this candidate separate from the confirmed adapter full-reload regression and Vite first-update overlay policy."
+}

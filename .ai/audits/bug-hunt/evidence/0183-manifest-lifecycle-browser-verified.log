@@ -1,0 +1,50 @@
+{"mode":"static","browser":"chromium","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"firefox","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"webkit","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"static","browser":"chromium","phase":"recovered-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"recovered-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"healthy-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"failed-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"restarted-owner","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"new-diagnostic-after-other-closes","pass":true}
+{"mode":"runtime","browser":"chromium","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"firefox","phase":"recovered-owner","pass":true}
+{"mode":"runtime","browser":"webkit","phase":"recovered-owner","pass":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ undefined
+- 'preserve'
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-manifest-lifecycle-browser.mjs:68:16 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: 'preserve',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

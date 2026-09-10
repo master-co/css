@@ -1,0 +1,8 @@
+{
+  "source": "node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.1_jiti@2.7.0_less@4.6.4_sass@1.101.0_terser@5.48.0_tsx@4.23.13_yaml@2.9.0/node_modules/vite/dist/client/client.mjs",
+  "sha256": "e6966602a62362a410659d82ead11d8ea7ed5319518164031f046307389e73f6",
+  "excerpt": "function clearOverlayOrReloadOnFirstUpdate() {\n\tif (hasDocument) {\n\t\tif (isFirstUpdate && hasErrorOverlay()) {\n\t\t\tlocation.reload();\n\t\t\treturn \"reload\";\n\t\t}\n\t\tif (enableOverlay) clearErrorOverlay();\n\t\tisFirstUpdate = false;\n\t}\n\treturn \"continue\";\n}\n",
+  "observed": "Trace records zero server full-reload messages, a normal js-update to two accepting boundaries, then client navigation. Installed Vite explicitly reloads if its first update encounters an error overlay.",
+  "classification": "Installed host behavior / overly broad first-update test expectation; no adapter full-reload or installed-client patch.",
+  "correctedControl": "Establish a real successful HMR update through the public environment API, then verify invalid-manifest reconciliation preserves accepted application state. Retain initial-first-update host behavior as a limitation."
+}

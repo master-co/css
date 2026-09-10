@@ -1,0 +1,18 @@
+{"mode":"runtime","runtime":true,"browser":"chromium","phase":"initial-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"firefox","phase":"initial-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"webkit","phase":"initial-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"chromium","phase":"updated-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"firefox","phase":"updated-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"webkit","phase":"updated-error","pass":true}
+{"mode":"runtime","runtime":true,"browser":"chromium","failure":"TimeoutError: page.waitForFunction: Timeout 30000ms exceeded.","errors":[],"messages":[{"type":"connected"},{"type":"error","error":"CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-manifest-startup-browser-5SlEIW/external/nested/tokens.css"},{"type":"error","error":"CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-manifest-startup-browser-5SlEIW/external/nested/tokens.css"},{"type":"error","error":"CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/vite-manifest-startup-browser-5SlEIW/external/nested/tokens.css"},{"type":"error","error":"Invalid @compose class: definitely-missing-class"},{"type":"full-reload"},{"type":"connected"},{"type":"error","error":"Failed to resolve import \"@master/css-runtime\" from \"\u0000virtual:master-css-runtime\". Does the file exist?"},{"type":"error","error":"Failed to resolve import \"@master/css-runtime\" from \"\u0000virtual:master-css-runtime\". Does the file exist?"},{"type":"full-reload"},{"type":"connected"},{"type":"error","error":"Failed to resolve import \"@master/css-runtime\" from \"\u0000virtual:master-css-runtime\". Does the file exist?"},{"type":"error","error":"Failed to resolve import \"@master/css-runtime\" from \"\u0000virtual:master-css-runtime\". Does the file exist?"}],"page":{"ready":true,"target":"<div id=\"target\" class=\"card target\"></div>","padding":"112px","overlay":"[plugin:vite:import-analysis] Failed to resolve import \"@master/css-runtime\" from \"\u0000virtual:master-css-runtime\". Does the file exist?\u0000virtual:master-css-runtime:1:341  |  import { MasterCSSRuntime } from '@master/css-runtime'\n   |                                    ^\n2  |  import masterCSSManifest from 'virtual:master-css-manifest'\n3  |  import masterCSSEmittedGlobals from 'virtual:master-css-emitted-globals'    at TransformPluginContext._formatLog (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:31147:39)\n    at TransformPluginContext.error (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:31144:14)\n    at normalizeUrl (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:28083:18)\n    at async file:/"}}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-manifest-startup-browser.mjs:42:27 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0

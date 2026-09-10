@@ -1,0 +1,41 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-manifest-lifecycle.test.ts (17 tests | 1 failed | 16 skipped) 984ms
+   × BH-0004 reconciliation updates an already loaded manifest through its HMR boundary 984ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-manifest-lifecycle.test.ts > BH-0004 reconciliation updates an already loaded manifest through its HMR boundary
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/plugins/bug-hunt-manifest-lifecycle.test.ts:114:39
+    112|     const send = vi.spyOn(server.ws, 'send');f.write('9rem')
+    113|     await vi.waitFor(() => expect(send).toHaveBeenCalled(), { timeout:…
+    114|     expect(reloaded(send.mock.calls)).toBe(false)
+       |                                       ^
+    115|     expect(JSON.stringify(send.mock.calls)).toContain('js-update')
+    116|     expect((await environment.transformRequest(module.url))?.code).toC…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 16 skipped (17)
+   Start at  12:23:10
+   Duration  1.50s (tests 68%, transform 21%, import 11%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

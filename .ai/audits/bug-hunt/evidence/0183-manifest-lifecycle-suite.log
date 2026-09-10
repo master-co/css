@@ -1,0 +1,156 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+stderr | tests/dev-hmr.test.ts > Vite dev HMR > updates runtime CSS without full reload and recovers after invalid CSS
+[browser] Failed to load resource: the server responded with a status of 500 (Internal Server Error)
+
+stderr | tests/dev-hmr.test.ts > Vite dev HMR > updates runtime CSS without full reload and recovers after invalid CSS
+[browser] [vite] Failed to reload /@id/__x00__virtual:master-css-manifest. This could be due to syntax errors or importing non-existent modules. (see errors above)
+
+ ❯ tests/dev-hmr.test.ts (2 tests | 1 failed) 6515ms
+   ❯ Vite dev HMR (2)
+     × updates runtime CSS without full reload and recovers after invalid CSS 1907ms
+ ❯ tests/plugins/bug-hunt-reference-host-recovery.test.ts (26 tests | 6 failed) 58884ms
+   × BH-0004 build-watch reference recovery scss/plain-root/startup=true 5180ms
+   × BH-0004 build-watch reference recovery scss/module-root/startup=true 5259ms
+   × BH-0004 build-watch reference recovery scss/retained-module/startup=true 5273ms
+   × BH-0004 build-watch reference recovery sass/plain-root/startup=true 5251ms
+   × BH-0004 build-watch reference recovery sass/module-root/startup=true 5162ms
+   × BH-0004 build-watch reference recovery sass/retained-module/startup=true 5173ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/dev-hmr.test.ts > Vite dev HMR > updates runtime CSS without full reload and recovers after invalid CSS
+AssertionError: expected [ { type: 'update', …(1) }, …(5) ] to not deep equally contain { Object (sample, inverse, ...) }
+
+- Expected:
+ObjectContaining {
+  "type": "full-reload",
+}
+
++ Received:
+[
+  {
+    "type": "update",
+    "updates": [
+      {
+        "acceptedPath": "/@id/__x00__virtual:master-css-manifest",
+        "explicitImportRequired": false,
+        "firstInvalidatedBy": undefined,
+        "isWithinCircularImport": false,
+        "path": "/@id/__x00__virtual:master-css-runtime",
+        "timestamp": 1789014005190,
+        "type": "js-update",
+      },
+    ],
+  },
+  {
+    "type": "update",
+    "updates": [
+      {
+        "acceptedPath": "/@id/__x00__virtual:master-css-manifest",
+        "explicitImportRequired": false,
+        "firstInvalidatedBy": undefined,
+        "isWithinCircularImport": false,
+        "path": "/@id/__x00__virtual:master-css-runtime",
+        "timestamp": 1789014005335,
+        "type": "js-update",
+      },
+    ],
+  },
+  {
+    "type": "update",
+    "updates": [
+      {
+        "acceptedPath": "/@id/__x00__virtual:master-css-manifest",
+        "explicitImportRequired": false,
+        "firstInvalidatedBy": undefined,
+        "isWithinCircularImport": false,
+        "path": "/@id/__x00__virtual:master-css-runtime",
+        "timestamp": 1789014005608,
+        "type": "js-update",
+      },
+    ],
+  },
+  {
+    "err": {
+      "frame": "",
+      "id": undefined,
+      "loc": undefined,
+      "message": "Invalid @compose class: bg:neutral-120",
+      "plugin": undefined,
+      "pluginCode": undefined,
+      "stack": "    at normalizeBindingError (/Users/aron/master/css/packages/binding/dist/normalize-error.js:42:9)
+    at callBinding (/Users/aron/master/css/packages/binding/dist/normalize-error.js:53:9)
+    at invoke (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
+    at Object.loadPreparedProjectManifest (/Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:30:70)
+    at loadBindingProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/binding-project.js:60:26)
+    at Object.loadProjectManifest (/Users/aron/master/css/packages/compiler/dist/project/manifest.js:40:17)
+    at loadMasterCSSVirtualManifest (/Users/aron/master/css/packages/internal/src/manifest-loader.ts:62:37)
+    at loadDefaultManifest (/Users/aron/master/css/packages/internal/src/manifest-virtual-module.ts:111:20)
+    at Object.load (/Users/aron/master/css/packages/internal/src/manifest-virtual-module.ts:138:24)
+    at withStylesheetDependencies (/Users/aron/master/css/packages/vite/src/utils/failed-stylesheet-dependencies.ts:46:20)",
+    },
+    "type": "error",
+  },
+  {
+    "path": "*",
+    "type": "full-reload",
+  },
+  {
+    "type": "update",
+    "updates": [
+      {
+        "acceptedPath": "/@id/__x00__virtual:master-css-manifest",
+        "explicitImportRequired": false,
+        "firstInvalidatedBy": undefined,
+        "isWithinCircularImport": false,
+        "path": "/@id/__x00__virtual:master-css-runtime",
+        "timestamp": 1789014005948,
+        "type": "js-update",
+      },
+    ],
+  },
+]
+
+ ❯ tests/dev-hmr.test.ts:180:26
+    178|     writeStyle(fixtureDir, 'block')
+    179|     await page.waitForFunction(() => getComputedStyle(document.querySe…
+    180|     expect(wsEvents).not.toContainEqual(expect.objectContaining({ type…
+       |                          ^
+    181|     expect(await page.evaluate(() => (window as Window & { __MASTER_CS…
+    182|       .toBe('preserve')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/plain-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/module-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery scss/retained-module/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/plain-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/module-root/startup=true
+ FAIL  tests/plugins/bug-hunt-reference-host-recovery.test.ts > BH-0004 build-watch reference recovery sass/retained-module/startup=true
+AssertionError: restored: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-reference-host-recovery.test.ts:104:102
+    102|       if (event.code === 'END' && terminal) { events.push(terminal); t…
+    103|     })
+    104|     const nextEvent = async (phase: string) => { await vi.waitFor(() =…
+       |                                                                                                      ^
+    105|     const initial = await nextEvent('initial')
+    106|     expect(initial.code).toBe(startupMissing ? 'ERROR' : 'BUNDLE_END')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+
+ Test Files  2 failed | 65 passed (67)
+      Tests  7 failed | 601 passed (608)
+   Start at  12:19:33
+   Duration  59.57s (tests 97%, import 2%, transform 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

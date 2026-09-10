@@ -1,0 +1,24 @@
+{"mode":"static","browser":"chromium","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"healthy-owner","pass":true}
+{"mode":"static","browser":"webkit","phase":"failed-owner","pass":true}
+{"mode":"static","browser":"chromium","phase":"restarted-owner","pass":true}
+{"mode":"static","browser":"firefox","phase":"restarted-owner","pass":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.goto: Navigation to "http://127.0.0.1:55778/" is interrupted by another navigation to "http://127.0.0.1:55778/"
+Call log:
+[2m  - navigating to "http://127.0.0.1:55778/", waiting until "load"[22m
+
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-manifest-lifecycle-browser.mjs:44:42 {
+  log: [
+    '  - navigating to "http://127.0.0.1:55778/", waiting until "load"'
+  ],
+  name: 'Error'
+}
+
+Node.js v24.20.0

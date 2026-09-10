@@ -1,0 +1,10 @@
+{
+  "sourceHashes": ".ai/audits/bug-hunt/evidence/0183-manifest-source-hashes.json",
+  "finalChecks": ".ai/audits/bug-hunt/evidence/0183-manifest-final-checks.json",
+  "browserSummary": ".ai/audits/bug-hunt/evidence/0183-manifest-browser-summary.json",
+  "historicalFailedRunsRetained": true,
+  "temporaryProductTraceInstrumentationRemoved": true,
+  "publicSurfaceChange": "Optional onDependency callback in MasterCSSProjectLoadOptions and inherited async/sync compile options; reports each path before reads, including missing dependencies",
+  "semanticChanges": false,
+  "originalTestsEdited": false
+}

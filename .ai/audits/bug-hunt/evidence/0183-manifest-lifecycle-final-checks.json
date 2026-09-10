@@ -1,0 +1,131 @@
+{
+  "head": "a19516d15",
+  "goal": "active",
+  "batch": "0183-reference-host-recovery",
+  "batchComplete": false,
+  "previousGoalTurn": "Manifest startup recovery verified; current lifecycle and loaded-module HMR checkpoint finalized during user-authorized audit commit preparation",
+  "validation": {
+    "vite": "603PASS/6FAIL (609 tests/67 files); all479 pre-0183 tests PASS",
+    "newVite": "17 lifecycle/HMR controls PASS",
+    "browser": "138PASS/0unexpectedpageerrors; 72startup plus66lifecycle/steady-state HMR",
+    "lintTypes": "Vite PASS",
+    "build": "Vite/originalViteexample PASS",
+    "unchangedLowerPackages": "Compiler275/internal18 prior PASS on unchanged sources; no new native/Wasm rebuild",
+    "rootGates": "Still unfinished; API census/package contracts previously FAIL; no golden refresh",
+    "aiContext": "PASS",
+    "syntaxJSONWhitespaceLedgerLinksSourceBudgets": "PASS",
+    "sourcePreservation": "426 source hashes verified; final lifecycle driver hash updated after readiness refinement; all425 other sources match prior capture"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 45,
+    "unresolved": 2,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029"
+  ],
+  "remainingHostFailures": [
+    "6 build-watch startup missing CSS references"
+  ],
+  "remaining": [
+    "Full original import graph and Vite/Webpack/other-host migration",
+    "HMR during runtime initialization remains an unverified candidate; steady-state closure/restart controls verified",
+    "Internal emitted Modules proxy?direct HTTP500 contract classification",
+    "Remaining Sass/virtual/base/resource/asset/renderBuiltUrl/SSR/Nuxt andWebpack shared-dist cases",
+    "All10blockedcoverage,4rootgates,4originalcandidates",
+    "Native immediate-close shutdown andWebKitnamespace validation limitations",
+    "Fullbenchmarkmatrices/reliablelongsession/history/owner-levelRustprofiling",
+    "Batch0038 additionalverification remains paused pendingexplicitidentityconfirmation"
+  ],
+  "next": "Controlled delayed-Wasm startup with HMR before/after runtime readiness; then internal Modules proxy?direct HTTP500; retain six build-watch startup failures",
+  "paused": "Batch0038 explicitidentityconfirmation absent",
+  "sourceCount": 426,
+  "preservation": {
+    "head": "a19516d15",
+    "baselineSources": 423,
+    "finalSources": 426,
+    "changed": {
+      "packages/vite/README.md": {
+        "before": "20367ab80c36091f3b329b5504fe087aa39b027a388f8581c81e893c6e7fa2d8",
+        "after": "0e29595845f9838b5bc5588aea32ec10674ba3077b1c7107df9cb0dcf7936472"
+      },
+      "packages/vite/src/plugins/pre-render.ts": {
+        "before": "8f2c390989ce7e4853324578011cb489e719536de5cca2ddcb2c9ddb8e5a1b99",
+        "after": "15efbba141a1e32067040fe08618ddda844e20b39c89729d9d92bb65c3459f16"
+      },
+      "packages/vite/src/utils/manifest-recovery.ts": {
+        "before": "95926c71425bde1109b7b3b09116a063970723676c0f581c220a90856faa6718",
+        "after": "997c91db5e904e91be404e7b2606a3a7d9cae0e40d7bd4d8e05b5451df713383"
+      }
+    },
+    "newSources": [
+      ".ai/audits/bug-hunt/repros/vite-manifest-lifecycle-browser.mjs",
+      "packages/vite/src/utils/environment-closing.ts",
+      "packages/vite/tests/plugins/bug-hunt-manifest-lifecycle.test.ts"
+    ],
+    "compilerInternalRustCLIUnchanged": true,
+    "previousCommitExclusionsUnchanged": 163,
+    "changedCommitExclusions": {
+      "packages/compiler/README.md": {
+        "before": "b6cfc161dfe932ee68927071e61e3bbf90336f33935efb8d90785fc4f87829a9",
+        "after": "6cd8f8c5131ead0b9ea795d4394169fb2969bbda7ebd2f158853874d45e7a576"
+      },
+      "packages/compiler/src/project/binding-project.ts": {
+        "before": "1ab99e9d82f0cabd152aff2c2fb8d50f00bb9db6125224a6238c4d88da88c127",
+        "after": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8"
+      },
+      "packages/vite/README.md": {
+        "before": "192af002d08fc193f515969efc53f5067e9f911930f03b27f48f98c24d0ecb3c",
+        "after": "0e29595845f9838b5bc5588aea32ec10674ba3077b1c7107df9cb0dcf7936472"
+      },
+      "packages/vite/src/plugins/stylesheet-recovery.ts": {
+        "before": "db142095f9224fe31fb8ec84c021a65a5c5a51235af2e416a1bf053b5869a514",
+        "after": "8bd6966f684b0bddd1b06ea855ae4fe384b18ccd8b8e77417093cbfb953620c7"
+      },
+      "packages/vite/src/utils/failed-dependency-reconciliation.ts": {
+        "before": "675bc50602b38bd5b9d8b0490dd21543ebcb9a8b6e311054fa3b9a89a515a436",
+        "after": "0d03af947741e796189d69e4cc7b1e4034debc1a1917f053892c251f38abc87e"
+      },
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts": {
+        "before": "0b4c792405b121bc716998184ebaf9ecd3f512a89a1eade9b8d16c027f385799",
+        "after": "b892df1dddea44f8830e7b3920dbba719dcb87fbe260585f337fd97417bd594e"
+      }
+    },
+    "priorCommittedRawLogsUnchanged": true,
+    "foreignSiteUnchanged": true,
+    "fiveArtifactsUnchanged": true,
+    "threeCLIArtifactsUnchanged": true
+  },
+  "activeJobs": [],
+  "commit": false,
+  "push": false,
+  "linkValidationNote": "Initial validator treated an existing absolute file link :201 line suffix as part of the filename; checker corrected, no document link changed.",
+  "terminalSessions": {
+    "44564": 1,
+    "41812": 0,
+    "38086": 0,
+    "79244": 1,
+    "63324": 1,
+    "98398": 0,
+    "42685": 1,
+    "37023": 0,
+    "26372": 0,
+    "29019": 1,
+    "58332": 1,
+    "39625": 0,
+    "23537": 0,
+    "66008": 1,
+    "29292": 0,
+    "41974": 1,
+    "13490": 1,
+    "94759": 1,
+    "16026": 1,
+    "4821": 0
+  },
+  "commitPreparation": "User explicitly authorized completed audit commit; product/package tests excluded"
+}
