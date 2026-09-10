@@ -4,10 +4,10 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0183 commit checkpoint: `c25c1c6dc` delivers the isolated BH-0056 renderer fix and3regressions; HEAD-source snapshot132tests/lint/types/buildPASS using existing installed dependencies/artifacts (not a clean dependency rebuild). Completed source-offset/entry-reference evidence is recorded; BH-0055 and Sass/compiler fixes still depend on unfinished graph work and remain uncommitted.201non-audit working files preserved byte-for-byte. Prior [checkpoint](progress-history-0183-rendered-commit.md) retains296compiler/110NextPASS with3oldassertionFAIL and12browserPASS. New output-map work is unfinished: Rust currently has2lifetime compile errors; do not apply prior Rust PASS to it.56historical/52fixed/4unresolved,65checked/10blocked; all prior gates/candidates/host/graph/benchmark/Site requirements remain.0038stillawaits explicitidentityconfirmation;goalactive;no push. Next fix output-map lifetimes, then verify mappings through lowering/Sass/hosts. [Commit checks](evidence/0183-rendered-commit-validation.json).
+- 提交交接：依使用者要求，本次保存0183 source-map及0184 conditional compose已收尾的有界查核、原始證據與2個重現腳本。產品／套件測試仍依賴未完成graph實作，0185新工作與其他對話Site變更保留工作區。50份歷史log雜湊一致；0184的483來源中467仍一致，16份已由0185更新，故舊PASS不代表目前版本。證據依賴記錄的工作區來源，非乾淨checkout驗證。57historical/52fixed/5unresolved、10blocked、4gates/4candidates及0038身分暫停維持；目標active，未推送。0185已改善直接輸出順序，但qualified managed import仍FAIL；接續核對最終native CLI／browser、來源與產物並同步帳本後，才能結案BH-0057。[提交核對](evidence/0184-commit-validation.json)；[0184原交接](progress-history-0184-commit.md)。
 
 
-- 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
+- 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 
 - 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
 
@@ -99,10 +99,11 @@
 | BH-0050 | P2 | 已修復 | Manifest／emittedGlobals分別HMR時復原另一個舊輸入，樣式倒退或重複全域變數 | 分別保留最新接受值；修前4unit/12browserFAIL，修復6新控制/168VitebrowserPASS；[0183](batches/0183-reference-host-recovery.md) / [證據](evidence/0183-runtime-inputs-finding.json) |
 | BH-0051 | P1 | 已確認 | Next --webpack 頂層CSS rule移除原生CSS loaders，CSS被當JS解析 | 管線部分修正；default及LightningCSS production各9browser通過；偶發timeout及完整host邊界仍待驗；[checkpoint](evidence/0183-sass-preparation-final-checks.json) |
 | BH-0052 | P1 | 已修復 | Next/Webpack 三個 virtual URI 繞過 alias，無法編譯 runtime | 精確beforeResolve對映；9控制、實際compiler與3瀏覽器runtime HMR通過；[證據](evidence/0183-next-virtual-findings.json) |
-| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | raw Sass、partial reference／缺檔恢復及additionalData origins已驗；output／expanded map與完整options/host待驗；[檢查](evidence/0183-next-source-offset-final-checks.json) |
+| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | raw Sass、partial reference／缺檔恢復及additionalData origins已驗；direct output／expanded origins已驗；delivery maps、native細節與完整options/host待驗；[檢查](evidence/0183-output-maps-final-checks.json) |
 | BH-0054 | P1 | 已修正 | Next/Turbopack 強制一般 CSS，CSS Module class 匯出為空 | css-module型別及*.module.css後綴均須保留；工作區與隔離版本dev/build三瀏覽器通過；[證據](evidence/0183-next-raw-turbo-module-discovery.json) |
 | BH-0055 | P1 | 已修復 | Next 入口及collection展開時丟失reference，引用自訂class無法編譯 | 原始reference metadata保留；dev/HMR、Turbopack/Webpack production通過；[證據](evidence/0183-next-source-offset-findings.json) |
 | BH-0056 | P1 | 已修復 | compileRenderedStylesheet 遺漏lowered compose規則 | renderer改用完整編譯CSS；單元、建置及三瀏覽器通過；[證據](evidence/0183-next-source-offset-findings.json) |
+| BH-0057 | P1 | 部分修復 | 原生條件內compose已展開；直接輸出反轉順序、拆開匿名layer仍未修 | Rust98PASS/2FAIL；compiler305PASS/1FAIL；native/Wasm graph與原生對照72browserPASS，direct15PASS/9FAIL；[0184](evidence/0184-final-checks.json) |
 
 53 historical confirmed findings: 49 fixed, 4 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
 

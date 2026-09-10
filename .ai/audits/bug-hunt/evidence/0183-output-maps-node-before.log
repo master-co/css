@@ -1,0 +1,134 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts (4 tests | 4 failed) 108ms
+   × final CSS maps native selectors and lowered compose to authored UTF-16 locations 8ms
+   × rendered graph maps imported compose and native selectors after reference removal 5ms
+   × raw Sass output map chains imported partial sources through native printing and compose lowering 92ms
+   × expanded lowering diagnostics point to the authored child rather than flattened CSS 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > final CSS maps native selectors and lowered compose to authored UTF-16 locations
+AssertionError: expected {} to match object { …(3) }
+
+- Expected
++ Received
+
+- {
+-   "originalColumn": 0,
+-   "originalLine": 2,
+-   "originalSource": "file:///project/entry.css",
+- }
++ {}
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts:23:42
+     21|   const source = '/* 😀 */\n@utilities{paint{padding:2rem}}\n.plain{co…
+     22|   const result = await compileStylesheet(file, source, { baseManifest,…
+     23|   expect(origin(result, '.plain').entry).toMatchObject({ originalSourc…
+       |                                          ^
+     24|   expect(origin(result, 'padding:2rem').entry).toMatchObject({ origina…
+     25|   expect(origin(result, '.card').payload.sourcesContent).toContain(sou…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > rendered graph maps imported compose and native selectors after reference removal
+AssertionError: expected {} to match object { …(3) }
+
+- Expected
++ Received
+
+- {
+-   "originalColumn": 0,
+-   "originalLine": 2,
+-   "originalSource": "file:///var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-output-map-XRfBZf/child.css",
+- }
++ {}
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts:36:43
+     34|     writeFileSync(join(root, 'tokens.css'), '@utilities{paint{padding:…
+     35|     const result = await compileRenderedStylesheet(file, '@import "./c…
+     36|     expect(origin(result, '.card').entry).toMatchObject({ originalSour…
+       |                                           ^
+     37|     expect(origin(result, 'padding:3rem').entry).toMatchObject({ origi…
+     38|     expect(origin(result, '.plain').payload.sourcesContent).toContain(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > raw Sass output map chains imported partial sources through native printing and compose lowering
+AssertionError: expected {} to match object { …(3) }
+
+- Expected
++ Received
+
+- {
+-   "originalColumn": 0,
+-   "originalLine": 0,
+-   "originalSource": "file:///var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-sass-output-map-Ffzcis/_card.scss",
+- }
++ {}
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts:51:43
+     49|     writeFileSync(partial, child)
+     50|     const result = await compileRenderedStylesheet(file, source, { bas…
+     51|     expect(origin(result, '.card').entry).toMatchObject({ originalSour…
+       |                                           ^
+     52|     expect(origin(result, 'padding:2rem').entry).toMatchObject({ origi…
+     53|     expect(origin(result, '.plain').payload.sourcesContent).toContain(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > expanded lowering diagnostics point to the authored child rather than flattened CSS
+AssertionError: expected MasterCSSError: Invalid @compose class: d… { …(4) } to match object { Object (diagnostics) }
+(17 matching properties omitted from actual)
+
+- Expected
++ Received
+
+- {
++ MasterCSSError {
+    "diagnostics": [
+      {
++       "code": "invalid-compose-class",
++       "domain": "compiler",
++       "message": "Invalid @compose class: does-not-exist",
+        "range": {
+          "end": {
+            "character": 29,
+-           "line": 1,
++           "line": 3,
+          },
+          "start": {
+            "character": 15,
+-           "line": 1,
++           "line": 3,
+          },
+        },
+-       "source": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-expanded-error-HUvtCz/child.css",
++       "severity": "error",
++       "source": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-expanded-error-HUvtCz/entry.css?master-css-expanded",
++       "version": 2,
+      },
+    ],
+  }
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts:62:135
+     60|     const child = join(root, 'child.css')
+     61|     writeFileSync(child, '/* authored */\n.card{@compose does-not-exis…
+     62|     await expect(compileRenderedStylesheet(join(root, 'entry.css'), '\…
+       |                                                                                                                                       ^
+     63|       .rejects.toMatchObject({ diagnostics: [expect.objectContaining({…
+     64|   } finally { rmSync(root, { recursive: true, force: true }) }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  16:27:35
+   Duration  395ms (transform 48%, tests 33%, import 19%)
+

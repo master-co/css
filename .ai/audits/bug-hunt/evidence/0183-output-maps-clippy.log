@@ -1,0 +1,130 @@
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+error: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/mastercss-compiler/src/imports.rs:284:59
+    |
+284 |     let imports = crate::stylesheet_graph::source_imports(&source_without_references, id)?;
+    |                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: change this to: `source_without_references`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+    = note: `-D clippy::needless-borrow` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::needless_borrow)]`
+
+error: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/mastercss-compiler/src/imports.rs:294:42
+    |
+294 |         let start = utf16_to_byte_offset(&source_without_references, import.start)
+    |                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: change this to: `source_without_references`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+
+error: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/mastercss-compiler/src/imports.rs:296:40
+    |
+296 |         let end = utf16_to_byte_offset(&source_without_references, import.end)
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: change this to: `source_without_references`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+
+error: this expression creates a reference which is immediately dereferenced by the compiler
+   --> crates/mastercss-compiler/src/imports.rs:335:51
+    |
+335 |     let first_import_start = utf16_to_byte_offset(&source_without_references, imports[0].start)
+    |                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: change this to: `source_without_references`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#needless_borrow
+
+error: this `if` statement can be collapsed
+   --> crates/mastercss-compiler/src/output_mappings.rs:77:13
+    |
+ 77 | /             if let Some(((_, original_loc), (_, generated_loc))) =
+ 78 | |                 location(original).zip(location(output))
+ 79 | |             {
+ 80 | |                 if let Some((original_byte, generated_byte)) = byte_offset_for_location(
+...   |
+115 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+    = note: `-D clippy::collapsible-if` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+    |
+ 78 ~                 location(original).zip(location(output))
+ 79 ~                 && let Some((original_byte, generated_byte)) = byte_offset_for_location(
+ 80 |                     self.parsed_source,
+...
+112 |                     }
+113 ~                 }
+    |
+
+error: this `if` statement can be collapsed
+   --> crates/mastercss-compiler/src/output_mappings.rs:80:17
+    |
+ 80 | /                 if let Some((original_byte, generated_byte)) = byte_offset_for_location(
+ 81 | |                     self.parsed_source,
+ 82 | |                     original_loc.line,
+ 83 | |                     original_loc.column,
+...   |
+114 | |                 }
+    | |_________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+ 89 ~                 ))
+ 90 ~                     && let Some((original_offset, generated_start)) =
+ 91 |                         byte_to_utf16_offset(self.source, original_byte)
+...
+112 |                         }
+113 ~                     }
+    |
+
+error: this `if` statement can be collapsed
+   --> crates/mastercss-compiler/src/output_mappings.rs:90:21
+    |
+ 90 | /                     if let Some((original_offset, generated_start)) =
+ 91 | |                         byte_to_utf16_offset(self.source, original_byte)
+ 92 | |                             .zip(byte_to_utf16_offset(self.output, generated_byte))
+...   |
+113 | |                     }
+    | |_____________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+ 92 ~                             .zip(byte_to_utf16_offset(self.output, generated_byte))
+ 93 ~                         && let Some(loc) =
+ 94 |                             crate::variant::source_location(self.source, original_byte)
+...
+110 |                             });
+111 ~                         }
+    |
+
+error: this `if` statement can be collapsed
+   --> crates/mastercss-compiler/src/output_mappings.rs:208:9
+    |
+208 | /         if byte_to_utf16_offset(source, *end).is_some_and(|end| end >= reference.range.start) {
+209 | |             if let Some(mapped) = crate::source_reference_from_bytes(
+210 | |                 source,
+211 | |                 reference.file.as_deref().unwrap_or_default(),
+...   |
+217 | |         }
+    | |_________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+help: collapse nested if block
+    |
+208 ~         if byte_to_utf16_offset(source, *end).is_some_and(|end| end >= reference.range.start)
+209 ~             && let Some(mapped) = crate::source_reference_from_bytes(
+210 |                 source,
+...
+215 |                 *reference = mapped;
+216 ~             }
+    |
+
+error: could not compile `mastercss-compiler` (lib) due to 8 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `mastercss-compiler` (lib test) due to 8 previous errors

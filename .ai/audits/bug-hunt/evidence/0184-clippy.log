@@ -1,0 +1,13 @@
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+error: used consecutive `str::replace` call
+   --> crates/mastercss-compiler/tests/bug_hunt_native_conditionals.rs:102:26
+    |
+102 |     let normalized = css.replace(' ', "").replace('\n', "");
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: replace with: `replace([' ', '\n'], "")`
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_str_replace
+    = note: `-D clippy::collapsible-str-replace` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_str_replace)]`
+
+error: could not compile `mastercss-compiler` (test "bug_hunt_native_conditionals") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

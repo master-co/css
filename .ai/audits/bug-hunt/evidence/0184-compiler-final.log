@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-native-conditionals.test.ts (3 tests | 1 failed) 1034ms
+   × BH-0057 direct public stylesheet keeps the authored winner inside native media 4ms
+[success] app/page.tsx 4 classes inserted in 0.6ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 1.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms  (repeated 5 times)
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-native-conditionals.test.ts > BH-0057 direct public stylesheet keeps the authored winner inside native media
+AssertionError: expected 65 to be less than 25
+ ❯ tests/bug-hunt-native-conditionals.test.ts:47:39
+     45|   const result = await compileRenderedStylesheet('/entry.css', source,…
+     46|   const css = result.css.replace(/\s+/g, '')
+     47|   expect(css.indexOf('padding:2rem')).toBeLessThan(css.indexOf('paddin…
+       |                                       ^
+     48| })
+     49|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 41 passed (42)
+      Tests  1 failed | 305 passed (306)
+   Start at  17:08:27
+   Duration  12.74s (tests 94%, import 3%, transform 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/compiler
+

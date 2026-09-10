@@ -1,0 +1,29 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.17s
+     Running tests/bug_hunt_output_mappings.rs (target/debug/deps/bug_hunt_output_mappings-1d77ff1be5b0a9d0)
+
+running 2 tests
+test native_output_maps_nested_rules_to_their_own_origins ... FAILED
+test native_output_retains_original_rule_locations_after_consumed_directives ... FAILED
+
+failures:
+
+---- native_output_maps_nested_rules_to_their_own_origins stdout ----
+
+thread 'native_output_maps_nested_rules_to_their_own_origins' (42339894) panicked at crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs:24:55:
+native output mappings
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- native_output_retains_original_rule_locations_after_consumed_directives stdout ----
+
+thread 'native_output_retains_original_rule_locations_after_consumed_directives' (42339895) panicked at crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs:9:55:
+native output mappings
+
+
+failures:
+    native_output_maps_nested_rules_to_their_own_origins
+    native_output_retains_original_rule_locations_after_consumed_directives
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_output_mappings`

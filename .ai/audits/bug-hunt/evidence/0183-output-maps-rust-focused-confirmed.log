@@ -1,0 +1,28 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.36s
+     Running tests/bug_hunt_output_mappings.rs (target/debug/deps/bug_hunt_output_mappings-1d77ff1be5b0a9d0)
+
+running 7 tests
+test expanded_import_graph_retains_copied_spans_through_references_wrappers_and_hoisting ... ok
+test native_output_retains_original_rule_locations_after_consumed_directives ... ok
+test native_output_maps_nested_rules_to_their_own_origins ... ok
+test native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification ... ok
+test wrapped_lowered_selectors_map_after_generated_condition_prefixes ... FAILED
+test composed_declaration_mapping_follows_the_winner_of_important_cascade ... ok
+test lower_output_retains_compose_and_native_declaration_origins ... ok
+
+failures:
+
+---- wrapped_lowered_selectors_map_after_generated_condition_prefixes stdout ----
+
+thread 'wrapped_lowered_selectors_map_after_generated_condition_prefixes' (42392275) panicked at crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs:255:10:
+wrapped selector
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    wrapped_lowered_selectors_map_after_generated_condition_prefixes
+
+test result: FAILED. 6 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_output_mappings`

@@ -65,3 +65,24 @@
 
 修正方向：保留 decoded-to-raw mapping，再轉為 UTF-16 範圍。 [重現與證據](batches/0012-language-ir.md)。
 
+
+## BH-0016 · P2 · Vite 巢狀 HTML hydration URL 錯誤
+
+[packages/vite/src/plugins/pre-render.ts:83](/Users/aron/master/css/packages/vite/src/plugins/pre-render.ts:83)。relative base 加巢狀 HTML；URL 應指向 emitted JSON，實際相對目前頁面解析到錯誤目錄，hydration 失敗。
+
+修正方向：依輸出 HTML 所在目錄計算相對 asset URL。 [重現與證據](batches/0020-vite-runtime-html.md)。
+
+
+## BH-0017 · P2 · Webpack 巢狀 HTML runtime URL 錯誤
+
+[packages/webpack/src/plugins/runtime-html-assets.ts:52](/Users/aron/master/css/packages/webpack/src/plugins/runtime-html-assets.ts:52)。relative publicPath 加巢狀 HTML；應載入 emitted runtime，實際請求不存在的子目錄檔案而無法啟動。
+
+修正方向：傳入 HTML asset name，區分相對與絕對 URL。 [重現與證據](batches/0021-webpack.md)。
+
+
+## BH-0018 · P2 · Node/native CLI 預設 discovery 漏掉 .mjs
+
+[packages/cli/src/generate.ts:12](/Users/aron/master/css/packages/cli/src/generate.ts:12)。專案有 .mjs；預設掃描應與明確指定檔案一致，實際漏產 CSS。Node 與 Rust CLI 均有正常控制組。
+
+修正方向：同步兩端 discovery extensions；與 BH-0012 分開修正。 [重現與證據](batches/0028-cli-discovery.md)。
+

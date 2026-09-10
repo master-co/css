@@ -1,0 +1,427 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/next-config.test.ts (14 tests | 3 failed) 246ms
+   ❯ withMasterCSS (14)
+     × adds a CSS manifest webpack loader 5ms
+     × adds a CSS manifest Turbopack loader 2ms
+     × adds CSS manifest loaders without runtime aliases or the adapter when mode is null 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest webpack loader
+AssertionError: expected [ { …(2) }, { …(2) }, { …(2) } ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++ [
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-manifest\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+            "external": true,
+            "module": true,
+            "virtual": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "resourceQuery": /master-css-manifest/,
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "external": true,
+-           "module": true,
++           "emittedGlobals": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++   {
++     "resourceQuery": /master-css-manifest/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "emittedGlobals": true,
++           "external": true,
++           "module": true,
+          },
+        },
+      ],
+-   },
+-   ObjectContaining {
+-     "resourceQuery": {
+-       "not": [
+-         /master-css-manifest/,
+-       ],
+-     },
+-     "test": /\.(css|scss|sass)$/,
+    },
+  ]
+
+ ❯ tests/next-config.test.ts:121:41
+    119|     const resolvedConfig = nextConfig.webpack(webpackConfig as any, {}…
+    120|
+    121|     expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining…
+       |                                         ^
+    122|       expect.objectContaining({
+    123|         test: expect.any(RegExp),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest Turbopack loader
+AssertionError: expected { '*.svg': { type: 'asset' }, …(4) } to deeply equal { '*': ArrayContaining{…}, …(4) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -28,49 +42,118 @@
+            },
+          ],
+        },
+        "loaders": [
+          {
++           "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
+            "options": {
+              "external": true,
+              "module": true,
+            },
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "as": "*.css",
+        "condition": {
+-         "path": Any<RegExp>,
++         "all": [
++           {
++             "path": /\.(css|scss|sass)$/,
++           },
++           {
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
+              },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
+        "loaders": [
+          {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
+            "options": {
+-             "emittedGlobals": true,
++             "sassOptions": {},
+            },
+          },
+        ],
+-       "type": "ecmascript",
++       "type": "css",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+-             "path": /\.(css|scss|sass)$/,
++             "path": /\.(scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
+            },
+            {
+              "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:181:40
+    179|     })
+    180|
+    181|     expect(nextConfig.turbopack.rules).toEqual({
+       |                                        ^
+    182|       '*': expect.arrayContaining([
+    183|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds CSS manifest loaders without runtime aliases or the adapter when mode is null
+AssertionError: expected { '*.js': [ { …(3) } ], …(3) } to deeply equal { '*': ArrayContaining{…}, …(3) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -26,30 +40,120 @@
+            {
+              "query": /master-css-manifest/,
+            },
+          ],
+        },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "external": true,
++             "module": true,
++           },
++         },
++       ],
+        "type": "ecmascript",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+              "path": /\.(css|scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
++             },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css",
++     },
++     {
++       "as": "*.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.(scss|sass)$/,
+            },
+            {
+              "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
++           },
++           {
++             "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:432:44
+    430|     expect(resolvedConfig.reactStrictMode).toBe(true)
+    431|     expect(resolvedConfig.adapterPath).toBeUndefined()
+    432|     expect(resolvedConfig.turbopack.rules).toEqual({
+       |                                            ^
+    433|       '*': expect.arrayContaining([
+    434|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 17 passed (18)
+      Tests  3 failed | 116 passed (119)
+   Start at  16:43:01
+   Duration  75.42s (tests 97%, import 2%, transform 1%)
+

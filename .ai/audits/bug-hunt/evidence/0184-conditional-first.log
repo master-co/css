@@ -1,0 +1,38 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.54s
+     Running tests/bug_hunt_native_conditionals.rs (target/debug/deps/bug_hunt_native_conditionals-eb5b6ad9b0674dd3)
+
+running 5 tests
+test graph_preserves_one_anonymous_layer_and_nested_wrapper_structure ... FAILED
+test graph_preserves_unrelated_native_children_and_composed_style_order ... ok
+test native_wrappers_without_directives_are_unchanged ... ok
+test direct_native_conditionals_expand_compose ... ok
+test graph_native_conditionals_expand_compose ... ok
+
+failures:
+
+---- graph_preserves_one_anonymous_layer_and_nested_wrapper_structure stdout ----
+
+thread 'graph_preserves_one_anonymous_layer_and_nested_wrapper_structure' (42410216) panicked at crates/mastercss-compiler/tests/bug_hunt_native_conditionals.rs:77:5:
+@layer {
+  .before {
+    color: red;
+  }
+
+  @supports (display: grid) {
+    .card{padding:2rem}
+
+    .after {
+      padding: 3rem;
+    }
+  }
+}
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    graph_preserves_one_anonymous_layer_and_nested_wrapper_structure
+
+test result: FAILED. 4 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_native_conditionals`

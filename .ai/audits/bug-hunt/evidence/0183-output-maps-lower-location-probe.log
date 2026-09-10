@@ -1,0 +1,22 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.31s
+     Running tests/bug_hunt_output_mappings.rs (target/debug/deps/bug_hunt_output_mappings-1d77ff1be5b0a9d0)
+
+running 1 test
+test lower_output_retains_compose_and_native_declaration_origins ... FAILED
+
+failures:
+
+---- lower_output_retains_compose_and_native_declaration_origins stdout ----
+
+thread 'lower_output_retains_compose_and_native_declaration_origins' (42356587) panicked at crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs:64:9:
+color: 72..72, expected 66: Ok(""), mappings=[Object {"generatedStart": Number(0), "generatedEnd": Number(5), "source": Object {"file": String("/project/entry.css"), "range": Object {"start": Number(40), "end": Number(45)}, "loc": Object {"start": Object {"line": Number(2), "column": Number(1)}, "end": Object {"line": Number(2), "column": Number(6)}}}}, Object {"generatedStart": Number(6), "generatedEnd": Number(18), "source": Object {"file": String("/project/entry.css"), "range": Object {"start": Number(58), "end": Number(63)}, "loc": Object {"start": Object {"line": Number(3), "column": Number(11)}, "end": Object {"line": Number(3), "column": Number(16)}}}}, Object {"generatedStart": Number(19), "generatedEnd": Number(28), "source": Object {"file": String("/project/entry.css"), "range": Object {"start": Number(72), "end": Number(72)}, "loc": Object {"start": Object {"line": Number(4), "column": Number(8)}, "end": Object {"line": Number(4), "column": Number(8)}}}}]
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    lower_output_retains_compose_and_native_declaration_origins
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_output_mappings`

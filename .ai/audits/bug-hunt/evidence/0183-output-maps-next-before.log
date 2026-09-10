@@ -1,0 +1,22 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts (6 tests | 1 failed) 2944ms
+   × Next injected package entry retains pure CSS authoring lines in its callback map 816ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > Next injected package entry retains pure CSS authoring lines in its callback map
+Unknown Error: Invalid @compose class: paint
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  16:31:36
+   Duration  3.28s (tests 91%, transform 6%, import 2%)
+
