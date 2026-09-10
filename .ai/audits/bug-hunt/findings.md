@@ -1,6 +1,9 @@
 # 問題索引
 
-- 0172完成BH-0034：native CSSOM traversal計入一般與巢狀style本身及leaf規則，遞迴處理group／keyframes，並收集巢狀selector；頂層layer統計只辨識CSSLayerBlockRule，重複名稱累加。修前54控制中42FAIL／12PASS；修後擴充60個三瀏覽器控制全PASS，含故意缺selector的負向控制。15tests／types、原lifecycle4／delivery16／progressive4與72個三瀏覽器報表頁面核對及report-smoke通過。CSSOM計數與公開runtime輸出項目數維持不同定義；既有snapshots不重寫，無效歷史數值不可直接比較。359來源核對完成，原151個排除變更及5項Wasm／runtime產物不變。47historical／38fixed／9unresolved、65checked／10blocked、4root gates／4原候選與host shutdown限制保持；BH-0004全部graph／Sass maps／virtual／watch／base／SSR／lifecycle與Nuxt/Webpack、0038身分暫停仍保留。全部本批程序已結束，HEADca2c8d00d，未commit/push，目標active。下一批0173處理BH-0042的array參數數量與deferred removal，再接BH-0043實際class／computed-style驗證及其他問題。[0172](batches/0172-benchmark-cssom-traversal.md)／[核對](evidence/0172-final-checks.json)；0171交接逐字見[歷史](progress-history-0172.md)。
+- 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
+
+- 0178完成BH-0040：必要文件／CSS資源必須成功完整回應且符合MIME；404／403／500／206、錯誤或缺失MIME、本文截斷及逾時均拒絕整份報告，等待已啟動工作結束後彙整URL錯誤，不跳過失敗資源輸出偏低總量。成功結果保留status／Content-Type／redirect URL與量測限制。15個修前測試11FAIL，最終98tests／types／smoke通過；21HTTP控制（5接受／16拒絕）、24三瀏覽器樣式控制與原始8公開頁面45資產核對通過。382來源、151排除檔及5項產物／3CLI built檔核對完成。47historical／44fixed／3unresolved，65checked／10blocked；BH-0004／0029／0037、完整graph／host／Sass maps／virtual／watch／base／SSR／lifecycle／Nuxt／Webpack、4root gates／4原候選／native shutdown／WebKit namespace限制與批次0038身分暫停仍未完成。下一批0179驗證BH-0037 compiler／extraction診斷階段與未採樣指標；本批程序已結束，HEADbdd9f25b8，未commit/push，目標active。[0178](batches/0178-docs-css-resources.md)／[核對](evidence/0178-final-checks.json)；0177交接逐字見[歷史](progress-history-0178.md)。
+
 
 - 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
 
@@ -73,24 +76,24 @@
 
 | BH-0037 | P3 | 已確認 | Compiler/extraction diagnostics 宣告未量測階段指標，119／15個 IDs 無樣本，compose 被標為較窄引擎階段 | benchmarks；[0064](batches/0064-compiler-diagnostics.md), [0065](batches/0065-extraction-diagnostics.md) |
 
-| BH-0038 | P2 | 已確認 | Startup benchmark 被動匯入 CLI bin，參數解析直接退出，第一個 variant 中止且無報告 | benchmarks；[0066](batches/0066-startup-diagnostics.md) |
+| BH-0038 | P2 | 已修復 | Startup benchmark 被動匯入 CLI bin，參數解析直接退出，第一個 variant 中止且無報告 | benchmarks；[0066](batches/0066-startup-diagnostics.md) ;[0175](batches/0175-benchmark-startup-import.md):8variants/292samples/four entry controls PASS |
 
-| BH-0039 | P3 | 已確認 | CSS structure benchmark 高估 universal 與 :is/:not/:has specificity，四個標準案例錯誤 | benchmarks；[0069](batches/0069-css-structure.md) |
+| BH-0039 | P3 | 已修復 | CSS structure benchmark 高估 universal 與 :is/:not/:has specificity，四個標準案例錯誤 | benchmarks；[0069](batches/0069-css-structure.md);[0177](batches/0177-benchmark-specificity.md):83tests/16report variants PASS;59of60 normative browser controls agree,WebKit namespace deviation isolated |
 
-| BH-0040 | P3 | 已確認 | Docs CSS size collector 接受404HTML錯誤頁並計入CSS大小，省略失敗狀態 | benchmarks；[0071](batches/0071-docs-css-size.md) |
+| BH-0040 | P3 | 已修復 | Docs CSS size collector 接受404HTML錯誤頁並計入CSS大小，省略失敗狀態 | benchmarks；[0071](batches/0071-docs-css-size.md);[0178](batches/0178-docs-css-resources.md):98tests/21HTTP/24browser controls andoriginal8pages/45assets PASS |
 
-| BH-0041 | P3 | 已確認 | Vite build/startup diagnostics 將略過及重複hook計為已掃描檔案，6callback實為2files/3scans | benchmarks；[0072](batches/0072-vite-scan-counts.md) |
+| BH-0041 | P3 | 已修復 | Vite build/startup diagnostics 將略過及重複hook計為已掃描檔案，6callback實為2files/3scans | benchmarks；[0072](batches/0072-vite-scan-counts.md);[0176](batches/0176-benchmark-vite-observation.md):4fixture comparisons,12scanner controls,16report variants PASS |
 
-| BH-0042 | P3 | 已確認 | Benchmark 沿用多參數 class API，陣列計數少算且延後刪除 flush 假成功 | benchmarks；[0078](batches/0078-interaction-array-contract.md), [0079](batches/0079-runtime-mutation-diagnostics.md) |
+| BH-0042 | P3 | 已修復 | Benchmark 沿用多參數 class API，陣列計數少算且延後刪除 flush 假成功 | benchmarks；[0078](batches/0078-interaction-array-contract.md), [0079](batches/0079-runtime-mutation-diagnostics.md) ;[0173](batches/0173-benchmark-array-instrumentation.md):19tests/72browser/48diagnostic variants PASS |
 
-| BH-0043 | P3 | 已確認 | Benchmark 清理情境寫死樣式驗證成功，CSS 失效仍回報通過 | benchmarks；[0084](batches/0084-style-invalidation-static.md) |
+| BH-0043 | P3 | 已修復 | Benchmark 清理情境寫死樣式驗證成功，CSS 失效仍回報通過 | benchmarks；[0084](batches/0084-style-invalidation-static.md) ;[0174](batches/0174-benchmark-style-validity.md):120browser controls,48 positive/144negative diagnostic gates PASS |
 
 | BH-0044 | P2 | 已修復 | Angular browser build 未附帶 runtime Wasm sidecar | [0088 修正與三瀏覽器驗證](batches/0088-example-nuxt-fixes.md) |
 | BH-0045 | P2 | 已修復 | Vite 在產生hash檔名後替換CSS placeholder，內容變更仍使用同一URL，快取可交付舊樣式 | 0128在命名前納入managed CSS；原始6、輸出39、hydration36及Vite110通過；[0128](batches/0128-vite-final-css-hashes.md)；[原始0127](batches/0127-build-publication-boundaries.md) |
 | BH-0046 | P2 | 已修復 | Vite dev runtime及preload忽略base，runtime／progressive的非根目錄頁面bootstrap404 | 0157修前2FAIL／2PASS；修後12actual-server cases、Vite209、216三瀏覽器動態class／theme HMR通過；[0157](batches/0157-runtime-development-base.md) |
 | BH-0047 | P2 | 已修復 | Vite pre-render開發模式更新manifest後，頁面保留舊SSR樣式 | 普通CSS獨立控制修前1FAIL；manifest變更full-reload、native-only不reload、progressive走runtime；Vite215及96browser控制PASS；[0159](batches/0159-development-stylesheet-graphs.md) |
 
-47 historical confirmed findings: 38 fixed, 9 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
+47 historical confirmed findings: 44 fixed, 3 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
 
 
 
@@ -235,3 +238,5 @@
 0146：修復共用manifest HMR hook丟棄普通CSS／inline／raw更新modules，保留原節點並合併virtual manifest；internal18、Vite160、Astro15與三套件lint/types/build、Vite／Astro範例均PASS。修後完整開發request矩陣93PASS／3FAIL；剩managed Sass ?url的link為/style.scss，但HMR送/style.scss.css?direct，更新路徑不匹配，已留WebSocket證據待修。另Modules HMR18PASS；URL原文oracle與pure冷啟動boot判定分開記錄。Site通過（75warnings），五產物不變；20段歷史逐字歸檔。下一批先修Sass direct URL HMR，再續其他request／host與Webpack；0144巢狀缺檔仍未完成。33fixed／12unresolved、10blocked／4root gates／4候選及0038身分暫停不變；HEADeb6b479a3，未提交／推送。[0146](batches/0146-development-style-requests.md)。
 
 部分較早批次交接逐字保存於[0159歷史歸檔](progress-history-0159.md)，目前狀態以最新交接與原批次為準。
+
+- 0176 closes the four missing startup metric gaps from0175: unscheduled duplicate project-import declaration removed; three environment hook observations restored. Original8startup variants/304samples PASS, no declared unsampled IDs. Historical details remain in0175 and0176 batches; no fabricated zero measurements.

@@ -1,0 +1,166 @@
+{
+  "0177-ai-context.log": {
+    "sha256": "9725551ddfcc8b672c8a0c214779352bc24cafca86bb418e119ba6033808e31e",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-browser-all.log": {
+    "sha256": "25f42661d8c14214105b4788717ed4cb175c7cb0837bc6633ea5dfd93022dce7",
+    "passRows": 59,
+    "terminalExits": [
+      1
+    ],
+    "browserControls": 60,
+    "failures": [
+      {
+        "browser": "webkit",
+        "control": "namespace-universal",
+        "color": "rgb(255, 0, 0)",
+        "css": "@namespace h url(http://www.w3.org/1999/xhtml); p{color:blue}h|*{color:red}",
+        "cssom": [
+          "@namespace h url(\"http://www.w3.org/1999/xhtml\");",
+          "p { color: blue; }",
+          "h|* { color: red; }"
+        ]
+      }
+    ],
+    "pass": false
+  },
+  "0177-browser-controls.log": {
+    "sha256": "e3e25eb15ad28648fd519db6edf6d2cc6ec27c53df8314afa183799105491cf3",
+    "passRows": 41,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0177-namespace-controls.log": {
+    "sha256": "33e029b2d98c19d2f6f28d4515cd28ef8b7b1bd460360c3f75d25944c08c3fed",
+    "passRows": 21,
+    "terminalExits": [
+      0
+    ],
+    "controls": 24,
+    "normativeMismatches": [
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-universal-after",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-universal-tie",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-type",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      }
+    ],
+    "productOrAnalyzerLoaded": false
+  },
+  "0177-namespace-final.log": {
+    "sha256": "d855ce0dcb7750e0c188e87b09e6887d7e5c7938ff6d8de4b7efc9ec1319b0c8",
+    "passRows": 21,
+    "terminalExits": [
+      0
+    ],
+    "controls": 24,
+    "normativeMismatches": [
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-universal-after",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-universal-tie",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "version": "26.6",
+        "control": "named-type",
+        "color": "rgb(255, 0, 0)",
+        "expected": "rgb(0, 0, 255)",
+        "pass": false
+      }
+    ],
+    "productOrAnalyzerLoaded": false
+  },
+  "0177-report-smoke.log": {
+    "sha256": "c739e181fded3ce7361905893e88fdb0cadabd78cd848d7f2cd1afd91da69e48",
+    "passRows": 1,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0177-structure-final.log": {
+    "sha256": "0b700730369c96c6342586ea0b6563be93ff42e5e1793cf226ff0173bc824c18",
+    "passRows": 16,
+    "terminalExits": [
+      0
+    ],
+    "variants": 16,
+    "artifacts": 84,
+    "samples": 336,
+    "validation": "PASS"
+  },
+  "0177-structure-report.log": {
+    "sha256": "ca450e988e908408c8a541695647d2da59a2f79c5a37ea4dd7f990b80293a6ec",
+    "passRows": 0,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0177-types-final.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-types-second.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-unit-before.log": {
+    "sha256": "d9121f6dec1bae3f19c19fc454f294635da806164fabff07e0e7fc4730478736",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-unit-final.log": {
+    "sha256": "bcb7bb8172f65b4ecadd05e67afc767ceefd13db6a472dc28d1a75930f98cb26",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-unit-fixed.log": {
+    "sha256": "a7c7a5296d3408ad8ce3135a7b518ad4017e1b8a43d5cb77f0283f58e38be274",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0177-unit-second.log": {
+    "sha256": "92c62cabdc2b52bb21b6d48dadd33caada68de8337e6050ce827723a5dd96af5",
+    "passRows": 0,
+    "terminalExits": []
+  }
+}

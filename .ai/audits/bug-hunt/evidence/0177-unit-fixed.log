@@ -1,0 +1,79 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/benchmarks
+
+ ❯ tests/bug-hunt-specificity.test.ts (58 tests | 4 failed) 11ms
+   × specificity context .x,#id { .child {color:red} } 3ms
+   × specificity context .x { + .other + & {color:red} } 0ms
+   × specificity context .x { :is(&,#id) {color:red} } 0ms
+   × specificity context .x { .child { &.active {color:red} } } 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x,#id { .child {color:red} }
+AssertionError: expected 100 to be 110 // Object.is equality
+
+- Expected
++ Received
+
+- 110
++ 100
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { + .other + & {color:red} }
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { .child { &.active {color:red} } }
+AssertionError: expected 10 to be 30 // Object.is equality
+
+- Expected
++ Received
+
+- 30
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { :is(&,#id) {color:red} }
+AssertionError: expected 10 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  4 failed | 76 passed (80)
+   Start at  08:07:54
+   Duration  174ms (transform 55%, import 26%, tests 16%, worker 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/benchmarks
+

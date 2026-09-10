@@ -1,0 +1,5 @@
+shared/vite-diagnostic-instrumentation.ts(31,35): error TS18046: 'handler' is of type 'unknown'.
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/benchmarks
+

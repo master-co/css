@@ -1,0 +1,90 @@
+{
+  "head": "bdd9f25b87305ab47437c30295d59ca6bb88f317",
+  "goal": "active",
+  "previousGoalTurn": "Progress:BH-0041 actual source counts and environment hook timings fixed0176",
+  "batch": "0177 BH-0039 specificity semantics repaired",
+  "validation": {
+    "before": "58focused cases:34FAIL/24PASS",
+    "after": "61new cases plus22existing:83PASS",
+    "types": "PASS",
+    "lint": "No package-local lint script",
+    "originalStructureReport": "16variants/336finite samples/336matching summaries,84artifacts verified;all fixture marker/hash/raw/gzip/brotli checks PASS",
+    "originalCorpusComparison": "All20other metrics andcurrent16maximum projections unchanged againstimmutablebdd9f25b8 analyzer;original maxima do notexpose defects",
+    "browserControls": "60observations:59normativePASS/1WebKit namespace divergence;all4originalBH39 controls pass inall3engines",
+    "independentNamespaceControls": "24pureHTML controls:21normativePASS/3WebKit divergences;exactset repeated,neitherproduct noranalyzer loaded",
+    "reportSmoke": "PASS",
+    "syntax": "3repros PASS",
+    "aiContext": "PASS",
+    "authoredWhitespace": "PASS",
+    "jsonAndLedgerLinks": "PASS"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 43,
+    "unresolved": 4,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1,
+    "browserNamespaceValidationLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0037",
+    "BH-0040"
+  ],
+  "preservation": {
+    "baselineSources": 374,
+    "finalSources": 379,
+    "changedBenchmarkSources": 2,
+    "newSharedModules": 1,
+    "newTestFiles": 1,
+    "newRepros": 3,
+    "priorExcluded151ByteIdentical": true,
+    "fiveArtifactsByteIdentical": true,
+    "threeCLIArtifactsRecordedAndUnchanged": true,
+    "fixturesSnapshotsDependenciesLockfileCIUnchanged": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Missing original imported Sass maps, partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "All4 unresolved findings,10 blocked coverage rows,4 root gates and4 original candidates",
+    "BH-0037 missing compiler/extraction measurements;BH-0040 resource status handling",
+    "WebKit namednamespace universal cascade validation limitation: pureHTML24 controls show3normative differences;notclaimedfixed"
+  ],
+  "limits": [
+    "Legacydecimal score is only a projection,not a cascade rank;tuple chosenlexicographically beforeprojection",
+    "Browsermatching/selectorvalidity andfutureselectorgrammars are not provided byanalyzer;unsupported parsedargument/prelude errors surfaced",
+    "WebKit26.6 namednamespace universal cascade differs fromspecification andChromium/Firefox;pureHTML controls isolate it,notfixed byproductchanges",
+    "Original16report maxima unchanged;focusednormative tests andbrowsercontrols prove repair,notreportgeneration alone",
+    "No productCSS/runtime/bundle behaviorchange orhistoricalperformance claim"
+  ],
+  "next": "0178 BH-0040 failedCSSresource status/MIME handling andresource totals",
+  "paused": "Batch0038 additional verification still requires explicit identity confirmation",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "2186": 1,
+    "88501": 1,
+    "74218": 0,
+    "79666": 1,
+    "12167": 0,
+    "16225": 0,
+    "45104": 0
+  },
+  "classifiedIntermediateFailures": {
+    "initialFocused": "34known/corroborated benchmarkmetric failures before repair",
+    "initialRepair": "4remaining failures due CSS Tree raw recovery for implicitnestedrules;repaired using existingstylesheetgrammar",
+    "reportDriver": "Obsolete oneCSSasset expectation;originalsuite passed butdriver8versus1 failed;fullassetset now verified",
+    "browserNormative": "OneWebKitnamespace mismatch;pureHTML isolates3relateddifferences,not a productdefect orsuccessfulnormativePASS"
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "head": "bdd9f25b87305ab47437c30295d59ca6bb88f317",
+  "baselineSources": 368,
+  "finalSources": 374,
+  "changed": {
+    "benchmarks/build-diagnostics/build-diagnostics.bench.ts": {
+      "before": "04caaa2c1e6094cf4586d5e61a8d6ee352327f8a9ec419fe91de944b6420a7cc",
+      "after": "c8c59bec6318e2cc362cb57fe8b5f612f71c6a20e4ed9bdba551771aac84cf80"
+    },
+    "benchmarks/shared/build-diagnostics.ts": {
+      "before": "2797fa688630e6e24387467882d237b96e3de9786a09a4a1315e73079c13505a",
+      "after": "7d15252149f9419c894ef4c08ea8fb0c8eb9425c28e99bed2143cbea31680c9d"
+    },
+    "benchmarks/shared/startup-diagnostics.ts": {
+      "before": "542e271a34e608ccca38cfdcc48e53d1273d6f8bd110947d2de87a50a11c3cbb",
+      "after": "76dc85032533b0be728ddfaca477ffdbd52a065b85ce0919ee208036a01cc170"
+    },
+    "benchmarks/startup-diagnostics/startup-diagnostics.bench.ts": {
+      "before": "c026755d99a4c692c1b92c3397309a0ce630d0d0e59329c418276603bda520ea",
+      "after": "42f10bdcdb08af1402bb9531564fe840053d3496e1215a0fbe3b9a54188076c9"
+    }
+  },
+  "newSources": [
+    "benchmarks/shared/scanned-sources.mjs",
+    "benchmarks/shared/vite-diagnostic-instrumentation.mjs",
+    "benchmarks/tests/bug-hunt-vite-observation.test.ts",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-observation.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-reports.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-source-controls.mjs"
+  ],
+  "priorExcluded151ByteIdentical": true,
+  "fiveArtifactsByteIdentical": true,
+  "threeCLIArtifactsByteIdentical": true,
+  "indexEmpty": true
+}

@@ -1,0 +1,29 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-ygq5tyt9/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-specificity-report.mjs"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-ygq5tyt9/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  08:09:24
+   Duration  22.79s (tests 100%)
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+
+8 !== 1
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-specificity-report.mjs:39:12) {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: 8,
+  expected: 1,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-ygq5tyt9"}

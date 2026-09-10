@@ -1,0 +1,154 @@
+{
+  "0173-arrays-before.log": {
+    "sha256": "b0431c21e94d571c723bb18536b61b842c6b620b92f912c784ad5b84d76b946c",
+    "passRows": 0,
+    "failRows": 36,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0173-arrays-fixed.log": {
+    "sha256": "e67691025e557d22925f023a934e6a82244f5643843f9d8f9f82a91b8e439c43",
+    "passRows": 36,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0173-interaction-report.log": {
+    "sha256": "84dfe078eccfcbd805a4f803e6810bbd70ff578a0627e8e6a0d4af376c1cfa40",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 54
+  },
+  "0173-invalidation-report.log": {
+    "sha256": "b2939b12a2a1e431369a735b24579228bc4e9a88ad2be19fd10774c251860092",
+    "passRows": 66,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "arrayReportChecks": 32,
+    "preparationChecks": 32,
+    "originalVariants": 32
+  },
+  "0173-mutation-report.log": {
+    "sha256": "74d268fcf1e8a18f514aeb9ac5b273070d395bdd6c6f9ccd7858e5947e581094",
+    "passRows": 34,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "arrayReportChecks": 16,
+    "preparationChecks": 16,
+    "originalVariants": 16
+  },
+  "0173-report-smoke.log": {
+    "sha256": "4a0e31860f0c0bc8d7cb800298a1cd64f2bad7c3951237e861e4a7dfdabb14f5",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 7
+  },
+  "0173-scenario-arrays-final.log": {
+    "sha256": "0d39814bf3385ef3ab5c8161caa73ccbbf7e23c35c75d913f7a93a6031d842ea",
+    "passRows": 25,
+    "failRows": 0,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0173-scenario-arrays-verified.log": {
+    "sha256": "382fcbf6cf17fd92ffc80e3333eae801def058dc31cdda0a6a1be817f4b48143",
+    "passRows": 36,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "extendedWindows": [
+      {
+        "engine": "webkit",
+        "modeId": "master-runtime",
+        "strategy": "baseline",
+        "extendedObservationMs": 4664,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      },
+      {
+        "engine": "webkit",
+        "modeId": "master-runtime",
+        "strategy": "defer-remove",
+        "extendedObservationMs": 4683,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      },
+      {
+        "engine": "webkit",
+        "modeId": "master-runtime",
+        "strategy": "suppress-remove-during-trace",
+        "extendedObservationMs": 4652,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      },
+      {
+        "engine": "webkit",
+        "modeId": "master-progressive",
+        "strategy": "baseline",
+        "extendedObservationMs": 4670,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      },
+      {
+        "engine": "webkit",
+        "modeId": "master-progressive",
+        "strategy": "defer-remove",
+        "extendedObservationMs": 4683,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      },
+      {
+        "engine": "webkit",
+        "modeId": "master-progressive",
+        "strategy": "suppress-remove-during-trace",
+        "extendedObservationMs": 4657,
+        "idleCallbackAvailable": false,
+        "scenarioDeleteRequests": 0,
+        "requestedUnique": 386
+      }
+    ]
+  },
+  "0173-scenario-arrays.log": {
+    "sha256": "3882a348287acaef55a753bb7335b36fd2599e174774c1ec07d17a4a332e811b",
+    "passRows": 18,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0173-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0173-unit-tests.log": {
+    "sha256": "fd60ba497a5b4dddef0a06e74cd89ad6aa108e85060678405c672efa2cb3b140",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0173-ai-context.log": {
+    "sha256": "b50df8f2d0417bfecbbc6e4019c1fda4daab1e1a2af72f38e0e8b269b74e0c68",
+    "status": "PASS"
+  }
+}

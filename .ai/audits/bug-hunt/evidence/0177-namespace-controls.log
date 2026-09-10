@@ -1,0 +1,27 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-t65umjy4/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-namespace-browser.mjs"]}
+{"browser":"chromium","version":"153.0.8010.12","control":"plain-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"named-universal-after","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"named-universal-before","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"named-universal-tie","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"any-namespace-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"named-type","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"plain-type-only","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"named-universal-only","color":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","pass":true}
+{"browser":"firefox","version":"155.0","control":"plain-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"named-universal-after","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"named-universal-before","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"named-universal-tie","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"any-namespace-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"named-type","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"plain-type-only","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"firefox","version":"155.0","control":"named-universal-only","color":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","pass":true}
+{"browser":"webkit","version":"26.6","control":"plain-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"webkit","version":"26.6","control":"named-universal-after","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"browser":"webkit","version":"26.6","control":"named-universal-before","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"webkit","version":"26.6","control":"named-universal-tie","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"browser":"webkit","version":"26.6","control":"any-namespace-universal","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"webkit","version":"26.6","control":"named-type","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}
+{"browser":"webkit","version":"26.6","control":"plain-type-only","color":"rgb(0, 0, 255)","expected":"rgb(0, 0, 255)","pass":true}
+{"browser":"webkit","version":"26.6","control":"named-universal-only","color":"rgb(255, 0, 0)","expected":"rgb(255, 0, 0)","pass":true}
+{"controls":24,"normativeMismatches":[{"browser":"webkit","version":"26.6","control":"named-universal-after","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false},{"browser":"webkit","version":"26.6","control":"named-universal-tie","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false},{"browser":"webkit","version":"26.6","control":"named-type","color":"rgb(255, 0, 0)","expected":"rgb(0, 0, 255)","pass":false}],"productOrAnalyzerLoaded":false}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-t65umjy4"}

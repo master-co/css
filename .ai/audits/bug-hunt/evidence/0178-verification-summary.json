@@ -1,0 +1,53 @@
+{
+  "0178-ai-context.log": {
+    "sha256": "227f41850b2821cfe68637ff02f1a16df7838dec9a59c6d567cc73e5e810526a",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0178-http-controls.log": {
+    "sha256": "ed450fdfea051dfb5b60bbe2a1f14bed29760e7729047579d8027736de458a18",
+    "passRows": 46,
+    "terminalExits": [
+      0
+    ],
+    "httpControls": 21,
+    "accepted": 5,
+    "rejected": 16,
+    "browserControls": 24,
+    "pass": true
+  },
+  "0178-public-docs.log": {
+    "sha256": "d809aae09c23e3760b33ae0f54f2c38dadd73e58f144baa1d0549ca1f75f5867",
+    "passRows": 9,
+    "terminalExits": [
+      0
+    ],
+    "pages": 8,
+    "assets": 45,
+    "pass": true,
+    "suiteStatus": 0,
+    "snapshotWritten": true
+  },
+  "0178-report-smoke.log": {
+    "sha256": "1fe5576b047811caac1134e0dca0d42ca7f0b7d73192b11386c7f259ec23d1fc",
+    "passRows": 1,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0178-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0178-unit-before.log": {
+    "sha256": "edcf42ad3d803134044c615f605f2558eccc1353ed2c4a60c8a00b9e16f34098",
+    "passRows": 0,
+    "terminalExits": []
+  },
+  "0178-unit-fixed.log": {
+    "sha256": "7ff5fe08a673ceb6956858f30c8a8a288e9c534b379319a25951c984babb632a",
+    "passRows": 0,
+    "terminalExits": []
+  }
+}

@@ -1,0 +1,66 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-ygill6zc/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-specificity-browser.mjs"]}
+{"browser":"chromium","version":"153.0.8010.12","control":"universal","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"namespace-universal","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"is-id","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"not-class","color":"rgb(0, 0, 255)","score":10,"tuple":{"id":0,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"has-type","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"where-zero","color":"rgb(0, 0, 255)","score":0,"tuple":{"id":0,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"uppercase-where","color":"rgb(0, 0, 255)","score":0,"tuple":{"id":0,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"escaped-is","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"nth-of","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"nth-last-of","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"class-component-overflow","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"type-component-overflow","color":"rgb(0, 0, 255)","score":10,"tuple":{"id":0,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"explicit-nesting","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"implicit-nesting","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"repeated-parent","color":"rgb(0, 0, 255)","score":20,"tuple":{"id":0,"class":2,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"parent-where","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"scope-parent-reset","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"legacy-pseudo-element","color":"rgb(0, 0, 255)","score":2,"tuple":{"id":0,"class":0,"type":2},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"host-argument","color":"rgb(0, 0, 255)","score":20,"tuple":{"id":0,"class":2,"type":0},"pass":true}
+{"browser":"chromium","version":"153.0.8010.12","control":"slotted-argument","color":"rgb(0, 0, 255)","score":11,"tuple":{"id":0,"class":1,"type":1},"pass":true}
+{"browser":"firefox","version":"155.0","control":"universal","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"firefox","version":"155.0","control":"namespace-universal","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"firefox","version":"155.0","control":"is-id","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"not-class","color":"rgb(0, 0, 255)","score":10,"tuple":{"id":0,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"has-type","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+{"browser":"firefox","version":"155.0","control":"where-zero","color":"rgb(0, 0, 255)","score":0,"tuple":{"id":0,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"uppercase-where","color":"rgb(0, 0, 255)","score":0,"tuple":{"id":0,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"escaped-is","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"nth-of","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"nth-last-of","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"class-component-overflow","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"type-component-overflow","color":"rgb(0, 0, 255)","score":10,"tuple":{"id":0,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"explicit-nesting","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"implicit-nesting","color":"rgb(0, 0, 255)","score":110,"tuple":{"id":1,"class":1,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"repeated-parent","color":"rgb(0, 0, 255)","score":20,"tuple":{"id":0,"class":2,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"parent-where","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"scope-parent-reset","color":"rgb(0, 0, 255)","score":100,"tuple":{"id":1,"class":0,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"legacy-pseudo-element","color":"rgb(0, 0, 255)","score":2,"tuple":{"id":0,"class":0,"type":2},"pass":true}
+{"browser":"firefox","version":"155.0","control":"host-argument","color":"rgb(0, 0, 255)","score":20,"tuple":{"id":0,"class":2,"type":0},"pass":true}
+{"browser":"firefox","version":"155.0","control":"slotted-argument","color":"rgb(0, 0, 255)","score":11,"tuple":{"id":0,"class":1,"type":1},"pass":true}
+{"browser":"webkit","version":"26.6","control":"universal","color":"rgb(0, 0, 255)","score":1,"tuple":{"id":0,"class":0,"type":1},"pass":true}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: webkit/namespace-universal
++ actual - expected
+
++ 'rgb(255, 0, 0)'
+- 'rgb(0, 0, 255)'
+       ^
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-specificity-browser.mjs:51:14)
+    at runNextTicks (node:internal/process/task_queues:65:5)
+    at process.processImmediate (node:internal/timers:541:9) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 'rgb(255, 0, 0)',
+  expected: 'rgb(0, 0, 255)',
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-ygill6zc"}

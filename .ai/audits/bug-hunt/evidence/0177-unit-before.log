@@ -1,0 +1,427 @@
+
+ RUN  v5.0.0 /Users/aron/master/css/benchmarks
+
+ ❯ tests/bug-hunt-specificity.test.ts (58 tests | 34 failed) 15ms
+   × specificity * 4ms
+   × specificity *|* 0ms
+   × specificity svg|* 0ms
+   × specificity |* 0ms
+   × specificity :is(#id) 0ms
+   × specificity :is(.x, #id) 0ms
+   × specificity :not(.x) 0ms
+   × specificity :has(> span) 0ms
+   × specificity :WHERE(#id) 0ms
+   × specificity :IS(.x, #id) 0ms
+   × specificity :i\73(.x, #id) 0ms
+   × specificity :not(:where(#id), .x) 0ms
+   × specificity :is(.x, :not(#id)) 0ms
+   × specificity :has(> .x, + #id) 0ms
+   × specificity :nth-child(2n of .x, #id) 0ms
+   × specificity :nth-last-child(odd of div.x) 0ms
+   × specificity :before 0ms
+   × specificity :AFTER 0ms
+   × specificity :first-line 0ms
+   × specificity :first-letter 0ms
+   × specificity ::slotted(.x) 0ms
+   × specificity ::slotted(div.x) 0ms
+   × specificity :is(#id, .x.x.x.x.x.x.x.x.x.x.x) 0ms
+   × specificity :is(.x, div div div div div div div div div div div) 0ms
+   × specificity #id, .x.x.x.x.x.x.x.x.x.x.x 0ms
+   × specificity .x, div div div div div div div div div div div 0ms
+   × specificity .x:is(div, #id):not(.other) 0ms
+   × specificity context .x,#id { &.active {color:red} } 0ms
+   × specificity context .x,#id { .child {color:red} } 1ms
+   × specificity context .x { && {color:red} } 0ms
+   × specificity context .x { + .other + & {color:red} } 0ms
+   × specificity context .x { :is(&,#id) {color:red} } 0ms
+   × specificity context .x { @media all { &.active {color:red} } } 0ms
+   × specificity context .x { .child { &.active {color:red} } } 0ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 34 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity *
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity *|*
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity svg|*
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity |*
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :is(#id)
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :is(.x, #id)
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :IS(.x, #id)
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :has(> .x, + #id)
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity #id, .x.x.x.x.x.x.x.x.x.x.x
+AssertionError: expected 110 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 110
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :not(.x)
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :not(:where(#id), .x)
+AssertionError: expected 20 to be 10 // Object.is equality
+
+- Expected
++ Received
+
+- 10
++ 20
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :has(> span)
+AssertionError: expected 11 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 11
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :WHERE(#id)
+AssertionError: expected 110 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 110
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :i\73(.x, #id)
+AssertionError: expected 10 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :is(.x, :not(#id))
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :is(#id, .x.x.x.x.x.x.x.x.x.x.x)
+AssertionError: expected 120 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 120
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :nth-child(2n of .x, #id)
+AssertionError: expected 10 to be 110 // Object.is equality
+
+- Expected
++ Received
+
+- 110
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :nth-last-child(odd of div.x)
+AssertionError: expected 10 to be 21 // Object.is equality
+
+- Expected
++ Received
+
+- 21
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :before
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :AFTER
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :first-line
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :first-letter
+AssertionError: expected 10 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity ::slotted(.x)
+AssertionError: expected 1 to be 11 // Object.is equality
+
+- Expected
++ Received
+
+- 11
++ 1
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity ::slotted(div.x)
+AssertionError: expected 1 to be 12 // Object.is equality
+
+- Expected
++ Received
+
+- 12
++ 1
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity :is(.x, div div div div div div div div div div div)
+AssertionError: expected 21 to be 10 // Object.is equality
+
+- Expected
++ Received
+
+- 10
++ 21
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity .x, div div div div div div div div div div div
+AssertionError: expected 11 to be 10 // Object.is equality
+
+- Expected
++ Received
+
+- 10
++ 11
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity .x:is(div, #id):not(.other)
+AssertionError: expected 140 to be 120 // Object.is equality
+
+- Expected
++ Received
+
+- 120
++ 140
+
+ ❯ tests/bug-hunt-specificity.test.ts:21:87
+     19| for (const [selector, expected] of selectors) {
+     20|   test(`specificity ${selector}`, () => {
+     21|     expect(analyzeCSSStructure(`${selector}{color:red}`).maxSelectorSp…
+       |                                                                                       ^
+     22|   })
+     23| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x,#id { &.active {color:red} }
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x,#id { .child {color:red} }
+AssertionError: expected 100 to be 110 // Object.is equality
+
+- Expected
++ Received
+
+- 110
++ 100
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { && {color:red} }
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { @media all { &.active {color:red} } }
+AssertionError: expected 10 to be 20 // Object.is equality
+
+- Expected
++ Received
+
+- 20
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { + .other + & {color:red} }
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { .child { &.active {color:red} } }
+AssertionError: expected 10 to be 30 // Object.is equality
+
+- Expected
++ Received
+
+- 30
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/34]⎯
+
+ FAIL  tests/bug-hunt-specificity.test.ts > specificity context .x { :is(&,#id) {color:red} }
+AssertionError: expected 10 to be 100 // Object.is equality
+
+- Expected
++ Received
+
+- 100
++ 10
+
+ ❯ tests/bug-hunt-specificity.test.ts:40:66
+     38| for (const [css, expected] of nested) {
+     39|   test(`specificity context ${css}`, () => {
+     40|     expect(analyzeCSSStructure(css).maxSelectorSpecificityScore).toBe(…
+       |                                                                  ^
+     41|   })
+     42| }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/34]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  34 failed | 24 passed (58)
+   Start at  08:06:32
+   Duration  289ms (import 46%, transform 39%, tests 13%, worker 2%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/benchmarks
+

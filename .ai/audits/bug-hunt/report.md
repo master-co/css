@@ -1,8 +1,11 @@
 # Master CSS 調查交付
 
+- 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
+
+- 0178完成BH-0040：必要文件／CSS資源必須成功完整回應且符合MIME；404／403／500／206、錯誤或缺失MIME、本文截斷及逾時均拒絕整份報告，等待已啟動工作結束後彙整URL錯誤，不跳過失敗資源輸出偏低總量。成功結果保留status／Content-Type／redirect URL與量測限制。15個修前測試11FAIL，最終98tests／types／smoke通過；21HTTP控制（5接受／16拒絕）、24三瀏覽器樣式控制與原始8公開頁面45資產核對通過。382來源、151排除檔及5項產物／3CLI built檔核對完成。47historical／44fixed／3unresolved，65checked／10blocked；BH-0004／0029／0037、完整graph／host／Sass maps／virtual／watch／base／SSR／lifecycle／Nuxt／Webpack、4root gates／4原候選／native shutdown／WebKit namespace限制與批次0038身分暫停仍未完成。下一批0179驗證BH-0037 compiler／extraction診斷階段與未採樣指標；本批程序已結束，HEADbdd9f25b8，未commit/push，目標active。[0178](batches/0178-docs-css-resources.md)／[核對](evidence/0178-final-checks.json)；0177交接逐字見[歷史](progress-history-0178.md)。
+
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
-- 0172完成BH-0034：native CSSOM traversal計入一般與巢狀style本身及leaf規則，遞迴處理group／keyframes，並收集巢狀selector；頂層layer統計只辨識CSSLayerBlockRule，重複名稱累加。修前54控制中42FAIL／12PASS；修後擴充60個三瀏覽器控制全PASS，含故意缺selector的負向控制。15tests／types、原lifecycle4／delivery16／progressive4與72個三瀏覽器報表頁面核對及report-smoke通過。CSSOM計數與公開runtime輸出項目數維持不同定義；既有snapshots不重寫，無效歷史數值不可直接比較。359來源核對完成，原151個排除變更及5項Wasm／runtime產物不變。47historical／38fixed／9unresolved、65checked／10blocked、4root gates／4原候選與host shutdown限制保持；BH-0004全部graph／Sass maps／virtual／watch／base／SSR／lifecycle與Nuxt/Webpack、0038身分暫停仍保留。全部本批程序已結束，HEADca2c8d00d，未commit/push，目標active。下一批0173處理BH-0042的array參數數量與deferred removal，再接BH-0043實際class／computed-style驗證及其他問題。[0172](batches/0172-benchmark-cssom-traversal.md)／[核對](evidence/0172-final-checks.json)；0171交接逐字見[歷史](progress-history-0172.md)。
 
 - 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
 
@@ -30,7 +33,7 @@
 
 起始 commit `e66ba7236`。提交整理：依使用者要求，BH-0035 的產品修復、實際 host 回歸測試與兩個啟動腳本已提交為 `79eea0d8f`。本次另保存 0115–0117 已完成的調查、證據及重現材料；BH-0004 的 compiler／binding／測試與文件實作及 Site 其他工作仍未提交。0115–0116 證據對應已記錄雜湊的工作區版本，其 graph 重現仍依賴未提交來源，不能宣稱乾淨 checkout 可獨立重現。提交前發現 0117 原 lint 紀錄實為 13 個 CommonJS 測試環境錯誤，先前 PASS 記載不正確；只新增測試檔的 Node globals 與 CommonJS import 註記後，完整 package lint 已通過，見 `evidence/0117-commit-lint.log`。測試執行內容與產品來源未變，沿用既有 31 tests、actual VS Code、types 與 isolated build 證據。12 個未解決問題、10 個受阻覆蓋單位及四項 root gates 保持未完成；0038 追加驗證仍待身分驗證明確確認。未推送。 進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
-47個歷史確認問題：38已修復、9未解決。0159修復BH-0047的pre-render manifest HMR；0157另修復BH-0046的development runtime base，詳見最新批次。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
+47個歷史確認問題：41已修復、6未解決。0159修復BH-0047的pre-render manifest HMR；0157另修復BH-0046的development runtime base，詳見最新批次。0128已修復BH-0045：Vite命名前納入managed CSS，原始快取與獨立lazy CSS控制通過；詳見最新批次。以下保留修復前重現歷史；當前狀態以findings及最新批次為準。BH-0004仍部分修復；[0112](batches/0112-external-import-order.md)確認21次external hoist cascade錯誤及18次nested拒絕，完整交付仍待實作；[0113](batches/0113-stylesheet-boundaries.md)新Rust graph/renderer有108browserPASS，但既有public仍39FAIL，不能結案；[0114](batches/0114-compiled-stylesheets.md)公開graph編譯新增126browserPASS，既有file/build交付、URL base與API gates仍待完成；BH-0001已由[0109](batches/0109-animation-value-context.md)完成，原0108的5個value失敗均通過。BH-0002已由[0110](batches/0110-variable-syntax.md)修復；BH-0003亦由[0111](batches/0111-static-retention.md)完成，145Rust全通過。10blocked coverage及未分類候選仍未完成。
 
 每項「重現與證據」包含命令、結果、控制組與新增測試／重現檔案。安全相關既有重現不重跑。
 
@@ -236,7 +239,7 @@
 
 修正方向：Nuxt 接管 runtime 注入時仍保留 stylesheet 編譯。原始 theme HMR 受阻，native CSS 控制組不代表原始 fixture 通過。[重現與證據](batches/0060-nuxt-dev-hmr.md)。
 
-## BH-0038 · P2 · Startup benchmark 匯入 CLI 執行入口即退出
+## BH-0038 · P2 · Startup benchmark 匯入 CLI 執行入口即退出 (fixed0175)
 
 [benchmarks/shared/startup-diagnostics.ts:218](/Users/aron/master/css/benchmarks/shared/startup-diagnostics.ts:218)。將可執行bin當被動模組匯入；無subcommand令Commander退出1，第一個variant即失敗，沒有診斷報告。同一bin的正常generate命令及core被動匯入皆通過。
 
@@ -284,31 +287,35 @@
 
 Extraction亦有15個未量測IDs，兩次完整compose卻標為engine建立／規則生成，不能用作單次render的分階段成本。修正方向：讓診斷契約符合實際量測，或接上正確擁有者的階段量測。[Compiler證據](batches/0064-compiler-diagnostics.md)、[extraction證據](batches/0065-extraction-diagnostics.md)。
 
-## BH-0039 · P3 · CSS structure benchmark 高估選擇器 specificity
+## BH-0039 · P3 · CSS structure benchmark 高估選擇器 specificity (fixed0177)
 
 [benchmarks/shared/css-structure.ts:354](/Users/aron/master/css/benchmarks/shared/css-structure.ts:354)。Universal誤加type權重，:is/:not/:has誤加pseudo-class自身權重；四個標準案例分別多1或10分。普通選擇器與Chromium實際cascade控制通過，問題僅在benchmark指標。
 
 修正方向：依標準特殊偽類與universal規則計算。[證據](batches/0069-css-structure.md)。
 
-## BH-0040 · P3 · Docs CSS size 將404HTML計為CSS
+Fixed0177: tuple comparison and selector-specific/nesting rules;83tests and16original report variants PASS. Browser controls59of60agree;independent pureHTML isolatesWebKit namespace differences,retained as a validation limitation. [Repair](batches/0177-benchmark-specificity.md).
+
+## BH-0040 · P3 · Docs CSS size 將404HTML計為CSS (fixed0178)
 
 [benchmarks/docs-page-css-size/shared.ts:166](/Users/aron/master/css/benchmarks/docs-page-css-size/shared.ts:166)。404被排除於失敗判定，錯誤頁body仍被計成CSS且未保留狀態。實際HTTP控制中1079bytes HTML被報為CSS，Chromium沒有套用任何規則；200CSS及500拒絕控制正常。
 
 修正方向：排除或明確標記失敗資源，避免誤計HTML。[證據](batches/0071-docs-css-size.md)。
 
-## BH-0041 · P3 · Vite benchmark 誤報已掃描來源數
+Fixed0178: strict complete resource collection withstatus/MIME checks,URL body-failure diagnostics andobserved metadata.98tests,21HTTP/24browser controls and8originalpages/45assets PASS. [Repair](batches/0178-docs-css-resources.md).
+
+## BH-0041 · P3 · Vite benchmark 誤報已掃描來源數 (fixed0176)
 
 [benchmarks/shared/build-diagnostics.ts:242](/Users/aron/master/css/benchmarks/shared/build-diagnostics.ts:242)。Build/startup以hook次數當檔案數，包含被略過的virtual/CSS及重複HTML；實測報6，實際為2個檔案／3次scan。觀察前後CSS雜湊一致。
 
-修正方向：計算符合定義的實際來源數，或使用準確的callback計數名稱。[證據](batches/0072-vite-scan-counts.md)。
+修正方向：計算符合定義的實際來源數，或使用準確的callback計數名稱。[證據](batches/0072-vite-scan-counts.md)。 Fixed0176: actual completed nonempty scans, normalized-path deduplication and source artifacts; environment hook wrappers keep plugin identity. Four CSS comparisons,12scanner controls and16report variants/404samples PASS. [Repair evidence](batches/0176-benchmark-vite-observation.md).
 
-## BH-0042 · P3 · Benchmark 陣列參數處理錯誤
+## BH-0042 · P3 · Benchmark 陣列參數處理錯誤 (fixed0173)
 
 [benchmarks/shared/interaction-cost-harness.ts:129](/Users/aron/master/css/benchmarks/shared/interaction-cost-harness.ts:129)。公開API接收一個class陣列，包裝器卻以參數數量計class；三個class新增／刪除各只計1。延後與抑制刪除策略在flush使用apply(runtime,names)，把陣列拆成多參數；回報已處理3個，實際3個規則全留下。相同陣列的baseline刪除正常。
 
 修正方向：計算陣列元素並以單一陣列轉送刪除。[Wrapper證據](batches/0078-interaction-array-contract.md)；0079原始preseed的spread呼叫也未建立兩個指定class，正確陣列控制均建立。[Preseed證據](batches/0079-runtime-mutation-diagnostics.md)。
 
-## BH-0043 · P3 · Benchmark 清理情境誤報樣式驗證成功
+## BH-0043 · P3 · Benchmark 清理情境誤報樣式驗證成功 (fixed0174)
 
 [benchmarks/shared/interaction-cost-page.ts:330](/Users/aron/master/css/benchmarks/shared/interaction-cost-page.ts:330)將`computedStyleValid`固定設為true。頁面就緒後停用CSS，實際對齊從center變為start，480個元素的清理情境仍回報樣式檢查通過；正常CSS控制組保持center。初始readiness確實檢查樣式，但情境結果沒有對應的樣式斷言。
 

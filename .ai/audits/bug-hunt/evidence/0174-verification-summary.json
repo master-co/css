@@ -1,0 +1,172 @@
+{
+  "0174-ai-context.log": {
+    "sha256": "cd11913ffd0461048174f6699d6b082fdbf55fff064345471d20deb2286f4531",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0174-interaction-final.log": {
+    "sha256": "55db2fc3163575ad55d455ff2bd7f18877bcdc787ee53ef25ba71d556fe84969",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 54
+  },
+  "0174-interaction-report.log": {
+    "sha256": "1bf0b647b6e85373a5f628417e14da257f8d544b25e04666af0674ec6b7cdf3d",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 54
+  },
+  "0174-invalidation-final.log": {
+    "sha256": "f46b4abbc756ed189094280a98cfb840d594051103ef873d2fa678916d4c0f3e",
+    "passRows": 98,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "styleReportChecks": 32,
+    "arrayReportChecks": 32,
+    "preparationArtifactChecks": 32,
+    "originalVariants": 32
+  },
+  "0174-invalidation-report.log": {
+    "sha256": "80efb473acf9046f83af7242aa31d36e7ccc2aa2f54403b49c59a98de2226b37",
+    "passRows": 98,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "styleReportChecks": 32,
+    "arrayReportChecks": 32,
+    "preparationArtifactChecks": 32,
+    "originalVariants": 32
+  },
+  "0174-mutation-final.log": {
+    "sha256": "7aee8ffd2bc0e45fca321d93604166c2e7d229cdcc2bd1c4ba29b34b6a18b5df",
+    "passRows": 50,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "styleReportChecks": 16,
+    "arrayReportChecks": 16,
+    "preparationArtifactChecks": 16,
+    "originalVariants": 16
+  },
+  "0174-mutation-report.log": {
+    "sha256": "136a5991dd96661e24c784a183fa14e2595d7d9b2ac6580399a617e602ff5e8c",
+    "passRows": 50,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "styleReportChecks": 16,
+    "arrayReportChecks": 16,
+    "preparationArtifactChecks": 16,
+    "originalVariants": 16
+  },
+  "0174-other-scenarios-final.log": {
+    "sha256": "e636230a40067c590e60be8a338bf509a85d4abe9792df539f595149777cf8be",
+    "passRows": 72,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0174-other-scenarios-fixed.log": {
+    "sha256": "94b6c8b0fd6bfbe974716213f8c88b7d04980e8c537a6d5e63266472805e20c7",
+    "passRows": 48,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0174-other-scenarios.log": {
+    "sha256": "097c0556955f5a43c5ec99f98c75ec1ad9375c7d7fe88f5419540e07f2ff91ca",
+    "passRows": 24,
+    "failRows": 24,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0174-report-smoke.log": {
+    "sha256": "36ede71a870fc215af0d5693a13c8aba4974e9303fe9b6cf0b7f73d0ad456a46",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 7
+  },
+  "0174-smoke-final.log": {
+    "sha256": "67e4405f2dab5e4d89bbe084f9410845fed1d6e690f9691afd6e641c63a09154",
+    "passRows": 1,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ],
+    "originalVariants": 7
+  },
+  "0174-style-before.log": {
+    "sha256": "642b5623289e5dcfb126de2451a6c6e9b1edc9cf27afeb12d784b8468df54582",
+    "passRows": 12,
+    "failRows": 12,
+    "terminalExits": [
+      1
+    ]
+  },
+  "0174-style-final.log": {
+    "sha256": "035e070c558d4a73ec1f388ac5ec7c1973a91757a2a615c0a8ceb52e60beb025",
+    "passRows": 48,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0174-style-fixed.log": {
+    "sha256": "8c3fdb459433af9415a73340ffc8f92c87763790d1ae53238724a0d03ccca3af",
+    "passRows": 24,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0174-style-verified.log": {
+    "sha256": "2b4894fe3e4d304c7405afd4183d4ce543a49319ff9e0c9818ce892a771a81de",
+    "passRows": 48,
+    "failRows": 0,
+    "terminalExits": [
+      0
+    ]
+  },
+  "0174-types-final.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0174-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0174-unit-tests-final.log": {
+    "sha256": "63096cf6aa03254468066d198a5829f13b2e79d89cfcd64d777711878ffbb2b2",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  },
+  "0174-unit-tests.log": {
+    "sha256": "fa342437b8e141556078d806e0247ebddd23cefc0d67171ac7e400b17f5437bc",
+    "passRows": 0,
+    "failRows": 0,
+    "terminalExits": []
+  }
+}

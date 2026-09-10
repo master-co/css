@@ -1,0 +1,93 @@
+{
+  "head": "bdd9f25b87305ab47437c30295d59ca6bb88f317",
+  "goal": "active",
+  "previousGoalTurn": "Progress:0171/0172 audit commit; current continuation also completed0173 BH-0042",
+  "batch": "0174 BH-0043 actual scenario styles and configured cleanup validation repaired",
+  "validation": {
+    "unitTests": "19 PASS",
+    "types": "PASS",
+    "lint": "No package-local lint script",
+    "cleanupBefore": "24 controls:12PASS/12 false-positive FAIL",
+    "otherBefore": "48 controls:24PASS/24 false-positive FAIL",
+    "cleanupFinal": "48 PASS:normal/disabled CSS/width-only failure/late-cycle failure",
+    "otherFinal": "72 PASS:normal/disabled CSS/selective min-height or grid-column failure",
+    "originalDiagnosticReports": "mutation16/invalidation32;48 preparation,48 array and48 style artifact/sample/summary checks",
+    "diagnosticGates": "48 positive gates;48 invalid-style and96 actual retained-class negative assertions",
+    "interaction": "54 final variants PASS",
+    "reportSmoke": "PASS",
+    "syntax": "3 repro scripts PASS",
+    "aiContext": "PASS",
+    "sourceHashes": "366 exact current matches",
+    "authoredWhitespace": "PASS",
+    "jsonAndLinks": "PASS"
+  },
+  "counts": {
+    "historical": 47,
+    "fixed": 40,
+    "unresolved": 7,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4,
+    "hostShutdownLimitation": 1
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0037",
+    "BH-0038",
+    "BH-0039",
+    "BH-0040",
+    "BH-0041"
+  ],
+  "preservation": {
+    "baselineSources": 363,
+    "finalSources": 366,
+    "changedBenchmarkSources": 6,
+    "newRepros": 3,
+    "priorExcluded151ByteIdentical": true,
+    "fiveArtifactsByteIdentical": true,
+    "fixturesSnapshotsDependenciesLockfileCIUnchanged": true,
+    "indexEmpty": true
+  },
+  "remaining": [
+    "BH-0004 full original import graph migration and host requirements",
+    "Missing original imported Sass maps, partial/reference/virtual cases and remaining resource ownership boundaries",
+    "Virtual sources, build-watch/missing recovery/base/asset naming/renderBuiltUrl/SSR assets/local lifecycle",
+    "Nuxt actual child CSS and Webpack graph/shared-dist race",
+    "Vite native immediate-close shutdown limitation",
+    "Module public-base imports and ICSS under imported layers: pure Vite limitations remain recorded, not completed",
+    "Batch0038 additional verification: explicit identity confirmation still absent",
+    "All7 unresolved findings,10 blocked coverage rows,4 root gates and4 original candidates",
+    "BH-0037 missing compiler/extraction measurements;BH-0038 startup passive import;BH-0039 specificity;BH-0040 resource status handling;BH-0041 file scan counts"
+  ],
+  "limits": [
+    "No speed claim or performance baseline refresh",
+    "Scenario checks sample the first appended element and existing probe; no exhaustive visual/property equivalence claim",
+    "Tailwind border-box computed width includes padding/border minimum;Master content-box is1px",
+    "New computed-style reads influence measured costs; invalid older numbers are not directly comparable",
+    "Synthetic retained-state corruption exercises validators separately from actual browser failure controls"
+  ],
+  "next": "0175 BH-0038 startup executable bin versus passive import; distinct from paused batch0038",
+  "paused": "Batch0038 explicit identity confirmation still absent",
+  "commit": false,
+  "push": false,
+  "activeJobs": [],
+  "terminalSessions": {
+    "75321": 1,
+    "73200": 0,
+    "41352": 0,
+    "77300": 0,
+    "28890": 0,
+    "11140": 0,
+    "14020": 0,
+    "5999": 1,
+    "15906": 0,
+    "32272": 0,
+    "92414": 0,
+    "26470": 0,
+    "97345": 0,
+    "75315": 0,
+    "57638": 0
+  }
+}

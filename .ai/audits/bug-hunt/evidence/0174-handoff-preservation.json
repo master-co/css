@@ -1,0 +1,38 @@
+{
+  "head": "bdd9f25b87305ab47437c30295d59ca6bb88f317",
+  "baselineSources": 363,
+  "finalSources": 366,
+  "changed": {
+    "benchmarks/shared/interaction-cost-metrics.ts": {
+      "before": "79c9e8777366984257e152cffa4fc94119e4480d183951ba777493ff3458a8f4",
+      "after": "70c6b31f376a93d1bcc159da0a7def58ec53279b208a80242d6b0b2161b8777a"
+    },
+    "benchmarks/shared/interaction-cost-page.ts": {
+      "before": "1505f148a4f12da2e12f1eb0ac46a8edf7380b0dc66466d92461d15db354ea85",
+      "after": "cdd12d8dfdaa4d7251a1d58e12389aeb16fe9c125875fa2117101b8837a109e2"
+    },
+    "benchmarks/shared/interaction-cost.ts": {
+      "before": "6ea13a7362d019a6e5d4e0bf9e31e78b5c2fa240f2d3da010cc1c1ee6f43fd1b",
+      "after": "00e5d45d18deabbdaba3cf8fd5879177e6c308f13cb3666460bdacbc93cc24c4"
+    },
+    "benchmarks/shared/runtime-mutation-diagnostic-metrics.ts": {
+      "before": "030b3923f648fd4ab35ccbce7192aeeb138bf786f0845498d89fb99656b4d71f",
+      "after": "b4cffe4dba4e3e611f4f39730278d5710828402849eee3ab61898fe885639f80"
+    },
+    "benchmarks/shared/runtime-style-invalidation-diagnostics.ts": {
+      "before": "b988b006aefd7a8ded08c276274e9e8ee622709aed9d2535cf6effaddb97332a",
+      "after": "2359c73ea0b8b938cf846c2d3359a60515a92518ebfb9db5552d5e2c8a353d83"
+    },
+    "benchmarks/shared/runtime-style-invalidation-metrics.ts": {
+      "before": "68485c5e633b47e23e21fc00320ab42183688d0b766b87cb48f9cd403cc7a569",
+      "after": "98a792007a108f356cb8d099374eadfaa9c81044103a8d98f1d712c7f4f42959"
+    }
+  },
+  "newSources": [
+    ".ai/audits/bug-hunt/repros/benchmark-style-validity.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-style-validity-report.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-style-other-scenarios.mjs"
+  ],
+  "priorExcluded151ByteIdentical": true,
+  "fiveArtifactsByteIdentical": true
+}

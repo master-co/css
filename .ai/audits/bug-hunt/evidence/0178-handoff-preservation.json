@@ -1,0 +1,20 @@
+{
+  "head": "bdd9f25b87305ab47437c30295d59ca6bb88f317",
+  "baselineSources": 379,
+  "finalSources": 382,
+  "changed": {
+    "benchmarks/docs-page-css-size/shared.ts": {
+      "before": "22bbff2f75a68f97676ade8c4d281f699e5d8db0d491064021718bc6e4af08c2",
+      "after": "caeded5bb9f5d3ee3a95214043ab51014d4f597fefdd6c9e61d162fbd9962bde"
+    }
+  },
+  "newSources": [
+    "benchmarks/tests/bug-hunt-docs-css-resources.test.ts",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-http.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-live.mjs"
+  ],
+  "priorExcluded151ByteIdentical": true,
+  "fiveArtifactsByteIdentical": true,
+  "threeCLIArtifactsByteIdentical": true,
+  "indexEmpty": true
+}

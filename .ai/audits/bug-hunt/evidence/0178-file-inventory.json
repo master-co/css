@@ -1,0 +1,30 @@
+{
+  "files": [
+    ".ai/audits/bug-hunt/README.md",
+    ".ai/audits/bug-hunt/batches/0178-docs-css-resources.md",
+    ".ai/audits/bug-hunt/changes.md",
+    ".ai/audits/bug-hunt/coverage.md",
+    ".ai/audits/bug-hunt/evidence/0178-ai-context.log",
+    ".ai/audits/bug-hunt/evidence/0178-artifact-hashes.json",
+    ".ai/audits/bug-hunt/evidence/0178-before-hashes.json",
+    ".ai/audits/bug-hunt/evidence/0178-cli-artifacts.json",
+    ".ai/audits/bug-hunt/evidence/0178-file-inventory.json",
+    ".ai/audits/bug-hunt/evidence/0178-final-checks.json",
+    ".ai/audits/bug-hunt/evidence/0178-handoff-preservation.json",
+    ".ai/audits/bug-hunt/evidence/0178-http-controls.log",
+    ".ai/audits/bug-hunt/evidence/0178-public-docs.log",
+    ".ai/audits/bug-hunt/evidence/0178-report-smoke.log",
+    ".ai/audits/bug-hunt/evidence/0178-source-hashes.json",
+    ".ai/audits/bug-hunt/evidence/0178-types.log",
+    ".ai/audits/bug-hunt/evidence/0178-unit-before.log",
+    ".ai/audits/bug-hunt/evidence/0178-unit-fixed.log",
+    ".ai/audits/bug-hunt/evidence/0178-verification-summary.json",
+    ".ai/audits/bug-hunt/findings.md",
+    ".ai/audits/bug-hunt/progress-history-0178.md",
+    ".ai/audits/bug-hunt/report.md",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-http.mjs",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-live.mjs",
+    "benchmarks/docs-page-css-size/shared.ts",
+    "benchmarks/tests/bug-hunt-docs-css-resources.test.ts"
+  ]
+}

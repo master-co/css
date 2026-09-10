@@ -1,0 +1,14 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-x4ql6nnn/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-runtime-report.mjs", "report-smoke"]}
+$ vitest bench report-smoke --run
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-x4ql6nnn/benchmarks
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  07:32:13
+   Duration  112ms (transform 48%, tests 32%, import 16%, worker 4%)
+
+{"suite":"report-smoke","commandExit":0}
+{"suite":"report-smoke","variants":[{"id":"minimal-master-runtime","samples":10,"legacyRuntimeCounts":[]},{"id":"docs-master-static","samples":10,"legacyRuntimeCounts":[]},{"id":"dashboard-master-progressive","samples":10,"legacyRuntimeCounts":[]},{"id":"dynamic-tailwind-cli","samples":10,"legacyRuntimeCounts":[]},{"id":"stress-css-tailwind-vite","samples":10,"legacyRuntimeCounts":[]},{"id":"stress-css-browser-css","samples":10,"legacyRuntimeCounts":[]},{"id":"stress-dom-browser-dom","samples":10,"legacyRuntimeCounts":[]}],"artifactCount":0,"wasmArtifacts":0,"wasm":{"raw":929757,"gzip":286205,"brotli":218273,"hash":"4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"},"pass":true}
+{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-x4ql6nnn"}

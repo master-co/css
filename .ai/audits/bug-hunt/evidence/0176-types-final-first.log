@@ -1,0 +1,6 @@
+shared/startup-diagnostics.ts(455,89): error TS2304: Cannot find name 'benchmarkRoot'.
+shared/startup-diagnostics.ts(456,89): error TS2304: Cannot find name 'benchmarkRoot'.
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/benchmarks
+

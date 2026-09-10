@@ -1,0 +1,171 @@
+{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-vite-reports.mjs", "startup-diagnostics"]}
+
+ RUN  v5.0.0 /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks
+
+stdout | startup-diagnostics/startup-diagnostics.bench.ts > startup diagnostics > write startup diagnostics report
+Measuring startup diagnostics for minimal / Master CSS CLI startup diagnostic, round 1/1
+
+stdout | startup-diagnostics/startup-diagnostics.bench.ts > startup diagnostics > write startup diagnostics report
+Measuring startup diagnostics for minimal / Master CSS Vite startup diagnostic, round 1/1
+
+ ❯ |bench| startup-diagnostics/startup-diagnostics.bench.ts (1 test | 1 failed) 9516ms
+   ❯ startup diagnostics (1)
+     × write startup diagnostics report 9516ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  |bench| startup-diagnostics/startup-diagnostics.bench.ts > startup diagnostics > write startup diagnostics report
+Error: Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node --import tsx startup-diagnostics/run-diagnostic.ts --workspace /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0 --fixture-id minimal --tool-id master-vite-startup-diagnostic --variant-id minimal-master-vite-startup-diagnostic --round 0 --output /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/diagnostic-result.json
+
+Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node --import tsx startup-diagnostics/run-diagnostic.ts --workspace /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0 --fixture-id minimal --tool-id master-vite-startup-diagnostic --variant-id minimal-master-vite-startup-diagnostic --round 0 --output /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/diagnostic-result.json
+/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/runner.ts:80
+    throw new Error([
+          ^
+
+Error: Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs
+
+Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs
+file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5
+function instrumentMasterVitePlugins(plugins,time){for(const plugin of plugins){if(plugin.name==="master-css:scanner")wrap(plugin,"configResolved","vite-master-scanner-init-ms");if(plugin.name==="master-css:usage-graph"){wrap(plugin,"transform","vite-master-module-scan-ms");wrap(plugin,"transformIndexHtml","vite-master-html-scan-ms")}if(plugin.name==="master-css:style-entry"){wrap(plugin,"load","vite-master-style-entry-ms");wrap(plugin,"transform","vite-master-style-entry-ms")}if(plugin.name==="master-css:style-entry:build")wrap(plugin,"generateBundle","vite-master-generate-bundle-ms")}return plugins;function wrap(plugin,name,metricId){const hook=plugin[name];const object=hook&&typeof hook==="object"?hook:void 0;const handler=typeof hook==="function"?hook:object?.handler;if(typeof handler!=="function")return;const invoke=handler;async function wrapped(...args){return time(metricId,()=>invoke.apply(this,args))}__name(wrapped,"wrapped");plugin[name]=object?{...object,handler:wrapped}:wrapped}__name(wrap,"wrap")}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+ReferenceError: __name is not defined
+    at wrap (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924)
+    at instrumentMasterVitePlugins (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119)
+    at file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+
+Node.js v24.20.0
+
+
+stderr:
+file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5
+function instrumentMasterVitePlugins(plugins,time){for(const plugin of plugins){if(plugin.name==="master-css:scanner")wrap(plugin,"configResolved","vite-master-scanner-init-ms");if(plugin.name==="master-css:usage-graph"){wrap(plugin,"transform","vite-master-module-scan-ms");wrap(plugin,"transformIndexHtml","vite-master-html-scan-ms")}if(plugin.name==="master-css:style-entry"){wrap(plugin,"load","vite-master-style-entry-ms");wrap(plugin,"transform","vite-master-style-entry-ms")}if(plugin.name==="master-css:style-entry:build")wrap(plugin,"generateBundle","vite-master-generate-bundle-ms")}return plugins;function wrap(plugin,name,metricId){const hook=plugin[name];const object=hook&&typeof hook==="object"?hook:void 0;const handler=typeof hook==="function"?hook:object?.handler;if(typeof handler!=="function")return;const invoke=handler;async function wrapped(...args){return time(metricId,()=>invoke.apply(this,args))}__name(wrapped,"wrapped");plugin[name]=object?{...object,handler:wrapped}:wrapped}__name(wrap,"wrap")}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+ReferenceError: __name is not defined
+    at wrap (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924)
+    at instrumentMasterVitePlugins (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119)
+    at file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+
+Node.js v24.20.0
+
+    at runCommand (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/runner.ts:80:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async runProbe (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:376:18)
+    at async runMasterViteStartupDiagnostic (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:262:21)
+    at async runStartupDiagnostic (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:186:7)
+    at async <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/startup-diagnostics/run-diagnostic.ts:6:16)
+
+Node.js v24.20.0
+
+
+stderr:
+/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/runner.ts:80
+    throw new Error([
+          ^
+
+Error: Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs
+
+Command failed: /Users/aron/.nvm/versions/node/v24.20.0/bin/node /Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs
+file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5
+function instrumentMasterVitePlugins(plugins,time){for(const plugin of plugins){if(plugin.name==="master-css:scanner")wrap(plugin,"configResolved","vite-master-scanner-init-ms");if(plugin.name==="master-css:usage-graph"){wrap(plugin,"transform","vite-master-module-scan-ms");wrap(plugin,"transformIndexHtml","vite-master-html-scan-ms")}if(plugin.name==="master-css:style-entry"){wrap(plugin,"load","vite-master-style-entry-ms");wrap(plugin,"transform","vite-master-style-entry-ms")}if(plugin.name==="master-css:style-entry:build")wrap(plugin,"generateBundle","vite-master-generate-bundle-ms")}return plugins;function wrap(plugin,name,metricId){const hook=plugin[name];const object=hook&&typeof hook==="object"?hook:void 0;const handler=typeof hook==="function"?hook:object?.handler;if(typeof handler!=="function")return;const invoke=handler;async function wrapped(...args){return time(metricId,()=>invoke.apply(this,args))}__name(wrapped,"wrapped");plugin[name]=object?{...object,handler:wrapped}:wrapped}__name(wrap,"wrap")}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+ReferenceError: __name is not defined
+    at wrap (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924)
+    at instrumentMasterVitePlugins (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119)
+    at file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+
+Node.js v24.20.0
+
+
+stderr:
+file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5
+function instrumentMasterVitePlugins(plugins,time){for(const plugin of plugins){if(plugin.name==="master-css:scanner")wrap(plugin,"configResolved","vite-master-scanner-init-ms");if(plugin.name==="master-css:usage-graph"){wrap(plugin,"transform","vite-master-module-scan-ms");wrap(plugin,"transformIndexHtml","vite-master-html-scan-ms")}if(plugin.name==="master-css:style-entry"){wrap(plugin,"load","vite-master-style-entry-ms");wrap(plugin,"transform","vite-master-style-entry-ms")}if(plugin.name==="master-css:style-entry:build")wrap(plugin,"generateBundle","vite-master-generate-bundle-ms")}return plugins;function wrap(plugin,name,metricId){const hook=plugin[name];const object=hook&&typeof hook==="object"?hook:void 0;const handler=typeof hook==="function"?hook:object?.handler;if(typeof handler!=="function")return;const invoke=handler;async function wrapped(...args){return time(metricId,()=>invoke.apply(this,args))}__name(wrapped,"wrapped");plugin[name]=object?{...object,handler:wrapped}:wrapped}__name(wrap,"wrap")}
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           ^
+
+ReferenceError: __name is not defined
+    at wrap (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924)
+    at instrumentMasterVitePlugins (file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119)
+    at file:///Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/.results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+
+Node.js v24.20.0
+
+    at runCommand (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/runner.ts:80:11)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async runProbe (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:376:18)
+    at async runMasterViteStartupDiagnostic (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:262:21)
+    at async runStartupDiagnostic (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/shared/startup-diagnostics.ts:186:7)
+    at async <anonymous> (/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6/benchmarks/startup-diagnostics/run-diagnostic.ts:6:16)
+
+Node.js v24.20.0
+
+ ❯ wrap .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924
+ ❯ instrumentMasterVitePlugins .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119
+ ❯ .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+ ❯ wrap .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924
+ ❯ instrumentMasterVitePlugins .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119
+ ❯ .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+ ❯ runCommand shared/runner.ts:80:11
+     78|     const stdout = bufferToString(commandError.stdout)
+     79|     const stderr = bufferToString(commandError.stderr)
+     80|     throw new Error([
+       |           ^
+     81|       `Command failed: ${command} ${args.join(' ')}`,
+     82|       commandError.message,
+ ❯ runProbe shared/startup-diagnostics.ts:376:18
+ ❯ runMasterViteStartupDiagnostic shared/startup-diagnostics.ts:262:21
+ ❯ runStartupDiagnostic shared/startup-diagnostics.ts:186:7
+ ❯ <anonymous> startup-diagnostics/run-diagnostic.ts:6:16
+ ❯ wrap .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924
+ ❯ instrumentMasterVitePlugins .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119
+ ❯ .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+ ❯ wrap .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:924
+ ❯ instrumentMasterVitePlugins .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:5:119
+ ❯ .results/startup-diagnostics/workspaces/minimal-master-vite-startup-diagnostic/round-0/.startup-probes/vite-startup.mjs:16:17
+ ❯ runCommand shared/runner.ts:80:11
+ ❯ runProbe shared/startup-diagnostics.ts:376:18
+ ❯ runMasterViteStartupDiagnostic shared/startup-diagnostics.ts:262:21
+ ❯ runStartupDiagnostic shared/startup-diagnostics.ts:186:7
+ ❯ <anonymous> startup-diagnostics/run-diagnostic.ts:6:16
+ ❯ runCommand shared/runner.ts:80:11
+ ❯ runStartupDiagnosticInChild startup-diagnostics/startup-diagnostics.bench.ts:139:3
+ ❯ createStartupDiagnosticsReport startup-diagnostics/startup-diagnostics.bench.ts:78:22
+ ❯ startup-diagnostics/startup-diagnostics.bench.ts:43:22
+ ❯ X.<anonymous> startup-diagnostics/startup-diagnostics.bench.ts:192:7
+ ❯ X.#g ../../../node_modules/.pnpm/tinybench@6.1.4/node_modules/tinybench/dist/index.js:1431:26
+ ❯ o ../../../node_modules/.pnpm/tinybench@6.1.4/node_modules/tinybench/dist/index.js:1373:53
+ ❯ X.#m ../../../node_modules/.pnpm/tinybench@6.1.4/node_modules/tinybench/dist/index.js:1387:54
+ ❯ X.run ../../../node_modules/.pnpm/tinybench@6.1.4/node_modules/tinybench/dist/index.js:1334:56
+ ❯ $.run ../../../node_modules/.pnpm/tinybench@6.1.4/node_modules/tinybench/dist/index.js:1573:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed (1)
+   Start at  07:56:36
+   Duration  9.65s (tests 99%, transform 1%)
+
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Original startup report failed
+
+1 !== 0
+
+    at <anonymous> (/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-vite-reports.mjs:14:8)
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0
+{"exit_code": 1, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-hlbverx6"}

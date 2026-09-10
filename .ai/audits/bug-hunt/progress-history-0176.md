@@ -1,0 +1,3 @@
+# Preserved 0175 handoff
+
+- 0175完成BH-0038：移除會執行CLI並退出的bin被動匯入probe及無效metric，保留完整bin指令計時、core被動匯入及runProgram執行計時，報表清楚註明歷史指標不再輸出。原始八個CLI／Vite變體全完成，292筆sample／summary與CSS marker／raw／gzip／brotli核對通過；四個真實CLI入口控制確認bin與core執行產生相同298bytes CSS。19tests／types／smoke通過，無package lint script。368來源、151排除檔案與5項產物核對完成；47historical／41fixed／6unresolved，65checked／10blocked。新報表仍有四個Vite指標未採樣，沒有補零或視為完成；下一批0176連同BH-0041查核source-file計數及applyToEnvironment前後的hook包裝。BH-0004完整graph／host／Sass maps／virtual／watch／base／SSR／lifecycle／Nuxt／Webpack、4root gates／4原候選／host shutdown限制與批次0038身分暫停全部保留。本批程序已結束，HEADbdd9f25b8，未commit/push，目標active。[0175](batches/0175-benchmark-startup-import.md)／[核對](evidence/0175-final-checks.json)；0174交接逐字見[歷史](progress-history-0175.md)。
