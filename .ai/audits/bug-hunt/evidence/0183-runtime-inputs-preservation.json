@@ -1,0 +1,26 @@
+{
+  "head": "e9584fb10",
+  "baselineSources": 435,
+  "finalSources": 437,
+  "unchangedBaselineSources": 433,
+  "changed": {
+    ".ai/audits/bug-hunt/repros/next-runtime-start-hmr-browser.mjs": {
+      "before": "db7cdc3fdae002234a03a7037c14690d88bdffe7d0e3e6a6a0b9703607f0b4fc",
+      "after": "6323d7b9e33d739e56b9a5ebd16ec937dd53a28a844bb65171de6ef1521e8b8d"
+    },
+    "packages/internal/src/runtime-bootstrap.ts": {
+      "before": "a24964714a5f2bf4838f6be423b03865f61b008574725b9741d4e901b9aef93c",
+      "after": "92da9918c309b75a5ed1c95873f0933ac9cb0b323cedf3894b1a91ccbedc5e35"
+    }
+  },
+  "newSources": [
+    "packages/internal/tests/bug-hunt-runtime-input-updates.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-runtime-input-updates-browser.mjs"
+  ],
+  "previousCommitExclusionsUnchanged": 181,
+  "foreignSiteUnchanged": true,
+  "eightArtifactsUnchanged": true,
+  "priorCommittedRawEvidenceUnchanged": true,
+  "NextWebpackRuntimeCompilerRustCLIProductSourcesUnchanged": true,
+  "benchmark": "Not run: only generated official bootstrap latest-input retention changed; no runtime engine/DOM/CSSOM/global bundle change or performance claim. Two current-input references retain the newest accepted modules."
+}

@@ -1,0 +1,29 @@
+{"baseline":false,"deliveryBaseline":true,"sourceSha256":"d82d78edd7647f57d5fba7da10306458d7a55114f272dd8018e949db93b2109b"}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59863/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+{"browser":"chromium","pass":false,"harnessOrHostFailure":"TimeoutError: page.waitForFunction: Timeout 2000ms exceeded.","state":{"generation":1,"padding":"0px"},"errors":["Cannot read properties of undefined (reading 'push')","Cannot set properties of undefined (setting '../../../../../../private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/webpack-runtime-start-hmr-M2Z3OE/node_modules/.master-css/master-css-manifest.js')"],"diagnostics":[]}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59872/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+<i> [webpack-dev-middleware] wait until bundle finished: /runtime.735ce411958aa88f58f1.hot-update.json
+{"browser":"firefox","pass":false,"harnessOrHostFailure":"TimeoutError: page.waitForFunction: Timeout 2000ms exceeded.","state":{"generation":1,"padding":"0px"},"errors":[],"diagnostics":["JSHandle@object"]}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59880/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+<i> [webpack-dev-middleware] wait until bundle finished: /runtime.bfdbce06cd4d0efd8d0e.hot-update.json
+{"browser":"webkit","pass":false,"harnessOrHostFailure":"TimeoutError: page.waitForFunction: Timeout 2000ms exceeded.","state":{"generation":1,"padding":"0px"},"errors":[],"diagnostics":["{version: 2, code: INTERNAL, domain: runtime, severity: error, message: Load failed}","{version: 2, code: INTERNAL, domain: runtime, severity: error, message: Load failed}"]}
+<e> [webpack-dev-middleware] Stream error: Error [ERR_STREAM_PREMATURE_CLOSE]: Premature close
+<e>     at getEosOnCloseError (node:internal/streams/end-of-stream:100:14)
+<e>     at ServerResponse.onclose (node:internal/streams/end-of-stream:260:19)
+<e>     at ServerResponse.emit (node:events:526:24)
+<e>     at emitCloseNT (node:_http_server:1156:10)
+<e>     at Socket.onServerResponseClose (node:_http_server:292:5)
+<e>     at Socket.emit (node:events:526:24)
+<e>     at TCP.<anonymous> (node:net:362:12) {
+<e>   code: 'ERR_STREAM_PREMATURE_CLOSE'
+<e> }
+{"summary":true,"observations":3,"failures":3}

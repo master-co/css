@@ -1,0 +1,56 @@
+{
+  "head": "e9584fb10",
+  "goal": "active",
+  "batch": "0183",
+  "batchComplete": false,
+  "counts": {
+    "historical": 51,
+    "fixed": 48,
+    "unresolved": 3,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "fixedThisTurn": [
+    "BH-0050"
+  ],
+  "newUnresolved": [
+    "BH-0051"
+  ],
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0051"
+  ],
+  "validation": {
+    "internal": "29PASS/7files;6newcontrols",
+    "astro": "15PASS",
+    "vite": "603PASS/6FAIL/609;original6build-watch failures",
+    "browser": "168VitePASS/0pageerrors plus3Next/TurbopackPASS verifying revised harness",
+    "nextWebpack": "FAIL before browser startup; BH-0051 confirmed; no HMR claim",
+    "internalLintTypesBuild": "PASS",
+    "viteAstroBuildsAndOriginalExamples": "PASS",
+    "aiContext": "PASS",
+    "syntaxJSONWhitespaceLinksBudgets": "PASS",
+    "sources": "437sourcehashes,433baseline sources unchanged,181commit exclusions and8artifacts verified"
+  },
+  "terminalSessions": {
+    "14785": 1,
+    "30556": 1,
+    "86349": 1,
+    "16701": 0,
+    "97534": 1,
+    "82865": 0,
+    "30524": 1,
+    "76397": 0,
+    "66202": 0
+  },
+  "activeJobs": [],
+  "next": "Fix BH-0051 Next/Webpack CSS loader composition, then verify its HMR and continue internal Modules proxy?direct/full host graph requirements",
+  "preservation": "0183-runtime-inputs-preservation.json",
+  "remaining": "All fullBH-0004/BH-0029/BH-0051,sixbuild-watchstartupcases,10blockedcoverage,4rootgates,4originalcandidates,graph/host/benchmark/fullmatrix/longsession/history/profiling/native-shutdown/WebKit requirements remain",
+  "paused": "0038additional verification pendingexplicitidentityconfirmation",
+  "commit": false,
+  "push": false
+}

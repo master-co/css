@@ -1,0 +1,45 @@
+{
+  "observations": 171,
+  "failures": 0,
+  "unexpectedPageErrors": 0,
+  "viteObservations": 168,
+  "unchangedNextTurbopackHarnessObservations": 3,
+  "runs": [
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-inputs-browser-fixed.log",
+      "sha256": "ac3e33c07a39e12f2434606edc59dd6f2cad1c16c53a1046310e3d45493d3ce2",
+      "summary": true,
+      "observations": 12,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-inputs-start-browser.log",
+      "sha256": "f40478a018e3b26a180c9f60c10621deb37759d6813595f4665ee555a1edf678",
+      "summary": true,
+      "observations": 18,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-inputs-lifecycle-browser.log",
+      "sha256": "27d55a95ad07b7c079715ed34ad8a68aa11f0343ad58a7377b6d4feed3f15e85",
+      "summary": true,
+      "observations": 66,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-inputs-startup-browser.log",
+      "sha256": "1a8ef97576119f55febafc826b26ee8328cc6a9e45a17d8d10ef146be474cd75",
+      "summary": true,
+      "observations": 72,
+      "failures": 0
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-inputs-next-turbo-harness.log",
+      "sha256": "762943c78e63354a2b67f4c76604c2a9935e27dbcda6c4c953a1a3f7de71bae1",
+      "summary": true,
+      "observations": 3,
+      "failures": 0
+    }
+  ],
+  "scope": "12new mixed-input controls,156prior Vite startup/lifecycle controls rerun;3Next/Turbopack controls verify the corrected harness on unchanged Next product code. Next/Webpack CSS failure occurs before browser startup and is not included as an HMR observation."
+}

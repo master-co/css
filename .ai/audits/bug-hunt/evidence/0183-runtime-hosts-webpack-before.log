@@ -1,0 +1,76 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/webpack
+
+ ❯ tests/bug-hunt-runtime-start-hmr.test.ts (5 tests | 4 failed) 1215ms
+   × BH-0048 Webpack pending runtime start: pending 55ms
+   × BH-0048 Webpack pending runtime start: burst 51ms
+   × BH-0048 Webpack pending runtime start: replacement 53ms
+   × BH-0048 Webpack pending runtime start: failure 1005ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-runtime-start-hmr.test.ts > BH-0048 Webpack pending runtime start: pending
+ FAIL  tests/bug-hunt-runtime-start-hmr.test.ts > BH-0048 Webpack pending runtime start: replacement
+AssertionError: expected 1 to be 2 // Object.is equality
+
+- Expected
++ Received
+
+- 2
++ 1
+
+ ❯ tests/bug-hunt-runtime-start-hmr.test.ts:40:46
+     38|   }
+     39|   await vi.waitFor(() => expect(instances.at(-1)?.observe).toHaveBeenC…
+     40|   expect(instances.at(-1)?.manifest.version).toBe(scenario === 'burst'…
+       |                                              ^
+     41|   expect(instances.at(-1)?.disposed).toBe(false)
+     42|   expect(initial.observe).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-runtime-start-hmr.test.ts > BH-0048 Webpack pending runtime start: burst
+AssertionError: expected 1 to be 3 // Object.is equality
+
+- Expected
++ Received
+
+- 3
++ 1
+
+ ❯ tests/bug-hunt-runtime-start-hmr.test.ts:40:46
+     38|   }
+     39|   await vi.waitFor(() => expect(instances.at(-1)?.observe).toHaveBeenC…
+     40|   expect(instances.at(-1)?.manifest.version).toBe(scenario === 'burst'…
+       |                                              ^
+     41|   expect(instances.at(-1)?.disposed).toBe(false)
+     42|   expect(initial.observe).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/bug-hunt-runtime-start-hmr.test.ts > BH-0048 Webpack pending runtime start: failure
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ tests/bug-hunt-runtime-start-hmr.test.ts:39:60
+     37|     return
+     38|   }
+     39|   await vi.waitFor(() => expect(instances.at(-1)?.observe).toHaveBeenC…
+       |                                                            ^
+     40|   expect(instances.at(-1)?.manifest.version).toBe(scenario === 'burst'…
+     41|   expect(instances.at(-1)?.disposed).toBe(false)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 1 passed (5)
+   Start at  12:56:10
+   Duration  1.32s (tests 97%, import 2%, transform 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/webpack
+

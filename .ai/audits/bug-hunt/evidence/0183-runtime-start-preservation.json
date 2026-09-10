@@ -1,0 +1,22 @@
+{
+  "head": "e9584fb10aa03e510702e5d77ec839502a70c80e",
+  "previousSourcesUnchanged": 426,
+  "finalSourceCount": 429,
+  "existingSourceChange": {
+    "path": "packages/internal/src/runtime-bootstrap.ts",
+    "beforeSha256": "d631136eb94c5a6e741b5a7b7867f4a419417e4ffd8b7b7c0fe3140301ff4f07",
+    "afterSha256": "a24964714a5f2bf4838f6be423b03865f61b008574725b9741d4e901b9aef93c",
+    "beforeBytes": 1986,
+    "afterBytes": 2374
+  },
+  "newSources": [
+    "packages/internal/tests/bug-hunt-runtime-start-hmr.test.ts",
+    ".ai/audits/bug-hunt/repros/vite-runtime-start-hmr-browser.mjs"
+  ],
+  "previousCommitExclusionsUnchanged": 181,
+  "foreignSitePreserved": true,
+  "priorCommittedRawEvidenceUnchanged": true,
+  "eightArtifactsByteIdentical": true,
+  "runtimeCoreAndGlobalBundleChanged": false,
+  "benchmark": "Not run: this is official bootstrap startup/HMR sequencing, not runtime engine/DOM/CSSOM hot-path code. One promise chain per bootstrap serializes starts; no performance claim. Existing eight runtime/Wasm/CLI artifacts unchanged."
+}

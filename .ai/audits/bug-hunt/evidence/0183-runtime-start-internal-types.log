@@ -1,0 +1,8 @@
+$ tsc -b tsconfig.typecheck.json
+tests/bug-hunt-runtime-start-hmr.test.ts(10,9): error TS2502: 'instances' is referenced directly or indirectly in its own type annotation.
+tests/bug-hunt-runtime-start-hmr.test.ts(11,12): error TS7023: 'instance' implicitly has return type 'any' because it does not have a return type annotation and is referenced directly or indirectly in one of its return expressions.
+[ELIFECYCLE] Command failed with exit code 2.
+Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
+
+  × "pnpm recursive run" failed in /Users/aron/master/css/packages/internal
+

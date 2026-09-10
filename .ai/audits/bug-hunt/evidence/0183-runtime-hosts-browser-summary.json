@@ -1,0 +1,45 @@
+{
+  "observations": 6,
+  "failures": 0,
+  "unexpectedPageErrors": 0,
+  "runs": [
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-hosts-next-browser-fixed.log",
+      "sha256": "9fd57ff69c6c0eb91de03c4acf314361445560b664f5dd5597c5104f0a008a97",
+      "observations": 3,
+      "failures": 0,
+      "unexpectedPageErrors": 0,
+      "heldMs": {
+        "chromium": 1574,
+        "firefox": 1535,
+        "webkit": 1542
+      },
+      "artifact": {
+        "artifact": "packages/next/dist/index.js",
+        "sha256": "a9bc3141933cf161242058135239a6c0993bb3dbfe7a9ef168465fad34b844ea"
+      }
+    },
+    {
+      "log": ".ai/audits/bug-hunt/evidence/0183-runtime-hosts-webpack-browser-final.log",
+      "sha256": "1fccf99b25ac51bc809499253abd4592f8720b06792b8ee6b9946e7a4bc17739",
+      "observations": 3,
+      "failures": 0,
+      "unexpectedPageErrors": 0,
+      "heldMs": {
+        "chromium": 396,
+        "firefox": 428,
+        "webkit": 384
+      },
+      "artifact": {
+        "baseline": false,
+        "deliveryBaseline": false,
+        "sourceSha256": "1d51cfca4b571d379e0cd605954d2ccb4a28f723107ac6273e971a2d145a1e99"
+      }
+    }
+  ],
+  "previousSharedBootstrap156": "Not rerun; sources unchanged, previous evidence retained",
+  "drivers": {
+    ".ai/audits/bug-hunt/repros/next-runtime-start-hmr-browser.mjs": "db7cdc3fdae002234a03a7037c14690d88bdffe7d0e3e6a6a0b9703607f0b4fc",
+    ".ai/audits/bug-hunt/repros/webpack-runtime-start-hmr-browser.mjs": "4602770d38ffb7bb132aa6c7247f9463e2b5f9433626832dc0dbf8887e255c71"
+  }
+}

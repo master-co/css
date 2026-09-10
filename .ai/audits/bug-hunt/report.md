@@ -1,11 +1,12 @@
 # Master CSS 調查交付
 
+- Commit checkpoint: BH-0048/BH-0049/BH-0050 fixes and 4 regression files committed as `50caa3e20`; 26 fresh tests and 3 package lints PASS. Open scope and 0038 pause unchanged. [Validation](evidence/0183-runtime-commit-validation.json).
+
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0183 已修正 manifest 操作在 environment 關閉後仍替換／清除共用 renderer、送出過期 reload／error 的問題：在公開 close 開始時取消恢復，完成後再核對操作所屬 environment；closeBundle 保留收尾。另修正上一輪恢復邏輯對已載入 manifest 強制整頁重載的回歸，改交由 Vite HMR 沿既有接受邊界傳播。17 個新控制全通過；完整 Vite609tests 為603PASS／6FAIL，原479全PASS，剩餘仍是6build-watch啟動缺reference。Vite lint／types／build／原範例PASS；本輪138三瀏覽器觀測PASS、0非預期pageerrors（66共用插件／重啟／關閉隔離與既有HMR狀態，72manifest啟動矩陣）。前輪600觀測保留為前一版本證據。426來源核對：3既有來源修改、3新增，compiler／internal／Rust／CLI、foreign Site、8Wasm/runtime/CLI產物及163原排除檔不變。8個初版關閉失敗、3個HMR關閉失敗及固定重現的整頁重載回歸均保留原日誌；新測試的send型別與重現腳本的navigation／virtual HTTP路徑錯誤另記。追蹤亦確認 Vite client 首次更新遇overlay會自行reload，沒有修改此host行為。新增未驗證候選：runtime尚未確認初始化完成時接收HMR，曾見WebKit已收到新manifest而CSSOM為空；成熟runtime控制已通過，初始化時序不能視為完成或直接歸咎腳本。下一步以延遲Wasm載入固定重現這個候選，再接internal Modules proxy?direct HTTP500及其餘host；6build-watch缺主機能力仍未完成。47historical／45fixed／2unresolved、65checked／10blocked，BH-0004／BH-0029、完整graph／其他host／benchmark、4root gates／4原候選、native shutdown／WebKit與0038身分暫停維持。0183與目標active；用戶本次授權提交已驗證帳本、證據與重現；產品／套件測試仍依賴未完成BH-0004，與Site變更留在工作區。未推送；歷史HEAD敘述保留當時狀態。[提交核對](evidence/0183-manifest-lifecycle-commit-validation.json)。[0183](batches/0183-reference-host-recovery.md)／[核對](evidence/0183-manifest-lifecycle-final-checks.json)／[初始化HMR候選](evidence/0183-manifest-initial-runtime-hmr-candidate.json)；前次交接逐字見[歷史](progress-history-0183-manifest-lifecycle.md)。
+- 0183: BH-0050 fixed. Separate manifest/emittedGlobals HMR previously restored the originally imported counterpart:6newcontrols4FAIL/2PASS and12runtime/progressive three-browser failures (9rem revertedto7rem,or emitted variable duplicated). Bootstrap now retains each latest accepted input;6newcontrolsPASS,internal29/Astro15PASS,Vite603PASS/6FAIL retains the6build-watchstartup cases. Final168VitebrowserobservationsPASS/0unexpectedpageerrors(12new+156startup/lifecycle reruns);internal lint/types/build,Vite/Astro builds andoriginalexamplesPASS. Next --webpack could not reach browser startup:top-level adapter CSS rule causes Next to remove its nativeCSS loaders;returnedCSS is parsed asJS. Relative config imports removed the fixture file-URL cache warning but not the compile failure,confirming P1 BH-0051,stillunfixed. Updated driver fails promptly on compile errors;3Next/Turbopack harness controlsPASS on unchangedNextsource.437sourcehashes:internalbootstrap andexistingNextdriver changed,2newtest/driver files;433baseline sources,181exclusions,foreignSite and8Wasm/runtime/CLIartifacts unchanged.51historical/48fixed/3unresolved(BH-0004/BH-0029/BH-0051),65checked/10blocked. Next repair Next/Webpack CSS loader composition with globalCSS/CSSModules/Sass andmanifest-query controls,then resume its pending-HMR verification and internalModules proxy?directHTTP500. All6build-watchcases,4rootgates,4originalcandidates,fullgraph/host/benchmark/long-session/history/profiling,native-shutdown/WebKitlimits and0038identitypause remain unfinished.0183 andgoalactive;HEADe9584fb10;no newcommit/push. [Batch](batches/0183-reference-host-recovery.md),[checks](evidence/0183-runtime-inputs-final-checks.json),[BH0050](evidence/0183-runtime-inputs-finding.json),[BH0051](evidence/0183-runtime-inputs-next-webpack-css.json),[previoushandoff](progress-history-0183-runtime-inputs.md).
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
-
 
 - 使用者再次授權提交已完成部分：本次僅提交0169–0170已收尾的帳本、原始證據與5個重現腳本；這些重現依賴帳本記錄的工作區來源，不能宣稱乾淨checkout可獨立重現。Benchmark程式與測試已混入0171未收尾修改，與BH-0004產品／套件測試及其他對話Site變更保留工作區。0171目前12tests、types、36個三瀏覽器準備控制、原mutation16及invalidation32變體通過，相關程序均已結束；但兩個診斷HTTP server新增Wasm MIME後尚未重跑原套件，且缺逐變體準備／清理數值核對與interaction回歸，不能宣稱BH-0033完成。首次preseed斷言誤把2個class當成2個輸出規則，已修正為實際3個輸出項目，屬腳本錯誤。下一步完成0171最終版本驗證與批次收尾；47historical／36fixed／11unresolved、10blocked／4root gates／4原候選、host shutdown限制及0038身分暫停維持，目標active；未推送。歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0170-commit-validation.json)；前次提交交接逐字見[歷史](commit-history-0170.md)。
 
@@ -65,39 +66,33 @@
 
 ## BH-0006 · P1 · SSR CSS 未安全嵌入 HTML
 
-[packages/server/src/render.ts:165](/Users/aron/master/css/packages/server/src/render.ts:165)。可控制的 encoded class 經解碼嵌入 style；應保持 CSS 資料邊界，實際可改變 HTML 結構並執行腳本。本機無害標記已驗證，不重跑。
-
-修正方向：在 HTML raw-text 邊界安全序列化 CSS，或採外部 CSS 輸出，同時保持 CSS 語意。 [重現與證據](batches/0007-server-render.md)。
+- Fixed; original details and evidence preserved verbatim in [history](report-fixed-p1-history-0183.md).
 
 ## BH-0013 · P1 · Unicode 前綴切片造成 Rust panic
 
-[crates/mastercss-language/src/document.rs:218](/Users/aron/master/css/crates/mastercss-language/src/document.rs:218)。class 函式前有多位元組字元；應正常分析，512-byte 切點卻落在 UTF-8 字元內而 panic。未宣稱整個 LSP process 崩潰。
-
-修正方向：將回溯切點校正到字元邊界。 [重現與證據](batches/0012-language-ir.md)。
+- Fixed; original details and evidence preserved verbatim in [history](report-fixed-p1-history-0183.md).
 
 ## BH-0021 · P1 · Installer 破壞多行 import
 
-[packages/create/src/transforms.ts:23](/Users/aron/master/css/packages/create/src/transforms.ts:23)。既有設定有多行 import；setup 應保持可解析，實際把新 import 插入舊 declaration 中間，導致建置無法啟動。
-
-修正方向：依完整 import declaration 邊界插入並保留 directives/comments。 [重現與證據](batches/0031-create-setup.md)。
+- Fixed; original details and evidence preserved verbatim in [history](report-fixed-p1-history-0183.md).
 
 ## BH-0022 · P1 · Figma 無法正確匯入自己的 export
 
-[packages/figma/src/features/setCollectionVariables.ts:52](/Users/aron/master/css/packages/figma/src/features/setCollectionVariables.ts:52)。exporter 產出 definitions array；importer 應還原變數與 modes，實際寫出 0/key 等 metadata 名稱。實際函式由明示 mock Figma API 驗證，未操作真實檔案。
-
-修正方向：先將支援的兩種資料形狀正規化，再寫入變數及 modes。 [重現與證據](batches/0033-figma-variables.md)。
+- Fixed; original details and evidence preserved verbatim in [history](report-fixed-p1-history-0183.md).
 
 ## BH-0023 · P1 · Nuxt progressive 缺少 client manifest
 
-[packages/nuxt/src/module.ts:255](/Users/aron/master/css/packages/nuxt/src/module.ts:255)。使用預設 progressive 模式；應取得 JSON 完成 hydration，實際 asset 未發布而回傳 HTML，client/runtime 無法啟動。真實建置及 Chromium 重現。
-
-修正方向：所有需要 client manifest 的模式均發布對應 Nitro public asset。 [重現與證據](batches/0035-ssr-examples.md)。
+- Fixed; original details and evidence preserved verbatim in [history](report-fixed-p1-history-0183.md).
 
 ## BH-0029 · P1 · Rspack static 模式漏掉 managed CSS
 
 [packages/webpack/src/plugins/usage-graph.ts:35](/Users/aron/master/css/packages/webpack/src/plugins/usage-graph.ts:35)。Rspack/Rsbuild static 建置；應產出 class/native CSS，succeedModule 的 source 卻為 undefined，整個 module 被跳過，最後 CSS 為空。
 
 修正方向：使用支援的 Rspack source API/時機，完成掃描再輸出；追加驗證目前暫停。 [重現與證據](batches/0038-integration-lab.md)。
+
+## BH-0051 · P1 · Next/Webpack native CSS compilation (unfixed)
+
+The adapter CSS rule triggers Next removal of built-in CSS loaders; transformed CSS is parsed as JavaScript before browser startup. Relative config imports remove the harness cache warning but preserve the failure. [Evidence and required repair](evidence/0183-runtime-inputs-next-webpack-css.json).
 
 ## BH-0001 · P2 · CSS 字串與註解被當成動畫宣告
 
@@ -247,6 +242,14 @@
 
 修正方向：被動import量測使用不執行CLI的入口，bin維持完整command量測。[證據](batches/0066-startup-diagnostics.md)。
 
+## BH-0048 / BH-0049 · P2 · Runtime startup and Webpack HMR delivery (fixed)
+
+Serialized starts fix shared/Next/Webpack pending-runtime ownership. Direct import.meta.webpackHot fixes the delivered Webpack CommonJS-wrapper HMR failure. Next68+3e2e/Webpack74 and6actual-host browsercontrolsPASS; earlier shared156browser evidence remains scoped to unchanged sources. [Evidence and limits](evidence/0183-runtime-hosts-findings.json).
+
+## BH-0050 · P2 · Separate HMR updates restore stale runtime inputs (fixed)
+
+Latest manifest and emittedGlobals are retained independently.6newcontrols/168Vitebrowser observationsPASS;original6build-watch failures remain. [Evidence and scope](evidence/0183-runtime-inputs-finding.json).
+
 ## BH-0002 · P3 · raw var() 空白漏掉依賴
 
 [crates/mastercss-engine/src/stylesheet_resources.rs:54](/Users/aron/master/css/crates/mastercss-engine/src/stylesheet_resources.rs:54)。直接交 raw stylesheet，var() 名稱前使用 tab 等 CSS whitespace；應保留變數，實際漏收。Compiler 正規化路徑已排除。
@@ -360,10 +363,7 @@ Fixed0178: strict complete resource collection withstatus/MIME checks,URL body-f
 - 恢復後再連續三輪確認條件未變，目標已再次標為blocked；所有未完成要求與接續步驟保留於0087。
 
 
-
 歷史進度原文移至 [修復報告歷史進度（0130整理）](report-history-0130.md)；目前狀態以原檔的最新交接為準。
-
-
 
 
 

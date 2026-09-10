@@ -1,0 +1,27 @@
+{
+  "head": "e9584fb10aa03e510702e5d77ec839502a70c80e",
+  "previousSourcesUnchanged": 429,
+  "finalSources": 435,
+  "existingSourceChanges": {
+    "packages/next/src/index.ts": {
+      "before": "f4e18087f22b6f8d1cae5bc084c2dab839a7c25e2867b768adf9ae44859d5d2e",
+      "after": "3487234842a38a050f4c9b43e0c1ea5fda4c2ddd09a785e9152f89c1a2764c60"
+    },
+    "packages/webpack/src/runtime.ts": {
+      "before": "e01759e30871e017e2f2396b69e0b360502d781990948052075229d78adc45cc",
+      "after": "999c9a7ae91096ecfc2ad3656d8bfa98c9e0584cae5f1bff519d1c170e4893ae"
+    }
+  },
+  "newSources": [
+    "packages/next/tests/bug-hunt-runtime-start-hmr.test.ts",
+    "packages/webpack/tests/bug-hunt-runtime-start-hmr.test.ts",
+    ".ai/audits/bug-hunt/repros/next-runtime-start-hmr-browser.mjs",
+    ".ai/audits/bug-hunt/repros/webpack-runtime-start-hmr-browser.mjs"
+  ],
+  "previousCommitExclusionsUnchanged": 181,
+  "foreignSiteUnchanged": true,
+  "eightArtifactsUnchanged": true,
+  "previousCommittedRawEvidenceUnchanged": true,
+  "runtimeInternalCompilerRustCLIUnchanged": true,
+  "benchmark": "Not run: host bootstrap startup/HMR sequencing only; runtime engine/DOM/CSSOM sources and global bundle unchanged. Queue adds a promise chain to serialize host starts; no performance claim."
+}

@@ -1,0 +1,29 @@
+{
+  "id": "BH-0048",
+  "severity": "P2",
+  "status": "confirmed; partial repair",
+  "rootCause": "MasterCSSRuntime.start deduplicates concurrent starts per document. Bootstrap HMR starts concurrently while Wasm is pending; an obsolete completion disposes the shared instance, then the current completion observes that disposed instance with the original manifest. All three browsers show empty CSSOM/0px with accepted9rem manifest; ready controls pass.",
+  "before": {
+    "browser": "3FAIL/3PASS; pending fails Chromium/Firefox/WebKit, ready controls pass",
+    "unit": "3FAIL/1PASS; pending update, burst and module replacement fail; dispose-only passes"
+  },
+  "repair": "Private generated bootstrap serializes pending starts, skips obsolete queued generations and carries the pending promise via Vite HMR dispose data into module replacement. Failed starts do not poison the queue. No runtime engine/global bundle or public API changes.",
+  "after": {
+    "internal": "23PASS including5new controls",
+    "vite": "603PASS/6FAIL; original6build-watch startup reference failures remain",
+    "astro": "15PASS",
+    "browser": "156PASS,18new/66lifecycle/72startup;0unexpectedpageerrors",
+    "builds": "internal/Vite/Astro and original Vite/Astro examples PASS",
+    "lintTypes": "internal PASS"
+  },
+  "limits": [
+    "Next/Webpack separate lifecycle implementations not yet verified or repaired",
+    "Actual other-host HMR/SSR boundaries remain",
+    "Batch0038 additional validation remains paused pending explicit identity confirmation"
+  ],
+  "testHarnessCorrections": [
+    "New test Promise.withResolvers<void> violated local lint rule; changed to undefined",
+    "New test instances return type was recursively inferred; added an explicit test-only Runtime type; assertions unchanged"
+  ],
+  "benchmark": "Not run; only official-bootstrap startup/HMR sequencing changed. Original runtime core and eight Wasm/runtime/CLI artifacts remain byte-identical. No performance claim."
+}

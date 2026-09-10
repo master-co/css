@@ -1,0 +1,24 @@
+{
+  "BH-0048": {
+    "status": "fixed",
+    "rootCause": "Concurrent host starts share the same runtime pending promise. Obsolete completion disposes the instance reused by the latest start.",
+    "repair": "Shared bootstrap (previous checkpoint), Next and Webpack serialize their pending starts and retain pending ownership across module replacement.",
+    "before": "Next generated-source8FAIL/2PASS;Webpack source4FAIL/1PASS. Actual Next/Turbopack old built package fails in all3 browsers with empty CSSOM; Webpack source-only control also fails all3 but does not validate package HMR delivery.",
+    "after": "All15new Next/Webpack controlsPASS, Next68/3e2e/Webpack74PASS, actual built Next/Webpack6browserPASS; shared bootstrap previous5new/23internal/156browser evidence on unchanged sources."
+  },
+  "BH-0049": {
+    "status": "fixed",
+    "severity": "P2",
+    "rootCause": "Package build classifies module.hot runtime as CommonJS and wraps it in its own module object; the consuming Webpack module HMR channel is inaccessible. Source-only controls missed this delivery behavior.",
+    "repair": "Use direct import.meta.webpackHot calls supported by installed Webpack. No build configuration or dependency change. Built runtime remains ESM without the package CommonJS wrapper.",
+    "before": "Old delivered runtime preserved in0183-runtime-hosts-webpack-delivery-before.json. All3browser controls fail to receive HMR; generation remains initial or the host reloads. Page errors/premature-close cleanup output retained as consequences, not separate findings.",
+    "after": "Final built package processes real dev-server HMR in3browsers, retains page marker and emits144px/9rem CSS with no pageerror or consoleerror. Full74Webpack tests and original example buildPASS."
+  },
+  "limitations": [
+    "Mixed manifest/emittedGlobals partial updates retain an unverified latest-input boundary; next focused investigation",
+    "Previous BH-0004/BH-0029 and six build-watch cases remain",
+    "Batch0038 additional Rspack/Rsbuild/browser/SSR validation remains paused; only unrelated ordinary Next/Webpack hosts were tested",
+    "Actual Next browser tests use Turbopack. Next webpackHot callback ownership is covered by controlled execution, not an actual Next/Webpack dev-server run; that host boundary remains in the broader unfinished coverage."
+  ],
+  "classification": "Two product defects. Source-only versus built-runtime controls are distinct scopes, not interchangeable evidence. No old tests/fixtures/snapshots were edited."
+}

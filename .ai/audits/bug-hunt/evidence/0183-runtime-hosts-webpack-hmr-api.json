@@ -1,0 +1,6 @@
+{
+  "source": "packages/webpack/node_modules/webpack/lib/HotModuleReplacementPlugin.js",
+  "sha256": "9486bd98c93707db1112786242f8e80b4245fbebf5aa5dd28b2908dda9a95905",
+  "snippet": "mport.meta.webpackHot\")\n\t\t\t\t.tap(PLUGIN_NAME, (expr) =>\n\t\t\t\t\tevaluateToIdentifier(\n\t\t\t\t\t\t\"import.meta.webpackHot\",\n\t\t\t\t\t\t\"import.meta\",\n\t\t\t\t\t\t() => [\"webpackHot\"],\n\t\t\t\t\t\ttrue\n\t\t\t\t\t)(expr)\n\t\t\t\t);\n\t\t\tparser.hooks.call\n\t\t\t\t.for(\"import.meta.webpackHot.accept\")\n\t\t\t\t.tap(\n\t\t\t\t\tPLUGIN_NAME,\n\t\t\t\t\tcreateAcceptHandler(parser, ImportMetaHotAcceptDependency)\n\t\t\t\t);\n\t\t\tparser.hooks.call\n\t\t\t\t.for(\"import.meta.webpackHot.decline\")\n\t\t\t\t.tap(\n\t\t\t\t\tPLUGIN_NAME,\n\t\t\t\t\tcreateDeclineHandler(parser, ImportMetaHotDeclineDependency)\n\t\t\t\t);\n\t\t\tparser.hooks.expression\n\t\t\t\t.for(\"import.meta.webpackHot\")\n\t\t\t\t.tap(PLUGIN_NAME, createHMRExpressionHandler(parser));\n\t\t};\n\n\t\tcompiler.hooks.comp",
+  "contract": "Installed Webpack explicitly recognizes import.meta.webpackHot.accept; using that direct form keeps HMR owned by the consuming Webpack module rather than a package-build CommonJS wrapper."
+}

@@ -1,0 +1,70 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest-ci-config" without a file extension (vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/internal
+
+ ❯ tests/bug-hunt-runtime-input-updates.test.ts (6 tests | 4 failed) 911ms
+   × runtime HMR retains latest inputs: manifest-first, pending=false 218ms
+   × runtime HMR retains latest inputs: globals-first, pending=false 217ms
+   × runtime HMR retains latest inputs: manifest-first, pending=true 106ms
+   × runtime HMR retains latest inputs: globals-first, pending=true 104ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-runtime-input-updates.test.ts > runtime HMR retains latest inputs: manifest-first, pending=false
+ FAIL  tests/bug-hunt-runtime-input-updates.test.ts > runtime HMR retains latest inputs: manifest-first, pending=true
+AssertionError: expected { version: 1, utilities: [] } to be { version: 1, utilities: [] } // Object.is equality
+
+If it should pass with deep equality, replace "toBe" with "toStrictEqual"
+
+Expected: { version: 1, utilities: [] }
+Received: serializes to the same string
+
+
+Compared values have no visual difference.
+
+ ❯ tests/bug-hunt-runtime-input-updates.test.ts:31:37
+     29|   gate.resolve(undefined)
+     30|   await vi.waitFor(() => expect(observed.length).toBeGreaterThan(0))
+     31|   expect(observed.at(-1)?.manifest).toBe(latestManifest)
+       |                                     ^
+     32|   expect(observed.at(-1)?.emittedGlobals).toBe(latestGlobals)
+     33|   expect(errors).not.toHaveBeenCalled()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-runtime-input-updates.test.ts > runtime HMR retains latest inputs: globals-first, pending=false
+ FAIL  tests/bug-hunt-runtime-input-updates.test.ts > runtime HMR retains latest inputs: globals-first, pending=true
+AssertionError: expected { variables: {} } to be { variables: { '--color-primary': 1 } } // Object.is equality
+
+- Expected
++ Received
+
+  {
+-   "variables": {
+-     "--color-primary": 1,
+-   },
++   "variables": {},
+  }
+
+ ❯ tests/bug-hunt-runtime-input-updates.test.ts:32:43
+     30|   await vi.waitFor(() => expect(observed.length).toBeGreaterThan(0))
+     31|   expect(observed.at(-1)?.manifest).toBe(latestManifest)
+     32|   expect(observed.at(-1)?.emittedGlobals).toBe(latestGlobals)
+       |                                           ^
+     33|   expect(errors).not.toHaveBeenCalled()
+     34|   dispose!({})
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 2 passed (6)
+   Start at  13:15:31
+   Duration  984ms (tests 98%, transform 1%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/internal
+

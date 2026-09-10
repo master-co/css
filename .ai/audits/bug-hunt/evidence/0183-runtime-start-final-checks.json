@@ -1,0 +1,47 @@
+{
+  "head": "e9584fb10",
+  "goal": "active",
+  "batch": "0183",
+  "batchComplete": false,
+  "counts": {
+    "historical": 48,
+    "fixed": 45,
+    "unresolved": 3,
+    "checked": 65,
+    "blockedCoverage": 10,
+    "rootGates": 4,
+    "originalCandidates": 4
+  },
+  "unresolvedFindings": [
+    "BH-0004",
+    "BH-0029",
+    "BH-0048"
+  ],
+  "validation": {
+    "internal": "23PASS/6files;5newcontrols",
+    "astro": "15PASS/2files",
+    "vite": "603PASS/6FAIL/609;all479pre-0183PASS",
+    "browser": "156PASS/0unexpectedpageerrors",
+    "internalLintTypesBuild": "PASS",
+    "viteAstroBuildsAndOriginalExamples": "PASS",
+    "aiContext": "PASS",
+    "syntaxJSONWhitespaceLinksBudgets": "PASS",
+    "sources": "429SHA256 verified;181previous exclusions and8artifacts unchanged"
+  },
+  "terminalSessions": {
+    "27825": 1,
+    "43296": 0,
+    "4884": 0,
+    "38885": 0,
+    "79339": 1,
+    "13786": 0,
+    "36141": 0
+  },
+  "activeJobs": [],
+  "preservation": "0183-runtime-start-preservation.json",
+  "next": "BH-0048 separate Next/Webpack controlled pending-start validation, mixed manifest/emittedGlobals inputs, then internal Modules proxy?direct and remaining host requirements",
+  "paused": "0038additional verification pendingexplicitidentityconfirmation",
+  "remaining": "All previous full BH-0004/BH-0029, six build-watch startup cases,10blockedcoverage,4rootgates,4originalcandidates, graph/host/benchmark/fullmatrix/longsession/history/profiling/native-shutdown/WebKit requirements remain; BH-0048 partial repair only",
+  "commit": false,
+  "push": false
+}

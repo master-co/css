@@ -1,0 +1,13 @@
+{
+  "reportHistory": ".ai/audits/bug-hunt/report-fixed-p1-history-0183.md",
+  "reportVerbatimSectionHashes": [
+    "8b2638aeab9c4feed7d764900b653b9bac704c243402136e00e17281c633d06f",
+    "e51837f6cd37284ba7692d6b39912a130c986c58a8f4fe1bd4207d84a3d18a90",
+    "21d05fd1fdbd3990f809920352285c3e97280366cc4a213ca3e236bf6ff62581",
+    "a1e6111ca4b6f29e07686ca5f29db404d10843071928198063658578d7ff360e",
+    "a3139794c132eeb175662a54bc88711c367a9b8a71c9d9d6fc70b859219f0bfa"
+  ],
+  "batchHistory": ".ai/audits/bug-hunt/batches/0183-manifest-startup-history.md",
+  "batchVerbatimSectionSha256": "7ee725e13bddd7226a19bbb025d6ed871e4558185f5a41f4588b3bdcb5189674",
+  "reason": "Preserve all prior details while keeping each AI document below400lines/48KiB; original heading entrances remain"
+}

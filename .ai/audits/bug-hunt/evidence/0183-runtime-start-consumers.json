@@ -1,0 +1,25 @@
+{
+  "finding": "BH-0048",
+  "status": "Confirmed; shared Vite/Astro bootstrap repaired; remaining host-specific lifecycle validation incomplete",
+  "sources": {
+    "packages/internal/src/runtime-bootstrap.ts": "a24964714a5f2bf4838f6be423b03865f61b008574725b9741d4e901b9aef93c",
+    "packages/runtime/src/core.ts": "ab584b88e2f492a6654b6b614683aa272a99f95d2ebe1c435b768d8e5bcbdf81",
+    "packages/vite/src/plugins/runtime-bootstrap.ts": "104ae6aed869f0b4fd15f05c6601eafd318ad9eafe0a73d26ee2536803016fb0",
+    "packages/astro/src/core.ts": "75c2733b0a02c2994efa6225f5b6669a246561cbd154c3c9f9a913fc3875ec68",
+    "packages/svelte/src/lib/vite.ts": "13a12421598ea57988882b579d9c944d1359fcd9823862e6785f9cf466375b78",
+    "packages/nuxt/src/runtime/css-runtime.ts": "42efd3f82fb9a008af962540b73a6de14f4791fa7cfc8037da05cd2dd0f13654",
+    "packages/next/src/index.ts": "f4e18087f22b6f8d1cae5bc084c2dab839a7c25e2867b768adf9ae44859d5d2e",
+    "packages/webpack/src/runtime.ts": "e01759e30871e017e2f2396b69e0b360502d781990948052075229d78adc45cc"
+  },
+  "sharedSourceConsumers": [
+    "Vite runtime/progressive bootstrap",
+    "Astro direct bootstrap generator",
+    "Svelte Vite wrapper"
+  ],
+  "separateImplementations": {
+    "Next": "Own generated state/token + await MasterCSSRuntime.start + stale dispose; requires controlled execution tests and host validation",
+    "Webpack": "Own global state/generation + await MasterCSSRuntime.start + stale dispose; requires controlled execution tests and host validation",
+    "Nuxt": "Own single plugin startup; inspect host replacement and integration ownership separately"
+  },
+  "next": "Reproduce pending-start ownership in separate Next/Webpack implementations without resuming paused0038 additional validation. Check partial manifest/emittedGlobals updates retain the latest accepted values; this is an additional unverified boundary, not a confirmed finding."
+}

@@ -1,0 +1,18 @@
+{"baseline":false,"deliveryBaseline":false,"sourceSha256":"1d51cfca4b571d379e0cd605954d2ccb4a28f723107ac6273e971a2d145a1e99"}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59910/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+{"browser":"chromium","pass":true,"wasmURL":"http://127.0.0.1:59910/f0405df191af0b210cc3.wasm","heldMs":396,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59916/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+<i> [webpack-dev-middleware] wait until bundle finished: /runtime.986024c15c3d37374ca3.hot-update.json
+{"browser":"firefox","pass":true,"wasmURL":"http://127.0.0.1:59916/f0405df191af0b210cc3.wasm","heldMs":428,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
+<i> [webpack-dev-server] Project is running at:
+<i> [webpack-dev-server] Loopback: http://127.0.0.1:59923/
+<i> [webpack-dev-server] Content not from webpack is served from '/Users/aron/master/css/public' directory
+<i> [webpack-dev-middleware] wait until bundle finished
+{"browser":"webkit","pass":true,"wasmURL":"http://127.0.0.1:59923/f0405df191af0b210cc3.wasm","heldMs":384,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
+{"summary":true,"observations":3,"failures":0}

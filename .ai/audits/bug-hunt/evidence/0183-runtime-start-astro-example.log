@@ -1,0 +1,202 @@
+$ astro build
+12:49:10 [types] Generated 47ms
+12:49:10 [build] output: "static"
+12:49:10 [build] mode: "static"
+12:49:10 [build] directory: /Users/aron/master/css/examples/astro/dist/
+12:49:10 [build] Collecting build info...
+12:49:10 [build] ✓ Completed in 60ms.
+12:49:10 [build] Building static entrypoints...
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @theme
+221 |    }
+222 |  }
+223 |  @theme {
+    |        ^
+224 |    /* Font families */
+225 |    --font-family-sans: var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Robo...
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @theme
+832 |  
+833 |  /* Light mode tokens */
+834 |  @theme light {
+    |        ^
+835 |    /* Shadows */
+836 |    --shadow-xs: 0 0 0 1px oklch(0% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .08);
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @theme
+914 |  
+915 |  /* Dark mode tokens */
+916 |  @theme dark {
+    |        ^
+917 |    /* Shadows */
+918 |    --shadow-xs: 0 0 0 1px oklch(100% 0 none / .04), 0 1px 2px -1px oklch(0% 0 none / .30);
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @theme
+996 |  
+997 |  /* Inline aliases */
+998 |  @theme inline {
+    |        ^
+999 |    --full: 100%;
+1000|  
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1010 |    --color-current: currentColor;
+1011 |  }
+1012 |  @custom-variant all {
+     |                 ^
+1013 |    @media all {
+1014 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1016 |  }
+1017 |  
+1018 |  @custom-variant print {
+     |                 ^
+1019 |    @media print {
+1020 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1022 |  }
+1023 |  
+1024 |  @custom-variant screen {
+     |                 ^
+1025 |    @media screen {
+1026 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1028 |  }
+1029 |  
+1030 |  @custom-variant speech {
+     |                 ^
+1031 |    @media speech {
+1032 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1034 |  }
+1035 |  
+1036 |  @custom-variant landscape {
+     |                 ^
+1037 |    @media (orientation: landscape) {
+1038 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1040 |  }
+1041 |  
+1042 |  @custom-variant portrait {
+     |                 ^
+1043 |    @media (orientation: portrait) {
+1044 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1046 |  }
+1047 |  
+1048 |  @custom-variant motion {
+     |                 ^
+1049 |    @media (prefers-reduced-motion: no-preference) {
+1050 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1052 |  }
+1053 |  
+1054 |  @custom-variant reduce-motion {
+     |                 ^
+1055 |    @media (prefers-reduced-motion: reduce) {
+1056 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1058 |  }
+1059 |  
+1060 |  @custom-variant base {
+     |                 ^
+1061 |    @layer base {
+1062 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1064 |  }
+1065 |  
+1066 |  @custom-variant default {
+     |                 ^
+1067 |    @layer defaults {
+1068 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1070 |  }
+1071 |  
+1072 |  @custom-variant component {
+     |                 ^
+1073 |    @layer components {
+1074 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1076 |  }
+1077 |  
+1078 |  @custom-variant utility {
+     |                 ^
+1079 |    @layer utilities {
+1080 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @custom-variant
+1082 |  }
+1083 |  
+1084 |  @custom-variant start {
+     |                 ^
+1085 |    @starting-style {
+1086 |      @slot;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1089 |  
+1090 |  /* Static utilities for positioning, clipping, and content. */
+1091 |  @utilities {
+     |            ^
+1092 |    abs {
+1093 |      position: absolute;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1195 |  
+1196 |  /* Static utilities for display, font rendering, and alignment. */
+1197 |  @utilities {
+     |            ^
+1198 |    decoration-from-font {
+1199 |      text-decoration-thickness: from-font;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1315 |  
+1316 |  /* Static utilities for text variants, viewport bounds, and shapes. */
+1317 |  @utilities {
+     |            ^
+1318 |    left {
+1319 |      left: 0;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1450 |  
+1451 |  /* Static utilities for positioning, tables, transforms, and wrapping. */
+1452 |  @utilities {
+     |            ^
+1453 |    static {
+1454 |      position: static;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1541 |  
+1542 |  /* Token and size shorthands. */
+1543 |  @utilities {
+     |            ^
+1544 |    animate:<~animate> {
+1545 |      animation: --value();
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1587 |  
+1588 |  /* Border and outline shorthands. */
+1589 |  @utilities {
+     |            ^
+1590 |    b:<number> {
+1591 |      border-width: --value();
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1662 |  
+1663 |  /* Grid, stroke, and text shorthands. */
+1664 |  @utilities {
+     |            ^
+1665 |    grid-cols:<number|*> {
+1666 |      display: grid;
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1740 |  
+1741 |  /* Vendor-prefixed shorthands. */
+1742 |  @utilities {
+     |            ^
+1743 |    backdrop-filter:<~color|*> {
+1744 |      -webkit-backdrop-filter: --value();
+12:49:11 [WARN] [vite] [lightningcss minify] Unknown at rule: @utilities
+1768 |  
+1769 |  /* Enum utility shortcuts. */
+1770 |  @utilities {
+     |            ^
+1771 |    bg-<auto|contain|cover> {
+1772 |      background-size: --value();
+12:49:11 [vite] ✓ built in 147ms
+12:49:11 [vite] ✓ built in 54ms
+12:49:11 [build] Rearranging server assets...
+
+ generating static routes 
+12:49:11   ├─ /index.html (+98ms) 
+12:49:11 ✓ Completed in 107ms.
+
+12:49:11 [build] ✓ Completed in 330ms.
+12:49:11 [WARN] [@astrojs/sitemap] The Sitemap integration requires the `site` astro.config option. Skipping.
+12:49:11 [build] 1 page(s) built in 395ms
+12:49:11 [build] Complete!
