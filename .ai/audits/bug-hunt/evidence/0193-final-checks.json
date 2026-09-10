@@ -1,0 +1,167 @@
+{
+  "batch": "0193-inspection-mjs-discovery",
+  "status": "BH-0059 fixed;BH-0060 confirmed and unfinished;goal active",
+  "head": "c156b1433b1387b184627a3ddbbcb88388f9b17e",
+  "counts": {
+    "historical": 60,
+    "fixed": 55,
+    "unresolved": 5,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "beforeSource": {
+      "pass": 8,
+      "fail": 4
+    },
+    "focusedAfter": {
+      "pass": 11,
+      "fail": 1
+    },
+    "compilerFull": {
+      "pass": 330,
+      "fail": 0
+    },
+    "toolingFull": {
+      "pass": 215,
+      "fail": 0
+    },
+    "mcpFull": {
+      "pass": 42,
+      "fail": 1
+    },
+    "builtPublicStdio": {
+      "before": {
+        "pass": 8,
+        "fail": 4
+      },
+      "after": {
+        "pass": 11,
+        "fail": 1
+      }
+    },
+    "plainJSAttribution": "FAIL;independent BH-0060",
+    "compilerMCPLintTypesBuild": "PASS"
+  },
+  "preservation": {
+    "baselineSources": 519,
+    "changedSources": [
+      "packages/compiler/src/diagnostics/index.ts",
+      "packages/mcp/src/scan.ts"
+    ],
+    "newSources": [
+      "packages/compiler/tests/diagnostics/bug-hunt-mjs-discovery.test.ts",
+      "packages/mcp/tests/bug-hunt-mjs-discovery.test.ts",
+      ".ai/audits/bug-hunt/repros/inspection-mjs-discovery.mjs",
+      ".ai/audits/bug-hunt/repros/inspection-source-attribution.mjs"
+    ],
+    "sourceHashes": "0193-source-hashes-final.json",
+    "artifacts": "0193-artifacts-final.json",
+    "nativeWasmRuntimeArtifacts": "unchanged",
+    "site": "baseline hashes unchanged;no revalidation claim",
+    "index": "empty",
+    "commitOrPush": false
+  },
+  "remaining": [
+    "BH-0060 compiler per-file class and diagnostic ownership; MCP trace misattributes classes across source files; ordinary two-JS reproduction FAIL",
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Two original candidates: parallel Webpack shared dist; legacy-native-compose insertion. Node Wasm candidate excluded0192; compiler/MCP .mjs fixed0193 as BH-0059",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "identityConfirmation": "not received;0038 paused",
+  "next": "BH-0060 per-file attribution: unique and duplicate classes, invalid diagnostics, native/safelist, order and asynchronous adapters;then full graph/hosts/maps/root gates and other original candidates",
+  "goal": "active",
+  "logs": {
+    "0193-built-after.log": {
+      "bytes": 940,
+      "sha256": "fd5a93465b1d58608913f65979279901a54ce2e969267e14cf0c792dd2939dec"
+    },
+    "0193-built-before.log": {
+      "bytes": 1404,
+      "sha256": "8364b88902810423a8f9a77f1b86ce1ebd3a29a6aa3c4078d9d3302ccc18657d"
+    },
+    "0193-compiler-before.log": {
+      "bytes": 1801,
+      "sha256": "cfccee90b89cc8d13c0c95403e5e8af898e6e2f6d54523ed864cfd842cd64b8d"
+    },
+    "0193-compiler-build.log": {
+      "bytes": 5662,
+      "sha256": "ca462b2af45aaee66afe41d6fc28c19a0297c22b93d1260b3c4dc3fecc26bb79"
+    },
+    "0193-compiler-focused.log": {
+      "bytes": 651,
+      "sha256": "2ac9987db140622f7673789d9ce679e4dd54f9803eb234f059fb4236186be354"
+    },
+    "0193-compiler-full.log": {
+      "bytes": 1442,
+      "sha256": "ece8d53cf9b8504e0e87bde233e7a2426a8fa17ed49304db8016af8e999e312c"
+    },
+    "0193-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0193-compiler-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0193-context-final.log": {
+      "bytes": 121,
+      "sha256": "c509010a088e5b3a1bc57621d84eb6129b0484446f04e42a91de5a2aff219e84"
+    },
+    "0193-js-attribution.log": {
+      "bytes": 1271,
+      "sha256": "2f0941a71d84fc275851a467d6e00fc610af9b5830f6bf0b13304ebb4e11f975"
+    },
+    "0193-mcp-before.log": {
+      "bytes": 3348,
+      "sha256": "e53f675ed2d80d050667e1b70f5db2527b0a095f012690359a7fc3faaa0d00e5"
+    },
+    "0193-mcp-build.log": {
+      "bytes": 1973,
+      "sha256": "9f21b3336b4d199b161a01582cf60eeda0e0c8735664fb8c0c73027d0ba70699"
+    },
+    "0193-mcp-focused.log": {
+      "bytes": 1684,
+      "sha256": "ff61653c51eba99a19030b715e1d925b39258594595259366ff4bddf070c2f5c"
+    },
+    "0193-mcp-full.log": {
+      "bytes": 1699,
+      "sha256": "38ed268cf56268a49b6529f24d652c99ef4606bcfebfe466784ec44c591157ed"
+    },
+    "0193-mcp-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0193-mcp-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0193-tooling-full.log": {
+      "bytes": 1687,
+      "sha256": "08ecc4a11728b2b6fbbf9f15268c3721d30a5758f52f06d52229c2f64025f9ee"
+    }
+  },
+  "checks": {
+    "context": "PASS;0193-context-final.log",
+    "syntax": "Both new audit scripts passed node --check",
+    "authoredDiff": "PASS",
+    "ledgerBudgetLinks": "PASS",
+    "findingRows": 60,
+    "fixedRows": 55,
+    "fixedStatusNote": "BH-0054 uses historical label \u5df2\u4fee\u6b63; counted with \u5df2\u4fee\u5fa9 without rewriting prior record",
+    "sourceHashesMatched": 523,
+    "artifactHashesMatched": 246,
+    "index": "empty"
+  },
+  "harnessNotes": "Ledger update first had a Python syntax error (no mutation), then report line-budget guard stopped an optional heading. Corrected synchronization; all five checkpoints, findings rows and coverage updated; no product test or assertion weakened."
+}

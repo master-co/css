@@ -1,0 +1,10 @@
+{"mode":"transform-leaf","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"mode":"transform-parent","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"mode":"build-end-leaf","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"mode":"build-end-parent","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"mode":"existing-transform","initial":"ERROR","recovered":"BUNDLE_END","calls":2}
+{"mode":"existing-build-end","initial":"ERROR","recovered":"BUNDLE_END","calls":2}
+{"mode":"build-start","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"mode":"input-change","initial":"ERROR","recovered":"BUNDLE_END","calls":2}
+{"mode":"error-watch-files","initial":"ERROR","recovered":"TIMEOUT","calls":1}
+{"results":[{"mode":"transform-leaf","initial":"ERROR","recovered":"TIMEOUT","calls":1},{"mode":"transform-parent","initial":"ERROR","recovered":"TIMEOUT","calls":1},{"mode":"build-end-leaf","initial":"ERROR","recovered":"TIMEOUT","calls":1},{"mode":"build-end-parent","initial":"ERROR","recovered":"TIMEOUT","calls":1},{"mode":"existing-transform","initial":"ERROR","recovered":"BUNDLE_END","calls":2},{"mode":"existing-build-end","initial":"ERROR","recovered":"BUNDLE_END","calls":2},{"mode":"build-start","initial":"ERROR","recovered":"TIMEOUT","calls":1},{"mode":"input-change","initial":"ERROR","recovered":"BUNDLE_END","calls":2},{"mode":"error-watch-files","initial":"ERROR","recovered":"TIMEOUT","calls":1}],"scope":"Vite/Rolldown failed transform dependency ownership; no Master CSS plugin"}

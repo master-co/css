@@ -1,0 +1,305 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts (6 tests | 4 failed) 3726ms
+   × build recovery replaces failures and forgets successful dependencies in static 774ms
+   × build recovery replaces failures and forgets successful dependencies in runtime 766ms
+   × build recovery replaces failures and forgets successful dependencies in pre-render 600ms
+   × build recovery replaces failures and forgets successful dependencies in progressive 526ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in static
+AssertionError: expected [ { code: 'ERROR', …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "code": "ERROR",
++     "error": Error {
++       "message": "Build failed with 1 error:
++
++ [plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/style.css
++ MasterCSSError: Invalid @compose class: definitely-missing
++     at normalizeBindingError (/Users/aron/master/css/packages/binding/src/normalize-error.ts:95:10)
++     at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:111:11)
++     at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++     at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++     at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++     at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++     at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)
++     at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:134:24
++ Caused by:
++   Error: {\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler.ts:80:29)
++       at /Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:43
++       at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:109:12)
++       at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++       at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++       at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++       at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)",
++       "errors": [
++         MasterCSSError {
++           "message": "Invalid @compose class: definitely-missing",
++           "cause": Error {
++             "message": "{\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}",
++             "code": "GenericFailure",
++           },
++           "code": "PLUGIN_ERROR",
++           "domain": "compiler",
++           "diagnostics": [
++             {
++               "code": "invalid-compose-class",
++               "domain": "compiler",
++               "message": "Invalid @compose class: definitely-missing",
++               "range": {
++                 "end": {
++                   "character": 44,
++                   "line": 0,
++                 },
++                 "start": {
++                   "character": 26,
++                   "line": 0,
++                 },
++               },
++               "severity": "error",
++               "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/missing/nested/tokens.css",
++               "version": 2,
++             },
++           ],
++           "payload": {
++             "code": "invalid-compose-class",
++             "diagnostics": [
++               {
++                 "code": "invalid-compose-class",
++                 "domain": "compiler",
++                 "message": "Invalid @compose class: definitely-missing",
++                 "range": {
++                   "end": {
++                     "character": 44,
++                     "line": 0,
++                   },
++                   "start": {
++                     "character": 26,
++                     "line": 0,
++                   },
++                 },
++                 "severity": "error",
++                 "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/missing/nested/tokens.css",
++                 "version": 2,
++               },
++             ],
++             "domain": "compiler",
++             "message": "Invalid @compose class: definitely-missing",
++           },
++           "name": "MasterCSSError",
++           "pluginCode": "invalid-compose-class",
++           "plugin": "master-css:local-compose",
++           "hook": "transform",
++           "id": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-hc1nYr/style.css",
++         },
++       ],
++     },
++     "result": BindingWatcherBundler {},
++   },
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:42:45
+     40|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     41|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+     42|       await delay(250);expect(state.events).toEqual([])
+       |                                             ^
+     43|       state.write('@utilities{paint{padding:3rem}}')
+     44|       expect((await state.next()).code).toBe('BUNDLE_END');expect(stat…
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in runtime
+AssertionError: expected [ { code: 'ERROR', …(2) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "code": "ERROR",
++     "error": Error {
++       "message": "Build failed with 1 error:
++
++ [plugin master-css:local-compose] /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/style.css
++ MasterCSSError: Invalid @compose class: definitely-missing
++     at normalizeBindingError (/Users/aron/master/css/packages/binding/src/normalize-error.ts:95:10)
++     at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:111:11)
++     at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++     at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++     at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++     at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++     at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++     at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)
++     at /Users/aron/master/css/packages/vite/src/plugins/local-compose.ts:134:24
++ Caused by:
++   Error: {\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler.ts:80:29)
++       at /Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:43
++       at callBinding (/Users/aron/master/css/packages/binding/src/normalize-error.ts:109:12)
++       at invoke (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:56:12)
++       at Object.compileCSSStylesheetGraph (/Users/aron/master/css/packages/binding/src/compiler-binding-adapter.ts:103:7)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:105:28)
++       at compileGraph (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:97:22)
++       at compileDeliveredSource (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:172:18)
++       at transformLocalStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:487:22)
++       at transformStylesheet (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:354:18)",
++       "errors": [
++         MasterCSSError {
++           "message": "Invalid @compose class: definitely-missing",
++           "cause": Error {
++             "message": "{\"code\":\"invalid-compose-class\",\"message\":\"Invalid @compose class: definitely-missing\",\"source\":\"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/missing/nested/tokens.css\",\"range\":{\"start\":26,\"end\":44}}",
++             "code": "GenericFailure",
++           },
++           "code": "PLUGIN_ERROR",
++           "domain": "compiler",
++           "diagnostics": [
++             {
++               "code": "invalid-compose-class",
++               "domain": "compiler",
++               "message": "Invalid @compose class: definitely-missing",
++               "range": {
++                 "end": {
++                   "character": 44,
++                   "line": 0,
++                 },
++                 "start": {
++                   "character": 26,
++                   "line": 0,
++                 },
++               },
++               "severity": "error",
++               "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/missing/nested/tokens.css",
++               "version": 2,
++             },
++           ],
++           "payload": {
++             "code": "invalid-compose-class",
++             "diagnostics": [
++               {
++                 "code": "invalid-compose-class",
++                 "domain": "compiler",
++                 "message": "Invalid @compose class: definitely-missing",
++                 "range": {
++                   "end": {
++                     "character": 44,
++                     "line": 0,
++                   },
++                   "start": {
++                     "character": 26,
++                     "line": 0,
++                   },
++                 },
++                 "severity": "error",
++                 "source": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/missing/nested/tokens.css",
++                 "version": 2,
++               },
++             ],
++             "domain": "compiler",
++             "message": "Invalid @compose class: definitely-missing",
++           },
++           "name": "MasterCSSError",
++           "pluginCode": "invalid-compose-class",
++           "plugin": "master-css:local-compose",
++           "hook": "transform",
++           "id": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-TMbbAx/style.css",
++         },
++       ],
++     },
++     "result": BindingWatcherBundler {},
++   },
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:42:45
+     40|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     41|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+     42|       await delay(250);expect(state.events).toEqual([])
+       |                                             ^
+     43|       state.write('@utilities{paint{padding:3rem}}')
+     44|       expect((await state.next()).code).toBe('BUNDLE_END');expect(stat…
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in pre-render
+AssertionError: expected 'Error: Build failed with 1 error:\n\n…' to contain 'definitely-missing'
+
+- Expected
++ Received
+
+- definitely-missing
++ Error: Build failed with 1 error:
++
++ [plugin master-css:pre-render]
++ Error: Master CSS manifest environment closed
++     at /Users/aron/master/css/packages/vite/src/utils/manifest-recovery.ts:29:28
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:41:107
+     39|       expect((await state.next()).code).toBe('ERROR')
+     40|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     41|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+       |                                                                                                           ^
+     42|       await delay(250);expect(state.events).toEqual([])
+     43|       state.write('@utilities{paint{padding:3rem}}')
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in progressive
+AssertionError: expected 'Error: Build failed with 1 error:\n\n…' to contain 'definitely-missing'
+
+- Expected
++ Received
+
+- definitely-missing
++ Error: Build failed with 1 error:
++
++ [plugin master-css:pre-render]
++ Error: Master CSS manifest environment closed
++     at /Users/aron/master/css/packages/vite/src/utils/manifest-recovery.ts:29:28
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:41:107
+     39|       expect((await state.next()).code).toBe('ERROR')
+     40|       state.write('@utilities{paint{@compose definitely-missing;}}')
+     41|       const invalid = await state.next();expect(invalid.code).toBe('ER…
+       |                                                                                                           ^
+     42|       await delay(250);expect(state.events).toEqual([])
+     43|       state.write('@utilities{paint{padding:3rem}}')
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:38:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  4 failed | 28 passed (32)
+   Start at  19:23:08
+   Duration  32.00s (tests 97%, transform 2%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

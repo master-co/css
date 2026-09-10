@@ -1,0 +1,145 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts (16 tests | 16 failed) 9397ms
+   × internal scss CSS proxy serves direct requests in static at / 672ms
+   × internal scss CSS proxy serves direct requests in static at /base/ 515ms
+   × internal sass CSS proxy serves direct requests in static at / 517ms
+   × internal sass CSS proxy serves direct requests in static at /base/ 512ms
+   × internal scss CSS proxy serves direct requests in runtime at / 533ms
+   × internal scss CSS proxy serves direct requests in runtime at /base/ 509ms
+   × internal sass CSS proxy serves direct requests in runtime at / 519ms
+   × internal sass CSS proxy serves direct requests in runtime at /base/ 506ms
+   × internal scss CSS proxy serves direct requests in pre-render at / 672ms
+   × internal scss CSS proxy serves direct requests in pre-render at /base/ 626ms
+   × internal sass CSS proxy serves direct requests in pre-render at / 652ms
+   × internal sass CSS proxy serves direct requests in pre-render at /base/ 628ms
+   × internal scss CSS proxy serves direct requests in progressive at / 625ms
+   × internal scss CSS proxy serves direct requests in progressive at /base/ 631ms
+   × internal sass CSS proxy serves direct requests in progressive at / 654ms
+   × internal sass CSS proxy serves direct requests in progressive at /base/ 625ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 16 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in static at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in static at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in runtime at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in runtime at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in pre-render at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in pre-render at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in progressive at /
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in progressive at /
+AssertionError: 
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Error</title>
+            <script type="module">
+              const error = {"message":"ENOENT: no such file or directory, open '/style.module.css'","stack":"    at readFileSync (node:fs:484:20)\n    at prepareBuildSassSource (/Users/aron/master/css/packages/vite/src/utils/build-sass-source.ts:105:20)\n    at LoadPluginContext.load (/Users/aron/master/css/packages/vite/src/plugins/sass-source.ts:107:28)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:50:79)\n    at /Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:101\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:65:14)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:75)\n    at EnvironmentPluginContainer.load (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:30890:56)\n    at loadAndTransform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:20624:21)","frame":""}
+              try {
+                const { ErrorOverlay } = await import("/@vite/client")
+                document.body.appendChild(new ErrorOverlay(error))
+              } catch {
+                const h = (tag, text) => {
+                  const el = document.createElement(tag)
+                  el.textContent = text
+                  return el
+                }
+                document.body.appendChild(h('h1', 'Internal Server Error'))
+                document.body.appendChild(h('h2', error.message))
+                document.body.appendChild(h('pre', error.stack))
+                document.body.appendChild(h('p', '(Error overlay failed to load)'))
+              }
+            </script>
+          </head>
+          <body>
+          </body>
+        </html>
+      : expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ collect tests/plugins/bug-hunt-sass-proxy-direct.test.ts:39:41
+     37|           seen.add(current.href)
+     38|           const response = await fetch(current, { headers: { accept: '…
+     39|           expect(response.status, text).toBe(200)
+       |                                         ^
+     40|           expect(response.headers.get('content-type')).toContain('text…
+     41|           css.push(text)
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts:54:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/16]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in static at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in static at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in runtime at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in runtime at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in pre-render at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in pre-render at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal scss CSS proxy serves direct requests in progressive at /base/
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > internal sass CSS proxy serves direct requests in progressive at /base/
+AssertionError: 
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <meta charset="UTF-8" />
+            <title>Error</title>
+            <script type="module">
+              const error = {"message":"ENOENT: no such file or directory, open '/style.module.css'","stack":"    at readFileSync (node:fs:484:20)\n    at prepareBuildSassSource (/Users/aron/master/css/packages/vite/src/utils/build-sass-source.ts:105:20)\n    at LoadPluginContext.load (/Users/aron/master/css/packages/vite/src/plugins/sass-source.ts:107:28)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:50:79)\n    at /Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:101\n    at AsyncLocalStorage.run (node:internal/async_local_storage/async_context_frame:65:14)\n    at LoadPluginContext.invoke (/Users/aron/master/css/packages/vite/src/utils/scoped-plugins.ts:68:75)\n    at EnvironmentPluginContainer.load (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:30890:56)\n    at loadAndTransform (file:///Users/aron/master/css/node_modules/.pnpm/vite@8.2.2_@types+node@24.13.3_esbuild@0.28.2_jiti@2.7.0_less@4.9.0_supports-color@5.5._5aef4224fb2d1e795047ce58ecc7070b/node_modules/vite/dist/node/chunks/node.js:20624:21)","frame":""}
+              try {
+                const { ErrorOverlay } = await import("/base/@vite/client")
+                document.body.appendChild(new ErrorOverlay(error))
+              } catch {
+                const h = (tag, text) => {
+                  const el = document.createElement(tag)
+                  el.textContent = text
+                  return el
+                }
+                document.body.appendChild(h('h1', 'Internal Server Error'))
+                document.body.appendChild(h('h2', error.message))
+                document.body.appendChild(h('pre', error.stack))
+                document.body.appendChild(h('p', '(Error overlay failed to load)'))
+              }
+            </script>
+          </head>
+          <body>
+          </body>
+        </html>
+      : expected 500 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 500
+
+ ❯ collect tests/plugins/bug-hunt-sass-proxy-direct.test.ts:39:41
+     37|           seen.add(current.href)
+     38|           const response = await fetch(current, { headers: { accept: '…
+     39|           expect(response.status, text).toBe(200)
+       |                                         ^
+     40|           expect(response.headers.get('content-type')).toContain('text…
+     41|           css.push(text)
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts:54:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/16]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  16 failed (16)
+   Start at  19:49:43
+   Duration  9.89s (tests 96%, transform 3%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

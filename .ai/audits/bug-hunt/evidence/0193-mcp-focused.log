@@ -1,0 +1,43 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/mcp
+
+ ❯ tests/bug-hunt-mjs-discovery.test.ts (9 tests | 1 failed) 3174ms
+   × trace finds ESM source (default) 457ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-mjs-discovery.test.ts > trace finds ESM source (default)
+AssertionError: expected [ 'control.js', 'entry.mjs' ] to deeply equal [ 'entry.mjs' ]
+
+- Expected
++ Received
+
+  [
++   "control.js",
+    "entry.mjs",
+  ]
+
+ ❯ tests/bug-hunt-mjs-discovery.test.ts:37:71
+     35|           expect(report.detected).toBe(true)
+     36|           expect(report.status).toBe('present')
+     37|           expect(report.occurrences.map((f) => basename(f.filePath))).…
+       |                                                                       ^
+     38|           expect(report.css.text).toContain(`display:${className}`)
+     39|         }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 passed (9)
+   Start at  20:15:18
+   Duration  3.61s (tests 89%, transform 8%, import 3%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/mcp
+

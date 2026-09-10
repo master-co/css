@@ -1,0 +1,204 @@
+{
+  "batch": "0190-build-watch-startup-recovery",
+  "status": "in progress; default-filter lifecycle repaired and verified, custom filters still failing",
+  "head": "c156b1433b1387b184627a3ddbbcb88388f9b17e",
+  "previousGoalTurn": "progress;completed audit commit c156b1433",
+  "counts": {
+    "historical": 58,
+    "fixed": 54,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "focused": {
+      "pass": 36,
+      "log": "0190-lifecycle-managed-fixed.log"
+    },
+    "viteFull": {
+      "pass": 619,
+      "fail": 0,
+      "files": 68,
+      "log": "0190-vite-full-final.log",
+      "scope": "Before two new custom-filter regressions; no later production edits except README"
+    },
+    "browser": {
+      "pass": 48,
+      "fail": 0,
+      "log": "0190-build-startup-browser.log",
+      "scope": "Built plugin;default filters;local/managed ×4modes ×3browsers ×2phases;runtime injection disabled"
+    },
+    "customFilters": {
+      "pass": 0,
+      "fail": 2,
+      "skipped": 10,
+      "log": "0190-watch-filters-before.log"
+    },
+    "lintTypesBuild": "PASS;0190-vite-lint-wrapup/types-wrapup/build logs",
+    "context": "PASS;0190-context-progress.log",
+    "reproSyntaxAndDiff": "PASS;2newrepros;authored diff;indexempty"
+  },
+  "rootCauses": [
+    "Missing-file addWatchFile registration does not trigger creation rebuild on current Vite8.2.2/Rolldown1.2.7 host;existingfile controls pass",
+    "closeBundle permanently closed manifest during a failed watch iteration",
+    "pre-render managed entries failed in configResolved before dependencies could be registered",
+    "Creating private trigger during a running build scheduled a spurious create rebuild;now allocated before watcher creation",
+    "Real watchChange events now acknowledge versions so failed-only reconciliation avoids duplicate host-triggered work"
+  ],
+  "classification": {
+    "adapterRegressions": "Premature closure and build missing-reference recovery; partial-config direct-hook guard failure repaired",
+    "hostEvidence": "Missing-file watch limitation and obsolete existing dependency still causing rebuild reproduced without Master CSS",
+    "harnessErrors": "Initial host probe realpath mismatch; obsolete output read during host rebuild observed transient emptied dist; corrected in new tests only",
+    "remainingProductFailures": "Private trigger filtered out by authored-file includes/cache directory excludes;2required regressions remain"
+  },
+  "preservation": {
+    "baselineSources": 505,
+    "unchangedBaselineSources": 499,
+    "changedSources": [
+      "packages/vite/README.md",
+      "packages/vite/src/core.ts",
+      "packages/vite/src/plugins/manifest-virtual-module.ts",
+      "packages/vite/src/plugins/pre-render.ts",
+      "packages/vite/src/utils/failed-dependency-reconciliation.ts",
+      "packages/vite/src/utils/failed-stylesheet-dependencies.ts"
+    ],
+    "newSources": [
+      "packages/vite/src/plugins/build-stylesheet-recovery.ts",
+      "packages/vite/src/utils/build-watch-recovery.ts",
+      "packages/vite/tests/plugins/bug-hunt-build-failure-lifecycle.test.ts",
+      ".ai/audits/bug-hunt/repros/build-watch-failed-dependency.mjs",
+      ".ai/audits/bug-hunt/repros/vite-build-startup-browser.mjs"
+    ],
+    "sources": "0190-source-hashes-progress.json",
+    "artifacts": "0190-artifacts-progress.json",
+    "foreignSite": "All prior Site source hashes unchanged",
+    "dependenciesFixturesSnapshotsCIRelease": "No new changes",
+    "index": "empty"
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2new custom-filter recovery failures and full lifetime matrix remain",
+    "Internal emittedModules CSS proxy ?direct HTTP500",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Four original candidates: compiler/MCP .mjs discovery; parallel Webpack shared dist; standalone Node Wasm file URL fetch; legacy-native-compose insertion",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "next": "Repair filtered build-watch invalidation while preserving user include/exclude rules; validate shared environment/cache ownership and config-failure cleanup, then finish0190 and continue all original host/graph/maps/root gates/candidates/benchmarks/Site requirements. Do not modify dependency versions or bypass0038 identity pause.",
+  "identityConfirmation": "not received;0038 paused",
+  "goal": "active",
+  "commitOrPush": false,
+  "logs": {
+    "0190-build-startup-browser.log": {
+      "bytes": 5359,
+      "sha256": "07ef5d348f113a2cf85f9a279b847725458710f162573d60884b21c8420e4904"
+    },
+    "0190-context-progress.log": {
+      "bytes": 121,
+      "sha256": "d99971a4f6758e0a2aa6039ddb2fdc263703c71be6fd94e307c3bdd0034d1570"
+    },
+    "0190-lifecycle-event-trace.log": {
+      "bytes": 37809,
+      "sha256": "7b44466c94ea0bff63464335c78e16879c0b0d172bb8a9ddb9e20269b9d47a3b"
+    },
+    "0190-lifecycle-managed-fixed.log": {
+      "bytes": 648,
+      "sha256": "84199684b8ce7042b075da4cac5d99450da51197429a30c7c6a62c078942b9e8"
+    },
+    "0190-lifecycle-prepared-cache.log": {
+      "bytes": 27620,
+      "sha256": "e1c11259a12c7603d2f3f3e8407e589640d5fdff4757e2f7cc87ed08c8bc333f"
+    },
+    "0190-managed-startup-before.log": {
+      "bytes": 3943,
+      "sha256": "ddee7c2bfd935d2676332811941816bf648f443cac2c55863955a2c90e8760fe"
+    },
+    "0190-obsolete-host-control.log": {
+      "bytes": 310,
+      "sha256": "4d7f4d9f9dbff21db70c68c96e560c494cd6d507c39eb25de231a9b4675e62c6"
+    },
+    "0190-recovery-lifecycle.log": {
+      "bytes": 16245,
+      "sha256": "6fc729da72235bd75b52e789cf800554e680b683e6c53fcd5245eaea0ecbff83"
+    },
+    "0190-startup-before.log": {
+      "bytes": 19657,
+      "sha256": "9e51ec71994d6add4b2a3cbf8ba98aea41c01b37b0a3117f24a3a509067c2d3e"
+    },
+    "0190-startup-cache-watch.log": {
+      "bytes": 659,
+      "sha256": "0fbcf8ecb4b5a387d98d1973bb6bc8f3edcf43af8e0a9abd704a076a56cea155"
+    },
+    "0190-startup-parent-watch.log": {
+      "bytes": 19657,
+      "sha256": "cc0778b28819157b70ef87616bcfeef13e6ada066db0ac114fb68bb56494c079"
+    },
+    "0190-vite-build.log": {
+      "bytes": 11274,
+      "sha256": "ab5730662423a35a16df52b8534eb68e15549f60c1effda45eec42a6fceabd3b"
+    },
+    "0190-vite-full-final.log": {
+      "bytes": 652,
+      "sha256": "a5f5943d80abb39720a2cf8697897d2f8e6bce607532262ade98133c40f00cd0"
+    },
+    "0190-vite-full.log": {
+      "bytes": 10847,
+      "sha256": "ed3317d1641a395c4b3f3814f38e507e4d2b59a4d6392dadfd36917b3c22c75f"
+    },
+    "0190-vite-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0190-vite-lint-lifecycle.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0190-vite-lint-wrapup.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0190-vite-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0190-vite-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0190-vite-types-lifecycle.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0190-vite-types-wrapup.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0190-vite-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0190-watch-filters-before.log": {
+      "bytes": 1581,
+      "sha256": "dd4ae441026d938ef7d03e2172950c26d339056ac65104ea6b80aedcf7dcb404"
+    },
+    "0190-watch-host-controls.log": {
+      "bytes": 1504,
+      "sha256": "ad6b02184c07f58acd84e3126d5902bf1072369fa5755fc0ebbd8119f3a38303"
+    },
+    "0190-watch-host-probe-realpath.log": {
+      "bytes": 714,
+      "sha256": "c624f415168a2df78d200ceed0c3cb3e25aad890817df5bda5ded4e950267037"
+    },
+    "0190-watch-host-probe.log": {
+      "bytes": 455,
+      "sha256": "b5a29d148681bb98bbe03d2d0f93e88147e5a07f9baef6d4152ee98df29ebb4d"
+    }
+  }
+}

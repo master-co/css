@@ -1,0 +1,74 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts (10 tests | 4 failed) 14572ms
+   × build recovery replaces failures and forgets successful dependencies in pre-render (managed=false) 2437ms
+   × build recovery replaces failures and forgets successful dependencies in progressive (managed=false) 2379ms
+   × build recovery replaces failures and forgets successful dependencies in pre-render (managed=true) 113ms
+   × build recovery replaces failures and forgets successful dependencies in progressive (managed=true) 106ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in pre-render (managed=false)
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in progressive (managed=false)
+AssertionError: expected '' to contain 'padding:4rem'
+
+- Expected
++ Received
+
+- padding:4rem
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:55:30
+     53|       // The adapter must stop reconciliation and preserve the current…
+     54|       expect(state.events.every(event => event.code === 'BUNDLE_END'))…
+     55|       expect(state.output()).toContain('padding:4rem')
+       |                              ^
+     56|       expect(state.output()).not.toContain('padding:99rem')
+     57|     }, undefined, managed)
+ ❯ fixture tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:11:9
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:39:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in pre-render (managed=true)
+Error: CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-8E4X0k/missing/nested/tokens.css
+ ❯ src/plugins/pre-render.ts:54:28
+     52|         onDependency(file)
+     53|       }
+     54|       const result = await loadProjectManifest({
+       |                            ^
+     55|         root,
+     56|         entries,
+ ❯ withStylesheetDependencies src/utils/failed-stylesheet-dependencies.ts:49:20
+ ❯ src/utils/manifest-recovery.ts:31:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > build recovery replaces failures and forgets successful dependencies in progressive (managed=true)
+Error: CSS file not found: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-build-recovery-xCFjcI/missing/nested/tokens.css
+ ❯ src/plugins/pre-render.ts:54:28
+     52|         onDependency(file)
+     53|       }
+     54|       const result = await loadProjectManifest({
+       |                            ^
+     55|         root,
+     56|         entries,
+ ❯ withStylesheetDependencies src/utils/failed-stylesheet-dependencies.ts:49:20
+ ❯ src/utils/manifest-recovery.ts:31:24
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed | 6 passed (10)
+   Start at  19:32:01
+   Duration  15.07s (tests 97%, transform 2%, import 1%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

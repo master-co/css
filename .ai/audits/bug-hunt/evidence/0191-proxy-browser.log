@@ -1,0 +1,11 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+page.waitForFunction: Timeout 10000ms exceeded.
+    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/vite-proxy-direct-browser.mjs:42:27 {
+  log: [],
+  name: 'TimeoutError'
+}
+
+Node.js v24.20.0

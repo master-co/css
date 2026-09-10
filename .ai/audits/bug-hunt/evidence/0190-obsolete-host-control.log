@@ -1,0 +1,2 @@
+{"mode":"obsolete-existing","initial":"ERROR","recovered":"BUNDLE_END","obsolete":"BUNDLE_END","calls":3}
+{"results":[{"mode":"obsolete-existing","initial":"ERROR","recovered":"BUNDLE_END","obsolete":"BUNDLE_END","calls":3}],"scope":"Vite/Rolldown failed transform dependency ownership; no Master CSS plugin"}

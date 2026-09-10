@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts (19 tests | 2 failed | 16 skipped) 720ms
+   × proxy requests retain host file access policy: outside-denied 222ms
+   × proxy requests retain host file access policy: pattern-denied 211ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > proxy requests retain host file access policy: outside-denied
+AssertionError: .outside{padding:9rem}
+/*# sourceMappingURL=data:application/json;base64,eyJmaWxlIjoiL3ByaXZhdGUvdmFyL2ZvbGRlcnMvX2IvNzY4ZGh0ejU2bnM1NHgxcjg2N2o2NzI4MDAwMGduL1QvbWFzdGVyLXByb3h5LWFjY2Vzcy0wUDd6Qzcvb3V0c2lkZS9zZWNyZXQgZmlsZS5jc3MiLCJtYXBwaW5ncyI6IkFBQUEsU0FBUyxZQUFZIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbInNlY3JldCBmaWxlLmNzcyJdLCJzb3VyY2VzQ29udGVudCI6WyIub3V0c2lkZXtwYWRkaW5nOjlyZW19Il0sInZlcnNpb24iOjN9 */: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts:81:44
+     79|       const response = await fetch(url, { headers: { accept: 'text/css…
+     80|       if (access === 'allowed') { expect(response.status, text).toBe(2…
+     81|       else { expect(response.status, text).toBe(403);expect(text).not.…
+       |                                            ^
+     82|     }
+     83|   } finally { await server?.environments.client.waitForRequestsIdle();…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/plugins/bug-hunt-sass-proxy-direct.test.ts > proxy requests retain host file access policy: pattern-denied
+AssertionError: .outside{padding:9rem}
+/*# sourceMappingURL=data:application/json;base64,eyJmaWxlIjoiL3ByaXZhdGUvdmFyL2ZvbGRlcnMvX2IvNzY4ZGh0ejU2bnM1NHgxcjg2N2o2NzI4MDAwMGduL1QvbWFzdGVyLXByb3h5LWFjY2Vzcy1iSGZiZ0QvYXBwL3NlY3JldCBmaWxlLmNzcyIsIm1hcHBpbmdzIjoiQUFBQSxTQUFTLFlBQVkiLCJuYW1lcyI6W10sInNvdXJjZXMiOlsic2VjcmV0IGZpbGUuY3NzIl0sInNvdXJjZXNDb250ZW50IjpbIi5vdXRzaWRle3BhZGRpbmc6OXJlbX0iXSwidmVyc2lvbiI6M30= */: expected 200 to be 403 // Object.is equality
+
+- Expected
++ Received
+
+- 403
++ 200
+
+ ❯ tests/plugins/bug-hunt-sass-proxy-direct.test.ts:81:44
+     79|       const response = await fetch(url, { headers: { accept: 'text/css…
+     80|       if (access === 'allowed') { expect(response.status, text).toBe(2…
+     81|       else { expect(response.status, text).toBe(403);expect(text).not.…
+       |                                            ^
+     82|     }
+     83|   } finally { await server?.environments.client.waitForRequestsIdle();…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed | 16 skipped (19)
+   Start at  19:51:38
+   Duration  1.22s (tests 62%, transform 25%, import 13%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

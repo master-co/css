@@ -1,0 +1,3 @@
+{"provider":"/Users/aron/master/css/packages/binding-wasm-engine/dist/provider-node.js","cwd":"/Users/aron/master/css"}
+{"iteration":0,"binding":"wasm","css":"@layer utilities{.paint{padding:2rem}}"}
+{"iteration":1,"binding":"wasm","css":"@layer utilities{.paint{padding:2rem}}"}

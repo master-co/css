@@ -1,0 +1,63 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-recovery-ownership.test.ts (3 tests | 2 failed) 415ms
+   × a configuration error does not allocate build recovery files 116ms
+   × closing one build owner preserves recovery for another already started owner 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-recovery-ownership.test.ts > a configuration error does not allocate build recovery files
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-wHMzbN/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-recovery-ownership.test.ts:24:31
+     22|       plugins: [masterCSS({ mode: 'static', runtime: false }), { name:…
+     23|     })).rejects.toThrow('intentional config error')
+     24|     expect(files(f.cacheDir)).toEqual([])
+       |                               ^
+     25|   } finally { f.close() }
+     26| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-recovery-ownership.test.ts > closing one build owner preserves recovery for another already started owner
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ tests/plugins/bug-hunt-build-recovery-ownership.test.ts:50:31
+     48|     await hook('closeWatcher', { environment: first })
+     49|     await failing(second)
+     50|     expect(files(f.cacheDir)).toHaveLength(1)
+       |                               ^
+     51|     await hook('closeWatcher', { environment: second })
+     52|     expect(files(f.cacheDir)).toEqual([])
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  19:43:34
+   Duration  904ms (tests 49%, transform 34%, import 17%)
+
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × "pnpm recursive exec" failed in /Users/aron/master/css/packages/vite
+

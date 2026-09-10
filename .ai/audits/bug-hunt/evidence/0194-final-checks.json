@@ -1,0 +1,227 @@
+{
+  "batch": "0194-inspection-source-attribution",
+  "status": "BH-0060 fixed;full goal active",
+  "head": "c156b1433b1387b184627a3ddbbcb88388f9b17e",
+  "previousGoalTurn": "progress;BH-0059fixed;BH-0060confirmed",
+  "counts": {
+    "historical": 60,
+    "fixed": 56,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "results": {
+    "sourceAttributionBefore": {
+      "fail": 7,
+      "note": "Two new directive inputs later corrected to required quoted lists; failures also demonstrate independent ownership errors"
+    },
+    "newTests": {
+      "compiler": 7,
+      "tooling": 8,
+      "nativeWasm": "4groups each"
+    },
+    "compilerFull": {
+      "pass": 337,
+      "fail": 0,
+      "scope": "Full run predates only new test corpus type annotation; final focused7 rerun passed"
+    },
+    "toolingFull": {
+      "pass": 223,
+      "fail": 0
+    },
+    "mcpFull": {
+      "pass": 43,
+      "fail": 0
+    },
+    "cliFull": {
+      "pass": 71,
+      "fail": 0
+    },
+    "viteFull": {
+      "pass": 640,
+      "fail": 3,
+      "retainedFailures": [
+        "0190 authored-file watch include",
+        "0190 cache directory watch exclude",
+        "0190 configuration-error recovery file cleanup"
+      ]
+    },
+    "publicStdio": {
+      "expanded": 22,
+      "originalMjsControls": 12,
+      "originalTwoJS": "PASS"
+    },
+    "lintTypesBuild": "Tooling/compiler/MCP PASS; initial compiler new test type error corrected",
+    "rootGates": "API census and package contracts remain FAIL; no golden/census changes"
+  },
+  "implementation": {
+    "owningAPI": "MasterCSSScanner.scanSource and MasterCSSScannerSourceResult on tooling/scanner/node",
+    "semantics": "Existing adapters/Rust produce candidates and classification; compiler retains full source candidates and associates with final shared classifications in input order",
+    "compatibility": "Existing scan/scanModule boolean and change-event behavior retained; native/Wasm/cache/filter/reset controls passed",
+    "publicBehavior": "discovered contains every file occurrence, including repeated classes; invalid diagnostic firstSource follows actual containing input order; changed stays a global scanner change flag",
+    "payloadPerformance": "No engine/runtime source or artifact change. Node scanner adds a result object; inspection retains per-source candidates and builds membership Sets once. No benchmark speedup claim; full performance requirements remain."
+  },
+  "preservation": {
+    "baselineSources": 527,
+    "changedSources": [
+      "packages/compiler/README.md",
+      "packages/compiler/src/diagnostics/index.ts",
+      "packages/tooling/src/scanner/core.ts",
+      "packages/tooling/src/scanner/index.ts",
+      "packages/tooling/src/scanner/node.ts",
+      "packages/tooling/README.md"
+    ],
+    "newSources": [
+      "packages/tooling/tests/scanner/bug-hunt-source-result.test.ts",
+      "packages/compiler/tests/diagnostics/bug-hunt-source-attribution.test.ts",
+      ".ai/audits/bug-hunt/repros/inspection-attribution-stdio.mjs"
+    ],
+    "sourceHashes": "0194-source-hashes-final.json",
+    "artifacts": "0194-artifacts-final.json",
+    "nativeWasmRuntimeViteArtifacts": "unchanged",
+    "site": "all baseline source hashes unchanged;no Site revalidation claim",
+    "existingFixturesSnapshotsDependenciesLockfilesCIRelease": "no changes",
+    "index": "empty",
+    "commitOrPush": false
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Two original candidates: parallel Webpack shared dist; legacy-native-compose insertion. Node Wasm candidate excluded0192; compiler/MCP .mjs fixed0193 as BH-0059",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete"
+  ],
+  "identityConfirmation": "not received;0038 paused",
+  "next": "Continue0190 watch-filter/config-error cleanup and BH-0004 complete public/host graph delivery; retain full maps,gates,2original candidates,benchmarks andSite requirements",
+  "goal": "active",
+  "logs": {
+    "0194-api-census.log": {
+      "bytes": 169797,
+      "sha256": "94b83b7b0131cfc6455de7199fcdf06cfa72baa056bf391b608e8c81a23ad34b"
+    },
+    "0194-attribution-after.log": {
+      "bytes": 1780,
+      "sha256": "fbbcd8a52cf3182f5b8b0f2af862fb95f2bc3ffda497d266acf2a88bd8a4a103"
+    },
+    "0194-attribution-before.log": {
+      "bytes": 7533,
+      "sha256": "ab38f516a11f93148a14daa52efb9f2c97813ea30a4b0a60ec039f2a82ce1c28"
+    },
+    "0194-attribution-final.log": {
+      "bytes": 650,
+      "sha256": "40bb0930e650ba3920fa64403488924e9dd89d47142d8ec9f455f360cc150f46"
+    },
+    "0194-attribution-quoted.log": {
+      "bytes": 650,
+      "sha256": "6b0029b4e68347b72757d5ed09c83f94fc7655dc1760b66ee3707f557aca35f0"
+    },
+    "0194-built-attribution.log": {
+      "bytes": 6481,
+      "sha256": "317c26aac3991bbe0d6f2449fed1920f105595136b13181b1f13747ccbead06d"
+    },
+    "0194-built-original.log": {
+      "bytes": 729,
+      "sha256": "7fc7c1707f8bdcf6e8e8424bc5ed6affa15d7cb80368bdac0e76362383a78b6a"
+    },
+    "0194-cli-full.log": {
+      "bytes": 749,
+      "sha256": "f13365487d19b9d2207da1d39c202dab87076c58938a162d42fa5a12709b8ac3"
+    },
+    "0194-compiler-build-final.log": {
+      "bytes": 5662,
+      "sha256": "7933130d3fdd1f89f8efb67d747a6b4ea5f6de0e6e87d15e07474e3107a0af6a"
+    },
+    "0194-compiler-full.log": {
+      "bytes": 1593,
+      "sha256": "14ab0f558a1a2c1219b63942d070abcd09c4838e670a73758cabd8bd12c2e031"
+    },
+    "0194-compiler-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0194-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0194-compiler-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0194-compiler-types.log": {
+      "bytes": 1170,
+      "sha256": "2e51c84960c52084585477d0e317b3474a482fd14390f68b1fdc19d0ee11119d"
+    },
+    "0194-context-final.log": {
+      "bytes": 121,
+      "sha256": "062b34c21f10db476f931734f91c3e61bedddd81f079d78d0517ed7d7b79189a"
+    },
+    "0194-js-original.log": {
+      "bytes": 638,
+      "sha256": "570b8f40ec80c511ac37f490bb1bc58a4ac6bbe20e83585e6ab950a01d4921ca"
+    },
+    "0194-mcp-build-final.log": {
+      "bytes": 1973,
+      "sha256": "722238d9ac656c1eae2091b658c70235545642881d1748a9534e2782e01c05ca"
+    },
+    "0194-mcp-full.log": {
+      "bytes": 648,
+      "sha256": "692ab4c3163877253ad3ffe1ec36c7b926ada95c54b32ce9d29be2fdf5e43241"
+    },
+    "0194-mcp-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0194-mcp-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0194-package-contracts.log": {
+      "bytes": 80853,
+      "sha256": "0b05f7a417638d48ef1104de85ff315e09898443f71ad964129863c303d08ceb"
+    },
+    "0194-scanner-focused.log": {
+      "bytes": 2601,
+      "sha256": "7ee41fe508639181d6c08df2a05ddbf2c72473b6ae310e776b9318e576414fbf"
+    },
+    "0194-tooling-build.log": {
+      "bytes": 9873,
+      "sha256": "c7cc3f48fdc9de993e87a302b4b6ae82bc1044f9abe5eb93080f44a1ada47751"
+    },
+    "0194-tooling-full.log": {
+      "bytes": 1686,
+      "sha256": "fd6f323384a6a44503f46d444ce8854b7565654ef7713bf49f68cde022c56fa0"
+    },
+    "0194-tooling-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0194-tooling-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0194-vite-full.log": {
+      "bytes": 2439,
+      "sha256": "bbfce1a95c367b364f4a48978da5904ac6500b8d091ed27332c002677e1fc303"
+    }
+  },
+  "checks": {
+    "context": "PASS;0194-context-final.log",
+    "syntax": "PASS",
+    "authoredDiff": "PASS",
+    "ledgerBudgetLinks": "PASS",
+    "findingRows": 60,
+    "fixedRows": 56,
+    "fixedLabels": "\u5df2\u4fee\u5fa9 plus historical BH-0054 label \u5df2\u4fee\u6b63",
+    "sourceHashesMatched": 530,
+    "artifactHashesMatched": 358,
+    "index": "empty"
+  }
+}
