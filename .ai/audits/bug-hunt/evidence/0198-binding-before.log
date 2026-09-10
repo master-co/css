@@ -1,0 +1,77 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-filesystem-project.test.ts (12 tests | 12 failed) 27ms
+   × BH-0004 filesystem project discovery unqualified 7ms
+   × BH-0004 filesystem project discovery  layer 2ms
+   × BH-0004 filesystem project discovery  layer(cards) 2ms
+   × BH-0004 filesystem project discovery  supports(display:grid) 2ms
+   × BH-0004 filesystem project discovery  screen 2ms
+   × BH-0004 filesystem project discovery  layer(cards) supports(display:grid) screen 2ms
+   × BH-0004 filesystem project explicit entries unqualified 2ms
+   × BH-0004 filesystem project explicit entries  layer 1ms
+   × BH-0004 filesystem project explicit entries  layer(cards) 2ms
+   × BH-0004 filesystem project explicit entries  supports(display:grid) 1ms
+   × BH-0004 filesystem project explicit entries  screen 1ms
+   × BH-0004 filesystem project explicit entries  layer(cards) supports(display:grid) screen 1ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery unqualified
+Unknown Error: Invalid @compose class: paint
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery  layer
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery  layer(cards)
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery  supports(display:grid)
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery  screen
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project discovery  layer(cards) supports(display:grid) screen
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries unqualified
+Unknown Error: Invalid @compose class: paint
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries  layer
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries  layer(cards)
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries  supports(display:grid)
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries  screen
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  tests/bug-hunt-filesystem-project.test.ts > BH-0004 filesystem project explicit entries  layer(cards) supports(display:grid) screen
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed (12)
+   Start at  21:48:51
+   Duration  151ms (transform 56%, tests 29%, import 13%, worker 2%)
+

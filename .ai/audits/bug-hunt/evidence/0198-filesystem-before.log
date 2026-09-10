@@ -1,0 +1,60 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 7.55s
+     Running tests/bug_hunt_filesystem_boundaries.rs (target/debug/deps/bug_hunt_filesystem_boundaries-b2b659d6438c04ce)
+
+running 6 tests
+test external_native_imports_do_not_block_manifest_and_compose ... FAILED
+test filesystem_import_and_reference_cycles_remain_errors ... FAILED
+test imported_source_patterns_belong_to_the_child_file ... FAILED
+test references_resolve_compose_without_exporting_reference_definitions_or_sources ... FAILED
+test repeated_imports_and_entry_override_keep_authoring_order ... FAILED
+test qualified_files_keep_shared_definitions_and_composed_output ... FAILED
+
+failures:
+
+---- external_native_imports_do_not_block_manifest_and_compose stdout ----
+
+thread 'external_native_imports_do_not_block_manifest_and_compose' (42884191) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:23:77:
+called `Result::unwrap()` on an `Err` value: Compiler(Import { message: "Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first", filename: "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-0/entry.css" })
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- filesystem_import_and_reference_cycles_remain_errors stdout ----
+
+thread 'filesystem_import_and_reference_cycles_remain_errors' (42884192) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:95:92:
+called `Result::unwrap_err()` on an `Ok` value: ProjectManifestIr { entries: ["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-6/entry.css"], manifest: Object {"version": Number(1)}, dependencies: ["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-6/entry.css"], extraction_policy: CssDirectiveExtractionPolicy { include: [], exclude: [], safelist: [], blocklist: [], preserve_native: false }, class_names: [], native_class_names: [], native_css: "", css: "", generated_css: "", warnings: [], source_plan: ProjectSourcePlanIr { version: 1, entries: [], files: [] } }
+
+---- imported_source_patterns_belong_to_the_child_file stdout ----
+
+thread 'imported_source_patterns_belong_to_the_child_file' (42884193) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:59:5:
+assertion `left == right` failed
+  left: []
+ right: ["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-1/styles/views/real.html"]
+
+---- references_resolve_compose_without_exporting_reference_definitions_or_sources stdout ----
+
+thread 'references_resolve_compose_without_exporting_reference_definitions_or_sources' (42884195) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:23:77:
+called `Result::unwrap()` on an `Err` value: Compiler(DirectiveDiagnostic { code: InvalidComposeClass, message: "Invalid @compose class: paint", filename: "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-2/entry.css", range: Some(SourceRange { start: 42, end: 47 }) })
+
+---- repeated_imports_and_entry_override_keep_authoring_order stdout ----
+
+thread 'repeated_imports_and_entry_override_keep_authoring_order' (42884196) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:106:5:
+assertion failed: css(&project.load().manifest, "paint").contains(".paint{color:red}")
+
+---- qualified_files_keep_shared_definitions_and_composed_output stdout ----
+
+thread 'qualified_files_keep_shared_definitions_and_composed_output' (42884194) panicked at crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs:23:77:
+called `Result::unwrap()` on an `Err` value: Compiler(DirectiveDiagnostic { code: InvalidComposeClass, message: "Invalid @compose class: paint", filename: "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-filesystem-boundaries-3435-7/entry.css", range: Some(SourceRange { start: 51, end: 56 }) })
+
+
+failures:
+    external_native_imports_do_not_block_manifest_and_compose
+    filesystem_import_and_reference_cycles_remain_errors
+    imported_source_patterns_belong_to_the_child_file
+    qualified_files_keep_shared_definitions_and_composed_output
+    references_resolve_compose_without_exporting_reference_definitions_or_sources
+    repeated_imports_and_entry_override_keep_authoring_order
+
+test result: FAILED. 0 passed; 6 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+error: test failed, to rerun pass `-p mastercss-project --test bug_hunt_filesystem_boundaries`

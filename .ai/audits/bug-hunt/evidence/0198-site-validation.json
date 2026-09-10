@@ -1,0 +1,8 @@
+{
+  "results": {
+    "prepare": 1,
+    "lint": 2
+  },
+  "scope": "Copied Site source with current directive paragraph; isolated generated outputs; installed dependencies and package/internal sources reused read-only; no live Site/browser verification",
+  "scratchRemoved": true
+}

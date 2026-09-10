@@ -1,0 +1,48 @@
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.17s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_project-e681271e098e08d7)
+
+running 5 tests
+test tests::matches_source_globs_with_fast_glob_compatible_primitives ... ok
+test tests::resolves_bare_source_patterns_from_the_project_root ... ok
+test tests::discovers_entries_and_compiles_local_imports ... ok
+test tests::resolves_entry_owned_source_plans_and_arbitrary_extensions ... ok
+test tests::lowers_compose_definitions_against_the_base_manifest ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.23s
+
+     Running tests/bug_hunt_filesystem_boundaries.rs (target/debug/deps/bug_hunt_filesystem_boundaries-b2b659d6438c04ce)
+
+running 6 tests
+test filesystem_import_and_reference_cycles_remain_errors ... ok
+test imported_source_patterns_belong_to_the_child_file ... ok
+test external_native_imports_do_not_block_manifest_and_compose ... ok
+test repeated_imports_and_entry_override_keep_authoring_order ... ok
+test references_resolve_compose_without_exporting_reference_definitions_or_sources ... ok
+test qualified_files_keep_shared_definitions_and_composed_output ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/bug_hunt_manifest_graphs.rs (target/debug/deps/bug_hunt_manifest_graphs-6870090f202102ba)
+
+running 4 tests
+test prepared_reference_cycles_and_missing_edges_remain_errors ... ok
+test references_resolve_managed_definitions_without_importing_their_sources_or_classes ... ok
+test qualified_external_imports_do_not_block_manifest_or_source_plan_compilation ... ok
+test structured_project_entries_merge_in_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/bug_hunt_ordered_output.rs (target/debug/deps/bug_hunt_ordered_output-dfa81897beff2a41)
+
+running 1 test
+test flat_project_css_uses_ordered_output_while_preserving_metadata_views ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests mastercss_project
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
