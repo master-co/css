@@ -60,10 +60,12 @@ pub(crate) fn lower_managed_definition_rule(
     )
     .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
     let layer = rule.name.layer().expect("managed directives have a layer");
+    let source_index = crate::source_index::SourceIndex::new(source);
+    let body_index = crate::source_index::SourceIndex::new(body);
     lower_managed_rule_list(
-        source,
+        &source_index,
         filename,
-        body,
+        &body_index,
         body_start_byte,
         stylesheet.rules.0,
         None,
@@ -187,6 +189,7 @@ fn compile_css_directives_impl(
     let mut style_order = 0;
     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
     let mut occupied_names = HashSet::new();
+    let source_index = crate::source_index::SourceIndex::new(source);
     let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
     if super::native_rule_list_has_directives(
         &rewritten_index,
@@ -229,10 +232,9 @@ fn compile_css_directives_impl(
             },
             rule => {
                 let mut lowerer = crate::native_conditionals::NativeConditionalLowerer {
-                    source,
+                    source: &source_index,
                     filename: &options.from,
-                    rewritten: &rewritten_source,
-                    rewritten_index: &rewritten_index,
+                    rewritten: &rewritten_index,
                     variants: &stylesheet_variant_rule_offsets,
                     definitions: &mut style_definitions,
                     order: &mut style_order,

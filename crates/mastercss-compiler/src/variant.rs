@@ -287,29 +287,6 @@ pub(crate) fn lower_custom_variant_rule(
     Ok(())
 }
 
-pub(crate) fn byte_offset_for_location(source: &str, line: u32, column: u32) -> Option<usize> {
-    let mut line_start = 0;
-    for _ in 0..line {
-        let newline = source[line_start..].find('\n')?;
-        line_start += newline + 1;
-    }
-    let target = column.saturating_sub(1);
-    let mut utf16_column = 0_u32;
-    let mut byte_offset = line_start;
-    for character in source[line_start..].chars() {
-        if character == '\n' || utf16_column >= target {
-            break;
-        }
-        let width = character.len_utf16() as u32;
-        if utf16_column + width > target {
-            return None;
-        }
-        utf16_column += width;
-        byte_offset += character.len_utf8();
-    }
-    (utf16_column == target).then_some(byte_offset)
-}
-
 pub(crate) fn source_location(source: &str, byte_offset: usize) -> Option<SourceLocation> {
     let prefix = source.get(..byte_offset)?;
     let line = prefix.bytes().filter(|byte| *byte == b'\n').count() as u32 + 1;
@@ -358,30 +335,6 @@ pub(crate) fn selector_end_byte(source: &str, start: usize) -> Option<usize> {
         index = next_char_end(source, index);
     }
     None
-}
-
-pub(crate) fn selector_source_reference(
-    source: &str,
-    filename: &str,
-    body: &str,
-    body_start_byte: usize,
-    line: u32,
-    column: u32,
-) -> Option<CssDirectiveSourceReference> {
-    let local_start = byte_offset_for_location(body, line, column)?;
-    let start = body_start_byte.checked_add(local_start)?;
-    let end = selector_end_byte(source, start)?;
-    Some(CssDirectiveSourceReference {
-        file: Some(filename.to_owned()),
-        range: SourceRange {
-            start: byte_to_utf16_offset(source, start)?,
-            end: byte_to_utf16_offset(source, end)?,
-        },
-        loc: Some(SourceLocationRange {
-            start: source_location(source, start)?,
-            end: source_location(source, end)?,
-        }),
-    })
 }
 
 pub(crate) fn source_reference_from_bytes(

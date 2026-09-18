@@ -262,6 +262,7 @@
 - [0249 Late-resource dev recovery](batches/0249-postcss-resource-dev-recovery.md)：資源刪除／還原與定義刪除／還原20步驟PASS，pure對照一致；無產品變更。
 - [0250 Compiler rule-count scaling](batches/0250-compiler-rule-count-scaling.md)：resource hook成本量測揭露compiler二次成長；新增BH-0062，未修復。
 - [0251 Compiler source index](batches/0251-compiler-source-index.md)：BH-0062修復；scaling回歸與Rust／TS套件PASS，0242候選patch另存。
+- [0252 Compiler lowering index](batches/0252-compiler-lowering-index.md)：索引貫穿lowering與資源引用；compose回歸基準FAIL→PASS，套件PASS；manifest合併待查。
 
 ## 目前交接點
 
@@ -271,7 +272,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0251：BH-0062已修復：root compiler新增每來源一次的line／UTF-16索引供mapping anchor與native lowering共用；窮舉對照測試、新scaling回歸（HEAD基準4000規則84.6s FAIL→1.05s PASS）、Rust全套件／clippy／fmt／codegen PASS；0242候選＋修正的compiler428／Next151／e2e3／真實Webpack PASS，800規則rendered 2.0s→17ms、preserveNativeSource 72.5s→96ms。62historical／58fixed／4unresolved。[證據](evidence/0251-final-checks.json)；[批次](batches/0251-compiler-source-index.md)；[前次](progress-history-0251-compiler-source-index.md)。
+- 0252：BH-0062第二階段：`SourceIndex`貫穿native／managed lowering與資源引用，移除只剩測試用的掃描函式；擴充scaling回歸（0251基準compose 4000規則128.6s FAIL→1.55s PASS）、Rust 140tests／clippy／fmt／codegen、0242候選＋patch compiler428／Next151 PASS；`@compose` 800規則562→76ms、url() 153→15ms。manifest合併仍超線性，待查。[證據](evidence/0252-final-checks.json)；[批次](batches/0252-compiler-lowering-index.md)；[前次](progress-history-0252-compiler-lowering-index.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 

@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0251：BH-0062已修復：root compiler新增每來源一次的line／UTF-16索引供mapping anchor與native lowering共用；窮舉對照測試、新scaling回歸（HEAD基準4000規則84.6s FAIL→1.05s PASS）、Rust全套件／clippy／fmt／codegen PASS；0242候選＋修正的compiler428／Next151／e2e3／真實Webpack PASS，800規則rendered 2.0s→17ms、preserveNativeSource 72.5s→96ms。62historical／58fixed／4unresolved。[證據](evidence/0251-final-checks.json)；[批次](batches/0251-compiler-source-index.md)；[前次](progress-history-0251-compiler-source-index.md)。
+- 0252：BH-0062第二階段：`SourceIndex`貫穿native／managed lowering與資源引用，移除只剩測試用的掃描函式；擴充scaling回歸（0251基準compose 4000規則128.6s FAIL→1.55s PASS）、Rust 140tests／clippy／fmt／codegen、0242候選＋patch compiler428／Next151 PASS；`@compose` 800規則562→76ms、url() 153→15ms。manifest合併仍超線性，待查。[證據](evidence/0252-final-checks.json)；[批次](batches/0252-compiler-lowering-index.md)；[前次](progress-history-0252-compiler-lowering-index.md)。
 
 
 - 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
@@ -108,7 +108,7 @@
 | BH-0059 | P2 | 已修復 | compiler診斷與MCP預設glob漏.mjs，遺漏CSS／class trace | [0193](batches/0193-inspection-mjs-discovery.md)；來源／stdio驗證；另有BH-0060 |
 | BH-0060 | P2 | 已修復 | 多檔診斷與MCP trace將class／警告錯指其他來源 | 逐檔候選對照Rust分類；15新增測試及22built控制通過；[0194](batches/0194-inspection-source-attribution.md) |
 | BH-0061 | P2 | 已修復 | 發布宣告引用缺失或未公開的型別路徑 | binding/tooling/LSP/MCP/Webpack沿用前批；0208補修compiler4個函式宣告，strictTS6通過，31compiler/30Webpack JS不變。[0208](batches/0208-webpack-entry-ownership.md)。 |
-| BH-0062 | P1 | 已修復 | Stylesheet compile 對規則數二次成長，preserveNativeSource 再放大 10–35 倍 | 0251 root新增`source_index.rs`每來源索引；Mapper／native lowering改用，掃描函式語義以窮舉測試固定。HEAD基準4000規則84.6s FAIL→1.05s；0242候選對應patch使800規則rendered 2.0s→17ms、preserveNativeSource 72.5s→96ms，compiler428／Next151 PASS。[0251](batches/0251-compiler-source-index.md)；[0250](batches/0250-compiler-rule-count-scaling.md) |
+| BH-0062 | P1 | 已修復 | Stylesheet compile 對規則數二次成長，preserveNativeSource 再放大 10–35 倍 | 0251 root新增`source_index.rs`每來源索引；Mapper／native lowering改用，掃描函式語義以窮舉測試固定。HEAD基準4000規則84.6s FAIL→1.05s；0242候選對應patch使800規則rendered 2.0s→17ms、preserveNativeSource 72.5s→96ms，compiler428／Next151 PASS。0252把索引貫穿native／managed lowering與url()引用：compose 4000規則128.6s→1.55s、800規則562→76ms；manifest合併超線性另列待查。[0252](batches/0252-compiler-lowering-index.md)；[0251](batches/0251-compiler-source-index.md)；[0250](batches/0250-compiler-rule-count-scaling.md) |
 
 53 historical confirmed findings: 49 fixed, 4 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
 

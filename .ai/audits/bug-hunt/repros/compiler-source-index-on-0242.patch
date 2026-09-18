@@ -1,5 +1,5 @@
 diff --git a/crates/mastercss-compiler/src/directives.rs b/crates/mastercss-compiler/src/directives.rs
-index fac2777..4abe9cf 100644
+index fac2777..2820919 100644
 --- a/crates/mastercss-compiler/src/directives.rs
 +++ b/crates/mastercss-compiler/src/directives.rs
 @@ -1,8 +1,8 @@
@@ -13,10 +13,26 @@ index fac2777..4abe9cf 100644
      extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
      lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
      normalize_stylesheet_value, rewrite_managed_variant_directives, validate_compose_syntax,
-@@ -195,8 +195,9 @@ fn compile_css_directives_impl(
+@@ -60,10 +60,12 @@ pub(crate) fn lower_managed_definition_rule(
+     )
+     .map_err(|error| directive_error(source, filename, rule.start_byte, error.to_string()))?;
+     let layer = rule.name.layer().expect("managed directives have a layer");
++    let source_index = crate::source_index::SourceIndex::new(source);
++    let body_index = crate::source_index::SourceIndex::new(body);
+     lower_managed_rule_list(
+-        source,
++        &source_index,
+         filename,
+-        body,
++        &body_index,
+         body_start_byte,
+         stylesheet.rules.0,
+         None,
+@@ -195,8 +197,10 @@ fn compile_css_directives_impl(
      let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
      let mut consumed = Vec::new();
      let mut occupied_names = HashSet::new();
++    let source_index = crate::source_index::SourceIndex::new(source);
 +    let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
      if super::native_rule_list_has_directives(
 -        &rewritten_source,
@@ -24,16 +40,20 @@ index fac2777..4abe9cf 100644
          &stylesheet.rules.0,
          &stylesheet_variant_rule_offsets,
      ) {
-@@ -242,6 +243,7 @@ fn compile_css_directives_impl(
-                     source,
+@@ -239,9 +243,9 @@ fn compile_css_directives_impl(
+             },
+             rule => {
+                 let mut lowerer = crate::native_conditionals::NativeConditionalLowerer {
+-                    source,
++                    source: &source_index,
                      filename: &options.from,
-                     rewritten: &rewritten_source,
-+                    rewritten_index: &rewritten_index,
+-                    rewritten: &rewritten_source,
++                    rewritten: &rewritten_index,
                      variants: &stylesheet_variant_rule_offsets,
                      definitions: &mut style_definitions,
                      order: &mut style_order,
 diff --git a/crates/mastercss-compiler/src/lib.rs b/crates/mastercss-compiler/src/lib.rs
-index 5ec2386..480f676 100644
+index 5ec2386..a1f622c 100644
 --- a/crates/mastercss-compiler/src/lib.rs
 +++ b/crates/mastercss-compiler/src/lib.rs
 @@ -639,6 +639,7 @@ mod output_edits;
@@ -44,11 +64,209 @@ index 5ec2386..480f676 100644
  mod source_spans;
  mod stylesheet_bundle;
  mod stylesheet_bundle_api;
+@@ -671,9 +672,8 @@ pub(crate) use syntax::{
+ };
+ pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
+ pub(crate) use variant::{
+-    byte_offset_for_location, combine_managed_selectors, lower_custom_variant_rule,
+-    managed_selector_definition, printed_selectors, rewrite_managed_variant_directives,
+-    selector_source_reference, source_reference_from_bytes, validate_compose_syntax,
++    combine_managed_selectors, lower_custom_variant_rule, managed_selector_definition,
++    printed_selectors, rewrite_managed_variant_directives, validate_compose_syntax,
+     validate_condition_variant_syntax,
+ };
+ 
+diff --git a/crates/mastercss-compiler/src/managed.rs b/crates/mastercss-compiler/src/managed.rs
+index 28d67d6..6cd7b94 100644
+--- a/crates/mastercss-compiler/src/managed.rs
++++ b/crates/mastercss-compiler/src/managed.rs
+@@ -2,12 +2,12 @@ use super::{
+     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
+     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap,
+     ParsedManagedPattern, StyleRule, UnknownAtRule, UtilityLayerName, Value,
+-    byte_offset_for_location, collect_class_list_token_ranges, collect_declarations,
+-    combine_managed_selectors, condition_properties, css_statement_delimiter, directive_error,
+-    lower_managed_pattern_style, managed_selector_definition, minified_css, next_char_end,
+-    preserve_compatible_literal_spelling, printed_selectors, selector_source_reference,
+-    source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
++    collect_class_list_token_ranges, collect_declarations, combine_managed_selectors,
++    condition_properties, css_statement_delimiter, directive_error, lower_managed_pattern_style,
++    managed_selector_definition, minified_css, next_char_end, preserve_compatible_literal_spelling,
++    printed_selectors, trim_byte_range, utf16_to_byte_offset,
+ };
++use crate::source_index::SourceIndex;
+ 
+ #[derive(Debug, Clone)]
+ pub(crate) struct ManagedStyleContext {
+@@ -44,9 +44,9 @@ pub(crate) fn push_managed_declarations(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_compose_rule(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    body: &str,
++    body: &SourceIndex<'_>,
+     body_start_byte: usize,
+     rule: UnknownAtRule<'_>,
+     context: &ManagedStyleContext,
+@@ -63,14 +63,14 @@ pub(crate) fn lower_compose_rule(
+             range: None,
+         });
+     }
+-    let local_start =
+-        byte_offset_for_location(body, rule.loc.line, rule.loc.column).ok_or_else(|| {
+-            CompilerError::Directive {
+-                message: "Cannot resolve @compose source range".into(),
+-                filename: filename.to_owned(),
+-                range: None,
+-            }
++    let local_start = body
++        .byte_offset_for_location(rule.loc.line, rule.loc.column)
++        .ok_or_else(|| CompilerError::Directive {
++            message: "Cannot resolve @compose source range".into(),
++            filename: filename.to_owned(),
++            range: None,
+         })?;
++    let body = body.text();
+     let Some((semicolon, ';')) = css_statement_delimiter(body, local_start, body.len()) else {
+         return Err(CompilerError::Directive {
+             message: "@compose requires a semicolon".into(),
+@@ -99,8 +99,7 @@ pub(crate) fn lower_compose_rule(
+         });
+     }
+     let absolute_directive_start = body_start_byte + local_start;
+-    let directive_source = source_reference_from_bytes(
+-        source,
++    let directive_source = source.reference(
+         filename,
+         absolute_directive_start,
+         body_start_byte + directive_end,
+@@ -124,8 +123,7 @@ pub(crate) fn lower_compose_rule(
+             order: *style_order,
+             class_name: token.token,
+             selector: context.selectors.join(","),
+-            source: source_reference_from_bytes(
+-                source,
++            source: source.reference(
+                 filename,
+                 body_start_byte + content_start + token_start,
+                 body_start_byte + content_start + token_end,
+@@ -143,9 +141,9 @@ pub(crate) fn lower_compose_rule(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_managed_style(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    body: &str,
++    body: &SourceIndex<'_>,
+     body_start_byte: usize,
+     style: StyleRule<'_>,
+     context: ManagedStyleContext,
+@@ -162,9 +160,9 @@ pub(crate) fn lower_managed_style(
+     if let Some(start) = context
+         .selector_source
+         .as_ref()
+-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
++        .and_then(|selector| source.byte_offset(selector.range.end))
+     {
+-        preserve_compatible_literal_spelling(source, start, &mut declarations);
++        preserve_compatible_literal_spelling(source.text(), start, &mut declarations);
+     }
+     push_managed_declarations(
+         declarations,
+@@ -194,9 +192,9 @@ pub(crate) fn lower_managed_style(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_managed_rule_list(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    body: &str,
++    body: &SourceIndex<'_>,
+     body_start_byte: usize,
+     rules: Vec<CssRule<'_>>,
+     context: Option<ManagedStyleContext>,
+@@ -212,7 +210,7 @@ pub(crate) fn lower_managed_rule_list(
+     for child in rules {
+         match child {
+             CssRule::Style(child) => {
+-                let local_offset = byte_offset_for_location(body, child.loc.line, child.loc.column);
++                let local_offset = body.byte_offset_for_location(child.loc.line, child.loc.column);
+                 if context.is_none()
+                     && let Some(pattern) =
+                         local_offset.and_then(|offset| pattern_rule_offsets.get(&offset))
+@@ -239,8 +237,7 @@ pub(crate) fn lower_managed_rule_list(
+                     ManagedStyleContext {
+                         name: parent.name.clone(),
+                         selectors: combine_managed_selectors(&parent.selectors, &child_selectors),
+-                        selector_source: selector_source_reference(
+-                            source,
++                        selector_source: source.selector_reference(
+                             filename,
+                             body,
+                             body_start_byte,
+@@ -257,8 +254,7 @@ pub(crate) fn lower_managed_rule_list(
+                     ManagedStyleContext {
+                         name,
+                         selectors: vec![selector],
+-                        selector_source: selector_source_reference(
+-                            source,
++                        selector_source: source.selector_reference(
+                             filename,
+                             body,
+                             body_start_byte,
+@@ -287,7 +283,7 @@ pub(crate) fn lower_managed_rule_list(
+             CssRule::NestedDeclarations(child) => {
+                 let Some(context) = &context else {
+                     return Err(directive_error(
+-                        source,
++                        source.text(),
+                         filename,
+                         body_start_byte,
+                         "Managed definition directives only accept bare managed names and nested at-rules",
+@@ -305,7 +301,7 @@ pub(crate) fn lower_managed_rule_list(
+             }
+             CssRule::Media(media) => {
+                 let mut path = condition_path.to_vec();
+-                let local_offset = byte_offset_for_location(body, media.loc.line, media.loc.column);
++                let local_offset = body.byte_offset_for_location(media.loc.line, media.loc.column);
+                 if let Some(token) =
+                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
+                 {
+@@ -430,7 +426,7 @@ pub(crate) fn lower_managed_rule_list(
+             }
+             CssRule::LayerBlock(_) => {
+                 return Err(directive_error(
+-                    source,
++                    source.text(),
+                     filename,
+                     body_start_byte,
+                     "Nested @layer blocks are not allowed inside managed definition directives",
+@@ -438,7 +434,7 @@ pub(crate) fn lower_managed_rule_list(
+             }
+             CssRule::Keyframes(_) => {
+                 return Err(directive_error(
+-                    source,
++                    source.text(),
+                     filename,
+                     body_start_byte,
+                     "@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @theme.",
+@@ -446,7 +442,7 @@ pub(crate) fn lower_managed_rule_list(
+             }
+             _ => {
+                 return Err(directive_error(
+-                    source,
++                    source.text(),
+                     filename,
+                     body_start_byte,
+                     "Unsupported rule inside managed definition directive",
 diff --git a/crates/mastercss-compiler/src/native_conditionals.rs b/crates/mastercss-compiler/src/native_conditionals.rs
-index 23d25d9..b46091a 100644
+index 23d25d9..faae022 100644
 --- a/crates/mastercss-compiler/src/native_conditionals.rs
 +++ b/crates/mastercss-compiler/src/native_conditionals.rs
-@@ -1,10 +1,11 @@
+@@ -1,17 +1,19 @@
  use super::{
      CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashMap,
 -    HashSet, NativeStyleContext, ThemeAtRule, byte_offset_for_location, condition_properties,
@@ -56,32 +274,34 @@ index 23d25d9..b46091a 100644
 -    printed_selectors, selector_source_reference,
 +    HashSet, NativeStyleContext, ThemeAtRule, condition_properties, lower_native_rule_list,
 +    lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
-+    selector_source_reference,
  };
  use crate::directives::{NativeStyleSlot, native_style_slot};
 +use crate::source_index::SourceIndex;
  
  /// Traverses stylesheet-level containers without treating unrelated native children
  /// (for example font faces and keyframes) as managed declarations.
-@@ -12,6 +13,8 @@ pub(crate) struct NativeConditionalLowerer<'a> {
-     pub source: &'a str,
+ pub(crate) struct NativeConditionalLowerer<'a> {
+-    pub source: &'a str,
++    /// Indexes of the original and rewritten sources, shared across every
++    /// top-level rule of one compilation.
++    pub source: &'a SourceIndex<'a>,
      pub filename: &'a str,
-     pub rewritten: &'a str,
-+    /// Index of `rewritten`, shared across every top-level rule of one compilation.
-+    pub rewritten_index: &'a SourceIndex<'a>,
+-    pub rewritten: &'a str,
++    pub rewritten: &'a SourceIndex<'a>,
      pub variants: &'a HashMap<usize, String>,
      pub definitions: &'a mut Vec<CssDirectiveStyleDefinition>,
      pub order: &'a mut u32,
-@@ -26,7 +29,7 @@ impl NativeConditionalLowerer<'_> {
-         path: &[CssDirectiveConditionPathEntry],
-     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
-         if !native_rule_list_has_directives(
--            self.rewritten,
-+            self.rewritten_index,
-             std::slice::from_ref(&rule),
-             self.variants,
-         ) {
-@@ -63,9 +66,10 @@ impl NativeConditionalLowerer<'_> {
+@@ -37,8 +39,7 @@ impl NativeConditionalLowerer<'_> {
+             let loc = style.loc;
+             let context = NativeStyleContext {
+                 selectors: printed_selectors(&style.selectors.0, self.filename)?,
+-                selector_source: selector_source_reference(
+-                    self.source,
++                selector_source: self.source.selector_reference(
+                     self.filename,
+                     self.rewritten,
+                     0,
+@@ -63,9 +64,10 @@ impl NativeConditionalLowerer<'_> {
              return Ok(self.slot(start, loc, path.len()));
          }
          if let CssRule::Media(media) = &rule
@@ -89,7 +309,7 @@ index 23d25d9..b46091a 100644
 -                byte_offset_for_location(self.rewritten, media.loc.line, media.loc.column)
 -                    .and_then(|offset| self.variants.get(&offset))
 +            && let Some(token) = self
-+                .rewritten_index
++                .rewritten
 +                .byte_offset_for_location(media.loc.line, media.loc.column)
 +                .and_then(|offset| self.variants.get(&offset))
          {
@@ -156,12 +376,21 @@ index 8837dbe..11c9e4d 100644
                  output.mappings.push(CssOutputMapping {
                      generated_start: generated + shift,
 diff --git a/crates/mastercss-compiler/src/native_style.rs b/crates/mastercss-compiler/src/native_style.rs
-index 2ad753b..845d41b 100644
+index 2ad753b..b65e0ca 100644
 --- a/crates/mastercss-compiler/src/native_style.rs
 +++ b/crates/mastercss-compiler/src/native_style.rs
-@@ -6,6 +6,7 @@ use super::{
-     minified_css, next_char_end, preserve_compatible_literal_spelling, printed_selectors,
-     selector_source_reference, source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
+@@ -1,11 +1,12 @@
+ use super::{
+     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
+     CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap, StyleRule, ThemeAtRule,
+-    UnknownAtRule, Value, byte_offset_for_location, collect_class_list_token_ranges,
+-    collect_declarations, combine_managed_selectors, condition_properties, css_statement_delimiter,
+-    minified_css, next_char_end, preserve_compatible_literal_spelling, printed_selectors,
+-    selector_source_reference, source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
++    UnknownAtRule, Value, collect_class_list_token_ranges, collect_declarations,
++    combine_managed_selectors, condition_properties, css_statement_delimiter, minified_css,
++    next_char_end, preserve_compatible_literal_spelling, printed_selectors, trim_byte_range,
++    utf16_to_byte_offset,
  };
 +use crate::source_index::SourceIndex;
  
@@ -186,6 +415,234 @@ index 2ad753b..845d41b 100644
                  .is_some_and(|offset| variant_rule_offsets.contains_key(&offset))
                  || native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
          }
+@@ -72,9 +74,9 @@ pub(crate) fn push_native_style_declarations(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_native_compose_rule(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    rewritten_source: &str,
++    rewritten: &SourceIndex<'_>,
+     rule: UnknownAtRule<'_>,
+     context: &NativeStyleContext,
+     condition_path: &[CssDirectiveConditionPathEntry],
+@@ -89,7 +91,9 @@ pub(crate) fn lower_native_compose_rule(
+             range: None,
+         });
+     }
+-    let local_start = byte_offset_for_location(rewritten_source, rule.loc.line, rule.loc.column)
++    let rewritten_source = rewritten.text();
++    let local_start = rewritten
++        .byte_offset_for_location(rule.loc.line, rule.loc.column)
+         .ok_or_else(|| CompilerError::Directive {
+             message: "Cannot resolve @compose source range".into(),
+             filename: filename.to_owned(),
+@@ -124,8 +128,7 @@ pub(crate) fn lower_native_compose_rule(
+             range: None,
+         });
+     }
+-    let directive_source =
+-        source_reference_from_bytes(source, filename, local_start, directive_end);
++    let directive_source = source.reference(filename, local_start, directive_end);
+     let (conditions, path) = condition_properties(condition_path);
+     for token in collect_class_list_token_ranges(class_list) {
+         if token.token.starts_with('{') {
+@@ -145,8 +148,7 @@ pub(crate) fn lower_native_compose_rule(
+             order: *style_order,
+             class_name: token.token,
+             selector: context.selectors.join(","),
+-            source: source_reference_from_bytes(
+-                source,
++            source: source.reference(
+                 filename,
+                 content_start + token_start,
+                 content_start + token_end,
+@@ -164,9 +166,9 @@ pub(crate) fn lower_native_compose_rule(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_native_style_rule(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    rewritten_source: &str,
++    rewritten: &SourceIndex<'_>,
+     style: StyleRule<'_, ThemeAtRule>,
+     context: NativeStyleContext,
+     condition_path: &[CssDirectiveConditionPathEntry],
+@@ -175,26 +177,24 @@ pub(crate) fn lower_native_style_rule(
+     style_order: &mut u32,
+ ) -> Result<(), CompilerError> {
+     let mut declarations = collect_declarations(&style.declarations, filename)?;
+-    if let Some(start) = context
++    let text = source.text();
++    let selector_end = context
+         .selector_source
+         .as_ref()
+-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
+-    {
+-        preserve_compatible_literal_spelling(source, start, &mut declarations);
++        .and_then(|selector| source.byte_offset(selector.range.end));
++    if let Some(start) = selector_end {
++        preserve_compatible_literal_spelling(text, start, &mut declarations);
+     }
+-    let declaration_source = context
+-        .selector_source
+-        .as_ref()
+-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
+-        .and_then(|start| css_statement_delimiter(source, start, source.len()))
++    let declaration_source = selector_end
++        .and_then(|start| css_statement_delimiter(text, start, text.len()))
+         .filter(|(_, delimiter)| *delimiter == '{')
+         .and_then(|(start, _)| {
+             let start = start + 1;
+-            let mut input = cssparser::ParserInput::new(&source[start..]);
++            let mut input = cssparser::ParserInput::new(&text[start..]);
+             let mut parser = cssparser::Parser::new(&mut input);
+             parser.skip_whitespace();
+             let start = start + parser.position().byte_index();
+-            source_reference_from_bytes(source, filename, start, start)
++            source.reference(filename, start, start)
+         });
+     push_native_style_declarations(
+         declarations,
+@@ -207,7 +207,7 @@ pub(crate) fn lower_native_style_rule(
+     lower_native_rule_list(
+         source,
+         filename,
+-        rewritten_source,
++        rewritten,
+         style.rules.0,
+         Some(context),
+         condition_path,
+@@ -219,9 +219,9 @@ pub(crate) fn lower_native_style_rule(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_native_rule_list(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    rewritten_source: &str,
++    rewritten: &SourceIndex<'_>,
+     rules: Vec<CssRule<'_, ThemeAtRule>>,
+     context: Option<NativeStyleContext>,
+     condition_path: &[CssDirectiveConditionPathEntry],
+@@ -239,24 +239,24 @@ pub(crate) fn lower_native_rule_list(
+                     .unwrap_or(child_selectors);
+                 let next_context = NativeStyleContext {
+                     selectors,
+-                    selector_source: selector_source_reference(
+-                        source,
+-                        filename,
+-                        rewritten_source,
+-                        0,
+-                        child.loc.line,
+-                        child.loc.column,
+-                    )
+-                    .or_else(|| {
+-                        context
+-                            .as_ref()
+-                            .and_then(|parent| parent.selector_source.clone())
+-                    }),
++                    selector_source: source
++                        .selector_reference(
++                            filename,
++                            rewritten,
++                            0,
++                            child.loc.line,
++                            child.loc.column,
++                        )
++                        .or_else(|| {
++                            context
++                                .as_ref()
++                                .and_then(|parent| parent.selector_source.clone())
++                        }),
+                 };
+                 lower_native_style_rule(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     child,
+                     next_context,
+                     condition_path,
+@@ -275,10 +275,9 @@ pub(crate) fn lower_native_rule_list(
+                 };
+                 push_native_style_declarations(
+                     collect_declarations(&child.declarations, filename)?,
+-                    byte_offset_for_location(rewritten_source, child.loc.line, child.loc.column)
+-                        .and_then(|start| {
+-                            source_reference_from_bytes(source, filename, start, start)
+-                        }),
++                    rewritten
++                        .byte_offset_for_location(child.loc.line, child.loc.column)
++                        .and_then(|start| source.reference(filename, start, start)),
+                     context,
+                     condition_path,
+                     style_definitions,
+@@ -288,7 +287,7 @@ pub(crate) fn lower_native_rule_list(
+             CssRule::Media(media) => {
+                 let mut path = condition_path.to_vec();
+                 let local_offset =
+-                    byte_offset_for_location(rewritten_source, media.loc.line, media.loc.column);
++                    rewritten.byte_offset_for_location(media.loc.line, media.loc.column);
+                 if let Some(token) =
+                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
+                 {
+@@ -303,7 +302,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_rule_list(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     media.rules.0,
+                     context.clone(),
+                     &path,
+@@ -320,7 +319,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_rule_list(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     supports.rules.0,
+                     context.clone(),
+                     &path,
+@@ -344,7 +343,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_rule_list(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     container.rules.0,
+                     context.clone(),
+                     &path,
+@@ -363,7 +362,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_rule_list(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     layer.rules.0,
+                     context.clone(),
+                     &path,
+@@ -380,7 +379,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_rule_list(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     starting_style.rules.0,
+                     context.clone(),
+                     &path,
+@@ -400,7 +399,7 @@ pub(crate) fn lower_native_rule_list(
+                 lower_native_compose_rule(
+                     source,
+                     filename,
+-                    rewritten_source,
++                    rewritten,
+                     rule,
+                     context,
+                     condition_path,
 diff --git a/crates/mastercss-compiler/src/output_mappings.rs b/crates/mastercss-compiler/src/output_mappings.rs
 index a4a2f32..4226daf 100644
 --- a/crates/mastercss-compiler/src/output_mappings.rs
@@ -285,12 +742,74 @@ index a4a2f32..4226daf 100644
          {
              *reference = mapped;
          }
+diff --git a/crates/mastercss-compiler/src/pattern.rs b/crates/mastercss-compiler/src/pattern.rs
+index 5125136..d308b9d 100644
+--- a/crates/mastercss-compiler/src/pattern.rs
++++ b/crates/mastercss-compiler/src/pattern.rs
+@@ -1,9 +1,10 @@
+ use super::{
+     CompilerError, CssDirectiveConditionPathEntry, CssRule, HashMap, PrinterOptions, StyleRule,
+-    ToCss, UtilityLayerName, Value, byte_offset_for_location, collect_declarations,
+-    combine_managed_selectors, css_comment_end, css_quote_end, next_char_end,
+-    preserve_compatible_literal_spelling, printed_selectors,
++    ToCss, UtilityLayerName, Value, collect_declarations, combine_managed_selectors,
++    css_comment_end, css_quote_end, next_char_end, preserve_compatible_literal_spelling,
++    printed_selectors,
+ };
++use crate::source_index::SourceIndex;
+ 
+ #[derive(Debug, Clone)]
+ pub(crate) enum ParsedManagedPattern {
+@@ -533,9 +534,9 @@ pub(crate) fn push_pattern_declarations(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_managed_pattern_rule_list(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    body: &str,
++    body: &SourceIndex<'_>,
+     rules: Vec<CssRule<'_>>,
+     selectors: &[String],
+     condition_path: &[CssDirectiveConditionPathEntry],
+@@ -571,7 +572,7 @@ pub(crate) fn lower_managed_pattern_rule_list(
+             }
+             CssRule::Media(media) => {
+                 let mut path = condition_path.to_vec();
+-                let local_offset = byte_offset_for_location(body, media.loc.line, media.loc.column);
++                let local_offset = body.byte_offset_for_location(media.loc.line, media.loc.column);
+                 if let Some(token) =
+                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
+                 {
+@@ -686,9 +687,9 @@ pub(crate) fn lower_managed_pattern_rule_list(
+ 
+ #[allow(clippy::too_many_arguments)]
+ pub(crate) fn lower_managed_pattern_style(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     filename: &str,
+-    body: &str,
++    body: &SourceIndex<'_>,
+     style: StyleRule<'_>,
+     selectors: &[String],
+     condition_path: &[CssDirectiveConditionPathEntry],
+@@ -696,8 +697,8 @@ pub(crate) fn lower_managed_pattern_style(
+     definition: &mut serde_json::Map<String, Value>,
+ ) -> Result<(), CompilerError> {
+     let mut declarations = collect_declarations(&style.declarations, filename)?;
+-    if let Some(start) = byte_offset_for_location(body, style.loc.line, style.loc.column) {
+-        preserve_compatible_literal_spelling(body, start, &mut declarations);
++    if let Some(start) = body.byte_offset_for_location(style.loc.line, style.loc.column) {
++        preserve_compatible_literal_spelling(body.text(), start, &mut declarations);
+     }
+     for selector in selectors {
+         push_pattern_declarations(definition, declarations.clone(), selector, condition_path);
 diff --git a/crates/mastercss-compiler/src/source_index.rs b/crates/mastercss-compiler/src/source_index.rs
 new file mode 100644
-index 0000000..f516651
+index 0000000..861e3a5
 --- /dev/null
 +++ b/crates/mastercss-compiler/src/source_index.rs
-@@ -0,0 +1,201 @@
+@@ -0,0 +1,245 @@
 +//! Per-source line and UTF-16 offset index.
 +//!
 +//! Anchoring output mappings converts parser locations to byte offsets and byte
@@ -333,6 +852,10 @@ index 0000000..f516651
 +            line_starts,
 +            checkpoints,
 +        }
++    }
++
++    pub(crate) fn text(&self) -> &'a str {
++        self.text
 +    }
 +
 +    /// UTF-16 units before `byte_offset`; `None` when it is not a character boundary.
@@ -403,6 +926,22 @@ index 0000000..f516651
 +        })
 +    }
 +
++    /// Selector reference anchored at a parser location inside `body`, matching
++    /// `selector_source_reference`: the selector ends in this (original) text.
++    pub(crate) fn selector_reference(
++        &self,
++        filename: &str,
++        body: &SourceIndex<'_>,
++        body_start_byte: usize,
++        line: u32,
++        column: u32,
++    ) -> Option<CssDirectiveSourceReference> {
++        let local_start = body.byte_offset_for_location(line, column)?;
++        let start = body_start_byte.checked_add(local_start)?;
++        let end = crate::variant::selector_end_byte(self.text, start)?;
++        self.reference(filename, start, end)
++    }
++
 +    /// Byte offset of a parser location: zero-based line, one-based UTF-16 column,
 +    /// which must stay within that line.
 +    pub(crate) fn byte_offset_for_location(&self, line: u32, column: u32) -> Option<usize> {
@@ -421,8 +960,32 @@ index 0000000..f516651
 +#[cfg(test)]
 +mod tests {
 +    use super::SourceIndex;
-+    use crate::variant::{byte_offset_for_location, source_location};
++    use crate::variant::source_location;
 +    use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
++
++    /// The scanning conversion the index replaced; kept as the test oracle.
++    fn byte_offset_for_location(source: &str, line: u32, column: u32) -> Option<usize> {
++        let mut line_start = 0;
++        for _ in 0..line {
++            let newline = source[line_start..].find('\n')?;
++            line_start += newline + 1;
++        }
++        let target = column.saturating_sub(1);
++        let mut utf16_column = 0_u32;
++        let mut byte_offset = line_start;
++        for character in source[line_start..].chars() {
++            if character == '\n' || utf16_column >= target {
++                break;
++            }
++            let width = character.len_utf16() as u32;
++            if utf16_column + width > target {
++                return None;
++            }
++            utf16_column += width;
++            byte_offset += character.len_utf8();
++        }
++        (utf16_column == target).then_some(byte_offset)
++    }
 +
 +    fn corpus() -> Vec<String> {
 +        let mut corpus = vec![
@@ -492,52 +1055,204 @@ index 0000000..f516651
 +        assert_eq!(index.utf16_offset(1), None);
 +    }
 +}
+diff --git a/crates/mastercss-compiler/src/stylesheet_resources.rs b/crates/mastercss-compiler/src/stylesheet_resources.rs
+index 5416fbe..23c731b 100644
+--- a/crates/mastercss-compiler/src/stylesheet_resources.rs
++++ b/crates/mastercss-compiler/src/stylesheet_resources.rs
+@@ -7,7 +7,7 @@ use lightningcss::{
+     values::{image::Image, url::Url},
+     visitor::{Visit, VisitTypes, Visitor},
+ };
+-use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
++use mastercss_lexer::utf16_to_byte_offset;
+ use mastercss_schema::{CssDirectiveSourceReference, CssDirectiveStyleDefinition, SourceRange};
+ use serde::{Deserialize, Serialize};
+ 
+@@ -270,6 +270,7 @@ fn process_resources(
+     let mut edits = Vec::new();
+     let mut generated_units = 0;
+     let mut cursor = 0;
++    let index = crate::source_index::SourceIndex::new(source);
+     for range in ranges {
+         // The value parser validates the complete URL/image-set grammar. Never
+         // repair an invalid value into a valid one while relocating resources.
+@@ -286,8 +287,8 @@ fn process_resources(
+         value.visit(&mut visitor)?;
+         for url in visitor.urls {
+             references.push(CssResourceReference {
+-                start: byte_to_utf16_offset(source, range.start).expect("parser boundary"),
+-                end: byte_to_utf16_offset(source, range.end).expect("parser boundary"),
++                start: index.utf16_offset(range.start).expect("parser boundary"),
++                end: index.utf16_offset(range.end).expect("parser boundary"),
+                 url,
+             });
+         }
+@@ -303,8 +304,8 @@ fn process_resources(
+                 })?;
+             generated_units += replacement.encode_utf16().count() as u32;
+             edits.push(ResourceEdit {
+-                original: byte_to_utf16_offset(source, range.start).expect("parser boundary")
+-                    ..byte_to_utf16_offset(source, range.end).expect("parser boundary"),
++                original: index.utf16_offset(range.start).expect("parser boundary")
++                    ..index.utf16_offset(range.end).expect("parser boundary"),
+                 generated: generated_start..generated_units,
+             });
+             output.push_str(&replacement);
+diff --git a/crates/mastercss-compiler/src/variant.rs b/crates/mastercss-compiler/src/variant.rs
+index 7da28bf..8a3482b 100644
+--- a/crates/mastercss-compiler/src/variant.rs
++++ b/crates/mastercss-compiler/src/variant.rs
+@@ -287,29 +287,6 @@ pub(crate) fn lower_custom_variant_rule(
+     Ok(())
+ }
+ 
+-pub(crate) fn byte_offset_for_location(source: &str, line: u32, column: u32) -> Option<usize> {
+-    let mut line_start = 0;
+-    for _ in 0..line {
+-        let newline = source[line_start..].find('\n')?;
+-        line_start += newline + 1;
+-    }
+-    let target = column.saturating_sub(1);
+-    let mut utf16_column = 0_u32;
+-    let mut byte_offset = line_start;
+-    for character in source[line_start..].chars() {
+-        if character == '\n' || utf16_column >= target {
+-            break;
+-        }
+-        let width = character.len_utf16() as u32;
+-        if utf16_column + width > target {
+-            return None;
+-        }
+-        utf16_column += width;
+-        byte_offset += character.len_utf8();
+-    }
+-    (utf16_column == target).then_some(byte_offset)
+-}
+-
+ pub(crate) fn source_location(source: &str, byte_offset: usize) -> Option<SourceLocation> {
+     let prefix = source.get(..byte_offset)?;
+     let line = prefix.bytes().filter(|byte| *byte == b'\n').count() as u32 + 1;
+@@ -360,30 +337,6 @@ pub(crate) fn selector_end_byte(source: &str, start: usize) -> Option<usize> {
+     None
+ }
+ 
+-pub(crate) fn selector_source_reference(
+-    source: &str,
+-    filename: &str,
+-    body: &str,
+-    body_start_byte: usize,
+-    line: u32,
+-    column: u32,
+-) -> Option<CssDirectiveSourceReference> {
+-    let local_start = byte_offset_for_location(body, line, column)?;
+-    let start = body_start_byte.checked_add(local_start)?;
+-    let end = selector_end_byte(source, start)?;
+-    Some(CssDirectiveSourceReference {
+-        file: Some(filename.to_owned()),
+-        range: SourceRange {
+-            start: byte_to_utf16_offset(source, start)?,
+-            end: byte_to_utf16_offset(source, end)?,
+-        },
+-        loc: Some(SourceLocationRange {
+-            start: source_location(source, start)?,
+-            end: source_location(source, end)?,
+-        }),
+-    })
+-}
+-
+ pub(crate) fn source_reference_from_bytes(
+     source: &str,
+     filename: &str,
 diff --git a/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs b/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs
 new file mode 100644
-index 0000000..eb45e83
+index 0000000..045cd00
 --- /dev/null
 +++ b/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,87 @@
 +//! BH-0062: native output mapping anchors scanned the source from its start for
 +//! every rule, making stylesheet compilation quadratic in the rule count.
 +use mastercss_compiler::{CompileNativeCssOptions, compile_css_directives};
 +use std::time::{Duration, Instant};
 +
-+fn stylesheet(rules: usize, multiline: bool) -> String {
-+    (0..rules)
-+        .map(|index| {
-+            format!(
-+                "@media (min-width:{index}px){{.r{index}{{content:\"ü😀\";padding:{}px}}}}",
-+                index % 9
-+            )
-+        })
-+        .collect::<Vec<_>>()
-+        .join(if multiline { "\n" } else { "" })
++#[derive(Clone, Copy)]
++enum Shape {
++    /// Plain rules inside `@media`; every rule keeps an anchored output mapping.
++    Media,
++    /// Native rules lowering `@compose`; every rule keeps selector and directive references.
++    Compose,
++    /// Native rules with `url()` resources; every reference keeps a UTF-16 range.
++    Resources,
 +}
 +
-+fn compile(rules: usize, multiline: bool) -> Duration {
-+    let source = stylesheet(rules, multiline);
++fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
++    let prefix = match shape {
++        Shape::Compose => "@master entry;",
++        Shape::Media | Shape::Resources => "",
++    };
++    prefix.to_owned()
++        + &(0..rules)
++            .map(|index| match shape {
++                Shape::Media => format!(
++                    "@media (min-width:{index}px){{.r{index}{{content:\"ü😀\";padding:{}px}}}}",
++                    index % 9
++                ),
++                Shape::Compose => {
++                    format!(".r{index}{{@compose p:{}px;content:\"ü😀\"}}", index % 9)
++                }
++                Shape::Resources => {
++                    format!(".r{index}{{background:url(\"./ü😀{index}.svg\");color:red}}")
++                }
++            })
++            .collect::<Vec<_>>()
++            .join(if multiline { "\n" } else { "" })
++}
++
++fn compile(shape: Shape, rules: usize, multiline: bool) -> Duration {
++    let source = stylesheet(shape, rules, multiline);
 +    let started = Instant::now();
 +    let result = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
 +    let elapsed = started.elapsed();
-+    // Every media rule and its style rule keep an anchored mapping.
-+    assert_eq!(result.native_mappings.len(), rules * 2, "{rules} rules");
++    match shape {
++        Shape::Media => assert_eq!(result.native_mappings.len(), rules * 2, "{rules} rules"),
++        Shape::Compose => assert_eq!(
++            result
++                .style_definitions
++                .map_or(0, |definitions| definitions.len()),
++            rules * 2,
++            "{rules} compose rules"
++        ),
++        Shape::Resources => assert_eq!(result.native_mappings.len(), rules, "{rules} rules"),
++    }
 +    elapsed
 +}
 +
-+#[test]
-+fn native_mapping_anchors_scale_linearly_with_rule_count() {
++fn assert_linear(shape: Shape, label: &str) {
 +    for multiline in [false, true] {
 +        // Warm up allocators and caches before timing.
-+        compile(64, multiline);
-+        let small = compile(500, multiline);
-+        let large = compile(4000, multiline);
++        compile(shape, 64, multiline);
++        let small = compile(shape, 500, multiline);
++        let large = compile(shape, 4000, multiline);
 +        let ratio = large.as_secs_f64() / small.as_secs_f64().max(0.001);
 +        // Eight times the rules: linear stays near 8x; the quadratic anchors were 64x
 +        // and took minutes here in debug builds.
 +        assert!(
 +            ratio < 40.0 && large < Duration::from_secs(10),
-+            "multiline={multiline}: 500 rules {small:?}, 4000 rules {large:?}, ratio {ratio:.1}"
++            "{label} multiline={multiline}: 500 rules {small:?}, 4000 rules {large:?}, ratio {ratio:.1}"
 +        );
 +    }
++}
++
++#[test]
++fn native_mapping_anchors_scale_linearly_with_rule_count() {
++    assert_linear(Shape::Media, "media");
++}
++
++#[test]
++fn native_compose_lowering_scales_linearly_with_rule_count() {
++    assert_linear(Shape::Compose, "compose");
++}
++
++#[test]
++fn resource_references_scale_linearly_with_rule_count() {
++    assert_linear(Shape::Resources, "resources");
 +}

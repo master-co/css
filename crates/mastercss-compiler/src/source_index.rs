@@ -42,6 +42,10 @@ impl<'a> SourceIndex<'a> {
         }
     }
 
+    pub(crate) fn text(&self) -> &'a str {
+        self.text
+    }
+
     /// UTF-16 units before `byte_offset`; `None` when it is not a character boundary.
     pub(crate) fn utf16_offset(&self, byte_offset: usize) -> Option<u32> {
         if byte_offset > self.text.len() || !self.text.is_char_boundary(byte_offset) {
@@ -110,6 +114,22 @@ impl<'a> SourceIndex<'a> {
         })
     }
 
+    /// Selector reference anchored at a parser location inside `body`, matching
+    /// `selector_source_reference`: the selector ends in this (original) text.
+    pub(crate) fn selector_reference(
+        &self,
+        filename: &str,
+        body: &SourceIndex<'_>,
+        body_start_byte: usize,
+        line: u32,
+        column: u32,
+    ) -> Option<CssDirectiveSourceReference> {
+        let local_start = body.byte_offset_for_location(line, column)?;
+        let start = body_start_byte.checked_add(local_start)?;
+        let end = crate::variant::selector_end_byte(self.text, start)?;
+        self.reference(filename, start, end)
+    }
+
     /// Byte offset of a parser location: zero-based line, one-based UTF-16 column,
     /// which must stay within that line.
     pub(crate) fn byte_offset_for_location(&self, line: u32, column: u32) -> Option<usize> {
@@ -128,8 +148,32 @@ impl<'a> SourceIndex<'a> {
 #[cfg(test)]
 mod tests {
     use super::SourceIndex;
-    use crate::variant::{byte_offset_for_location, source_location};
+    use crate::variant::source_location;
     use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
+
+    /// The scanning conversion the index replaced; kept as the test oracle.
+    fn byte_offset_for_location(source: &str, line: u32, column: u32) -> Option<usize> {
+        let mut line_start = 0;
+        for _ in 0..line {
+            let newline = source[line_start..].find('\n')?;
+            line_start += newline + 1;
+        }
+        let target = column.saturating_sub(1);
+        let mut utf16_column = 0_u32;
+        let mut byte_offset = line_start;
+        for character in source[line_start..].chars() {
+            if character == '\n' || utf16_column >= target {
+                break;
+            }
+            let width = character.len_utf16() as u32;
+            if utf16_column + width > target {
+                return None;
+            }
+            utf16_column += width;
+            byte_offset += character.len_utf8();
+        }
+        (utf16_column == target).then_some(byte_offset)
+    }
 
     fn corpus() -> Vec<String> {
         let mut corpus = vec![

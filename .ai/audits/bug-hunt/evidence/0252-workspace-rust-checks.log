@@ -1,0 +1,7 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 8.68s
+clippy exit=0
+fmt exit=0
+total passed 140 failed 0
+    Finished `release` profile [optimized] target(s) in 42.96s
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-runner/queue/065-check8.sh: line 10: 81243 Killed: 9               node /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-runner/probe-shape3.mjs 2>&1
+probe exit=137

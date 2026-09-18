@@ -1,10 +1,10 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
     CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap, StyleRule, ThemeAtRule,
-    UnknownAtRule, Value, byte_offset_for_location, collect_class_list_token_ranges,
-    collect_declarations, combine_managed_selectors, condition_properties, css_statement_delimiter,
-    minified_css, next_char_end, preserve_compatible_literal_spelling, printed_selectors,
-    selector_source_reference, source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
+    UnknownAtRule, Value, collect_class_list_token_ranges, collect_declarations,
+    combine_managed_selectors, condition_properties, css_statement_delimiter, minified_css,
+    next_char_end, preserve_compatible_literal_spelling, printed_selectors, trim_byte_range,
+    utf16_to_byte_offset,
 };
 use crate::source_index::SourceIndex;
 
@@ -74,9 +74,9 @@ pub(crate) fn push_native_style_declarations(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_native_compose_rule(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    rewritten_source: &str,
+    rewritten: &SourceIndex<'_>,
     rule: UnknownAtRule<'_>,
     context: &NativeStyleContext,
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -91,7 +91,9 @@ pub(crate) fn lower_native_compose_rule(
             range: None,
         });
     }
-    let local_start = byte_offset_for_location(rewritten_source, rule.loc.line, rule.loc.column)
+    let rewritten_source = rewritten.text();
+    let local_start = rewritten
+        .byte_offset_for_location(rule.loc.line, rule.loc.column)
         .ok_or_else(|| CompilerError::Directive {
             message: "Cannot resolve @compose source range".into(),
             filename: filename.to_owned(),
@@ -126,8 +128,7 @@ pub(crate) fn lower_native_compose_rule(
             range: None,
         });
     }
-    let directive_source =
-        source_reference_from_bytes(source, filename, local_start, directive_end);
+    let directive_source = source.reference(filename, local_start, directive_end);
     let (conditions, path) = condition_properties(condition_path);
     for token in collect_class_list_token_ranges(class_list) {
         if token.token.starts_with('{') {
@@ -147,8 +148,7 @@ pub(crate) fn lower_native_compose_rule(
             order: *style_order,
             class_name: token.token,
             selector: context.selectors.join(","),
-            source: source_reference_from_bytes(
-                source,
+            source: source.reference(
                 filename,
                 content_start + token_start,
                 content_start + token_end,
@@ -166,9 +166,9 @@ pub(crate) fn lower_native_compose_rule(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_native_style_rule(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    rewritten_source: &str,
+    rewritten: &SourceIndex<'_>,
     style: StyleRule<'_, ThemeAtRule>,
     context: NativeStyleContext,
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -177,26 +177,24 @@ pub(crate) fn lower_native_style_rule(
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
     let mut declarations = collect_declarations(&style.declarations, filename)?;
-    if let Some(start) = context
+    let text = source.text();
+    let selector_end = context
         .selector_source
         .as_ref()
-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
-    {
-        preserve_compatible_literal_spelling(source, start, &mut declarations);
+        .and_then(|selector| source.byte_offset(selector.range.end));
+    if let Some(start) = selector_end {
+        preserve_compatible_literal_spelling(text, start, &mut declarations);
     }
-    let declaration_source = context
-        .selector_source
-        .as_ref()
-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
-        .and_then(|start| css_statement_delimiter(source, start, source.len()))
+    let declaration_source = selector_end
+        .and_then(|start| css_statement_delimiter(text, start, text.len()))
         .filter(|(_, delimiter)| *delimiter == '{')
         .and_then(|(start, _)| {
             let start = start + 1;
-            let mut input = cssparser::ParserInput::new(&source[start..]);
+            let mut input = cssparser::ParserInput::new(&text[start..]);
             let mut parser = cssparser::Parser::new(&mut input);
             parser.skip_whitespace();
             let start = start + parser.position().byte_index();
-            source_reference_from_bytes(source, filename, start, start)
+            source.reference(filename, start, start)
         });
     push_native_style_declarations(
         declarations,
@@ -209,7 +207,7 @@ pub(crate) fn lower_native_style_rule(
     lower_native_rule_list(
         source,
         filename,
-        rewritten_source,
+        rewritten,
         style.rules.0,
         Some(context),
         condition_path,
@@ -221,9 +219,9 @@ pub(crate) fn lower_native_style_rule(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_native_rule_list(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    rewritten_source: &str,
+    rewritten: &SourceIndex<'_>,
     rules: Vec<CssRule<'_, ThemeAtRule>>,
     context: Option<NativeStyleContext>,
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -241,24 +239,24 @@ pub(crate) fn lower_native_rule_list(
                     .unwrap_or(child_selectors);
                 let next_context = NativeStyleContext {
                     selectors,
-                    selector_source: selector_source_reference(
-                        source,
-                        filename,
-                        rewritten_source,
-                        0,
-                        child.loc.line,
-                        child.loc.column,
-                    )
-                    .or_else(|| {
-                        context
-                            .as_ref()
-                            .and_then(|parent| parent.selector_source.clone())
-                    }),
+                    selector_source: source
+                        .selector_reference(
+                            filename,
+                            rewritten,
+                            0,
+                            child.loc.line,
+                            child.loc.column,
+                        )
+                        .or_else(|| {
+                            context
+                                .as_ref()
+                                .and_then(|parent| parent.selector_source.clone())
+                        }),
                 };
                 lower_native_style_rule(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     child,
                     next_context,
                     condition_path,
@@ -277,10 +275,9 @@ pub(crate) fn lower_native_rule_list(
                 };
                 push_native_style_declarations(
                     collect_declarations(&child.declarations, filename)?,
-                    byte_offset_for_location(rewritten_source, child.loc.line, child.loc.column)
-                        .and_then(|start| {
-                            source_reference_from_bytes(source, filename, start, start)
-                        }),
+                    rewritten
+                        .byte_offset_for_location(child.loc.line, child.loc.column)
+                        .and_then(|start| source.reference(filename, start, start)),
                     context,
                     condition_path,
                     style_definitions,
@@ -290,7 +287,7 @@ pub(crate) fn lower_native_rule_list(
             CssRule::Media(media) => {
                 let mut path = condition_path.to_vec();
                 let local_offset =
-                    byte_offset_for_location(rewritten_source, media.loc.line, media.loc.column);
+                    rewritten.byte_offset_for_location(media.loc.line, media.loc.column);
                 if let Some(token) =
                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
                 {
@@ -305,7 +302,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_rule_list(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     media.rules.0,
                     context.clone(),
                     &path,
@@ -322,7 +319,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_rule_list(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     supports.rules.0,
                     context.clone(),
                     &path,
@@ -346,7 +343,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_rule_list(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     container.rules.0,
                     context.clone(),
                     &path,
@@ -365,7 +362,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_rule_list(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     layer.rules.0,
                     context.clone(),
                     &path,
@@ -382,7 +379,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_rule_list(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     starting_style.rules.0,
                     context.clone(),
                     &path,
@@ -402,7 +399,7 @@ pub(crate) fn lower_native_rule_list(
                 lower_native_compose_rule(
                     source,
                     filename,
-                    rewritten_source,
+                    rewritten,
                     rule,
                     context,
                     condition_path,

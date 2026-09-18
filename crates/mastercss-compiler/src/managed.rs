@@ -2,12 +2,12 @@ use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap,
     ParsedManagedPattern, StyleRule, UnknownAtRule, UtilityLayerName, Value,
-    byte_offset_for_location, collect_class_list_token_ranges, collect_declarations,
-    combine_managed_selectors, condition_properties, css_statement_delimiter, directive_error,
-    lower_managed_pattern_style, managed_selector_definition, minified_css, next_char_end,
-    preserve_compatible_literal_spelling, printed_selectors, selector_source_reference,
-    source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
+    collect_class_list_token_ranges, collect_declarations, combine_managed_selectors,
+    condition_properties, css_statement_delimiter, directive_error, lower_managed_pattern_style,
+    managed_selector_definition, minified_css, next_char_end, preserve_compatible_literal_spelling,
+    printed_selectors, trim_byte_range, utf16_to_byte_offset,
 };
+use crate::source_index::SourceIndex;
 
 #[derive(Debug, Clone)]
 pub(crate) struct ManagedStyleContext {
@@ -44,9 +44,9 @@ pub(crate) fn push_managed_declarations(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_compose_rule(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    body: &str,
+    body: &SourceIndex<'_>,
     body_start_byte: usize,
     rule: UnknownAtRule<'_>,
     context: &ManagedStyleContext,
@@ -63,14 +63,14 @@ pub(crate) fn lower_compose_rule(
             range: None,
         });
     }
-    let local_start =
-        byte_offset_for_location(body, rule.loc.line, rule.loc.column).ok_or_else(|| {
-            CompilerError::Directive {
-                message: "Cannot resolve @compose source range".into(),
-                filename: filename.to_owned(),
-                range: None,
-            }
+    let local_start = body
+        .byte_offset_for_location(rule.loc.line, rule.loc.column)
+        .ok_or_else(|| CompilerError::Directive {
+            message: "Cannot resolve @compose source range".into(),
+            filename: filename.to_owned(),
+            range: None,
         })?;
+    let body = body.text();
     let Some((semicolon, ';')) = css_statement_delimiter(body, local_start, body.len()) else {
         return Err(CompilerError::Directive {
             message: "@compose requires a semicolon".into(),
@@ -99,8 +99,7 @@ pub(crate) fn lower_compose_rule(
         });
     }
     let absolute_directive_start = body_start_byte + local_start;
-    let directive_source = source_reference_from_bytes(
-        source,
+    let directive_source = source.reference(
         filename,
         absolute_directive_start,
         body_start_byte + directive_end,
@@ -124,8 +123,7 @@ pub(crate) fn lower_compose_rule(
             order: *style_order,
             class_name: token.token,
             selector: context.selectors.join(","),
-            source: source_reference_from_bytes(
-                source,
+            source: source.reference(
                 filename,
                 body_start_byte + content_start + token_start,
                 body_start_byte + content_start + token_end,
@@ -143,9 +141,9 @@ pub(crate) fn lower_compose_rule(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_style(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    body: &str,
+    body: &SourceIndex<'_>,
     body_start_byte: usize,
     style: StyleRule<'_>,
     context: ManagedStyleContext,
@@ -162,9 +160,9 @@ pub(crate) fn lower_managed_style(
     if let Some(start) = context
         .selector_source
         .as_ref()
-        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
+        .and_then(|selector| source.byte_offset(selector.range.end))
     {
-        preserve_compatible_literal_spelling(source, start, &mut declarations);
+        preserve_compatible_literal_spelling(source.text(), start, &mut declarations);
     }
     push_managed_declarations(
         declarations,
@@ -194,9 +192,9 @@ pub(crate) fn lower_managed_style(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_rule_list(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    body: &str,
+    body: &SourceIndex<'_>,
     body_start_byte: usize,
     rules: Vec<CssRule<'_>>,
     context: Option<ManagedStyleContext>,
@@ -212,7 +210,7 @@ pub(crate) fn lower_managed_rule_list(
     for child in rules {
         match child {
             CssRule::Style(child) => {
-                let local_offset = byte_offset_for_location(body, child.loc.line, child.loc.column);
+                let local_offset = body.byte_offset_for_location(child.loc.line, child.loc.column);
                 if context.is_none()
                     && let Some(pattern) =
                         local_offset.and_then(|offset| pattern_rule_offsets.get(&offset))
@@ -239,8 +237,7 @@ pub(crate) fn lower_managed_rule_list(
                     ManagedStyleContext {
                         name: parent.name.clone(),
                         selectors: combine_managed_selectors(&parent.selectors, &child_selectors),
-                        selector_source: selector_source_reference(
-                            source,
+                        selector_source: source.selector_reference(
                             filename,
                             body,
                             body_start_byte,
@@ -257,8 +254,7 @@ pub(crate) fn lower_managed_rule_list(
                     ManagedStyleContext {
                         name,
                         selectors: vec![selector],
-                        selector_source: selector_source_reference(
-                            source,
+                        selector_source: source.selector_reference(
                             filename,
                             body,
                             body_start_byte,
@@ -287,7 +283,7 @@ pub(crate) fn lower_managed_rule_list(
             CssRule::NestedDeclarations(child) => {
                 let Some(context) = &context else {
                     return Err(directive_error(
-                        source,
+                        source.text(),
                         filename,
                         body_start_byte,
                         "Managed definition directives only accept bare managed names and nested at-rules",
@@ -305,7 +301,7 @@ pub(crate) fn lower_managed_rule_list(
             }
             CssRule::Media(media) => {
                 let mut path = condition_path.to_vec();
-                let local_offset = byte_offset_for_location(body, media.loc.line, media.loc.column);
+                let local_offset = body.byte_offset_for_location(media.loc.line, media.loc.column);
                 if let Some(token) =
                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
                 {
@@ -430,7 +426,7 @@ pub(crate) fn lower_managed_rule_list(
             }
             CssRule::LayerBlock(_) => {
                 return Err(directive_error(
-                    source,
+                    source.text(),
                     filename,
                     body_start_byte,
                     "Nested @layer blocks are not allowed inside managed definition directives",
@@ -438,7 +434,7 @@ pub(crate) fn lower_managed_rule_list(
             }
             CssRule::Keyframes(_) => {
                 return Err(directive_error(
-                    source,
+                    source.text(),
                     filename,
                     body_start_byte,
                     "@keyframes is not allowed inside managed definition directives. Move managed animation definitions to top-level @theme.",
@@ -446,7 +442,7 @@ pub(crate) fn lower_managed_rule_list(
             }
             _ => {
                 return Err(directive_error(
-                    source,
+                    source.text(),
                     filename,
                     body_start_byte,
                     "Unsupported rule inside managed definition directive",

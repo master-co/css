@@ -1,0 +1,5 @@
+test resource_references_scale_linearly_with_rule_count ... ok
+test native_mapping_anchors_scale_linearly_with_rule_count ... ok
+test native_compose_lowering_scales_linearly_with_rule_count ... ok
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.55s
+test exit=0

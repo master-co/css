@@ -7,7 +7,7 @@ use lightningcss::{
     values::{image::Image, url::Url},
     visitor::{Visit, VisitTypes, Visitor},
 };
-use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
+use mastercss_lexer::utf16_to_byte_offset;
 use mastercss_schema::{CssDirectiveSourceReference, CssDirectiveStyleDefinition, SourceRange};
 use serde::{Deserialize, Serialize};
 
@@ -270,6 +270,7 @@ fn process_resources(
     let mut edits = Vec::new();
     let mut generated_units = 0;
     let mut cursor = 0;
+    let index = crate::source_index::SourceIndex::new(source);
     for range in ranges {
         // The value parser validates the complete URL/image-set grammar. Never
         // repair an invalid value into a valid one while relocating resources.
@@ -286,8 +287,8 @@ fn process_resources(
         value.visit(&mut visitor)?;
         for url in visitor.urls {
             references.push(CssResourceReference {
-                start: byte_to_utf16_offset(source, range.start).expect("parser boundary"),
-                end: byte_to_utf16_offset(source, range.end).expect("parser boundary"),
+                start: index.utf16_offset(range.start).expect("parser boundary"),
+                end: index.utf16_offset(range.end).expect("parser boundary"),
                 url,
             });
         }
@@ -303,8 +304,8 @@ fn process_resources(
                 })?;
             generated_units += replacement.encode_utf16().count() as u32;
             edits.push(ResourceEdit {
-                original: byte_to_utf16_offset(source, range.start).expect("parser boundary")
-                    ..byte_to_utf16_offset(source, range.end).expect("parser boundary"),
+                original: index.utf16_offset(range.start).expect("parser boundary")
+                    ..index.utf16_offset(range.end).expect("parser boundary"),
                 generated: generated_start..generated_units,
             });
             output.push_str(&replacement);

@@ -2,7 +2,6 @@ use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashMap,
     HashSet, NativeStyleContext, ThemeAtRule, condition_properties, lower_native_rule_list,
     lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
-    selector_source_reference,
 };
 use crate::directives::{NativeStyleSlot, native_style_slot};
 use crate::source_index::SourceIndex;
@@ -10,11 +9,11 @@ use crate::source_index::SourceIndex;
 /// Traverses stylesheet-level containers without treating unrelated native children
 /// (for example font faces and keyframes) as managed declarations.
 pub(crate) struct NativeConditionalLowerer<'a> {
-    pub source: &'a str,
+    /// Indexes of the original and rewritten sources, shared across every
+    /// top-level rule of one compilation.
+    pub source: &'a SourceIndex<'a>,
     pub filename: &'a str,
-    pub rewritten: &'a str,
-    /// Index of `rewritten`, shared across every top-level rule of one compilation.
-    pub rewritten_index: &'a SourceIndex<'a>,
+    pub rewritten: &'a SourceIndex<'a>,
     pub variants: &'a HashMap<usize, String>,
     pub definitions: &'a mut Vec<CssDirectiveStyleDefinition>,
     pub order: &'a mut u32,
@@ -29,7 +28,7 @@ impl NativeConditionalLowerer<'_> {
         path: &[CssDirectiveConditionPathEntry],
     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
         if !native_rule_list_has_directives(
-            self.rewritten_index,
+            self.rewritten,
             std::slice::from_ref(&rule),
             self.variants,
         ) {
@@ -40,8 +39,7 @@ impl NativeConditionalLowerer<'_> {
             let loc = style.loc;
             let context = NativeStyleContext {
                 selectors: printed_selectors(&style.selectors.0, self.filename)?,
-                selector_source: selector_source_reference(
-                    self.source,
+                selector_source: self.source.selector_reference(
                     self.filename,
                     self.rewritten,
                     0,
@@ -67,7 +65,7 @@ impl NativeConditionalLowerer<'_> {
         }
         if let CssRule::Media(media) = &rule
             && let Some(token) = self
-                .rewritten_index
+                .rewritten
                 .byte_offset_for_location(media.loc.line, media.loc.column)
                 .and_then(|offset| self.variants.get(&offset))
         {

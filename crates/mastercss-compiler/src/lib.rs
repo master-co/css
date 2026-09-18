@@ -667,9 +667,8 @@ pub(crate) use syntax::{
 };
 pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
 pub(crate) use variant::{
-    byte_offset_for_location, combine_managed_selectors, lower_custom_variant_rule,
-    managed_selector_definition, printed_selectors, rewrite_managed_variant_directives,
-    selector_source_reference, source_reference_from_bytes, validate_compose_syntax,
+    combine_managed_selectors, lower_custom_variant_rule, managed_selector_definition,
+    printed_selectors, rewrite_managed_variant_directives, validate_compose_syntax,
     validate_condition_variant_syntax,
 };
 

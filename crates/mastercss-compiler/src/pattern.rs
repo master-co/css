@@ -1,9 +1,10 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssRule, HashMap, PrinterOptions, StyleRule,
-    ToCss, UtilityLayerName, Value, byte_offset_for_location, collect_declarations,
-    combine_managed_selectors, css_comment_end, css_quote_end, next_char_end,
-    preserve_compatible_literal_spelling, printed_selectors,
+    ToCss, UtilityLayerName, Value, collect_declarations, combine_managed_selectors,
+    css_comment_end, css_quote_end, next_char_end, preserve_compatible_literal_spelling,
+    printed_selectors,
 };
+use crate::source_index::SourceIndex;
 
 #[derive(Debug, Clone)]
 pub(crate) enum ParsedManagedPattern {
@@ -533,9 +534,9 @@ pub(crate) fn push_pattern_declarations(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_pattern_rule_list(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    body: &str,
+    body: &SourceIndex<'_>,
     rules: Vec<CssRule<'_>>,
     selectors: &[String],
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -571,7 +572,7 @@ pub(crate) fn lower_managed_pattern_rule_list(
             }
             CssRule::Media(media) => {
                 let mut path = condition_path.to_vec();
-                let local_offset = byte_offset_for_location(body, media.loc.line, media.loc.column);
+                let local_offset = body.byte_offset_for_location(media.loc.line, media.loc.column);
                 if let Some(token) =
                     local_offset.and_then(|offset| variant_rule_offsets.get(&offset))
                 {
@@ -686,9 +687,9 @@ pub(crate) fn lower_managed_pattern_rule_list(
 
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn lower_managed_pattern_style(
-    source: &str,
+    source: &SourceIndex<'_>,
     filename: &str,
-    body: &str,
+    body: &SourceIndex<'_>,
     style: StyleRule<'_>,
     selectors: &[String],
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -696,8 +697,8 @@ pub(crate) fn lower_managed_pattern_style(
     definition: &mut serde_json::Map<String, Value>,
 ) -> Result<(), CompilerError> {
     let mut declarations = collect_declarations(&style.declarations, filename)?;
-    if let Some(start) = byte_offset_for_location(body, style.loc.line, style.loc.column) {
-        preserve_compatible_literal_spelling(body, start, &mut declarations);
+    if let Some(start) = body.byte_offset_for_location(style.loc.line, style.loc.column) {
+        preserve_compatible_literal_spelling(body.text(), start, &mut declarations);
     }
     for selector in selectors {
         push_pattern_declarations(definition, declarations.clone(), selector, condition_path);
