@@ -66,6 +66,12 @@
       "stylesheetGraph": "72 / 0",
       "nextActualHost": "chromium and webkit pass",
       "suites": "compiler 58/438, next 25/155 + 3 e2e, webpack 12/88, 28 builds, 102/107 tasks"
+    },
+    "loadSensitiveTests": {
+      "note": "Observed while running browser suites and cargo concurrently on this machine; both pass on their own and are not caused by the migration.",
+      "crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs": "component_merges_scale_linearly_with_definition_count asserts a timing ratio below 40 and reported 59.2 under load; two isolated reruns pass (5 passed each), and the full workspace reruns at 370 passed / 0 failed.",
+      "@master/css-webpack#type-check": "fails when turbo --force runs it against a dist being rewritten; passes on its own.",
+      "packages/webpack/tests/bug-hunt-active-graph.test.ts": "watch timing flake recorded in 0269; a final serial run of the suite is 12 files / 88 tests passing."
     }
   },
   "reproChanges": {
