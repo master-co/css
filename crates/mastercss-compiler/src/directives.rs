@@ -90,6 +90,7 @@ pub fn compile_css_directives(
 
 pub(crate) struct NativeStyleSlot {
     pub name: String,
+    pub loc: lightningcss::rules::Location,
     pub definitions: Vec<CssDirectiveStyleDefinition>,
 }
 
@@ -107,6 +108,12 @@ fn compile_css_directives_impl(
     options: &CompileNativeCssOptions,
     slots: Option<&mut Vec<NativeStyleSlot>>,
 ) -> Result<CompileCssDirectivesResult, CompilerError> {
+    if options.preserve_native_source && options.classes.is_some() {
+        return Err(CompilerError::Print {
+            filename: options.from.clone(),
+            message: "preserveNativeSource cannot be combined with class pruning".into(),
+        });
+    }
     let external_slots = slots.is_some();
     let mut local_slots = Vec::new();
     let mut slots = Some(match slots {
@@ -188,6 +195,7 @@ fn compile_css_directives_impl(
     let mut style_definitions = Vec::new();
     let mut style_order = 0;
     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
+    let mut consumed = Vec::new();
     let mut occupied_names = HashSet::new();
     let source_index = crate::source_index::SourceIndex::new(source);
     let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
@@ -203,6 +211,9 @@ fn compile_css_directives_impl(
         }
     }
     for rule in stylesheet.rules.0.drain(..) {
+        if let CssRule::Custom(directive) = &rule {
+            consumed.push(directive.start_byte);
+        }
         match rule {
             CssRule::Custom(directive) => match directive.name {
                 DirectiveName::Settings => {
@@ -254,6 +265,18 @@ fn compile_css_directives_impl(
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }
 
+    let preserved = if options.preserve_native_source && options.preserve_native_css {
+        Some(crate::native_source::preserve_native_source(
+            &source_without_entry,
+            source,
+            &rewritten_source,
+            &options.from,
+            &consumed,
+            slots.as_deref().map(Vec::as_slice).unwrap_or_default(),
+        )?)
+    } else {
+        None
+    };
     let native_output = if !external_slots
         && let Some(slots) = slots.as_deref_mut().filter(|slots| !slots.is_empty())
     {
@@ -265,14 +288,21 @@ fn compile_css_directives_impl(
             stylesheet.rules.0 =
                 crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
         }
-        let css = print_native_css(&mut stylesheet, &options.from)?;
-        let mappings = crate::output_mappings::native_output_mappings(
-            source,
-            &rewritten_source,
-            &options.from,
-            &stylesheet.rules.0,
-            &css,
-        );
+        let css = match &preserved {
+            Some((ordered, _)) => ordered.css.clone(),
+            None => print_native_css(&mut stylesheet, &options.from)?,
+        };
+        let mappings = if let Some((ordered, _)) = &preserved {
+            ordered.mappings.clone()
+        } else {
+            crate::output_mappings::native_output_mappings(
+                source,
+                &rewritten_source,
+                &options.from,
+                &stylesheet.rules.0,
+                &css,
+            )
+        };
         stylesheet.rules.0 = crate::native_output::strip_style_slots(rules, &names).0;
         Some(crate::native_output::prepare_native_output(
             source,
@@ -292,18 +322,35 @@ fn compile_css_directives_impl(
         stylesheet.rules.0 = crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
     }
     let native_css = if options.preserve_native_css || external_slots {
-        print_native_css(&mut stylesheet, &options.from)?
+        match &preserved {
+            Some((ordered, plain)) => {
+                if external_slots {
+                    ordered.css.clone()
+                } else {
+                    plain.css.clone()
+                }
+            }
+            None => print_native_css(&mut stylesheet, &options.from)?,
+        }
     } else {
         String::new()
     };
 
-    let native_mappings = crate::output_mappings::native_output_mappings(
-        source,
-        &rewritten_source,
-        &options.from,
-        &stylesheet.rules.0,
-        &native_css,
-    );
+    let native_mappings = if let Some((ordered, plain)) = &preserved {
+        if external_slots {
+            ordered.mappings.clone()
+        } else {
+            plain.mappings.clone()
+        }
+    } else {
+        crate::output_mappings::native_output_mappings(
+            source,
+            &rewritten_source,
+            &options.from,
+            &stylesheet.rules.0,
+            &native_css,
+        )
+    };
     Ok(CompileCssDirectivesResult {
         native_output,
         native_mappings,
@@ -337,6 +384,7 @@ pub(crate) fn native_style_slot<'a>(
     };
     slots.push(NativeStyleSlot {
         name: name.clone(),
+        loc,
         definitions: definitions.to_vec(),
     });
     CssRule::Unknown(lightningcss::rules::unknown::UnknownAtRule {

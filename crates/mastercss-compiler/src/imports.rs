@@ -373,6 +373,12 @@ pub fn compile_native_css(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileNativeCssResult, CompilerError> {
+    if options.preserve_native_source && options.classes.is_some() {
+        return Err(CompilerError::Print {
+            filename: options.from.clone(),
+            message: "preserveNativeSource cannot be combined with class pruning".into(),
+        });
+    }
     let (source, had_master_entry_directive) = remove_master_directive_statements(source);
     if !options.preserve_native_css {
         return Ok(CompileNativeCssResult {
@@ -394,6 +400,14 @@ pub fn compile_native_css(
         filename: options.from.clone(),
         range: None,
     })?;
+    if options.preserve_native_source {
+        drop(stylesheet);
+        return Ok(CompileNativeCssResult {
+            native_css: source.clone(),
+            css: source,
+            had_master_entry_directive,
+        });
+    }
     if let Some(classes) = &options.classes {
         let classes = classes.iter().cloned().collect::<HashSet<_>>();
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);

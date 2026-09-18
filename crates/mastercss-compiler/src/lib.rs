@@ -74,6 +74,9 @@ pub struct CompileNativeCssOptions {
     pub from: String,
     #[serde(default = "default_true", rename = "preserveNativeCSS")]
     pub preserve_native_css: bool,
+    /// Preserve untouched native source for subsequent host transforms.
+    #[serde(default)]
+    pub preserve_native_source: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub classes: Option<Vec<String>>,
 }
@@ -83,6 +86,7 @@ impl Default for CompileNativeCssOptions {
         Self {
             from: default_filename(),
             preserve_native_css: true,
+            preserve_native_source: false,
             classes: None,
         }
     }
@@ -627,6 +631,7 @@ mod imports;
 mod managed;
 mod native_conditionals;
 mod native_output;
+mod native_source;
 pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
 mod graph_inline;
 mod native_style;

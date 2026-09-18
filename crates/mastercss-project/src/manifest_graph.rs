@@ -100,6 +100,7 @@ pub(super) fn compile_manifest_graph_with_output(
             options: CompileNativeCssOptions {
                 from: request.entry.clone(),
                 preserve_native_css: false,
+                preserve_native_source: false,
                 classes: None,
             },
             base_manifest: Some(base_manifest),

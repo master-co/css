@@ -575,6 +575,7 @@ fn load_project_manifest_graphs(
             &CompileNativeCssOptions {
                 from: entry_text.clone(),
                 preserve_native_css: false,
+                preserve_native_source: false,
                 classes: None,
             },
         )?;

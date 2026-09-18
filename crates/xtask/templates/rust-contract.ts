@@ -746,6 +746,8 @@ export interface MasterCSSCompilerInspection {
 export interface MasterCSSDirectiveCompileOptions {
   from?: string
   preserveNativeCSS?: boolean
+  /** Retain untouched source for host transforms; incompatible with class pruning. */
+  preserveNativeSource?: boolean
   classes?: readonly string[]
 }
 

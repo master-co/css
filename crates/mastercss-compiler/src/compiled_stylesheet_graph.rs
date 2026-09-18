@@ -171,6 +171,7 @@ pub fn compile_css_stylesheet_graph(
             &CompileNativeCssOptions {
                 from: node.id.clone(),
                 preserve_native_css: request.options.preserve_native_css,
+                preserve_native_source: request.options.preserve_native_source,
                 classes: request
                     .classes_by_stylesheet
                     .get(&node.id)

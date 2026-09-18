@@ -9,6 +9,7 @@ fn request(source: &str, preserve: bool) -> LowerCssDirectivesRequest {
         &CompileNativeCssOptions {
             from: "/entry.css".into(),
             preserve_native_css: preserve,
+            preserve_native_source: false,
             classes: None,
         },
     )
