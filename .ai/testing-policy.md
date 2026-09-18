@@ -2,9 +2,11 @@
 
 ## General Rule
 
-Run the smallest meaningful package-scoped validation first. Broaden to root tests when a change crosses package boundaries, affects public APIs, or changes CSS output.
+Run the smallest meaningful package-scoped validation first. Broaden to affected consumer checks when a change crosses package boundaries, affects public APIs, or changes CSS output. Use root tests only when the impact cannot be covered by scoped checks. Repeat or broaden after passing checks only for new changes, failures, or unresolved risks.
 
 Package lint is mandatory for every changed workspace package that defines a package-local `lint` script. For multi-package changes, run lint once per affected package with `pnpm --filter <package> lint`; if an affected package has no package-local lint script, report that explicitly.
+
+AI-guidance-only changes require context validation and affected package lint, not product tests or builds. Site content and executable examples follow their applicable local validation rules.
 
 ## Performance Benchmarks
 

@@ -9,6 +9,12 @@ import type {
   MasterCSSCompileManifestResult,
   MasterCSSCompileOptions,
   MasterCSSCompileResult,
+  MasterCSSPrepareStylesheetBundleRequest,
+  MasterCSSStylesheetBundle,
+  MasterCSSRenderStylesheetBundleRequest,
+  MasterCSSStylesheetAsset,
+  MasterCSSCompileStylesheetsRequest,
+  MasterCSSCompileStylesheetsResult,
   MasterCSSCompilerInspection
 } from './index'
 import type { CompileCSSResult } from './contracts'
@@ -81,6 +87,7 @@ export function toMasterCSSCompileResultInternal(
 ): MasterCSSCompileResult {
   return Object.freeze({
     css: result.css,
+    ...(result.sourceMap ? { sourceMap: result.sourceMap } : {}),
     nativeCSS: result.nativeCSS,
     generatedCSS: result.generatedCSS,
     dependencies: Object.freeze([...result.dependencies]),
@@ -174,6 +181,7 @@ export class MasterCSSCompiler implements Disposable {
     }
     const lowered = this.#session.lowerCSSDirectives({
       manifestInput: rawDirectives.manifestInput,
+      nativeOutput: rawDirectives.nativeOutput,
       styleDefinitions: rawDirectives.styleDefinitions || [],
       warnings: rawDirectives.warnings
     }, {
@@ -182,10 +190,11 @@ export class MasterCSSCompiler implements Disposable {
       manifest: MasterCSSManifest
       warnings: string[]
       generatedCSS: string
+      css?: string
     }
     const diagnostics = diagnosticsFor(lowered.warnings, options.onDiagnostic)
     const generatedCSS = lowered.generatedCSS || ''
-    const css = [rawDirectives.nativeCSS, generatedCSS].filter(Boolean).join('\n')
+    const css = lowered.css ?? [rawDirectives.nativeCSS, generatedCSS].filter(Boolean).join('\n')
     return Object.freeze({
       css,
       nativeCSS: rawDirectives.nativeCSS,
@@ -204,6 +213,46 @@ export class MasterCSSCompiler implements Disposable {
     if (this.#disposed) return
     this.#session.dispose()
     this.#disposed = true
+  }
+
+  prepareStylesheetBundle(request: MasterCSSPrepareStylesheetBundleRequest): MasterCSSStylesheetBundle {
+    this.assertActive()
+    const result = this.#session.prepareCSSStylesheetBundle(request)
+    return Object.freeze({
+      ...result,
+      graph: Object.freeze({
+        ...result.graph,
+        references: Object.freeze(result.graph.references.map(reference => Object.freeze({ ...reference }))),
+        stylesheets: Object.freeze(result.graph.stylesheets.map(stylesheet => Object.freeze({
+          ...stylesheet,
+          imports: Object.freeze(stylesheet.imports.map(edge => Object.freeze({ ...edge })))
+        })))
+      }),
+      sources: Object.freeze(result.sources.map(source => Object.freeze({
+        ...source,
+        range: Object.freeze({ ...source.range }),
+        resources: Object.freeze(source.resources.map(resource => Object.freeze({ ...resource }))),
+        imports: Object.freeze(source.imports.map(resource => Object.freeze({ ...resource })))
+      })))
+    })
+  }
+
+  renderStylesheetBundle(request: MasterCSSRenderStylesheetBundleRequest): readonly MasterCSSStylesheetAsset[] {
+    this.assertActive()
+    return Object.freeze(this.#session.renderCSSStylesheetBundle(request).map(asset => Object.freeze({ ...asset })))
+  }
+
+  compileStylesheets(request: MasterCSSCompileStylesheetsRequest): MasterCSSCompileStylesheetsResult {
+    this.assertActive()
+    const result = this.#session.compileCSSStylesheetGraph(request)
+    const directives = toMasterCSSCompileResultInternal(result.directives)
+    return Object.freeze({
+      ...directives,
+      entry: result.entry,
+      stylesheets: Object.freeze(result.stylesheets.map(stylesheet => Object.freeze({ ...stylesheet }))),
+      manifest: Object.freeze(result.manifest),
+      directives
+    })
   }
 
   [Symbol.dispose]() {

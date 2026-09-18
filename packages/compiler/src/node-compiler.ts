@@ -1,7 +1,7 @@
 /** @internal Node-only compiler and import-graph implementation. */
-import { existsSync, readFileSync, realpathSync } from 'node:fs'
-import { createRequire } from 'node:module'
-import { dirname, extname, isAbsolute, resolve } from 'node:path'
+import { readFileSync, realpathSync } from 'node:fs'
+import { extname, isAbsolute, resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
 import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -26,6 +26,17 @@ import {
   emptyExtractionPolicy
 } from './contracts'
 
+import {
+  isExpandableImportSource,
+  resolveRelativeCSSFile,
+  resolveMasterCSSPackageEntryFile,
+  prepareCSSImportGraph,
+  type PreparedCSSImportGraph
+} from './node-imports'
+export { resolveMasterCSSPackageEntryFile } from './node-imports'
+
+const MASTER_CSS_PACKAGE_ID = '@master/css'
+
 export type {
   CompileCSSFileOptions,
   CompileCSSOptions,
@@ -33,16 +44,6 @@ export type {
   CSSReferenceStatement,
   ResolvedCSSImportGraph
 } from './contracts'
-
-const require = createRequire(import.meta.url)
-const MASTER_CSS_PACKAGE_ID = '@master/css'
-const MASTER_CSS_PACKAGE_IDS = new Set([MASTER_CSS_PACKAGE_ID, '@master/css-preset'])
-
-interface CSSPackageJSON {
-  name?: unknown
-  style?: unknown
-  exports?: unknown
-}
 
 export interface CSSDependencyImport {
   start: number
@@ -54,6 +55,7 @@ export interface CSSDependencyImport {
 export interface CSSDependencyAnalysis {
   sourceWithoutReferences: string
   imports: CSSDependencyImport[]
+  resources: { start: number, end: number, url: string }[]
 }
 
 export interface InspectCSSResult {
@@ -70,6 +72,8 @@ export interface InspectCSSResult {
 }
 
 export interface ResolveCSSImportGraphOptions {
+  onDependency?: (file: string) => void
+  onSource?: (file: string, source: string) => void
   projectDir?: string
   expandPackageImports?: boolean
   onReference?: (reference: CSSReferenceStatement, fromFile: string) => void
@@ -87,6 +91,7 @@ type CompileCSSManifestInternalOptions = CompileCSSManifestSourceOptions & {
   referenceStack?: string[]
   diagnostics?: CompilerDiagnosticRecorder
   sourceText?: string
+  onDependency?: (file: string) => void
 }
 
 export interface CompileCSSManifestResult extends Omit<CompileCSSResult, 'manifestInput'> {
@@ -122,164 +127,8 @@ function nativeCompiler() {
   return createCompilerBindingSessionSync()
 }
 
-function isExpandableImportSource(source: string) {
-  return (source.startsWith('./') || source.startsWith('../')) && extname(source) === '.css'
-}
-
-function readJSONFile<T>(file: string) {
-  return JSON.parse(readFileSync(file, 'utf-8')) as T
-}
-
-function findPackageRoot(entryFile: string, packageName: string) {
-  let directory = dirname(entryFile)
-  while (true) {
-    const packageJSONFile = resolve(directory, 'package.json')
-    if (existsSync(packageJSONFile)) {
-      try {
-        const packageJSON = readJSONFile<CSSPackageJSON>(packageJSONFile)
-        if (packageJSON.name === packageName) {
-          return {
-            directory,
-            packageJSON
-          }
-        }
-      } catch {
-        // Keep walking up in case this is not the package root.
-      }
-    }
-    const parentDirectory = dirname(directory)
-    if (parentDirectory === directory) return
-    directory = parentDirectory
-  }
-}
-
-function resolvePackageDirectory(directory: string) {
-  try {
-    return realpathSync(directory)
-  } catch {
-    return directory
-  }
-}
-
-function findNodeModulesPackageRoot(baseDirectory: string, packageName: string) {
-  let directory = resolve(baseDirectory)
-  const packagePath = packageName.split('/')
-  while (true) {
-    const packageJSONFile = resolve(directory, 'node_modules', ...packagePath, 'package.json')
-    if (existsSync(packageJSONFile)) {
-      try {
-        const packageJSON = readJSONFile<CSSPackageJSON>(packageJSONFile)
-        if (packageJSON.name === packageName) {
-          return {
-            directory: resolvePackageDirectory(dirname(packageJSONFile)),
-            packageJSON
-          }
-        }
-      } catch {
-        // Keep walking up in case this is not the package root.
-      }
-    }
-    const parentDirectory = dirname(directory)
-    if (parentDirectory === directory) return
-    directory = parentDirectory
-  }
-}
-
-function resolvePackageRoot(packageName: string, fromFile: string, projectDir?: string) {
-  const resolvedFromFile = resolve(projectDir || '', fromFile)
-  const searchDirectories = [
-    projectDir,
-    resolvedFromFile,
-    dirname(resolvedFromFile),
-    process.cwd()
-  ].filter((directory): directory is string => typeof directory === 'string')
-
-  for (const directory of new Set(searchDirectories)) {
-    const packageRoot = findNodeModulesPackageRoot(directory, packageName)
-    if (packageRoot) return packageRoot
-  }
-
-  const resolver = createProjectRequire(fromFile, projectDir)
-  let packageEntryFile: string
-  try {
-    packageEntryFile = resolver.resolve(packageName)
-  } catch {
-    packageEntryFile = require.resolve(packageName)
-  }
-  return findPackageRoot(packageEntryFile, packageName)
-}
-
-function getPackageStyleEntry(packageJSON: CSSPackageJSON) {
-  if (typeof packageJSON.style === 'string') return packageJSON.style
-  if (!packageJSON.exports || typeof packageJSON.exports !== 'object') return
-  const rootExport = (packageJSON.exports as Record<string, unknown>)['.']
-  if (!rootExport || typeof rootExport !== 'object') return
-  const styleExport = (rootExport as Record<string, unknown>).style
-  return typeof styleExport === 'string' ? styleExport : undefined
-}
-
-function createProjectRequire(fromFile: string, projectDir?: string) {
-  return createRequire(resolve(projectDir || dirname(fromFile), 'package.json'))
-}
-
-export function resolveMasterCSSPackageEntryFile(importSource: string, fromFile = process.cwd(), projectDir?: string) {
-  if (!MASTER_CSS_PACKAGE_IDS.has(importSource)) return
-  const packageRoot = resolvePackageRoot(importSource, fromFile, projectDir)
-  if (!packageRoot) return
-  const styleEntry = getPackageStyleEntry(packageRoot.packageJSON)
-  if (!styleEntry) return
-  const styleFile = resolve(packageRoot.directory, styleEntry)
-  if (!existsSync(styleFile)) {
-    throw new Error(`${importSource} CSS style entry was not found: ${styleFile}`)
-  }
-  return styleFile
-}
-
 export function inspectCSS(source: string): InspectCSSResult {
   return callCompilerBinding<InspectCSSResult>(() => nativeCompiler().inspectCSS(source))
-}
-
-interface PreparedCSSImportGraph {
-  entry: string
-  files: Record<string, string>
-  edges: { from: string, specifier: string, resolved: string }[]
-}
-
-function prepareCSSImportGraphFile(
-  file: string,
-  graph: PreparedCSSImportGraph,
-  visited: Set<string>,
-  options: ResolveCSSImportGraphOptions = {},
-  sourceOverride?: string
-): void {
-  const absoluteFile = resolve(file)
-  if (sourceOverride === undefined && !existsSync(absoluteFile)) {
-    throw new Error(`CSS file not found: ${absoluteFile}`)
-  }
-  if (visited.has(absoluteFile)) return
-  visited.add(absoluteFile)
-
-  const source = sourceOverride ?? readFileSync(absoluteFile, 'utf-8')
-  graph.files[absoluteFile] = source
-  const analysis = callCompilerBinding<{
-    sourceWithoutReferences: string
-    imports: { source: string }[]
-  }>(() => nativeCompiler().analyzeCSSDependencies(source))
-  for (const importStatement of analysis.imports) {
-    const importSource = importStatement.source
-    const packageFile = options.expandPackageImports !== false
-      ? resolveMasterCSSPackageEntryFile(importSource, absoluteFile, options.projectDir)
-      : undefined
-    if (packageFile || isExpandableImportSource(importSource)) {
-      const importedFile = packageFile || resolve(dirname(absoluteFile), importSource)
-      graph.edges.push({
-        from: absoluteFile,
-        specifier: importSource,
-        resolved: importedFile
-      })
-      prepareCSSImportGraphFile(importedFile, graph, visited, options)
-    }
-  }
 }
 
 export function resolveCSSImportGraph(file: string, options: ResolveCSSImportGraphOptions = {}): ResolvedCSSImportGraph {
@@ -292,12 +141,8 @@ export function resolveCSSImportGraphSource(
   options: ResolveCSSImportGraphOptions = {}
 ): ResolvedCSSImportGraph {
   const entry = resolve(file)
-  const graph: PreparedCSSImportGraph = {
-    entry,
-    files: {},
-    edges: []
-  }
-  prepareCSSImportGraphFile(entry, graph, new Set(), options, source)
+  const graph = prepareCSSImportGraph(file, source, options, analyzeCSSDependencies)
+  for (const [inputFile, inputSource] of Object.entries(graph.files)) options.onSource?.(inputFile, inputSource)
   const result = callCompilerBinding<ResolvedCSSImportGraph>(() => (
     nativeCompiler().resolveCSSImportGraph(graph)
   ))
@@ -538,6 +383,9 @@ function compileManifestInputWithBinding(
 }
 
 interface BindingLowerCSSDirectivesResult {
+  css?: string
+  outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
+  generatedMappings?: CompileCSSResult['generatedMappings']
   input: CompileCSSResult['manifestInput']
   manifest: MasterCSSManifest
   resolutionManifest: MasterCSSManifest
@@ -560,6 +408,7 @@ function lowerCSSDirectivesWithBinding(
     nativeCompiler().lowerCSSDirectives(
       {
         manifestInput: result.manifestInput,
+        nativeOutput: result.nativeOutput,
         styleDefinitions: result.styleDefinitions || [],
         warnings: result.warnings
       },
@@ -586,7 +435,7 @@ function addUnique<T>(target: T[], values: Iterable<T> | undefined) {
   }
 }
 
-function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSManifestSourceOptions = {}) {
+export function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: CompileCSSManifestSourceOptions = {}) {
   const fromFile = reference.file
     ? isAbsolute(reference.file)
       ? reference.file
@@ -594,7 +443,7 @@ function resolveCSSReferenceFile(reference: CSSDirectiveReference, options: Comp
     : resolve(options.root || process.cwd(), 'master.css')
   const packageFile = resolveMasterCSSPackageEntryFile(reference.source, fromFile, options.root)
   if (packageFile) return packageFile
-  if (isExpandableImportSource(reference.source)) return resolve(dirname(fromFile), reference.source)
+  if (isExpandableImportSource(reference.source, fromFile)) return resolveRelativeCSSFile(reference.source, fromFile)
   throw new Error(`@reference only supports relative CSS files or Master CSS package entries: ${reference.source}`)
 }
 
@@ -613,6 +462,7 @@ function resolveCSSReferenceContext(
 
   for (const reference of references || []) {
     const referenceFile = resolveCSSReferenceFile(reference, options)
+    options.onDependency?.(referenceFile)
     const comparableReferenceFile = resolveComparablePath(referenceFile)
     const stack = normalizeReferenceStack(options.referenceStack)
     if (stack.includes(comparableReferenceFile)) {
@@ -657,25 +507,61 @@ function toCompileCSSManifestResult(
   addUnique(warnings, referenceContext.warnings)
   addUnique(warnings, lowerResult.warnings)
   const generatedCSS = lowerResult.generatedCSS || ''
-  const css = [
+  const css = lowerResult.css ?? [
     result.nativeCSS,
     generatedCSS
   ].filter(Boolean).join('\n')
   return {
     ...directiveData,
+    ...(lowerResult.css === undefined ? {} : { outputMappings: lowerResult.outputMappings ?? [] }),
     dependencies,
     manifest: lowerResult.manifest,
     resolutionManifest: lowerResult.resolutionManifest,
     warnings,
     generatedCSS,
+    generatedMappings: lowerResult.generatedMappings,
     css,
     directives: result
   }
 }
 
+/** Compile original files independently before merging their manifest and native output. */
+export function compileCSSManifestGraph(
+  graph: PreparedCSSImportGraph,
+  options: CompileCSSManifestInternalOptions & {
+    mapReferences?: (file: string, source: string, references: CSSDirectiveReference[]) => readonly CSSDirectiveReference[]
+  } = {}
+) {
+  const references = Object.entries(graph.files).flatMap(([file, source]) => {
+    const parsed = compileCSS(source, { from: file })
+    const references = parsed.references || []
+    return options.mapReferences?.(file, source, references) ?? references
+  })
+  const referenceContext = resolveCSSReferenceContext(references, options)
+  const compiled = callCompilerBinding<ReturnType<ReturnType<typeof nativeCompiler>['compileCSSStylesheetGraph']>>(() => nativeCompiler().compileCSSStylesheetGraph({
+    graph,
+    urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
+    baseManifest: options.baseManifest,
+    resolutionManifest: referenceContext.manifest,
+    options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false, ...(options.classes ? { classes: options.classes } : {}) },
+    inlineImports: true
+  }))
+  const directives = reviveBindingCompileResult(compiled.directives as CompileCSSResult)
+  directives.references = references.length ? references : undefined
+  const dependencies = [...new Set([...directives.dependencies, ...referenceContext.dependencies])]
+  const warnings = [...new Set([...directives.warnings, ...referenceContext.warnings])]
+  for (const warning of warnings) options.onDiagnostic?.(compilerWarningDiagnostic(warning))
+  const entry = compiled.stylesheets.find(sheet => sheet.id === compiled.entry)!
+  return {
+    ...directives, dependencies, warnings, css: entry.css, outputMappings: entry.outputMappings,
+    manifest: compiled.manifest, resolutionManifest: compiled.resolutionManifest,
+    directives, stylesheets: compiled.stylesheets
+  }
+}
+
 export function createManifestFromCSSResult(
   result: CompileCSSResult,
-  options: CompileCSSManifestSourceOptions = {}
+  options: CompileCSSManifestSourceOptions & { sourceText?: string, onDependency?: (file: string) => void } = {}
 ) {
   return toCompileCSSManifestResult(result, options)
 }
@@ -701,14 +587,12 @@ export function compileCSSManifest(source: string, options: CompileCSSManifestSo
 
 function compileCSSManifestFileInternal(file: string, options: CompileCSSManifestInternalOptions = {}): CompileCSSManifestResult {
   const absoluteFile = isAbsolute(file) ? file : resolve(options.root || '', file)
-  const result = compileCSSFile(file, {
-    ...options,
-    preserveNativeCSS: options.preserveNativeCSS ?? false
-  })
-  return toCompileCSSManifestResult(result, {
-    ...options,
+  const graph = prepareCSSImportGraph(absoluteFile, undefined, {
+    projectDir: options.root, onDependency: options.onDependency
+  }, analyzeCSSDependencies)
+  return compileCSSManifestGraph(graph, {
+    ...options, preserveNativeCSS: options.preserveNativeCSS ?? false,
     from: absoluteFile,
-    sourceText: readFileSync(stripRequest(absoluteFile), 'utf8'),
     referenceStack: [...(options.referenceStack || []), absoluteFile]
   })
 }
@@ -739,26 +623,18 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
   }
   let manifest: MasterCSSManifest | undefined = options.baseManifest
   for (const entry of entries) {
-    const result = compileCSSFile(entry, {
+    const manifestResult = compileCSSManifestFile(entry, {
       ...options,
+      baseManifest: manifest,
       preserveNativeCSS: options.preserveNativeCSS ?? false
     })
+    const result = manifestResult.directives
     directives = result
     extractionPolicy = mergeCSSDirectiveExtractionPolicy(extractionPolicy, result.extractionPolicy)
     addUnique(dependencies, result.dependencies)
     addUnique(classNames, result.classNames)
     addUnique(nativeClassNames, result.nativeClassNames)
     addUnique(warnings, result.warnings)
-    const manifestResult = toCompileCSSManifestResult(result, {
-      ...options,
-      baseManifest: manifest,
-      from: entry,
-      sourceText: readFileSync(
-        stripRequest(isAbsolute(entry) ? entry : resolve(options.root || '', entry)),
-        'utf8'
-      ),
-      referenceStack: [isAbsolute(entry) ? entry : resolve(options.root || '', entry)]
-    })
     manifest = manifestResult.manifest
     addUnique(dependencies, manifestResult.dependencies)
     addUnique(warnings, manifestResult.warnings)

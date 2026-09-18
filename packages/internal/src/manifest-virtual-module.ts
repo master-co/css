@@ -141,16 +141,20 @@ export function createMasterCSSManifestVirtualModulePlugin(
     },
     handleHotUpdate({
       file,
+      modules = [],
       server
     }: {
       file: string
+      modules?: readonly MasterCSSVirtualModuleNode[]
       server: MasterCSSVirtualModuleServer
     }) {
       if (!cssManifestDependencies.includes(file)) return
-      return invalidateManifestModule(
+      // A manifest dependency may also be an ordinary stylesheet or a queried
+      // source module. Adding the virtual manifest must not consume their HMR.
+      return [...new Set([...modules, ...invalidateManifestModule(
         server.moduleGraph.getModuleById(RESOLVED_VIRTUAL_MANIFEST_ID),
         server
-      )
+      )])]
     }
   }
 }

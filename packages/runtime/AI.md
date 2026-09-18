@@ -66,24 +66,19 @@ Mutable registries, DOM nodes, layers, and binding sessions are internal.
 - Compiler/tooling Wasm accidentally entering the runtime bundle.
 - Accidental growth of runtime-covered value dependencies that are neither runtime core nor intentional observability.
 
-## Safe Changes
+## Constraints
 
-- Focused lifecycle fixes.
-- Hydration fixes with progressive e2e coverage.
-- Runtime insertion/deletion fixes with browser tests.
-
-## Dangerous Changes
-
-- Deleting rules by guessed indexes.
-- Rehydrating without comparing generated CSS text.
-- Removing class count tracking or hydration error checks.
-- Changing FOUC behavior without integration validation.
-- Changing global names `MasterCSSRuntime` or `masterCSSRuntime` casually.
-- Adding tooling-only operations to `MasterCSSRuntime` or the Wasm engine.
-- Treating build-time-only config imports or tooling helpers as browser runtime dependencies.
-- Adding global event buses or tooling observer APIs to runtime.
+- Derive CSSOM deletion indexes from tracked state.
+- Compare generated CSS text when rehydrating.
+- Preserve class count tracking and hydration error checks.
+- Validate integration behavior when changing FOUC handling.
+- Treat global names `MasterCSSRuntime` and `masterCSSRuntime` as public contracts.
+- Keep tooling-only operations out of `MasterCSSRuntime` and the Wasm engine.
+- Keep build-time-only config imports and tooling helpers out of browser runtime dependencies.
 
 ## Validation
+
+For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
 pnpm --filter @master/css-runtime e2e
@@ -96,7 +91,7 @@ Use or extend `e2e/lifecycle.test.ts`, `e2e/class-usages.test.ts`, `e2e/progress
 
 ## Benchmark Guidance
 
-Run `pnpm --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Correctness e2e should remain browser correctness, not timing assertions. Report benchmark status, global runtime asset impact, memory/cold-start/runtime CPU/CSSOM tradeoffs, and whether generated CSS output, progressive hydration, or fallback hydration changed.
+For runtime implementation changes, run `pnpm --filter @master/css-runtime bench` when changing DOM observation, class tracking, lifecycle behavior, hydration, runtime layer insertion/deletion, CSSOM mutation, or the global browser bundle. Correctness e2e should remain browser correctness, not timing assertions. Report benchmark status, global runtime asset impact, memory/cold-start/runtime CPU/CSSOM tradeoffs, and whether generated CSS output, progressive hydration, or fallback hydration changed.
 
 ## Bundle Audit Notes
 

@@ -1,19 +1,8 @@
 # Context Pack Index
 
-Use this index after reading `AGENTS.md`. Load the smallest pack that matches the task, then follow any "Escalate When" guidance in that pack. Context packs are compact routing aids; deeper `.ai/*.md` files remain the source of detailed architecture and testing policy.
+Choose the matching route when you need task guidance or ownership context. Read only what applies; do not reopen `AGENTS.md`, this index, or other instructions already in context. Pure wording/formatting edits can stay with the affected document and its local guidance.
 
-## Default Read Order
-
-1. `AGENTS.md`
-2. This file
-3. `.ai/context/package-routing.md` when paths, packages, or a diff are known
-4. `.ai/context/rust-routing.md` for Rust, binding, codegen, or parity paths
-5. Affected package `package.json` or crate `Cargo.toml`
-6. Affected package/crate-local `AI.md`, if present
-7. One task pack below
-8. Existing source and nearby tests
-
-Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrails.md` whenever the task touches CSS output, package boundaries, public APIs, runtime, extraction, language tooling, ESLint, compiler, parser, or performance-sensitive paths.
+For package code, read the affected manifest and local `AI.md`. For high-risk behavior changes, use [accuracy-guardrails.md](accuracy-guardrails.md) and its relevant deep references before editing. Route by the behavior being changed, not merely by a package name appearing in the task.
 
 ## Task Routing
 
@@ -34,8 +23,6 @@ Do not read every `.ai/` file by default. Do read `.ai/context/accuracy-guardrai
 
 - Project overview: `.ai/overview.md`
 - Package ownership and dependency direction: `.ai/architecture.md`, `.ai/package-map.md`
-- Path-based package context: `.ai/context/package-routing.md`
-- Rust crate/module and host pairing: `.ai/context/rust-routing.md`
 - Enforced source/context budgets: `.ai/context/source-budget.json`
 - Class, compiler, scanner, runtime, and language flows: `.ai/data-flows.md`
 - Boundaries and risk areas: `.ai/boundaries.md`

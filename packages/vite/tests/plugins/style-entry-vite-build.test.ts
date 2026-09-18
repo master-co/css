@@ -88,7 +88,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
 
     expect(css).toContain('.fake-font')
     expect(css).toContain('.block{display:block}')
-    expect(css.indexOf('.fake-font')).toBeLessThan(css.indexOf('.block{display:block}'))
+    expect(css).not.toContain('fake-font/index.css')
     expect(css).not.toContain('#master-css-slot')
     expect(css).not.toContain('@master/css')
   })

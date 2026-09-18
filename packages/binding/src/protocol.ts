@@ -718,6 +718,7 @@ export interface MasterCSSDirectiveExtractionPolicy {
 }
 
 export interface MasterCSSDirectiveCompilation {
+  nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   extractionPolicy: MasterCSSDirectiveExtractionPolicy
   classNames: string[]
@@ -758,6 +759,8 @@ export interface MasterCSSDependencyImport {
 export interface MasterCSSDependencyAnalysis {
   sourceWithoutReferences: string
   imports: MasterCSSDependencyImport[]
+  /** Original-source UTF-16 ranges, including URLs inside authoring directives. */
+  resources: { start: number, end: number, url: string }[]
 }
 
 export interface MasterCSSStandaloneDirectiveStatement {
@@ -795,6 +798,7 @@ export interface MasterCSSCompileDefaultPresetResult {
 }
 
 export interface MasterCSSLowerDirectivesRequest {
+  nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
   warnings?: readonly string[]
@@ -806,6 +810,9 @@ export interface MasterCSSLowerDirectivesOptions {
 }
 
 export interface MasterCSSLowerDirectivesResult {
+  css?: string
+  outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
+  generatedMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   input: MasterCSSDirectiveManifestInput
   manifest: import('@master/css-schema/manifest').MasterCSSManifest
   resolutionManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -838,10 +845,97 @@ export interface MasterCSSResolvedImportGraph {
   references?: MasterCSSDirectiveCompilation['references']
 }
 
+export interface MasterCSSCompileStylesheetGraphRequest {
+  /** Unresolved imports already emitted by the host, keyed by original stylesheet ID. */
+  hostImports?: Record<string, string[]>
+  /** Inline compatible local children; retained boundaries still require asset delivery. */
+  inlineImports?: boolean
+  graph: MasterCSSImportGraphRequest
+  urls: Record<string, string>
+  /** Original source ID -> decoded resource URL -> root-relative or absolute delivery URL. */
+  resourceURLs?: Record<string, Record<string, string>>
+  /** Explicit standalone delivery: every stylesheet and relative resource uses a sibling ./ URL. */
+  relativeResourceURLs?: boolean
+  /** Per-file pruning override; null preserves native rules in that stylesheet. */
+  classesByStylesheet?: Record<string, string[] | null>
+  /** Select native rules/compose and external imports; local links retain reachability. */
+  nativeStylesheets?: string[]
+  options?: MasterCSSDirectiveCompileOptions
+  baseManifest?: import('@master/css-schema/manifest').MasterCSSManifest
+  resolutionManifest?: import('@master/css-schema/manifest').MasterCSSManifest
+}
+
+export interface MasterCSSCompiledStylesheet {
+  id: string
+  href: string
+  css: string
+  outputMappings: import('@master/css-schema/css-directives').CSSOutputMapping[]
+  nativeCSS: string
+  generatedCSS: string
+}
+
+export interface MasterCSSCompiledStylesheetGraph {
+  entry: string
+  stylesheets: MasterCSSCompiledStylesheet[]
+  manifest: import('@master/css-schema/manifest').MasterCSSManifest
+  resolutionManifest: import('@master/css-schema/manifest').MasterCSSManifest
+  directives: MasterCSSDirectiveCompilation
+}
+
+export interface MasterCSSStylesheetAsset {
+  readonly id: string
+  readonly href: string
+  readonly css: string
+}
+
+export interface MasterCSSPrepareStylesheetBundleRequest {
+  readonly source: string
+  readonly from: string
+  readonly slotCSSRule: string
+  readonly managed: { readonly entry: string, readonly stylesheets: readonly MasterCSSStylesheetAsset[] }
+}
+
+export interface MasterCSSStylesheetBundle {
+  readonly slots: number
+  readonly graph: {
+    readonly version: number
+    readonly entry: string
+    readonly references: Readonly<NonNullable<MasterCSSDirectiveCompilation['references']>>
+    readonly stylesheets: readonly {
+      readonly id: string
+      readonly source: string
+      readonly imports: readonly {
+        readonly start: number, readonly end: number, readonly statement: string
+        readonly specifier: string, readonly resolved: string | null
+      }[]
+    }[]
+  }
+  readonly sources: readonly {
+    readonly id: string
+    readonly filename: string
+    readonly range: { readonly start: number, readonly end: number }
+    readonly prefix: string
+    readonly resources: readonly { readonly start: number, readonly end: number, readonly url: string }[]
+    readonly imports: readonly { readonly start: number, readonly end: number, readonly url: string }[]
+  }[]
+}
+
+export interface MasterCSSRenderStylesheetBundleRequest {
+  readonly bundle: MasterCSSStylesheetBundle
+  readonly urls: Readonly<Record<string, string>>
+  readonly resourceURLs?: Readonly<Record<string, string>>
+  /** Host guarantees all fragments retain the input stylesheet's resource base. */
+  readonly preserveResourceBase?: boolean
+  /** Inline local children only when import order and namespace scope survive. */
+  readonly inlineImports?: boolean
+}
+
 export interface MasterCSSProjectEntryGraph {
   entry: string
   source: string
   dependencies: readonly string[]
+  /** Manifest-only hosts preserve per-file CSS and resolved import/reference edges. */
+  manifestGraph?: MasterCSSImportGraphRequest
 }
 
 export interface MasterCSSProjectSourceEntryPlan {

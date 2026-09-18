@@ -31,6 +31,10 @@ interface MasterCSSCompilerWasmProviderSession {
   normalizeDefaultManifestForJSON(manifest: unknown): unknown
   compileDefaultPresetManifest(request: unknown): unknown
   resolveCSSImportGraph(request: unknown): unknown
+  resolveCSSStylesheetGraph(request: unknown): unknown
+  prepareCSSStylesheetBundle(request: unknown): unknown
+  renderCSSStylesheetBundle(request: unknown): unknown
+  compileCSSStylesheetGraph(request: unknown): unknown
 }
 
 interface MasterCSSCompilerWasmRenderProviderSession {

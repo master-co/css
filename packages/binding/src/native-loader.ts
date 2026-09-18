@@ -153,6 +153,10 @@ export interface NativeBinding {
   compileDefaultPresetManifestJson(requestJSON: string): string
   renderClassesJson(manifestJSON: string, classNames: string[], nativeSupport?: boolean[]): string
   resolveCssImportGraphJson(requestJSON: string): string
+  resolveCssStylesheetGraphJson(requestJSON: string): string
+  prepareCssStylesheetBundleJson(requestJSON: string): string
+  renderCssStylesheetBundleJson(requestJSON: string): string
+  compileCssStylesheetGraphJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
   LanguageSession: new (manifestJSON: string) => NativeLanguageSession

@@ -34,6 +34,9 @@ pub(crate) fn native_rule_list_has_directives(
         CssRule::Container(rule) => {
             native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
         }
+        CssRule::LayerBlock(rule) => {
+            native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+        }
         CssRule::StartingStyle(rule) => {
             native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
         }
@@ -43,6 +46,7 @@ pub(crate) fn native_rule_list_has_directives(
 
 pub(crate) fn push_native_style_declarations(
     declarations: serde_json::Map<String, Value>,
+    source: Option<CssDirectiveSourceReference>,
     context: &NativeStyleContext,
     condition_path: &[CssDirectiveConditionPathEntry],
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
@@ -57,7 +61,7 @@ pub(crate) fn push_native_style_declarations(
         order: *style_order,
         selector: context.selectors.join(","),
         declarations,
-        source: None,
+        source,
         selector_source: context.selector_source.clone(),
         conditions,
         condition_path,
@@ -178,8 +182,23 @@ pub(crate) fn lower_native_style_rule(
     {
         preserve_compatible_literal_spelling(source, start, &mut declarations);
     }
+    let declaration_source = context
+        .selector_source
+        .as_ref()
+        .and_then(|selector| utf16_to_byte_offset(source, selector.range.end))
+        .and_then(|start| css_statement_delimiter(source, start, source.len()))
+        .filter(|(_, delimiter)| *delimiter == '{')
+        .and_then(|(start, _)| {
+            let start = start + 1;
+            let mut input = cssparser::ParserInput::new(&source[start..]);
+            let mut parser = cssparser::Parser::new(&mut input);
+            parser.skip_whitespace();
+            let start = start + parser.position().byte_index();
+            source_reference_from_bytes(source, filename, start, start)
+        });
     push_native_style_declarations(
         declarations,
+        declaration_source,
         &context,
         condition_path,
         style_definitions,
@@ -256,6 +275,10 @@ pub(crate) fn lower_native_rule_list(
                 };
                 push_native_style_declarations(
                     collect_declarations(&child.declarations, filename)?,
+                    byte_offset_for_location(rewritten_source, child.loc.line, child.loc.column)
+                        .and_then(|start| {
+                            source_reference_from_bytes(source, filename, start, start)
+                        }),
                     context,
                     condition_path,
                     style_definitions,
@@ -323,6 +346,25 @@ pub(crate) fn lower_native_rule_list(
                     filename,
                     rewritten_source,
                     container.rules.0,
+                    context.clone(),
+                    &path,
+                    variant_rule_offsets,
+                    style_definitions,
+                    style_order,
+                )?;
+            }
+            CssRule::LayerBlock(layer) => {
+                let value = match &layer.name {
+                    Some(name) => format!("@layer {}", minified_css(name, filename)?),
+                    None => "@layer".into(),
+                };
+                let mut path = condition_path.to_vec();
+                path.push(CssDirectiveConditionPathEntry::Condition { value });
+                lower_native_rule_list(
+                    source,
+                    filename,
+                    rewritten_source,
+                    layer.rules.0,
                     context.clone(),
                     &path,
                     variant_rule_offsets,

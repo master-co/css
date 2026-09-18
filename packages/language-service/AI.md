@@ -10,12 +10,13 @@
 - Completion, hover/generated CSS previews, colors, and color presentations.
 - `TextDocument` methods that delegate class-position and semantic token primitives to `@master/css-tooling/language`.
 - Thin wrappers around editor-neutral language primitives.
+- Shiki adaptation and the shipped TextMate grammar asset.
 
 ## Does Not Own
 
 - Engine syntax behavior.
 - LSP capabilities and workspace lifecycle.
-- Browser helpers, Shiki helpers, TextMate grammar ownership, semantic tokenizer ownership, or class-position scanner ownership.
+- Editor-neutral semantic tokenizer and class-position scanner implementation; use `@master/css-tooling/language`.
 - Raw class-list parsing and unescape behavior; that flows through `@master/css-tooling/language` from `@master/css-tooling/lexer`.
 - Diagnostics without language-server coordination.
 
@@ -49,20 +50,16 @@
 - Generated CSS in hover docs.
 - Consistency with engine rule matching.
 
-## Safe Changes
+## Constraints
 
-- Focused completion, hover, color, or wrapper-level semantic token fixes.
-- Framework-specific class-position fixtures.
-- Tests for new syntax support.
-
-## Dangerous Changes
-
-- Assuming all class strings are HTML attributes.
-- Returning completions outside accepted documents.
-- Reintroducing browser, Shiki, grammar, semantic tokenizer, or class-position scanner ownership.
-- Broad regex rewrites without framework-specific tests.
+- Handle class strings in each supported document syntax, not only HTML attributes.
+- Return completions only inside accepted documents.
+- Delegate semantic token and class-position scanning logic to tooling.
+- Cover regex changes with affected framework fixtures.
 
 ## Validation
+
+For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
 pnpm --filter @master/css-language-service test
@@ -70,5 +67,7 @@ pnpm --filter @master/css-language-service lint
 pnpm --filter @master/css-language-service type-check
 pnpm --filter @master/css-language-service build
 ```
+
+For Shiki or grammar changes, use `tests/shiki.test.ts`, `tests/shiki-session.test.ts`, and `tests/rc87-shiki.test.ts`.
 
 Use or extend `tests/get-class-position`, `tests/suggest-syntax`, `tests/inspect-syntax.test.ts`, `tests/render-semantic-tokens.test.ts`, `tests/render-css-semantic-tokens.test.ts`, `tests/render-syntax-colors.test.ts`, and `tests/edit-syntax-colors.test.ts`.

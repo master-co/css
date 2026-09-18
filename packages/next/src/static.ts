@@ -1,3 +1,4 @@
+import { publishStaticStylesheets } from './static-publication'
 import {
   defaultScannerOptions,
   MasterCSSScanner,
@@ -40,6 +41,8 @@ interface StaticSession {
   stylesheets: MasterCSSStylesheetCollection
   ready: Promise<MasterCSSScanner>
   write: () => Promise<void>
+  publicationDependencies: readonly string[]
+  outputFiles: readonly string[]
 }
 
 interface PrepareNextStaticOptions {
@@ -101,12 +104,16 @@ export async function transformStaticStyleSource(statePath: string, resourcePath
   return composeStylesheetHostSync(source, { masterImport: toCSSImportPath(resourcePath, state.outputPath) })
 }
 
-async function createStaticCSS(projectDir: string, session: StaticSession) {
-  return (await session.stylesheets.compose({
+async function publishStaticCSS(projectDir: string, outputPath: string, session: StaticSession) {
+  const result = await publishStaticStylesheets(outputPath, delivery => session.stylesheets.compose({
     scanner: session.scanner,
     baseManifest: session.scanner.css.manifest,
-    projectDir
-  })).css
+    projectDir,
+    delivery
+  }))
+  session.publicationDependencies = result.dependencies
+  session.outputFiles = result.outputFiles
+  syncScannerResetDependencies(session)
 }
 
 async function registerStylesheetEntries(projectDir: string, session: StaticSession) {
@@ -121,24 +128,11 @@ async function registerStylesheetEntries(projectDir: string, session: StaticSess
 }
 
 function getStyleDependencyPaths(session: StaticSession) {
-  return session.stylesheets.snapshot().dependencies
+  return [...session.stylesheets.snapshot().dependencies, ...session.publicationDependencies]
 }
 
 function syncScannerResetDependencies(session: StaticSession) {
   session.scanner.resetDependencies = [...new Set(getStyleDependencyPaths(session))]
-}
-
-async function writeStaticCSS(outputPath: string, cssText: string) {
-  await mkdir(dirname(outputPath), { recursive: true })
-  try {
-    if (await readFile(outputPath, 'utf-8') === cssText) {
-      return false
-    }
-  } catch {
-    // File does not exist yet.
-  }
-  await writeFile(outputPath, cssText)
-  return true
 }
 
 function createSession(projectDir: string, outputPath: string, options: ResolvedMasterCSSNextOptions): StaticSession {
@@ -146,34 +140,32 @@ function createSession(projectDir: string, outputPath: string, options: Resolved
   const stylesheets = createStylesheetCollection()
   let writeChain = Promise.resolve()
   let session: StaticSession
+  let initialized = false
   const write = () => {
-    writeChain = writeChain
-      .then(async () => {
-        const cssText = await createStaticCSS(projectDir, session)
-        await writeStaticCSS(outputPath, cssText)
-      })
-      .catch((error: unknown) => {
-        console.error('[@master/css-next] failed to write static CSS:', error)
-      })
+    // Explicit operations reject; subsequent queued attempts can still recover.
+    writeChain = writeChain.catch(() => undefined).then(() => publishStaticCSS(projectDir, outputPath, session))
     return writeChain
   }
   const ready = scanner
     .init()
     .then(async () => {
       await registerStylesheetEntries(projectDir, session)
+      initialized = true
       await write()
       return scanner
     })
 
   scanner.on('change', () => {
-    void write()
+    if (initialized) void write().catch(error => console.error('[@master/css-next] failed to write static CSS:', error))
   })
 
   session = {
     scanner,
     stylesheets,
     ready,
-    write
+    write,
+    publicationDependencies: [],
+    outputFiles: []
   }
 
   return session
@@ -229,7 +221,7 @@ export async function addStaticCSSDependencies(statePath: string, addDependency?
     debug: state.options.debug
   })
   const session = await getOrCreateStaticSession(state.projectDir, state.outputPath, options)
-  addDependency(state.outputPath)
+  for (const file of new Set([state.outputPath, ...session.outputFiles, ...session.publicationDependencies])) addDependency(file)
   for (const styleSource of session.stylesheets.snapshot().sources) {
     for (const dependency of styleSource.dependencies) {
       addDependency(dependency)
@@ -249,7 +241,15 @@ export async function getOrCreateStaticSession(
     session = createSession(projectDir, outputPath, options)
     sessions.set(key, session)
   }
-  await session.ready
+  try { await session.ready }
+  catch (error) {
+    if (sessions.get(key) === session) {
+      sessions.delete(key)
+      await session.scanner.dispose()
+      session.stylesheets.dispose()
+    }
+    throw error
+  }
   return session
 }
 
@@ -295,7 +295,6 @@ export async function scanStaticModule(statePath: string, resourcePath: string, 
   if (changed) {
     await session.write()
   } else if (!existsSync(state.outputPath)) {
-    const cssText = await createStaticCSS(state.projectDir, session)
-    await writeStaticCSS(state.outputPath, cssText)
+    await session.write()
   }
 }

@@ -2,10 +2,10 @@ use super::resolution::{
     combine_style_selectors, composition_rules, directive_diagnostic, resolve_configured_branches,
 };
 use super::{
-    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition,
-    EngineCompositionRuleIr, EngineSession, ErrorCode, HashMap, Map, MergedStyleDefinition,
-    Ordering, ResolvedStyleBranch, RulePriorityIr, StyleConditionFeature, StyleMergeBucket,
-    StyleMergeEvent, UtilityLayerName, Value, natural_compare,
+    CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
+    CssDirectiveStyleDefinition, EngineCompositionRuleIr, EngineSession, ErrorCode, HashMap, Map,
+    MergedStyleDefinition, Ordering, ResolvedStyleBranch, RulePriorityIr, StyleConditionFeature,
+    StyleMergeBucket, StyleMergeEvent, UtilityLayerName, Value, natural_compare,
 };
 
 pub(super) fn bucket_key(
@@ -20,9 +20,13 @@ pub(super) fn push_style_event(
     buckets: &mut Vec<(String, StyleMergeBucket)>,
     branch: ResolvedStyleBranch,
     event: StyleMergeEvent,
+    selector_source: Option<CssDirectiveSourceReference>,
 ) {
     let key = bucket_key(&branch.selector, &branch.conditions, branch.layer);
     if let Some((_, bucket)) = buckets.iter_mut().find(|(current, _)| *current == key) {
+        if event.order() < bucket.order || bucket.selector_source.is_none() {
+            bucket.selector_source = selector_source;
+        }
         bucket.order = bucket.order.min(event.order());
         bucket.events.push(event);
         return;
@@ -30,6 +34,7 @@ pub(super) fn push_style_event(
     buckets.push((
         key,
         StyleMergeBucket {
+            selector_source,
             selector: branch.selector,
             conditions: branch.conditions,
             layer: branch.layer,
@@ -254,34 +259,88 @@ pub(super) fn compare_style_merge_buckets(
     left.order.cmp(&right.order)
 }
 
+fn apply_declarations_with_sources(
+    target: &mut Map<String, Value>,
+    sources: &mut HashMap<String, CssDirectiveSourceReference>,
+    incoming: &Map<String, Value>,
+    source: Option<&CssDirectiveSourceReference>,
+) {
+    for (property, value) in incoming {
+        if target.get(property).is_some_and(is_important) && !is_important(value) {
+            continue;
+        }
+        if let Some(source) = source {
+            sources.insert(property.clone(), source.clone());
+        } else {
+            sources.remove(property);
+        }
+    }
+    apply_declarations(target, incoming);
+}
+
 pub(super) fn merged_bucket(bucket: StyleMergeBucket) -> Option<MergedStyleDefinition> {
     let mut declarations = Map::new();
-    let mut compose_batch: Vec<(u32, EngineCompositionRuleIr)> = Vec::new();
-    let flush = |batch: &mut Vec<(u32, EngineCompositionRuleIr)>,
-                 declarations: &mut Map<String, Value>| {
-        batch.sort_by(|(left_order, left), (right_order, right)| {
+    let mut declaration_sources = HashMap::new();
+    let mut compose_batch: Vec<(
+        u32,
+        EngineCompositionRuleIr,
+        Option<CssDirectiveSourceReference>,
+    )> = Vec::new();
+    let flush = |batch: &mut Vec<(
+        u32,
+        EngineCompositionRuleIr,
+        Option<CssDirectiveSourceReference>,
+    )>,
+                 declarations: &mut Map<String, Value>,
+                 sources: &mut HashMap<String, CssDirectiveSourceReference>| {
+        batch.sort_by(|(left_order, left, _), (right_order, right, _)| {
             compare_rule_priority(left, right).then_with(|| left_order.cmp(right_order))
         });
-        for (_, rule) in batch.drain(..) {
-            apply_declarations(declarations, &rule.declarations);
+        for (_, rule, source) in batch.drain(..) {
+            apply_declarations_with_sources(
+                declarations,
+                sources,
+                &rule.declarations,
+                source.as_ref(),
+            );
         }
     };
     let mut events = bucket.events;
     events.sort_by_key(StyleMergeEvent::order);
     for event in events {
         match event {
-            StyleMergeEvent::Compose { order, rule } => compose_batch.push((order, rule)),
+            StyleMergeEvent::Compose {
+                order,
+                rule,
+                source,
+            } => compose_batch.push((order, rule, source)),
             StyleMergeEvent::Native {
                 declarations: incoming,
+                source,
                 ..
             } => {
-                flush(&mut compose_batch, &mut declarations);
-                apply_declarations(&mut declarations, &incoming);
+                flush(
+                    &mut compose_batch,
+                    &mut declarations,
+                    &mut declaration_sources,
+                );
+                apply_declarations_with_sources(
+                    &mut declarations,
+                    &mut declaration_sources,
+                    &incoming,
+                    source.as_ref(),
+                );
             }
         }
     }
-    flush(&mut compose_batch, &mut declarations);
+    flush(
+        &mut compose_batch,
+        &mut declarations,
+        &mut declaration_sources,
+    );
     (!declarations.is_empty()).then_some(MergedStyleDefinition {
+        selector_source: bucket.selector_source,
+        declaration_sources,
         selector: bucket.selector,
         declarations,
         conditions: bucket.conditions,
@@ -305,6 +364,7 @@ pub(super) fn create_merged_style_definitions(
                 condition_path,
                 layer,
                 source,
+                selector_source,
                 ..
             } => {
                 let rules = composition_rules(engine, class_name)?;
@@ -341,9 +401,11 @@ pub(super) fn create_merged_style_definitions(
                             &mut buckets,
                             branch,
                             StyleMergeEvent::Compose {
+                                source: source.clone(),
                                 order: *order,
                                 rule: rule.clone(),
                             },
+                            selector_source.clone().or_else(|| source.clone()),
                         );
                     }
                 }
@@ -355,6 +417,8 @@ pub(super) fn create_merged_style_definitions(
                 conditions,
                 condition_path,
                 layer,
+                source,
+                selector_source,
                 ..
             } => {
                 let path = condition_path.clone().unwrap_or_else(|| {
@@ -372,9 +436,11 @@ pub(super) fn create_merged_style_definitions(
                         &mut buckets,
                         branch,
                         StyleMergeEvent::Native {
+                            source: source.clone(),
                             order: *order,
                             declarations: declarations.clone(),
                         },
+                        selector_source.clone().or_else(|| source.clone()),
                     );
                 }
             }

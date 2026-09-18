@@ -1,39 +1,9 @@
 # Explain Package
 
-## Goal
+Explain the requested package from its manifest, public entrypoints, owning source, tests, and consumers.
 
-Explain how a package works, including inputs, transformations, outputs, dependencies, public APIs, tests, and risk areas.
+Use [the package-boundaries context pack](../../.ai/context/package-boundaries.md) for task-specific guidance; repository policy remains in `AGENTS.md`. Do not reread guidance already in context.
 
-## Read Before Starting
+## Completion
 
-- `AGENTS.md`
-- `.ai/context/index.md`
-- `.ai/context/package-boundaries.md`
-- The package `package.json`
-- The package `AI.md`, if present
-
-## Inspect First
-
-- Entry point files
-- Main source files
-- Tests and fixtures
-- Workspace dependencies and dependents
-- Deeper references from `.ai/context/package-boundaries.md` when ownership or dependency direction is unclear
-
-## Output
-
-Include:
-
-- Package purpose
-- Public exports
-- Internal workflow
-- Dependencies and dependents
-- What affects CSS output
-- What affects developer experience
-- Risk areas
-- Required validation after changes
-
-## Not Allowed
-
-- Do not invent package responsibilities.
-- Do not summarize only file names.
+Describe its purpose, public inputs/outputs, internal data flow, dependencies/dependents, CSS and developer-experience effects, risks, and relevant validation. Distinguish verified behavior from uncertainty; do not substitute a file inventory for an explanation.

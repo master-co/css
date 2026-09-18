@@ -9,7 +9,7 @@ use lightningcss::values::length::{Length, LengthPercentageOrAuto};
 use mastercss_engine::{EngineCompositionRuleIr, EngineSession, natural_compare};
 use mastercss_schema::{
     CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, ErrorCode, RulePriorityIr, UtilityLayerName,
+    CssDirectiveStyleDefinition, CssOutputMapping, ErrorCode, RulePriorityIr, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
@@ -29,6 +29,8 @@ pub struct LowerCssDirectivesOptions {
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesRequest {
     #[serde(default)]
+    pub native_output: Option<crate::NativeCssOutput>,
+    #[serde(default)]
     pub manifest_input: CssDirectiveManifestInput,
     #[serde(default)]
     pub style_definitions: Vec<CssDirectiveStyleDefinition>,
@@ -39,6 +41,12 @@ pub struct LowerCssDirectivesRequest {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesResult {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub css: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub output_mappings: Vec<CssOutputMapping>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub generated_mappings: Vec<CssOutputMapping>,
     pub input: CssDirectiveManifestInput,
     pub manifest: Value,
     pub resolution_manifest: Value,
@@ -57,6 +65,8 @@ struct ResolvedStyleBranch {
 
 #[derive(Debug, Clone)]
 struct MergedStyleDefinition {
+    selector_source: Option<CssDirectiveSourceReference>,
+    declaration_sources: HashMap<String, CssDirectiveSourceReference>,
     selector: String,
     declarations: Map<String, Value>,
     conditions: Vec<String>,
@@ -65,10 +75,12 @@ struct MergedStyleDefinition {
 #[derive(Debug, Clone)]
 enum StyleMergeEvent {
     Compose {
+        source: Option<CssDirectiveSourceReference>,
         order: u32,
         rule: EngineCompositionRuleIr,
     },
     Native {
+        source: Option<CssDirectiveSourceReference>,
         order: u32,
         declarations: Map<String, Value>,
     },
@@ -84,6 +96,7 @@ impl StyleMergeEvent {
 
 #[derive(Debug, Clone)]
 struct StyleMergeBucket {
+    selector_source: Option<CssDirectiveSourceReference>,
     selector: String,
     conditions: Vec<String>,
     layer: Option<UtilityLayerName>,
@@ -95,6 +108,7 @@ type StyleConditionFeature = (String, f64, f64);
 
 mod api;
 mod merge;
+mod output;
 mod render;
 mod resolution;
 

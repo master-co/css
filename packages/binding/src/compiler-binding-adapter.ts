@@ -1,7 +1,7 @@
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSDiagnosticDomain } from '@master/css-schema'
 import type { MasterCSSCompilerBindingSession } from './compiler-binding-contract'
-import { callBinding } from './normalize-error'
+import { callBinding, type BindingSourceText } from './normalize-error'
 
 interface CompilerOperations {
   findManifestEntries?: MasterCSSCompilerBindingSession['findManifestEntries']
@@ -20,6 +20,10 @@ interface CompilerOperations {
   normalizeDefaultManifest: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
   compileDefaultPresetManifest: MasterCSSCompilerBindingSession['compileDefaultPresetManifest']
   resolveCSSImportGraph: MasterCSSCompilerBindingSession['resolveCSSImportGraph']
+  resolveCSSStylesheetGraph: MasterCSSCompilerBindingSession['resolveCSSStylesheetGraph']
+  prepareCSSStylesheetBundle: MasterCSSCompilerBindingSession['prepareCSSStylesheetBundle']
+  renderCSSStylesheetBundle: MasterCSSCompilerBindingSession['renderCSSStylesheetBundle']
+  compileCSSStylesheetGraph: MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']
   createInspectionReport?: MasterCSSCompilerBindingSession['createInspectionReport']
   renderClassNames?: MasterCSSCompilerBindingSession['renderClassNames']
   dispose?: () => void
@@ -41,7 +45,7 @@ export function bindCompilerBindingSession(
   const invoke = <T>(
     domain: MasterCSSDiagnosticDomain,
     operation: () => T,
-    source?: string
+    source?: BindingSourceText
   ) => {
     if (disposed) {
       throw new MasterCSSError({
@@ -92,6 +96,15 @@ export function bindCompilerBindingSession(
       invoke('compiler', () => operations.compileDefaultPresetManifest(request)),
     resolveCSSImportGraph: (request) =>
       invoke('compiler', () => operations.resolveCSSImportGraph(request)),
+    resolveCSSStylesheetGraph: (request) =>
+      invoke('compiler', () => operations.resolveCSSStylesheetGraph(request), filename => request.files[filename]),
+    prepareCSSStylesheetBundle: (request) =>
+      invoke('compiler', () => operations.prepareCSSStylesheetBundle(request), filename => filename === request.from ? request.source : request.managed.stylesheets.find(asset => asset.id === filename)?.css),
+    renderCSSStylesheetBundle: (request) =>
+      invoke('compiler', () => operations.renderCSSStylesheetBundle(request)),
+    compileCSSStylesheetGraph: (request) =>
+      invoke('compiler', () => operations.compileCSSStylesheetGraph(request), filename =>
+        Object.hasOwn(request.graph.files, filename) ? request.graph.files[filename] : undefined),
     createInspectionReport: (input) => invoke('tooling', () =>
       operations.createInspectionReport?.(input) ?? unavailable('Inspection reporting')),
     renderClassNames: (manifest, classNames, nativeSupport) => invoke('server', () =>

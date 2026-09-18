@@ -1,14 +1,15 @@
-import type { Plugin, ViteDevServer } from 'vite'
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import { existsSync, readFileSync } from 'fs'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
 import { RESOLVED_VIRTUAL_EMITTED_GLOBALS_ID } from '../common'
-import { getScanner } from '../utils/scanner-context'
+import { getScanner, ensureScanner, releaseScannerEnvironment } from '../utils/scanner-context'
 
 /** HMR when the config and source files changed */
 export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let transformedIndexHTMLModule: { id: string, code: string }
-  const servers: ViteDevServer[] = []
+  const servers = new Map<ResolvedConfig, ViteDevServer>()
+  const attachedScanners = new WeakSet<object>()
   const updateStylesheetImporters = async ({ server }: { server: ViteDevServer }) => {
     if (!server) return
     const affectedModuleIds = new Set(context.virtualCSSImporters || [])
@@ -49,22 +50,29 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
     enforce: 'pre',
     apply: 'serve',
     buildStart() {
-      let resetChain: Promise<unknown> = Promise.resolve()
-      let updateChain: Promise<unknown> = Promise.resolve()
-      const onError = (label: string) => (err: unknown) => {
-        console.error(`[master-css.vite] ${label} failed:`, err)
+      const attach = () => {
+        const scanner = getScanner(context)
+        if (attachedScanners.has(scanner)) return
+        attachedScanners.add(scanner)
+        let resetChain: Promise<unknown> = Promise.resolve()
+        let updateChain: Promise<unknown> = Promise.resolve()
+        const onError = (label: string) => (err: unknown) => {
+          console.error(`[master-css.vite] ${label} failed:`, err)
+        }
+        scanner
+          .on('reset', () => {
+            resetChain = resetChain
+              .then(() => Promise.all([...servers.values()].map((eachServer) => handleReset({ server: eachServer }))))
+              .catch(onError('reset'))
+          })
+          .on('change', () => {
+            updateChain = updateChain
+              .then(() => Promise.all([...servers.values()].map((eachServer) => updateStylesheetImporters({ server: eachServer }))))
+              .catch(onError('hmr update'))
+          })
       }
-      getScanner(context)
-        .on('reset', () => {
-          resetChain = resetChain
-            .then(() => Promise.all(servers.map((eachServer) => handleReset({ server: eachServer }))))
-            .catch(onError('reset'))
-        })
-        .on('change', () => {
-          updateChain = updateChain
-            .then(() => Promise.all(servers.map((eachServer) => updateStylesheetImporters({ server: eachServer }))))
-            .catch(onError('hmr update'))
-        })
+      if (context.scanner) return attach()
+      return ensureScanner(_options, context).then(attach)
     },
     transformIndexHtml: {
       order: 'pre',
@@ -76,8 +84,12 @@ export default function StyleEntryHMRPlugin(_options: ResolvedMasterCSSVitePlugi
         await getScanner(context).scanModule(filename, html)
       }
     },
+    closeBundle() {
+      const config = this.environment?.getTopLevelConfig() ?? context.config
+      if (config && releaseScannerEnvironment(context, config, this.environment)) servers.delete(config)
+    },
     configureServer(server) {
-      servers.push(server)
+      servers.set(server.config, server)
     }
   }
 }

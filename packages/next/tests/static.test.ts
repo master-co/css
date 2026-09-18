@@ -1,6 +1,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
   prepareNextStatic,
@@ -10,6 +11,15 @@ import {
 } from '../src/static'
 import masterCSSNextStaticCSSLoader from '../src/static-css-loader'
 import masterCSSNextStaticLoader from '../src/static-loader'
+
+// Native CSS may live in immutable child stylesheets; inspect only the current graph.
+function readStaticCSS(file: string, seen = new Set<string>()): string {
+  if (seen.has(file)) return ''
+  seen.add(file)
+  const css = readFileSync(file, 'utf-8')
+  const imports = [...css.matchAll(/@import\s+["']([^"']+)["']/g)].filter(([, href]) => href.startsWith('.'))
+  return css + imports.map(([, href]) => readStaticCSS(fileURLToPath(new URL(href, pathToFileURL(file))), seen)).join('\n')
+}
 
 function createFixture() {
   const root = mkdtempSync(join(tmpdir(), 'master-css-next-static-'))
@@ -94,7 +104,7 @@ describe('Next static mode', () => {
     await scanStaticFixtureModule(statePath, pagePath)
     await scanStaticFixtureModule(statePath, modulePath)
 
-    const css = readFileSync(outputPath, 'utf-8')
+    const css = readStaticCSS(outputPath)
     expect(css).toContain('@layer base')
     expect(css).toContain('text-rendering: geometricprecision')
     expect(css).toContain('display:block')
@@ -137,10 +147,10 @@ describe('Next static mode', () => {
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), source)
     expect(replaced).toBe('@import "../.master/next.css";')
     expect(replaced).not.toContain('.main')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('color: var(--color-primary)')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('--color-primary:red')
+    expect(readStaticCSS(outputPath)).toContain('.main')
+    expect(readStaticCSS(outputPath)).toContain('display:block')
+    expect(readStaticCSS(outputPath)).toContain('color: var(--color-primary)')
+    expect(readStaticCSS(outputPath)).toContain('--color-primary:red')
   })
 
   it('prunes dev CSS chunks that import @master/css', async () => {
@@ -171,12 +181,12 @@ describe('Next static mode', () => {
     `)
 
     expect(replaced).toBe('@import "../.master/next.css";')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
-    expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
+    expect(readStaticCSS(outputPath)).toContain('display:block')
+    expect(readStaticCSS(outputPath)).toContain('.main')
     expect(replaced).not.toContain('.unused')
     expect(replaced).toContain('../.master/next.css')
     expect(replaced).not.toContain('@master/css')
-    expect(readFileSync(outputPath, 'utf-8')).not.toContain('.unused')
+    expect(readStaticCSS(outputPath)).not.toContain('.unused')
   })
 
   it('adds output and managed CSS entry files as CSS loader dependencies for dev updates', async () => {
@@ -218,7 +228,7 @@ describe('Next static mode', () => {
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/theme.css'), source)
 
     expect(replaced).toBe(source)
-    expect(readFileSync(outputPath, 'utf-8')).not.toContain('--color-primary')
+    expect(readStaticCSS(outputPath)).not.toContain('--color-primary')
   })
 
   it('lets the scanner loader feed an imported module into the scanner incrementally', async () => {
@@ -229,7 +239,7 @@ describe('Next static mode', () => {
 
     await prepareNextStatic({ mode: 'static' }, { projectDir: root })
 
-    expect(readFileSync(outputPath, 'utf-8')).not.toContain('display:block')
+    expect(readStaticCSS(outputPath)).not.toContain('display:block')
 
     const modulePath = join(root, 'app/main.ts')
     const source = `
@@ -237,7 +247,7 @@ describe('Next static mode', () => {
     `
     await expect(runStaticLoader(statePath, modulePath, source)).resolves.toBe(source)
 
-    const css = readFileSync(outputPath, 'utf-8')
+    const css = readStaticCSS(outputPath)
     expect(css).toContain('display:block')
     expect(css).toContain('margin:0')
     expect(readFileSync(scanLogPath, 'utf-8')).toContain(modulePath)
@@ -264,7 +274,7 @@ describe('Next static mode', () => {
     await scanStaticFixtureModule(statePath, dependencyPath)
     await scanStaticFixtureModule(statePath, pagePath)
 
-    const css = readFileSync(outputPath, 'utf-8')
+    const css = readStaticCSS(outputPath)
     expect(css).toContain('display:block')
     expect(css).not.toContain('123456px')
   })
@@ -284,8 +294,8 @@ describe('Next static mode', () => {
     await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
     await scanStaticFixtureModule(statePath, pagePath)
 
-    expect(readFileSync(outputPath, 'utf-8')).toContain('display:block')
-    expect(readFileSync(outputPath, 'utf-8')).not.toContain('margin:0')
+    expect(readStaticCSS(outputPath)).toContain('display:block')
+    expect(readStaticCSS(outputPath)).not.toContain('margin:0')
 
     writeFileSync(pagePath, `
       export default function Page() {
@@ -295,7 +305,7 @@ describe('Next static mode', () => {
 
     await runStaticLoader(statePath, pagePath, readFileSync(pagePath, 'utf-8'))
 
-    expect(readFileSync(outputPath, 'utf-8')).toContain('margin:0')
+    expect(readStaticCSS(outputPath)).toContain('margin:0')
   })
 
   it('updates static CSS when Turbopack reruns the CSS loader', async () => {
@@ -321,7 +331,7 @@ describe('Next static mode', () => {
     await prepareNextStatic({ mode: 'static' }, { projectDir: root, watch: true })
     await scanStaticFixtureModule(statePath, pagePath)
 
-    expect(readFileSync(outputPath, 'utf-8')).toContain('color: red')
+    expect(readStaticCSS(outputPath)).toContain('color: red')
 
     writeFileSync(globalsPath, `
       @import "@master/css";
@@ -333,7 +343,7 @@ describe('Next static mode', () => {
 
     await runStaticCSSLoader(statePath, globalsPath, readFileSync(globalsPath, 'utf-8'))
 
-    const css = readFileSync(outputPath, 'utf-8')
+    const css = readStaticCSS(outputPath)
     expect(css).toContain('color: #00f')
     expect(css).not.toContain('color: red')
   })

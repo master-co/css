@@ -207,7 +207,27 @@ export type CSSDirectiveStyleDefinition =
   | CSSDirectiveStyleComposeDefinition
   | CSSDirectiveStyleNativeDefinition
 
+/** Generated UTF-16 offset and its original authoring-source anchor. */
+export interface CSSOutputMapping {
+  generatedStart: number
+  generatedEnd?: number
+  source: CSSDirectiveSourceReference
+}
+
+/** Rust output plan; pass it unchanged from parsing to directive lowering. */
+export interface CSSNativeOutput {
+  css: string
+  mappings: CSSOutputMapping[]
+  slots: { start: number, end: number, marker: string, definitions: CSSDirectiveStyleDefinition[] }[]
+}
+
 export interface CSSDirectiveResult {
+  nativeOutput?: CSSNativeOutput
+  outputMappings?: CSSOutputMapping[]
+  /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */
+  sourceMap?: string
+  nativeMappings?: CSSOutputMapping[]
+  generatedMappings?: CSSOutputMapping[]
   manifestInput: CSSDirectiveManifestInput
   extractionPolicy: CSSDirectiveExtractionPolicy
   classNames: string[]

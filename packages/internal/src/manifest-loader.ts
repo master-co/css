@@ -23,6 +23,7 @@ export interface MasterCSSVirtualManifestHost {
     readonly entries: readonly string[]
     readonly baseManifest: MasterCSSManifest
     readonly signal?: AbortSignal
+    readonly onDependency?: (dependency: string) => void
   }) => Promise<MasterCSSVirtualManifestLoadResult>
 }
 
@@ -62,7 +63,8 @@ export async function loadMasterCSSVirtualManifest(
     root: options.root,
     entries,
     baseManifest: options.baseManifest ?? defaultBuildManifest,
-    signal: options.signal
+    signal: options.signal,
+    onDependency: addDependency
   })
   for (const dependency of result.dependencies) addDependency(dependency)
   return Object.freeze({

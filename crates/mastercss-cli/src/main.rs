@@ -301,7 +301,7 @@ fn run_scan(args: ScanArgs) -> Result<(), CliError> {
         .map_err(|error| CliError::new("CLI_SCANNER_FAILED", error.to_string()))?
         .engine
         .text;
-    let css = [project.native_css, project.generated_css, generated_css]
+    let css = [project.css, generated_css]
         .into_iter()
         .filter(|value| !value.is_empty())
         .collect::<Vec<_>>()

@@ -1,3 +1,6 @@
+import type { StylesheetSourceContext } from './source-context'
+import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
+import type { PreparedCSSImportGraph } from '../node-imports'
 import type { CompileCSSOptions, CompileCSSResult } from '../node-compiler'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -9,22 +12,50 @@ export interface SassModule {
     url: URL
     style: 'expanded'
     syntax: 'scss' | 'indented'
-  }): Promise<{ css: string }>
+    sourceMap?: boolean
+    sourceMapIncludeSources?: boolean
+  }): Promise<{ css: string, loadedUrls?: readonly URL[], sourceMap?: object }>
 }
 
-export interface CompileStylesheetOptions extends CompileCSSOptions {
+export interface StylesheetPreparationOptions {
+  readonly projectDir?: string
+  readonly baseFile?: string
+  readonly loadSass?: (projectDir?: string) => SassModule
+  readonly onDependency?: (file: string) => void
+  readonly signal?: AbortSignal
+}
+
+export interface PreparedStylesheetSource {
+  readonly id: string
+  readonly baseFile: string
+  readonly source: string
+  readonly dependencies: readonly string[]
+  /** Serialized Sass source map v3, including original source contents. */
+  readonly sourceMap?: string
+}
+
+export interface CompileStylesheetOptions extends CompileCSSOptions, StylesheetSourceContext {
+  /** Internal metadata retained when source collection removes import directives. */
+  references?: CompileCSSResult['references']
+  delivery?: StylesheetDeliveryOptions
   readonly baseManifest: MasterCSSManifest
   projectDir?: string
   loadSass?: (projectDir?: string) => SassModule
 }
 
 export interface CompileRenderedStylesheetResult extends CompileCSSResult {
+  /** Present with delivery options; publish every returned stylesheet at its href. */
+  entry?: string
+  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap: string }[]
+  resources?: readonly StylesheetResourceAsset[]
   emittedGlobals: Required<MasterCSSEmittedGlobals>
   manifest: MasterCSSManifest
   renderedCSS: RenderCompiledManifestCSSResult
 }
 
 export interface TransformLocalStylesheetResult {
+  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  resources?: readonly StylesheetResourceAsset[]
   code: string
   dependencies: string[]
   transformed: boolean
@@ -32,6 +63,7 @@ export interface TransformLocalStylesheetResult {
 }
 
 export interface TransformLocalStylesheetOptions extends CompileStylesheetOptions {
+  transformNativeStylesheets?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
 }
 
@@ -54,6 +86,9 @@ export interface CreateExtractedCSSOptions extends CompileStylesheetOptions {
 }
 
 export interface CreateExtractedCSSResult {
+  stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  resources?: readonly StylesheetResourceAsset[]
+  dependencies?: readonly string[]
   css: string
   emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
@@ -84,6 +119,8 @@ export interface ScannerState {
 }
 
 export interface StylesheetSource {
+  references?: CompileCSSResult['references']
+  graph?: PreparedCSSImportGraph
   source: string
   pruneNativeCSS: boolean
   masterCSS: boolean
@@ -95,6 +132,7 @@ export interface StylesheetSource {
 export type StylesheetSources = Map<string, StylesheetSource>
 
 export interface ResolvedStylesheetSource {
+  references?: CompileCSSResult['references']
   source: string
   dependencies: string[]
 }

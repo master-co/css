@@ -2,15 +2,7 @@
 
 Use this for performance investigation, benchmark work, or hot path changes.
 
-## Read
-
-- `AGENTS.md`
-- `.ai/context/index.md`
-- Affected package `package.json`
-- Affected package-local `AI.md`
-- Existing benchmarks or tests for the path
-
-## Workflow
+## Evidence And Constraints
 
 - Identify a concrete hot path before changing code.
 - Validate correctness before benchmark reporting.

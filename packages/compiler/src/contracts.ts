@@ -19,6 +19,7 @@ export interface CompileCSSFileOptions extends CompileCSSOptions {
 export type CompileCSSResult = CSSDirectiveResult
 
 export interface ResolvedCSSImportGraph {
+  sourceMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   source: string
   dependencies: string[]
   references?: CSSDirectiveReference[]

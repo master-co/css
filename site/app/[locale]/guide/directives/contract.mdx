@@ -44,6 +44,47 @@ Marks the stylesheet as a full Master CSS entry, loads the package stylesheet gr
 
 Other directive families such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, and `@preserve native` are not entry markers by themselves.
 
+### Local file URLs
+
+Node file compilation reads CSS import names using CSS escaping and case rules.
+Relative `@import` and `@reference` URLs resolve their pathname against the source
+file: percent escapes identify filename characters, while query strings and
+fragments are excluded from the filesystem path. For example,
+`"./tokens%20%23.css?v=1#theme"` reads a sibling file named `tokens #.css`.
+Existing bare relative CSS paths such as `"tokens.css"` are also expanded. Bare
+package imports without a matching local file remain available to the host
+resolver. Reference files remain compile-time context and do not emit their native CSS.
+For a prepared virtual stylesheet, the host's explicit filesystem source owner
+also supplies the base for relative CSS references. Resources in a referenced
+definition remain relative to the reference file when composed elsewhere.
+
+### Stylesheet boundaries and resource URLs
+
+CSS import conditions and layers apply to the imported stylesheet. Moving or
+combining files must preserve those boundaries and the URLs of their images and
+fonts. A resource used by an imported managed definition retains that definition's
+source location when another file uses it through `@compose`.
+
+Native CLI project scanning reads managed definitions from each local imported
+file before resolving `@compose`. Import layers and conditions remain attached
+to composed native rules; they do not hide the file's managed definitions.
+Relative `@source` patterns are resolved from the file that declares them, and
+`@reference` supplies composition context without adding its scanning sources or
+exporting its managed classes. This project-scanning path does not publish the
+ordinary native stylesheets or their external imports and resource assets.
+
+The prepared-files compiler method `compileStylesheets()` returns separate CSS
+assets and accepts a `resourceURLs` map for parsed `url()` and `image-set()` values.
+The map is keyed by source file ID, then by the decoded resource URL; replacements
+must be root-relative or absolute. Use absolute replacements when output files
+can be served from different origins. All returned stylesheets must be delivered.
+Fragment-only references such as `url(#filter)` remain local references.
+
+This prepared-files method requires the host to supply import resolution, resource
+mappings and reference context. Existing file, project, integration and CLI output
+paths have not yet adopted this delivery model; its guarantees do not extend to
+those paths. Without resource mappings, the host must preserve original URL bases.
+
 ---
 
 ## Reference context \{#reference-context\}
@@ -368,6 +409,13 @@ For example, these directives scan content files and a shared UI package, then r
 
 Bare source globs are resolved from the scanner `cwd`. Globs that start with `./` or `../` are resolved relative to the CSS file that declares the directive.
 
+An imported CSS file keeps its own directory as the base for relative source
+patterns. Files loaded only through `@reference` do not add scanning sources.
+
+Scanning directives are consumed in the file that declares them, before import
+layers or media conditions wrap the native CSS. They do not appear in the
+generated stylesheet, and their relative paths still use the declaring file.
+
 For the scanning model, see [Scanning latent classes](/guide/scanning-latent-classes).
 
 ---
@@ -448,6 +496,19 @@ Do not put quotes, grouped class syntax, or class tokens that need CSS quoted st
 }
 ```
 
+Native style rules inside `@media`, `@supports`, `@container`, `@layer`, and
+`@starting-style` can also use `@compose`. Direct compilation and the prepared-files
+`compileStylesheets()` API keep composed and native rules in their authored order,
+including within anonymous layers. Use the final `css` result: `nativeCSS` and
+`generatedCSS` describe separate parts and cannot be concatenated to recover that order.
+Quoted content remains literal even when it resembles an internal compose marker.
+The Node rendered stylesheet API also preserves managed definitions imported with
+`layer`, `supports()`, and media qualifiers. Imports that require separate CSS assets
+still need the stylesheet delivery options.
+When using those options with `compileRenderedStylesheet()`, publish every returned
+stylesheet and resource at its assigned URL, including the entry stylesheet.
+This does not remove the separate import-delivery limitations described above.
+
 Top-level `@compose` is invalid because there is no selector context to receive the lowered declarations.
 
 Use `@compose` in these contexts:
@@ -457,7 +518,7 @@ Use `@compose` in these contexts:
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.
 
-Master CSS lowers `@compose` before CSS Modules or framework scoped CSS rewrite selectors. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not create a generated CSS slot, and does not become a native CSS pruning root.
+The Vite integration preserves CSS Modules scoped names and exports when lowering `@compose`. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not add globally generated utility CSS, and does not become a native CSS pruning root.
 
 Composed declarations are merged by Master CSS rule priority. Native declarations follow normal source order: declarations after `@compose` override earlier composed declarations, and a later `@compose` can override earlier native declarations unless the earlier declaration is `!important`.
 
@@ -486,6 +547,255 @@ Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@va
 For selector states, write a nested selector directly. A selector can contain `@variant` inside it when it also needs a condition.
 
 ---
+
+## CLI stylesheet assets \{#cli-stylesheet-assets\}
+
+When using `master-css generate --output dist/output.css`, deploy the generated
+sibling CSS and resource files together with `output.css`. The entry imports
+those CSS files, preserving local import conditions and external CSS imports.
+Relative images and fonts are resolved from their original source stylesheet
+and copied beside the output. Referenced definitions can use resources from the
+reference file without emitting that file's native CSS.
+
+In file-export watch mode, missing imported stylesheets or resources are reported
+while the last successful export stays available. Restoring the files triggers a
+rebuild that also includes source edits made while dependency preparation failed.
+
+Custom stylesheet collection hosts can independently select project native CSS,
+Master base CSS, and generated utility rules with `includeNativeCSS`,
+`includeMasterBaseCSS`, and `includeGeneratedCSS`. Excluding native output keeps
+authored definitions available to used utilities. Local imports still connect
+selected output; imports to empty excluded branches are omitted so they do not
+establish cascade layers. External imports from excluded stylesheets are omitted.
+The compiler option `preserveNativeCSS: false` removes raw native CSS and external
+imports while keeping compiled native `@compose` in included stylesheets.
+
+When resource URLs are rewritten for delivery, ranged compiler diagnostics still
+refer to the original stylesheet and source position, including imported files.
+
+This applies to CLI file export. `--no-export` and existing file/build CSS delivery
+paths still have separate import-graph limitations.
+
+Node project manifest loading (`compileProjectManifest`, `loadProjectManifest`,
+and their synchronous variants) preserves each imported stylesheet while
+compiling shared definitions. A qualified local import containing an external
+import can therefore supply definitions without fetching that external CSS.
+`@reference` supplies definitions for composition and contributes dependencies;
+its native rules, standalone utility classes, and source policies are not imported.
+Relative `@source` and `@source not` patterns beginning with `./` or `../` resolve
+from the file that declares them, including imported files. Bare patterns resolve
+from the project root. Explicit project entries merge in the supplied order.
+These APIs return a manifest and metadata; they do not publish native CSS assets.
+
+
+
+`compileManifestFileSync(file, { baseManifest, delivery, preserveNativeCSS: true })`
+can prepare a file and its imports for publication as separate stylesheets. The
+Node host resolves local imports, package entries and references; the existing
+Rust graph compiler retains external import order, conditions and native
+`@compose` positions. `delivery` uses the same URL callbacks as standalone
+stylesheet collections: `entryURL`, `stylesheetURL(file)` and `resourceURL(file)`.
+Each stylesheet must have a distinct final URL.
+
+The returned `stylesheets` include the entry and every required imported CSS
+asset; copy each returned `resources` file to its `href` and publish each
+stylesheet at its `href` before loading the entry. Compilation performs reads
+and returns assets without writing output files. `css`, `nativeCSS` and
+`generatedCSS` describe the entry only, so publishing only `css` is insufficient.
+Relative resource URLs are rewritten for their original source owner and retain
+query strings and fragments. Reference-only stylesheets are not published.
+Omitting `preserveNativeCSS` retains the file API's existing default of removing
+raw native CSS while preserving compiled native `@compose` and its conditions.
+Omitting `delivery` continues to use the legacy single-string file path, whose
+external-import limitations remain; other build and `--no-export` consumers
+still require their own asset publishing integration.
+
+---
+
+## Vite production stylesheet delivery \{#vite-stylesheet-delivery\}
+
+Vite production builds preserve managed CSS imports as separate stylesheet assets.
+Local imports containing external CSS keep their media, supports and layer scopes,
+and external imports retain their position relative to local CSS. Ordinary bundle
+rules before or after the managed entry keep that order.
+
+Deploy the complete build output, including generated `master-css-*` stylesheets
+and resource files. The CSS entry alone does not contain all rules. Managed and
+Node-resolved package resources keep their source ownership, query strings and
+fragments. Node-resolved package CSS retains native rules even when project CSS is
+pruned. Production CSS imports use Vite's string or regular expression aliases,
+package import conditions, and custom plugins that resolve imports to CSS files on
+disk. Entry markers and definitions can come from these aliased files or from
+null-prefixed virtual `.css` modules supplied by plugin loaders. Virtual imports
+retain their original CSS, conditions and layers, including nested imports. Query
+suffixes remain part of virtual module identities.
+Virtual resource ownership, preprocessors, alias resolution for `@reference` or
+resource URLs, watch/HMR delivery, and other bundlers still need further integration.
+
+Vite production builds preprocess Sass entries and imports using the configured
+Sass options, aliases and partial dependencies. String or function `additionalData`
+runs once per source in each build. CSS imports left by Sass retain their conditions
+and source order in the compiler graph. Relative partial resources keep their
+original owner, and changing a partial triggers a rebuild. CSS Modules retain Vite's
+scoped class names and exports; raw text requests bypass stylesheet compilation.
+Managed `?inline` imports return compiled CSS without injecting a stylesheet:
+
+```js
+import css from './style.css?inline'
+
+const style = document.createElement('style')
+style.textContent = css
+document.head.append(style)
+```
+
+Each inline request has its own stylesheet output, including when another file is
+loaded automatically. Safe local imports are expanded; imports that protect CSS
+scope or external loading remain linked assets. Import-free strings can also be
+used with `CSSStyleSheet.replaceSync()`. Asset URLs retain the emitted asset base
+when the string is inserted into another document location. Inline CSS content
+participates in hashed JavaScript filenames.
+
+During an SSR build, inline CSS uses the configured public `base` for asset URLs.
+With Vite’s default `ssrEmitAssets: false`, deploy the matching client build’s
+assets. Enable `ssrEmitAssets` when the server build should also publish them.
+
+Inline asset URLs also use Vite’s `experimental.renderBuiltUrl` callback. The
+callback receives `hostType: "js"` for inline strings and `hostType: "css"` for
+retained stylesheet files. JavaScript URLs can use runtime expressions; stylesheet
+files use static URLs or relative-path decisions. URL mapping changes participate
+in retained stylesheet filenames as well as the importing JavaScript hash.
+
+Production Sass compiler diagnostics use Vite's preprocessing maps to identify
+the original file or partial, including inline requests and Sass imported by CSS.
+Unchanged tokens retain their original ranges. Sass expansion can provide only
+the originating segment; diagnostics explain when an exact token range is
+unavailable. Injected content or an `additionalData` callback without a usable map
+can retain a clearly identified preprocessed location. Internal diagnostic maps
+do not enable published source maps.
+
+Production CSS Modules, including Sass modules, retain Vite's scoped names,
+named/default exports, cross-file `composes`, global selectors and
+`localsConvention`. Exported scoped names participate in native CSS usage so
+the default pruning policy keeps their rules.
+
+Production build-watch tracks resolved CSS Modules `composes` dependencies,
+including nested compositions. Editing a composed file rebuilds its consumers;
+correcting an invalid Master CSS composition in that file recovers the build.
+When Vite provides no original location for composed CSS, diagnostics explicitly
+identify the preprocessed location.
+
+Development CSS and Sass modules retain their scoped exports and native rules.
+Editing the module or a resolved `composes` dependency updates both its CSS and
+exports through HMR, including modules that use local `@compose`.
+
+During development, editing a CSS project entry updates ordinary stylesheet
+imports and its `?inline` and `?raw` consumers. Inline requests export processed
+CSS without injecting a stylesheet; raw requests retain the original source.
+Sass stylesheets attached through a `?url` value update in place during development,
+including paths under a configured base, aliases, and allowed files outside the project root.
+For CSS and Sass Modules, `?inline` exports the scoped CSS without injecting it,
+while `?raw` retains the authored source. Vite 8.2.2 rejects `?url` for
+`.module.css` and `.module.scss` paths, even with `css.modules: false`.
+
+Ordinary Sass `@use` and nested `@forward` partials update their stylesheet
+consumers during development, including `?inline` and attached `?url` values.
+Deleting a partial reports the Sass error; restoring it recovers the stylesheet
+without reloading the page. Relative resources keep the partial’s directory as
+their source location.
+Server-side `?inline` consumers also receive updated Sass output. After restarting
+the Vite dev server, connected pages reload and reconnect; stylesheet requests
+and subsequent edits use the new server state. This also works in middleware
+mode when Vite’s WebSocket connection is attached to the host HTTP server.
+Closing one configured development environment leaves stylesheet loading and
+updates available in the remaining environments. An initialized replacement can
+stay idle while the other environments close, then load styles when needed.
+With per-environment start/end hooks enabled, existing Sass partials continue
+updating as other environments start.
+The plugin array can also be reused across concurrent Vite roots. Each resolved
+configuration keeps its own stylesheet, manifest, and rendering state; restarting
+or closing one development server leaves the others available. Client and SSR
+builds retain their own configured asset bases.
+
+Pre-render and progressive builds and development CSS entries support qualified
+local imports whose descendants retain external imports. The browser applies the
+original layer, supports, and media conditions to the delivered child stylesheets.
+Development entries serve retained child CSS and resources under the configured
+base. Loading an entry normally and through SSR `?inline` shares its source identity.
+In pre-render mode, changing the project manifest reloads the page to refresh
+server-rendered rules; progressive mode applies the update through its runtime.
+Native-only CSS edits do not require a manifest reload.
+Editing a retained development CSS child or an image resource updates connected
+pages without reloading them. Resource filenames can include percent-encoded
+spaces, Unicode, `#`, `?`, and `%`, while separate query strings and fragments
+retain their meaning. Resources respect the original file's `server.fs.deny`.
+Previously published CSS and resource URLs retain their contents until their
+server context closes, including URLs held by SSR inline CSS consumers. Closing
+another root that uses the same plugin array, or closing the SSR environment,
+leaves the remaining client's resource delivery available. Retained versions use
+server memory and temporary files until that context closes.
+Each development resource version uses the same captured bytes for its URL and
+published contents, even when the source is replaced or deleted before the CSS
+is delivered. Deleting a referenced resource reports a development compilation
+error while previously published versions remain readable. Restoring the resource
+updates connected pages and dismisses the error overlay without reloading them.
+An initialized replacement environment can remain idle while the old environment,
+client, and SSR environments close, then load new retained graphs and receive
+child stylesheet updates. This works with either value of
+`server.perEnvironmentStartEndDuringDev`.
+Restarting a standalone or middleware development server releases the previous
+context's resource copies. Connected pages reload and reconnect to new asset URLs;
+subsequent child CSS and image edits update without another page reload.
+Local stylesheets compile imported local rules and retain qualified child imports
+and resources in development and production builds. This also applies when the
+root and intermediate stylesheets contain only native CSS, and `@compose` appears
+only in an imported descendant. These graphs remain local stylesheets rather than
+becoming project entries or native CSS pruning roots.
+CSS Modules keep the root module's scoped exports; SSR inline requests return
+compiled CSS, and raw requests retain the authored source. Child CSS and resource
+edits update connected development pages; CSS Module consumers need the HMR
+handling described below to retain page state. Production inline
+strings publish their retained assets as well. Local entries keep their positions
+within the built stylesheet, and content-based asset names are independent of
+asynchronous entry registration order.
+Local CSS and Sass imported through `?url` deliver their compiled stylesheet
+and retained child assets. When that URL is attached as a stylesheet link,
+editing a retained CSS child or its image updates the styles without reloading
+the page, including when only an imported descendant contains `@compose`.
+CSS Modules that import local CSS files expose the imported classes through the
+root module's exports, with the same scope as its own classes. Imports retain their
+conditions and layers, and relative resources keep their original file's directory.
+Shared inputs retain each importing root's scope; identical CSS files in different
+directories retain their own resource paths. This applies in development and builds.
+Imported SCSS and indented Sass files also keep the root module's scope when
+different source files compile to identical CSS. Each file retains its own resource
+directory, and processing the import graph does not repeat its `additionalData`
+callback. String values and callbacks that return source maps are supported.
+Consumers must accept CSS Module updates, directly or through their framework's
+HMR handling, to apply changed exported names without reloading the page.
+Relative CSS `@reference` directives emitted from Sass partials resolve from the
+mapped partial's directory, including through CSS Modules. Referenced definitions
+retain their own image and font bases. A supplied map that cannot identify an
+original filesystem source produces an error.
+
+Diagnostics for imported CSS and Sass use their original files and source maps,
+including Sass partials and mapped `additionalData`. Imported Sass is preprocessed
+once per prepared Module graph; temporary map data is removed before CSS delivery.
+Interpolation can identify an originating segment without an exact token range.
+When a callback changes source without supplying a map, diagnostics explicitly
+identify a preprocessed location instead of inventing an original Sass position.
+Root-relative public CSS URLs that already include Vite's `base` can fail during
+Vite Modules preprocessing. Virtual sources and retained-graph Sass edge cases
+still require further validation.
+
+Missing CSS Modules composition recovery, other development request modes, other preprocessors
+and user PostCSS transformations still require integration and validation.
+
+For production graph delivery, an alias or custom resolver pointing to project
+CSS follows the project's native CSS pruning policy. A bare-looking import name
+alone does not make the file package CSS: the resolved file must belong to the
+named package. Package export conditions may select another CSS file within that
+package while retaining its native rules. `@preserve native;` explicitly keeps
+project-native rules regardless of class usage.
 
 ## Native CSS preservation \{#native-css-preservation\}
 ### `@preserve native` \{#preserve-native\}

@@ -6,6 +6,12 @@ import type {
 import type {
   MasterCSSCompileDefaultPresetRequest,
   MasterCSSCompileDefaultPresetResult,
+  MasterCSSPrepareStylesheetBundleRequest,
+  MasterCSSStylesheetBundle,
+  MasterCSSRenderStylesheetBundleRequest,
+  MasterCSSStylesheetAsset,
+  MasterCSSCompileStylesheetGraphRequest,
+  MasterCSSCompiledStylesheetGraph,
   MasterCSSCompileManifestOptions,
   MasterCSSCompileManifestResult,
   MasterCSSCompilerInspection,
@@ -84,6 +90,10 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
     request: MasterCSSCompileDefaultPresetRequest
   ): MasterCSSCompileDefaultPresetResult
   resolveCSSImportGraph(request: MasterCSSImportGraphRequest): MasterCSSResolvedImportGraph
+  resolveCSSStylesheetGraph(request: MasterCSSImportGraphRequest): MasterCSSStylesheetBundle['graph']
+  prepareCSSStylesheetBundle(request: MasterCSSPrepareStylesheetBundleRequest): MasterCSSStylesheetBundle
+  renderCSSStylesheetBundle(request: MasterCSSRenderStylesheetBundleRequest): readonly MasterCSSStylesheetAsset[]
+  compileCSSStylesheetGraph(request: MasterCSSCompileStylesheetGraphRequest): MasterCSSCompiledStylesheetGraph
   createInspectionReport(input: MasterCSSDiagnosticsReportInput): MasterCSSInspectionReport
   renderClassNames(
     manifest: MasterCSSManifest,

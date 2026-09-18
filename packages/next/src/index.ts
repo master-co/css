@@ -23,6 +23,7 @@ import {
   resolveStaticStatePath,
 } from './static'
 import { registerOptions, resolveOptions, type MasterCSSNextOptions } from './options'
+import { composeWebpackStylesheets } from './webpack-stylesheets'
 import { createWebpackVirtualModulesPlugin } from './webpack-virtual-modules'
 
 type WithAdapterPath<T extends NextConfig> = T & { adapterPath: string }
@@ -251,7 +252,7 @@ function applyMasterCSSWebpackConfig(
   projectDir: string
 ) {
   config.module ??= {}
-  config.module.rules ??= []
+  config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY)
   config.module.rules.push({
     test: MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN,
     use: [
@@ -285,19 +286,6 @@ function applyMasterCSSWebpackConfig(
           module: true,
           external: true
         }
-      }
-    ]
-  })
-  config.module.rules.push({
-    test: /\.(css|scss|sass)$/,
-    resourceQuery: {
-      not: [
-        MASTER_CSS_MANIFEST_RESOURCE_QUERY
-      ]
-    },
-    use: [
-      {
-        loader: stylesheetLoaderPath
       }
     ]
   })
@@ -407,9 +395,19 @@ function applyMasterCSSTurbopackConfig(
         { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
       ]
     },
-    loaders: [stylesheetLoaderPath],
+    loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
     type: 'css' as const,
     as: '*.css'
+  }
+  // Directives can be introduced by @use/@forward in another Sass file.
+  const importedSassRule = {
+    ...masterCSSStyleRule,
+    condition: { all: [
+      { path: /\.(scss|sass)$/ },
+      { not: { path: /\.module\.(scss|sass)$/ } },
+      { not: { content: MASTER_CSS_STYLE_CONTENT_PATTERN } },
+      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+    ] }
   }
   const cssModuleRule = {
     ...masterCSSStyleRule,
@@ -417,7 +415,7 @@ function applyMasterCSSTurbopackConfig(
     as: '*.module.css',
     condition: { all: [
       { path: /\.module\.(css|scss|sass)$/ },
-      { content: MASTER_CSS_STYLE_CONTENT_PATTERN },
+      { any: [{ content: MASTER_CSS_STYLE_CONTENT_PATTERN }, { path: /\.(scss|sass)$/ }] },
       { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
     ] }
   }
@@ -449,7 +447,7 @@ function applyMasterCSSTurbopackConfig(
         masterCSSVirtualManifestRule,
         masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
-        ...(includeStyleRule ? [masterCSSStyleRule, cssModuleRule] : []),
+        ...(includeStyleRule ? [masterCSSStyleRule, importedSassRule, cssModuleRule] : []),
         ...toRuleArray(configRules)
       ]
     } satisfies TurbopackRules

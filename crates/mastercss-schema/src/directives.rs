@@ -31,6 +31,16 @@ pub struct CssDirectiveSourceReference {
     pub loc: Option<SourceLocationRange>,
 }
 
+/// A generated UTF-16 offset anchored to an original authoring source.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssOutputMapping {
+    pub generated_start: u32,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub generated_end: Option<u32>,
+    pub source: CssDirectiveSourceReference,
+}
+
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CssDirectiveReferenceStatement {

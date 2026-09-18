@@ -23,7 +23,9 @@ import {
 import { defaultBuildManifest } from '@master/css-internal/project'
 import {
   createStylesheetCollection,
-  type MasterCSSStylesheetCollection
+  type MasterCSSStylesheetComposition,
+  type MasterCSSStylesheetCollection,
+  type MasterCSSStylesheetDeliveryOptions
 } from '@master/css-compiler/stylesheet'
 import {
   collectStylesheetDependenciesSync,
@@ -50,6 +52,8 @@ import StyleEntryPlugin from './plugins/style-entry'
 import RuntimeEntryPlugin from './plugins/runtime-entry'
 import RuntimeHTMLAssetsPlugin from './plugins/runtime-html-assets'
 import GeneratedCSSAssetsPlugin from './plugins/generated-css-assets'
+import { getBuildStylesheetDelivery } from './utils/build-stylesheet-delivery'
+import { stylesheetSlot } from './utils/stylesheet-slot'
 import {
   resolveMasterCSSWebpackPluginOptions,
   shouldInjectRuntime,
@@ -96,13 +100,17 @@ export interface MasterCSSWebpackContext {
   setPluginInitialized(pluginInitialized: boolean): void
   getDefaultManifestDependencyPaths(): string[]
   getResetDependencyPaths(): string[]
-  setModuleContent(modulePath: string, moduleContent: unknown): void
+  recordCompilationError(error: unknown): void
+  takeCompilationErrors(): Error[]
+  reconcileModuleContents(entries: [string, string][], rebuiltPaths: ReadonlySet<string>): Promise<[string, string][] | undefined>
   writeVirtualModule(modulePath: string, moduleContent: string): void
   setManifestJSONAsset(assetFileName: string, json: string): void
   getManifestJSONAssets(): [string, string][]
   createDefaultManifestModule(): Promise<string>
   createEmittedGlobalsModule(): Promise<string>
   createGeneratedCSSModule(): Promise<string>
+  createGeneratedCSSResult(): Promise<MasterCSSStylesheetComposition>
+  createStylesheetCSSResults(delivery?: MasterCSSStylesheetDeliveryOptions): Promise<{ slot: string, result: MasterCSSStylesheetComposition }[]>
   processModuleContents(
     entries: [string, string][],
     isGeneratedCSSModulePath: (modulePath: string) => boolean
@@ -127,9 +135,15 @@ export class MasterCSSWebpackPlugin {
   emittedGlobals: MasterCSSEmittedGlobals = {}
   resetReplayChain: Promise<unknown> = Promise.resolve()
   private resetReplayFailure: { error: unknown } | undefined
+  private compilationErrors: Error[] = []
   stylesheets: MasterCSSStylesheetCollection = createStylesheetCollection()
   stylesheetDependencyFallbacks = new Map<string, string[]>()
   development = false
+  private processingModuleContents = 0
+
+  private get usesStylesheetDelivery() {
+    return this.pluginOptions.mode === 'static' && !this.development
+  }
 
   constructor(
     customOptions: MasterCSSWebpackPluginOptions = {},
@@ -154,11 +168,11 @@ export class MasterCSSWebpackPlugin {
     }
   }
 
-  get options() {
+  get options(): MasterCSSScanner['options'] {
     return this.scanner.options
   }
 
-  get css() {
+  get css(): MasterCSSScanner['css'] {
     return this.scanner.css
   }
 
@@ -170,23 +184,23 @@ export class MasterCSSWebpackPlugin {
     return this.scanner.slotCSSRule
   }
 
-  get latentClasses() {
+  get latentClasses(): MasterCSSScanner['latentClasses'] {
     return this.scanner.latentClasses
   }
 
-  get validClasses() {
+  get validClasses(): MasterCSSScanner['validClasses'] {
     return this.scanner.validClasses
   }
 
-  get invalidClasses() {
+  get invalidClasses(): MasterCSSScanner['invalidClasses'] {
     return this.scanner.invalidClasses
   }
 
-  get nativeClassNames() {
+  get nativeClassNames(): MasterCSSScanner['nativeClassNames'] {
     return this.scanner.nativeClassNames
   }
 
-  get usedNativeClasses() {
+  get usedNativeClasses(): MasterCSSScanner['usedNativeClasses'] {
     return this.scanner.usedNativeClasses
   }
 
@@ -264,14 +278,16 @@ export class MasterCSSWebpackPlugin {
     ])]
   }
 
-  private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean } = {}) {
+  private async createExtractedCSSResult(options: { includeNativeCSS?: boolean, includeMasterBaseCSS?: boolean, sourceIds?: readonly string[], delivery?: MasterCSSStylesheetDeliveryOptions } = {}) {
     const result = await this.stylesheets.compose({
       scanner: this.scanner,
       baseManifest: this.scanner.css.manifest,
       classes: this.getScannerClasses(),
       projectDir: this.cwd,
       includeNativeCSS: options.includeNativeCSS,
-      includeMasterBaseCSS: options.includeMasterBaseCSS
+      includeMasterBaseCSS: options.includeMasterBaseCSS,
+      sourceIds: options.sourceIds,
+      delivery: this.usesStylesheetDelivery ? options.delivery ?? getBuildStylesheetDelivery() : undefined
     })
     this.emittedGlobals = result.emittedGlobals
     return result
@@ -290,10 +306,21 @@ export class MasterCSSWebpackPlugin {
   }
 
   private async registerStylesheetSource(modulePath: string, source: string) {
-    await this.stylesheets.register(this.scanner, modulePath, source, {
-      baseManifest: this.scanner.css.manifest,
-      projectDir: this.cwd
-    })
+    const id = cleanStylesheetModuleRequest(modulePath)
+    const dependencies = new Set(this.stylesheetDependencyFallbacks.get(id))
+    try {
+      const result = await this.stylesheets.register(this.scanner, modulePath, source, {
+        baseManifest: this.scanner.css.manifest,
+        projectDir: this.cwd,
+        delivery: this.usesStylesheetDelivery ? {
+          ...getBuildStylesheetDelivery(),
+          onDependency: file => { dependencies.add(file) }
+        } : undefined
+      })
+      for (const file of result.dependencies) dependencies.add(file)
+    } finally {
+      this.stylesheetDependencyFallbacks.set(id, [...dependencies])
+    }
   }
 
   private readOriginalStyleSource(modulePath: string, fallback: string) {
@@ -305,7 +332,36 @@ export class MasterCSSWebpackPlugin {
     }
   }
 
+  private async reconcileModuleContents(entries: [string, string][], rebuiltPaths: ReadonlySet<string>) {
+    const activePaths = new Set(entries.map(([file]) => file))
+    const removedPaths = Object.keys(this.moduleContentByPath).filter(file => !activePaths.has(file))
+    const changedEntries = entries.filter(([file]) => rebuiltPaths.has(file)
+      || !Object.prototype.hasOwnProperty.call(this.moduleContentByPath, file))
+    for (const file of removedPaths) {
+      delete this.moduleContentByPath[file]
+      this.stylesheets.delete(file)
+      this.stylesheetDependencyFallbacks.delete(cleanStylesheetModuleRequest(file))
+    }
+    for (const [file, content] of entries) this.moduleContentByPath[file] = content
+    if (!removedPaths.length) return changedEntries.length ? changedEntries : undefined
+
+    // Scanner contributions are owned by its Rust session. Rebuild that session
+    // from the surviving sources, retaining the configured manifest and safelist.
+    // Suppress reset replay: the caller already has this compilation's sources.
+    await this.scanner.reset(this.scanner.customOptions, { emit: false })
+    return entries
+  }
+
   private async processModuleContents(entries: [string, string][], isGeneratedCSSModulePath: (modulePath: string) => boolean) {
+    this.processingModuleContents++
+    try {
+      await this.processModuleEntries(entries, isGeneratedCSSModulePath)
+    } finally {
+      this.processingModuleContents--
+    }
+  }
+
+  private async processModuleEntries(entries: [string, string][], isGeneratedCSSModulePath: (modulePath: string) => boolean) {
     const insertEntries: [string, string][] = []
     const styleEntries: [string, string][] = []
 
@@ -316,7 +372,8 @@ export class MasterCSSWebpackPlugin {
         let resolution: ReturnType<typeof resolveStylesheetSync>
         try {
           resolution = resolveStylesheetSync(modulePath, source, {
-            projectDir: this.cwd
+            projectDir: this.cwd,
+            preserveImports: this.usesStylesheetDelivery
           })
         } catch (error) {
           this.stylesheetDependencyFallbacks.set(
@@ -382,9 +439,11 @@ export class MasterCSSWebpackPlugin {
       },
       getDefaultManifestDependencyPaths: () => this.getDefaultManifestDependencyPaths(),
       getResetDependencyPaths: () => this.getResetDependencyPaths(),
-      setModuleContent: (modulePath, moduleContent) => {
-        this.moduleContentByPath[modulePath] = moduleContent
+      recordCompilationError: error => {
+        this.compilationErrors.push(error instanceof Error ? error : new Error(String(error)))
       },
+      takeCompilationErrors: () => this.compilationErrors.splice(0),
+      reconcileModuleContents: (entries, rebuiltPaths) => this.reconcileModuleContents(entries, rebuiltPaths),
       writeVirtualModule: (modulePath, moduleContent) => {
         try {
           context.virtualModule?.writeModule(modulePath, moduleContent)
@@ -402,12 +461,21 @@ export class MasterCSSWebpackPlugin {
       getManifestJSONAssets: () => [...this.manifestJSONAssets],
       createDefaultManifestModule: () => this.createDefaultManifestModule(),
       createEmittedGlobalsModule: () => this.createEmittedGlobalsModule(),
+      createGeneratedCSSResult: () => this.createExtractedCSSResult(),
+      createStylesheetCSSResults: async delivery => {
+        const results = [{ slot: this.slotCSSRule, result: await this.createExtractedCSSResult({ sourceIds: [], delivery }) }]
+        for (const id of this.stylesheets.snapshot().sourceIds) {
+          results.push({ slot: stylesheetSlot(id), result: await this.createExtractedCSSResult({ sourceIds: [id], delivery }) })
+        }
+        return results
+      },
       createGeneratedCSSModule: async () => {
         const result = await this.createExtractedCSSResult()
         return result.css
       },
       processModuleContents: (entries, isGeneratedCSSModulePath) => this.processModuleContents(entries, isGeneratedCSSModulePath),
       writeGeneratedCSSModule: async () => {
+        if (this.processingModuleContents) return
         if (!context.virtualModule || !context.virtualCSSImportModuleId) return
         const css = await context.createGeneratedCSSModule()
         context.writeVirtualModule(

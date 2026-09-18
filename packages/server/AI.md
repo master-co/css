@@ -31,7 +31,6 @@ session, and live CSS state are internal.
 
 - `src/render.ts`
 - `src/render-html.ts`
-- `src/render.ts`
 - `src/html-render-session.ts`
 - `src/create-server-renderer.ts`
 - `src/parse-html.ts` (internal)
@@ -44,21 +43,17 @@ session, and live CSS state are internal.
 - Serialization preserving source expectations.
 - Fixture `generated.css` output changes.
 
-## Safe Changes
+## Constraints
 
-- HTML parsing fixes.
-- Entity decoding fixes.
-- Style injection fixes with fixtures.
-
-## Dangerous Changes
-
-- Changing engine CSS generation behavior here.
-- Emitting unsorted CSS.
-- Injecting duplicate `style#master-css` tags.
-- Replacing parser/serializer without a clear reason.
-- Treating `className` as HTML class without a requirement.
+- Keep CSS generation semantics in the engine.
+- Preserve sorted CSS output.
+- Update existing `style#master-css` instead of injecting duplicates.
+- Replace the parser/serializer only for a demonstrated need.
+- Treat `className` as HTML class only when required.
 
 ## Validation
+
+For behavior changes, use the focused tests below. Run lint for package changes; type-check/build when types or package output change. AI-guidance-only edits need lint and the root context check.
 
 ```sh
 pnpm --filter @master/css-server test

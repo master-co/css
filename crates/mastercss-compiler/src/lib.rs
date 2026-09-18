@@ -40,8 +40,8 @@ use mastercss_lexer::{
 use mastercss_schema::{
     CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy,
     CssDirectiveManifestInput, CssDirectiveReferenceStatement, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssDirectiveVariableDefinition, Diagnostic, ErrorCode,
-    SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
+    CssDirectiveStyleDefinition, CssDirectiveVariableDefinition, CssOutputMapping, Diagnostic,
+    ErrorCode, SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -100,6 +100,10 @@ pub struct CompileNativeCssResult {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub native_output: Option<NativeCssOutput>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub native_mappings: Vec<CssOutputMapping>,
     pub manifest_input: CssDirectiveManifestInput,
     pub extraction_policy: CssDirectiveExtractionPolicy,
     pub class_names: Vec<String>,
@@ -120,6 +124,8 @@ pub struct CompileCssDirectivesResult {
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ResolvedCssImportGraph {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub source_mappings: Vec<CssOutputMapping>,
     pub source: String,
     pub dependencies: Vec<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -140,6 +146,7 @@ pub struct CssDependencyImport {
 pub struct CssDependencyAnalysis {
     pub source_without_references: String,
     pub imports: Vec<CssDependencyImport>,
+    pub resources: Vec<CssResourceReference>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -185,19 +192,17 @@ pub fn analyze_standalone_directives(source: &str) -> StandaloneDirectiveAnalysi
 
 pub fn analyze_css_dependencies(source: &str) -> CssDependencyAnalysis {
     let (source_without_references, _) = remove_css_reference_statements(source);
-    let imports = find_css_import_statements(&source_without_references)
+    let imports = stylesheet_graph::discover_source_imports(&source_without_references)
         .into_iter()
-        .filter_map(|statement| {
-            let source = parse_css_import_source(&statement.statement)?;
-            Some(CssDependencyImport {
-                start: statement.start,
-                end: statement.end,
-                statement: statement.statement,
-                source,
-            })
+        .map(|import| CssDependencyImport {
+            start: import.start,
+            end: import.end,
+            statement: import.statement,
+            source: import.specifier,
         })
         .collect();
     CssDependencyAnalysis {
+        resources: analyze_css_resources(source),
         source_without_references,
         imports,
     }
@@ -616,11 +621,27 @@ fn filter_native_css_rules<'i, R>(
         .collect()
 }
 
+mod compiled_stylesheet_graph;
 mod directives;
 mod imports;
 mod managed;
+mod native_conditionals;
+mod native_output;
+pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
+mod graph_inline;
 mod native_style;
+mod output_edits;
+pub use graph_inline::{CompileCssStylesheetGraphInput, compile_css_stylesheet_graph_input};
+mod output_mappings;
 mod pattern;
+mod source_spans;
+mod stylesheet_bundle;
+mod stylesheet_bundle_api;
+mod stylesheet_bundle_context;
+mod stylesheet_graph;
+mod stylesheet_inline;
+mod stylesheet_resources;
+pub use stylesheet_resources::{CssResourceReference, analyze_css_resources};
 mod syntax;
 mod theme;
 mod variant;
@@ -651,9 +672,24 @@ pub(crate) use variant::{
     validate_condition_variant_syntax,
 };
 
+pub use compiled_stylesheet_graph::{
+    CompileCssStylesheetGraphRequest, CompiledCssStylesheet, CompiledCssStylesheetGraph,
+    compile_css_stylesheet_graph,
+};
 pub use directives::compile_css_directives;
 pub use imports::{
     compile_native_css, inspect_css, resolve_css_import_graph, resolve_prepared_css_import_graph,
+};
+pub use stylesheet_bundle::{CssBundleGraph, CssBundleSource, compose_css_bundle_graph};
+pub use stylesheet_bundle_api::{
+    CssBundleManagedStylesheets, PrepareCssStylesheetBundleRequest,
+    RenderCssStylesheetBundleRequest, prepare_css_stylesheet_bundle, render_css_stylesheet_bundle,
+};
+pub use stylesheet_bundle_context::relocate_css_bundle_resources;
+pub use stylesheet_graph::{
+    CssStylesheetAsset, CssStylesheetGraph, CssStylesheetImport, CssStylesheetNode,
+    render_css_stylesheet_graph, resolve_css_stylesheet_graph,
+    resolve_prepared_css_stylesheet_graph,
 };
 
 #[cfg(test)]

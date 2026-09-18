@@ -93,4 +93,22 @@ Import the default stylesheet from your application CSS so the plugin can replac
 
 The Webpack plugin uses `MasterCSSScanner` from `@master/css-tooling/scanner/node` for source scanning and writes generated CSS through virtual modules.
 
+For production builds with `mode: 'static'` that emit CSS assets, the plugin
+preserves imported stylesheet boundaries and emits the required CSS fragments
+and resources beside the host CSS asset. Deploy these emitted files together.
+Changes to imported CSS or resource contents participate in the entry CSS
+content hash.
+Each emitted resource uses the same captured bytes for its filename and contents.
+Later builds read a fresh snapshot, including changes made during publication.
+
+In production static watch builds, missing imported CSS or resources are
+reported as compilation errors. Restoring those files triggers a new build.
+Removing a managed stylesheet entry also releases its unused graph dependencies.
+Watch builds reconcile the current module graph, including cached modules when
+an import is restored. Shared resources and separately loaded project manifest
+dependencies remain watched while they still have an active owner.
+Each production static stylesheet keeps its own position in the host CSS chunk.
+Separate entrypoints and lazy chunks receive their own native stylesheet graphs
+and resources; lazy native styles take effect when their CSS chunk is loaded.
+
 See the [Webpack installation guide](https://rc.css.master.co/guide/installation/webpack) for a complete project setup.

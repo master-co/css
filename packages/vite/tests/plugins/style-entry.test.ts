@@ -1,6 +1,8 @@
-import { describe, expect, test, vi } from 'vitest'
+import { afterEach, describe, expect, test, vi } from 'vitest'
 import { resolve } from 'node:path'
 import StyleEntryPlugin from '../../src/plugins/style-entry'
+import { clearDevStylesheets, devStylesheetState } from '../../src/utils/dev-stylesheet-delivery'
+import type { MasterCSSVitePluginContext } from '../../src/core'
 import { VIRTUAL_CSS_ID } from '@master/css-internal/style-module'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -8,9 +10,15 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 const SLOT = '#master-css-slot{--slot:0}'
 const RESOLVED_VIRTUAL_CSS_ID = '\0' + VIRTUAL_CSS_ID
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+const contexts = new Set<MasterCSSVitePluginContext>()
+
+afterEach(() => {
+  for (const context of contexts) clearDevStylesheets(context)
+  contexts.clear()
+})
 
 function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {
-  return {
+  const context = {
     config: { command, root: process.cwd() },
     includeGeneratedCSS,
     scanner: {
@@ -27,10 +35,29 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
       emit: () => undefined,
     },
   } as any
+  contexts.add(context)
+  return context
 }
 
 function getStylesheet(context: ReturnType<typeof makeContext>, id: string) {
   return context.stylesheets.snapshot().sources.find((source: { id: string }) => source.id === id)
+}
+
+function collectDeliveredCSS(context: ReturnType<typeof makeContext>, entry: string) {
+  const state = devStylesheetState(context), pending = [entry], seen = new Set<string>(), sources: string[] = []
+  while (pending.length) {
+    const source = pending.pop()!
+    sources.push(source)
+    for (const match of source.matchAll(/@import\s+"([^"]+)"/g)) {
+      const url = new URL(match[1], state.origin)
+      if (!url.pathname.startsWith(state.prefix) || seen.has(url.pathname)) continue
+      seen.add(url.pathname)
+      const child = state.stylesheets.get(url.pathname)
+      expect(child).toBeDefined()
+      pending.push(child!)
+    }
+  }
+  return sources.join('\n')
 }
 
 describe('StyleEntryPlugin', () => {
@@ -72,12 +99,12 @@ describe('StyleEntryPlugin', () => {
       prunesNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(getStylesheet(context, '/project/src/style.css')?.source).not.toContain('@master/css')
+    expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@master/css')
     expect(context.virtualCSSImporters).toBeUndefined()
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
-  test('build transform keeps native imports before the slot when @master/css comes first', async () => {
+  test('build transform retains native imports in the source graph when @master/css comes first', async () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -87,12 +114,12 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )
 
-    expect(result.code).toBe('@import "@fontsource/fira-mono";\n' + SLOT)
+    expect(result.code).toBe(SLOT)
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
       prunesNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(getStylesheet(context, '/project/src/style.css')?.source).not.toContain('@master/css')
+    expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@fontsource/fira-mono')
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 
@@ -143,8 +170,11 @@ describe('StyleEntryPlugin', () => {
 
     expect(result.code).toContain('.fg\\:red')
     expect(result.code).not.toContain('@master/css')
-    expect(result.code.indexOf('@import "@fontsource/fira-mono";')).toBe(0)
-    expect(result.code.match(/@fontsource\/fira-mono/g)).toHaveLength(1)
+    expect(result.code).not.toContain('@fontsource/fira-mono')
+    const graph = collectDeliveredCSS(context, result.code)
+    expect(graph).toContain('@font-face')
+    expect(graph).toContain('Fira Mono')
+    expect(graph).toContain('@layer base')
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
   })
@@ -182,8 +212,11 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )
 
-    expect(result.code.indexOf('@import "@fontsource/fira-mono";')).toBe(0)
-    expect(result.code).toContain('@layer base')
+    expect(result.code).not.toContain('@fontsource/fira-mono')
+    const graph = collectDeliveredCSS(context, result.code)
+    expect(graph).toContain('@font-face')
+    expect(graph).toContain('Fira Mono')
+    expect(graph).toContain('@layer base')
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain(SLOT)
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
@@ -204,7 +237,7 @@ describe('StyleEntryPlugin', () => {
       prunesNativeCSS: true,
       source: expect.stringContaining('.card')
     })
-    expect(getStylesheet(context, '/project/src/style.css')?.source).not.toContain('@master entry;')
+    expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@master entry;')
     expect(context.virtualCSSPlaceholderEmitted).toBe(true)
   })
 

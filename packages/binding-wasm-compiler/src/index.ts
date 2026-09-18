@@ -18,6 +18,10 @@ interface GeneratedCompilerWasmModule {
   normalizeDefaultManifestForJSON(manifest: unknown): unknown
   compileDefaultPresetManifest(request: unknown): unknown
   resolveCSSImportGraph(request: unknown): unknown
+  resolveCSSStylesheetGraph(request: unknown): unknown
+  prepareCSSStylesheetBundle(request: unknown): unknown
+  renderCSSStylesheetBundle(request: unknown): unknown
+  compileCSSStylesheetGraph(request: unknown): unknown
   CompilerRenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
     ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
@@ -128,6 +132,10 @@ export interface CompilerWasmSession {
   normalizeDefaultManifestForJSON<T = unknown>(manifest: unknown): T
   compileDefaultPresetManifest<T = unknown>(request: unknown): T
   resolveCSSImportGraph<T = unknown>(request: unknown): T
+  resolveCSSStylesheetGraph<T = unknown>(request: unknown): T
+  prepareCSSStylesheetBundle<T = unknown>(request: unknown): T
+  renderCSSStylesheetBundle<T = unknown>(request: unknown): T
+  compileCSSStylesheetGraph<T = unknown>(request: unknown): T
 }
 
 export async function createCompilerWasmSession(
@@ -149,7 +157,11 @@ export async function createCompilerWasmSession(
     normalizeManifestForJSON: <T>(manifest: unknown) => module.normalizeManifestForJSON(manifest) as T,
     normalizeDefaultManifestForJSON: <T>(manifest: unknown) => module.normalizeDefaultManifestForJSON(manifest) as T,
     compileDefaultPresetManifest: <T>(request: unknown) => module.compileDefaultPresetManifest(request) as T,
-    resolveCSSImportGraph: <T>(request: unknown) => module.resolveCSSImportGraph(request) as T
+    resolveCSSImportGraph: <T>(request: unknown) => module.resolveCSSImportGraph(request) as T,
+    resolveCSSStylesheetGraph: <T>(request: unknown) => module.resolveCSSStylesheetGraph(request) as T,
+    prepareCSSStylesheetBundle: <T>(request: unknown) => module.prepareCSSStylesheetBundle(request) as T,
+    renderCSSStylesheetBundle: <T>(request: unknown) => module.renderCSSStylesheetBundle(request) as T,
+    compileCSSStylesheetGraph: <T>(request: unknown) => module.compileCSSStylesheetGraph(request) as T
   }
 }
 

@@ -66,6 +66,8 @@ export default nextConfig
 
 Static mode uses source-glob scanning as the correctness baseline. A Turbopack CSS loader replaces `@import '@master/css'` with generated CSS. CSS files that import `@master/css` are treated as native CSS pruning roots by default; add `@preserve native;` when native CSS must be preserved.
 
+The generated entry can import companion stylesheets. Static mode publishes these stylesheets and referenced resources together for Turbopack, preserving source-relative resource URLs. Resource updates receive new filenames; earlier immutable assets remain available to builds already reading them. Static preparation rejects output failures so callers can retry after the cause is removed.
+
 ## Client types
 
 Add `@master/css/client` to a project environment file when TypeScript imports Master CSS virtual modules.

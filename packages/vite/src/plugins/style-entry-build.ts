@@ -1,9 +1,15 @@
 import type { Plugin } from 'vite'
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { posix } from 'node:path'
+import { createCompilerSync } from '@master/css-compiler/node'
 import type { MasterCSSVitePluginContext } from '../core'
 import type { ResolvedMasterCSSVitePluginOptions } from '../options'
-import getExtractedCSS from '../utils/extracted-css'
+import getExtractedCSS, { getExtractedCSSResult } from '../utils/extracted-css'
 import { getScanner } from '../utils/scanner-context'
+import { removeGraphOnlyStylesheetEntries } from '../utils/build-import-resolver'
+import { prepareBuildStylesheet } from '../utils/build-stylesheet-delivery'
+import { clearLocalStylesheets, localStylesheets } from '../utils/local-stylesheet'
 
 function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string): { source: string, replaced: boolean } {
   let replaced = false
@@ -18,13 +24,27 @@ function replaceSlotCSSRule(source: string, slotCSSRule: string, realCSS: string
 
 export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePluginOptions, context: MasterCSSVitePluginContext): Plugin {
   let renderedCSS: string | undefined
+  let extracted: Awaited<ReturnType<typeof getExtractedCSSResult>> | undefined
+  let compiler: ReturnType<typeof createCompilerSync> | undefined
+  const prepared = new Map<string, ReturnType<typeof prepareBuildStylesheet>>()
+  const prepare = (source: string) => {
+    if (!compiler || !extracted) return
+    if (!prepared.has(source)) prepared.set(source, prepareBuildStylesheet(compiler, source, getScanner(context).slotCSSRule, extracted, [...localStylesheets(context).values()]))
+    return prepared.get(source)
+  }
   return {
     name: 'master-css:style-entry:build',
     enforce: 'post',
     apply: 'build',
     async renderStart() {
       // Module transforms and usage collection finish before output rendering.
-      renderedCSS = await getExtractedCSS(context)
+      if (this.getModuleInfo) removeGraphOnlyStylesheetEntries(context, id => this.getModuleInfo(id))
+      if (context.stylesheets?.size === 0 && !context.virtualCSSImporters?.size) context.virtualCSSPlaceholderEmitted = false
+      extracted = await getExtractedCSSResult(context)
+      renderedCSS = extracted.css
+      compiler?.dispose()
+      compiler = extracted.stylesheets || localStylesheets(context).size ? createCompilerSync() : undefined
+      prepared.clear()
     },
     outputOptions(options) {
       const assetFileNames = options.assetFileNames
@@ -32,8 +52,10 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
         ...options,
         assetFileNames(asset) {
           const cssAsset = (asset.names ?? [asset.name]).some(name => name?.endsWith('.css'))
-          const result = cssAsset && renderedCSS !== undefined && typeof asset.source === 'string'
-            ? replaceSlotCSSRule(asset.source, getScanner(context).slotCSSRule, renderedCSS)
+          const graph = cssAsset && typeof asset.source === 'string' ? prepare(asset.source) : undefined
+          const result = graph ? { source: graph.source, replaced: true }
+            : cssAsset && renderedCSS !== undefined && typeof asset.source === 'string' && !extracted?.stylesheets
+              ? replaceSlotCSSRule(asset.source, getScanner(context).slotCSSRule, renderedCSS)
             : undefined
           const pattern = typeof assetFileNames === 'function'
             ? assetFileNames(result?.replaced ? { ...asset, source: result.source } : asset)
@@ -58,6 +80,21 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
         if (chunk.type === 'asset') {
           // @ts-expect-error rollup OutputAsset.source is string|Uint8Array
           const oldSource = String(bundle[eachCssFileName]['source'])
+          const graph = prepare(oldSource)
+          if (graph) {
+            chunk.source = graph.source
+            replacedAny = true
+            for (const asset of graph.assets) {
+              const fileName = posix.join(posix.dirname(eachCssFileName), asset.href)
+              this.emitFile({ type: 'asset', fileName, source: asset.css })
+            }
+            for (const resource of graph.resources ?? []) {
+              const fileName = posix.join(posix.dirname(eachCssFileName), resource.href)
+              this.emitFile({ type: 'asset', fileName, source: readFileSync(resource.file) })
+            }
+            continue
+          }
+          if (extracted?.stylesheets) continue
           const result = replaceSlotCSSRule(oldSource, slotCSSRule, realCSS)
           if (result.source !== oldSource) {
             // @ts-expect-error see above
@@ -80,6 +117,8 @@ export default function StyleEntryBuildPlugin(_options: ResolvedMasterCSSVitePlu
           `rewrote or dropped it. The output will be missing Master CSS output.`
         )
       }
-    }
+    },
+    closeBundle() { compiler?.dispose(); compiler = undefined; prepared.clear(); clearLocalStylesheets(context) },
+    renderError() { compiler?.dispose(); compiler = undefined; prepared.clear() }
   }
 }

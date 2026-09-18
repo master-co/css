@@ -1,5 +1,6 @@
 import {
   compileStylesheet,
+  resolveStylesheet,
   collectStylesheetEmittedGlobals,
   transformStylesheet
 } from '@master/css-compiler/stylesheet'
@@ -13,10 +14,13 @@ import {
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { defaultBuildManifest } from '@master/css-internal/project'
+import { stylesheetSlot } from './stylesheet-slot'
 
 interface TransformStyleSourceOptions {
   projectDir?: string
   masterImport?: string
+  preserveImports?: boolean
+  onDependency?: (file: string) => void
 }
 
 function hasMasterStyleManifestDirective(source: string) {
@@ -45,7 +49,13 @@ export async function transformStyleSource(
 ) {
   const { projectDir, masterImport = VIRTUAL_CSS_ID } = options
   const dependencies: string[] = []
-  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
+  const resolution = options.preserveImports
+    ? await resolveStylesheet(resourcePath, source, {
+      projectDir, preserveImports: true,
+      resolveImport: () => undefined,
+      onDependency: options.onDependency
+    })
+    : resolveStylesheetSync(resourcePath, source, { projectDir })
   if (!resolution) {
     return { code: source, dependencies }
   }
@@ -101,7 +111,8 @@ export async function transformStyleSource(
   dependencies.push(...resolution.dependencies)
   return {
     code: composeStylesheetHostSync(source, {
-      masterImport
+      masterImport,
+      ...(options.preserveImports ? { masterSource: stylesheetSlot(resourcePath) } : {})
     }),
     dependencies
   }

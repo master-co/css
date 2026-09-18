@@ -1,17 +1,6 @@
 # Package Routing Pack
 
-Use this after `.ai/context/index.md` when a task names files, paths, packages, or a diff. The goal is to choose package-local context without scanning the whole repository.
-
-## Route Order
-
-1. Match changed or referenced paths below.
-2. Read each affected workspace `package.json`.
-3. For `crates/**`, read root/affected `Cargo.toml` and `.ai/context/rust-routing.md`.
-4. Read each affected package/crate-local `AI.md`, if present.
-5. Read the task pack from `.ai/context/index.md`.
-6. Escalate through `.ai/context/accuracy-guardrails.md` when the path touches high-risk behavior.
-
-When a task spans multiple paths, load the lowest owning package for each path and then read `.ai/context/package-boundaries.md` if behavior crosses package layers.
+Use this when affected paths or package ownership need locating. Match the path below, read the affected manifest and local `AI.md` for code changes, and inspect the owning source/tests. For multi-package work, start at the lowest owner; use `package-boundaries.md` when behavior crosses layers. Skip unrelated rows and instructions already in context.
 
 ## Package Paths
 

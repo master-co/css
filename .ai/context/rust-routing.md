@@ -1,9 +1,9 @@
 # Rust Crate Routing Pack
 
-Use this after `.ai/context/package-routing.md` whenever a task touches `crates/**`,
+Use this for changes to `crates/**`,
 Rust-backed behavior, native bindings, Wasm bindings, code generation, or parity.
 
-## Read Order
+## Relevant Context
 
 1. Root `Cargo.toml` and the affected crate `Cargo.toml`.
 2. The affected crate `AI.md`, when present.
@@ -42,26 +42,7 @@ own loading, filesystem, browser, editor, and platform adaptation.
 | `mastercss-cli` | Native CLI transport over project/scanner/engine | `packages/cli` |
 | `xtask` | Artifact builds, codegen, parity, and release staging | generated target plus `parity/**` evidence |
 
-## Engine Module Routing
-
-- Session lifecycle, batches, snapshots, and transitions: `session.rs`, `state.rs`.
-- Utility lookup and declaration/value matching: `utility.rs`, `value_syntax.rs`.
-- Selectors, modes, and conditions: `condition.rs`.
-- Rule assembly and CSS-facing IR: `generation.rs`, `render.rs`.
-- Variables, animations, and retained resources: `resources.rs`,
-  `stylesheet_resources.rs`.
-- Manifest indexing and normalization: `manifest.rs`.
-- Completion-facing engine data: `completion.rs`.
-
-## Compiler Module Routing
-
-- Directive syntax and parsed authoring IR: `directives.rs`, `syntax.rs`, `theme.rs`,
-  `variant.rs`, `managed.rs`.
-- Import discovery and native CSS handling: `imports.rs`, `native_style.rs`.
-- Manifest normalization and domains: `manifest/normalize.rs`, `manifest/preset.rs`,
-  `manifest/utilities.rs`, `manifest/variables.rs`.
-- Lowering orchestration: `lower/api.rs`, `lower/resolution.rs`, `lower/merge.rs`,
-  `lower/render.rs`.
+For engine/compiler domain modules, use the corresponding crate-local `AI.md`; the tables above identify the owner without duplicating its module map.
 
 ## Validation
 

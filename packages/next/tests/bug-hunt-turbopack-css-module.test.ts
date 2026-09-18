@@ -25,6 +25,18 @@ for (const extension of ['css', 'scss', 'sass']) test(`Turbopack preserves CSS M
   expect(rules[0].type).toBe('css-module')
   expect(rules[0].as).toBe('*.module.css')
 })
+for (const extension of ['scss', 'sass']) test(`Turbopack handles imported directives in .module.${extension} once`, () => {
+  const rules = stylesheetRules(`card.module.${extension}`, '@use "parts/card";')
+  expect(rules).toHaveLength(1)
+  expect(rules[0].type).toBe('css-module')
+  expect(rules[0].as).toBe('*.module.css')
+})
+test('Turbopack keeps global Sass global and forwards configured options', () => {
+  const rules = stylesheetRules('globals.scss', '@use "parts/global";')
+  expect(rules).toHaveLength(1)
+  expect(rules[0].type).toBe('css')
+  expect(rules[0].loaders).toEqual([expect.objectContaining({ options: { sassOptions: { loadPaths: ['/project/styles'] } } })])
+})
 test('Turbopack leaves native CSS Modules without Master directives to Next', () => {
   expect(stylesheetRules('card.module.css', '.card{padding:2rem;}')).toEqual([])
 })

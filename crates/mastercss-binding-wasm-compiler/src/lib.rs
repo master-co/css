@@ -235,6 +235,15 @@ pub fn resolve_css_import_graph(request: JsValue) -> Result<JsValue, JsValue> {
     render_value(&result)
 }
 
+#[wasm_bindgen(js_name = resolveCSSStylesheetGraph)]
+pub fn resolve_css_stylesheet_graph(request: JsValue) -> Result<JsValue, JsValue> {
+    let request = serde_wasm_bindgen::from_value::<CssImportGraphRequest>(request)
+        .map_err(serialization_error)?;
+    let result = mastercss_compiler::resolve_prepared_css_stylesheet_graph(&request)
+        .map_err(compiler_error)?;
+    render_value(&result)
+}
+
 #[wasm_bindgen(js_name = bindingInfo)]
 pub fn binding_info() -> Result<JsValue, JsValue> {
     serde_wasm_bindgen::to_value(&mastercss_schema::BindingInfo::new(
@@ -244,4 +253,37 @@ pub fn binding_info() -> Result<JsValue, JsValue> {
         &["compiler", "render"],
     ))
     .map_err(serialization_error)
+}
+
+#[wasm_bindgen(js_name = compileCSSStylesheetGraph)]
+pub fn compile_css_stylesheet_graph(request: JsValue) -> Result<JsValue, JsValue> {
+    let request = serde_wasm_bindgen::from_value::<
+        mastercss_compiler::CompileCssStylesheetGraphInput,
+    >(request)
+    .map_err(serialization_error)?;
+    let result =
+        mastercss_compiler::compile_css_stylesheet_graph_input(&request).map_err(compiler_error)?;
+    render_value(&result)
+}
+
+#[wasm_bindgen(js_name = prepareCSSStylesheetBundle)]
+pub fn prepare_css_stylesheet_bundle(request: JsValue) -> Result<JsValue, JsValue> {
+    let request = serde_wasm_bindgen::from_value::<
+        mastercss_compiler::PrepareCssStylesheetBundleRequest,
+    >(request)
+    .map_err(serialization_error)?;
+    render_value(
+        &mastercss_compiler::prepare_css_stylesheet_bundle(&request).map_err(compiler_error)?,
+    )
+}
+
+#[wasm_bindgen(js_name = renderCSSStylesheetBundle)]
+pub fn render_css_stylesheet_bundle(request: JsValue) -> Result<JsValue, JsValue> {
+    let request = serde_wasm_bindgen::from_value::<
+        mastercss_compiler::RenderCssStylesheetBundleRequest,
+    >(request)
+    .map_err(serialization_error)?;
+    render_value(
+        &mastercss_compiler::render_css_stylesheet_bundle(&request).map_err(compiler_error)?,
+    )
 }

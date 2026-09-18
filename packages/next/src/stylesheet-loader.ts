@@ -1,3 +1,7 @@
+import { prependStylesheetLineMap } from './stylesheet-source-map'
+import { dirname, extname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { prepareNextStylesheet, type NextStylesheetLoaderOptions } from './prepare-stylesheet'
 import {
   compileRenderedStylesheet,
   compileStylesheet,
@@ -18,8 +22,10 @@ import { defaultBuildManifest } from '@master/css-internal/project'
 interface LoaderContext {
   resourcePath: string
   rootContext?: string
-  async?: () => (error: Error | null, result?: string) => void
+  async?: () => (error: Error | null, result?: string, sourceMap?: object) => void
   addDependency?: (file: string) => void
+  addContextDependency?: (directory: string) => void
+  getOptions?: () => NextStylesheetLoaderOptions
 }
 
 function hasMasterStyleDirective(source: string) {
@@ -50,27 +56,35 @@ async function createGlobalStyleEntryEmittedGlobals(
   return result.emittedGlobals
 }
 
-async function transformStyleSource(resourcePath: string, source: string, projectDir?: string) {
-  const dependencies: string[] = []
-  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
-  if (!resolution) return { code: source, dependencies }
+async function transformStyleSource(resourcePath: string, source: string, projectDir: string | undefined, options: NextStylesheetLoaderOptions, onDependency: (file: string) => void, inputMap?: object | string) {
+  const rawSass = !options.preprocessed && ['.scss', '.sass'].includes(extname(resourcePath))
+  const prepared = rawSass ? await prepareNextStylesheet(resourcePath, source, projectDir, options, onDependency) : undefined
+  source = prepared?.source ?? source
+  const dependencies: string[] = [...prepared?.dependencies ?? []]
+  const sourceMap = prepared?.sourceMap ?? (typeof inputMap === 'string' ? inputMap : inputMap ? JSON.stringify(inputMap) : undefined)
+  const context = { sourceMap, baseFile: resourcePath, onDependency }
+  // Webpack has already run the user's Sass pipeline. Keep its prepared CSS
+  // and original filename. Raw Turbopack inputs are prepared before classification.
+  const loadSass = () => ({ async compileStringAsync(css: string) { return { css } } })
+  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, ...context })
+  if (!resolution) return { code: source, dependencies, sourceMap }
   if (resolution.kind === 'entry' || resolution.kind === 'master-package-entry') {
-    const renderedSource = inspectCSSSync(source).hasMasterCSSImport
-      ? resolution
-      : resolveStylesheetSync(
-        resourcePath,
-        `@import "@master/css";\n${source}`,
-        { projectDir }
-      ) ?? resolution
-    dependencies.push(...renderedSource.dependencies)
-    const result = await compileRenderedStylesheet(resourcePath, renderedSource.compilationSource, {
+    const addMasterImport = !inspectCSSSync(source).hasMasterCSSImport
+    const compilationSource = addMasterImport ? `@import "@master/css";\n${source}` : source
+    const renderedMap = addMasterImport ? prependStylesheetLineMap(resourcePath, source, sourceMap) : sourceMap
+    dependencies.push(...resolution.dependencies)
+    const result = await compileRenderedStylesheet(resourcePath, compilationSource, {
       baseManifest: defaultBuildManifest,
+      loadSass,
+      ...context,
+      sourceMap: renderedMap,
       projectDir,
       preserveNativeCSS: true
     })
     dependencies.push(...(result.dependencies || []))
     return {
       code: result.css || result.nativeCSS || '',
+      sourceMap: result.sourceMap,
       dependencies
     }
   }
@@ -78,16 +92,19 @@ async function transformStyleSource(resourcePath: string, source: string, projec
   if (resolution.kind === 'master-package') {
     const code = resolution.outputSource
     if (!hasMasterStyleDirective(code)) {
-      return { code, dependencies }
+      return { code, dependencies, sourceMap }
     }
     const result = await compileStylesheet(resourcePath, code, {
       baseManifest: defaultBuildManifest,
+      loadSass,
+      ...context,
       projectDir,
       preserveNativeCSS: true
     })
     dependencies.push(...(result.dependencies || []))
     return {
       code: result.css || result.nativeCSS || '',
+      sourceMap: result.sourceMap,
       dependencies
     }
   }
@@ -107,23 +124,26 @@ async function transformStyleSource(resourcePath: string, source: string, projec
       )
       const result = await transformStylesheet(resourcePath, source, {
         baseManifest: projectManifest.manifest,
+        loadSass,
+        ...context,
         projectDir,
         emittedGlobals
       })
       dependencies.push(...projectManifest.dependencies, ...(result.dependencies || []))
       return {
         code: result.code,
+        sourceMap: result.sourceMap,
         dependencies
       }
   }
   if (resolution.kind === 'plain') {
-    return { code: source, dependencies }
+    return { code: source, dependencies, sourceMap }
   }
 
-  return { code: source, dependencies }
+  return { code: source, dependencies, sourceMap }
 }
 
-export default function masterCSSStylesheetLoader(this: LoaderContext, source: string) {
+export default function masterCSSStylesheetLoader(this: LoaderContext, source: string, inputMap?: object | string) {
   const callback = this.async?.()
   if (!callback) {
     throw new Error('[@master/css-next] Stylesheet loader requires an async loader context.')
@@ -136,13 +156,29 @@ export default function masterCSSStylesheetLoader(this: LoaderContext, source: s
   for (const dependency of dependencies) {
     this.addDependency?.(dependency)
   }
-  transformStyleSource(this.resourcePath, source, this.rootContext)
+  const onDependency = (file: string) => {
+    if (dependencies.has(file)) return
+    dependencies.add(file)
+    this.addDependency?.(file)
+  }
+  const options = this.getOptions?.() ?? {}
+  transformStyleSource(this.resourcePath, source, this.rootContext, options, onDependency, inputMap)
     .then((result) => {
       for (const dependency of new Set(result.dependencies)) {
         if (dependencies.has(dependency)) continue
         this.addDependency?.(dependency)
       }
-      callback(null, result.code)
+      callback(null, result.code, result.sourceMap ? JSON.parse(result.sourceMap) : undefined)
     })
-    .catch((error: Error) => callback(error))
+    .catch((error: Error & { span?: { url?: URL } }) => {
+      // Sass does not return loadedUrls when a missing import aborts compilation.
+      // Watch its known search directories so creating an input can retry the loader.
+      const directories = new Set([dirname(this.resourcePath)])
+      if (error.span?.url?.protocol === 'file:') directories.add(dirname(fileURLToPath(error.span.url)))
+      for (const paths of [options.sassOptions?.loadPaths, options.sassOptions?.includePaths]) {
+        if (Array.isArray(paths)) for (const path of paths) directories.add(resolve(this.rootContext ?? process.cwd(), String(path)))
+      }
+      for (const directory of directories) this.addContextDependency?.(directory)
+      callback(error)
+    })
 }

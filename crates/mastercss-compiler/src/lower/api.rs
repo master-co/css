@@ -30,11 +30,14 @@ pub fn lower_css_directives(
             }
         }
         return Ok(LowerCssDirectivesResult {
+            css: None,
+            output_mappings: Vec::new(),
             input,
             manifest,
             resolution_manifest,
             warnings,
             generated_css: String::new(),
+            generated_mappings: Vec::new(),
             diagnostic_counts: HashMap::from([("lower-managed-style-refresh-count".into(), 0)]),
         });
     }
@@ -88,8 +91,8 @@ pub fn lower_css_directives(
         })
         .cloned()
         .collect::<Vec<_>>();
-    let generated_css = if native_definitions.is_empty() {
-        String::new()
+    let (generated_css, generated_mappings) = if native_definitions.is_empty() {
+        (String::new(), Vec::new())
     } else {
         if !unrefreshed.is_empty() {
             let current_manifest = compile_with_base(
@@ -124,11 +127,14 @@ pub fn lower_css_directives(
         ),
     )]);
     Ok(LowerCssDirectivesResult {
+        css: None,
+        output_mappings: Vec::new(),
         input,
         manifest,
         resolution_manifest,
         warnings,
         generated_css,
+        generated_mappings,
         diagnostic_counts,
     })
 }
@@ -137,10 +143,14 @@ pub fn lower_css_directives_request(
     request: &LowerCssDirectivesRequest,
     options: &LowerCssDirectivesOptions,
 ) -> Result<LowerCssDirectivesResult, CompilerError> {
-    lower_css_directives(
+    let mut result = lower_css_directives(
         &request.manifest_input,
         &request.style_definitions,
         &request.warnings,
         options,
-    )
+    )?;
+    if let Some(output) = &request.native_output {
+        super::output::assemble_native_output(output, options, &mut result)?;
+    }
+    Ok(result)
 }

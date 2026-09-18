@@ -1,44 +1,27 @@
 # Testing Pack
 
-Use this for adding tests or choosing validation for an implementation.
+Use when selecting validation or adding coverage. Start with the smallest test that proves the changed behavior; match local fixture conventions. Build/type-check when public types or package output change, and widen to affected consumers when their contracts are involved.
 
-## Baseline
+## Required Checks
 
-Use scoped validation first, then broaden based on risk. When changing a workspace package, run that package's `lint` script if it exists. For multi-package changes, run lint for every affected package that defines it. If an affected package has no package-local lint script, report that explicitly.
+- Run each changed workspace package's `lint` script if defined; report packages without one.
+- Parser/compiler/renderer/runtime/scanner/language/ESLint behavior changes require focused tests. Use `.ai/testing-policy.md` for the change-type matrix and fixture rules.
+- Tests-only tasks do not authorize implementation changes. Cover existing behavior or a known regression; update snapshots only for an intentional, explained output change.
+- AI guidance structure changes require `pnpm run check:ai-context`; checker policy changes additionally require `pnpm run test:ai-context`.
+- Documentation-only AI changes do not require product tests/builds. For site content or runnable examples, use `docs.md` and applicable local guidance.
 
-## Common Commands
+## Scoped Commands
 
-```sh
-pnpm build
-pnpm test
-pnpm e2e
-pnpm lint
-pnpm type-check
-pnpm check
-pnpm build:examples
-```
-
-## High-Value Scoped Checks
+Read the affected manifest for available scripts. Common commands are:
 
 ```sh
-pnpm --filter @master/css test
-pnpm --filter @master/css-runtime e2e
-pnpm --filter @master/css-server test
-pnpm --filter @master/css-tooling test
-pnpm --filter @master/css-compiler test
-pnpm --filter @master/css-vite test
-pnpm --filter @master/css-language-service test
-pnpm --filter @master/css-language-server test
-pnpm --filter @master/eslint-plugin-css test
-pnpm --filter @master/css-cli test
+pnpm --filter <package> test
+pnpm --filter <package> lint
+pnpm --filter <package> type-check
 ```
 
-## Escalate When
+Runtime browser correctness uses `pnpm --filter @master/css-runtime e2e`. Rust, ABI, and parity checks are in [rust-routing.md](rust-routing.md); hot-path measurements are in [performance.md](performance.md). Root/CI command details live in `.ai/commands.md`.
 
-- Parser, compiler, renderer, runtime, scanner, language tooling, or ESLint behavior changes: read `.ai/testing-policy.md`.
-- Performance-sensitive engine or runtime work changes: read `.ai/context/performance.md`.
-- CSS output snapshots or fixtures change: read `.ai/context/css-output.md`.
+## Completion
 
-## Fixtures And Snapshots
-
-Only update snapshots or generated CSS fixtures when the behavior change is intentional, explained, and covered by a focused regression test or fixture.
+Fix failures introduced by the change and rerun affected checks. Once checks pass, repeat or broaden only for new changes, failures, or unresolved risks. Report commands, results, and pre-existing failures or blockers separately; never weaken correctness to pass.

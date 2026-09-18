@@ -3,7 +3,8 @@ import {
   bindCompilerSessionInternal,
   toMasterCSSCompileManifestResultInternal
 } from './compiler'
-import type { MasterCSSCompileManifestOptions } from './index'
+import type { MasterCSSCompileManifestOptions, MasterCSSCompileManifestResult, MasterCSSCompileStylesheetsResult } from './index'
+import { compileDeliveredFile, type StylesheetDeliveryOptions, type StylesheetResourceAsset } from './stylesheet/delivery'
 import {
   bindCompilerBindingSessionInternal
 } from './session'
@@ -17,6 +18,12 @@ export {
   type MasterCSSCompileManifestResult,
   type MasterCSSCompileOptions,
   type MasterCSSCompileResult,
+  type MasterCSSPrepareStylesheetBundleRequest,
+  type MasterCSSStylesheetBundle,
+  type MasterCSSRenderStylesheetBundleRequest,
+  type MasterCSSStylesheetAsset,
+  type MasterCSSCompileStylesheetsRequest,
+  type MasterCSSCompileStylesheetsResult,
   type MasterCSSCompilerInspection
 } from './index'
 export {
@@ -32,6 +39,15 @@ export {
 export interface MasterCSSCompileManifestFileOptions
   extends MasterCSSCompileManifestOptions {
   readonly root?: string
+}
+
+export interface MasterCSSCompileManifestFileDeliveryOptions extends MasterCSSCompileManifestFileOptions {
+  readonly delivery: StylesheetDeliveryOptions
+}
+
+export interface MasterCSSCompileManifestFileResult extends MasterCSSCompileStylesheetsResult {
+  /** Copy these files to their hrefs before publishing the entry stylesheet. */
+  readonly resources: readonly Readonly<StylesheetResourceAsset>[]
 }
 
 export function createCompilerSync() {
@@ -63,8 +79,29 @@ export function compileManifestSync(
 
 export function compileManifestFileSync(
   file: string,
+  options: MasterCSSCompileManifestFileDeliveryOptions
+): MasterCSSCompileManifestFileResult
+export function compileManifestFileSync(
+  file: string,
   options: MasterCSSCompileManifestFileOptions
-) {
+): MasterCSSCompileManifestResult
+export function compileManifestFileSync(
+  file: string,
+  options: MasterCSSCompileManifestFileOptions | MasterCSSCompileManifestFileDeliveryOptions
+): MasterCSSCompileManifestResult | MasterCSSCompileManifestFileResult {
+  if ('delivery' in options) {
+    const result = compileDeliveredFile(file, {
+      ...options,
+      projectDir: options.root,
+      preserveNativeCSS: options.preserveNativeCSS ?? false
+    })
+    return Object.freeze({
+      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic),
+      entry: result.entry,
+      stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))),
+      resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset })))
+    })
+  }
   return toMasterCSSCompileManifestResultInternal(
     compileCSSManifestFile(file, options),
     options.onDiagnostic

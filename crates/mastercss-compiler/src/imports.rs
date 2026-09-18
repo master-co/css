@@ -8,6 +8,72 @@ use super::{
     normalize_stylesheet_value, parse_css_import_source, remove_css_reference_statements,
     remove_master_directive_statements, utf16_to_byte_offset,
 };
+use crate::source_spans::MappedSource;
+use lightningcss::{rules::CssRule, traits::ToCss};
+
+pub(crate) fn imported_css_wrappers(
+    statement: &str,
+    source: &str,
+    filename: &str,
+) -> Result<(String, String), CompilerError> {
+    let stylesheet = StyleSheet::parse(statement, ParserOptions::default()).map_err(|error| {
+        CompilerError::Parse {
+            message: error.to_string(),
+            filename: filename.to_owned(),
+            range: None,
+        }
+    })?;
+    let Some(CssRule::Import(import)) = stylesheet.rules.0.first() else {
+        return Err(CompilerError::Import {
+            message: "Expected a CSS import rule".into(),
+            filename: filename.to_owned(),
+        });
+    };
+    if (import.layer.is_some()
+        || import.supports.is_some()
+        || !import.media.media_queries.is_empty())
+        && !crate::stylesheet_graph::source_imports(source, filename)?.is_empty()
+    {
+        // @import is invalid inside conditional/layer blocks. A provider must
+        // resolve these children before their enclosing import can be inlined.
+        return Err(CompilerError::Import {
+            message: "Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first".into(),
+            filename: filename.to_owned(),
+        });
+    }
+    let print_error = |error: lightningcss::error::PrinterError| CompilerError::Print {
+        message: error.to_string(),
+        filename: filename.to_owned(),
+    };
+    let mut prefix = String::new();
+    let mut suffix = String::new();
+    if let Some(layer) = &import.layer {
+        let name = layer
+            .as_ref()
+            .map(|name| name.to_css_string(PrinterOptions::default()))
+            .transpose()
+            .map_err(print_error)?
+            .unwrap_or_default();
+        prefix = format!("@layer {name}{{{prefix}");
+        suffix.push('}');
+    }
+    if !import.media.media_queries.is_empty() {
+        let media = import
+            .media
+            .to_css_string(PrinterOptions::default())
+            .map_err(print_error)?;
+        prefix = format!("@media {media}{{{prefix}");
+        suffix.push('}');
+    }
+    if let Some(supports) = &import.supports {
+        let supports = supports
+            .to_css_string(PrinterOptions::default())
+            .map_err(print_error)?;
+        prefix = format!("@supports {supports}{{{prefix}");
+        suffix.push('}');
+    }
+    Ok((prefix, suffix))
+}
 
 pub(crate) fn default_filename() -> String {
     "master.css".into()
@@ -142,6 +208,49 @@ pub fn inspect_css(source: &str) -> InspectCssResult {
     }
 }
 
+pub(crate) fn load_css_import_source<P: CssImportProvider>(
+    id: &str,
+    provider: &P,
+    references: &mut Vec<CssDirectiveReferenceStatement>,
+) -> Result<String, CompilerError> {
+    Ok(load_css_import_source_mapped(id, provider, references)?.text)
+}
+
+fn load_css_import_source_mapped<P: CssImportProvider>(
+    id: &str,
+    provider: &P,
+    references: &mut Vec<CssDirectiveReferenceStatement>,
+) -> Result<MappedSource, CompilerError> {
+    let source = provider.load(id).map_err(|error| CompilerError::Import {
+        message: format!("Cannot load CSS import {id}: {error}"),
+        filename: id.to_owned(),
+    })?;
+    let (source_without_references, file_references) = remove_css_reference_statements(&source);
+    let authored = MappedSource::authored(id, source);
+    let mut mapped = MappedSource::default();
+    let mut cursor = 0;
+    for reference in &file_references {
+        let start = utf16_to_byte_offset(&authored.text, reference.start)
+            .expect("reference start boundary");
+        let end =
+            utf16_to_byte_offset(&authored.text, reference.end).expect("reference end boundary");
+        mapped.push(authored.slice(cursor, start));
+        cursor = end;
+    }
+    mapped.push(authored.slice(cursor, authored.text.len()));
+    debug_assert_eq!(mapped.text, source_without_references);
+    references.extend(file_references.into_iter().map(|reference| {
+        CssDirectiveReferenceStatement {
+            start: reference.start,
+            end: reference.end,
+            statement: reference.statement,
+            source: decode_css_quoted_string(&reference.source),
+            file: Some(id.to_owned()),
+        }
+    }));
+    Ok(mapped)
+}
+
 pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     id: &str,
     provider: &P,
@@ -149,7 +258,7 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     dependency_set: &mut HashSet<String>,
     stack: &mut Vec<String>,
     references: &mut Vec<CssDirectiveReferenceStatement>,
-) -> Result<String, CompilerError> {
+) -> Result<MappedSource, CompilerError> {
     if stack.iter().any(|entry| entry == id) {
         let mut cycle = stack.clone();
         cycle.push(id.to_owned());
@@ -161,69 +270,72 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     if dependency_set.insert(id.to_owned()) {
         dependencies.push(id.to_owned());
     }
-    let source = provider.load(id).map_err(|error| CompilerError::Import {
-        message: format!("Cannot load CSS import {id}: {error}"),
-        filename: id.to_owned(),
-    })?;
-    let (source_without_references, file_references) = remove_css_reference_statements(&source);
-    references.extend(file_references.into_iter().map(|reference| {
-        CssDirectiveReferenceStatement {
-            start: reference.start,
-            end: reference.end,
-            statement: reference.statement,
-            source: decode_css_quoted_string(&reference.source),
-            file: Some(id.to_owned()),
-        }
-    }));
-    let imports = find_css_import_statements(&source_without_references);
+    let mapped = load_css_import_source_mapped(id, provider, references)?;
+    let source_without_references = &mapped.text;
+    let imports = crate::stylesheet_graph::source_imports(source_without_references, id)?;
     if imports.is_empty() {
-        return Ok(source_without_references);
+        return Ok(mapped);
     }
 
     stack.push(id.to_owned());
-    let mut output = String::with_capacity(source_without_references.len());
+    let mut output = MappedSource::default();
     let mut byte_index = 0;
     let mut preserved_imports = Vec::new();
     for import in &imports {
-        let start = utf16_to_byte_offset(&source_without_references, import.start)
+        let start = utf16_to_byte_offset(source_without_references, import.start)
             .expect("lexer import start is a valid UTF-16 boundary");
-        let end = utf16_to_byte_offset(&source_without_references, import.end)
+        let end = utf16_to_byte_offset(source_without_references, import.end)
             .expect("lexer import end is a valid UTF-16 boundary");
-        output.push_str(&source_without_references[byte_index..start]);
-        let specifier = parse_css_import_source(&import.statement).unwrap_or_default();
+        output.push(mapped.slice(byte_index, start));
+        let specifier = &import.specifier;
         let resolved = provider
-            .resolve(&specifier, id)
+            .resolve(specifier, id)
             .map_err(|error| CompilerError::Import {
                 message: format!("Cannot resolve CSS import {specifier} from {id}: {error}"),
                 filename: id.to_owned(),
             })?;
         if let Some(resolved) = resolved {
-            output.push_str(&resolve_css_import_graph_file(
+            let source = resolve_css_import_graph_file(
                 &resolved,
                 provider,
                 dependencies,
                 dependency_set,
                 stack,
                 references,
-            )?);
+            )?;
+            let (prefix, suffix) = imported_css_wrappers(&import.statement, &source.text, id)?;
+            output.push_unmapped(&prefix);
+            output.push(source);
+            output.push_unmapped(&suffix);
         } else {
-            preserved_imports.push(import.statement.trim().to_owned());
+            let statement = &source_without_references[start..end];
+            let trim_start = statement.len() - statement.trim_start().len();
+            preserved_imports.push(mapped.slice(
+                start + trim_start,
+                start + trim_start + statement.trim().len(),
+            ));
         }
         byte_index = end;
     }
-    output.push_str(&source_without_references[byte_index..]);
+    output.push(mapped.slice(byte_index, source_without_references.len()));
     stack.pop();
 
     if preserved_imports.is_empty() {
         return Ok(output);
     }
-    let first_import_start = utf16_to_byte_offset(&source_without_references, imports[0].start)
+    let first_import_start = utf16_to_byte_offset(source_without_references, imports[0].start)
         .expect("lexer import start is a valid UTF-16 boundary");
-    let suffix = output.split_off(first_import_start);
-    output.push_str(&preserved_imports.join("\n"));
-    if !suffix.is_empty() {
-        output.push('\n');
-        output.push_str(&suffix);
+    let suffix = output.slice(first_import_start, output.text.len());
+    output = output.slice(0, first_import_start);
+    for (index, import) in preserved_imports.into_iter().enumerate() {
+        if index > 0 {
+            output.push_unmapped("\n");
+        }
+        output.push(import);
+    }
+    if !suffix.text.is_empty() {
+        output.push_unmapped("\n");
+        output.push(suffix);
     }
     Ok(output)
 }
@@ -243,7 +355,8 @@ pub fn resolve_css_import_graph<P: CssImportProvider>(
         &mut references,
     )?;
     Ok(ResolvedCssImportGraph {
-        source,
+        source: source.text,
+        source_mappings: source.mappings,
         dependencies,
         references,
     })

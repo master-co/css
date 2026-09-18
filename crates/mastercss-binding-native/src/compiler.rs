@@ -361,3 +361,47 @@ pub fn resolve_css_import_graph_json(request_json: String) -> Result<String> {
             .map_err(compiler_to_napi_error)?,
     )
 }
+
+#[napi]
+pub fn resolve_css_stylesheet_graph_json(request_json: String) -> Result<String> {
+    let request = serde_json::from_str::<CssImportGraphRequest>(&request_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(
+        &mastercss_compiler::resolve_prepared_css_stylesheet_graph(&request)
+            .map_err(compiler_to_napi_error)?,
+    )
+}
+
+#[napi]
+pub fn compile_css_stylesheet_graph_json(request_json: String) -> Result<String> {
+    let request =
+        serde_json::from_str::<mastercss_compiler::CompileCssStylesheetGraphInput>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(
+        &mastercss_compiler::compile_css_stylesheet_graph_input(&request)
+            .map_err(compiler_to_napi_error)?,
+    )
+}
+
+#[napi]
+pub fn prepare_css_stylesheet_bundle_json(request_json: String) -> Result<String> {
+    let request = serde_json::from_str::<mastercss_compiler::PrepareCssStylesheetBundleRequest>(
+        &request_json,
+    )
+    .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(
+        &mastercss_compiler::prepare_css_stylesheet_bundle(&request)
+            .map_err(compiler_to_napi_error)?,
+    )
+}
+
+#[napi]
+pub fn render_css_stylesheet_bundle_json(request_json: String) -> Result<String> {
+    let request =
+        serde_json::from_str::<mastercss_compiler::RenderCssStylesheetBundleRequest>(&request_json)
+            .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(
+        &mastercss_compiler::render_css_stylesheet_bundle(&request)
+            .map_err(compiler_to_napi_error)?,
+    )
+}

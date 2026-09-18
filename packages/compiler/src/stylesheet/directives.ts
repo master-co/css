@@ -1,19 +1,26 @@
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import fg from 'fast-glob'
 import {
+  compileCSS,
   collectStandaloneCSSDirectiveExtractionPolicy,
   createCSSDirectiveExtractionPolicy,
   findStandaloneCSSDirectiveStatements,
   mergeCSSDirectiveExtractionPolicy,
   removeStandaloneCSSDirectives,
-  resolveCSSImportGraph,
-  resolveCSSImportGraphSource,
+  analyzeCSSDependencies,
   type StandaloneCSSDirectiveStatement
 } from '../node-compiler'
+import { prepareCSSImportGraph, type PrepareCSSImportGraphOptions } from '../node-imports'
+import { createCompilerBindingSessionSync } from '@master/css-binding/compiler/node'
 import type { CSSDirectiveExtractionPolicy } from '@master/css-schema/css-directives'
 
 export type StylesheetDirectives = CSSDirectiveExtractionPolicy
 export type StylesheetDirectiveStatement = StandaloneCSSDirectiveStatement
+
+export function hasLocalStyleDirectives(source: string, from?: string) {
+  const result = compileCSS(source, { preserveNativeCSS: false, from })
+  return Boolean(result.generatedCSS || result.styleDefinitions?.length || result.references?.length)
+}
 
 export interface StylesheetSourceOptions {
   include?: readonly string[]
@@ -99,16 +106,40 @@ export function collectStylesheetDirectives(
 export function collectStylesheetDirectivesFromCSSGraph(
   file: string,
   source?: string,
-  cwd = process.cwd()
+  cwd = process.cwd(),
+  graphOptions: Pick<PrepareCSSImportGraphOptions, 'projectDir' | 'expandPackageImports'> = {}
 ): CollectedStylesheetDirectives {
   const filename = resolve(file)
-  const graph = source === undefined
-    ? resolveCSSImportGraph(filename, { projectDir: cwd, expandPackageImports: false })
-    : resolveCSSImportGraphSource(filename, source, { projectDir: cwd, expandPackageImports: false })
-  return {
-    directives: collectStylesheetDirectives(graph.source, filename, cwd),
-    dependencies: graph.dependencies
-  }
+  const request = prepareCSSImportGraph(filename, source, {
+    projectDir: cwd, expandPackageImports: false, ...graphOptions
+  }, analyzeCSSDependencies)
+  const compiler = createCompilerBindingSessionSync()
+  try {
+    const graph = compiler.resolveCSSStylesheetGraph(request)
+    const nodes = new Map(graph.stylesheets.map(node => [node.id, node]))
+    const visited = new Set<string>()
+    const policies: StylesheetDirectives[] = []
+    const work: [string, boolean][] = [[graph.entry, false]]
+    // The Rust graph has already validated cycles and import syntax. Visit
+    // imported files before collecting the owning file's policy.
+    while (work.length) {
+      const [id, exit] = work.pop()!
+      const node = nodes.get(id)!
+      if (exit) {
+        policies.push(collectStylesheetDirectives(node.source, id, cwd))
+      } else if (!visited.has(id)) {
+        visited.add(id)
+        work.push([id, true])
+        for (const edge of [...node.imports].reverse()) {
+          if (edge.resolved) work.push([edge.resolved, false])
+        }
+      }
+    }
+    return {
+      directives: mergeStylesheetDirectives(...policies),
+      dependencies: graph.stylesheets.map(node => node.id)
+    }
+  } finally { compiler.dispose() }
 }
 
 export function resolveStylesheetSourcePaths(options: StylesheetSourceOptions, cwd = process.cwd()) {

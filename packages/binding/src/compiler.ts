@@ -72,8 +72,13 @@ export function loadNativeCompilerBinding(
         parse(nativeBinding.normalizeDefaultManifestJson(JSON.stringify(manifest))),
       compileDefaultPresetManifest: (request) =>
         parse(nativeBinding.compileDefaultPresetManifestJson(JSON.stringify(request))),
+      resolveCSSStylesheetGraph: (request) => parse(nativeBinding.resolveCssStylesheetGraphJson(JSON.stringify(request))),
       resolveCSSImportGraph: (request) =>
         parse(nativeBinding.resolveCssImportGraphJson(JSON.stringify(request))),
+      prepareCSSStylesheetBundle: (request) => parse(nativeBinding.prepareCssStylesheetBundleJson(JSON.stringify(request))),
+      renderCSSStylesheetBundle: (request) => parse(nativeBinding.renderCssStylesheetBundleJson(JSON.stringify(request))),
+      compileCSSStylesheetGraph: (request) =>
+        parse(nativeBinding.compileCssStylesheetGraphJson(JSON.stringify(request))),
       createInspectionReport: (input) =>
         parse(nativeBinding.createInspectionReportJson(JSON.stringify(input))),
       renderClassNames: (manifest, classNames, nativeSupport) =>
@@ -93,6 +98,9 @@ export {
   MASTER_CSS_DIAGNOSTICS_REPORT_VERSION,
   type MasterCSSCompileDefaultPresetRequest,
   type MasterCSSCompileDefaultPresetResult,
+  type MasterCSSCompileStylesheetGraphRequest,
+  type MasterCSSCompiledStylesheetGraph,
+  type MasterCSSCompiledStylesheet,
   type MasterCSSCompileManifestOptions,
   type MasterCSSCompileManifestResult,
   type MasterCSSDiagnosticsReportInput,

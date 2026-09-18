@@ -72,7 +72,8 @@ export async function loadProjectManifest(
   const result = loadBindingProjectManifest(
     resolve(options.root ?? process.cwd()),
     options.baseManifest,
-    options.entries
+    options.entries,
+    options.onDependency
   )
   throwIfAborted(options.signal)
   return immutableProjectResult(result, options.onDiagnostic)

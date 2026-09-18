@@ -23,6 +23,13 @@ export { MASTER_CSS_DIAGNOSTICS_REPORT_VERSION } from './protocol'
 export type {
   MasterCSSCompileDefaultPresetRequest,
   MasterCSSCompileDefaultPresetResult,
+  MasterCSSPrepareStylesheetBundleRequest,
+  MasterCSSStylesheetBundle,
+  MasterCSSRenderStylesheetBundleRequest,
+  MasterCSSStylesheetAsset,
+  MasterCSSCompileStylesheetGraphRequest,
+  MasterCSSCompiledStylesheetGraph,
+  MasterCSSCompiledStylesheet,
   MasterCSSCompileManifestOptions,
   MasterCSSCompileManifestResult,
   MasterCSSCompilerInspection,

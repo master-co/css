@@ -25,6 +25,8 @@ export interface MasterCSSCompileOptions {
 }
 
 export interface MasterCSSCompileResult {
+  /** Serialized map v3 for css when produced by a stylesheet host. */
+  readonly sourceMap?: string
   readonly css: string
   readonly nativeCSS: string
   readonly generatedCSS: string
@@ -56,6 +58,27 @@ export interface MasterCSSCompileManifestResult extends MasterCSSCompileResult {
   readonly manifest: MasterCSSManifest
   readonly directives: MasterCSSCompileResult
 }
+
+/**
+ * Prepared files/edges and delivery URLs for boundary-preserving compilation.
+ * Resolve @reference inputs into resolutionManifest before calling this API.
+ * Supply resourceURLs to relocate parsed url()/image-set() resources before definition merging.
+ * Without that map, delivery URLs must retain the original resource bases.
+ */
+export type MasterCSSCompileStylesheetsRequest = import('@master/css-binding/compiler').MasterCSSCompileStylesheetGraphRequest
+
+export interface MasterCSSCompileStylesheetsResult extends MasterCSSCompileManifestResult {
+  readonly entry: string
+  /** Every stylesheet must be delivered at its href, including the entry. */
+  readonly stylesheets: readonly Readonly<import('@master/css-binding/compiler').MasterCSSCompiledStylesheet>[]
+}
+
+/** Prepare source boundaries before the host assigns final asset URLs. */
+export type MasterCSSPrepareStylesheetBundleRequest = import('@master/css-binding/compiler').MasterCSSPrepareStylesheetBundleRequest
+export type MasterCSSStylesheetBundle = import('@master/css-binding/compiler').MasterCSSStylesheetBundle
+/** Render all assets; relative ordinary resources/imports require explicit URL mappings. */
+export type MasterCSSRenderStylesheetBundleRequest = import('@master/css-binding/compiler').MasterCSSRenderStylesheetBundleRequest
+export type MasterCSSStylesheetAsset = import('@master/css-binding/compiler').MasterCSSStylesheetAsset
 
 export interface MasterCSSCompilerInspection {
   readonly hasMasterEntryDirective: boolean

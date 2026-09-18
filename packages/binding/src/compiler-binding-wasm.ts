@@ -20,6 +20,10 @@ type MasterCSSCompilerWasmProviderSession = Pick<
   | 'lowerCSSDirectives'
   | 'compileDefaultPresetManifest'
   | 'resolveCSSImportGraph'
+  | 'resolveCSSStylesheetGraph'
+  | 'prepareCSSStylesheetBundle'
+  | 'renderCSSStylesheetBundle'
+  | 'compileCSSStylesheetGraph'
 > & Readonly<{
   normalizeManifestForJSON: MasterCSSCompilerBindingSession['normalizeManifest']
   normalizeDefaultManifestForJSON: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
@@ -86,7 +90,11 @@ export async function createCompilerWasmBindingSession(
     normalizeManifest: (manifest) => session.normalizeManifestForJSON(manifest),
     normalizeDefaultManifest: (manifest) => session.normalizeDefaultManifestForJSON(manifest),
     compileDefaultPresetManifest: (request) => session.compileDefaultPresetManifest(request),
-    resolveCSSImportGraph: (request) => session.resolveCSSImportGraph(request)
+    resolveCSSImportGraph: (request) => session.resolveCSSImportGraph(request),
+    resolveCSSStylesheetGraph: (request) => session.resolveCSSStylesheetGraph(request),
+    prepareCSSStylesheetBundle: (request) => session.prepareCSSStylesheetBundle(request),
+    renderCSSStylesheetBundle: (request) => session.renderCSSStylesheetBundle(request),
+    compileCSSStylesheetGraph: (request) => session.compileCSSStylesheetGraph(request)
   })
 }
 

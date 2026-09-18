@@ -1,7 +1,8 @@
 use super::resolution::directive_error;
 use super::{
-    CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition, HashMap, HashSet, Map,
-    MergedStyleDefinition, UtilityLayerName, Value, json,
+    CompilerError, CssDirectiveManifestInput, CssDirectiveSourceReference,
+    CssDirectiveStyleDefinition, CssOutputMapping, HashMap, HashSet, Map, MergedStyleDefinition,
+    UtilityLayerName, Value, json,
 };
 
 pub(super) fn layer_name(layer: UtilityLayerName) -> &'static str {
@@ -214,28 +215,72 @@ pub(super) fn managed_refresh_count(
     count
 }
 
-pub(super) fn render_style_definitions(definitions: Vec<MergedStyleDefinition>) -> String {
-    definitions
-        .into_iter()
-        .map(|definition| {
-            let declarations = definition
-                .declarations
-                .into_iter()
-                .map(|(property, value)| {
-                    format!("{property}:{}", value.as_str().unwrap_or_default())
-                })
-                .collect::<Vec<_>>()
-                .join(";");
-            let mut text = format!("{}{{{declarations}}}", definition.selector);
-            for condition in definition.conditions.iter().rev() {
-                let condition = condition.trim();
-                if !condition.is_empty() {
-                    text = format!("{condition}{{{text}}}");
-                }
+pub(super) fn render_style_definitions(
+    definitions: Vec<MergedStyleDefinition>,
+) -> (String, Vec<CssOutputMapping>) {
+    fn anchor(
+        mappings: &mut Vec<CssOutputMapping>,
+        start: u32,
+        end: u32,
+        source: Option<&CssDirectiveSourceReference>,
+    ) {
+        if let Some(source) = source {
+            mappings.push(CssOutputMapping {
+                generated_start: start,
+                generated_end: Some(end),
+                source: source.clone(),
+            });
+        }
+    }
+    let mut css = String::new();
+    let mut offset = 0u32;
+    let mut mappings = Vec::new();
+    for definition in definitions {
+        let conditions = definition
+            .conditions
+            .iter()
+            .map(|condition| condition.trim())
+            .filter(|condition| !condition.is_empty())
+            .collect::<Vec<_>>();
+        for condition in &conditions {
+            css.push_str(condition);
+            css.push('{');
+            offset += condition.encode_utf16().count() as u32 + 1;
+        }
+        let selector_end = offset + definition.selector.encode_utf16().count() as u32;
+        anchor(
+            &mut mappings,
+            offset,
+            selector_end,
+            definition.selector_source.as_ref(),
+        );
+        css.push_str(&definition.selector);
+        css.push('{');
+        offset = selector_end + 1;
+        for (index, (property, value)) in definition.declarations.into_iter().enumerate() {
+            if index > 0 {
+                css.push(';');
+                offset += 1;
             }
-            text
-        })
-        .collect()
+            let declaration = format!("{property}:{}", value.as_str().unwrap_or_default());
+            let end = offset + declaration.encode_utf16().count() as u32;
+            anchor(
+                &mut mappings,
+                offset,
+                end,
+                definition.declaration_sources.get(&property),
+            );
+            css.push_str(&declaration);
+            offset = end;
+        }
+        css.push('}');
+        offset += 1;
+        for _ in conditions {
+            css.push('}');
+            offset += 1;
+        }
+    }
+    (css, mappings)
 }
 
 pub(super) fn media_mode_warnings(input: &CssDirectiveManifestInput) -> Vec<String> {

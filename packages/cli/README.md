@@ -86,6 +86,33 @@ Options:
 | `--binding <binding>` | `auto`, `native`, or `wasm` | `auto` | Select the execution binding for diagnostics and migration testing. |
 | `--no-export` | `boolean` | `false` | Print generated CSS instead of writing a file. |
 
+File-export watch mode reports missing imported stylesheets and resources while
+keeping the last successful export. It retries when those files are restored,
+including files in newly created directories. Source edits made during failed
+dependency preparation are included when the rebuild succeeds.
+
+Node-host file exports publish versioned CSS sidecars and content-addressed
+resources before atomically replacing the entry CSS. A failed asset write or
+entry replacement leaves the previous export usable. Existing sidecars are reused
+only when their bytes match; conflicting files are preserved and reported as an
+error. Watch mode can retry publication after permissions are restored and a source
+or dependency changes. Publish the entry together with its referenced sidecars.
+
+Each output keeps a hidden ownership journal beside its entry. Later successful
+exports remove only unchanged files created by that output. Current and previous
+generations are retained; older generations remain for at least 24 hours after
+replacement. Another tracked output's references also prevent deletion. Existing matching
+files are reused without acquiring ownership, and modified or replaced files are
+preserved. Keep the journal for future builds; removing it leaves existing assets
+unowned and prevents their automatic cleanup.
+
+Cooperating CLI processes of the same OS account serialize publication and cleanup
+on a local filesystem. An interrupted journal can be recovered on the next export.
+A journal-finalization failure can occur after the new entry is already published;
+retrying recovers that state. Cleanup failures report a warning and leave valid
+output in place for a later retry. These guarantees do not cover older writers,
+external edits during publication, or power-loss durability.
+
 `--binding native` opts a one-shot scan into the Rust `mcss` executable and verifies its package, ABI, manifest, and hydration versions before execution. Watch, lint, and inspect remain on the Node host until their native parity gates pass. `MASTER_CSS_CLI_BINDING` provides the same selection for automation.
 
 ### `npx @master/css-cli lint [source paths]`

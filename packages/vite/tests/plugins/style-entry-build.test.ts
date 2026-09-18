@@ -222,9 +222,12 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       const bundle = makeBundle({
         'assets/index-abc.css': SLOT,
       })
-      await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+      const assets: { source: string }[] = []
+      await (plugin as any).renderStart()
+      await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
+      await (plugin as any).closeBundle()
 
-      const css = String(bundle['assets/index-abc.css'].source)
+      const css = assets.map(asset => asset.source).join('\n')
       expect(css).toContain('body')
       expect(css).toContain('.native-card')
       expect(css).not.toContain('.unused-card')
@@ -279,9 +282,12 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
       const bundle = makeBundle({
         'assets/index-abc.css': SLOT,
       })
-      await (plugin as any).generateBundle.call({ warn }, {}, bundle)
+      const assets: { source: string }[] = []
+      await (plugin as any).renderStart()
+      await (plugin as any).generateBundle.call({ warn, emitFile: (asset: { source: string }) => assets.push(asset) }, {}, bundle)
+      await (plugin as any).closeBundle()
 
-      const css = String(bundle['assets/index-abc.css'].source)
+      const css = assets.map(asset => asset.source).join('\n')
       expect(css).toContain('.native-used')
       expect(css).not.toContain('.native-unused')
       expect(css).toMatch(/--color-primary:(rgb\(18 52 86\)|#123456)/)

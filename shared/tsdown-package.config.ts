@@ -106,7 +106,9 @@ export default defineConfig({
     alwaysBundle: [privateInternalPackagePattern],
     dts: {
       alwaysBundle: [privateInternalPackagePattern],
-      neverBundle: [/^[^./]/, /^\.{1,2}\//]
+      neverBundle: ['@master/css-binding', '@master/css-tooling', '@master/css-language-server', '@master/css-mcp'].includes(packageJSON.name || '')
+        ? [/^[^./]/]
+        : [/^[^./]/, /^\.{1,2}\//]
     }
   },
   plugins: [

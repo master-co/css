@@ -1,40 +1,9 @@
 # Update Docs
 
-## Goal
+Update the requested documentation to match verified source behavior and current public examples.
 
-Update documentation to match actual source behavior.
+Use [the docs context pack](../../.ai/context/docs.md) for task-specific guidance; repository policy remains in `AGENTS.md`. Do not reread guidance already in context.
 
-## Read Before Starting
+## Completion
 
-- `AGENTS.md`
-- `.ai/context/index.md`
-- `.ai/context/docs.md`
-- The source/package docs related to the behavior
-- The affected package `AI.md`, if present
-
-## Inspect First
-
-- Source implementation
-- Tests or fixtures proving behavior
-- Existing documentation style in `site/`
-
-## Editing Rules
-
-- Verify behavior from source/tests before writing docs.
-- Keep docs aligned with public API and current examples.
-- Do not create a root `docs/` directory unless requested.
-- Do not change code unless explicitly requested.
-- Follow `.ai/context/css-output.md` when docs describe generated CSS.
-
-## Validation
-
-- Run docs/site checks only if the docs change needs build validation.
-- Run package tests if docs examples depend on generated output and fixtures changed.
-
-## Completion Output
-
-Report:
-
-- Docs changed
-- Source behavior verified
-- Commands run or why not run
+Report the docs changed, source evidence for behavior claims, and relevant validation or why it was unnecessary. Keep product code changes outside this task unless requested.

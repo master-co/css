@@ -1,12 +1,15 @@
 #![forbid(unsafe_code)]
 
+mod filesystem_graph;
+mod manifest_graph;
+
 use std::collections::HashSet;
 use std::fs;
 use std::path::{Component, Path, PathBuf};
 
 use mastercss_compiler::{
     CompileNativeCssOptions, CompilerError, CssImportProvider, LowerCssDirectivesOptions,
-    compile_css_directives, inspect_css, lower_css_directives, resolve_css_import_graph,
+    LowerCssDirectivesRequest, compile_css_directives, inspect_css, lower_css_directives_request,
 };
 use mastercss_schema::CssDirectiveExtractionPolicy;
 use serde::{Deserialize, Serialize};
@@ -59,6 +62,10 @@ pub struct ProjectEntryGraphIr {
     pub entry: String,
     pub source: String,
     pub dependencies: Vec<String>,
+    /// Boundary-preserving input for manifest-only hosts. Legacy source/CSS
+    /// consumers retain their existing contract until they support asset graphs.
+    #[serde(default)]
+    pub manifest_graph: Option<mastercss_compiler::CssImportGraphRequest>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
@@ -473,20 +480,30 @@ pub fn load_project_manifest_entries_with_root(
             source,
         })?;
         let entry_text = entry.to_string_lossy().into_owned();
-        let graph = resolve_css_import_graph(&entry_text, &FilesystemCssProvider)?;
+        let graph = filesystem_graph::prepare(&entry_text)?;
         graphs.push(ProjectEntryGraphIr {
             entry: entry_text,
-            source: graph.source,
-            dependencies: graph.dependencies,
+            source: String::new(),
+            dependencies: Vec::new(),
+            manifest_graph: Some(graph),
         });
     }
-    load_project_manifest_graphs_with_root(project_dir, graphs, base_manifest)
+    load_project_manifest_graphs(project_dir, graphs, base_manifest, true)
 }
 
 pub fn load_project_manifest_graphs_with_root(
     project_dir: &Path,
     graphs: Vec<ProjectEntryGraphIr>,
     base_manifest: Value,
+) -> Result<ProjectManifestIr, ProjectError> {
+    load_project_manifest_graphs(project_dir, graphs, base_manifest, false)
+}
+
+fn load_project_manifest_graphs(
+    project_dir: &Path,
+    graphs: Vec<ProjectEntryGraphIr>,
+    base_manifest: Value,
+    emit_native_compose: bool,
 ) -> Result<ProjectManifestIr, ProjectError> {
     let project_dir = project_dir
         .canonicalize()
@@ -515,6 +532,44 @@ pub fn load_project_manifest_graphs_with_root(
                 source,
             })?;
         let entry_text = entry.to_string_lossy().into_owned();
+        if let Some(request) = graph.manifest_graph {
+            if request.entry != graph.entry {
+                return Err(CompilerError::Import {
+                    filename: graph.entry,
+                    message: "Prepared manifest graph entry does not match the project entry"
+                        .into(),
+                }
+                .into());
+            }
+            let compiled = manifest_graph::compile_manifest_graph_with_output(
+                &request,
+                manifest,
+                &project_dir,
+                &[],
+                emit_native_compose,
+            )?;
+            manifest = compiled.manifest;
+            let result = compiled.directives;
+            if !result.css.is_empty() {
+                css.push(result.css);
+            }
+            if !result.generated_css.is_empty() {
+                generated_css.push(result.generated_css);
+            }
+            resolved_entries.push(entry_text);
+            push_unique(&mut dependencies, result.dependencies);
+            push_unique(&mut class_names, result.class_names);
+            push_unique(&mut native_class_names, result.native_class_names);
+            push_unique(&mut warnings, result.warnings);
+            let entry_source_plan =
+                resolve_source_entry_plan(&project_dir, &entry, &result.extraction_policy)?;
+            push_unique(&mut source_plan.files, entry_source_plan.files.clone());
+            if !entry_source_plan.include.is_empty() || !entry_source_plan.exclude.is_empty() {
+                source_plan.entries.push(entry_source_plan);
+            }
+            merge_extraction_policy(&mut extraction_policy, result.extraction_policy);
+            continue;
+        }
         let result = compile_css_directives(
             &graph.source,
             &CompileNativeCssOptions {
@@ -523,10 +578,13 @@ pub fn load_project_manifest_graphs_with_root(
                 classes: None,
             },
         )?;
-        let lowered = lower_css_directives(
-            &result.manifest_input,
-            result.style_definitions.as_deref().unwrap_or_default(),
-            &result.warnings,
+        let lowered = lower_css_directives_request(
+            &LowerCssDirectivesRequest {
+                manifest_input: result.manifest_input,
+                style_definitions: result.style_definitions.unwrap_or_default(),
+                warnings: result.warnings,
+                native_output: result.native_output,
+            },
             &LowerCssDirectivesOptions {
                 base_manifest: Some(manifest),
                 resolution_manifest: None,
@@ -550,17 +608,18 @@ pub fn load_project_manifest_graphs_with_root(
         if !result.native_css.is_empty() {
             native_css.push(result.native_css.clone());
         }
+        let ordered_css = lowered.css.unwrap_or_else(|| {
+            [result.native_css.as_str(), lowered.generated_css.as_str()]
+                .into_iter()
+                .filter(|value| !value.is_empty())
+                .collect::<Vec<_>>()
+                .join("\n")
+        });
+        if !ordered_css.is_empty() {
+            css.push(ordered_css);
+        }
         if !lowered.generated_css.is_empty() {
-            css.push(
-                [result.native_css.as_str(), lowered.generated_css.as_str()]
-                    .into_iter()
-                    .filter(|value| !value.is_empty())
-                    .collect::<Vec<_>>()
-                    .join("\n"),
-            );
             generated_css.push(lowered.generated_css);
-        } else if !result.native_css.is_empty() {
-            css.push(result.native_css.clone());
         }
     }
 

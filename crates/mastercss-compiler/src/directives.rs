@@ -1,16 +1,15 @@
 use super::{
-    CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError,
-    CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
-    CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap, HashSet, MinifyOptions,
-    NativeClassNameCollector, NativeStyleContext, ParserOptions, PrinterOptions, StyleSheet,
-    ThemeAtRule, ThemeAtRuleParser, Visit, byte_offset_for_location, decode_css_quoted_string,
-    directive_error, extraction_policy_from_statements, filter_native_css_rules,
-    lower_custom_variant_rule, lower_managed_rule_list, lower_native_rule_list,
-    lower_native_style_rule, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
-    native_rule_list_has_directives, normalize_stylesheet_value, printed_selectors,
-    remove_css_reference_statements, remove_standalone_css_directives,
-    rewrite_managed_variant_directives, selector_source_reference, validate_compose_syntax,
+    CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
+    CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap,
+    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
+    ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
+    extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
+    lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
+    normalize_stylesheet_value, rewrite_managed_variant_directives, validate_compose_syntax,
     validate_condition_variant_syntax,
+};
+use mastercss_lexer::{
+    find_css_reference_statements, find_standalone_css_directive_statements, utf16_to_byte_offset,
 };
 
 #[allow(clippy::too_many_arguments)]
@@ -84,9 +83,62 @@ pub fn compile_css_directives(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileCssDirectivesResult, CompilerError> {
+    compile_css_directives_impl(source, options, None)
+}
+
+pub(crate) struct NativeStyleSlot {
+    pub name: String,
+    pub definitions: Vec<CssDirectiveStyleDefinition>,
+}
+
+pub(crate) fn compile_css_directives_with_slots(
+    source: &str,
+    options: &CompileNativeCssOptions,
+) -> Result<(CompileCssDirectivesResult, Vec<NativeStyleSlot>), CompilerError> {
+    let mut slots = Vec::new();
+    let result = compile_css_directives_impl(source, options, Some(&mut slots))?;
+    Ok((result, slots))
+}
+
+fn compile_css_directives_impl(
+    source: &str,
+    options: &CompileNativeCssOptions,
+    slots: Option<&mut Vec<NativeStyleSlot>>,
+) -> Result<CompileCssDirectivesResult, CompilerError> {
+    let external_slots = slots.is_some();
+    let mut local_slots = Vec::new();
+    let mut slots = Some(match slots {
+        Some(slots) => slots,
+        None => &mut local_slots,
+    });
     validate_condition_variant_syntax(source, &options.from)?;
     validate_compose_syntax(source, &options.from)?;
-    let (source_without_references, reference_statements) = remove_css_reference_statements(source);
+    let reference_statements = find_css_reference_statements(source);
+    let standalone_directives = find_standalone_css_directive_statements(source);
+    // Parsing still addresses the original source. Blank consumed statements
+    // instead of deleting bytes, preserving line breaks and all later offsets.
+    let mut masked = source.as_bytes().to_vec();
+    for (start, end) in reference_statements
+        .iter()
+        .map(|statement| (statement.start, statement.end))
+        .chain(
+            standalone_directives
+                .iter()
+                .map(|statement| (statement.start, statement.end)),
+        )
+    {
+        if let Some((start, end)) =
+            utf16_to_byte_offset(source, start).zip(utf16_to_byte_offset(source, end))
+        {
+            for byte in &mut masked[start..end] {
+                if !matches!(*byte, b'\r' | b'\n') {
+                    *byte = b' ';
+                }
+            }
+        }
+    }
+    let source_without_entry =
+        String::from_utf8(masked).expect("statement ranges end at UTF-8 boundaries");
     let references = reference_statements
         .into_iter()
         .map(|reference| CssDirectiveReferenceStatement {
@@ -97,8 +149,6 @@ pub fn compile_css_directives(
             file: Some(options.from.clone()),
         })
         .collect::<Vec<_>>();
-    let (source_without_entry, standalone_directives) =
-        remove_standalone_css_directives(&source_without_references);
     let extraction_policy = extraction_policy_from_statements(&standalone_directives);
     let (rewritten_source, stylesheet_variant_rule_offsets) =
         rewrite_managed_variant_directives(&source_without_entry);
@@ -136,6 +186,18 @@ pub fn compile_css_directives(
     let mut style_definitions = Vec::new();
     let mut style_order = 0;
     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
+    let mut occupied_names = HashSet::new();
+    if super::native_rule_list_has_directives(
+        &rewritten_source,
+        &stylesheet.rules.0,
+        &stylesheet_variant_rule_offsets,
+    ) {
+        for token in mastercss_lexer::tokenize_css_syntax(source) {
+            if let mastercss_lexer::CssSyntaxKind::AtKeyword(name) = token.kind {
+                occupied_names.insert(name.into_owned());
+            }
+        }
+    }
     for rule in stylesheet.rules.0.drain(..) {
         match rule {
             CssRule::Custom(directive) => match directive.name {
@@ -164,97 +226,83 @@ pub fn compile_css_directives(
                     )?
                 }
             },
-            CssRule::Style(style)
-                if native_rule_list_has_directives(
-                    &rewritten_source,
-                    &style.rules.0,
-                    &stylesheet_variant_rule_offsets,
-                ) =>
-            {
-                let context = NativeStyleContext {
-                    selectors: printed_selectors(&style.selectors.0, &options.from)?,
-                    selector_source: selector_source_reference(
-                        source,
-                        &options.from,
-                        &rewritten_source,
-                        0,
-                        style.loc.line,
-                        style.loc.column,
-                    ),
+            rule => {
+                let mut lowerer = crate::native_conditionals::NativeConditionalLowerer {
+                    source,
+                    filename: &options.from,
+                    rewritten: &rewritten_source,
+                    variants: &stylesheet_variant_rule_offsets,
+                    definitions: &mut style_definitions,
+                    order: &mut style_order,
+                    slots: slots.as_deref_mut(),
+                    occupied: &mut occupied_names,
                 };
-                lower_native_style_rule(
-                    source,
-                    &options.from,
-                    &rewritten_source,
-                    style,
-                    context,
-                    &[],
-                    &stylesheet_variant_rule_offsets,
-                    &mut style_definitions,
-                    &mut style_order,
-                )?;
+                if let Some(rule) = lowerer.lower(rule, &[])? {
+                    native_rules.push(rule);
+                }
             }
-            CssRule::Media(media)
-                if byte_offset_for_location(
-                    &rewritten_source,
-                    media.loc.line,
-                    media.loc.column,
-                )
-                .is_some_and(|offset| stylesheet_variant_rule_offsets.contains_key(&offset)) =>
-            {
-                let offset =
-                    byte_offset_for_location(&rewritten_source, media.loc.line, media.loc.column)
-                        .expect("matched variant media rules have a source offset");
-                let path = [CssDirectiveConditionPathEntry::Variant {
-                    token: stylesheet_variant_rule_offsets[&offset].clone(),
-                }];
-                lower_native_rule_list(
-                    source,
-                    &options.from,
-                    &rewritten_source,
-                    media.rules.0,
-                    None,
-                    &path,
-                    &stylesheet_variant_rule_offsets,
-                    &mut style_definitions,
-                    &mut style_order,
-                )?;
-            }
-            rule => native_rules.push(rule),
         }
     }
+    crate::output_mappings::refine_native_declaration_sources(source, &mut style_definitions);
     stylesheet.rules.0 = native_rules;
     if let Some(classes) = &options.classes {
         let classes = classes.iter().cloned().collect::<HashSet<_>>();
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }
 
-    let native_css = if options.preserve_native_css {
-        stylesheet
-            .minify(MinifyOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: options.from.clone(),
-            })?;
-        let css = stylesheet
-            .to_css(PrinterOptions::default())
-            .map_err(|error| CompilerError::Print {
-                message: error.to_string(),
-                filename: options.from.clone(),
-            })?
-            .code
-            .trim()
-            .to_owned();
-        normalize_stylesheet_value(&css, false).map_err(|message| CompilerError::Directive {
-            message,
-            filename: options.from.clone(),
-            range: None,
-        })?
+    let native_output = if !external_slots
+        && let Some(slots) = slots.as_deref_mut().filter(|slots| !slots.is_empty())
+    {
+        // Both views use the same parsed and lowered tree. The raw native view
+        // removes slots before minification; the ordered view retains them.
+        let rules = stylesheet.rules.0.clone();
+        let names = slots.iter().map(|slot| slot.name.as_str()).collect();
+        if !options.preserve_native_css {
+            stylesheet.rules.0 =
+                crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
+        }
+        let css = print_native_css(&mut stylesheet, &options.from)?;
+        let mappings = crate::output_mappings::native_output_mappings(
+            source,
+            &rewritten_source,
+            &options.from,
+            &stylesheet.rules.0,
+            &css,
+        );
+        stylesheet.rules.0 = crate::native_output::strip_style_slots(rules, &names).0;
+        Some(crate::native_output::prepare_native_output(
+            source,
+            &options.from,
+            css,
+            mappings,
+            slots,
+        )?)
+    } else {
+        None
+    };
+    if !options.preserve_native_css
+        && external_slots
+        && let Some(slots) = slots.as_deref()
+    {
+        let names = slots.iter().map(|slot| slot.name.as_str()).collect();
+        stylesheet.rules.0 = crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
+    }
+    let native_css = if options.preserve_native_css || external_slots {
+        print_native_css(&mut stylesheet, &options.from)?
     } else {
         String::new()
     };
 
+    let native_mappings = crate::output_mappings::native_output_mappings(
+        source,
+        &rewritten_source,
+        &options.from,
+        &stylesheet.rules.0,
+        &native_css,
+    );
     Ok(CompileCssDirectivesResult {
+        native_output,
+        native_mappings,
         manifest_input,
         extraction_policy,
         class_names,
@@ -266,5 +314,55 @@ pub fn compile_css_directives(
         dependencies: Vec::new(),
         style_definitions: (!style_definitions.is_empty()).then_some(style_definitions),
         references: (!references.is_empty()).then_some(references),
+    })
+}
+
+pub(crate) fn native_style_slot<'a>(
+    slots: &mut Vec<NativeStyleSlot>,
+    occupied: &mut HashSet<String>,
+    definitions: &[CssDirectiveStyleDefinition],
+    loc: lightningcss::rules::Location,
+) -> CssRule<'a, ThemeAtRule> {
+    let mut index = slots.len();
+    let name = loop {
+        let name = format!("--master-css-compose-slot-{index}");
+        if occupied.insert(name.clone()) {
+            break name;
+        }
+        index += 1;
+    };
+    slots.push(NativeStyleSlot {
+        name: name.clone(),
+        definitions: definitions.to_vec(),
+    });
+    CssRule::Unknown(lightningcss::rules::unknown::UnknownAtRule {
+        name: name.into(),
+        prelude: lightningcss::properties::custom::TokenList(Vec::new()),
+        block: None,
+        loc,
+    })
+}
+
+fn print_native_css(
+    stylesheet: &mut StyleSheet<'_, ThemeAtRule>,
+    filename: &str,
+) -> Result<String, CompilerError> {
+    stylesheet
+        .minify(MinifyOptions::default())
+        .map_err(|error| CompilerError::Print {
+            message: error.to_string(),
+            filename: filename.into(),
+        })?;
+    let css = stylesheet
+        .to_css(PrinterOptions::default())
+        .map_err(|error| CompilerError::Print {
+            message: error.to_string(),
+            filename: filename.into(),
+        })?
+        .code;
+    normalize_stylesheet_value(css.trim(), false).map_err(|message| CompilerError::Directive {
+        message,
+        filename: filename.into(),
+        range: None,
     })
 }

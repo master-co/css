@@ -26,7 +26,11 @@ export default function masterCSSNextStaticCSSLoader(this: LoaderContext, source
 
   const run = addStaticCSSDependencies(statePath, this.addDependency?.bind(this))
     .then(() => transformStaticStyleSource(statePath, this.resourcePath, source))
-    .then((content) => callback(null, content))
+    .then(async (content) => {
+      // Transformation can discover resources and publish new companion files.
+      await addStaticCSSDependencies(statePath, this.addDependency?.bind(this))
+      callback(null, content)
+    })
     .catch((error: Error) => callback(error))
 
   void run

@@ -28,12 +28,18 @@ export default function ScannerLifecyclePlugin(context: MasterCSSWebpackContext)
       })
 
       compiler.hooks.watchRun.tapPromise(context.name, async (watchingCompiler) => {
-        await context.init()
-        const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
-        const resetDependencies = context.getResetDependencyPaths()
-        if (resetDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
-          await context.reset(context.getOptions())
-          await context.waitForResetReplay()
+        try {
+          await context.init()
+          const modifiedFiles = (watchingCompiler as Compiler & { modifiedFiles?: ReadonlySet<string> }).modifiedFiles
+          const resetDependencies = context.getResetDependencyPaths()
+          if (resetDependencies.some((dependency) => hasModifiedFile(modifiedFiles, dependency))) {
+            await context.reset(context.getOptions())
+            await context.waitForResetReplay()
+          }
+        } catch (error) {
+          // A fatal watchRun error bypasses Webpack's watcher re-registration.
+          // Report it on the next compilation so filesystem recovery stays live.
+          context.recordCompilationError(error)
         }
       })
 

@@ -6,6 +6,8 @@ import {
 } from '@master/css-schema'
 import { NativeBindingError } from './errors'
 
+export type BindingSourceText = string | ((filename: string) => string | undefined)
+
 interface BindingDiagnosticPayload {
   readonly code?: unknown
   readonly message?: unknown
@@ -48,7 +50,7 @@ export function normalizeBindingError(
   domain: MasterCSSDiagnosticDomain = 'binding',
   fallbackCode = 'INTERNAL',
   fallbackMessage = 'Master CSS binding operation failed.',
-  sourceText?: string
+  sourceText?: BindingSourceText
 ): MasterCSSError {
   if (cause instanceof MasterCSSError) return cause
   const parsed = parseBindingDiagnostic(cause)
@@ -64,6 +66,9 @@ export function normalizeBindingError(
     : cause instanceof Error && cause.message
       ? cause.message
       : fallbackMessage
+  const text = typeof sourceText === 'function'
+    ? typeof parsed?.source === 'string' ? sourceText(parsed.source) : undefined
+    : sourceText
   const diagnostic: MasterCSSDiagnostic | undefined = parsed
     ? Object.freeze({
       version: MASTER_CSS_DIAGNOSTIC_VERSION,
@@ -72,13 +77,13 @@ export function normalizeBindingError(
       severity: 'error',
       message,
       ...(typeof parsed.source === 'string' ? { source: parsed.source } : {}),
-      ...(sourceText !== undefined
+      ...(text !== undefined
         && typeof parsed.range?.start === 'number'
         && typeof parsed.range.end === 'number'
         ? {
           range: Object.freeze({
-            start: positionAt(sourceText, parsed.range.start),
-            end: positionAt(sourceText, parsed.range.end)
+            start: positionAt(text, parsed.range.start),
+            end: positionAt(text, parsed.range.end)
           })
         }
         : {}),
@@ -98,7 +103,7 @@ export function normalizeBindingError(
 export function callBinding<T>(
   domain: MasterCSSDiagnosticDomain,
   operation: () => T,
-  sourceText?: string
+  sourceText?: BindingSourceText
 ): T {
   try {
     return operation()
@@ -110,7 +115,7 @@ export function callBinding<T>(
 export async function callBindingAsync<T>(
   domain: MasterCSSDiagnosticDomain,
   operation: () => Promise<T>,
-  sourceText?: string
+  sourceText?: BindingSourceText
 ): Promise<T> {
   try {
     return await operation()

@@ -1,3 +1,9 @@
+import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
+import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
+import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, type CSSImportFileResolver } from '../node-imports'
+export type { CSSImportFileResolver as MasterCSSStylesheetImportResolver, CSSImportSource as MasterCSSStylesheetImportSource } from '../node-imports'
+import { analyzeCSSDependencies, inspectCSS } from '../node-compiler'
+export type { StylesheetDeliveryOptions as MasterCSSStylesheetDeliveryOptions, StylesheetResourceAsset as MasterCSSStylesheetResourceAsset } from './delivery'
 import { MasterCSSError } from '@master/css-schema'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
@@ -27,15 +33,12 @@ import {
   type StylesheetSources
 } from './index'
 
-export interface MasterCSSSassCompiler {
-  compileStringAsync(source: string, options: {
-    readonly url: URL
-    readonly style: 'expanded'
-    readonly syntax: 'scss' | 'indented'
-  }): Promise<{ readonly css: string }>
-}
+export type { SassModule as MasterCSSSassCompiler, StylesheetPreparationOptions as MasterCSSStylesheetPreparationOptions, PreparedStylesheetSource as MasterCSSPreparedStylesheet } from './types'
+import type { SassModule as MasterCSSSassCompiler } from './types'
+export { prepareStylesheetSource as prepareStylesheet } from './index'
 
-export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptions {
+export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptions, StylesheetSourceContext {
+  readonly delivery?: StylesheetDeliveryOptions
   readonly baseManifest: MasterCSSManifest
   readonly projectDir?: string
   readonly loadSass?: (projectDir?: string) => MasterCSSSassCompiler
@@ -43,11 +46,19 @@ export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptio
 }
 
 export interface MasterCSSCompiledStylesheet extends MasterCSSCompileResult {
+  readonly entry?: string
+  /** Delivery assets, including the entry. Each map describes its final CSS. */
+  readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string, readonly sourceMap: string }[]
+  readonly resources?: readonly StylesheetResourceAsset[]
   readonly manifest: MasterCSSManifest
   readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
 
 export interface MasterCSSStylesheetTransformResult {
+  readonly sourceMap?: string
+  /** Retained child stylesheets; delivery hosts must publish every returned asset. */
+  readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  readonly resources?: readonly StylesheetResourceAsset[]
   readonly code: string
   readonly dependencies: readonly string[]
   readonly transformed: boolean
@@ -55,17 +66,27 @@ export interface MasterCSSStylesheetTransformResult {
 }
 
 export interface MasterCSSStylesheetTransformOptions extends MasterCSSStylesheetCompileOptions {
+  /** With delivery, also process native graphs prepared by a host transformer. */
+  readonly transformNativeStylesheets?: boolean
   readonly emittedGlobals?: MasterCSSEmittedGlobals
 }
 
-export interface MasterCSSStylesheetResolutionOptions {
+export interface MasterCSSStylesheetResolutionOptions extends StylesheetSourceContext {
   readonly projectDir?: string
+  /** Classify a prepared graph without flattening its CSS for delivery hosts. */
+  readonly preserveImports?: boolean
   readonly signal?: AbortSignal
 }
 
 export interface MasterCSSStylesheetDependencyOptions {
   readonly projectDir?: string
   readonly signal?: AbortSignal
+}
+
+export interface MasterCSSStylesheetAsyncResolutionOptions extends MasterCSSStylesheetResolutionOptions {
+  readonly baseFile?: string
+  readonly resolveImport?: CSSImportFileResolver
+  readonly onDependency?: (file: string) => void
 }
 
 export type MasterCSSStylesheetKind =
@@ -91,6 +112,8 @@ export interface MasterCSSStylesheetHostOptions {
 }
 
 export interface MasterCSSStylesheetCompositionOptions extends MasterCSSStylesheetCompileOptions {
+  /** Compose only these registered source IDs; omitted selects all and an empty list selects none. */
+  readonly sourceIds?: readonly string[]
   readonly scanner: MasterCSSScanner
   readonly manifest?: MasterCSSManifest
   readonly classes?: readonly string[]
@@ -100,6 +123,9 @@ export interface MasterCSSStylesheetCompositionOptions extends MasterCSSStyleshe
 }
 
 export interface MasterCSSStylesheetComposition {
+  readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
+  readonly resources?: readonly StylesheetResourceAsset[]
+  readonly dependencies?: readonly string[]
   readonly css: string
   readonly emittedGlobals: Required<MasterCSSEmittedGlobals>
 }
@@ -151,14 +177,26 @@ export function resolveStylesheetSync(
   options.signal?.throwIfAborted()
   if (!isStylesheetRequest(id)) return
   const normalizedId = cleanStyleRequest(id)
-  const packageStyle = isMasterCSSPackageStyleFile(id, options.projectDir)
-  const resolved = resolveMasterStyleSource(id, source, options.projectDir)
-  const local = !resolved && hasLocalStyleDirectives(source)
+  try {
+  const resolved = options.preserveImports
+    ? resolveUnflattenedStylesheet(normalizedId, source, options.projectDir)
+    : resolveMasterStyleSource(id, source, options.projectDir)
+  return createStylesheetResolution(normalizedId, source, options, resolved)
+  } catch (error) { throw mapStylesheetError(error, normalizedId, options, source) }
+}
+
+function createStylesheetResolution(
+  normalizedId: string, source: string, options: MasterCSSStylesheetResolutionOptions,
+  resolved: { source: string, dependencies: string[], local?: boolean } | undefined
+): MasterCSSStylesheetResolution {
+  const packageStyle = !normalizedId.startsWith('\0') && isMasterCSSPackageStyleFile(normalizedId, options.projectDir)
+  const entry = resolved && !resolved.local
+  const local = resolved?.local || (!resolved && hasLocalStyleDirectives(source, normalizedId))
   const kind: MasterCSSStylesheetKind = packageStyle
-    ? resolved
+    ? entry
       ? 'master-package-entry'
       : 'master-package'
-    : resolved
+    : entry
       ? 'entry'
       : local
         ? 'local'
@@ -170,7 +208,7 @@ export function resolveStylesheetSync(
   const dependencies = resolved?.dependencies
     ?? (kind === 'plain'
       ? [normalizedId]
-      : collectStylesheetDependenciesInternal(id, source, options.projectDir))
+      : collectStylesheetDependenciesInternal(normalizedId, source, options.projectDir))
 
   return Object.freeze({
     id: normalizedId,
@@ -182,12 +220,38 @@ export function resolveStylesheetSync(
   })
 }
 
-export function resolveStylesheet(
+function resolveUnflattenedStylesheet(id: string, source: string, projectDir?: string) {
+  let graph: ReturnType<typeof prepareCSSImportGraph>
+  try {
+    graph = prepareCSSImportGraph(id, source, { projectDir, expandPackageImports: false }, analyzeCSSDependencies)
+  } catch (error) {
+    if (!inspectCSS(source).hasMasterEntry) return
+    throw error
+  }
+  return classifyPreparedStylesheet(graph, source)
+}
+
+function classifyPreparedStylesheet(graph: ReturnType<typeof prepareCSSImportGraph>, source: string) {
+  const sources = Object.values(graph.files)
+  const entry = sources.some(text => inspectCSS(text).hasMasterEntry)
+  if (!entry && !sources.some(source => hasLocalStyleDirectives(source))) return
+  return { source, dependencies: Object.keys(graph.files), local: !entry }
+}
+
+export async function resolveStylesheet(
   id: string,
   source: string,
-  options: MasterCSSStylesheetResolutionOptions = {}
+  options: MasterCSSStylesheetAsyncResolutionOptions = {}
 ): Promise<MasterCSSStylesheetResolution | undefined> {
-  return Promise.resolve(resolveStylesheetSync(id, source, options))
+  if (!options.resolveImport && !options.baseFile) return resolveStylesheetSync(id, source, options)
+  options.signal?.throwIfAborted()
+  if (!options.preserveImports) throw new TypeError('Custom import resolution requires preserveImports.')
+  if (!isStylesheetRequest(id)) return
+  const normalizedId = cleanStyleRequest(id)
+  const graph = await prepareCSSImportGraphWithResolver(normalizedId, source, { projectDir: options.projectDir, expandPackageImports: false, onDependency: options.onDependency, signal: options.signal, baseFile: options.baseFile }, analyzeCSSDependencies, options.resolveImport ?? (() => undefined))
+  options.signal?.throwIfAborted()
+  const resolved = classifyPreparedStylesheet(graph, source)
+  return createStylesheetResolution(normalizedId, source, options, resolved)
 }
 
 export function collectStylesheetDependenciesSync(
@@ -254,6 +318,11 @@ export async function compileRenderedStylesheet(
   const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic)
   return Object.freeze({
     ...compilation,
+    ...(result.stylesheets ? {
+      entry: result.entry,
+      stylesheets: Object.freeze(result.stylesheets.map(({ id, href, css, sourceMap }) => Object.freeze({ id, href, css, sourceMap }))),
+      resources: Object.freeze((result.resources ?? []).map(asset => Object.freeze({ ...asset })))
+    } : {}),
     manifest: Object.freeze(result.manifest),
     emittedGlobals: freezeEmittedGlobals(result.emittedGlobals)
   })
@@ -291,8 +360,11 @@ export async function transformStylesheet(
   options.signal?.throwIfAborted()
   return Object.freeze({
     code: result.code,
+    ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
     transformed: result.transformed,
+    ...(result.stylesheets ? { stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))) } : {}),
+    ...(result.resources ? { resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset }))) } : {}),
     ...(result.result
       ? {
         compilation: toMasterCSSCompileResultInternal(
@@ -324,7 +396,18 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options: MasterCSSStylesheetCompileOptions
   ): Promise<MasterCSSCompileResult> {
     this.assertActive()
-    const compileOptions = abortableOptions(options)
+    let compileOptions = abortableOptions(options)
+    const resolveImport = compileOptions.delivery?.resolveImport
+    if (resolveImport) {
+      compileOptions = { ...compileOptions, delivery: { ...compileOptions.delivery!, resolveImport: async (specifier, importer) => {
+        this.assertActive()
+        options.signal?.throwIfAborted()
+        const result = await resolveImport(specifier, importer)
+        this.assertActive()
+        options.signal?.throwIfAborted()
+        return result
+      } } }
+    }
     const result = await registerStylesheetSource(
       scanner,
       this.#sources,
@@ -353,16 +436,22 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options: MasterCSSStylesheetCompositionOptions
   ): Promise<MasterCSSStylesheetComposition> {
     this.assertActive()
-    const compileOptions = abortableOptions(options)
+    const { sourceIds, ...compileOptions } = abortableOptions(options)
+    const selected = sourceIds && new Set(sourceIds.map(cleanStyleRequest))
     const result = await createExtractedCSSResult({
       ...compileOptions,
       scanner: options.scanner,
-      stylesheetSources: this.#sources,
+      stylesheetSources: selected
+        ? new Map([...this.#sources].filter(([id]) => selected.has(id)))
+        : this.#sources,
       loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
     })
     options.signal?.throwIfAborted()
     return Object.freeze({
       css: result.css,
+      ...(result.stylesheets ? { stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))) } : {}),
+      ...(result.resources ? { resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset }))) } : {}),
+      ...(result.dependencies ? { dependencies: Object.freeze([...result.dependencies]) } : {}),
       emittedGlobals: freezeEmittedGlobals(result.emittedGlobals)
     })
   }

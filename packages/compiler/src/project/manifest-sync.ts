@@ -64,7 +64,8 @@ export function loadProjectManifestSync(
   return immutableProjectResult(loadBindingProjectManifest(
     resolve(options.root ?? process.cwd()),
     options.baseManifest,
-    options.entries
+    options.entries,
+    options.onDependency
   ), options.onDiagnostic)
 }
 

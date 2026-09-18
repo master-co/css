@@ -10,6 +10,8 @@ export interface MasterCSSProjectLoadOptions extends MasterCSSProjectDiscoveryOp
   readonly baseManifest: MasterCSSManifest
   readonly entries?: readonly string[]
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+  /** Reports each project CSS file before reading it, including missing imports/references. */
+  readonly onDependency?: (file: string) => void
 }
 
 export interface MasterCSSProjectCompileOptions extends MasterCSSProjectLoadOptions {

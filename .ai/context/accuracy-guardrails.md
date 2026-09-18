@@ -1,31 +1,25 @@
 # Accuracy Guardrails
 
-Use this pack when a task is high-risk or when a compact task pack is not enough. The goal is to save tokens by routing context, not to hide important constraints.
+Use before changing high-risk behavior below, or reviewing a change to it. Load the matching references, affected package/crate `AI.md`, and owning source/tests; no full repository map is required. Pure wording or formatting edits do not trigger semantic investigation.
 
-## Escalate Immediately
+## Risk Routing
 
-Read deeper references before editing when touching:
+| Changed behavior | Required deep references |
+|---|---|
+| CSS bytes, layers, priority, values, selectors, conditions, variables, modes, animation, or utility matching | `.ai/data-flows.md`, `.ai/testing-policy.md`; use `rust-routing.md` to locate the semantic owner |
+| Directive parsing, manifest lowering, or compiler/project behavior | `.ai/data-flows.md`, `.ai/testing-policy.md`, `packages/compiler/AI.md`, owning crate guidance |
+| Runtime hydration, CSSOM insertion/deletion, DOM observation, class counts, or runtime bundle inputs | `.ai/data-flows.md`, `.ai/testing-policy.md`, `packages/runtime/AI.md` |
+| Extraction adapters, false positives/negatives, fixed classes, or scanner state | `.ai/data-flows.md`, `.ai/testing-policy.md`, `packages/tooling/AI.md` |
+| Language tokenization, UTF-16 positions, semantic tokens, completion, hover, colors, or LSP | `.ai/data-flows.md`, `.ai/testing-policy.md`, affected tooling/language package guidance |
+| ESLint parser support, ordering, collisions, validation, or autofix ranges | `.ai/data-flows.md`, `.ai/testing-policy.md`, `packages/eslint-plugin/AI.md`, owning tooling/crate guidance |
+| Public exports, config shapes, virtual IDs, generated imports, or dependency direction | `.ai/architecture.md`, `.ai/package-map.md`, `.ai/boundaries.md` |
+| Benchmark-relevant engine/runtime hot paths | `.ai/commands.md`, `.ai/testing-policy.md`, affected package guidance |
 
-- CSS output, layer order, priority, selector parsing/generation, condition parsing/generation, values, variables, modes, animations, manifest lowering, or utility matching.
-- Runtime hydration, CSSOM insertion/deletion, DOM observation, class counting, or global runtime bundles.
-- Static extraction, source adapters, false positives, false negatives, fixed classes, or generated CSS scanner state.
-- Language tokenization, class positions, semantic tokens, completion, hover, color features, or LSP behavior.
-- ESLint parser support, class order, collision detection, validation, or autofix ranges.
-- Public exports, config shapes, virtual module ids, generated import specifiers, package boundaries, or dependency direction.
-- Benchmark-relevant engine/runtime hot paths.
+For high-risk reviews, also use `.ai/review-checklist.md` and `.ai/boundaries.md`. Directive syntax, semantics, lowering, extraction, or directive refactors require the public directive guide update specified in `AGENTS.md`.
 
-## Required Deep References
+## Evidence
 
-- CSS and class generation: `.ai/data-flows.md`, `.ai/testing-policy.md`, affected package `AI.md`.
-- Compiler or directive behavior: `.ai/data-flows.md`, `.ai/testing-policy.md`, `packages/compiler/AI.md`, and the directive guide when user-facing semantics change.
-- Package ownership or cycles: `.ai/architecture.md`, `.ai/package-map.md`, `.ai/boundaries.md`.
-- Performance: `.ai/commands.md`, `.ai/testing-policy.md`, affected package `AI.md`.
-- Review: `.ai/review-checklist.md`, `.ai/boundaries.md`, affected package `AI.md`.
-
-## Work Rules
-
-- Do not infer CSS output correctness from snapshots alone; trace the owning source behavior.
-- Do not preserve legacy compatibility during explicit refactor work unless required by the user or issue.
-- Do not move behavior up the dependency graph to make an implementation easier.
-- Do not update generated fixtures or snapshots unless the output change is intentional and explained.
-- Do not report benchmark gains without the command, environment limits, and correctness validation.
+- Trace owning source behavior; snapshots alone do not establish CSS correctness.
+- Explain intentional CSS/fixture changes and validate downstream effects.
+- Resolve ownership at the correct layer; do not move behavior up the dependency graph to simplify implementation.
+- Report benchmark commands, environment limitations, and correctness checks with performance claims.

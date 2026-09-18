@@ -9,10 +9,16 @@ import ContextPlugin from './plugins/context'
 import ScannerPlugin from './plugins/scanner'
 import UsageGraphPlugin from './plugins/usage-graph'
 import LocalComposePlugin from './plugins/local-compose'
+import StylesheetRecoveryPlugin from './plugins/stylesheet-recovery'
+import BuildStylesheetRecoveryPlugin from './plugins/build-stylesheet-recovery'
+import SassSourcePlugin from './plugins/sass-source'
+import InlineStylesheetPlugin from './plugins/inline-stylesheet'
 import StyleEntryPlugin from './plugins/style-entry'
 import StyleEntryHMRPlugin from './plugins/style-entry-hmr'
 import StyleEntryBuildPlugin from './plugins/style-entry-build'
 import RuntimeBootstrapPlugin from './plugins/runtime-bootstrap'
+import DevStylesheetPlugin from './plugins/dev-stylesheet'
+import { scopePlugins } from './utils/scoped-plugins'
 import {
   resolveMasterCSSVitePluginOptions,
   type MasterCSSVitePluginOptions,
@@ -35,8 +41,12 @@ export function createMasterCSSVitePlugin(
   specifiedOptions: MasterCSSVitePluginOptions = {}
 ): Plugin[] {
   const options = resolveMasterCSSVitePluginOptions(specifiedOptions)
-  const runtimeBootstrap = RuntimeBootstrapPlugin()
   if (!options.enabled) return []
+  return scopePlugins(() => createPlugins(options))
+}
+
+function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
+  const runtimeBootstrap = RuntimeBootstrapPlugin()
   const context = {
     includeGeneratedCSS: options.mode === 'static'
   } as MasterCSSVitePluginContext
@@ -48,9 +58,14 @@ export function createMasterCSSVitePlugin(
     ManifestLoaderPlugin(context),
     ScannerPlugin(options, context),
     UsageGraphPlugin(options, context),
+    StylesheetRecoveryPlugin(context),
+    BuildStylesheetRecoveryPlugin(context),
+    SassSourcePlugin(context),
     LocalComposePlugin(options, context),
     StyleEntryPlugin(options, context),
     StyleEntryHMRPlugin(options, context),
+    InlineStylesheetPlugin(context),
+    DevStylesheetPlugin(context),
     StyleEntryBuildPlugin(options, context)
   ]
   switch (options.mode) {
@@ -87,6 +102,7 @@ type LazyPluginHook =
   | 'buildStart'
   | 'buildEnd'
   | 'closeBundle'
+  | 'closeWatcher'
   | 'handleHotUpdate'
   | 'configureServer'
   | 'transform'
@@ -167,6 +183,7 @@ function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOptions, context: M
       'buildStart',
       'buildEnd',
       'closeBundle',
+      'closeWatcher',
       'handleHotUpdate',
       'configureServer',
       'transformIndexHtml',

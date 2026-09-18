@@ -29,7 +29,14 @@ export interface BindingCompilerSession {
   normalizeManifest: MasterCSSCompilerBindingSession['normalizeManifest']
   normalizeDefaultManifest: MasterCSSCompilerBindingSession['normalizeDefaultManifest']
   compileDefaultPresetManifest: MasterCSSCompilerBindingSession['compileDefaultPresetManifest']
+  prepareCSSStylesheetBundle: MasterCSSCompilerBindingSession['prepareCSSStylesheetBundle']
+  renderCSSStylesheetBundle: MasterCSSCompilerBindingSession['renderCSSStylesheetBundle']
   resolveCSSImportGraph: MasterCSSCompilerBindingSession['resolveCSSImportGraph']
+  compileCSSStylesheetGraph(
+    request: Parameters<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>[0]
+  ): Omit<ReturnType<MasterCSSCompilerBindingSession['compileCSSStylesheetGraph']>, 'directives'> & {
+    directives: CompileCSSResult
+  }
   dispose(): void
 }
 
@@ -81,8 +88,14 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
       session.normalizeDefaultManifest(manifest),
     compileDefaultPresetManifest: (request: MasterCSSCompileDefaultPresetRequest) =>
       session.compileDefaultPresetManifest(request),
+    prepareCSSStylesheetBundle: (request) => session.prepareCSSStylesheetBundle(request),
+    renderCSSStylesheetBundle: (request) => session.renderCSSStylesheetBundle(request),
     resolveCSSImportGraph: (request: MasterCSSImportGraphRequest) =>
       session.resolveCSSImportGraph(request),
+    compileCSSStylesheetGraph(request) {
+      const result = session.compileCSSStylesheetGraph(request)
+      return { ...result, directives: reviveCompileResult(result.directives as CompileCSSResult) }
+    },
     dispose: () => session.dispose()
   }
 }
