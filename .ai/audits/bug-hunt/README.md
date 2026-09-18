@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 63 historical confirmed findings; 61 fixed, 2 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 63 historical confirmed findings; 62 fixed, 1 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -272,9 +272,10 @@
 - [0259 Post-promote re-verification](batches/0259-post-promote-reverification.md)：交付後16情境實際host重驗全PASS；帳本歷史歸檔。
 - [0260 Next CSS pipeline closure](batches/0260-next-css-pipeline-closure.md)：BH-0051結案，14組實際host對照全PASS；BH-0053補Turbopack Sass控制。
 - [0261 Rspack static delivery](batches/0261-rspack-static-delivery.md)：BH-0029結案，Rspack／Webpack交付四格對照一致。
+- [0262 Selector maps and cache boundaries](batches/0262-selector-maps-and-cache-boundaries.md)：BH-0053結案，兩個0243反例歸類為Next／Turbopack側邊界。
 
 ## 目前交接點
 
-- 0261：BH-0029結案。在目前主工作樹重跑原repro：Rspack模組仍無source，但`finishModules`以完整module graph補齊，managed CSS實際經`main.css`→`@import`鏈交付（`.block{display:block}`在鏈上），原斷言只讀`main.css`（僅50 bytes的`@import`）故誤判。新增Webpack對照repro，四格（webpack／rspack×有無`@preserve native`）行為逐格相同：managed CSS一律交付，作者原生CSS只有`@preserve native`才保留，屬Master既有預設。repro改為沿鏈攤平並加上`@preserve native`後PASS。0038暫停的integration-lab追加覆蓋未重啟。63historical／61fixed／2unresolved。[證據](evidence/0261-final-checks.json)；[批次](batches/0261-rspack-static-delivery.md)；[前次](progress-history-0261-rspack-delivery.md)。
+- 0262：BH-0053結案。兩個0243尾隨反例在交付版本重測後歸類為Master以外：per-selector maps方面，`preserveNativeSource`讓compiler階段從6P/4F補到**10P/0F**，但同一payload交給目前安裝Next的`CssMinimizerPlugin.optimizeAsset`後兩種設定都退回6P/4F，殘餘損失在Next的minimizer；持久快取方面，純Next＋最小寫檔loader（完全不載入Master）與Master交付版本同樣在修改source後`Module not found`解析不到剛發布的stylesheet，屬Turbopack持久快取行為。缺陷陳述本身已由0260四組Turbopack Sass對照驗證通過，故改標已修復；native declaration granularity與完整Sass option／host邊界移到PKG-next覆蓋列追蹤。63historical／62fixed／1unresolved（僅剩BH-0004）。[證據](evidence/0262-final-checks.json)；[批次](batches/0262-selector-maps-and-cache-boundaries.md)；[前次](progress-history-0262-selector-maps.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
