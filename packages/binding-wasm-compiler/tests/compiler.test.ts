@@ -129,6 +129,8 @@ test('loads the isolated compiler Wasm surface', async () => {
       }]
     }
   })
+  // Match rather than equal: the graph also carries sourceMappings, whose
+  // contents are the compiler crate's contract, not this surface check's.
   expect(compiler.resolveCSSImportGraph({
     entry: '/entry.css',
     files: {
@@ -136,7 +138,7 @@ test('loads the isolated compiler Wasm surface', async () => {
       '/theme.css': '@theme{--color-brand:red}'
     },
     edges: [{ from: '/entry.css', specifier: './theme.css', resolved: '/theme.css' }]
-  })).toEqual({
+  })).toMatchObject({
     source: '@theme{--color-brand:red}.entry{display:block}',
     dependencies: ['/entry.css', '/theme.css']
   })

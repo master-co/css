@@ -317,7 +317,9 @@ test('loads the isolated source tooling Wasm surface', async () => {
     css: { text: '😀' }
   })).toMatchObject({
     version: 1,
-    css: { bytes: 2, included: false },
+    // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
+    // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
+    css: { bytes: 4, included: false },
     missingCSS: {
       missing: [{ className: 'missing', reason: 'not-detected' }]
     },
