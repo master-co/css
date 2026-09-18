@@ -5,7 +5,7 @@
     "node": "^24"
   },
   "scripts": {
-    "build": "nuxt-module-build prepare && nuxt-module-build && node scripts/normalize-module-build.js",
+    "build": "node ../../scripts/with-typescript-tooling-compat.mjs nuxt-module-build prepare && node ../../scripts/with-typescript-tooling-compat.mjs nuxt-module-build && node scripts/normalize-module-build.js",
     "dev": "nuxt-module-build prepare && nuxi dev playground",
     "dev:build": "nuxi build playground",
     "dev:prepare": "nuxt-module-build build --stub && node scripts/normalize-module-build.js && nuxt-module-build prepare && nuxi prepare playground",
