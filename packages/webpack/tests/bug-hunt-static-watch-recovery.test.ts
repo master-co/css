@@ -1,7 +1,6 @@
 import { expect, test } from 'vitest'
 import { existsSync, mkdtempSync, readFileSync, realpathSync, rmSync, unlinkSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { fileURLToPath } from 'node:url'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import webpack from 'webpack'
@@ -23,11 +22,9 @@ test.each(['child', 'resource'])('watch reports a missing %s as compilation erro
   const childCSS = '@import "https://external.invalid/font.css";.card{color:red;background-image:url("./pixel.svg")} '
   const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="7"/>'
   writeFileSync(child, childCSS);writeFileSync(resource, svg)
-  if (process.env.BH_WATCH_PURE === 'loader') writeFileSync(join(root, 'passthrough.cjs'), 'module.exports = source => source')
   const compiler = webpack({ mode: 'production', context: root, entry: './entry.js', resolve: { tsconfig: false },
-    module: { rules: ['loader', 'external-loader'].includes(process.env.BH_WATCH_PURE ?? '') ? [{ test: /\.css$/, enforce: 'pre', use: [process.env.BH_WATCH_PURE === 'external-loader' ? fileURLToPath(new URL('../../../.ai/audits/bug-hunt/repros/webpack-watch-passthrough.cjs', import.meta.url)) : join(root, 'passthrough.cjs')] }] : [] },
     experiments: { css: true }, output: { path: join(root, 'out'), filename: '[name].js', cssFilename: '[name].[contenthash:8].css' },
-    plugins: process.env.BH_WATCH_PURE ? [] : [new Plugin({ mode: 'static', runtime: false }, root)] })
+    plugins: [new Plugin({ mode: 'static', runtime: false }, root)] })
   let phase = 'initial'
   const watchRegistrations: unknown[] = []
   const events: unknown[] = []
