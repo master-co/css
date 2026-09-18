@@ -1,0 +1,219 @@
+{
+  "counts": {
+    "historical": 63,
+    "fixed": 58,
+    "unresolved": 5,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "pendingApprovals": {
+    "existingWebpackTestContract": {
+      "file": "packages/webpack/tests/plugin-runtime.test.ts",
+      "patch": ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch",
+      "rootFileSha256": "378564be3acc2840e4af0010bbec5a9345db9d4bc906d55f61cf016c4583310c",
+      "patchSha256": "e4960863a87b55bc0bbfdde0e0d87d2f120426e21fffcaec8835a0e2509d999d",
+      "isolatedPatchedFileSha256": "da2cf049de005c48c03f1aeacbd1bac13320cf783f8e19e7138ed1254784256f",
+      "scope": "Two existing watch tests and fake compilation mock; compilation.errors and missingDependencies; preserves error identity/logging/recovery assertions",
+      "authorization": "No reply to separate Webpack test patch question; LSP one-line approval applied0203 is distinct"
+    },
+    "watchpackDependencyPatch": {
+      "patch": ".ai/audits/bug-hunt/repros/watchpack-initial-scan-removals.patch",
+      "sha256": "497eca85fe84d6eb7a899b16701af80d58ec08dff7b383688a86ed04077d2e74",
+      "version": "2.5.2",
+      "candidate": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-watchpack-patch-onnbwu_j/watchpack",
+      "scope": "Formal patch file, pnpm patchedDependencies and matching lockfile entries; no upgrades/additionaldependencies",
+      "authorization": "Question accepted asynchronously; no explicit reply received",
+      "reason": "User prohibits dependency/lockfile changes without exception",
+      "delivered": false
+    },
+    "nextGraphDeliveryTests": {
+      "patch": "/Users/aron/master/css/.ai/audits/bug-hunt/repros/next-graph-delivery-test-contracts.patch",
+      "sha256": "92dacc917ee3d5b4416a092a74268b9b00ff2201a97a4655081b3bb39c130421",
+      "files": {
+        "tests/stylesheet-loader.test.ts": {
+          "rootSha256": "ae815faa307cdcc87d4ce29393e65a7366dad5dff28004d9968183167b01c319",
+          "candidateSha256": "5dd9ee9e1eb3e5fb6e4d14c56e3a956669bdbff488a225b91919fd95db6336d1"
+        },
+        "tests/bug-hunt-sass-source-offsets.test.ts": {
+          "rootSha256": "07770248c248b52859102e5262c9a3f6d38c92202bb33973d733d8590e042d1a",
+          "candidateSha256": "5fc5439b5f10bf44a77deb6e300026d680b299d04045bc58bf0c2c8fad23e0e7"
+        },
+        "tests/bug-hunt-output-source-maps.test.ts": {
+          "rootSha256": "3b4807370390da55c4d3f6e48ed6a322c4a04dc050729d3f0cf72870ffc047eb",
+          "candidateSha256": "61748f7e7f09ea80090f08c16c94913591090cfb591f32cb0de34ffb80f50dd2"
+        },
+        "tests/next-config.test.ts": {
+          "rootSha256": "83b34e1126863e9278c13ea86ad79181d07317c1dbb7d237fae4fb8d57e4bfd4",
+          "candidateSha256": "c05d555ec7034c72d9d257b3b63cd059c99c0d95b6a42071849c1065afa03787"
+        }
+      },
+      "authorization": "Explicitquestionasked; no reply received at checkpoint; root four files unchanged",
+      "scope": "Three complete graph/map readers preserve every CSS expectation. next-config follows existing Module exclusion and replaces obsolete CSS top-level rule requirement with an explicit absence assertion; manifest/runtime rules remain checked. New audit pipeline test separately verifies delegated original options.",
+      "currentCandidateNote": "0237retained54/64candidate fixesboundedPostCSS/globalcases;rootundelivered,fullhostscopepending. Fourtestapprovalaloneinsufficient;ownedpipeline/lightweighttestpatches stillseparate."
+    }
+  },
+  "batch": "0257-next-candidate-promote-feasibility",
+  "goal": "active",
+  "previousGoalTurn": "0256: BH-0063 candidate fix verified in the owned copy; promote deferred",
+  "status": "Evidence-only batch. The owned Next candidate (tmp/0256-turbopack-animations/packages/next) passes lint, audit type-check (src+tests against the 0244 candidate compiler d.ts), build, 24 files/152 tests and 3 e2e. The candidate test contract adds 4 test files and modifies 5 existing ones (4 of them the pending nextGraphDeliveryTests approval). Promote requires the whole chain: Rust 535 lines (native_source.rs, project, xtask template), binding protocol, compiler 11 files/46 lines, next 13 new files, site contract docs; the 0244 candidate crates predate the committed 0251-0253 compiler perf (0251 source-index patch dry-run applies; 0252/0253 unverified). No product change, no promote. A separate commit corrected the 0256 claim that the copy had no tests.",
+  "head": "d0a7d9de3bff706749c3e5c839fca61f0e709115",
+  "results": {
+    "lint": {
+      "exit": 0,
+      "log": "0257-next-candidate-lint.log"
+    },
+    "typeCheck": {
+      "exit": 0,
+      "config": "tsconfig.audit-0246.json",
+      "log": "0257-next-candidate-type-check-audit.log",
+      "note": "package tsc -b fails only on missing workspace tsconfig references in the partial copy"
+    },
+    "build": {
+      "exit": 0,
+      "files": 68,
+      "bytes": 261630,
+      "log": "0257-next-candidate-build.log"
+    },
+    "test": {
+      "exit": 0,
+      "files": 24,
+      "tests": 152,
+      "log": "0257-next-candidate-test.log"
+    },
+    "e2e": {
+      "exit": 0,
+      "files": 3,
+      "tests": 3,
+      "log": "0257-next-candidate-e2e.log"
+    },
+    "testContractDelta": {
+      "added": [
+        "bug-hunt-postcss-request-plugins.test.ts",
+        "bug-hunt-postcss-resource-host.test.ts",
+        "bug-hunt-postcss-resource-policy.test.ts",
+        "bug-hunt-turbopack-global-animations.test.ts"
+      ],
+      "modified": {
+        "stylesheet-loader.test.ts": 7,
+        "bug-hunt-sass-source-offsets.test.ts": 3,
+        "bug-hunt-output-source-maps.test.ts": 3,
+        "next-config.test.ts": 13,
+        "bug-hunt-webpack-css-pipeline.test.ts": 14
+      }
+    }
+  },
+  "promoteChain": {
+    "rust": {
+      "linesChanged": 535,
+      "newFiles": [
+        "crates/mastercss-compiler/src/native_source.rs",
+        "crates/mastercss-compiler/tests/bug_hunt_preserved_native_source.rs"
+      ],
+      "copy": "tmp/0244-global-resource-api",
+      "missingFromCopy": [
+        "0251 source_index.rs",
+        "0252 lowering index",
+        "0253 manifest merge"
+      ],
+      "sourceIndexPatchDryRun": "applies to all 14 files"
+    },
+    "binding": [
+      "packages/binding/src/protocol.ts"
+    ],
+    "compiler": {
+      "files": 11,
+      "lines": 46,
+      "tests": 2
+    },
+    "next": {
+      "newFiles": 13,
+      "newLines": 800,
+      "modifiedFiles": 4,
+      "modifiedLines": 63
+    },
+    "site": [
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "unchanged": [
+      "packages/internal",
+      "packages/schema",
+      "packages/preset"
+    ]
+  },
+  "candidateHashes": {
+    "tests/bug-hunt-turbopack-global-animations.test.ts": "f2af52b199cb943e76f15a2f633281ce3adea17d8fb26af412628c975ddea753",
+    "src/prepare-entry-graph.ts": "423515eed45bd30d01c851a15571cce53dbeaf0645be98a2629ec97250f23f64",
+    "src/prepare-global-module.ts": "458d1b16d14f54a2f3b3656375eff559ef2151d9fa36dfaf7a61c797cdf7fb93"
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR.",
+    "0207 bounded production static watch deletion/restoration/rename/unmanage now29PASS and63snapshot-browserPASS; this supersedes only the bounded watch subset of0206 remaining text. Full multi/lazy-entry, emitted asset pruning, resource snapshots during concurrent writes, local compose/Modules/maps/Sass/customresolvers/development/HMR/Next remain.",
+    "0207 existing Webpack watch test-contract patch remains pending explicit user approval; root test untouched. After approval apply exact repro patch and use a fresh owned build copy for full serial tests.",
+    "0208 simple multiple/lazy andcombinedA-B/B-A productionstatic layouts now18browserPASS; full chunk topology/unusedemission/sourcecleanup/concurrentresources/dev/SSR/Next remain. New public collection sourceIds andcompiler declaration fixes delivered.",
+    "0208 delivered immediate first-child deletion consistently times out after first successful callback despitewatchregistrationwhilefileexists;3PASS1FAIL deliveredregressions. PureWebpack/localnooploader/externalnooploader controlsPASS. This remains a product/path-dependent watch failure under BH-0004; fullcopied82PASS andlongwatch29PASS do not clear it. Next turn trace nativeWatchpack events/dependency metadata, thenverify immediate deletion andall29steps. Do not substitute delays orlateredits for recovery.",
+    "0209 supersedes only the tentative classification of0208first-delete failure: pureWebpack controlledinitialscaninterleaving reproducesWatchpack2.5.2loss; isolatedpatchfixespurecontrol/actual2tests/all29watchsteps. Formal patch/pnpmconfiguration/lockfile delivery stillawaitsexplicitapproval; do not mark complete. ExistingWebpacktestpatch alsoseparatelypending.",
+    "0210 actual Webpack production watch graph removal confirmed stale registered CSS/resource dependencies: product3PASS/4FAIL in both no-cache andmemory-cache; pure7PASS ineach. Deleting anunused image after removing theJSimport incorrectlyfailscompilation. Unused CSS/resource publication itself stops correctly. Fix must reconcilecurrentmodules,restorecached reattached sources withoutsucceedModule, preserveindependentmanifest/sharedowners andclearallreplay/fallback/scannerownership. Stillunfixed; no production edits0210.",
+    "0211 supersedes only the bounded0210 source-removal failure: currentmodule reconciliation, cachedsource restoration and scanner reset delivered; 3newactualtests,4deliveredwatchlayouts28steps,29longwatch and21snapshotbrowserPASS. Fullchunk optimization/tree-shaken modules,simultaneousimport+resource removal,concurrentresource snapshots,allhost/dev/HMR/Next matrices remain.0209Watchpackformalpatch andexistingWebpacktestpatch stillpending explicitapproval.",
+    "0212 bounded simultaneous detach/delete/restore passes60product+40purewatchsteps; optimizedsideEffects owner directCSSactivation/deactivation gives20outputchecks and4matchingmissingresourcecontrols. Zerochunkmodules remain legitimatecompileddependencies inbothpureandproduct. This closes onlythetestedinterleavings/layouts; arbitrarytiming,fullchunk/chunksharing/lazy/SSR/dev/Next andconcurrentresource snapshotsremain. Next deterministicresourcehashversusemittedbytes interleaving atbuild-stylesheet-delivery/resourceURL andGeneratedCSSAssetsPlugin readFileSync.",
+    "0213 repairs the bounded Webpack resource snapshot contract: a single publication pass hashes and emits the same captured bytes, shared across entries; following builds capture fresh bytes. Delivered 3 tests/6 controlled builds, 29 long-watch steps and21 browser snapshots PASS. Full candidate suite remains86PASS/2FAIL; exact0212-source baseline83PASS/2FAIL reproduces the same memory-cache detached/one watch timeouts. These are pre-existing but still unresolved; do not infer they share the0209Watchpack initial-deletion cause or claim fullwatch completion.",
+    "0214 corrected tracing locates a missing entry.js update before Webpack rebuilding; full suite86PASS/2FAIL (shared-owner update and initial deletion). Root cause and validated repair remain required; passing traced runs do not supersede failures.",
+    "0215 two fixed six-trial native runs each5PASS/1FAIL; independent fs.watch also misses the failing entry event. Poll100ms six-trial control6PASS. This locates a bounded native event-delivery limitation, not a default-route repair or resolution of0209 initial deletion. Further native host diagnosis/strategy remains required.",
+    "0216 pure Node native/poll six-trial controls eachPASS, so contextual0215 event loss is not a universal fs.watch failure. Next delivered general loader2PASS/2FAIL andstatic2PASS/2FAIL establish missing retained graph/resource delivery andswallowed static publication errors. Fullasset publisher, error propagation/recovery, general loader migration andactualNexthost validation remain required.",
+    "0217 supersedes only the bounded0216 Next static delivery/error gap: complete companion CSS/resource publication, immutable captured bytes, errors/recovery and same-invocation resource dependencies delivered.13focused tests,120PASS/3existingconfigFAIL fullsuite,3e2e and9delivered browser checks. General Next loader still2PASS/2FAIL; raw20qualified/39external andfullhost/maps/watch requirements remain.",
+    "0217 immutable old .master asset revisions remain for in-flight readers; cleanup/retention policy, multi-process/multi-entry/default-worker publication consistency andcomplete static/dev/HMR/SSR remain unverified. Three original Next config expectation failures reproduce before this change and remain unfinished; no test edit authorized for those. Playground PATH fixed only in test process using already-installed Next; portable harness setup remains.",
+    "0218 Next general delivery contract: direct relative nested-path attempt violates compiler sibling-only contract; file URLs pass8unit tests but actual browser decode fails; absolute filesystem URLs failTurbopack resolution. Isolated all-sibling graph plus relative import wrapper passes12browser checks and5resource/CSS/Sass-map controls. Full candidate116PASS/9FAIL (3oldconfig plus6inline-output/map assertion failures). No candidate promotion; all shared629sources/493artifacts restored/preserved. Currentdelivered newcontrols3PASS/2FAIL andactualhost fails. Resolve six existing test contracts with complete graph/maps evidence, verify actual host maps/CSSModules/Sass/dev/HMR andrequired suite/e2e before applying/delivering the candidate. Full general local/raw/host requirements remain.",
+    "0219 graph-aware test-copy adaptation preserves all expected values and29scoped tests pass; exact3-test-file patch prepared but unapplied. ActualdefaultNextWebpack candidate andpureNext each6PASS/6FAIL: bundledcss-loader treats layer(card) as media andexternalimports endafterordinaryrules. LightningCSScontrol9PASS/3FAIL fixes local layer only; pure/managedTurbopack each12PASS. Forcingexternalimportfiltertrue makesbothWebpackvariants fail resolvingHTTP, so it is not a repair. No product/dependency/artifact changes orpromotion. Need validated NextWebpack host strategy/dependency-level correction, actualmaps/Modules/Sass/dev/HMR andexistingtest authorization beforecandidate delivery; earlierNext/general/fullmatrix requirements unchanged.",
+    "0220 supersedes only the bounded Next defaultWebpack rendering failure: isolated complete asset dispatcher gives default/maps/Lightning12browserPASS each and11directcontrolsPASS. Finalexported source maps2FAIL,fullsuite120PASS/8FAIL (3oldconfig,4dispatcherstructure,1intermittenttimeout;single-repeatPASS). Candidate unpromoted; supply authoredmaps via emitFile/SourceMapSource,reviewpipelinecontracts,fullsuite/e2e/actualmaps/Modules/Sass/dev/HMR andexistingtestauthorization remain. Previous35entries preserved; no dependencychange. Moderncss-loaderalone doesnotfix Nextextraction.",
+    "0221 supersedes bounded0220 finalmap/candidate-test failures: authoredmaps passedthroughWebpackemitFile withpublicationformat2 includedinrevision; finaldefaultWebpack/Lightning each12browser+13mapcontrolsPASS,full128tests/3e2ePASS,8oldcachefilespreserved. Fourexistingtestpatchrequestedawaitingreply; rootunchangedandcandidateunpromoted. Applyvalidatedcandidateandrunroot/deliveredchecksafterauthorization, orcontinueindependentfullModules/Sass/options/deployment/dev/HMRmatriceswhilewaiting. Historicalintermittenttimeoutandall36priorrequirementsremain; boundedpassingrundoesnotproveallhoststability.",
+    "0222 actualentryCSSModulecandidateexportsareempty:Webpack/Turbopackeach0PASS/9FAILbeforeandafterlightweightfix;localModules each9PASS,pureWebpack9PASS. DeliveredentryModulebuildsrejectunwantedpresetglobalpureselectors. NextautoprependedpresetcontradictsRust/compilerandcurrentdocumentedlightweightmarker;isolatedremoval gives3entryparity/20scoped/ordinaryhosts12each/maps13PASS. Additionalone-testexpectedbasecontractpatchpreparedonly;notcoveredbypriorfour-testquestion. FixscopedModulehandoffwithcompletegraph/nativehostprocessing,thenfullsuite/e2eandroot/deliveredchecks. DoNOTpromote0221candidatejustbecausepriorfour-testapprovalarrives. All37priorrequirements retained.",
+    "0223 supersedes only bounded0222 entry Module export loss in owned candidate: Next processors/purity/naming plus ICSS or native global/dependency compositions give each host9basic/15composition browser PASS;7preparecontrols andWebpack2authored Module mapsPASS. Actual Turbopack2mapsFAIL point to intermediate .master CSS. Full suite127PASS/1PATHenvironmentFAIL; corrected-process-PATH playground1PASS;3e2e/lint/scopedtypes/buildPASS. Candidateunpromoted; full imported Module graph scoping, Sass/options/Lightning/ICSS/deployment/dev/HMR/SSR andfinalmaphandoff stillrequired. Existingfour-testapproval andextra lightweight expected-value contract remain separate. All38priorentries retained.",
+    "0224 supersedes only the bounded0223 lost authored-map target: private generated-CSS loader validatespublication2/hash/UTF8boundary and passescompiler maps toTurbo callback. FinalModule15/global12browser and4exactfile/line/column/independentlycaptured-authored-contentchecksPASS;12loadercontrols/128tests/3e2e/lint/scopedtypes/buildPASS. Duplicated turbopack URI namespace reproduces in pureNext identity loader andremainsUNFIXED; relativecallbackpaths do not repair it. Candidateunpromoted. Full imported Module graph scoping, Sass/partial/options/Lightning/ICSS/deployment/dev/HMR/static/SSR, testauthorizations andeventualroot/deliveredvalidation remain; all39priorentries retained.",
+    "0225 actual CSS Module import matrix establishes unpromotedcandidate childscope loss: pureNext4paths72PASS, candidate54PASS/18FAIL. Bothhosts .module.css children andWebpackplain.css children becomeunscoped(6FAIL/path);Turbo plain.css legitimatelyremainsglobal(nativecorrectedoracle18PASS). AllchildCSS/resourcebytes retained. PureTurboinitialstrict-scope6FAIL is a crosshosttestassumption, initial2PostCSSresolutionerrors areharnessissues. No productpatch thisbatch; candidate47sources/50dist androot493artifacts unchanged. Nextverify global-parent/ICSS semantics, thencontext-aware hostModulegraph preparation viaexistingNextresolve/Module/ICSS capabilities andcompiler sourcecallback, preservingmaps/dependencies/order/capturedsources. All40priorrequirements remain; priorfour-testapprovalalone cannotpermitpromotion.",
+    "0226 supersedes bounded0225 childscope failures: ownedpreparedgraphsession usesNextgetResolve/Module/ICSS processors, cachesbyfile+mode, mapsvirtualIDs tophysicaldependencies, preservesplain-globalCSSandresolvesICSSvalues beforeopaquegraphpublication. Actual8contextlayouts144browser/24independentlycapturedauthoredmapsPASS;9preparationcontrols/128tests/3e2e/package-lint/scopedtypes/buildPASS. PriorWebpackICSS9PASS/3FAIL now12PASS;Turbo compositions15PASS. PrototypevirtualdependencyNUL failures fixedandretainedasevidence. Candidateunpromoted. ICSScycles currentlydefensivelyrejectwithoutnativeparityproof;missingexports,qualifiedimports,encoded/query/alias/packagepaths,actualSass/customimporters,sourcecaptureofraw/fallback/Sassinputs,dev/HMR/SSR andexistingtestpermissionsremain. PureTurboURIduplicationstillunfixed; all41priorrequirements retained.",
+    "0227 supersedes boundedWebpack encodedICSS path failure inownedcandidate: NextnormalizeUrl andnativeICSSrequestorder plusresolutionreuseforretainedCSSedge; space/literalpercentactualpure-and-fixedWebpackbuilds andChromium/WebKitPASS.11preparation/128tests/3e2e/types/buildPASS.20edgebuilds distinguishnativecyclefailures, nativeundefinedmissingexports andTurboignoredrawICSS fromcandidateearlyrejection; policy/parity remainsunfinished. Firefoxnowfailslaunch withmissingprofileevenwithownedexistingprofile; do notreuse0226threebrowserPASS. Candidateunpromoted; furtherqueries/escapes/aliases/package/inline-loaderrequests,qualifiedimports,Sass/customoptions/maps/concurrentsourcecapture/dev/HMR/SSR,testpermissions androot/deliveredchecksremain. All42priorremainingentries retained;0038identitypause unchanged.",
+    "0228 ownedcandidate fixesTurboICSShexescape decoding viaNextModuleexportnormalizer withoutURIpercentdecoding;getResolve no longerforcesWebpackstyleconditions. Query/fragment/alias/literalpercent/simplepackagecontrolsPASS,14preparation/128tests/3e2e/types/buildPASS. Butcandidateactual12builds22browserPASS/2FAIL:ServerComponent condition selectsbrowserinstead ofpureNextreact-server. NativeTurbo clientexportsimportclasseswhileemittingbrowserCSS(2FAIL),andescapedspaceclassnamesbreaknativeborder(2FAIL); theseareseparatenativehostlimitations. Trace2builds/6loaderinvocations:defaultgetResolvebrowserinserverandclient,explicitconditionsresolve,buttarget/modeabsent; nexttraceTurbopackruleconditions/hosttransitions,neverguessReactcontextfrompath. FullICSSmissingexport/cycles/inline-loaders/qualifiedimports/extensionless/escapecontinuations/customconditions/Sass/maps/dev/HMR/SSR,Firefox,testpermissions/rootdelivery andall43priorentriesremain. Candidateunpromoted;0038pauseunchanged.",
+    "0229 nativeTurbopackruletracing showsonlybrowserforserver/client/mixedand_module exposesonly__reserved,no Reactlayer/type.4contextbuilds6browserPASS/6FAIL. Rootnative-compositiondelegationprototype4builds6PASS/4FAIL:repairsServerbutbreaksClient/mixedClientinthenativeCSS/exportconditionmismatch;rejected. Baseline0228candidate48sources/52distrestoredbyte-identical,no retainedproductchange. NeedpreserveconsumerconditionidentityacrossCSSpublicationandModuleexports;singleconditionoverrideorblindnativeedgehandoffisinadequate. Nextcondition-specificnativeCSS/exportsanalysis andindependentqualifiedimports/inline-loader/Sass/sourcecapture;all44priorrequirements,Firefox,testpermissions/rootdelivery and0038pause remain.",
+    "0230 narrows0229 through12 pure/candidate Turbopack builds and88 Chromium/WebKit observations:84 appearancePASS/4 nativeClient initialFAIL. PureClient SSR class selects import(full branches) or default(browser/default), absent from delivered browserCSS; remount changes class to browser and recovers. Mixed Server CSS can mask default-only Client mismatch. Candidate12 Server branch differences and6 initialClient differences remain; import/default and default-only controls agree. Remount is diagnostic, not repair. Need consumer identity shared across CSS publication and Module exports; no product change/promotion,45 previous requirements retained.",
+    "0231 supersedes only bounded NextWebpack inline query/chain/nested/resolveLoader-alias failures in owned candidate. Prefix/resource now split; native loader resolver uses importing CSS directory; importModule captures CSS/map through a private source loader. Final5builds/10browser,18flow controls,128tests/3e2e/lint/types/build PASS. Candidate49sources/54artifacts retained,10-sourcepatchprepared butNOTpromoted. PureNextServer transformedCSS overriddenbyrawCSS remains a distinctnativeboundary. Complete pre/postCSS/Sass/importLoaders pipelines, inline dynamicdependencies/watch/error recovery/maps,0230conditions,nativeClient SSR andall46prior requirements remain.",
+    "0232 records11actualNextWebpackPostCSSbuilds,22browserobservations12PASS/10FAIL. Candidategraphentry/child/inlinechildskipPostCSS;Rust-generatedpadding remains32px ratherthan48px;plugin-renamedModuleexport absent. Pure10PASS andcandidateexistinglocal-compose2PASS establish requiredorder. Rootcausegraphwrapper/privateemitbypassesnativepipeline;candidateunchanged49sources/54dist. Fixmustpreservelowerednative/generatedglobalboundaries,PostCSS-derivedModuleexports,maps/resources/imports andfinalhashes. Neitherinput-only norasset-onlyPostCSS is sufficient. All47priorrequirements remain,including0230conditions,0038pause,Firefox,permissions,fullSass/watch.",
+    "0233 stageprototype verifiesRustlowering -> existingNextPostCSS -> Moduleexports for3single-filefixtures:6Chromium/WebKitPASS,3originalselectorfile/line/column/fullcontentanchors.2negativecontrolsproveglobalbrandmustnotscopeasModule. Native4fixtureinspectionshowsasset.generatedCSS includeslocalcompose output,whilefinalrendergeneratedCSS isseparate. PrototypeprocessesglobalPostCSSseparatelyanddoesnotprovecombined-rootplugins,globalmaps,imports/resources/hash/lifecycle. Noactualhostrepair:0232all10failsstillremain;candidateunchanged49sources/54dist. Nextnativebundle relinking andfullhostintegration;all48priorrequirementsretained.",
+    "0234 verifies5bundle/native-Wasm parity and5graph parity cases;rawgraph+Node mappedgraph20browser and10originalselectoranchors/fullcontentPASS usingcorrectNextPostCSSfrom/to+configuredpipeline. Existingbundle doesnotcarrymaps/ownerresources orresolveunknownoriginalaliases;thisisAPIcapability,nottreatunsupporteduseasbug. ExistinggraphAPIhandlesexplicitmappededges/per-ownernewresources andmaps. EmptyPostCSSproducerstillreturnsAAAA andwronglineforsecond-line selector;actualNextemptyconfigimpactunverified. NoactualNextfix,0232all10FAILremain,candidate49sources/54distunchanged. Integratecapturedloweredinput/nativePostCSS/Modules/recompiledgraph whilepreservingglobals/rootplugincontext/dependencies andno duplicatewrapperprocessing;all49priorrequirements retained.",
+    "0235: native immutable PostCSS transport five cases and actual Client two browsers PASS; Server and pure Server both 2FAIL due appended untransformed child override. Existing Next graph candidate remains0231; original0232 five scenarios/10FAIL NOT repaired. Integrate validated native request/options/meta/dependency transport after Rust lowering before exports within full graph, preserve global/Module and combined-root plugin semantics, relink resources/maps with0234 API; actual watch/recovery/Sass/options/empty maps andall prior requirements remain.",
+    "0236: corrected isolated graph/PostCSS prototype passes original0232five cases/10browser pluslocal and latest3selector maps; generatedglobal/theme case fails explicit experimental guard while restored0231baseline passes2browser. Prototype saved, NOTdelivered; currentcandidate restored0231 and original10FAIL remain. Continuecorrectedpatch inownedcopy to preservegeneratedglobals andcombined-root plugin semantics; do notkeepguard asproductrestriction. PostCSS-addedimports/ICSS,resources/conditions/Sass/watch/recovery andallprior requirements remain.",
+    "0237 supersedes historical0232candidate-only10FAIL and0236globalguard: retained0237isolatedcandidate54sources/64dist passesfivePostCSSscenarios plusglobals/theme/component/clone/generatedandICSSkeyframes;14selector maps,128tests/3e2e/lint/typesPASS. Rootundelivered andBH0004/BH0053fullscopeNOTcomplete. Next actualPostCSS-addedimports/ICSS/resources/newglobalreferences, arbitraryASTownership/metadata transformations, fullSass/watch/invalidation/recovery and.master/postcss snapshotcleanup/cache;allpriorunclosedraw/host/SSR/conditions/Turbo/Firefox/rootgates/Site/0038andapprovalsremain.",
+    "0238 bounded supersession: retained54source/64dist candidate fixes added direct/nested nonempty ICSS CSS delivery and generated-global root/child resource URLs; actual Chromium/WebKit passed. PostCSS-added global reference remains2browserFAIL; empty-rule pre-PostCSS removal build failure remains and requires pureNext comparison. Need newly discovered child Master definitions/global closure, synthetic-edge deletion/rename/order/condition sync, ownership/metadata/Sass/watch/recovery/snapshot lifecycle/full maps/host matrix; all53prior entries preserved; no root promotion or commit;0038 identity pause unchanged.",
+    "0239 bounded supersession: ordinary and media empty child CSS now bypass unnecessary lowering based on public Rust inspection; actual Next Chromium/WebKit each2PASS with new ICSS. Themed empty rule still build FAIL and requires compiler-owned input-preserving lowering; PostCSS-added global reference still2browserFAIL. Public stage proof shows full-manifest regeneration overwrites prior PostCSS edit; do not use that workaround. No blanket input/global closure completion. All54earlier entries and all host/ownership/Sass/watch/maps/pending/0038 requirements preserved.",
+    "0240 bounded supersession: separate Rust-owned source-preservation prototype (notpromoted;Next0239 54/64 unchanged) passes managed themeempty/comment/value/merged-rule +4controls =8build/16browser. Latest copied-span mappings15anchorsPASS/2FAIL (mergedselectorcolumn48vs26;animationchildmissingapp path);wholeRustcompiler118PASS/3default-formatFAIL,clippyPASS. Need explicit opt-in compiler host-preparation contract/default preservation, native/Wasm/API/docs work and map fixes before adoption. First minify-only prototype insufficient. Globalreferenceclosure and all55prior remaining entries/pending/0038 constraints persist.",
+    "0241 bounded supersession: retainedNextcandidate54/64 fixes0239plain-input raw-map path regression by absolutizing sources at own producer. Actualdefaultand0240RustprototypekeyframemapsPASS;8afterbuild/16browser,18anchorsPASS/1FAIL. Remaining mergedselectorcolumn48vs26 alsofails pureNext,explicitexactanchorrequirement stillnotcomplete. Rustprototype203sources/3binaries unchanged;3default-format testsneedopt-incompilerhost API;globalclosure/56earlierentries/pending/0038identitypause remain.",
+    "0242 update: explicit opt-in source preservation closes0240 three default-format regressions in ownedAPI (Rust124/project16/compiler424); Next4build8browser pass. Previous0241 shared-map failure superseded only for that anchor: added sibling26vs48FAIL, so full merged-selector provenance remains. Initialstatic e2e missing publishedCSS persists as unclassified failure despite cold/warm recheckPASS. Continue final normalization/Next map provenance, preserved failedcache comparison and globalclosure/childMasterdefinitions/edge lifecycle; every previous57remaining item retained, not claimed complete.",
+    "0243 update: previous0242 unclassified static failure is now reproduced as Turbo persistent build-cache + dynamically created revision import,8cached sequences(initialPASS/changedFAIL) including rootcompiler and pureNext. Hostread/contextdeps/cacheable(false) fail; cache-off6phasesPASS only diagnostic. Cacheddeleted-publications phase unreached. Selector stages independently show defaultcompiler6PASS4FAIL, preservation10PASS0FAIL, nativeNextoptimizer6PASS4FAIL for both. Keep immutable0242 candidates; no completion. Next independent work: emittedGlobals/new-reference closure controls; design per-selector provenance and cache-visible publication without silently disablinghostcache or guessingmaps.",
+    "0244 update: owned compileRenderedStylesheet/compileBrowserStylesheet emittedGlobals delta API verified with428 compiler tests acrossrun/rechecks, build/types/lint and6 actualPostCSS/browser observations. Delta preserves processed oldglobals but late globals miss plugin processing; secondwholepass processes them but duplicatesOnce sideeffects. API notpromoted, Nextstill0242. Need single-run lifecycle tests forOnce/Declaration/OnceExit late references and removed/renamedglobals accounting; keep all59 priorremaining entries including selector maps and cachedpublication failures.",
+    "0245 update: nativePostCSS lifecycle matrix27cases and62browser observations distinguish expected nativeorder from Mastertiming: tailbridge4/9 processed, after-userroot-hook6/9 andpure6/9; all9wrappercells matchpure, Onceexecutedonce. Threeearlier-hookmisses are also purebehavior, not standaloneMasterbugs. Two samehookstage gaps corrected inboundedprobe only. Remove/renameoldglobal makes initialemittedcontextstale andsuppressesneededresource; knownfixturezero restores, not genericfix. Next: request-local nativepostcss adapter withprepare/helper/error/message/Modules/context tests; no mutation sharedprocessor or integration ofstalecontext. All60 priorremaining entries retained.",
+    "0246 update: separatelyownedNext56source/66dist addsrequest-local nativepostcss dispatcher andpluginadapter,15newtests; full143PASS,final20affectedPASS,3e2ePASS,build/types/lintPASS. prepare/helper/message/receiver/function/Document/parallel isolationverified; proxyidentity andlastPlugin bugs corrected. No automaticstylesheetresourcepolicy wired; newtestcallbacks useknowncontext. NeedRust-backed currentglobalpresence/ownership snapshot forremoved/renamedresources theninputloader/prepare-postcss wiring andactualpagecounterexample. Retained0242Next54/64 and0242/0244APIs unchanged; all61priorremaining retained, no completion.",
+    "0247 supersedes only the bounded automatic wiring of the PostCSS resource policy in the owned Next copy: deletion/rename/edit history, entry-first child history, allocated resource rebasing and Module ownership verified with actual Next Webpack builds. Sibling history sharing, diagnostics forwarding, late-resource watch dependencies, hook performance, Turbopack, 0243 selector provenance and Turbo persistent-cache publication, full Sass/watch/SSR/Modules/multi-root/host boundaries remain; BH-0004/BH-0053 stay open.",
+    "0248 supersedes only the bounded Webpack dev watch/HMR verification of PostCSS-introduced late resources (bytes, theme value, round trip; Chromium/WebKit; pure control) and classifies compiler stylesheet diagnostics as throw-or-empty in the probed cases. Turbopack, deletion/rename recovery, sibling history, hook performance, 0243 maps/cache counterexamples and full host boundaries remain; BH-0004/BH-0053 stay open.",
+    "0249 supersedes only the bounded Webpack dev deletion/restoration verification of PostCSS-introduced late resources and referenced theme definitions (Chromium/WebKit; pure control). Turbopack, sibling history, hook performance, promotion evaluation, 0243 maps/cache counterexamples and full host boundaries remain; BH-0004/BH-0053 stay open.",
+    "0251 fixes BH-0062 in root (source index); the 0242 candidate delta is a separate un-applied patch. Remaining scan-based call sites, hook render count and shared artifact rebuilds stay open.",
+    "0252 extends the BH-0062 fix to native/managed lowering and url() references; manifest merge cloning remains superlinear (~70ms/800 definitions) and is a separate open item. 0242 candidate patch updated, still un-applied.",
+    "0253 keys manifest merges; 0254 classifies the residual @components growth as serialization/allocation constants (no finding). 0242 candidate patch (14 files) still un-applied.",
+    "0255 adds BH-0063 (Turbopack Module animation references to Master global keyframes) and classifies Turbopack PostCSS contract gaps (combined root, late resources). Fix planned on the owned Next copy with module-animation as the acceptance control."
+  ]
+}
