@@ -237,9 +237,11 @@ function resolveUnflattenedStylesheet(id: string, source: string, projectDir?: s
 }
 
 function classifyPreparedStylesheet(graph: ReturnType<typeof prepareCSSImportGraph>, source: string) {
-  const sources = Object.values(graph.files)
-  const entry = sources.some(text => inspectCSS(text).hasMasterEntry)
-  if (!entry && !sources.some(source => hasLocalStyleDirectives(source))) return
+  const files = Object.entries(graph.files)
+  const entry = files.some(([, text]) => inspectCSS(text).hasMasterEntry)
+  // Name the file being inspected: a directive diagnostic raised here otherwise
+  // reports the compiler's default filename instead of the stylesheet it is in.
+  if (!entry && !files.some(([file, text]) => hasLocalStyleDirectives(text, file))) return
   return { source, dependencies: Object.keys(graph.files), local: !entry }
 }
 

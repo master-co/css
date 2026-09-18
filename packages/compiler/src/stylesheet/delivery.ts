@@ -170,7 +170,7 @@ export async function compileDeliveredSource(id: string, source: string, options
   const graph = delivery.resolveImport || delivery.baseFile || delivery.sourceMap
     ? await prepareCSSImportGraphWithResolver(filename, source, graphOptions, analyzeCSSDependencies, delivery.resolveImport ?? (() => undefined))
     : prepareCSSImportGraph(filename, source, graphOptions, analyzeCSSDependencies)
-  if (!options.transformNativeStylesheets && !Object.values(graph.files).some(source => hasLocalStyleDirectives(source))) return
+  if (!options.transformNativeStylesheets && !Object.entries(graph.files).some(([file, source]) => hasLocalStyleDirectives(source, file))) return
   const result = compileGraph(graph, {
     ...options,
     delivery: { ...delivery, stylesheetURL: (file, variant) => file === graph.entry ? delivery.entryURL : delivery.stylesheetURL(file, variant) }
