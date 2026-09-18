@@ -1,0 +1,814 @@
+   Compiling mastercss-schema v0.0.0 (/Users/aron/master/css/crates/mastercss-schema)
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
+   Compiling mastercss-diagnostics v0.0.0 (/Users/aron/master/css/crates/mastercss-diagnostics)
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
+   Compiling mastercss-source v0.0.0 (/Users/aron/master/css/crates/mastercss-source)
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
+   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
+   Compiling mastercss-validator v0.0.0 (/Users/aron/master/css/crates/mastercss-validator)
+   Compiling mastercss-language v0.0.0 (/Users/aron/master/css/crates/mastercss-language)
+   Compiling mastercss-lint v0.0.0 (/Users/aron/master/css/crates/mastercss-lint)
+   Compiling mastercss-binding-wasm-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-engine)
+   Compiling mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
+   Compiling mastercss-binding-wasm-tooling v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-tooling)
+   Compiling mastercss-project v0.0.0 (/Users/aron/master/css/crates/mastercss-project)
+   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+   Compiling mastercss-cli v0.0.0 (/Users/aron/master/css/crates/mastercss-cli)
+   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.07s
+     Running unittests src/lib.rs (target/debug/deps/mastercss_binding_native-1138e00c16823260)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_binding_wasm_compiler-f9df2fc06346e5f2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_binding_wasm_engine-8a0d75893d9672eb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_binding_wasm_tooling-cb5a66ccb90dea08)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/mcss-924bbb3004d7caf8)
+
+running 2 tests
+test tests::matches_cross_platform_glob_patterns ... ok
+test tests::self_test_engine_contract_is_stable ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_mjs.rs (target/debug/deps/bug_hunt_mjs-27a4fd9347ab2b4e)
+
+running 1 test
+test bh_0018_native_cli_discovers_mjs_by_default_glob_and_explicit_path ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.84s
+
+     Running tests/bug_hunt_ordered_output.rs (target/debug/deps/bug_hunt_ordered_output-e0e3d30cd1c9c32b)
+
+running 1 test
+test native_cli_keeps_composed_styles_in_one_anonymous_layer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.43s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_compiler-f2de82aaa0e3c7f5)
+
+running 28 tests
+test tests::can_skip_native_css_printing ... ok
+test source_index::tests::checkpoints_cover_multibyte_boundaries ... ok
+test manifest::tests::compiles_variant_nodes ... ok
+test lower::tests::orders_unconditioned_native_styles_before_matching_responsive_styles ... ok
+test lower::tests::keeps_source_order_for_non_numeric_conditions_and_distinct_targets ... ok
+test lower::tests::normalizes_root_size_when_ordering_numeric_conditions ... ok
+test manifest::tests::ignores_placeholders_and_dependencies_inside_quoted_values ... ok
+test manifest::tests::compiles_variables_conditions_and_utilities ... ok
+test lower::tests::orders_matching_managed_utility_rules_without_moving_layers ... ok
+test tests::owns_compose_syntax_diagnostic_codes_and_utf16_ranges ... ok
+test tests::recognizes_only_explicit_project_entry_markers ... ok
+test tests::rejects_invalid_theme_modifier_combinations ... ok
+test tests::rejects_provider_import_cycles_deterministically ... ok
+test tests::resolves_import_graphs_through_a_provider_without_filesystem_ownership ... ok
+test tests::lowers_theme_modifiers_and_replaces_duplicate_mode_tokens_in_order ... ok
+test tests::lowers_settings_into_the_canonical_manifest_input ... ok
+test lower::tests::orders_unconditioned_compositions_before_matching_responsive_compositions ... ok
+test tests::lowers_numeric_leading_variant_names ... ok
+test tests::normalizes_theme_alpha_aliases_and_unquoted_pipes ... ok
+test tests::lowers_static_managed_definitions_with_utf16_source_ranges ... ok
+test lower::tests::rejects_invalid_native_declarations_in_compose ... ok
+test tests::lowers_static_theme_keyframes_outside_layers ... ok
+test tests::compiles_native_css_and_removes_entry_directive ... ok
+test tests::filters_native_selectors_without_losing_discovered_classes ... ok
+test tests::lowers_theme_tokens_and_preserves_native_css ... ok
+test tests::lowers_native_compose_and_variant_styles ... ok
+test lower::tests::accepts_valid_unparsed_native_declarations_in_compose ... ok
+test source_index::tests::matches_scanning_conversions ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+
+     Running tests/bug_hunt_bundle_context.rs (target/debug/deps/bug_hunt_bundle_context-2e2d5918dd9dbcbd)
+
+running 4 tests
+test imports_stay_before_namespace_and_redeclared_defaults_keep_order ... ok
+test namespaces_follow_ordinary_fragments_without_leaking_into_managed_graph ... ok
+test missing_or_relative_mapping_does_not_partially_mutate_input ... ok
+test relocation_preserves_original_positions_and_namespace_identifiers ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_bundle_graph.rs (target/debug/deps/bug_hunt_bundle_graph-69525bcbe38d8354)
+
+running 6 tests
+test complete_slot_matching_ignores_trivia_but_not_strings_or_larger_rules ... ok
+test separates_complete_rules_and_preserves_original_utf16_sources ... ok
+test leaves_absent_slots_untouched_and_reports_unimplemented_contexts ... ok
+test retains_every_occurrence_and_avoids_managed_id_collisions ... ok
+test keeps_nested_conditions_and_one_shared_anonymous_layer ... ok
+test deep_wrappers_are_iterative_and_repeated_plans_are_stable ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/bug_hunt_compiled_stylesheet_graph.rs (target/debug/deps/bug_hunt_compiled_stylesheet_graph-53a8ef18b19d3e5e)
+
+running 8 tests
+test native_filtering_does_not_remove_import_topology_or_manifest_definitions ... ok
+test child_native_compose_resolves_managed_definitions_declared_by_parent ... ok
+test authored_unknown_at_rules_cannot_collide_with_private_compose_slots ... ok
+test repeated_imports_use_occurrence_order_for_manifest_overrides ... ok
+test generated_child_css_keeps_import_conditions_when_native_preservation_is_disabled ... ok
+test native_compose_keeps_its_position_before_later_native_rules ... ok
+test manifest_and_managed_dependencies_match_concatenated_authoring_order ... ok
+test compiled_browser_corpus_assets ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/bug_hunt_directive_positions.rs (target/debug/deps/bug_hunt_directive_positions-15401cbd30eaaeb4)
+
+running 1 test
+test diagnostics_after_removed_directives_retain_original_utf16_offsets ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_graph_diagnostics.rs (target/debug/deps/bug_hunt_graph_diagnostics-3b7a4b21f06691bf)
+
+running 2 tests
+test relocated_style_definition_metadata_uses_original_ranges_and_locations ... ok
+test graph_diagnostics_retain_original_utf16_ranges_after_resource_edits ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_graph_output_mappings.rs (target/debug/deps/bug_hunt_graph_output_mappings-ea43abccb09a5a7c)
+
+running 5 tests
+test graph_native_anchor_survives_import_url_length_change ... ok
+test graph_compose_slot_does_not_replace_a_quoted_marker ... ok
+test graph_compose_and_native_siblings_keep_original_child_anchors ... ok
+test graph_resource_relocation_preserves_later_authored_ranges ... ok
+test graph_native_suppression_keeps_composed_conditions_and_layer_identity ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_host_import_ownership.rs (target/debug/deps/bug_hunt_host_import_ownership-2f4f7c43101f9cd6)
+
+running 3 tests
+test host_import_removal_preserves_original_native_source_anchors ... ok
+test host_entry_imports_are_removed_without_dropping_child_boundaries ... ok
+test host_ownership_cannot_suppress_resolved_or_missing_imports ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_import_qualifiers.rs (target/debug/deps/bug_hunt_import_qualifiers-514b311d39ae47a2)
+
+running 8 tests
+test bh_0004_external_import_keeps_its_authored_qualifiers ... ok
+test bh_0004_import_media_is_preserved_when_expanding ... ok
+test bh_0004_import_layer_is_preserved_when_expanding ... ok
+test bh_0004_combined_conditions_wrap_layer_instead_of_declaring_it_unconditionally ... ok
+test bh_0004_import_supports_is_preserved_when_expanding ... ok
+test bh_0004_unresolved_nested_import_is_an_explicit_limit_not_invalid_nested_css ... ok
+test bh_0004_nested_local_imports_preserve_each_condition_and_layer_scope ... ok
+test bh_0004_anonymous_layers_remain_distinct_and_unqualified_css_stays_bare ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_inline_delivery.rs (target/debug/deps/bug_hunt_inline_delivery-643d381332151ba7)
+
+running 8 tests
+test invalid_late_import_is_not_activated_by_inlining ... ok
+test a_bare_wrapper_can_promote_a_namespace_stylesheet_without_changing_its_scope ... ok
+test earlier_external_import_can_precede_an_inlined_suffix ... ok
+test qualified_and_repeated_anonymous_layers_keep_distinct_wrappers ... ok
+test retained_later_import_prevents_earlier_rules_from_invalidating_it ... ok
+test leaf_graph_becomes_a_real_css_string_and_default_delivery_stays_split ... ok
+test conditional_external_children_remain_stylesheet_assets ... ok
+test parent_and_child_namespaces_are_not_merged ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_inline_graph_maps.rs (target/debug/deps/bug_hunt_inline_graph_maps-4d094a55ab77da40)
+
+running 3 tests
+test inlining_keeps_external_order_and_namespace_boundaries_as_assets ... ok
+test inlining_does_not_move_relative_resource_or_import_bases ... ok
+test inline_qualified_child_keeps_composition_and_original_anchors ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_native_conditionals.rs (target/debug/deps/bug_hunt_native_conditionals-6177e50f57751594)
+
+running 9 tests
+test graph_preserves_one_anonymous_layer_and_nested_wrapper_structure ... ok
+test direct_native_conditional_order_is_preserved ... ok
+test direct_anonymous_layer_remains_one_layer ... ok
+test graph_preserves_unrelated_native_children_and_composed_style_order ... ok
+test native_wrappers_without_directives_are_unchanged ... ok
+test conditional_selector_and_compose_origins_stay_at_authored_positions ... ok
+test graph_native_conditionals_expand_compose ... ok
+test direct_native_conditionals_expand_compose ... ok
+test native_conditions_nested_inside_styles_expand_compose ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/bug_hunt_native_output_selection.rs (target/debug/deps/bug_hunt_native_output_selection-3b14dde4e48580af)
+
+running 2 tests
+test selected_native_output_keeps_local_reachability_and_only_selected_external_imports ... ok
+test suppressed_native_imports_do_not_declare_unused_layers ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/bug_hunt_ordered_output.rs (target/debug/deps/bug_hunt_ordered_output-988abb0c3985530d)
+
+running 6 tests
+test stale_or_overlapping_serialized_slots_report_errors ... ok
+test disabling_native_output_preserves_only_composed_rules_and_their_containers ... ok
+test slot_markers_cannot_collide_with_authored_rules_or_strings ... ok
+test direct_slots_keep_repeated_selectors_separate_and_retain_important_order ... ok
+test ordered_maps_anchor_each_retained_and_composed_rule_after_replacement ... ok
+test overlapping_slots_and_backwards_mapping_ranges_are_rejected ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_output_mappings.rs (target/debug/deps/bug_hunt_output_mappings-aea830bb3264539c)
+
+running 7 tests
+test native_output_maps_nested_rules_to_their_own_origins ... ok
+test native_output_retains_original_rule_locations_after_consumed_directives ... ok
+test expanded_import_graph_retains_copied_spans_through_references_wrappers_and_hoisting ... ok
+test native_rule_anchors_survive_crlf_unicode_masks_variants_and_minification ... ok
+test lower_output_retains_compose_and_native_declaration_origins ... ok
+test composed_declaration_mapping_follows_the_winner_of_important_cascade ... ok
+test wrapped_lowered_selectors_map_after_generated_condition_prefixes ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_preserved_native_source.rs (target/debug/deps/bug_hunt_preserved_native_source-2e6399a225a62a4b)
+
+running 7 tests
+test native_only_preservation_respects_disabled_output_and_rejects_pruning ... ok
+test preserves_unicode_comments_and_literal_directive_text ... ok
+test consumed_definitions_and_composes_have_no_native_whitespace_output ... ok
+test source_preservation_is_opt_in_and_rejects_pruning ... ok
+test preserves_native_bytes_around_consumed_theme ... ok
+test native_only_preservation_retains_source_and_validates_syntax ... ok
+test preserves_siblings_and_containers_around_lowered_slots ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_resource_urls.rs (target/debug/deps/bug_hunt_resource_urls-f83ee6cfbb038f5c)
+
+running 6 tests
+test analysis_ranges_stay_in_original_source_across_removed_references_and_repeated_urls ... ok
+test opaque_url_payloads_and_invalid_values_do_not_create_nested_resources ... ok
+test resources_use_css_url_and_image_set_grammar_including_authoring_bodies ... ok
+test relocation_requires_complete_independent_mappings_and_preserves_local_fragments ... ok
+test theme_urls_are_resolved_before_manifest_merging_and_unmapped_absolute_urls_survive ... ok
+test source_owner_is_retained_when_managed_definition_is_composed_in_another_file ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_rule_count_scaling.rs (target/debug/deps/bug_hunt_rule_count_scaling-51e96da5602faa5d)
+
+running 5 tests
+test theme_variable_merges_scale_linearly_with_definition_count ... ok
+test resource_references_scale_linearly_with_rule_count ... ok
+test native_mapping_anchors_scale_linearly_with_rule_count ... ok
+test native_compose_lowering_scales_linearly_with_rule_count ... ok
+test component_merges_scale_linearly_with_definition_count ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.09s
+
+     Running tests/bug_hunt_standalone_delivery.rs (target/debug/deps/bug_hunt_standalone_delivery-dc6d6bebcbe1c5b8)
+
+running 1 test
+test relative_resources_require_explicit_sibling_delivery_and_keep_cross_file_ownership ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_stylesheet_discovery.rs (target/debug/deps/bug_hunt_stylesheet_discovery-ba78d2c4bdd9fab3)
+
+running 4 tests
+test nested_and_opaque_import_text_is_not_an_edge ... ok
+test malformed_import_does_not_hide_other_valid_imports_during_analysis ... ok
+test escaped_unresolved_nested_import_still_reports_the_known_qualified_limit ... ok
+test decoded_import_discovery_and_resolution_share_css_rules_and_utf16_ranges ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_stylesheet_graph.rs (target/debug/deps/bug_hunt_stylesheet_graph-9edf312dbab23ca1)
+
+running 8 tests
+test references_are_reported_with_original_filename_and_removed_before_ranges ... ok
+test preserves_duplicate_edges_and_loads_diamond_nodes_once ... ok
+test renderer_rejects_missing_targets_urls_and_stale_ranges ... ok
+test provider_failures_and_cycles_retain_actionable_paths ... ok
+test decoded_imports_keep_utf16_ranges_and_opaque_text ... ok
+test renderer_preserves_external_bytes_and_escapes_host_urls ... ok
+test browser_corpus_assets ... ok
+test deep_graph_does_not_recurse_on_the_rust_call_stack ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_diagnostics-9c2dcf01d860ab6e)
+
+running 5 tests
+test tests::reports_version_mismatches_as_structured_invalid_input ... ok
+test tests::creates_empty_scanner_error_reports ... ok
+test tests::classifies_missing_css_in_observable_precedence_order ... ok
+test tests::composes_stable_reports_and_utf8_css_sizes ... ok
+test tests::reports_utf8_css_bytes_whether_or_not_text_is_included ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_engine-16b4633667b18c03)
+
+running 36 tests
+test tests::normalizes_base_units_inside_css_math_functions ... ok
+test tests::inspection_does_not_mutate_the_session ... ok
+test tests::preserves_math_function_names_that_overlap_inline_variables ... ok
+test tests::groups_multi_node_utilities_into_one_hydration_rule ... ok
+test tests::host_globals_replace_locally_emitted_static_resources ... ok
+test tests::ensure_is_idempotent_and_delete_reports_exact_index ... ok
+test tests::commits_only_host_supported_native_declarations ... ok
+test tests::lets_native_key_aliases_handle_variables_outside_managed_namespaces ... ok
+test tests::preserves_all_static_rules_for_the_same_class_across_layers ... ok
+test tests::prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions ... ok
+test tests::preserves_selector_templates_across_selectorless_variants ... ok
+test tests::rejects_circular_inline_variable_references ... ok
+test tests::preserves_pattern_utility_precedence_inside_groups ... ok
+test tests::disposed_sessions_fail_closed ... ok
+test tests::creates_sorted_rule_transitions_and_css ... ok
+test tests::preserves_custom_property_names_inside_generated_math ... ok
+test tests::preserves_native_alias_matchers_for_shared_declarations ... ok
+test tests::exposes_manifest_driven_class_semantics_without_mutating_the_session ... ok
+test tests::preserves_selector_priority_for_class_pseudo_and_attribute_states ... ok
+test tests::resolves_dependencies_of_inline_variables_without_emitting_resources ... ok
+test tests::resolves_legacy_pseudo_elements_without_rewriting_explicit_double_colons ... ok
+test tests::tracks_theme_variables_referenced_by_keyframes ... ok
+test tests::suppresses_variables_already_emitted_by_the_host ... ok
+test tests::registers_host_globals_transactionally_after_classes_are_ensured ... ok
+test tests::separates_child_selectors_from_dynamic_values ... ok
+test tests::tracks_variable_resources_across_aliases_and_deletion ... ok
+test tests::refresh_replays_connected_classes_against_new_manifest ... ok
+test tests::resolves_inline_dependencies_in_emitted_base_and_mode_variables ... ok
+test tests::parses_each_compound_condition_as_a_condition ... ok
+test tests::renders_selector_condition_layer_and_important_state ... ok
+test tests::tracks_keyframes_only_from_animation_declarations ... ok
+test tests::validates_native_value_namespaces_before_committing_rules ... ok
+test tests::executes_rc87_parser_parity_corpus ... ok
+test tests::registers_host_keyframes_after_animation_rules_are_ensured ... ok
+test tests::validates_and_saturates_host_globals_before_classes_are_ensured ... ok
+test tests::renders_the_compiled_condition_grammar ... ok
+
+test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.44s
+
+     Running tests/bug_hunt_lifecycle.rs (target/debug/deps/bug_hunt_lifecycle-a1d996ef310d43be)
+
+running 2 tests
+test audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable ... ok
+test audit_transition_replay_matches_snapshot_through_256_operations ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 15.67s
+
+     Running tests/bug_hunt_static_dependencies.rs (target/debug/deps/bug_hunt_static_dependencies-9a75d26a08797077)
+
+running 2 tests
+test bh_0003_static_resources_retain_transitive_dependencies_at_creation ... ok
+test bh_0003_static_dependency_survives_last_class_deletion ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/bug_hunt_static_retention.rs (target/debug/deps/bug_hunt_static_retention-290c84476a39d3dd)
+
+running 12 tests
+test dynamic_inline_dependency_graph_is_fully_released ... ok
+test registering_external_root_after_creation_preserves_local_dependencies ... ok
+test externally_emitted_root_still_keeps_missing_dependencies ... ok
+test static_chain_counts_survive_repeated_class_lifetimes ... ok
+test refresh_replaces_static_dependencies_and_subset_forks_preserve_them ... ok
+test cyclic_dependency_graph_is_retained_once_per_static_root ... ok
+test static_roots_share_one_declaration_and_independent_baselines ... ok
+test mode_only_static_root_keeps_dependencies_from_all_modes ... ok
+test full_external_graph_is_not_duplicated_and_refresh_keeps_suppression ... ok
+test inline_intermediate_is_not_emitted_but_its_dependencies_are_retained ... ok
+test refresh_from_static_to_dynamic_removes_the_permanent_reference ... ok
+test deep_static_chain_uses_bounded_call_stack ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_language-182af5782d33fac0)
+
+running 12 tests
+test tests::skips_overlapping_and_multiline_tokens ... ok
+test tests::treats_plaintext_as_a_class_list_and_skips_markup_comments ... ok
+test tests::keeps_class_positions_and_semantic_tokens_in_utf16 ... ok
+test tests::applies_document_context_settings_in_rust ... ok
+test tests::tokenizes_group_terminators_and_selector_combinators_in_rust ... ok
+test color::tests::rejects_dynamic_or_invalid_color_mix ... ok
+test color::tests::parses_static_color_mix_weights_and_hue ... ok
+test tests::batches_manifest_driven_class_semantics ... ok
+test tests::commits_only_host_supported_native_class_semantics ... ok
+test tests::owns_mdn_and_negative_completion_candidates_in_rust ... ok
+test tests::renders_isolated_hover_inspection_css ... ok
+test tests::executes_rc87_language_lexer_parity_corpus ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/bug_hunt_semantic_offsets.rs (target/debug/deps/bug_hunt_semantic_offsets-656318ebdedfbff1)
+
+running 1 test
+test bh_0014_semantic_ranges_follow_raw_escape_sequences ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/bug_hunt_unicode.rs (target/debug/deps/bug_hunt_unicode-8e429e60a4afad94)
+
+running 1 test
+test bh_0013_unicode_before_a_long_line_string_does_not_panic ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_lexer-8ffd734bd5ce66fa)
+
+running 12 tests
+test tests::class_ranges_use_javascript_utf16_offsets ... ok
+test tests::collects_only_active_css_variable_references ... ok
+test tests::finds_removes_and_ranges_master_entry_directives_in_utf16 ... ok
+test tests::converts_only_valid_utf16_boundaries ... ok
+test tests::extracts_only_top_level_keyframe_blocks_without_losing_lines ... ok
+test tests::finds_top_level_imports_and_parses_quoted_semicolons ... ok
+test tests::ignores_non_entry_and_nested_master_syntax ... ok
+test tests::matches_existing_css_escape_examples ... ok
+test tests::preserves_unclosed_css_variable_references ... ok
+test tests::transforms_balanced_css_variable_references_without_touching_literals ... ok
+test tests::parses_and_removes_top_level_extraction_policy_directives ... ok
+test tests::executes_rc87_lexer_parity_corpus ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_boundaries.rs (target/debug/deps/bug_hunt_boundaries-92a47365b5e9b117)
+
+running 2 tests
+test audit_variable_transform_identity_and_malformed_directives_do_not_panic ... ok
+test audit_unicode_class_ranges_round_trip_utf16 ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/css_syntax.rs (target/debug/deps/css_syntax-c7656c1ecfccd965)
+
+running 4 tests
+test names_and_strings_decode_css_escapes_without_merging_comment_separated_tokens ... ok
+test balanced_components_keep_custom_values_and_feature_queries_out_of_declarations ... ok
+test numeric_components_keep_signs_exponents_units_and_identifier_boundaries ... ok
+test unicode_bytes_and_deep_blocks_do_not_recurse_on_the_call_stack ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_lint-3479fe8b014114ee)
+
+running 10 tests
+test class_list::tests::preserves_raw_tokens_and_whitespace_while_sorting ... ok
+test class_list::tests::creates_utf16_conflict_ranges_and_whole_list_fixes ... ok
+test class_list::tests::formats_canonical_compose_class_names_as_code_spans ... ok
+test tests::classifies_host_rule_validation_results_in_rust ... ok
+test class_list::tests::creates_invalid_and_unknown_class_diagnostics ... ok
+test tests::discovers_raw_value_segments_and_creates_policy_diagnostics ... ok
+test tests::sorts_and_finds_full_conflicts_without_retaining_rules ... ok
+test tests::suggests_canonical_classes_from_engine_facts ... ok
+test tests::creates_structural_compose_directives_from_engine_facts ... ok
+test tests::suggests_canonical_composition_groups_from_engine_facts ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.14s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_project-090b691a440191c7)
+
+running 5 tests
+test tests::matches_source_globs_with_fast_glob_compatible_primitives ... ok
+test tests::resolves_bare_source_patterns_from_the_project_root ... ok
+test tests::discovers_entries_and_compiles_local_imports ... ok
+test tests::resolves_entry_owned_source_plans_and_arbitrary_extensions ... ok
+test tests::lowers_compose_definitions_against_the_base_manifest ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.22s
+
+     Running tests/bug_hunt_filesystem_boundaries.rs (target/debug/deps/bug_hunt_filesystem_boundaries-a8e0e8b3a5574d7e)
+
+running 6 tests
+test filesystem_import_and_reference_cycles_remain_errors ... ok
+test imported_source_patterns_belong_to_the_child_file ... ok
+test external_native_imports_do_not_block_manifest_and_compose ... ok
+test repeated_imports_and_entry_override_keep_authoring_order ... ok
+test references_resolve_compose_without_exporting_reference_definitions_or_sources ... ok
+test qualified_files_keep_shared_definitions_and_composed_output ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+     Running tests/bug_hunt_manifest_graphs.rs (target/debug/deps/bug_hunt_manifest_graphs-fa0eef329a9b9600)
+
+running 4 tests
+test prepared_reference_cycles_and_missing_edges_remain_errors ... ok
+test references_resolve_managed_definitions_without_importing_their_sources_or_classes ... ok
+test qualified_external_imports_do_not_block_manifest_or_source_plan_compilation ... ok
+test structured_project_entries_merge_in_order ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/bug_hunt_ordered_output.rs (target/debug/deps/bug_hunt_ordered_output-a040a37661aa2c12)
+
+running 1 test
+test flat_project_css_uses_ordered_output_while_preserving_metadata_views ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_render-ddce692e6be865e0)
+
+running 8 tests
+test tests::composes_sorted_css_and_hydration_rules ... ok
+test tests::preserves_and_increments_host_resource_counts ... ok
+test tests::cached_subset_output_does_not_depend_on_warm_up_order ... ok
+test tests::native_support_only_applies_to_new_classes ... ok
+test tests::snapshots_cached_class_subsets_like_fresh_sessions ... ok
+test tests::cached_native_declarations_preserve_later_alias_matchers ... ok
+test tests::composes_native_stylesheet_resources_without_duplicate_keyframes ... ok
+test tests::cached_subsets_preserve_page_resource_composition ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_animation_syntax.rs (target/debug/deps/bug_hunt_animation_syntax-5872cd49ad3c3950)
+
+running 22 tests
+test custom_block_is_not_use ... ok
+test commented_fake_definition ... ok
+test quoted_animation_name ... ok
+test quoted_definition ... ok
+test comment_separates_definition ... ok
+test escaped_definition ... ok
+test escaped_animation_name ... ok
+test commented_fake_use ... ok
+test important_animation_name ... ok
+test custom_property_is_not_use ... ok
+test missing_definition_block ... ok
+test nested_definition ... ok
+test native_definition ... ok
+test plain_use ... ok
+test comment_after_name ... ok
+test comment_before_colon ... ok
+test quoted_fake_definition ... ok
+test quoted_fake_use ... ok
+test supports_is_not_use ... ok
+test url_fake_use ... ok
+test uppercase_definition ... ok
+test uppercase_property ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_animation_value_slots.rs (target/debug/deps/bug_hunt_animation_value_slots-dbf017d5c6906355)
+
+running 29 tests
+test fill_none_before_name ... ok
+test compiled_variable_timing ... ok
+test comment_separates_number_unit ... ok
+test invalid_multiple_names ... ok
+test auto_duration ... ok
+test math_duration ... ok
+test math_iteration ... ok
+test css_wide_mixed ... ok
+test decimal_iteration_before_name ... ok
+test css_wide_alone ... ok
+test fill_and_none_name ... ok
+test duplicate_numbers ... ok
+test exponent_iteration ... ok
+test escaped_time_unit ... ok
+test invalid_dimension ... ok
+test negative_time_is_delay ... ok
+test timing_keyword ... ok
+test too_many_none_slots ... ok
+test too_many_times ... ok
+test negative_iteration ... ok
+test negative_delay ... ok
+test repeated_timing ... ok
+test sign_returns_iteration_number ... ok
+test signed_decimal_iteration ... ok
+test numeric_iteration_before_name ... ok
+test quoted_keyword_name ... ok
+test fallback_timing ... ok
+test math_time_and_iteration ... ok
+test trailing_comma ... ok
+
+test result: ok. 29 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_animation_values.rs (target/debug/deps/bug_hunt_animation_values-f9ce2a82b6a4442d)
+
+running 3 tests
+test nested_selectors_and_descriptor_blocks_do_not_create_fake_declarations ... ok
+test variables_are_followed_only_from_animation_values_and_include_fallbacks ... ok
+test timing_and_play_state_slots_take_priority_over_animation_names ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_animation_variables.rs (target/debug/deps/bug_hunt_animation_variables-c851d1d67269ceaa)
+
+running 8 tests
+test variable_modes_preserve_occupied_slots_and_known_values_do_not_use_fallbacks ... ok
+test a_valid_mode_branch_survives_another_branch_with_a_cycle ... ok
+test cycles_are_invalid_even_with_internal_fallbacks_but_outer_fallbacks_work ... ok
+test comma_lists_and_animation_name_have_distinct_slot_rules ... ok
+test auto_duration_preserves_names_required_by_browsers_with_the_older_grammar ... ok
+test nested_variables_do_not_merge_tokens_and_mode_branches_do_not_rescue_invalid_names ... ok
+test browser_variable_corpus_retains_exactly_the_expected_animation_union ... ok
+test repeated_mode_diamonds_and_deep_chains_do_not_expand_cartesian_strings ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.59s
+
+     Running tests/bug_hunt_stylesheet_resources.rs (target/debug/deps/bug_hunt_stylesheet_resources-01ecf21532609d7c)
+
+running 4 tests
+test bh_0001_commented_keyframes_must_not_suppress_used_animation ... ok
+test bh_0001_comment_animation_must_not_emit_unused_keyframes ... ok
+test audit_actual_native_keyframes_suppress_duplicates ... ok
+test bh_0002_css_whitespace_in_var_must_preserve_dependencies ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running tests/bug_hunt_variable_syntax.rs (target/debug/deps/bug_hunt_variable_syntax-d91d5dcf4d7497aa)
+
+running 1 test
+test raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_scanner-74bceb83e0ba6b20)
+
+running 5 tests
+test tests::matches_compiler_blocklist_values_without_changing_regex_dialects ... ok
+test tests::owns_generated_rule_validation_classification ... ok
+test tests::commits_host_css_validation_and_ordered_native_support ... ok
+test tests::reset_recreates_engine_and_clears_all_scanner_state ... ok
+test tests::caches_sources_and_tracks_valid_invalid_candidates_in_insertion_order ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_schema-72f3547cbae7e20d)
+
+running 3 tests
+test tests::validates_manifest_v1_without_dropping_unknown_fields ... ok
+test tests::hydration_json_is_script_safe ... ok
+test tests::rejects_legacy_manifest_shapes ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_source-78b7aaa6d5933608)
+
+running 9 tests
+test tests::keeps_groups_and_interpolation_candidates ... ok
+test tests::keeps_native_custom_properties_but_not_legacy_assignments ... ok
+test tests::keeps_query_and_selector_suffixes_but_rejects_bracket_values_and_markup_tails ... ok
+test tests::extracts_mixed_source_candidates_in_insertion_order ... ok
+test tests::extracts_html_class_attributes_and_delegates_scripts_to_oxc ... ok
+test tests::extracts_astro_frontmatter_scripts_and_markup_but_not_styles ... ok
+test tests::ignores_module_specifiers_require_imports_and_directives_with_oxc ... ok
+test tests::extracts_static_javascript_and_typescript_strings_with_oxc ... ok
+test html_attribute::tests::every_named_reference_matches_the_existing_decoder_and_maps_its_source ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/html_attribute_mapping.rs (target/debug/deps/html_attribute_mapping-eed8eb83e4fc9971)
+
+running 3 tests
+test source_batch_returns_requested_attribute_maps_without_source_files ... ok
+test maps_entities_as_indivisible_utf16_spans ... ok
+test preserves_attribute_ambiguous_ampersands_and_decodes_numeric_boundaries ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/html_character_references.rs (target/debug/deps/html_character_references-9aa216fbc66f56c7)
+
+running 6 tests
+test respects_first_class_attribute_and_incomplete_tags ... ok
+test handles_unquoted_attributes_and_deduplicates_decoded_values ... ok
+test distinguishes_foreign_titles_and_html_integration_points ... ok
+test decodes_html_attribute_references_and_preserves_class_tokens ... ok
+test ignores_comments_raw_text_and_tag_like_attribute_text ... ok
+test does_not_decode_javascript_or_raw_source_strings ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/mastercss_validator-626f30b4f7afdec0)
+
+running 3 tests
+test tests::generates_batches_without_retaining_class_rules ... ok
+test tests::commits_only_host_supported_native_declarations ... ok
+test tests::validates_native_declarations_nested_in_groups ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/xtask-a06b606dabcc1ba7)
+
+running 3 tests
+test tests::formats_artifact_sha256_as_zero_padded_lowercase_hex ... ok
+test tests::atomically_replaces_staged_artifacts ... ok
+test tests::assembles_all_native_packages_and_writes_stable_checksums ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests mastercss_binding_wasm_compiler
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_binding_wasm_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_binding_wasm_tooling
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_compiler
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_diagnostics
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_engine
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_language
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_lexer
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_lint
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_project
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_render
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_scanner
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_schema
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_source
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests mastercss_validator
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

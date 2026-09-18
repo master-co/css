@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0257：owned副本`packages/next`候選五項檢查全PASS：lint、audit type-check（src＋tests對0244 compiler d.ts）、build、24files／152tests、3e2e；候選測試契約較主工作樹新增4檔、修改5檔（含pending `nextGraphDeliveryTests`四檔）。量化promote依賴鏈：Rust 535行（`native_source.rs`）＋binding protocol＋compiler 11檔46行＋next 13新檔＋site契約文件，且0244候選crates缺0251–0253 perf（0251 patch dry-run可套用，0252／0253未驗）。沒有promote、沒有產品變更；另commit訂正0256「副本無tests」誤述。63historical／58fixed／5unresolved不變。[證據](evidence/0257-final-checks.json)；[批次](batches/0257-next-candidate-promote-feasibility.md)；[前次](progress-history-0257-next-candidate-promote.md)。
+- 0258：依授權promote 0232–0256整套候選到主工作樹，分3個產品commit（`9d1910e24` Rust `preserve_native_source`＋binding、`879b58d96` compiler公開API與rendered resource context、`5810c71ed` Next PostCSS／module graph管線），含先前待授權的`nextGraphDeliveryTests`四檔。候選分叉點`7edc87136`與主工作樹0251–0253 perf三方合併無衝突，另補套`native_source.rs`的`SourceIndex` hunks避免BH-0062二次成本回歸。驗證：cargo fmt／clippy／357tests／codegen／parity、compiler 57files/428tests、next 24files/152tests＋3e2e、28套件build全PASS；BH-0063在主工作樹實際host雙bundler雙瀏覽器PASS。vite 23／nuxt 3／webpack 2／wasm 2為serial對照下與baseline完全相同的既有失敗，promote未新增失敗。BH-0063改為已修復：63historical／59fixed／4unresolved。[證據](evidence/0258-final-checks.json)；[批次](batches/0258-promote-next-candidate.md)；[前次](progress-history-0258-promote.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -94,9 +94,9 @@ Renderer received parser nativeCSS alone, dropping lowered compose rules. Render
 
 已修復。原先 raw replacen 選中字串內的 marker，將 composed CSS 寫入 content 並漏掉實際規則；改由 Rust lexer 定位真實 at-rule。Native/Wasm graph 修前6個browserFAIL，修後含原生／direct控制15PASS。[0187證據](evidence/0187-marker-finding.json)。
 
-## BH-0063 · P1 · Turbopack Module 引用 global animation 失效（owned候選修復）
+## BH-0063 · P1 · Turbopack Module 引用 global animation 失效（已修復）
 
-`.module.css`中的`animation:fade`（preset animation）在Turbopack＋Master下被CSS Modules作用域化為`card_fade__…`，最終CSS沒有`@keyframes fade`，Chromium／WebKit的`getAnimations()`皆無frames；Webpack＋Master同一fixture輸出`fade`與2 frames正常。0256在owned副本修復：`nextGeneratedGlobalAnimations`從Master generatedCSS取出preset keyframes名稱，Turbopack無host PostCSS分支以`globalAnimations`建立module graph，讓`:local(fade)`還原為global `fade`並交付`@keyframes fade`；`module-animation` Turbopack baseline FAIL→fixed／recheck PASS，Webpack對照全PASS。候選所在檔案主工作樹不存在，promote須交付0232–0256整套候選，未交付。[候選與驗收](batches/0256-next-turbopack-module-animation.md)；[原始對照](batches/0255-next-turbopack-postcss-characterization.md)。
+`.module.css`中的`animation:fade`（preset animation）在Turbopack＋Master下被CSS Modules作用域化為`card_fade__…`，最終CSS沒有`@keyframes fade`，Chromium／WebKit的`getAnimations()`皆無frames；Webpack＋Master同一fixture正常。已修復並於0258交付（`5810c71ed`）：`nextGeneratedGlobalAnimations`從Master generatedCSS取出preset keyframes名稱，Turbopack無host PostCSS分支以`globalAnimations`建立module graph，讓`:local(fade)`還原為global `fade`並交付`@keyframes fade`；作者自訂`@keyframes`仍維持Module作用域。主工作樹實際host雙bundler雙瀏覽器PASS，`packages/next` 24files／152tests與3e2e PASS。[交付與驗證](batches/0258-promote-next-candidate.md)；[原始對照](batches/0255-next-turbopack-postcss-characterization.md)。
 
 ## BH-0062 · P1 · Stylesheet compile 對規則數二次成長（fixed）
 
