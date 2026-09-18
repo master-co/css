@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0266：使用者授權後交付兩個長期待審patch。`cb0233d56`把`plugin-runtime.test.ts`的兩個watch測試改為plugin實際實作的契約（replay錯誤進`compilation.errors`、未存在的reset路徑進`missingDependencies`），套用前後雜湊與記錄相符。`68ced2463`以`pnpm patch`正式交付`watchpack@2.5.2`的initial-scan修正（只有掃描確實找到的項目才移除missing watcher），`patch-commit`帶進的12個無關套件與版本漂移已還原，最終lockfile僅7 insertions／4 deletions。**`@master/css-webpack`因此12 files／88 tests全綠**（原2＋1 FAIL）；build 28/28、全套件103/107，未通過僅剩wasm×2、nuxt、vite，與baseline相同。另訂正0265：實測證明`same-layer`無法以`@layer`宣告修復（layer內順序而非layer順序），BH-0004 external可修項由4降為**2**（`different-layers`），修後基準為9 PASS／11 FAIL。pendingApprovals清空。63historical／62fixed／1unresolved。[證據](evidence/0266-final-checks.json)；[批次](batches/0266-approved-patches.md)；[前次](progress-history-0266-approved-patches.md)。
+- 0267：依0266收窄條件交付BH-0004 external修正`e20f890aa`：展開後在輸出最前面補一行依作者順序的`@layer`宣告，僅在「確有無法解析的import被提前」「具名layer多於一個」「作者未自行宣告順序」三者皆成立時輸出，其餘graph位元組不變。宣告置於輸出最前端而非第一個import位置——初版放在後者時，作者寫在import前的`@layer base{…}`區塊會讓宣告失效，由新測試捕捉。`external-import-order`由**7 PASS／13 FAIL變9 PASS／11 FAIL**（`different-layers`兩瀏覽器轉PASS），binding parity 10 PASS維持；0264的qualified矩陣仍為60觀察／0失敗。cargo fmt／clippy／**370tests**、28套件build、101/107 tasks PASS；webpack 12files/88tests全綠，vite 23／nuxt 3／wasm 2在serial下與baseline逐項相同。另修復多套件殘留的陳舊`.bin` shim（刪除`packages/*/node_modules`後以frozen lockfile重裝，lockfile未變）。63historical／62fixed／1unresolved。[證據](evidence/0267-final-checks.json)；[批次](batches/0267-authored-layer-order.md)；[前次](progress-history-0267-authored-layer-order.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -30,7 +30,7 @@
 
 ## BH-0004 · P1 · 展開 CSS import 丟失條件與 layer（部分修正）
 
-`preserveNativeSource`已於0258隨compiler API交付。0263把低層`direct`路徑的失敗化約為單一根因：Master definition directive被包在native at-rule裡就無法lowering，而展開qualified import是文字包裹，必然把被匯入stylesheet的directive一起包進`@supports`／`@media`／`@layer`。0264交付修正：展開時先把被匯入stylesheet頂層的`@settings`／`@theme`／`@custom-variant`／`@defaults`／`@components`／`@utilities`切出wrapper並保留copied source spans，其餘照舊受qualifier約束；無qualifier的import不變。qualified flatten+compile矩陣的60個觀察由20失敗變為0失敗，`direct-native`與`direct-wasm`各從2 PASS／10 FAIL變成12 PASS／0 FAIL，兩個binding一致。仍待：`external-import-order`的外部import展開（7 PASS／13 FAIL）與nested未解析import的明確限制，以及完整public／host graph遷移。[修正與驗收](batches/0264-qualified-import-definitions.md)；[根因](batches/0263-bh-0004-contained-directives.md)。
+`preserveNativeSource`已於0258交付。0264修好qualified面：展開帶`layer()`／`supports()`／media的import時，被匯入stylesheet頂層的六個definition family留在wrapper之外，qualified flatten+compile矩陣的60個觀察全數通過。0267修好external面可修的部分：無法解析的import會被提前到stylesheet最前（CSS要求`@import`先於其他規則），連帶提前它所具名layer的首次出現而翻轉layer順序；展開後改以作者順序的`@layer`宣告領頭，僅在具名layer多於一個且作者未自行宣告時輸出，`external-import-order`基準由7 PASS／13 FAIL變為9 PASS／11 FAIL。剩餘11項不是可修缺陷：6項是被匯入stylesheet自身帶未解析外部`@import`的明確限制（CSS不允許`@import`在條件／layer區塊內），5項（`same-layer`、`external-last`、`conditional-local`）決勝於layer內或未分層的出現順序，實測補`@layer`宣告無效。完整public／host graph遷移仍未完成。[layer順序](batches/0267-authored-layer-order.md)；[qualified](batches/0264-qualified-import-definitions.md)；[分類](batches/0266-approved-patches.md)。
 
 ## BH-0006 · P1 · SSR CSS 未安全嵌入 HTML
 
