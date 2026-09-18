@@ -1,0 +1,96 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next
+
+ ✓ tests/bug-hunt-runtime-start-hmr.test.ts (10 tests) 1034ms
+ ✓ tests/bug-hunt-preprocessed-stylesheet.test.ts (2 tests) 1012ms
+   ✓ Next preserves the host Sass preprocessing boundary, preprocessed=false 554ms
+   ✓ Next preserves the host Sass preprocessing boundary, preprocessed=true 457ms
+ ✓ tests/bug-hunt-postcss-request-plugins.test.ts (15 tests) 263ms
+ ✓ tests/bug-hunt-sass-source-offsets.test.ts (9 tests) 1664ms
+   ✓ Next scss entry preserves imported partial reference ownership 664ms
+   ✓ Next sass entry preserves imported partial reference ownership 810ms
+ ✓ tests/next-config.test.ts (14 tests) 601ms
+   ✓ withMasterCSS (14)
+     ✓ sets up static mode with Turbopack rules without adding a webpack callback 570ms
+ ✓ tests/css-manifest-import-loader.test.ts (3 tests) 139ms
+ ✓ tests/bug-hunt-postcss-resource-policy.test.ts (7 tests) 182ms
+ ✓ tests/bug-hunt-postcss-resource-host.test.ts (1 test) 53ms
+ ✓ tests/bug-hunt-sass-directive-terminators.test.ts (5 tests) 2098ms
+   ✓ Next preserves Sass directive terminators: scss, explicitCompressed=false 485ms
+   ✓ Next preserves Sass directive terminators: scss, explicitCompressed=true 425ms
+   ✓ Next preserves Sass directive terminators: indented, explicitCompressed=false 602ms
+   ✓ Next preserves Sass directive terminators: indented, explicitCompressed=true 584ms
+ ✓ tests/bug-hunt-turbopack-css-module.test.ts (7 tests) 5ms
+ ✓ tests/bug-hunt-webpack-virtual-modules.test.ts (9 tests) 10ms
+ ✓ tests/bug-hunt-webpack-css-pipeline.test.ts (5 tests) 14ms
+ ✓ tests/css-manifest-loader.test.ts (8 tests) 2875ms
+   ✓ css manifest loader (8)
+     ✓ loads the default virtual manifest from CSS entry files only 686ms
+     ✓ keeps virtual manifest dependencies registered after invalid CSS and recovers on the next run 1734ms
+ ✓ tests/bug-hunt-entry-reference-build-state.test.ts (2 tests) 3086ms
+   ✓ Next build completion preserves entry reference metadata, imported=false 1483ms
+   ✓ Next build completion preserves entry reference metadata, imported=true 1602ms
+ ✓ tests/bug-hunt-loader-graph-delivery.test.ts (5 tests) 3229ms
+   ✓ general Next loader publishes retained nested-resource graph 573ms
+   ✓ general Next delivered entry retains original native declaration source maps 696ms
+   ✓ general Next scss delivered entry retains imported partial ownership and map 1074ms
+   ✓ general Next sass delivered entry retains imported partial ownership and map 622ms
+ ✓ tests/adapter.test.ts (13 tests) 3234ms
+   ✓ renderNextBuildOutputs (11)
+     ✓ does not duplicate globals already emitted by project CSS entries 547ms
+     ✓ derives a custom static export root from nested output metadata 317ms
+     ✓ does not inline native-only managed CSS entry output 412ms
+     ✓ keeps only generated CSS in style#master-css when native CSS is also present 372ms
+ ✓ tests/bug-hunt-raw-sass-context.test.ts (6 tests) 3716ms
+   ✓ Next raw scss retains partial reference and edit dependencies 1201ms
+   ✓ Next raw sass retains partial reference and edit dependencies 1432ms
+   ✓ Next raw Sass uses configured implementation, load paths and additional data 463ms
+   ✓ Next registers missing mapped CSS reference before error and recovers on creation 598ms
+ ✓ tests/bug-hunt-static-asset-publication.test.ts (4 tests) 3861ms
+   ✓ static publication delivers resource owners and fresh immutable bytes: nested=false 719ms
+   ✓ static publication delivers resource owners and fresh immutable bytes: nested=true 977ms
+   ✓ static preparation rejects output failures and retries after the failure is removed 1576ms
+   ✓ static CSS loader reports newly discovered resource dependencies in the same invocation 589ms
+ ✓ tests/bug-hunt-output-source-maps.test.ts (6 tests) 3831ms
+   ✓ Next injected package entry retains pure CSS authoring lines in its callback map 624ms
+   ✓ Next scss output map retains original root after additionalData 764ms
+   ✓ Next sass output map retains original root after additionalData 665ms
+   ✓ Next output map distinguishes imported Sass and injected CSS origins 1263ms
+   ✓ Next preprocessed Webpack input chains the supplied Sass map through lowering 476ms
+ ✓ tests/build-state.test.ts (1 test) 4044ms
+   ✓ resolveMasterCSSBuildState (1)
+     ✓ resolves @compose entries against the loaded base manifest while extracting native CSS 4044ms
+ ✓ tests/playground.test.ts (1 test) 7804ms
+   ✓ playground (1)
+     ✓ imports the global CSS entry as a Next config module 7803ms
+ ✓ tests/stylesheet-loader.test.ts (9 tests) 10175ms
+   ✓ Next style CSS loader (9)
+     ✓ derives native CSS from @master/css instead of hardcoding a package subpath 2230ms
+     ✓ keeps @master entry lightweight without importing package CSS 319ms
+     ✓ preserves native CSS and keyframes from imported Master entry graphs 1687ms
+     ✓ locally lowers @compose in CSS Modules without importing package CSS 513ms
+     ✓ locally lowers explicit @reference CSS Modules without importing package CSS 364ms
+     ✓ emits referenced default theme variables for page-level CSS 2343ms
+     ✓ dedupes referenced default theme variables already emitted by global CSS for page-level CSS 2306ms
+     ✓ keeps local style dependencies registered after invalid @compose and recovers on the next run 374ms
+ ✓ tests/static.test.ts (9 tests) 54651ms
+   ✓ Next static mode (9)
+     ✓ writes extracted CSS from source files including imported modules 5768ms
+     ✓ replaces @master/css imports for dev CSS chunks and preserves ordinary CSS 8662ms
+     ✓ prunes dev CSS chunks that import @master/css 8587ms
+     ✓ adds output and managed CSS entry files as CSS loader dependencies for dev updates 4270ms
+     ✓ ignores app stylesheets with @theme when they do not import @master/css 2188ms
+     ✓ lets the scanner loader feed an imported module into the scanner incrementally 5072ms
+     ✓ does not scan excluded node_modules modules from the static loader 5037ms
+     ✓ updates static CSS when Turbopack reruns the source loader 7901ms
+     ✓ updates static CSS when Turbopack reruns the CSS loader 7165ms
+
+ Test Files  23 passed (23)
+      Tests  151 passed (151)
+   Start at  09:04:09
+   Duration  55.19s (tests 93%, transform 4%, import 3%)
+

@@ -1,0 +1,47 @@
+{
+  "sources": {
+    "count": 670,
+    "previousCount": 666,
+    "changed": [],
+    "missing": [],
+    "added": [
+      ".ai/audits/bug-hunt/repros/next-resource-edit-intent.mjs",
+      ".ai/audits/bug-hunt/repros/next-resource-history-probes.mjs",
+      ".ai/audits/bug-hunt/repros/compiler-emitted-globals-history-probe.mjs",
+      ".ai/audits/bug-hunt/repros/next-postcss-resource-policy-on-0246.patch"
+    ]
+  },
+  "artifacts": {
+    "count": 493,
+    "changed": [],
+    "missing": []
+  },
+  "candidate": {
+    "files": 59,
+    "changedFrom0246": [
+      "src/prepare-entry-graph.ts",
+      "src/prepare-global-module.ts",
+      "src/prepare-postcss.ts",
+      "src/stylesheet-input-loader.ts"
+    ],
+    "newFiles": [
+      "src/postcss-resource-policy.ts",
+      "tests/bug-hunt-postcss-resource-host.test.ts",
+      "tests/bug-hunt-postcss-resource-policy.test.ts"
+    ],
+    "removed": []
+  },
+  "dist": 60,
+  "retained0242": {
+    "files": 54,
+    "changed": []
+  },
+  "api0244": {
+    "sourceFiles": 100,
+    "changedSources": [],
+    "artifacts": 62,
+    "changedArtifacts": [],
+    "nativeBinding": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/mastercss.node",
+    "nativeSha256Matches": true
+  }
+}

@@ -257,6 +257,7 @@
 - [0244 Rendered resource context](batches/0244-rendered-resource-context.md)：差集API驗證，PostCSS晚出現資源仍有處理順序反例。
 - [0245 PostCSS resource lifecycle](batches/0245-postcss-resource-lifecycle.md)：原生順序與hook後差集對照通過；global刪改計數及正式整合待續。
 - [0246 PostCSS request adapter](batches/0246-postcss-request-adapter.md)：新副本驗證native loader、插件狀態／訊息與並行隔離；尚未完成資源自動接線。
+- [0247 PostCSS resource policy](batches/0247-postcss-resource-policy.md)：owned副本自動接線資源歷史；刪改不復活、真實Webpack與host chain通過；sibling／diagnostics／watch待續。
 
 ## 目前交接點
 
@@ -266,7 +267,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0246：新隔離Next加入request-local PostCSS adapter；143tests、20項最終複驗、3e2e及build／types／lint PASS。修正proxy身分與lastPlugin；資源刪改計數／自動接線仍未完成。[證據](evidence/0246-final-checks.json)；[批次](batches/0246-postcss-request-adapter.md)；[前次](progress-history-0246-postcss-request-adapter.md)。
+- 0247：owned Next副本自動接線PostCSS resource policy；processedGlobals視為處理歷史，刪改global不復活；151tests／23聚焦、3e2e、lint／types／build及真實Next Webpack子圖資源雙瀏覽器PASS。sibling歷史、diagnostics轉發、watch依賴與完整host仍未完成。[證據](evidence/0247-final-checks.json)；[批次](batches/0247-postcss-resource-policy.md)；[前次](progress-history-0247-postcss-resource-policy.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 

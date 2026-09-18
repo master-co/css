@@ -1,0 +1,17 @@
+{
+  "patch": ".ai/audits/bug-hunt/repros/next-postcss-resource-policy-on-0246.patch",
+  "sha256": "e80e440b515429fcddd88400f487df99665cc00a428436c99b48d793b633ba31",
+  "base": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0246-postcss-request-adapter/packages/next",
+  "files": [
+    "src/postcss-resource-policy.ts",
+    "src/prepare-entry-graph.ts",
+    "src/prepare-global-module.ts",
+    "src/prepare-postcss.ts",
+    "src/stylesheet-input-loader.ts",
+    "tests/bug-hunt-postcss-resource-host.test.ts",
+    "tests/bug-hunt-postcss-resource-policy.test.ts"
+  ],
+  "readOnlyCheck": 0,
+  "applied": false,
+  "requires": "0246 owned Next copy (itself a delta on the retained 0242 candidate) with the 0244 compiler resource API linked. Not promoted to the 0242 candidate or root."
+}

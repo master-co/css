@@ -1,0 +1,4 @@
+host: Darwin ArondeMacBook-Pro-2.local 27.0.0 Darwin Kernel Version 27.0.0: Tue Aug 11 21:05:42 PDT 2026; root:xnu-13432.1.9~1/RELEASE_ARM64_T6031 arm64
+node: v24.20.0 pnpm: 12.3.4 cargo: 
+f3f6f7616
+-rwxr-xr-x@ 1 aron  staff  47959776 Sep 18 05:59 .ai/audits/bug-hunt/tmp/0242-source-preservation-api/mastercss.node

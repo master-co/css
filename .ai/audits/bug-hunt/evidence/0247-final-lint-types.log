@@ -1,0 +1,4 @@
+### eslint
+eslint exit=0
+### tsc
+tsc exit=0
