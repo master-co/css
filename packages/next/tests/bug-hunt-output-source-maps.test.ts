@@ -1,3 +1,4 @@
+import { readStylesheetEntry } from './helpers/stylesheet-output'
 import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { createRequire, SourceMap } from 'node:module'
 import { join } from 'node:path'
@@ -16,7 +17,7 @@ async function fixture(run: (root: string) => Promise<void>) {
 function compile(root: string, file: string, source: string, options = {}, inputMap?: object) {
   return new Promise<{ code: string, sourceMap: ConstructorParameters<typeof SourceMap>[0] }>((resolve, reject) => loader.call({
     rootContext: root, resourcePath: file, getOptions: () => options,
-    async: () => (error: Error | null, code?: string, sourceMap?: object) => error ? reject(error) : resolve({ code: code!, sourceMap: sourceMap as ConstructorParameters<typeof SourceMap>[0] })
+    async: () => (error: Error | null, code?: string, sourceMap?: object) => error ? reject(error) : resolve(readStylesheetEntry(file, code!, sourceMap as ConstructorParameters<typeof SourceMap>[0]))
   }, source, inputMap))
 }
 function origin(result: Awaited<ReturnType<typeof compile>>, token: string) {

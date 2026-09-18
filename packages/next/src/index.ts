@@ -1,3 +1,4 @@
+import { NEXT_STYLESHEET_ASSET_PATTERN } from './stylesheet-map-loader'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { dirname, join, relative, resolve } from 'node:path'
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
@@ -386,6 +387,15 @@ function applyMasterCSSTurbopackConfig(
     type: 'ecmascript' as const,
     as: '*.js'
   }
+  const publishedStylesheetMapRule = {
+    condition: { all: [
+      { path: NEXT_STYLESHEET_ASSET_PATTERN },
+      { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
+    ] },
+    loaders: [fileURLToPath(new URL('./stylesheet-map-loader.js', import.meta.url))],
+    type: 'css' as const,
+    as: '*.css'
+  }
   const masterCSSStyleRule = {
     condition: {
       all: [
@@ -447,7 +457,7 @@ function applyMasterCSSTurbopackConfig(
         masterCSSVirtualManifestRule,
         masterCSSEmittedGlobalsRule,
         masterCSSManifestRule,
-        ...(includeStyleRule ? [masterCSSStyleRule, importedSassRule, cssModuleRule] : []),
+        ...(includeStyleRule ? [publishedStylesheetMapRule, masterCSSStyleRule, importedSassRule, cssModuleRule] : []),
         ...toRuleArray(configRules)
       ]
     } satisfies TurbopackRules

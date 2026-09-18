@@ -151,14 +151,9 @@ describe('withMasterCSS', () => {
             }
           })
         ]
-      }),
-      expect.objectContaining({
-        test: /\.(css|scss|sass)$/,
-        resourceQuery: {
-          not: [/master-css-manifest/]
-        }
       })
     ]))
+    expect(resolvedConfig.module.rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
     expect(resolvedConfig.resolve.alias[VIRTUAL_MANIFEST_ID]).toContain(join('node_modules', '.master-css', 'master-css-manifest.js'))
     expect(resolvedConfig.resolve.alias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
     expect(resolvedConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.js')
@@ -230,6 +225,7 @@ describe('withMasterCSS', () => {
           condition: {
             all: [
               { path: /\.(css|scss|sass)$/ },
+              { not: { path: /\.module\.(css|scss|sass)$/ } },
               { content: expect.any(RegExp) },
               { not: { query: /master-css-manifest/ } }
             ]
@@ -449,6 +445,7 @@ describe('withMasterCSS', () => {
           condition: {
             all: [
               { path: /\.(css|scss|sass)$/ },
+              { not: { path: /\.module\.(css|scss|sass)$/ } },
               { content: expect.any(RegExp) },
               { not: { query: /master-css-manifest/ } }
             ]
@@ -464,9 +461,9 @@ describe('withMasterCSS', () => {
     expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules)
       .toEqual(expect.arrayContaining([
         expect.objectContaining({ test: expect.any(RegExp) }),
-        expect.objectContaining({ resourceQuery: /master-css-manifest/ }),
-        expect.objectContaining({ test: /\.(css|scss|sass)$/ })
+        expect.objectContaining({ resourceQuery: /master-css-manifest/ })
       ]))
+    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
     expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
     expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
   })

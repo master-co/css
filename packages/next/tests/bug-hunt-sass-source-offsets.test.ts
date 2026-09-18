@@ -1,3 +1,4 @@
+import { readStylesheetText } from './helpers/stylesheet-output'
 import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, join } from 'node:path'
@@ -19,7 +20,7 @@ async function fixture(run: (root: string) => Promise<void>) {
 function compile(root: string, file: string, source: string, dependencies: string[], sassOptions?: Record<string, unknown>) {
   return new Promise<string>((resolve, reject) => loader.call({
     resourcePath: file, rootContext: root, getOptions: () => ({ sassOptions }), addDependency: file => dependencies.push(file),
-    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(output!)
+    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(readStylesheetText(file, output!))
   }, source))
 }
 for (const syntax of ['scss', 'sass']) test(`Next ${syntax} additionalData keeps root diagnostic line`, async () => {

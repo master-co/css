@@ -1,3 +1,4 @@
+import { readStylesheetText } from './helpers/stylesheet-output'
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
@@ -29,7 +30,7 @@ function runStylesheetLoader(root: string, resourcePath: string, source: string)
     }
 
     masterCSSStylesheetLoader.call(context, source)
-  }).then((content) => ({ content, dependencies }))
+  }).then((content) => ({ content: readStylesheetText(resourcePath, content), dependencies }))
 }
 
 describe('Next style CSS loader', () => {
@@ -47,12 +48,12 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies.length).toBeGreaterThan(0)
   })
 
-  it('derives native CSS from @master entry directives', async () => {
+  it('keeps @master entry lightweight without importing package CSS', async () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const result = await runStylesheetLoader(root, entryPath, '@master entry;')
 
-    expect(result.content).toContain('@layer base')
+    expect(result.content).not.toContain('@layer base')
     expect(result.content).not.toContain('@master entry;')
     expect(result.dependencies).toContain(entryPath)
   })

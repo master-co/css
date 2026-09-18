@@ -7,7 +7,7 @@ import type { MasterCSSStylesheetComposition, MasterCSSStylesheetDeliveryOptions
 
 const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex')
 
-async function publishFile(file: string, bytes: Buffer, immutable: boolean) {
+export async function publishFile(file: string, bytes: Buffer, immutable: boolean) {
   try {
     const current = await readFile(file)
     if (current.equals(bytes)) return

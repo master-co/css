@@ -6,9 +6,10 @@ const nextLoader = (name: string) => `/node_modules/next/dist/build/webpack/load
 
 for (const sass of [false, true]) for (const lightning of [false, true]) test(`BH-0051 preserves Next CSS processing, sass=${sass}, lightning=${lightning}`, () => {
   const cssLoader = { loader: nextLoader(lightning ? 'lightningcss-loader' : 'css-loader'), options: { importLoaders: sass ? 3 : 1, modules: { mode: 'pure' } } }
+  const postcssOptions = { sourceMap: true, postcss: async () => ({}) }
   const use = [
     { loader: 'style-loader' }, cssLoader,
-    ...lightning ? [] : [{ loader: nextLoader('postcss-loader') }],
+    ...lightning ? [] : [{ loader: nextLoader('postcss-loader'), options: postcssOptions }],
     ...sass ? [{ loader: 'resolve-url-loader' }, { loader: 'sass-loader' }] : []
   ]
   const css = { test: sass ? /\.module\.scss$/ : /\.module\.css$/, use }
@@ -23,7 +24,16 @@ for (const sass of [false, true]) for (const lightning of [false, true]) test(`B
   const master = chain.findIndex((item: { loader: string }) => item.loader.endsWith('stylesheet-loader.js'))
   expect(master).toBe(lightning ? 2 : 3)
   expect(chain[master].options).toEqual({ preprocessed: true })
-  expect(chain.filter((_: unknown, index: number) => index !== master)).toEqual(use.map(item => item === cssLoader ? { ...item, options: { ...cssLoader.options, importLoaders: cssLoader.options.importLoaders + 1 } } : item))
+  const dispatcher = chain[1]
+  expect(dispatcher.loader).toMatch(/[/\\]webpack-css-loader\.js$/)
+  expect(dispatcher.options.loader).toBe(cssLoader.loader)
+  const postcss = chain.find((item: { loader: string }) => item.loader.endsWith('/webpack-postcss-loader.js'))
+  if (!lightning) {
+    expect(postcss.options.loader).toBe(nextLoader('postcss-loader'))
+    expect(postcss.options.options).toBe(postcssOptions)
+  }
+  const delegated = chain.filter((_: unknown, index: number) => index !== master).map((item: unknown) => item === dispatcher ? dispatcher.options : item === postcss ? postcss.options : item)
+  expect(delegated).toEqual(use.map(item => item === cssLoader ? { ...item, options: { ...cssLoader.options, importLoaders: cssLoader.options.importLoaders + 1 } } : item))
   expect(group.resourceQuery).toEqual({ not: [/master-css-manifest/] })
   expect(cssLoader.options.importLoaders).toBe(sass ? 3 : 1)
   expect(use).toHaveLength((lightning ? 2 : 3) + (sass ? 2 : 0))

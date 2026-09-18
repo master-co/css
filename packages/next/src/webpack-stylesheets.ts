@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url'
 type Rule = {
   use?: unknown
   rules?: unknown[]
@@ -51,6 +52,13 @@ export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: st
               : expandedSassOptions(sassOptions) } }
           }
           return position === index ? [loader, { loader: stylesheetLoader, options: { preprocessed: true } }] : [loader]
+        })
+        rule.use = (rule.use as unknown[]).map(item => {
+          const loader = item as Loader
+          const name = loaderName(item)
+          if (!nextCSSLoader.test(name)) return item
+          if (name.includes('postcss-loader')) return { loader: fileURLToPath(new URL('./webpack-postcss-loader.js', import.meta.url)), options: { loader: loader.loader, options: loader.options ?? {} } }
+          return { loader: fileURLToPath(new URL('./webpack-css-loader.js', import.meta.url)), options: { loader: loader.loader, options: loader.options ?? {} } }
         })
         changed = true
       }
