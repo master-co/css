@@ -1,35 +1,8 @@
 # 覆蓋清單
 
-- Commit checkpoint: BH-0048/BH-0049/BH-0050 fixes and 4 regression files committed as `50caa3e20`; 26 fresh tests and 3 package lints PASS. Open scope and 0038 pause unchanged. [Validation](evidence/0183-runtime-commit-validation.json).
+- 0254：五份帳本頭部較早交接逐字歸檔至`progress-history-0254-ledger-heads.md`（README 47.0K→26.6K）；0253後`@components`殘餘成長取樣為序列化／配置常數，無線性搜尋frame，已分類不新增finding。無產品變更。[證據](evidence/0254-final-checks.json)；[批次](batches/0254-ledger-archive-manifest-residual.md)；[前次](progress-history-0254-ledger-archive.md)。
 
-- 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
-
-- 0253：BH-0062第三階段：manifest合併改為key索引（`VariableTable`、`merge_array_by`），回歸新增theme／components形狀（0252基準4000定義6.0s／7.9s FAIL→PASS）；Rust 144tests／clippy／fmt／codegen、0242候選＋patch compiler428／Next151 PASS；800定義components 74→27ms、theme 61→16ms。[證據](evidence/0253-final-checks.json)；[批次](batches/0253-compiler-manifest-merge.md)；[前次](progress-history-0253-compiler-manifest-merge.md)。
-
-
-- 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
-
-- 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
-
-- 0163交接原文已逐字歸檔至[歷史紀錄](progress-history-0164.md)，既有證據與未完成範圍保留。
-
-- 0162交接原文已逐字歸檔至[歷史紀錄](progress-history-0163.md)，既有證據與未完成範圍保留。
-
-- 0161 handoff preserved verbatim in [history](progress-history-0162.md); original evidence and unfinished scope remain available.
-
-- 0160 handoff preserved verbatim in [history](progress-history-0161.md); original results and incomplete scope remain available.
-
-- 0159 handoff preserved verbatim in [history](progress-history-0160.md); original batch evidence and unfinished scope remain authoritative.
-
-- 0158共同交接已逐字歸檔至[歷史紀錄](progress-history-0159.md)；關閉限制與未完成範圍保留。
-
-- 0157共同交接原文已移至[歷史紀錄](progress-history-0158.md)，BH-0046證據及關閉候選沿用。
-
-- 0155–0156共用交接已逐字歸檔至[歷史紀錄](progress-history-0157.md)，各批次證據與未完成範圍保留。
-
-- 0152–0154共用交接已逐字移至[歷史紀錄](progress-history-0155.md)，批次證據與未完成項目保留。
-
-- 0147–0151 共用交接原文已逐字歸檔至[歷史紀錄](progress-history-0153.md)，各批次證據與未完成事項保留。
+- 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
 固定 ID 不重新編號；狀態只用未開始／進行中／已檢查／受阻。已檢查只代表所列行為完成，不代表沒有其他 bug。
 

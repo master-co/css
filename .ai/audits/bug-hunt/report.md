@@ -1,36 +1,8 @@
 # Master CSS 調查交付
 
-- Commit checkpoint: BH-0048/BH-0049/BH-0050 fixes and 4 regression files committed as `50caa3e20`; 26 fresh tests and 3 package lints PASS. Open scope and 0038 pause unchanged. [Validation](evidence/0183-runtime-commit-validation.json).
+- 0254：五份帳本頭部較早交接逐字歸檔至`progress-history-0254-ledger-heads.md`（README 47.0K→26.6K）；0253後`@components`殘餘成長取樣為序列化／配置常數，無線性搜尋frame，已分類不新增finding。無產品變更。[證據](evidence/0254-final-checks.json)；[批次](batches/0254-ledger-archive-manifest-residual.md)；[前次](progress-history-0254-ledger-archive.md)。
 
-- 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
-
-- 0253：BH-0062第三階段：manifest合併改為key索引（`VariableTable`、`merge_array_by`），回歸新增theme／components形狀（0252基準4000定義6.0s／7.9s FAIL→PASS）；Rust 144tests／clippy／fmt／codegen、0242候選＋patch compiler428／Next151 PASS；800定義components 74→27ms、theme 61→16ms。[證據](evidence/0253-final-checks.json)；[批次](batches/0253-compiler-manifest-merge.md)；[前次](progress-history-0253-compiler-manifest-merge.md)。
-
-- 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
-
-- 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
-
-- 0166交接原文已逐字歸檔至[歷史紀錄](progress-history-0167.md)，既有證據與未完成範圍保留。
-
-- 0163交接原文已逐字歸檔至[歷史紀錄](progress-history-0164.md)，既有證據與未完成範圍保留。
-
-- 0162交接原文已逐字歸檔至[歷史紀錄](progress-history-0163.md)，既有證據與未完成範圍保留。
-
-- 0161 handoff preserved verbatim in [history](progress-history-0162.md); original evidence and unfinished scope remain available.
-
-- 0160 handoff preserved verbatim in [history](progress-history-0161.md); original results and incomplete scope remain available.
-
-- 0159 handoff preserved verbatim in [history](progress-history-0160.md); original batch evidence and unfinished scope remain authoritative.
-
-- 0158共同交接已逐字歸檔至[歷史紀錄](progress-history-0159.md)；關閉限制與未完成範圍保留。
-
-- 0157共同交接原文已移至[歷史紀錄](progress-history-0158.md)，BH-0046證據及關閉候選沿用。
-
-- 0155–0156共用交接已逐字歸檔至[歷史紀錄](progress-history-0157.md)，各批次證據與未完成範圍保留。
-
-- 0152–0154共用交接已逐字移至[歷史紀錄](progress-history-0155.md)，批次證據與未完成項目保留。
-
-- 0147–0151 共用交接原文已逐字歸檔至[歷史紀錄](progress-history-0153.md)，各批次證據與未完成事項保留。
+- 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
 起始 commit `e66ba7236`。提交整理：依使用者要求，BH-0035 的產品修復、實際 host 回歸測試與兩個啟動腳本已提交為 `79eea0d8f`。本次另保存 0115–0117 已完成的調查、證據及重現材料；BH-0004 的 compiler／binding／測試與文件實作及 Site 其他工作仍未提交。0115–0116 證據對應已記錄雜湊的工作區版本，其 graph 重現仍依賴未提交來源，不能宣稱乾淨 checkout 可獨立重現。提交前發現 0117 原 lint 紀錄實為 13 個 CommonJS 測試環境錯誤，先前 PASS 記載不正確；只新增測試檔的 Node globals 與 CommonJS import 註記後，完整 package lint 已通過，見 `evidence/0117-commit-lint.log`。測試執行內容與產品來源未變，沿用既有 31 tests、actual VS Code、types 與 isolated build 證據。12 個未解決問題、10 個受阻覆蓋單位及四項 root gates 保持未完成；0038 追加驗證仍待身分驗證明確確認。未推送。 進度與完整證據見 [README](README.md)、[coverage](coverage.md)、[findings](findings.md)。
 
