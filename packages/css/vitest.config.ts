@@ -1,32 +1,19 @@
-import { defineConfig } from 'vitest/config'
 import { fileURLToPath } from 'node:url'
-import { defaultVitestTestTimeout, withCITimeouts } from '../../shared/vitest-ci-config'
+import { defineConfig } from 'vitest/config'
+import config from '../../shared/vitest.config'
 
 export default defineConfig({
-  test: withCITimeouts({
-    include: [
-      'tests/**/*.{test,spec}.?(c|m)[jt]s?(x)',
-      'tests/**/test.?(c|m)[jt]s?(x)'
-    ],
-    exclude: [
-      '**/tmp/**'
-    ],
-    testTimeout: defaultVitestTestTimeout,
-    forceRerunTriggers: [
-      'vitest.config.*',
-      'vite.config.*',
-      '**/*generated.css',
-      'package.json',
-      '**/*.output.*',
-      '**/*.input.*',
-      '**/fixtures/**/*'
-    ]
-  }),
+  ...config,
   resolve: {
-    alias: [{
-      find: /^@master\/css-binding-wasm-engine$/,
-      replacement: fileURLToPath(new URL('../binding-wasm-engine/src/provider-node.ts', import.meta.url))
-    }],
+    alias: [
+      {
+        find: /^@master\/css-binding-wasm-engine$/,
+        replacement: fileURLToPath(new URL(
+          '../binding-wasm-engine/src/provider-node.ts',
+          import.meta.url
+        ))
+      }
+    ],
     tsconfigPaths: true
   }
 })
