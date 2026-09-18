@@ -93,3 +93,11 @@ for (const filter of [
     expect(state.output()).toContain('padding:3rem')
   } finally { await state.close();rmSync(state.root, { recursive: true, force: true }) }
 })
+
+test('a watch filter that accepts no recovery location allocates nothing', async () => {
+  const state = await setup('static', undefined, false, ['**/*.no-such-extension'])
+  try {
+    expect((await state.next()).code).toBe('ERROR')
+    expect(state.cacheFiles()).toEqual([])
+  } finally { await state.close();rmSync(state.root, { recursive: true, force: true }) }
+})
