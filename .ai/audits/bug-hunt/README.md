@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 63 historical confirmed findings; 59 fixed, 4 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 63 historical confirmed findings; 60 fixed, 3 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -270,9 +270,10 @@
 - [0257 Next candidate promote feasibility](batches/0257-next-candidate-promote-feasibility.md)：候選lint／types／build／152tests／3e2e全PASS；promote需跨Rust／compiler／next交付，未執行。
 - [0258 Promote Next candidate](batches/0258-promote-next-candidate.md)：候選正式交付，BH-0063已修復；既有失敗與baseline一致。
 - [0259 Post-promote re-verification](batches/0259-post-promote-reverification.md)：交付後16情境實際host重驗全PASS；帳本歷史歸檔。
+- [0260 Next CSS pipeline closure](batches/0260-next-css-pipeline-closure.md)：BH-0051結案，14組實際host對照全PASS；BH-0053補Turbopack Sass控制。
 
 ## 目前交接點
 
-- 0259：交付後以實際host對主工作樹重驗Next結論，16情境×Chromium／WebKit：Webpack 8個PostCSS情境與Turbopack 7個Module情境全PASS，0237／0247的combined-root PostCSS與0226–0231的Module契約在產品上重現；BH-0051／0053／0054維持成立。Turbopack `encoded-composes` build失敗經pure對照證實為Turbopack自身拒絕百分號編碼composes路徑，與0227一致，不新增finding。四份帳本歷史敘述逐字歸檔至`*-history-0259.md`：findings 45.9→19.0K、coverage 45.5→36.7K、report 42.1→29.9K、changes 40.2→11.0K，全部回到40 KiB內，check:ai-context通過。63historical／59fixed／4unresolved不變。[證據](evidence/0259-final-checks.json)；[批次](batches/0259-post-promote-reverification.md)；[前次](progress-history-0259-reverification.md)。
+- 0260：BH-0051結案。交付版本以14組實際host對照補齊：webpack css／scss／sass的build與dev、三種語法＋LightningCSS build、turbopack css build，每組Chromium＋WebKit皆`failures:0`且`cssSupportDisabled:false`；配合0258的152tests／3e2e（`next-config`已改為斷言舊頂層rule缺席）與0259的15情境，BH-0051列明範圍完成。BH-0053補turbopack scss dev／build／partial／partial+recovery四組PASS，仍維持部分修正（delivery asset maps、native declaration granularity、完整Sass host邊界未完成）。repro新增`BH_NEXT_BROWSERS`以繞過本機Firefox環境失敗，預設行為不變。63historical／60fixed／3unresolved。[證據](evidence/0260-final-checks.json)；[批次](batches/0260-next-css-pipeline-closure.md)；[前次](progress-history-0260-next-css-closure.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。

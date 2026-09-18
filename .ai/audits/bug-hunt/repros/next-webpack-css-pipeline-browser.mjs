@@ -113,7 +113,7 @@ try {
     assert.ok(Date.now() < deadline, 'Next did not become ready');await delay(200)
   }
   if (recovery) assert.ok(restored, 'Missing partial failure must be observed before recovery')
-  for (const name of ['chromium', 'firefox', 'webkit']) {
+  for (const name of (process.env.BH_NEXT_BROWSERS || 'chromium,firefox,webkit').split(',')) {
     if (!production) write(3, 2)
     browser = await browsers[name].launch()
     const page = await browser.newPage(), errors = []

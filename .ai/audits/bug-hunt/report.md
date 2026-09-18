@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0259：交付後以實際host對主工作樹重驗Next結論，16情境×Chromium／WebKit：Webpack 8個PostCSS情境與Turbopack 7個Module情境全PASS，0237／0247的combined-root PostCSS與0226–0231的Module契約在產品上重現；BH-0051／0053／0054維持成立。Turbopack `encoded-composes` build失敗經pure對照證實為Turbopack自身拒絕百分號編碼composes路徑，與0227一致，不新增finding。四份帳本歷史敘述逐字歸檔至`*-history-0259.md`：findings 45.9→19.0K、coverage 45.5→36.7K、report 42.1→29.9K、changes 40.2→11.0K，全部回到40 KiB內，check:ai-context通過。63historical／59fixed／4unresolved不變。[證據](evidence/0259-final-checks.json)；[批次](batches/0259-post-promote-reverification.md)；[前次](progress-history-0259-reverification.md)。
+- 0260：BH-0051結案。交付版本以14組實際host對照補齊：webpack css／scss／sass的build與dev、三種語法＋LightningCSS build、turbopack css build，每組Chromium＋WebKit皆`failures:0`且`cssSupportDisabled:false`；配合0258的152tests／3e2e（`next-config`已改為斷言舊頂層rule缺席）與0259的15情境，BH-0051列明範圍完成。BH-0053補turbopack scss dev／build／partial／partial+recovery四組PASS，仍維持部分修正（delivery asset maps、native declaration granularity、完整Sass host邊界未完成）。repro新增`BH_NEXT_BROWSERS`以繞過本機Firefox環境失敗，預設行為不變。63historical／60fixed／3unresolved。[證據](evidence/0260-final-checks.json)；[批次](batches/0260-next-css-pipeline-closure.md)；[前次](progress-history-0260-next-css-closure.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -62,9 +62,9 @@
 
 修正方向：使用支援的 Rspack source API/時機，完成掃描再輸出；追加驗證目前暫停。 [重現與證據](batches/0038-integration-lab.md)。
 
-## BH-0051 · P1 · Next/Webpack native CSS compilation (partial)
+## BH-0051 · P1 · Next/Webpack native CSS compilation (fixed)
 
-The top-level CSS rule disabled Next CSS support. The adapter now composes existing loader chains; five configuration controls and three-browser CSS/Modules/manifest-query/HMR checks pass. The separate runtime URI failure is repaired as BH-0052; dev Sass/LightningCSS/import/resource controls pass. Working-tree expanded Sass preparation preserves semicolons and default CSS/SCSS/Sass production passes9browser checks. Uninstrumented LightningCSS production also passes9browser checks. Intermittent timeout/full host validation remain pending; this partial product repair is not committed. Two unchanged config tests assert the obsolete top-level rule. BH-0051 remains open. [Checkpoint](evidence/0183-next-css-final-checks.json).
+The top-level CSS rule disabled Next CSS support. The adapter composes the existing loader chains instead, and the repair shipped with the Next pipeline in 0258; `next-config.test.ts` now asserts the obsolete top-level rule is absent rather than requiring it. 0260 completed the outstanding host validation on the delivered tree: webpack css/scss/sass in build and dev, all three syntaxes with LightningCSS in build, and turbopack css in build — 14 runs, each Chromium and WebKit, every one `failures:0` with `cssSupportDisabled:false` and no intermittent timeout. With the 24 files/152 tests and 3 e2e from 0258 and the 15 actual-host scenarios from 0259, the listed scope is complete. [Controls](batches/0260-next-css-pipeline-closure.md).
 
 ## BH-0052 · P1 · Next/Webpack virtual URI resolution (fixed)
 
@@ -72,7 +72,7 @@ Three official virtual IDs bypassed resolve.alias and failed independently of CS
 
 ## BH-0053 · P1 · Next/Turbopack Sass classification (partial)
 
-Raw Sass prepares before classification; partial references, missing recovery and additionalData root/injected diagnostics now pass. Exact columns are retained only for unchanged mapped text; expanded interpolation uses an explicit segment anchor. Direct output maps and expanded lowering diagnostics now pass, including actual Turbopack dev and Webpack production maps. Delivery asset maps, native declaration granularity and full Sass option/host boundaries remain unfinished. [Checks](evidence/0183-output-maps-final-checks.json).
+Raw Sass prepares before classification; partial references, missing recovery and additionalData root/injected diagnostics pass. 0260 re-ran the Turbopack controls on the delivered tree — scss in dev and build, a `parts/_card.scss` partial, and partial plus recovery after observing the missing-file failure — all Chromium and WebKit PASS. Delivery asset maps, the 0243 persistent-cache counterexamples, native declaration granularity and the full Sass option/host boundaries remain unfinished. [Controls](batches/0260-next-css-pipeline-closure.md); [Checks](evidence/0183-output-maps-final-checks.json).
 
 ## BH-0054 · P1 · Turbopack CSS Module exports (fixed)
 
