@@ -10,6 +10,9 @@ inputs:
   frozen-lockfile:
     description: Whether to install with --frozen-lockfile.
     default: "true"
+  ignore-scripts:
+    description: Whether to install with --ignore-scripts.
+    default: "false"
   submodules:
     description: Whether to fetch repository submodules.
     default: "true"
@@ -47,7 +50,7 @@ runs:
         GITHUB_TOKEN: ${{ inputs.submodules-token }}
     - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
       shell: bash
-      run: pnpm install --frozen-lockfile --prefer-offline
+      run: pnpm install --frozen-lockfile --prefer-offline ${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}
     - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile != 'true' }}
       shell: bash
-      run: pnpm install --prefer-offline
+      run: pnpm install --prefer-offline ${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}

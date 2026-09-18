@@ -239,7 +239,15 @@ jobs:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: rust-quality
+          cache-on-failure: true
+          save-if: ${{ github.event_name != 'pull_request' }}
       - name: Validate Rust workspace
+        env:
+          CARGO_INCREMENTAL: "0"
+          CARGO_TERM_COLOR: always
         run: |
           cargo fmt --check
           cargo clippy --workspace --all-targets --all-features -- -D warnings
@@ -277,7 +285,14 @@ jobs:
           install: "false"
           submodules: "false"
           turbo-cache: "false"
+      - uses: Swatinem/rust-cache@v2
+        with:
+          shared-key: native-${{ matrix.package }}
+          cache-on-failure: true
+          save-if: ${{ github.event_name != 'pull_request' }}
       - name: Build and stage native artifacts
+        env:
+          CARGO_INCREMENTAL: "0"
         run: cargo xtask stage-native-target ${{ matrix.package }} --release
       - name: Pack, install, load addon, and execute CLI smoke
         run: node scripts/binding-package-smoke.mjs packages/${{ matrix.package }}

@@ -19,10 +19,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
+      # Only commitlint runs here, so skip husky and every package postinstall.
       - uses: ./.github/actions/setup-pnpm
         with:
           submodules: "false"
           turbo-cache: "false"
+          ignore-scripts: "true"
       - run: printf '%s\n' "$PR_TITLE" | pnpm exec commitlint
         env:
           PR_TITLE: ${{ github.event.pull_request.title }}
