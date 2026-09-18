@@ -1,0 +1,7 @@
+# 0265 Previous checkpoint archive
+
+以下0264交接與受影響列逐字保留。
+
+- 0264：交付BH-0004 qualified import修正`fc879fad4`：展開帶`layer()`／`supports()`／media的import時，先把被匯入stylesheet頂層的`@settings`／`@theme`／`@custom-variant`／`@defaults`／`@components`／`@utilities`切出（保留copied source spans）放在wrapper之外，其餘照舊包進wrapper；無qualifier的import不走此路徑。qualified矩陣60觀察由20失敗變**0失敗**（direct-native／direct-wasm各2P/10F→12P/0F），native與Wasm一致。新增3項Rust測試；cargo fmt／clippy／**364tests**／codegen／parity、28套件build、compiler 57files/428tests、next 24files/152tests、102/107 tasks PASS；vite 23／nuxt 3／webpack 2／wasm 2在serial下與baseline逐項相同，未新增失敗；`external-import-order`不受影響（7P/13F不變）。BH-0004仍為部分修正，剩external import展開與完整graph遷移。63historical／62fixed／1unresolved。[證據](evidence/0264-final-checks.json)；[批次](batches/0264-qualified-import-definitions.md)；[前次](progress-history-0264-qualified-definitions.md)。
+
+| BH-0004 | P1 | 已確認／部分修正 | CSS import 展開丟失檔案邊界，條件、cascade及managed定義失真 | source-preservation已於0258交付。0263定位根因：definition directive被native at-rule包住無法lowering，源自展開qualified import時的文字包裹。0264交付`fc879fad4`把被匯入stylesheet頂層的六個definition family切出wrapper（保留copied source spans），qualified矩陣60觀察由20失敗變0失敗（direct-native／direct-wasm各12/0），native與Wasm一致；364 Rust tests、compiler 428、next 152 PASS，既有失敗serial下與baseline相同。仍待：`external-import-order`外部import展開（7P/13F）與nested未解析import限制、完整public／host graph遷移。[0264](batches/0264-qualified-import-definitions.md)；[0263](batches/0263-bh-0004-contained-directives.md) |

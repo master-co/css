@@ -1,6 +1,6 @@
 # 覆蓋清單
 
-- 0264：交付BH-0004 qualified import修正`fc879fad4`：展開帶`layer()`／`supports()`／media的import時，先把被匯入stylesheet頂層的`@settings`／`@theme`／`@custom-variant`／`@defaults`／`@components`／`@utilities`切出（保留copied source spans）放在wrapper之外，其餘照舊包進wrapper；無qualifier的import不走此路徑。qualified矩陣60觀察由20失敗變**0失敗**（direct-native／direct-wasm各2P/10F→12P/0F），native與Wasm一致。新增3項Rust測試；cargo fmt／clippy／**364tests**／codegen／parity、28套件build、compiler 57files/428tests、next 24files/152tests、102/107 tasks PASS；vite 23／nuxt 3／webpack 2／wasm 2在serial下與baseline逐項相同，未新增失敗；`external-import-order`不受影響（7P/13F不變）。BH-0004仍為部分修正，剩external import展開與完整graph遷移。63historical／62fixed／1unresolved。[證據](evidence/0264-final-checks.json)；[批次](batches/0264-qualified-import-definitions.md)；[前次](progress-history-0264-qualified-definitions.md)。
+- 0265：把BH-0004剩下的`external-import-order`基準（7 PASS／13 FAIL，0264前後不變）逐案分類：**A** 6項為明確限制（被匯入stylesheet自身含未解析外部`@import`，CSS不允許`@import`在條件／layer區塊內，已有專屬錯誤與測試）；**B** 4項（same-layer、different-layers）可修——基準內`different-layers` FAIL而只多一行`@layer a,b;`的`predeclared-layers` PASS，證明展開時外部import被提前會翻轉layer首次出現順序，補一行依作者順序的`@layer`宣告即可，修後基準為11 PASS／9 FAIL；**C** 3項（external-last、conditional-local）外部與本地皆未分層，只能靠出現順序決勝，而`@import`必須在其他規則之前，屬展開的固有邊界。本批無產品變更。63historical／62fixed／1unresolved。[證據](evidence/0265-final-checks.json)；[批次](batches/0265-external-import-classification.md)；[前次](progress-history-0265-external-imports.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
