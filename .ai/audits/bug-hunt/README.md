@@ -269,9 +269,10 @@
 - [0256 Turbopack Module animation candidate](batches/0256-next-turbopack-module-animation.md)：BH-0063 owned候選修復雙bundler雙瀏覽器PASS；promote範圍為整套候選，未交付。
 - [0257 Next candidate promote feasibility](batches/0257-next-candidate-promote-feasibility.md)：候選lint／types／build／152tests／3e2e全PASS；promote需跨Rust／compiler／next交付，未執行。
 - [0258 Promote Next candidate](batches/0258-promote-next-candidate.md)：候選正式交付，BH-0063已修復；既有失敗與baseline一致。
+- [0259 Post-promote re-verification](batches/0259-post-promote-reverification.md)：交付後16情境實際host重驗全PASS；帳本歷史歸檔。
 
 ## 目前交接點
 
-- 0258：依授權promote 0232–0256整套候選到主工作樹，分3個產品commit（`9d1910e24` Rust `preserve_native_source`＋binding、`879b58d96` compiler公開API與rendered resource context、`5810c71ed` Next PostCSS／module graph管線），含先前待授權的`nextGraphDeliveryTests`四檔。候選分叉點`7edc87136`與主工作樹0251–0253 perf三方合併無衝突，另補套`native_source.rs`的`SourceIndex` hunks避免BH-0062二次成本回歸。驗證：cargo fmt／clippy／357tests／codegen／parity、compiler 57files/428tests、next 24files/152tests＋3e2e、28套件build全PASS；BH-0063在主工作樹實際host雙bundler雙瀏覽器PASS。vite 23／nuxt 3／webpack 2／wasm 2為serial對照下與baseline完全相同的既有失敗，promote未新增失敗。BH-0063改為已修復：63historical／59fixed／4unresolved。[證據](evidence/0258-final-checks.json)；[批次](batches/0258-promote-next-candidate.md)；[前次](progress-history-0258-promote.md)。
+- 0259：交付後以實際host對主工作樹重驗Next結論，16情境×Chromium／WebKit：Webpack 8個PostCSS情境與Turbopack 7個Module情境全PASS，0237／0247的combined-root PostCSS與0226–0231的Module契約在產品上重現；BH-0051／0053／0054維持成立。Turbopack `encoded-composes` build失敗經pure對照證實為Turbopack自身拒絕百分號編碼composes路徑，與0227一致，不新增finding。四份帳本歷史敘述逐字歸檔至`*-history-0259.md`：findings 45.9→19.0K、coverage 45.5→36.7K、report 42.1→29.9K、changes 40.2→11.0K，全部回到40 KiB內，check:ai-context通過。63historical／59fixed／4unresolved不變。[證據](evidence/0259-final-checks.json)；[批次](batches/0259-post-promote-reverification.md)；[前次](progress-history-0259-reverification.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。

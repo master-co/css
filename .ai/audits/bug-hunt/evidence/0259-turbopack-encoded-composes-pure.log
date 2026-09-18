@@ -1,0 +1,34 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 6ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 2 errors:
+./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/card.module.css
+Error: Module not found: Can't resolve './other%20module.module.css'
+
+
+Import trace:
+  Server Component:
+    ./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/card.module.css
+    ./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/page.jsx
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/card.module.css
+Error: An issue occurred while resolving a CSS module `composes:` rule
+Module relative './other%20module.module.css' referenced in `composes: ... from ...;` can't be resolved.
+
+
+Import trace:
+  Server Component:
+    ./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/card.module.css
+    ./packages/next/e2e/bug-hunt-module-edge-TYBq0G/app/page.jsx
+
+
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+{"scenario":"encoded-composes","bundler":"turbopack","pure":true,"build":{"code":1,"signal":null,"timedOut":false,"exported":false},"observations":[]}
