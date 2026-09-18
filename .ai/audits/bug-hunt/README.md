@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 63 historical confirmed findings; 60 fixed, 3 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 63 historical confirmed findings; 61 fixed, 2 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -271,9 +271,10 @@
 - [0258 Promote Next candidate](batches/0258-promote-next-candidate.md)：候選正式交付，BH-0063已修復；既有失敗與baseline一致。
 - [0259 Post-promote re-verification](batches/0259-post-promote-reverification.md)：交付後16情境實際host重驗全PASS；帳本歷史歸檔。
 - [0260 Next CSS pipeline closure](batches/0260-next-css-pipeline-closure.md)：BH-0051結案，14組實際host對照全PASS；BH-0053補Turbopack Sass控制。
+- [0261 Rspack static delivery](batches/0261-rspack-static-delivery.md)：BH-0029結案，Rspack／Webpack交付四格對照一致。
 
 ## 目前交接點
 
-- 0260：BH-0051結案。交付版本以14組實際host對照補齊：webpack css／scss／sass的build與dev、三種語法＋LightningCSS build、turbopack css build，每組Chromium＋WebKit皆`failures:0`且`cssSupportDisabled:false`；配合0258的152tests／3e2e（`next-config`已改為斷言舊頂層rule缺席）與0259的15情境，BH-0051列明範圍完成。BH-0053補turbopack scss dev／build／partial／partial+recovery四組PASS，仍維持部分修正（delivery asset maps、native declaration granularity、完整Sass host邊界未完成）。repro新增`BH_NEXT_BROWSERS`以繞過本機Firefox環境失敗，預設行為不變。63historical／60fixed／3unresolved。[證據](evidence/0260-final-checks.json)；[批次](batches/0260-next-css-pipeline-closure.md)；[前次](progress-history-0260-next-css-closure.md)。
+- 0261：BH-0029結案。在目前主工作樹重跑原repro：Rspack模組仍無source，但`finishModules`以完整module graph補齊，managed CSS實際經`main.css`→`@import`鏈交付（`.block{display:block}`在鏈上），原斷言只讀`main.css`（僅50 bytes的`@import`）故誤判。新增Webpack對照repro，四格（webpack／rspack×有無`@preserve native`）行為逐格相同：managed CSS一律交付，作者原生CSS只有`@preserve native`才保留，屬Master既有預設。repro改為沿鏈攤平並加上`@preserve native`後PASS。0038暫停的integration-lab追加覆蓋未重啟。63historical／61fixed／2unresolved。[證據](evidence/0261-final-checks.json)；[批次](batches/0261-rspack-static-delivery.md)；[前次](progress-history-0261-rspack-delivery.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。

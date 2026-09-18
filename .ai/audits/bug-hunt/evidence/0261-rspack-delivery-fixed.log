@@ -1,0 +1,94 @@
+
+✔ entry.js 1 classes inserted in 0.1ms 
+{
+  "records": [
+    {
+      "hook": "AsyncSeriesHook"
+    },
+    {
+      "resource": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/entry.js",
+      "resolvePath": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/entry.js",
+      "privateSource": "undefined",
+      "originalSource": "undefined"
+    },
+    {
+      "resource": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/app.css",
+      "resolvePath": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/app.css",
+      "privateSource": "undefined",
+      "originalSource": "undefined"
+    },
+    {
+      "resource": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/app.css",
+      "resolvePath": "/Users/aron/master/css/examples/integration-lab/tmp/bh-0029-aNM9Rq/app.css",
+      "privateSource": "undefined",
+      "originalSource": "undefined"
+    },
+    {
+      "stage": -1,
+      "css": [
+        [
+          "main.css",
+          "#master-css-entry-de634eb4e149bd1fee29{--slot:0}\n"
+        ]
+      ],
+      "classes": [
+        "block"
+      ]
+    },
+    {
+      "stage": 10000,
+      "css": [
+        [
+          "master-css-e45746f36e1fe85b0bd1-3.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-4.css\";@layer theme{:root{--font-family-sans:var(--font-sans,ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-mono:var(--font-mono,ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}}@layer utilities{.block{display:block}}"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-5.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-6.css\";"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-8.css",
+          ""
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-9.css",
+          ""
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-10.css",
+          ""
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-4.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-5.css\";.control{color:red}"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-7.css",
+          "@layer theme;@layer base{*{text-rendering:geometricprecision}body{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;line-height:1.2}a,button{touch-action:manipulation}[role=button],summary,button{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}[type=button]{-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}*,:before,:after{box-sizing:border-box}body{-moz-tab-size:2;tab-size:2}img,svg,video,canvas,audio,iframe,embed,object{max-width:100%;display:block}html,body{height:-moz-available}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}pre,code,kbd,samp{font-size:1em}::-moz-focus-inner{border-style:none;padding:0}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}[type=search]{-webkit-appearance:textfield;-moz-appearance:textfield;-ms-appearance:textfield;appearance:textfield;outline-offset:-2px}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}hr{height:0;color:inherit}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}body{font-family:var(--font-family-sans);font-feature-settings:var(--font-feature-sans,normal)}:host{font-family:var(--font-family-sans);font-feature-settings:var(--font-feature-sans,normal)}code,kbd,samp,pre{font-family:var(--font-family-mono);font-feature-settings:var(--font-feature-mono,normal)}a{color:inherit;text-decoration:none}button,input,optgroup,select,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;color:inherit;background-color:transparent;margin:0;padding:0;font-size:100%}*,:before,:after{border-style:solid;border-width:0}body,blockquote,dl,dd,hr,figure,p,pre,h1,h2,h3,h4,h5,h6{margin:0}td,legend,fieldset{padding:0}ul,ol{margin:0;padding:0}body{-webkit-tap-highlight-color:transparent}ul{list-style:none}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}[hidden]{display:none}}@layer defaults,components,utilities;"
+        ],
+        [
+          "main.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-0.css\";"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-6.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-7.css\";@import \"./master-css-e45746f36e1fe85b0bd1-8.css\";@import \"./master-css-e45746f36e1fe85b0bd1-9.css\";@import \"./master-css-e45746f36e1fe85b0bd1-10.css\";"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-1.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-3.css\";@import \"./master-css-e45746f36e1fe85b0bd1-2.css\";"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-0.css",
+          "@import \"./master-css-e45746f36e1fe85b0bd1-1.css\";"
+        ],
+        [
+          "master-css-e45746f36e1fe85b0bd1-2.css",
+          ""
+        ]
+      ]
+    }
+  ],
+  "emitted": "@import \"./master-css-e45746f36e1fe85b0bd1-0.css\";",
+  "deliveredBytes": 3369
+}

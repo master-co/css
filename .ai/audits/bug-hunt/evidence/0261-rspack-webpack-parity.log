@@ -1,0 +1,50 @@
+
+✔ entry.js 1 classes inserted in 0.2ms 
+
+✔ entry.js 1 classes inserted in 0.1ms 
+
+✔ entry.js 1 classes inserted in 0.1ms 
+
+✔ entry.js 1 classes inserted in 0.1ms 
+[
+  {
+    "kind": "webpack",
+    "preserve": false,
+    "errors": "",
+    "mainInlinesBlock": false,
+    "reachableHasBlock": true,
+    "reachableHasAuthored": false,
+    "mainBytes": 50,
+    "reachableBytes": 3786
+  },
+  {
+    "kind": "webpack",
+    "preserve": true,
+    "errors": "",
+    "mainInlinesBlock": false,
+    "reachableHasBlock": true,
+    "reachableHasAuthored": true,
+    "mainBytes": 50,
+    "reachableBytes": 3814
+  },
+  {
+    "kind": "rspack",
+    "preserve": false,
+    "errors": "",
+    "mainInlinesBlock": false,
+    "reachableHasBlock": true,
+    "reachableHasAuthored": false,
+    "mainBytes": 50,
+    "reachableBytes": 3350
+  },
+  {
+    "kind": "rspack",
+    "preserve": true,
+    "errors": "",
+    "mainInlinesBlock": false,
+    "reachableHasBlock": true,
+    "reachableHasAuthored": true,
+    "mainBytes": 50,
+    "reachableBytes": 3369
+  }
+]

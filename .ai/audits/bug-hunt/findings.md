@@ -1,6 +1,6 @@
 # 問題索引
 
-- 0260：BH-0051結案。交付版本以14組實際host對照補齊：webpack css／scss／sass的build與dev、三種語法＋LightningCSS build、turbopack css build，每組Chromium＋WebKit皆`failures:0`且`cssSupportDisabled:false`；配合0258的152tests／3e2e（`next-config`已改為斷言舊頂層rule缺席）與0259的15情境，BH-0051列明範圍完成。BH-0053補turbopack scss dev／build／partial／partial+recovery四組PASS，仍維持部分修正（delivery asset maps、native declaration granularity、完整Sass host邊界未完成）。repro新增`BH_NEXT_BROWSERS`以繞過本機Firefox環境失敗，預設行為不變。63historical／60fixed／3unresolved。[證據](evidence/0260-final-checks.json)；[批次](batches/0260-next-css-pipeline-closure.md)；[前次](progress-history-0260-next-css-closure.md)。
+- 0261：BH-0029結案。在目前主工作樹重跑原repro：Rspack模組仍無source，但`finishModules`以完整module graph補齊，managed CSS實際經`main.css`→`@import`鏈交付（`.block{display:block}`在鏈上），原斷言只讀`main.css`（僅50 bytes的`@import`）故誤判。新增Webpack對照repro，四格（webpack／rspack×有無`@preserve native`）行為逐格相同：managed CSS一律交付，作者原生CSS只有`@preserve native`才保留，屬Master既有預設。repro改為沿鏈攤平並加上`@preserve native`後PASS。0038暫停的integration-lab追加覆蓋未重啟。63historical／61fixed／2unresolved。[證據](evidence/0261-final-checks.json)；[批次](batches/0261-rspack-static-delivery.md)；[前次](progress-history-0261-rspack-delivery.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -38,7 +38,7 @@
 | BH-0026 | P2 | 已修復 | CLI generate --binding wasm 被忽略，仍建立 native scanner | cli；[0048](batches/0048-cli-binding-selection.md) |
 | BH-0027 | P3 | 已修復 | Webpack example 多餘 index.js 請求404；main/runtime正常 | example；[0049](batches/0049-webpack-example-asset.md) |
 | BH-0028 | P2 | 已修復 | ESLint 現代範例 CSS 使用不支援的 $variable，規則載入失敗 | EX-eslint；[0037](batches/0037-eslint-examples.md) |
-| BH-0029 | P1 | 已確認 | Rspack succeedModule 無 source，static 模式漏掉所有 managed CSS | Webpack/Rspack/Rsbuild；[0038](batches/0038-integration-lab.md)；追加驗證暫停 |
+| BH-0029 | P1 | 已修復 | Rspack succeedModule 無 source，static 模式漏掉所有 managed CSS | 0261在主工作樹重測：Rspack模組仍無source，但`usage-graph`的`finishModules`以完整module graph補齊，managed CSS經`main.css`的`@import`鏈交付（`.block{display:block}`在`master-css-…-3.css`），鏈上檔案都寫入`dist/`。原斷言只讀`main.css`未跟隨鏈。Webpack對照四格（±`@preserve native`）行為逐格相同；作者原生CSS需`@preserve native`屬既有預設。0038暫停的integration-lab追加host覆蓋未重啟。[0261](batches/0261-rspack-static-delivery.md)；[原始0038](batches/0038-integration-lab.md) |
 | BH-0030 | P2 | 已修復 | Webpack 固定 output.filename 與自動 runtime entry 衝突，playground 無法 build | webpack/playground；[0042](batches/0042-nested-hosts.md), [0106修復](batches/0106-webpack-fixed-filename.md) |
 | BH-0031 | P2 | 已修復 | MCP 並行套用預覽重複接受 token，重疊檔案更新略過 stale-hash 保護 | mcp；[0053](batches/0053-mcp-preview-concurrency.md), [0082](batches/0082-mcp-multiprocess.md), [0101修復](batches/0101-mcp-preview-concurrency-fix.md) |
 | BH-0032 | P2 | 已修復 | Browser lifecycle/delivery benchmark 未複製 Wasm sidecar，runtime 頁面無法啟動 | benchmarks；[0055](batches/0055-browser-lifecycle-metrics.md), [0075](batches/0075-master-delivery-modes.md), [0076](batches/0076-progressive-diagnostics.md), [0077](batches/0077-interaction-cost.md), [0079](batches/0079-runtime-mutation-diagnostics.md), [0080](batches/0080-style-invalidation-diagnostics.md); [0169 fixed/verified](batches/0169-benchmark-wasm-delivery.md) |
