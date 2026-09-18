@@ -75,6 +75,76 @@ pub(crate) fn imported_css_wrappers(
     Ok((prefix, suffix))
 }
 
+/// Named cascade layers in authored first-appearance order, or `None` when the
+/// stylesheet declares an order itself.
+fn authored_layer_order(
+    source: &str,
+    imports: &[crate::stylesheet_graph::CssStylesheetImport],
+) -> Option<Vec<String>> {
+    let (without_blocks, blocks) =
+        mastercss_lexer::extract_top_level_at_rule_blocks(source, &["layer"]);
+    if has_layer_statement(&without_blocks) {
+        return None;
+    }
+    let mut ordered = blocks
+        .iter()
+        .filter_map(|block| Some((block.start, layer_block_name(&block.source)?)))
+        .chain(
+            imports
+                .iter()
+                .filter_map(|import| Some((import.start, import_layer_name(&import.statement)?))),
+        )
+        .collect::<Vec<_>>();
+    ordered.sort_by_key(|(start, _)| *start);
+    let mut names: Vec<String> = Vec::new();
+    for (_, name) in ordered {
+        if !names.contains(&name) {
+            names.push(name);
+        }
+    }
+    Some(names)
+}
+
+/// True when a top-level `@layer` ends as a statement rather than a block. Block
+/// forms are already blanked out of `source` by the caller.
+fn has_layer_statement(source: &str) -> bool {
+    let bytes = source.as_bytes();
+    let mut index = 0;
+    while let Some(offset) = source[index..].to_ascii_lowercase().find("@layer") {
+        let start = index + offset;
+        let mut cursor = start + "@layer".len();
+        while cursor < bytes.len() && bytes[cursor] != b'{' && bytes[cursor] != b';' {
+            cursor += 1;
+        }
+        if cursor < bytes.len() && bytes[cursor] == b';' {
+            return true;
+        }
+        index = cursor.max(start + 1);
+    }
+    false
+}
+
+/// Name of a `@layer name {` block; anonymous layers cannot be pinned.
+fn layer_block_name(block: &str) -> Option<String> {
+    let name = block.strip_prefix('@')?.get("layer".len()..)?;
+    let name = name.split('{').next()?.trim();
+    (!name.is_empty() && !name.contains(',')).then(|| name.to_owned())
+}
+
+/// Name an `@import` assigns its stylesheet; anonymous layers cannot be pinned.
+fn import_layer_name(statement: &str) -> Option<String> {
+    let stylesheet = StyleSheet::parse(statement, ParserOptions::default()).ok()?;
+    let CssRule::Import(import) = stylesheet.rules.0.first()? else {
+        return None;
+    };
+    import
+        .layer
+        .as_ref()?
+        .as_ref()?
+        .to_css_string(PrinterOptions::default())
+        .ok()
+}
+
 /// Definition directives an imported stylesheet may declare at its top level.
 const IMPORTED_DEFINITION_DIRECTIVES: [&str; 6] = [
     "settings",
@@ -394,6 +464,19 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
     if !suffix.text.is_empty() {
         output.push_unmapped("\n");
         output.push(suffix);
+    }
+    // Hoisting an unresolved import also hoists the first appearance of the
+    // layer it names, and first appearance is what orders layers. Lead with the
+    // authored order so the hoist cannot reorder the cascade. Only a stylesheet
+    // that names more than one layer can be reordered, and one that declares an
+    // order already wins, so both are left untouched.
+    if let Some(layers) = authored_layer_order(source_without_references, &imports)
+        && layers.len() > 1
+    {
+        let mut pinned = MappedSource::default();
+        pinned.push_unmapped(&format!("@layer {};\n", layers.join(", ")));
+        pinned.push(output);
+        output = pinned;
     }
     Ok(output)
 }

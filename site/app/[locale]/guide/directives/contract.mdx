@@ -265,6 +265,21 @@ Managed definition directives create generated classes in the matching cascade l
 
 `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. Importing a stylesheet with a qualifier follows the same rule: the import's `layer()`, `supports()`, or media query wraps the imported rules, while the imported stylesheet's definitions are kept beside that wrapper rather than inside it, so they stay global.
 
+An import Master cannot resolve, such as one addressing a remote stylesheet, stays an `@import` and moves to the top of the expanded stylesheet, because CSS requires every `@import` to precede the other rules. Moving it also moves the first appearance of any layer it names, and first appearance is what orders layers, so expansion leads with the authored order:
+
+```css
+/* authored */
+@import "./local.css" layer(a);
+@import "https://cdn.example/remote.css" layer(b);
+
+/* expanded */
+@layer a, b;
+@import "https://cdn.example/remote.css" layer(b);
+@layer a { /* ./local.css */ }
+```
+
+The statement is added only when the stylesheet names more than one layer and does not already declare an order itself; anything else is emitted unchanged. Two orderings cannot be preserved this way: content sharing one layer with a hoisted import, and unlayered content, both of which are decided by source order alone.
+
 ### `@defaults` \{#defaults\}
 Defines managed classes in the `defaults` layer.
 

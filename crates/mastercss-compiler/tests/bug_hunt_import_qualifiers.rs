@@ -205,3 +205,122 @@ fn bh_0004_unqualified_import_leaves_definitions_where_they_were() {
         "@utilities{paint{padding:2rem}}\n.card{padding:3rem}\n.after{margin:1px}"
     );
 }
+
+/// An unresolved import is hoisted to the top, which also hoists the first
+/// appearance of the layer it names. Pin the authored order so the hoist cannot
+/// reorder the cascade, and leave stylesheets it cannot reorder untouched.
+struct ExternalAfterLocal(&'static str);
+impl CssImportProvider for ExternalAfterLocal {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        match id {
+            "entry" => Ok(self.0.into()),
+            "child" => Ok(".example{color:red}".into()),
+            _ => Err("missing".into()),
+        }
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok((specifier == "./local.css").then(|| "child".into()))
+    }
+}
+
+#[test]
+fn bh_0004_hoisted_external_import_pins_the_authored_layer_order() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        result.source.starts_with("@layer a, b;\n"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_a_single_named_layer_cannot_be_reordered_so_output_is_unchanged() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@import './local.css' layer(shared);@import 'https://example.test/style.css' layer(shared);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        !result.source.contains("@layer shared;"),
+        "{}",
+        result.source
+    );
+    assert!(result.source.starts_with("@import "), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_unlayered_imports_get_no_layer_statement() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal("@import './local.css';@import 'https://example.test/style.css';"),
+    )
+    .unwrap();
+    assert!(!result.source.contains("@layer"), "{}", result.source);
+}
+
+#[test]
+fn bh_0004_an_authored_layer_order_is_never_restated() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@layer a,b;@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert_eq!(
+        result.source.matches("@layer a").count(),
+        2,
+        "{}",
+        result.source
+    );
+    assert!(
+        result.source.starts_with("@layer a,b;"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_layer_blocks_take_part_in_the_authored_order() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &ExternalAfterLocal(
+            "@layer base{.base{display:block}}@import './local.css' layer(a);@import 'https://example.test/style.css' layer(b);",
+        ),
+    )
+    .unwrap();
+    assert!(
+        result.source.starts_with("@layer base, a, b;\n"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_a_fully_resolved_graph_keeps_its_bytes() {
+    struct AllLocal;
+    impl CssImportProvider for AllLocal {
+        type Error = String;
+        fn load(&self, id: &str) -> Result<String, String> {
+            match id {
+                "entry" => Ok("@import './local.css' layer(a);@layer b{.b{display:block}}".into()),
+                "child" => Ok(".example{color:red}".into()),
+                _ => Err("missing".into()),
+            }
+        }
+        fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+            Ok((specifier == "./local.css").then(|| "child".into()))
+        }
+    }
+    let result = resolve_css_import_graph("entry", &AllLocal).unwrap();
+    assert!(!result.source.contains("@layer a, b;"), "{}", result.source);
+}
