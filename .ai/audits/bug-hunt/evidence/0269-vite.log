@@ -1,0 +1,495 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/vite
+
+ ❯ tests/plugins/bug-hunt-build-failure-lifecycle.test.ts (12 tests | 2 failed) 30280ms
+   × watch filters allow reference recovery with authored-file include 5177ms
+   × watch filters allow reference recovery with cache-directory exclude 5166ms
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts (24 tests | 20 failed) 3603ms
+   × failed config-sync releases unstarted recovery material (static) 124ms
+   × failed config-async releases unstarted recovery material (static) 110ms
+   × failed factory releases unstarted recovery material (static) 109ms
+   × failed environment-init releases unstarted recovery material (static) 106ms
+   × failed config-sync releases unstarted recovery material (runtime) 109ms
+   × failed config-async releases unstarted recovery material (runtime) 112ms
+   × failed factory releases unstarted recovery material (runtime) 111ms
+   × failed environment-init releases unstarted recovery material (runtime) 109ms
+   × failed config-sync releases unstarted recovery material (pre-render) 105ms
+   × failed config-async releases unstarted recovery material (pre-render) 112ms
+   × failed factory releases unstarted recovery material (pre-render) 121ms
+   × failed environment-init releases unstarted recovery material (pre-render) 107ms
+   × failed config-sync releases unstarted recovery material (progressive) 106ms
+   × failed config-async releases unstarted recovery material (progressive) 105ms
+   × failed factory releases unstarted recovery material (progressive) 105ms
+   × failed environment-init releases unstarted recovery material (progressive) 104ms
+   × configuration releases unstarted environments when a peer factory fails (shared=true) 106ms
+   × configuration releases unstarted environments when a peer init fails (shared=true) 106ms
+   × configuration releases unstarted environments when a peer factory fails (shared=false) 317ms
+   × configuration releases unstarted environments when a peer init fails (shared=false) 311ms
+ ❯ tests/plugins/bug-hunt-build-recovery-ownership.test.ts (3 tests | 1 failed) 410ms
+   × a configuration error does not allocate build recovery files 115ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 23 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-xq1q7w/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-8xjyUT/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-qlPC2f/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (static)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-Gw7ZgZ/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-1EGwO9/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-GRv3Fl/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-uLc2BO/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (runtime)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-A549uE/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-16NQc2/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-6OsAsW/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-azPizR/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (pre-render)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-wVoFov/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-sync releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-fZjNlQ/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed config-async releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-R6bmer/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed factory releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-OUG6Fp/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > failed environment-init releases unstarted recovery material (progressive)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-JvjCeS/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:28:33
+     26|           }
+     27|         })).rejects.toThrow(error.message)
+     28|         expect(files(cacheDir)).toEqual([])
+       |                                 ^
+     29|       } finally { rmSync(root, { recursive: true, force: true }) }
+     30|     })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > configuration releases unstarted environments when a peer factory fails (shared=true)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-Sb3U4a/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:81:31
+     79|         build: { watch: {}, createEnvironment }
+     80|       })).rejects.toThrow(error.message)
+     81|       expect(files(cacheDir)).toEqual([])
+       |                               ^
+     82|     } finally { rmSync(root, { recursive: true, force: true }) }
+     83|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > configuration releases unstarted environments when a peer init fails (shared=true)
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-vyqTzO/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:81:31
+     79|         build: { watch: {}, createEnvironment }
+     80|       })).rejects.toThrow(error.message)
+     81|       expect(files(cacheDir)).toEqual([])
+       |                               ^
+     82|     } finally { rmSync(root, { recursive: true, force: true }) }
+     83|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > configuration releases unstarted environments when a peer factory fails (shared=false)
+AssertionError: expected [ …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-CDBDUb/invalidate",
++   "master-css-watch-LWvJzH/invalidate",
++   "master-css-watch-eo29DG/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:81:31
+     79|         build: { watch: {}, createEnvironment }
+     80|       })).rejects.toThrow(error.message)
+     81|       expect(files(cacheDir)).toEqual([])
+       |                               ^
+     82|     } finally { rmSync(root, { recursive: true, force: true }) }
+     83|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-config-recovery.test.ts > configuration releases unstarted environments when a peer init fails (shared=false)
+AssertionError: expected [ …(3) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-1YNLwm/invalidate",
++   "master-css-watch-aHCTwu/invalidate",
++   "master-css-watch-gDb2Yl/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-config-recovery.test.ts:81:31
+     79|         build: { watch: {}, createEnvironment }
+     80|       })).rejects.toThrow(error.message)
+     81|       expect(files(cacheDir)).toEqual([])
+       |                               ^
+     82|     } finally { rmSync(root, { recursive: true, force: true }) }
+     83|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with authored-file include
+ FAIL  tests/plugins/bug-hunt-build-failure-lifecycle.test.ts > watch filters allow reference recovery with cache-directory exclude
+AssertionError: expected 0 to be greater than 0
+ ❯ vi.waitFor.timeout tests/plugins/bug-hunt-build-failure-lifecycle.test.ts:34:65
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/23]⎯
+
+ FAIL  tests/plugins/bug-hunt-build-recovery-ownership.test.ts > a configuration error does not allocate build recovery files
+AssertionError: expected [ Array(1) ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   "master-css-watch-tm6CDM/invalidate",
++ ]
+
+ ❯ tests/plugins/bug-hunt-build-recovery-ownership.test.ts:24:31
+     22|       plugins: [masterCSS({ mode: 'static', runtime: false }), { name:…
+     23|     })).rejects.toThrow('intentional config error')
+     24|     expect(files(f.cacheDir)).toEqual([])
+       |                               ^
+     25|   } finally { f.close() }
+     26| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/23]⎯
+
+
+ Test Files  3 failed | 68 passed (71)
+      Tests  23 failed | 644 passed (667)
+   Start at  22:12:22
+   Duration  536.50s (tests 98%, import 2%)
+

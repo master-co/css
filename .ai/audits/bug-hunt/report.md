@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0268：訂正三項失準。（一）`external-import-order.mjs`原本任一瀏覽器`launch()`失敗就整輪中止，本機Firefox自0227起失敗，因此0263–0267每次都只跑完Chromium 20筆、**WebKit從未執行**；我在0267寫的「2瀏覽器」是錯的，該數字是單一瀏覽器子集，與歷史三瀏覽器60觀察的21P/39F不可直接比較。repro改為讀`BH_IMPORT_ORDER_BROWSERS`且單一瀏覽器失敗只記錄不中止，重跑得**18 PASS／22 FAIL（Chromium＋WebKit 40觀察）**，兩引擎逐案完全一致。（二）`remaining`前兩筆自0189起被逐字複製93份，其中「qualified still20FAIL/4PASS」在0264即已不成立，已改寫為當前事實。（三）逐一追查`resolve_css_import_graph`的呼叫者後確認：**實際輸出CSS的路徑全部已在graph上**（`inlineImports`是逐檔編譯後才內聯且保留mappings，不是舊攤平），舊攤平只剩entry分類（Next一律攤平、Webpack條件性）、兩個零呼叫者API與preset build script；BH-0004收尾比「完整public／host graph遷移」這句話窄得多。63historical／62fixed／1unresolved。[證據](evidence/0268-final-checks.json)；[批次](batches/0268-external-baseline-correction.md)；[前次](progress-history-0268-baseline-correction.md)。
+- 0269：依授權執行BH-0004計畫的步驟1、2、3、5。**步驟1**（`690671b99`）把`packages/next`與`packages/webpack`的分類一律改為`preserveImports: true`，改走保留邊界的import graph：攤平分類無法把`@import`放進qualifier區塊，帶qualifier匯入自身含外部`@import`的child時**分類階段就拋錯**，而兩個host接著都用delivery路徑編譯、本來就吃得下；另一差異是child宣告local directives時攤平報`plain`、圖報`local`，後者正是既有測試`bug-hunt-imported-local-classification`斷言的答案。切換後Next 5個Sass診斷測試失敗，追出圖分類自身既有缺陷：檢查本地指令時未傳檔名，診斷被歸到預設`master.css`，已修（`efa311688`，Vite同受影響）。**步驟2**（`a2f5b2465`）移除零呼叫者的`compileCSSFile`與`prepareRenderedSource`；兩道root gate在改動前即已失敗且未提及這兩個名字。**步驟3**依計畫保留`resolveCSSImportGraph`為低階API。**步驟5**更新directives contract。compiler 58files/438tests、next 25files/155tests＋3e2e、webpack 12/88、28套件build、102/107 tasks PASS；vite 23／nuxt 3／wasm 2在serial下與baseline逐項相同。新測到`bug-hunt-active-graph.test.ts`為watch時序flake（非本批造成）。63historical／62fixed／1unresolved。[證據](evidence/0269-final-checks.json)；[批次](batches/0269-graph-classification.md)；[前次](progress-history-0269-graph-classification.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -30,7 +30,7 @@
 
 ## BH-0004 · P1 · 展開 CSS import 丟失條件與 layer（部分修正）
 
-`preserveNativeSource`已於0258交付。0264修好qualified面：展開帶`layer()`／`supports()`／media的import時，被匯入stylesheet頂層的六個definition family留在wrapper之外，qualified flatten+compile矩陣的60個觀察全數通過。0267修好external面可修的部分：無法解析的import會被提前到stylesheet最前（CSS要求`@import`先於其他規則），連帶提前它所具名layer的首次出現而翻轉layer順序；展開後改以作者順序的`@layer`宣告領頭，僅在具名layer多於一個且作者未自行宣告時輸出，`external-import-order`基準由7 PASS／13 FAIL變為9 PASS／11 FAIL。剩餘11項不是可修缺陷：6項是被匯入stylesheet自身帶未解析外部`@import`的明確限制（CSS不允許`@import`在條件／layer區塊內），5項（`same-layer`、`external-last`、`conditional-local`）決勝於layer內或未分層的出現順序，實測補`@layer`宣告無效。完整public／host graph遷移仍未完成。[layer順序](batches/0267-authored-layer-order.md)；[qualified](batches/0264-qualified-import-definitions.md)；[分類](batches/0266-approved-patches.md)。
+0258交付`preserveNativeSource`；0264把被匯入stylesheet的definitions留在qualifier wrapper之外，qualified flatten+compile矩陣60觀察全數通過；0267以作者順序的`@layer`宣告領頭，使提前的外部import不再翻轉cascade。0268釐清剩餘範圍：實際輸出CSS的路徑早已全部在保留邊界的圖上，舊的單字串展開只殘留在entry分類與兩個無人呼叫的API。0269據此收尾——`packages/next`與`packages/webpack`的分類改走import graph，修掉兩項缺陷（帶qualifier匯入自身含外部`@import`的child時分類階段直接拋錯；被匯入檔案宣告的local directives使root被誤判為`plain`而不被transform），並移除`compileCSSFile`與`prepareRenderedSource`。同時修掉圖分類自身未傳檔名、使指令診斷歸到預設`master.css`的既有缺陷。剩餘11項external失敗不是可修缺陷：6項是被匯入stylesheet自身帶未解析外部`@import`的明確限制，5項決勝於layer內或未分層的出現順序。完整host／watch矩陣的逐項重跑仍未完成。[分類遷移](batches/0269-graph-classification.md)；[範圍釐清](batches/0268-external-baseline-correction.md)。
 
 ## BH-0006 · P1 · SSR CSS 未安全嵌入 HTML
 

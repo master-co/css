@@ -280,6 +280,8 @@ An import Master cannot resolve, such as one addressing a remote stylesheet, sta
 
 The statement is added only when the stylesheet names more than one layer and does not already declare an order itself; anything else is emitted unchanged. Two orderings cannot be preserved this way: content sharing one layer with a hoisted import, and unlayered content, both of which are decided by source order alone.
 
+A stylesheet's kind and its compiled output are both decided on the import graph, with every file kept apart. Importing a stylesheet that carries its own remote `@import` under a `layer()`, `supports()` or media qualifier is therefore supported: the qualifier applies to the imported rules and the remote import stays in the file that wrote it. Only an expansion that has to collapse the graph into one file rejects that shape, because CSS does not allow `@import` inside a block.
+
 ### `@defaults` \{#defaults\}
 Defines managed classes in the `defaults` layer.
 
