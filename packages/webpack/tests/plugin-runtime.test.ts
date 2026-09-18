@@ -45,6 +45,8 @@ function makeFakeCompiler(options: {
   const assets = options.assets || {}
   const compilation = {
     fileDependencies: new Set<string>(),
+    missingDependencies: new Set<string>(),
+    errors: [] as Error[],
     entrypoints: new Map(options.entryFiles ? [[
       'master-css-runtime',
       {
@@ -486,7 +488,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         return this
       })
       ;(plugin as any).reset = reset
-      const { compiler } = makeFakeCompiler({
+      const { compiler, compilation } = makeFakeCompiler({
         context: root,
         modifiedFiles: new Set([tokenPath])
       })
@@ -497,11 +499,16 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         compiler.hooks.watchRun.callAsync(compiler, (error) => error ? reject(error) : resolve())
       })
 
-      await expect(runWatch()).rejects.toBe(replayError)
+      await expect(runWatch()).resolves.toBeUndefined()
+      compiler.hooks.thisCompilation.call(compilation as any)
+      expect(compilation.errors).toEqual([replayError])
       expect(errorLog).toHaveBeenCalledWith('[master-css.webpack] reset replay failed:', replayError)
       expect(stylesheets.compose).toHaveBeenCalledTimes(1)
 
+      compilation.errors.length = 0
       await expect(runWatch()).resolves.toBeUndefined()
+      compiler.hooks.thisCompilation.call(compilation as any)
+      expect(compilation.errors).toEqual([])
       expect(stylesheets.compose).toHaveBeenCalledTimes(2)
       expect(reset).toHaveBeenCalledTimes(2)
     } finally {
@@ -510,7 +517,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('registers reset dependencies with the active compilation', () => {
+  test('registers reset dependencies with the active compilation', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-deps-'))
     const configPath = path.join(root, 'app.css')
     const tokenPath = path.join(root, 'theme.css')
@@ -526,8 +533,9 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       plugin.apply(compiler as any)
       compiler.hooks.thisCompilation.call(compilation as any)
 
-      expect(compilation.fileDependencies).toContain(configPath)
-      expect(compilation.fileDependencies).toContain(tokenPath)
+      await compilation.hooks.finishModules.promise([])
+      expect(compilation.missingDependencies).toContain(configPath)
+      expect(compilation.missingDependencies).toContain(tokenPath)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
