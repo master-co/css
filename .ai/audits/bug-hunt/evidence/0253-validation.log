@@ -1,0 +1,59 @@
+### root rust
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 14.39s
+clippy exit=0
+fmt exit=0
+root tests passed 144 failed 0
+     Running `target/debug/xtask codegen --check`
+codegen exit=0
+    Finished `release` profile [optimized] target(s) in 43.68s
+### root shapes (0253)
+rules with url() resources n=200 rendered                        median 10.9 ms
+rules with url() resources n=400 rendered                        median 10.2 ms
+rules with url() resources n=800 rendered                        median 15.1 ms
+rules with @compose directives n=200 rendered                    median 19.7 ms
+rules with @compose directives n=400 rendered                    median 39.1 ms
+rules with @compose directives n=800 rendered                    median 77.7 ms
+@components definitions n=200 rendered                           median 5.2 ms
+@components definitions n=400 rendered                           median 10.5 ms
+@components definitions n=800 rendered                           median 27.4 ms
+@components with @compose n=200 rendered                         median 8.3 ms
+@components with @compose n=400 rendered                         median 16.2 ms
+@components with @compose n=800 rendered                         median 35.4 ms
+@utilities definitions n=200 rendered                            median 4.7 ms
+@utilities definitions n=400 rendered                            median 9.5 ms
+@utilities definitions n=800 rendered                            median 21.7 ms
+@theme variables n=200 rendered                                  median 4.3 ms
+@theme variables n=400 rendered                                  median 7.9 ms
+@theme variables n=800 rendered                                  median 16.1 ms
+### candidate
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.92s
+cand clippy exit=0
+candidate passed 131 failed 0
+    Finished `release` profile [optimized] target(s) in 43.62s
+### compiler 0244 suite (0242+0253)
+ Test Files  57 passed (57)
+      Tests  428 passed (428)
+compiler exit=0
+### next 0247 suite (0242+0253)
+ Test Files  23 passed (23)
+      Tests  151 passed (151)
+next exit=0
+### candidate shapes (0253)
+rules with url() resources n=200 rendered                        median 4.7 ms
+rules with url() resources n=400 rendered                        median 7.5 ms
+rules with url() resources n=800 rendered                        median 14.6 ms
+rules with @compose directives n=200 rendered                    median 19.4 ms
+rules with @compose directives n=400 rendered                    median 39.0 ms
+rules with @compose directives n=800 rendered                    median 77.5 ms
+@components definitions n=200 rendered                           median 5.7 ms
+@components definitions n=400 rendered                           median 10.5 ms
+@components definitions n=800 rendered                           median 23.8 ms
+@components with @compose n=200 rendered                         median 7.6 ms
+@components with @compose n=400 rendered                         median 15.8 ms
+@components with @compose n=800 rendered                         median 34.9 ms
+@utilities definitions n=200 rendered                            median 4.6 ms
+@utilities definitions n=400 rendered                            median 9.5 ms
+@utilities definitions n=800 rendered                            median 22.1 ms
+@theme variables n=200 rendered                                  median 4.2 ms
+@theme variables n=400 rendered                                  median 8.0 ms
+@theme variables n=800 rendered                                  median 15.7 ms

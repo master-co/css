@@ -7,6 +7,8 @@ use super::{
     CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
     MANIFEST_VERSION, Map, MasterCssManifest, Value,
 };
+use std::collections::HashMap;
+use std::collections::hash_map::Entry;
 
 pub(super) fn merge_array_by(
     base: Option<&Value>,
@@ -14,16 +16,24 @@ pub(super) fn merge_array_by(
     key: impl Fn(&Value) -> Option<String>,
 ) -> Option<Value> {
     let mut merged = base.and_then(Value::as_array).cloned().unwrap_or_default();
+    // Index keys once: the first entry with a key owns its slot, as the linear
+    // search did, and later definitions replace it in place.
+    let mut slots = HashMap::new();
+    for (index, existing) in merged.iter().enumerate() {
+        if let Some(existing_key) = key(existing) {
+            slots.entry(existing_key).or_insert(index);
+        }
+    }
     for value in next.and_then(Value::as_array).into_iter().flatten() {
-        let value_key = key(value);
-        if let Some(index) = value_key.as_ref().and_then(|value_key| {
-            merged
-                .iter()
-                .position(|existing| key(existing).as_ref() == Some(value_key))
-        }) {
-            merged[index] = value.clone();
-        } else {
-            merged.push(value.clone());
+        match key(value) {
+            Some(value_key) => match slots.entry(value_key) {
+                Entry::Occupied(slot) => merged[*slot.get()] = value.clone(),
+                Entry::Vacant(slot) => {
+                    slot.insert(merged.len());
+                    merged.push(value.clone());
+                }
+            },
+            None => merged.push(value.clone()),
         }
     }
     (!merged.is_empty()).then_some(Value::Array(merged))

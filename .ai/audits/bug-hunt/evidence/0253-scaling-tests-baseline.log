@@ -1,0 +1,13 @@
+HEAD is now at c98845ab1 Perf(Compiler): Share source indexes across native and managed lowering
+test resource_references_scale_linearly_with_rule_count ... ok
+test native_mapping_anchors_scale_linearly_with_rule_count ... ok
+test native_compose_lowering_scales_linearly_with_rule_count ... ok
+thread 'theme_variable_merges_scale_linearly_with_definition_count' (3484943) panicked at crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs:129:9:
+theme multiline=false: 500 rules 127.874ms, 4000 rules 6.016845584s, ratio 47.1
+test theme_variable_merges_scale_linearly_with_definition_count ... FAILED
+thread 'component_merges_scale_linearly_with_definition_count' (3484939) panicked at crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs:129:9:
+components multiline=false: 500 rules 178.562333ms, 4000 rules 7.908817084s, ratio 44.3
+test component_merges_scale_linearly_with_definition_count ... FAILED
+test result: FAILED. 3 passed; 2 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.13s
+baseline test exit=101
+/Users/aron/master/css c98845ab1 [rust]

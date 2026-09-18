@@ -2,6 +2,7 @@ use super::{
     BUILTIN_NAMESPACES, CompilerError, CssDirectiveManifestInput, Map, NUMERIC_THEME_NAMESPACES,
     Number, Value, json,
 };
+use std::collections::HashMap;
 
 pub(super) fn manifest_error(message: impl Into<String>) -> CompilerError {
     CompilerError::Directive {
@@ -284,15 +285,42 @@ pub(super) fn variable_slot(variable: &Map<String, Value>) -> String {
         })
 }
 
-pub(super) fn push_variable(target: &mut Vec<Map<String, Value>>, variable: Map<String, Value>) {
-    let slot = variable_slot(&variable);
-    if let Some(existing) = target
-        .iter_mut()
-        .find(|existing| variable_slot(existing) == slot)
-    {
-        existing.extend(variable);
-    } else {
-        target.push(variable);
+/// Compiled variables with their slot positions, so repeated definitions merge
+/// without rescanning every earlier variable.
+#[derive(Default)]
+pub(super) struct VariableTable {
+    variables: Vec<Map<String, Value>>,
+    slots: HashMap<String, usize>,
+}
+
+impl VariableTable {
+    pub(super) fn position(&self, slot: &str) -> Option<usize> {
+        self.slots.get(slot).copied()
+    }
+
+    pub(super) fn get_mut(&mut self, index: usize) -> &mut Map<String, Value> {
+        &mut self.variables[index]
+    }
+
+    /// Appends a variable under its slot and returns its position.
+    pub(super) fn insert(&mut self, variable: Map<String, Value>) -> usize {
+        let index = self.variables.len();
+        self.slots.insert(variable_slot(&variable), index);
+        self.variables.push(variable);
+        index
+    }
+
+    pub(super) fn push(&mut self, variable: Map<String, Value>) {
+        match self.position(&variable_slot(&variable)) {
+            Some(index) => self.variables[index].extend(variable),
+            None => {
+                self.insert(variable);
+            }
+        }
+    }
+
+    pub(super) fn into_variables(self) -> Vec<Map<String, Value>> {
+        self.variables
     }
 }
 
@@ -301,7 +329,7 @@ pub(super) fn compile_variables(
     base: Option<&Value>,
 ) -> Result<Vec<Map<String, Value>>, CompilerError> {
     let namespaces = collect_namespaces(input, base);
-    let mut variables = Vec::<Map<String, Value>>::new();
+    let mut variables = VariableTable::default();
     for definition in input.variables.as_deref().unwrap_or_default() {
         let (name, key, namespace) = resolved_variable_name(
             definition.name.as_deref(),
@@ -320,12 +348,8 @@ pub(super) fn compile_variables(
             "string"
         };
         if let Some(mode) = &definition.mode {
-            let index = variables
-                .iter()
-                .position(|variable| variable.get("name").and_then(Value::as_str) == Some(&name));
-            let target = if let Some(index) = index {
-                &mut variables[index]
-            } else {
+            // Every compiled variable carries its name, so the name is its slot.
+            let index = variables.position(&name).unwrap_or_else(|| {
                 let mut variable = Map::new();
                 variable.insert("name".into(), Value::String(name.clone()));
                 variable.insert("key".into(), Value::String(key.clone()));
@@ -337,9 +361,9 @@ pub(super) fn compile_variables(
                 if definition.r#static == Some(true) {
                     variable.insert("static".into(), Value::Bool(true));
                 }
-                variables.push(variable);
-                variables.last_mut().expect("variable was inserted")
-            };
+                variables.insert(variable)
+            });
+            let target = variables.get_mut(index);
             if definition.r#static == Some(true) {
                 target.insert("static".into(), Value::Bool(true));
             }
@@ -401,9 +425,9 @@ pub(super) fn compile_variables(
         if definition.r#static == Some(true) {
             variable.insert("static".into(), Value::Bool(true));
         }
-        push_variable(&mut variables, variable);
+        variables.push(variable);
     }
-    Ok(variables)
+    Ok(variables.into_variables())
 }
 
 pub(super) fn group_variables(variables: Vec<Map<String, Value>>) -> Option<Value> {

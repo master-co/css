@@ -1,0 +1,9 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.28s
+clippy exit=0
+test theme_variable_merges_scale_linearly_with_definition_count ... ok
+test resource_references_scale_linearly_with_rule_count ... ok
+test native_mapping_anchors_scale_linearly_with_rule_count ... ok
+test native_compose_lowering_scales_linearly_with_rule_count ... ok
+test component_merges_scale_linearly_with_definition_count ... ok
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.04s
+test exit=0
