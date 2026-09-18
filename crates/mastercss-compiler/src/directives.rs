@@ -184,6 +184,19 @@ fn compile_css_directives_impl(
             format!("@{} must be top-level", name.as_str()),
         ));
     }
+    // Lightning CSS only reports `is_nested` for style-rule nesting, so a
+    // directive inside a container at-rule parses as a custom rule the printer
+    // cannot emit. Import flattening produces that shape when it wraps a child
+    // in its qualifier, so report the same top-level requirement instead of a
+    // printer error.
+    if let Some((start_byte, name)) = contained_directive(&stylesheet.rules.0, false) {
+        return Err(directive_error(
+            source,
+            &options.from,
+            start_byte,
+            format!("@{} must be top-level", name.as_str()),
+        ));
+    }
 
     let mut native_class_collector = NativeClassNameCollector::default();
     stylesheet
@@ -393,6 +406,37 @@ pub(crate) fn native_style_slot<'a>(
         block: None,
         loc,
     })
+}
+
+/// First Master directive that sits inside a container at-rule, if any.
+fn contained_directive(
+    rules: &[CssRule<'_, ThemeAtRule>],
+    contained: bool,
+) -> Option<(usize, DirectiveName)> {
+    for rule in rules {
+        if let CssRule::Custom(directive) = rule {
+            if contained {
+                return Some((directive.start_byte, directive.name));
+            }
+            continue;
+        }
+        let nested = match rule {
+            CssRule::Media(rule) => &rule.rules.0,
+            CssRule::Supports(rule) => &rule.rules.0,
+            CssRule::LayerBlock(rule) => &rule.rules.0,
+            CssRule::Container(rule) => &rule.rules.0,
+            CssRule::Scope(rule) => &rule.rules.0,
+            CssRule::MozDocument(rule) => &rule.rules.0,
+            CssRule::StartingStyle(rule) => &rule.rules.0,
+            CssRule::Style(rule) => &rule.rules.0,
+            CssRule::Nesting(rule) => &rule.style.rules.0,
+            _ => continue,
+        };
+        if let Some(found) = contained_directive(nested, true) {
+            return Some(found);
+        }
+    }
+    None
 }
 
 fn print_native_css(

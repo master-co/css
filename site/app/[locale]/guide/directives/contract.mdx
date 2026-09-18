@@ -263,6 +263,8 @@ For token authoring, see [Theme Tokens](/guide/theme). For mode behavior, see [V
 ## Managed definitions \{#managed-definitions\}
 Managed definition directives create generated classes in the matching cascade layer. The first level inside each block is a bare class name, not a selector.
 
+`@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. This also applies to a stylesheet that is imported with a qualifier: the import's `layer()`, `supports()`, or media query wraps the imported rules, and the imported stylesheet's definitions stay top-level definitions.
+
 ### `@defaults` \{#defaults\}
 Defines managed classes in the `defaults` layer.
 
