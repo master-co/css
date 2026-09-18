@@ -1,0 +1,3 @@
+$ node scripts/check-ai-context.mjs
+AI context budget passed for 3245 files (4 generated excluded, 1 bounded exception).
+exit=0

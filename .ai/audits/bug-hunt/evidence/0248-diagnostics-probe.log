@@ -1,0 +1,10 @@
+unknown compose | compileStylesheet | THROWS Invalid @compose class: totally-unknown-utility
+unknown compose | compileRenderedStylesheet | THROWS Invalid @compose class: totally-unknown-utility
+invalid theme value | compileStylesheet | diagnostics= []
+invalid theme value | compileRenderedStylesheet | diagnostics= []
+unknown directive | compileStylesheet | diagnostics= []
+unknown directive | compileRenderedStylesheet | diagnostics= []
+bad import | compileStylesheet | diagnostics= []
+bad import | compileRenderedStylesheet | THROWS CSS file not found: /audit/missing.css
+late unknown var | compileStylesheet | diagnostics= []
+late unknown var | compileRenderedStylesheet | diagnostics= []

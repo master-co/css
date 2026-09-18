@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0247：owned Next副本自動接線PostCSS resource policy；processedGlobals視為處理歷史，刪改global不復活；151tests／23聚焦、3e2e、lint／types／build及真實Next Webpack子圖資源雙瀏覽器PASS。sibling歷史、diagnostics轉發、watch依賴與完整host仍未完成。[證據](evidence/0247-final-checks.json)；[批次](batches/0247-postcss-resource-policy.md)；[前次](progress-history-0247-postcss-resource-policy.md)。
+- 0248：owned 0247副本在實際`next dev --webpack`驗證late資源：SVG位元組、theme值更新與回復在Master／pure×Chromium／WebKit共16步驟PASS、HMR無整頁reload；compiler對5種stylesheet問題僅拋錯或無diagnostics，不新增轉發。無產品變更；sibling歷史、Turbopack、刪除恢復待續。[證據](evidence/0248-final-checks.json)；[批次](batches/0248-postcss-resource-dev-watch.md)；[前次](progress-history-0248-postcss-resource-dev-watch.md)。
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 

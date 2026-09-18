@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0247：owned Next副本自動接線PostCSS resource policy；processedGlobals視為處理歷史，刪改global不復活；151tests／23聚焦、3e2e、lint／types／build及真實Next Webpack子圖資源雙瀏覽器PASS。sibling歷史、diagnostics轉發、watch依賴與完整host仍未完成。[證據](evidence/0247-final-checks.json)；[批次](batches/0247-postcss-resource-policy.md)；[前次](progress-history-0247-postcss-resource-policy.md)。
+- 0248：owned 0247副本在實際`next dev --webpack`驗證late資源：SVG位元組、theme值更新與回復在Master／pure×Chromium／WebKit共16步驟PASS、HMR無整頁reload；compiler對5種stylesheet問題僅拋錯或無diagnostics，不新增轉發。無產品變更；sibling歷史、Turbopack、刪除恢復待續。[證據](evidence/0248-final-checks.json)；[批次](batches/0248-postcss-resource-dev-watch.md)；[前次](progress-history-0248-postcss-resource-dev-watch.md)。
 
 
 - 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
@@ -99,7 +99,7 @@
 | BH-0050 | P2 | 已修復 | Manifest／emittedGlobals分別HMR時復原另一個舊輸入，樣式倒退或重複全域變數 | 分別保留最新接受值；修前4unit/12browserFAIL，修復6新控制/168VitebrowserPASS；[0183](batches/0183-reference-host-recovery.md) / [證據](evidence/0183-runtime-inputs-finding.json) |
 | BH-0051 | P1 | 已確認 | Next --webpack 頂層CSS rule移除原生CSS loaders，CSS被當JS解析 | 管線部分修正；default及LightningCSS production各9browser通過；偶發timeout及完整host邊界仍待驗；[checkpoint](evidence/0183-sass-preparation-final-checks.json) |
 | BH-0052 | P1 | 已修復 | Next/Webpack 三個 virtual URI 繞過 alias，無法編譯 runtime | 精確beforeResolve對映；9控制、實際compiler與3瀏覽器runtime HMR通過；[證據](evidence/0183-next-virtual-findings.json) |
-| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | 0247 owned副本自動接線resource policy：刪改歷史四種操作與pure一致，真實Webpack child／entry資源雙瀏覽器PASS；sibling歷史、diagnostics轉發、watch依賴、Turbopack與0243 maps／cache反例保持未完成。[0247](batches/0247-postcss-resource-policy.md)；[此前](progress-history-0247-postcss-resource-policy.md) |
+| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | 0248 late資源在Webpack dev的位元組／theme值watch與HMR雙瀏覽器PASS，diagnostics無可轉發warning；0247 policy刪改歷史與真實Webpack build PASS。sibling歷史、Turbopack、刪除恢復與0243 maps／cache反例保持未完成。[0248](batches/0248-postcss-resource-dev-watch.md)；[此前](progress-history-0248-postcss-resource-dev-watch.md) |
 | BH-0054 | P1 | 已修正 | Next/Turbopack 強制一般 CSS，CSS Module class 匯出為空 | css-module型別及*.module.css後綴均須保留；工作區與隔離版本dev/build三瀏覽器通過；[證據](evidence/0183-next-raw-turbo-module-discovery.json) |
 | BH-0055 | P1 | 已修復 | Next 入口及collection展開時丟失reference，引用自訂class無法編譯 | 原始reference metadata保留；dev/HMR、Turbopack/Webpack production通過；[證據](evidence/0183-next-source-offset-findings.json) |
 | BH-0056 | P1 | 已修復 | compileRenderedStylesheet 遺漏lowered compose規則 | renderer改用完整編譯CSS；單元、建置及三瀏覽器通過；[證據](evidence/0183-next-source-offset-findings.json) |

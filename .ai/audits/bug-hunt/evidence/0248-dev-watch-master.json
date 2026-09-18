@@ -1,0 +1,120 @@
+{
+  "scenario": "postcss-late-resource-dev-watch",
+  "bundler": "webpack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "steps": [
+    {
+      "browser": "chromium",
+      "step": "initial",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.svg?rev=1#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "asset": {
+        "status": 200,
+        "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"2\"><rect id=\"shape\" width=\"2\" height=\"2\" fill=\"red\"/></svg>"
+      },
+      "queryPreserved": true,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "svg-bytes-updated",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/9c10e4e3a999ea05f710e4b0f9ead90ce856d789d6db7b5f0572a4f29f2f7fe2.svg?rev=1#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "asset": {
+        "status": 200,
+        "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"2\"><rect id=\"shape\" width=\"2\" height=\"2\" fill=\"blue\"/></svg>"
+      },
+      "urlChanged": true,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "theme-value-updated",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/9c10e4e3a999ea05f710e4b0f9ead90ce856d789d6db7b5f0572a4f29f2f7fe2.svg?rev=1#shape\")",
+        "outline": "rgb(34, 34, 34)",
+        "marker": "preserved"
+      },
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "theme-value-round-trip",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/9c10e4e3a999ea05f710e4b0f9ead90ce856d789d6db7b5f0572a4f29f2f7fe2.svg?rev=1#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "serverLog": "▲ Next.js 16.3.4 (webpack)\n- Local:         http://127.0.0.1:50021\n- Network:       http://127.0.0.1:50021\n✓ Ready in 180ms\n✓ Running next.config.mjs took 98ms\n- Experiments (use with caution):\n  · cpus: 1\n\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n○ Compiling / ...\n GET / 200 in 4.4s (next.js: 4.4s, application-code: 69ms)\n GET / 200 in 12ms (next.js: 1.1ms, application-code: 11ms)\n GET / 200 in 46ms (next.js: 36ms, application-code: 10ms)\n GET / 200 in 46ms (next.js: 38ms, application-code: 7ms)\n GET / 200 in 54ms (next.js: 48ms, application-code: 6ms)\n\u001b[?25h\n",
+  "svgResponses": [
+    {
+      "url": "http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.svg?rev=1",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:50021/_next/static/css/master/7cfbc5679bdf5580855ff552c46bca3057ba7f9198843ee41d335c137427b232/maps/9c10e4e3a999ea05f710e4b0f9ead90ce856d789d6db7b5f0572a4f29f2f7fe2.svg?rev=1",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": "                               .direct{color:#123456;border-top:7px solid red}"
+    }
+  ]
+}

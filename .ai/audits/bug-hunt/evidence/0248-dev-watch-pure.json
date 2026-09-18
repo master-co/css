@@ -1,0 +1,125 @@
+{
+  "scenario": "postcss-late-resource-dev-watch",
+  "bundler": "webpack",
+  "pure": true,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "steps": [
+    {
+      "browser": "chromium",
+      "step": "initial",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:49994/_next/static/media/new.3acdb51e.svg#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "asset": {
+        "status": 200,
+        "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"2\"><rect id=\"shape\" width=\"2\" height=\"2\" fill=\"red\"/></svg>"
+      },
+      "queryPreserved": false,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "svg-bytes-updated",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:49994/_next/static/media/new.16909a27.svg#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "asset": {
+        "status": 200,
+        "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"2\" height=\"2\"><rect id=\"shape\" width=\"2\" height=\"2\" fill=\"blue\"/></svg>"
+      },
+      "urlChanged": true,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "theme-value-updated",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:49994/_next/static/media/new.16909a27.svg#shape\")",
+        "outline": "rgb(34, 34, 34)",
+        "marker": "preserved"
+      },
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "step": "theme-value-round-trip",
+      "observation": {
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "background": "url(\"http://127.0.0.1:49994/_next/static/media/new.16909a27.svg#shape\")",
+        "outline": "rgb(17, 17, 17)",
+        "marker": "preserved"
+      },
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "serverLog": "▲ Next.js 16.3.4 (webpack)\n- Local:         http://127.0.0.1:49994\n- Network:       http://127.0.0.1:49994\n✓ Ready in 184ms\n✓ Running next.config.mjs took 8ms\n- Experiments (use with caution):\n  · cpus: 1\n\n GET / 200 in 1566ms (next.js: 1497ms, application-code: 69ms)\n GET / 200 in 11ms (next.js: 1.0ms, application-code: 10ms)\n GET / 200 in 9ms (next.js: 1.6ms, application-code: 7ms)\n GET / 200 in 49ms (next.js: 38ms, application-code: 11ms)\n GET / 200 in 29ms (next.js: 22ms, application-code: 6ms)\n\u001b[?25h\n",
+  "svgResponses": [
+    {
+      "url": "http://127.0.0.1:49994/_next/static/media/new.3acdb51e.svg",
+      "status": 200
+    },
+    {
+      "url": "http://127.0.0.1:49994/_next/static/media/new.16909a27.svg",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/globals.css",
+      "late": true,
+      "css": ":root{--image-audit:url(\"./new.svg?rev=1#shape\");--color-audit:#111111}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/globals.css",
+      "late": true,
+      "css": ":root{--image-audit:url(\"./new.svg?rev=1#shape\");--color-audit:#222222}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/globals.css",
+      "late": true,
+      "css": ":root{--image-audit:url(\"./new.svg?rev=1#shape\");--color-audit:#111111}"
+    },
+    {
+      "file": "app/card.module.css",
+      "late": false,
+      "css": ".direct{color:#123456;border-top:7px solid red}"
+    }
+  ]
+}
