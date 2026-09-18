@@ -6,6 +6,7 @@ use super::{
     minified_css, next_char_end, preserve_compatible_literal_spelling, printed_selectors,
     selector_source_reference, source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
 };
+use crate::source_index::SourceIndex;
 
 #[derive(Debug, Clone)]
 pub(crate) struct NativeStyleContext {
@@ -14,7 +15,7 @@ pub(crate) struct NativeStyleContext {
 }
 
 pub(crate) fn native_rule_list_has_directives(
-    source: &str,
+    source: &SourceIndex<'_>,
     rules: &[CssRule<'_, ThemeAtRule>],
     variant_rule_offsets: &HashMap<usize, String>,
 ) -> bool {
@@ -24,7 +25,8 @@ pub(crate) fn native_rule_list_has_directives(
             native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
         }
         CssRule::Media(rule) => {
-            byte_offset_for_location(source, rule.loc.line, rule.loc.column)
+            source
+                .byte_offset_for_location(rule.loc.line, rule.loc.column)
                 .is_some_and(|offset| variant_rule_offsets.contains_key(&offset))
                 || native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
         }

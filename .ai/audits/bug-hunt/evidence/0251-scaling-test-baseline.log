@@ -1,0 +1,14 @@
+Updating files:  98% (10836/11048)Updating files:  99% (10938/11048)Updating files: 100% (11048/11048)Updating files: 100% (11048/11048), done.
+HEAD is now at 7edc87136 Chore(Agent): Record bug-hunt batch 0250
+?? crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs
+test native_mapping_anchors_scale_linearly_with_rule_count has been running for over 60 seconds
+thread 'native_mapping_anchors_scale_linearly_with_rule_count' (3404594) panicked at crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs:38:9:
+multiline=false: 500 rules 1.335865458s, 4000 rules 84.63579075s, ratio 63.4
+test native_mapping_anchors_scale_linearly_with_rule_count ... FAILED
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 86.02s
+error: test failed, to rerun pass `-p mastercss-compiler --test bug_hunt_rule_count_scaling`
+
+real	1m38.637s
+user	1m34.297s
+sys	0m2.400s
+baseline test exit=101

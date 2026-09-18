@@ -1,7 +1,7 @@
+use crate::source_index::SourceIndex;
 use crate::{
     CssDirectiveSourceReference, CssOutputMapping, CssRule, ParserOptions, SourceLocationRange,
-    SourceRange, StyleSheet, ThemeAtRule, ThemeAtRuleParser, byte_offset_for_location,
-    byte_to_utf16_offset,
+    SourceRange, StyleSheet, ThemeAtRule, ThemeAtRuleParser,
 };
 use lightningcss::rules::Location;
 
@@ -44,23 +44,25 @@ fn location(rule: &CssRule<'_, ThemeAtRule>) -> Option<(&'static str, Location)>
 }
 
 struct Mapper<'a> {
-    source: &'a str,
-    parsed_source: &'a str,
-    output: &'a str,
+    source: SourceIndex<'a>,
+    parsed_source: SourceIndex<'a>,
+    output: SourceIndex<'a>,
     filename: &'a str,
     mappings: Vec<CssOutputMapping>,
 }
 
 impl Mapper<'_> {
     fn anchor(&self, original: Location, generated: Location) -> Option<CssOutputMapping> {
-        let original_byte =
-            byte_offset_for_location(self.parsed_source, original.line, original.column)?;
-        let generated_byte =
-            byte_offset_for_location(self.output, generated.line, generated.column)?;
-        let original_offset = byte_to_utf16_offset(self.source, original_byte)?;
-        let loc = crate::variant::source_location(self.source, original_byte)?;
+        let original_byte = self
+            .parsed_source
+            .byte_offset_for_location(original.line, original.column)?;
+        let generated_byte = self
+            .output
+            .byte_offset_for_location(generated.line, generated.column)?;
+        let original_offset = self.source.utf16_offset(original_byte)?;
+        let loc = self.source.location(original_byte)?;
         Some(CssOutputMapping {
-            generated_start: byte_to_utf16_offset(self.output, generated_byte)?,
+            generated_start: self.output.utf16_offset(generated_byte)?,
             generated_end: None,
             source: CssDirectiveSourceReference {
                 file: Some(self.filename.into()),
@@ -145,9 +147,9 @@ pub(crate) fn native_output_mappings(
         return Vec::new();
     };
     let mut mapper = Mapper {
-        source,
-        parsed_source,
-        output,
+        source: SourceIndex::new(source),
+        parsed_source: SourceIndex::new(parsed_source),
+        output: SourceIndex::new(output),
         filename,
         mappings: Vec::new(),
     };
@@ -173,6 +175,7 @@ pub(crate) fn refine_native_declaration_sources(
     }) {
         return;
     }
+    let source_index = SourceIndex::new(source);
     let tokens = tokenize_css_syntax(source);
     let mut ranges = collect_css_syntax_statements(&tokens)
         .into_iter()
@@ -180,7 +183,7 @@ pub(crate) fn refine_native_declaration_sources(
         .filter_map(|statement| {
             let start = tokens[statement.tokens.start].bytes.start;
             let end = tokens[statement.tokens.end - 1].bytes.end;
-            Some((byte_to_utf16_offset(source, start)?, start, end))
+            Some((source_index.utf16_offset(start)?, start, end))
         })
         .collect::<Vec<_>>();
     ranges.sort_by_key(|range| range.0);
@@ -196,13 +199,11 @@ pub(crate) fn refine_native_declaration_sources(
         let Some((_, start, end)) = index.checked_sub(1).and_then(|index| ranges.get(index)) else {
             continue;
         };
-        if byte_to_utf16_offset(source, *end).is_some_and(|end| end >= reference.range.start)
-            && let Some(mapped) = crate::source_reference_from_bytes(
-                source,
-                reference.file.as_deref().unwrap_or_default(),
-                *start,
-                *end,
-            )
+        if source_index
+            .utf16_offset(*end)
+            .is_some_and(|end| end >= reference.range.start)
+            && let Some(mapped) =
+                source_index.reference(reference.file.as_deref().unwrap_or_default(), *start, *end)
         {
             *reference = mapped;
         }

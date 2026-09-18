@@ -1,0 +1,21 @@
+HEAD is now at 7edc87136 Chore(Agent): Record bug-hunt batch 0250
+   Compiling thiserror v2.0.20
+   Compiling thiserror-impl v2.0.20
+    Finished `release` profile [optimized] target(s) in 1m 04s
+/Users/aron/master/css 7edc87136 [rust]
+### compiler 0244 suite (root HEAD baseline binding)
+   × native source preservation is explicit and rejects class pruning 263ms
+   × native graph preparation preserves native input and rejects per-file pruning 1ms
+   × Node stylesheet preparation preserves raw text and exact UTF-16 selector origins 9ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/bug-hunt-preserved-source.test.ts > native source preservation is explicit and rejects class pruning
+ FAIL  tests/bug-hunt-preserved-source.test.ts > native graph preparation preserves native input and rejects per-file pruning
+ FAIL  tests/bug-hunt-preserved-source.test.ts > Node stylesheet preparation preserves raw text and exact UTF-16 selector origins
+ Test Files  1 failed | 56 passed (57)
+      Tests  3 failed | 425 passed (428)
+compiler exit=1
+### shape (root HEAD baseline binding)
+plain rules, no theme, no var n=200 rendered                 median 8.7 ms
+plain rules, no theme, no var n=400 rendered                 median 25.1 ms
+plain rules, no theme, no var n=400 compileStylesheet        median 11.8 ms
+plain rules, no theme, no var n=800 rendered                 median 87.5 ms

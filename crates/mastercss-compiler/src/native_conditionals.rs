@@ -1,10 +1,11 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashMap,
-    HashSet, NativeStyleContext, ThemeAtRule, byte_offset_for_location, condition_properties,
-    lower_native_rule_list, lower_native_style_rule, minified_css, native_rule_list_has_directives,
-    printed_selectors, selector_source_reference,
+    HashSet, NativeStyleContext, ThemeAtRule, condition_properties, lower_native_rule_list,
+    lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
+    selector_source_reference,
 };
 use crate::directives::{NativeStyleSlot, native_style_slot};
+use crate::source_index::SourceIndex;
 
 /// Traverses stylesheet-level containers without treating unrelated native children
 /// (for example font faces and keyframes) as managed declarations.
@@ -12,6 +13,8 @@ pub(crate) struct NativeConditionalLowerer<'a> {
     pub source: &'a str,
     pub filename: &'a str,
     pub rewritten: &'a str,
+    /// Index of `rewritten`, shared across every top-level rule of one compilation.
+    pub rewritten_index: &'a SourceIndex<'a>,
     pub variants: &'a HashMap<usize, String>,
     pub definitions: &'a mut Vec<CssDirectiveStyleDefinition>,
     pub order: &'a mut u32,
@@ -26,7 +29,7 @@ impl NativeConditionalLowerer<'_> {
         path: &[CssDirectiveConditionPathEntry],
     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
         if !native_rule_list_has_directives(
-            self.rewritten,
+            self.rewritten_index,
             std::slice::from_ref(&rule),
             self.variants,
         ) {
@@ -63,9 +66,10 @@ impl NativeConditionalLowerer<'_> {
             return Ok(self.slot(start, loc, path.len()));
         }
         if let CssRule::Media(media) = &rule
-            && let Some(token) =
-                byte_offset_for_location(self.rewritten, media.loc.line, media.loc.column)
-                    .and_then(|offset| self.variants.get(&offset))
+            && let Some(token) = self
+                .rewritten_index
+                .byte_offset_for_location(media.loc.line, media.loc.column)
+                .and_then(|offset| self.variants.get(&offset))
         {
             let start = self.definitions.len();
             let loc = media.loc;

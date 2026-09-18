@@ -634,6 +634,7 @@ mod output_edits;
 pub use graph_inline::{CompileCssStylesheetGraphInput, compile_css_stylesheet_graph_input};
 mod output_mappings;
 mod pattern;
+mod source_index;
 mod source_spans;
 mod stylesheet_bundle;
 mod stylesheet_bundle_api;

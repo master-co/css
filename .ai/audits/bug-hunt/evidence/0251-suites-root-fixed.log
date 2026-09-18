@@ -1,0 +1,21 @@
+### codegen check
+   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 5.22s
+     Running `target/debug/xtask codegen --check`
+codegen exit=0
+### compiler 0244 suite
+ ❯ tests/bug-hunt-preserved-source.test.ts (6 tests | 3 failed) 2568ms
+   × native source preservation is explicit and rejects class pruning 7ms
+   × native graph preparation preserves native input and rejects per-file pruning 1ms
+   × Node stylesheet preparation preserves raw text and exact UTF-16 selector origins 3ms
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+ FAIL  tests/bug-hunt-preserved-source.test.ts > native source preservation is explicit and rejects class pruning
+ FAIL  tests/bug-hunt-preserved-source.test.ts > native graph preparation preserves native input and rejects per-file pruning
+ FAIL  tests/bug-hunt-preserved-source.test.ts > Node stylesheet preparation preserves raw text and exact UTF-16 selector origins
+ Test Files  1 failed | 56 passed (57)
+      Tests  3 failed | 425 passed (428)
+compiler exit=1
+### next 0247 suite
+ Test Files  23 passed (23)
+      Tests  151 passed (151)
+next exit=0

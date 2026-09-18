@@ -1,0 +1,543 @@
+diff --git a/crates/mastercss-compiler/src/directives.rs b/crates/mastercss-compiler/src/directives.rs
+index fac2777..4abe9cf 100644
+--- a/crates/mastercss-compiler/src/directives.rs
++++ b/crates/mastercss-compiler/src/directives.rs
+@@ -1,8 +1,8 @@
+ use super::{
+     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
+     CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap,
+-    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet, ThemeAtRule,
+-    ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
++    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
++    ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
+     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
+     lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
+     normalize_stylesheet_value, rewrite_managed_variant_directives, validate_compose_syntax,
+@@ -195,8 +195,9 @@ fn compile_css_directives_impl(
+     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
+     let mut consumed = Vec::new();
+     let mut occupied_names = HashSet::new();
++    let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
+     if super::native_rule_list_has_directives(
+-        &rewritten_source,
++        &rewritten_index,
+         &stylesheet.rules.0,
+         &stylesheet_variant_rule_offsets,
+     ) {
+@@ -242,6 +243,7 @@ fn compile_css_directives_impl(
+                     source,
+                     filename: &options.from,
+                     rewritten: &rewritten_source,
++                    rewritten_index: &rewritten_index,
+                     variants: &stylesheet_variant_rule_offsets,
+                     definitions: &mut style_definitions,
+                     order: &mut style_order,
+diff --git a/crates/mastercss-compiler/src/lib.rs b/crates/mastercss-compiler/src/lib.rs
+index 5ec2386..480f676 100644
+--- a/crates/mastercss-compiler/src/lib.rs
++++ b/crates/mastercss-compiler/src/lib.rs
+@@ -639,6 +639,7 @@ mod output_edits;
+ pub use graph_inline::{CompileCssStylesheetGraphInput, compile_css_stylesheet_graph_input};
+ mod output_mappings;
+ mod pattern;
++mod source_index;
+ mod source_spans;
+ mod stylesheet_bundle;
+ mod stylesheet_bundle_api;
+diff --git a/crates/mastercss-compiler/src/native_conditionals.rs b/crates/mastercss-compiler/src/native_conditionals.rs
+index 23d25d9..b46091a 100644
+--- a/crates/mastercss-compiler/src/native_conditionals.rs
++++ b/crates/mastercss-compiler/src/native_conditionals.rs
+@@ -1,10 +1,11 @@
+ use super::{
+     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveStyleDefinition, CssRule, HashMap,
+-    HashSet, NativeStyleContext, ThemeAtRule, byte_offset_for_location, condition_properties,
+-    lower_native_rule_list, lower_native_style_rule, minified_css, native_rule_list_has_directives,
+-    printed_selectors, selector_source_reference,
++    HashSet, NativeStyleContext, ThemeAtRule, condition_properties, lower_native_rule_list,
++    lower_native_style_rule, minified_css, native_rule_list_has_directives, printed_selectors,
++    selector_source_reference,
+ };
+ use crate::directives::{NativeStyleSlot, native_style_slot};
++use crate::source_index::SourceIndex;
+ 
+ /// Traverses stylesheet-level containers without treating unrelated native children
+ /// (for example font faces and keyframes) as managed declarations.
+@@ -12,6 +13,8 @@ pub(crate) struct NativeConditionalLowerer<'a> {
+     pub source: &'a str,
+     pub filename: &'a str,
+     pub rewritten: &'a str,
++    /// Index of `rewritten`, shared across every top-level rule of one compilation.
++    pub rewritten_index: &'a SourceIndex<'a>,
+     pub variants: &'a HashMap<usize, String>,
+     pub definitions: &'a mut Vec<CssDirectiveStyleDefinition>,
+     pub order: &'a mut u32,
+@@ -26,7 +29,7 @@ impl NativeConditionalLowerer<'_> {
+         path: &[CssDirectiveConditionPathEntry],
+     ) -> Result<Option<CssRule<'i, ThemeAtRule>>, CompilerError> {
+         if !native_rule_list_has_directives(
+-            self.rewritten,
++            self.rewritten_index,
+             std::slice::from_ref(&rule),
+             self.variants,
+         ) {
+@@ -63,9 +66,10 @@ impl NativeConditionalLowerer<'_> {
+             return Ok(self.slot(start, loc, path.len()));
+         }
+         if let CssRule::Media(media) = &rule
+-            && let Some(token) =
+-                byte_offset_for_location(self.rewritten, media.loc.line, media.loc.column)
+-                    .and_then(|offset| self.variants.get(&offset))
++            && let Some(token) = self
++                .rewritten_index
++                .byte_offset_for_location(media.loc.line, media.loc.column)
++                .and_then(|offset| self.variants.get(&offset))
+         {
+             let start = self.definitions.len();
+             let loc = media.loc;
+diff --git a/crates/mastercss-compiler/src/native_source.rs b/crates/mastercss-compiler/src/native_source.rs
+index 8837dbe..11c9e4d 100644
+--- a/crates/mastercss-compiler/src/native_source.rs
++++ b/crates/mastercss-compiler/src/native_source.rs
+@@ -1,7 +1,5 @@
+-use crate::{
+-    CompilerError, CssOutputMapping, byte_offset_for_location, byte_to_utf16_offset,
+-    directives::NativeStyleSlot, source_reference_from_bytes,
+-};
++use crate::source_index::SourceIndex;
++use crate::{CompilerError, CssOutputMapping, directives::NativeStyleSlot};
+ use mastercss_lexer::{collect_css_syntax_statements, tokenize_css_syntax};
+ use std::collections::HashMap;
+ 
+@@ -27,6 +25,10 @@ pub(crate) fn preserve_native_source(
+     };
+     let tokens = tokenize_css_syntax(source);
+     let statements = collect_css_syntax_statements(&tokens);
++    // One index per text: anchors are emitted for every token boundary.
++    let source_index = SourceIndex::new(source);
++    let original_index = SourceIndex::new(original);
++    let rewritten_index = SourceIndex::new(rewritten);
+     let mut ends = HashMap::new();
+     for statement in statements {
+         let Some(first) = tokens.get(statement.tokens.start) else {
+@@ -57,7 +59,8 @@ pub(crate) fn preserve_native_source(
+         edits.push((*start, end, String::new()));
+     }
+     for slot in slots {
+-        let start = byte_offset_for_location(rewritten, slot.loc.line, slot.loc.column)
++        let start = rewritten_index
++            .byte_offset_for_location(slot.loc.line, slot.loc.column)
+             .ok_or_else(|| error("Lowered slot has no source location"))?;
+         let end = *ends
+             .get(&start)
+@@ -84,6 +87,9 @@ pub(crate) fn preserve_native_source(
+                 .get(start..end)
+                 .ok_or_else(|| error("Invalid native source range"))?;
+             let generated = output.css.encode_utf16().count() as u32;
++            let unchanged_units = source_index
++                .utf16_offset(start)
++                .ok_or_else(|| error("Invalid native source range"))?;
+             for offset in std::iter::once(start).chain(
+                 anchors
+                     .iter()
+@@ -93,9 +99,12 @@ pub(crate) fn preserve_native_source(
+                 if offset == end {
+                     continue;
+                 }
+-                let reference = source_reference_from_bytes(original, filename, offset, offset)
++                let reference = original_index
++                    .reference(filename, offset, offset)
+                     .ok_or_else(|| error("Invalid preserved source anchor"))?;
+-                let shift = byte_to_utf16_offset(unchanged, offset - start)
++                let shift = source_index
++                    .utf16_offset(offset)
++                    .map(|units| units - unchanged_units)
+                     .ok_or_else(|| error("Invalid preserved output anchor"))?;
+                 output.mappings.push(CssOutputMapping {
+                     generated_start: generated + shift,
+diff --git a/crates/mastercss-compiler/src/native_style.rs b/crates/mastercss-compiler/src/native_style.rs
+index 2ad753b..845d41b 100644
+--- a/crates/mastercss-compiler/src/native_style.rs
++++ b/crates/mastercss-compiler/src/native_style.rs
+@@ -6,6 +6,7 @@ use super::{
+     minified_css, next_char_end, preserve_compatible_literal_spelling, printed_selectors,
+     selector_source_reference, source_reference_from_bytes, trim_byte_range, utf16_to_byte_offset,
+ };
++use crate::source_index::SourceIndex;
+ 
+ #[derive(Debug, Clone)]
+ pub(crate) struct NativeStyleContext {
+@@ -14,7 +15,7 @@ pub(crate) struct NativeStyleContext {
+ }
+ 
+ pub(crate) fn native_rule_list_has_directives(
+-    source: &str,
++    source: &SourceIndex<'_>,
+     rules: &[CssRule<'_, ThemeAtRule>],
+     variant_rule_offsets: &HashMap<usize, String>,
+ ) -> bool {
+@@ -24,7 +25,8 @@ pub(crate) fn native_rule_list_has_directives(
+             native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+         }
+         CssRule::Media(rule) => {
+-            byte_offset_for_location(source, rule.loc.line, rule.loc.column)
++            source
++                .byte_offset_for_location(rule.loc.line, rule.loc.column)
+                 .is_some_and(|offset| variant_rule_offsets.contains_key(&offset))
+                 || native_rule_list_has_directives(source, &rule.rules.0, variant_rule_offsets)
+         }
+diff --git a/crates/mastercss-compiler/src/output_mappings.rs b/crates/mastercss-compiler/src/output_mappings.rs
+index a4a2f32..4226daf 100644
+--- a/crates/mastercss-compiler/src/output_mappings.rs
++++ b/crates/mastercss-compiler/src/output_mappings.rs
+@@ -1,7 +1,7 @@
++use crate::source_index::SourceIndex;
+ use crate::{
+     CssDirectiveSourceReference, CssOutputMapping, CssRule, ParserOptions, SourceLocationRange,
+-    SourceRange, StyleSheet, ThemeAtRule, ThemeAtRuleParser, byte_offset_for_location,
+-    byte_to_utf16_offset,
++    SourceRange, StyleSheet, ThemeAtRule, ThemeAtRuleParser,
+ };
+ use lightningcss::rules::Location;
+ 
+@@ -44,23 +44,25 @@ fn location(rule: &CssRule<'_, ThemeAtRule>) -> Option<(&'static str, Location)>
+ }
+ 
+ struct Mapper<'a> {
+-    source: &'a str,
+-    parsed_source: &'a str,
+-    output: &'a str,
++    source: SourceIndex<'a>,
++    parsed_source: SourceIndex<'a>,
++    output: SourceIndex<'a>,
+     filename: &'a str,
+     mappings: Vec<CssOutputMapping>,
+ }
+ 
+ impl Mapper<'_> {
+     fn anchor(&self, original: Location, generated: Location) -> Option<CssOutputMapping> {
+-        let original_byte =
+-            byte_offset_for_location(self.parsed_source, original.line, original.column)?;
+-        let generated_byte =
+-            byte_offset_for_location(self.output, generated.line, generated.column)?;
+-        let original_offset = byte_to_utf16_offset(self.source, original_byte)?;
+-        let loc = crate::variant::source_location(self.source, original_byte)?;
++        let original_byte = self
++            .parsed_source
++            .byte_offset_for_location(original.line, original.column)?;
++        let generated_byte = self
++            .output
++            .byte_offset_for_location(generated.line, generated.column)?;
++        let original_offset = self.source.utf16_offset(original_byte)?;
++        let loc = self.source.location(original_byte)?;
+         Some(CssOutputMapping {
+-            generated_start: byte_to_utf16_offset(self.output, generated_byte)?,
++            generated_start: self.output.utf16_offset(generated_byte)?,
+             generated_end: None,
+             source: CssDirectiveSourceReference {
+                 file: Some(self.filename.into()),
+@@ -145,9 +147,9 @@ pub(crate) fn native_output_mappings(
+         return Vec::new();
+     };
+     let mut mapper = Mapper {
+-        source,
+-        parsed_source,
+-        output,
++        source: SourceIndex::new(source),
++        parsed_source: SourceIndex::new(parsed_source),
++        output: SourceIndex::new(output),
+         filename,
+         mappings: Vec::new(),
+     };
+@@ -173,6 +175,7 @@ pub(crate) fn refine_native_declaration_sources(
+     }) {
+         return;
+     }
++    let source_index = SourceIndex::new(source);
+     let tokens = tokenize_css_syntax(source);
+     let mut ranges = collect_css_syntax_statements(&tokens)
+         .into_iter()
+@@ -180,7 +183,7 @@ pub(crate) fn refine_native_declaration_sources(
+         .filter_map(|statement| {
+             let start = tokens[statement.tokens.start].bytes.start;
+             let end = tokens[statement.tokens.end - 1].bytes.end;
+-            Some((byte_to_utf16_offset(source, start)?, start, end))
++            Some((source_index.utf16_offset(start)?, start, end))
+         })
+         .collect::<Vec<_>>();
+     ranges.sort_by_key(|range| range.0);
+@@ -196,13 +199,11 @@ pub(crate) fn refine_native_declaration_sources(
+         let Some((_, start, end)) = index.checked_sub(1).and_then(|index| ranges.get(index)) else {
+             continue;
+         };
+-        if byte_to_utf16_offset(source, *end).is_some_and(|end| end >= reference.range.start)
+-            && let Some(mapped) = crate::source_reference_from_bytes(
+-                source,
+-                reference.file.as_deref().unwrap_or_default(),
+-                *start,
+-                *end,
+-            )
++        if source_index
++            .utf16_offset(*end)
++            .is_some_and(|end| end >= reference.range.start)
++            && let Some(mapped) =
++                source_index.reference(reference.file.as_deref().unwrap_or_default(), *start, *end)
+         {
+             *reference = mapped;
+         }
+diff --git a/crates/mastercss-compiler/src/source_index.rs b/crates/mastercss-compiler/src/source_index.rs
+new file mode 100644
+index 0000000..f516651
+--- /dev/null
++++ b/crates/mastercss-compiler/src/source_index.rs
+@@ -0,0 +1,201 @@
++//! Per-source line and UTF-16 offset index.
++//!
++//! Anchoring output mappings converts parser locations to byte offsets and byte
++//! offsets to UTF-16 ranges for every rule. Scanning the source from its start on
++//! each conversion made those passes quadratic in the number of rules. The index
++//! is built once per source text and answers each conversion from the nearest
++//! line start or byte checkpoint.
++
++use crate::{CssDirectiveSourceReference, SourceLocation, SourceLocationRange, SourceRange};
++use mastercss_lexer::utf16_len;
++
++const CHECKPOINT_BYTES: usize = 256;
++
++pub(crate) struct SourceIndex<'a> {
++    text: &'a str,
++    /// Byte offsets where lines start, beginning with 0.
++    line_starts: Vec<usize>,
++    /// `(byte offset at a character boundary, UTF-16 units before it)`, ascending, beginning with `(0, 0)`.
++    checkpoints: Vec<(usize, u32)>,
++}
++
++impl<'a> SourceIndex<'a> {
++    pub(crate) fn new(text: &'a str) -> Self {
++        let mut line_starts = vec![0];
++        let mut checkpoints = vec![(0, 0)];
++        let mut units = 0_u32;
++        let mut next_checkpoint = CHECKPOINT_BYTES;
++        for (byte, character) in text.char_indices() {
++            if byte >= next_checkpoint {
++                checkpoints.push((byte, units));
++                next_checkpoint = byte + CHECKPOINT_BYTES;
++            }
++            units += character.len_utf16() as u32;
++            if character == '\n' {
++                line_starts.push(byte + 1);
++            }
++        }
++        Self {
++            text,
++            line_starts,
++            checkpoints,
++        }
++    }
++
++    /// UTF-16 units before `byte_offset`; `None` when it is not a character boundary.
++    pub(crate) fn utf16_offset(&self, byte_offset: usize) -> Option<u32> {
++        if byte_offset > self.text.len() || !self.text.is_char_boundary(byte_offset) {
++            return None;
++        }
++        let index = self
++            .checkpoints
++            .partition_point(|(byte, _)| *byte <= byte_offset)
++            - 1;
++        let (base_byte, base_units) = self.checkpoints[index];
++        Some(base_units + utf16_len(&self.text[base_byte..byte_offset]))
++    }
++
++    /// Byte offset of a UTF-16 offset; `None` when it splits a surrogate pair or exceeds the text.
++    pub(crate) fn byte_offset(&self, utf16_offset: u32) -> Option<usize> {
++        let index = self
++            .checkpoints
++            .partition_point(|(_, units)| *units <= utf16_offset)
++            - 1;
++        let (mut byte, mut units) = self.checkpoints[index];
++        for character in self.text[byte..].chars() {
++            if units == utf16_offset {
++                return Some(byte);
++            }
++            let next = units + character.len_utf16() as u32;
++            if next > utf16_offset {
++                return None;
++            }
++            units = next;
++            byte += character.len_utf8();
++        }
++        (units == utf16_offset).then_some(byte)
++    }
++
++    /// One-based line and UTF-16 column of a byte offset.
++    pub(crate) fn location(&self, byte_offset: usize) -> Option<SourceLocation> {
++        let units = self.utf16_offset(byte_offset)?;
++        let line = self
++            .line_starts
++            .partition_point(|start| *start <= byte_offset);
++        let line_start = self.line_starts[line - 1];
++        let column = units - self.utf16_offset(line_start)? + 1;
++        Some(SourceLocation {
++            line: line as u32,
++            column,
++        })
++    }
++
++    /// Source reference for a byte range, matching `source_reference_from_bytes`.
++    pub(crate) fn reference(
++        &self,
++        filename: &str,
++        start: usize,
++        end: usize,
++    ) -> Option<CssDirectiveSourceReference> {
++        Some(CssDirectiveSourceReference {
++            file: Some(filename.to_owned()),
++            range: SourceRange {
++                start: self.utf16_offset(start)?,
++                end: self.utf16_offset(end)?,
++            },
++            loc: Some(SourceLocationRange {
++                start: self.location(start)?,
++                end: self.location(end)?,
++            }),
++        })
++    }
++
++    /// Byte offset of a parser location: zero-based line, one-based UTF-16 column,
++    /// which must stay within that line.
++    pub(crate) fn byte_offset_for_location(&self, line: u32, column: u32) -> Option<usize> {
++        let line = line as usize;
++        let line_start = *self.line_starts.get(line)?;
++        let units = self.utf16_offset(line_start)? + column.saturating_sub(1);
++        let byte = self.byte_offset(units)?;
++        let line_end = self
++            .line_starts
++            .get(line + 1)
++            .map_or(self.text.len(), |next| next - 1);
++        (byte <= line_end).then_some(byte)
++    }
++}
++
++#[cfg(test)]
++mod tests {
++    use super::SourceIndex;
++    use crate::variant::{byte_offset_for_location, source_location};
++    use mastercss_lexer::{byte_to_utf16_offset, utf16_to_byte_offset};
++
++    fn corpus() -> Vec<String> {
++        let mut corpus = vec![
++            String::new(),
++            "\n".into(),
++            "a".into(),
++            ".a{color:red}\n.b{color:blue}".into(),
++            ".a{color:red}\r\n\r\n.b{content:\"é😀\"}\n".into(),
++            "😀😀\n😀".into(),
++            "é\né\n\n".into(),
++        ];
++        // Long enough to cross several byte checkpoints; short enough for the
++        // exhaustive comparison against the scanning conversions.
++        let long = (0..48)
++            .map(|index| format!(".r{index}{{content:\"ü😀\";padding:{}px}}", index % 9))
++            .collect::<Vec<_>>();
++        corpus.push(long.join(""));
++        corpus.push(long.join("\n"));
++        corpus
++    }
++
++    #[test]
++    fn matches_scanning_conversions() {
++        for text in corpus() {
++            let index = SourceIndex::new(&text);
++            for byte in 0..=text.len() + 1 {
++                assert_eq!(
++                    index.utf16_offset(byte),
++                    byte_to_utf16_offset(&text, byte),
++                    "{text:?} {byte}"
++                );
++                assert_eq!(
++                    index.location(byte),
++                    source_location(&text, byte),
++                    "{text:?} {byte}"
++                );
++            }
++            let units = mastercss_lexer::utf16_len(&text);
++            for utf16 in 0..=units + 1 {
++                assert_eq!(
++                    index.byte_offset(utf16),
++                    utf16_to_byte_offset(&text, utf16),
++                    "{text:?} {utf16}"
++                );
++            }
++            let lines = text.matches('\n').count() as u32 + 2;
++            for line in 0..lines {
++                for column in 0..=units + 1 {
++                    assert_eq!(
++                        index.byte_offset_for_location(line, column),
++                        byte_offset_for_location(&text, line, column),
++                        "{text:?} line {line} column {column}"
++                    );
++                }
++            }
++        }
++    }
++
++    #[test]
++    fn checkpoints_cover_multibyte_boundaries() {
++        let text = "😀".repeat(300);
++        let index = SourceIndex::new(&text);
++        assert!(index.checkpoints.len() > 2);
++        assert_eq!(index.utf16_offset(text.len()), Some(600));
++        assert_eq!(index.byte_offset(600), Some(text.len()));
++        assert_eq!(index.byte_offset(599), None);
++        assert_eq!(index.utf16_offset(1), None);
++    }
++}
+diff --git a/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs b/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs
+new file mode 100644
+index 0000000..eb45e83
+--- /dev/null
++++ b/crates/mastercss-compiler/tests/bug_hunt_rule_count_scaling.rs
+@@ -0,0 +1,43 @@
++//! BH-0062: native output mapping anchors scanned the source from its start for
++//! every rule, making stylesheet compilation quadratic in the rule count.
++use mastercss_compiler::{CompileNativeCssOptions, compile_css_directives};
++use std::time::{Duration, Instant};
++
++fn stylesheet(rules: usize, multiline: bool) -> String {
++    (0..rules)
++        .map(|index| {
++            format!(
++                "@media (min-width:{index}px){{.r{index}{{content:\"ü😀\";padding:{}px}}}}",
++                index % 9
++            )
++        })
++        .collect::<Vec<_>>()
++        .join(if multiline { "\n" } else { "" })
++}
++
++fn compile(rules: usize, multiline: bool) -> Duration {
++    let source = stylesheet(rules, multiline);
++    let started = Instant::now();
++    let result = compile_css_directives(&source, &CompileNativeCssOptions::default()).unwrap();
++    let elapsed = started.elapsed();
++    // Every media rule and its style rule keep an anchored mapping.
++    assert_eq!(result.native_mappings.len(), rules * 2, "{rules} rules");
++    elapsed
++}
++
++#[test]
++fn native_mapping_anchors_scale_linearly_with_rule_count() {
++    for multiline in [false, true] {
++        // Warm up allocators and caches before timing.
++        compile(64, multiline);
++        let small = compile(500, multiline);
++        let large = compile(4000, multiline);
++        let ratio = large.as_secs_f64() / small.as_secs_f64().max(0.001);
++        // Eight times the rules: linear stays near 8x; the quadratic anchors were 64x
++        // and took minutes here in debug builds.
++        assert!(
++            ratio < 40.0 && large < Duration::from_secs(10),
++            "multiline={multiline}: 500 rules {small:?}, 4000 rules {large:?}, ratio {ratio:.1}"
++        );
++    }
++}

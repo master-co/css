@@ -1,0 +1,8 @@
+### real Next build (0242+fix binding)
+exit=0
+"pass":true}
+"pass":true}]}
+### next e2e (0242+fix binding)
+ Test Files  3 passed (3)
+      Tests  3 passed (3)
+e2e exit=0

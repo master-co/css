@@ -1,0 +1,54 @@
+### render cost (0242+fix)
+rules=20 theme=10 bytes=1343 hook-style rendered(rootText)             median 3.9 ms
+rules=20 theme=10 bytes=1343 rendered(rootText, preserveNativeCSS)     median 2.2 ms
+rules=20 theme=10 bytes=1343 rendered(rootText, preserveNativeCSS+Source) median 5.8 ms
+rules=20 theme=10 bytes=1343 compileStylesheet(rootText, preserveNativeCSS) median 0.6 ms
+rules=100 theme=60 bytes=6953 hook-style rendered(rootText)            median 3.5 ms
+rules=100 theme=60 bytes=6953 rendered(rootText, preserveNativeCSS)    median 3.4 ms
+rules=100 theme=60 bytes=6953 rendered(rootText, preserveNativeCSS+Source) median 50.0 ms
+rules=100 theme=60 bytes=6953 compileStylesheet(rootText, preserveNativeCSS) median 1.4 ms
+rules=200 theme=60 bytes=13171 hook-style rendered(rootText)           median 5.1 ms
+rules=200 theme=60 bytes=13171 rendered(rootText, preserveNativeCSS)   median 5.2 ms
+rules=200 theme=60 bytes=13171 rendered(rootText, preserveNativeCSS+Source) median 161.5 ms
+rules=200 theme=60 bytes=13171 compileStylesheet(rootText, preserveNativeCSS) median 2.1 ms
+rules=400 theme=60 bytes=25617 hook-style rendered(rootText)           median 8.9 ms
+rules=400 theme=60 bytes=25617 rendered(rootText, preserveNativeCSS)   median 9.0 ms
+rules=400 theme=60 bytes=25617 rendered(rootText, preserveNativeCSS+Source) median 580.0 ms
+rules=400 theme=60 bytes=25617 compileStylesheet(rootText, preserveNativeCSS) median 3.4 ms
+rules=400 theme=10 bytes=24587 hook-style rendered(rootText)           median 7.9 ms
+rules=400 theme=10 bytes=24587 rendered(rootText, preserveNativeCSS)   median 7.8 ms
+rules=400 theme=10 bytes=24587 rendered(rootText, preserveNativeCSS+Source) median 551.5 ms
+rules=400 theme=10 bytes=24587 compileStylesheet(rootText, preserveNativeCSS) median 3.3 ms
+rules=800 theme=60 bytes=50499 hook-style rendered(rootText)           median 16.8 ms
+rules=800 theme=60 bytes=50499 rendered(rootText, preserveNativeCSS)   median 16.7 ms
+rules=800 theme=60 bytes=50499 rendered(rootText, preserveNativeCSS+Source) median 2204.4 ms
+rules=800 theme=60 bytes=50499 compileStylesheet(rootText, preserveNativeCSS) median 6.9 ms
+### compiler 0244 suite (0242+fix)
+ Test Files  57 passed (57)
+      Tests  428 passed (428)
+compiler exit=0
+### next 0247 suite (0242+fix)
+ Test Files  23 passed (23)
+      Tests  151 passed (151)
+next exit=0
+### hook cost (0242+fix)
+{"size":"small","bytes":1059,"plugins":0,"hook":false,"medianMs":1.11,"minMs":0.73,"maxMs":4.7,"hookRenders":0,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":0,"hook":true,"medianMs":5.23,"minMs":4.56,"maxMs":9.9,"hookRenders":3,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":1,"hook":false,"medianMs":1.04,"minMs":0.95,"maxMs":1.84,"hookRenders":0,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":1,"hook":true,"medianMs":6.12,"minMs":5.67,"maxMs":6.59,"hookRenders":4,"lateEmitted":true}
+{"size":"small","bytes":1059,"plugins":2,"hook":false,"medianMs":0.95,"minMs":0.85,"maxMs":1.52,"hookRenders":0,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":2,"hook":true,"medianMs":6.8,"minMs":6.47,"maxMs":7.02,"hookRenders":5,"lateEmitted":true}
+{"size":"small","bytes":1059,"plugins":4,"hook":false,"medianMs":0.86,"minMs":0.84,"maxMs":1.09,"hookRenders":0,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":4,"hook":true,"medianMs":8.72,"minMs":8.4,"maxMs":8.94,"hookRenders":7,"lateEmitted":true}
+{"size":"small","bytes":1059,"plugins":8,"hook":false,"medianMs":0.83,"minMs":0.81,"maxMs":0.93,"hookRenders":0,"lateEmitted":false}
+{"size":"small","bytes":1059,"plugins":8,"hook":true,"medianMs":13.11,"minMs":12.77,"maxMs":13.72,"hookRenders":11,"lateEmitted":true}
+{"size":"medium","bytes":19109,"plugins":0,"hook":false,"medianMs":6.75,"minMs":6.14,"maxMs":7.78,"hookRenders":0,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":0,"hook":true,"medianMs":40.04,"minMs":38.87,"maxMs":52.68,"hookRenders":3,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":1,"hook":false,"medianMs":11.76,"minMs":11.4,"maxMs":14.07,"hookRenders":0,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":1,"hook":true,"medianMs":48.85,"minMs":48.11,"maxMs":49.52,"hookRenders":4,"lateEmitted":true}
+{"size":"medium","bytes":19109,"plugins":2,"hook":false,"medianMs":11.66,"minMs":11.37,"maxMs":12.57,"hookRenders":0,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":2,"hook":true,"medianMs":56.86,"minMs":56.27,"maxMs":58.75,"hookRenders":5,"lateEmitted":true}
+{"size":"medium","bytes":19109,"plugins":4,"hook":false,"medianMs":11.79,"minMs":11.24,"maxMs":12.41,"hookRenders":0,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":4,"hook":true,"medianMs":74.01,"minMs":73.57,"maxMs":74.42,"hookRenders":7,"lateEmitted":true}
+{"size":"medium","bytes":19109,"plugins":8,"hook":false,"medianMs":12.18,"minMs":11.72,"maxMs":12.95,"hookRenders":0,"lateEmitted":false}
+{"size":"medium","bytes":19109,"plugins":8,"hook":true,"medianMs":109.15,"minMs":108.6,"maxMs":110.6,"hookRenders":11,"lateEmitted":true}

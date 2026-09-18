@@ -187,8 +187,9 @@ fn compile_css_directives_impl(
     let mut style_order = 0;
     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
     let mut occupied_names = HashSet::new();
+    let rewritten_index = crate::source_index::SourceIndex::new(&rewritten_source);
     if super::native_rule_list_has_directives(
-        &rewritten_source,
+        &rewritten_index,
         &stylesheet.rules.0,
         &stylesheet_variant_rule_offsets,
     ) {
@@ -231,6 +232,7 @@ fn compile_css_directives_impl(
                     source,
                     filename: &options.from,
                     rewritten: &rewritten_source,
+                    rewritten_index: &rewritten_index,
                     variants: &stylesheet_variant_rule_offsets,
                     definitions: &mut style_definitions,
                     order: &mut style_order,

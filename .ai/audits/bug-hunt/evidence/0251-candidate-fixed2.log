@@ -1,0 +1,35 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.29s
+clippy exit=0
+   1 test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+   2 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+   1 test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.97s
+   1 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+   1 test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+   1 test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s
+   1 test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+   1 test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+   1 test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+   1 test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+   1 test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+   2 test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+   1 test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+   2 test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+   2 test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+   1 test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+   1 test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+   1 test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+test exit=0
+    Finished `release` profile [optimized] target(s) in 43.30s
+build exit=0
+aab73e64a5b3d898ee5c40006d83d6ff5785e304ef413556da8c771af0372f9a  /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0251-source-index/mastercss-0242-fixed.node
+### render cost (0242+fix2)
+rules=20 theme=10 bytes=1343 rendered(rootText, preserveNativeCSS+Source) median 3.5 ms
+rules=100 theme=60 bytes=6953 rendered(rootText, preserveNativeCSS+Source) median 14.2 ms
+rules=200 theme=60 bytes=13171 rendered(rootText, preserveNativeCSS+Source) median 25.4 ms
+rules=400 theme=60 bytes=25617 rendered(rootText, preserveNativeCSS+Source) median 47.4 ms
+rules=400 theme=10 bytes=24587 rendered(rootText, preserveNativeCSS+Source) median 47.9 ms
+rules=800 theme=60 bytes=50499 rendered(rootText, preserveNativeCSS+Source) median 96.5 ms
+### compiler 0244 suite (0242+fix2)
+ Test Files  57 passed (57)
+      Tests  428 passed (428)
+compiler exit=0
