@@ -55,7 +55,7 @@
   "batch": "0256-next-turbopack-module-animation",
   "goal": "active",
   "previousGoalTurn": "0255: Turbopack PostCSS contracts classified; BH-0063 confirmed unfixed",
-  "status": "Candidate fix for BH-0063 in the owned copy (tmp/0256-turbopack-animations). nextGeneratedGlobalAnimations() reads preset keyframe names from Master generatedCSS; the no-host-PostCSS (Turbopack) branch of prepareNextEntryGraph builds the module graph with globalAnimations so :local(fade) is restored to global fade and @keyframes fade is delivered. module-animation: Turbopack baseline FAIL -> fixed/recheck PASS, Webpack control PASS (Chromium/WebKit). Remaining generated/imported-keyframe and global-context FAILs are the 0255 combined-root PostCSS contract gap (no plugin mutation on Turbopack), not a new finding; keyframe scenarios now resolve fade with real frames. Promote would deliver the whole 0232-0256 candidate (13 new files ~800 lines, 4 modified files ~63 lines) and the copy has no tests/; user chose not to promote. No product change in the main tree. Ledgers only.",
+  "status": "Candidate fix for BH-0063 in the owned copy (tmp/0256-turbopack-animations). nextGeneratedGlobalAnimations() reads preset keyframe names from Master generatedCSS; the no-host-PostCSS (Turbopack) branch of prepareNextEntryGraph builds the module graph with globalAnimations so :local(fade) is restored to global fade and @keyframes fade is delivered. module-animation: Turbopack baseline FAIL -> fixed/recheck PASS, Webpack control PASS (Chromium/WebKit). Remaining generated/imported-keyframe and global-context FAILs are the 0255 combined-root PostCSS contract gap (no plugin mutation on Turbopack), not a new finding; keyframe scenarios now resolve fade with real frames. Promote would deliver the whole 0232-0256 candidate (13 new files ~800 lines, 4 modified files ~63 lines) and depends on the owned compiler/Rust candidate chain; user chose not to promote. (0257 correction: the copy does have tests/.) No product change in the main tree. Ledgers only.",
   "head": "cf7a8ef4a06de03bf5f86d760d6e1222c9b773b9",
   "reproChanges": {
     "file": "repros/next-module-edge-host.mjs",
@@ -77,8 +77,9 @@
       "newLines": 800,
       "modifiedFiles": 4,
       "modifiedLines": 63,
-      "copyHasTests": false,
-      "delivered": false
+      "copyHasTests": true,
+      "delivered": false,
+      "note": "0257 correction: the owned copy does have packages/next/tests (30 entries incl. candidate bug-hunt tests; 0247 ran 151 tests/3 e2e on this chain). Promote additionally depends on the owned compiler (0244 API) and Rust candidate chain absent from the main tree."
     }
   },
   "results": {

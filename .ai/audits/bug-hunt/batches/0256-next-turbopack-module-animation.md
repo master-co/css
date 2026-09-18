@@ -36,11 +36,11 @@
 
 ## promote範圍評估（未執行）
 
-BH-0063候選只涉及兩個函式，但所在檔案主工作樹不存在：owned副本`packages/next/src`比主工作樹多13檔約800行（`prepare-entry-graph`、`prepare-global-module`、`prepare-module`、`prepare-module-graph`、`prepare-postcss`、`postcss-request-plugins`、`postcss-resource-policy`、`stylesheet-delivery`、`stylesheet-input-loader`、`stylesheet-map-loader`、`stylesheet-source-loader`、`webpack-css-loader`、`webpack-postcss-loader`），另改`index.ts`／`stylesheet-loader.ts`／`webpack-stylesheets.ts`／`static-publication.ts`約63行。promote等於交付0232–0256整套Next PostCSS／module pipeline候選；副本沒有`tests/`目錄，候選從未跑過`packages/next`測試套件。使用者決定先不promote，照舊記錄。
+BH-0063候選只涉及兩個函式，但所在檔案主工作樹不存在：owned副本`packages/next/src`比主工作樹多13檔約800行（`prepare-entry-graph`、`prepare-global-module`、`prepare-module`、`prepare-module-graph`、`prepare-postcss`、`postcss-request-plugins`、`postcss-resource-policy`、`stylesheet-delivery`、`stylesheet-input-loader`、`stylesheet-map-loader`、`stylesheet-source-loader`、`webpack-css-loader`、`webpack-postcss-loader`），另改`index.ts`／`stylesheet-loader.ts`／`webpack-stylesheets.ts`／`static-publication.ts`約63行。promote等於交付0232–0256整套Next PostCSS／module pipeline候選；副本有`tests/`（含候選新增的bug-hunt測試；0247曾在此鏈跑過151tests／3e2e），但候選同時依賴owned compiler（0244 API）與Rust候選，主工作樹沒有這些API。使用者決定先不promote，照舊記錄。（0257訂正：原文誤寫副本無tests。）
 
 ## 帳本
 
 - 63historical、58fixed、5unresolved不變；BH-0063改為「已確認／owned候選修復」，比照BH-0004。65checked／10blocked、pending approvals不變；goal active。
-- 下一步：promote另開一批，先把候選搬進含`tests/`的完整副本跑`packages/next` lint／types／build與測試套件、e2e，通過再談交付；Turbopack combined-root PostCSS與late resource契約仍需另行設計。
+- 下一步：promote另開一批，先在owned副本跑`packages/next` lint／types／build與測試套件、e2e，並量化compiler／Rust候選鏈，通過再談交付；Turbopack combined-root PostCSS與late resource契約仍需另行設計。
 
 [Final checks](../evidence/0256-final-checks.json)
