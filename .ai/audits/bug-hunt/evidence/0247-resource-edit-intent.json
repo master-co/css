@@ -1,0 +1,229 @@
+{
+  "source": "@theme{--color-old:#111111;--color-late:#abcdef}.card{color:var(--color-old)}",
+  "cases": [
+    {
+      "mutation": "delete",
+      "master": true,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{}}\n\n@layer theme{:root{--color-late:#fedcba}}",
+      "processedHistory": {
+        "variables": {
+          "color-late": 1,
+          "color-old": 1
+        },
+        "animations": {}
+      }
+    },
+    {
+      "mutation": "delete",
+      "master": false,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{}}@layer theme{:root{--color-late:#fedcba}}"
+    },
+    {
+      "mutation": "rename",
+      "master": true,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-renamed:#111}}\n\n@layer theme{:root{--color-late:#fedcba}}",
+      "processedHistory": {
+        "variables": {
+          "color-late": 1,
+          "color-old": 1
+        },
+        "animations": {}
+      }
+    },
+    {
+      "mutation": "rename",
+      "master": false,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-renamed:#111}}@layer theme{:root{--color-late:#fedcba}}"
+    },
+    {
+      "mutation": "rename-references",
+      "master": true,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-renamed);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-renamed:#111}}\n\n@layer theme{:root{--color-late:#fedcba}}",
+      "processedHistory": {
+        "variables": {
+          "color-late": 1,
+          "color-old": 1
+        },
+        "animations": {}
+      }
+    },
+    {
+      "mutation": "rename-references",
+      "master": false,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-renamed);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-renamed:#111}}@layer theme{:root{--color-late:#fedcba}}"
+    },
+    {
+      "mutation": "edit",
+      "master": true,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-old:#123456}}\n\n@layer theme{:root{--color-late:#fedcba}}",
+      "processedHistory": {
+        "variables": {
+          "color-late": 1,
+          "color-old": 1
+        },
+        "animations": {}
+      }
+    },
+    {
+      "mutation": "edit",
+      "master": false,
+      "calls": 1,
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-old:#123456}}@layer theme{:root{--color-late:#fedcba}}"
+    }
+  ],
+  "observations": [
+    {
+      "browser": "chromium",
+      "mutation": "delete",
+      "master": true,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "delete",
+      "master": false,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "rename",
+      "master": true,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "rename",
+      "master": false,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "rename-references",
+      "master": true,
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "rename-references",
+      "master": false,
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "edit",
+      "master": true,
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "chromium",
+      "mutation": "edit",
+      "master": false,
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "delete",
+      "master": true,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "delete",
+      "master": false,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "rename",
+      "master": true,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "rename",
+      "master": false,
+      "computed": {
+        "color": "rgb(0, 128, 0)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "rename-references",
+      "master": true,
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "rename-references",
+      "master": false,
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "edit",
+      "master": true,
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      }
+    },
+    {
+      "browser": "webkit",
+      "mutation": "edit",
+      "master": false,
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      }
+    }
+  ],
+  "errors": [],
+  "conclusion": "Processing history preserves intentional user deletion/rename and matches plain PostCSS. Resetting history to current presence would resurrect deleted definitions. History is not a final CSS inventory or hydration count."
+}

@@ -1,0 +1,182 @@
+{
+  "scenario": "postcss-global-clone",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "input": {
+    "a": "@theme{--color-audit:#111111}.direct{@compose fg:audit;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "globalContext": true,
+    "globalClone": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 79ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 3.4s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 62ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/123b3b4bdb7c887a.css",
+      "text": "@import url(\"/_next/static/css/master/1b4378c3e434eac3671a91697f42e2e801d858b1d1ba2307837ef25b5b82c74f/css/c9ea0c12ff500c3e8eb0af987819480e6bb219ce086bd7078b9948c738c0d617-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/1b4378c3e434eac3671a91697f42e2e801d858b1d1ba2307837ef25b5b82c74f/css/c9ea0c12ff500c3e8eb0af987819480e6bb219ce086bd7078b9948c738c0d617-entry.css",
+      "text": ".card_direct__vAL_y{color:var(--color-audit);border-top:7px solid red}@layer theme{:root{--color-audit:#123456}}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;@theme{--color-audit:#111111}.direct{@compose fg:audit;border-top:7px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{border-top:7px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/123b3b4bdb7c887a.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-a55765eeb0df145e.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/1b4378c3e434eac3671a91697f42e2e801d858b1d1ba2307837ef25b5b82c74f/css/c9ea0c12ff500c3e8eb0af987819480e6bb219ce086bd7078b9948c738c0d617-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-ecd5fd86cd1a7fee.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-1c3b0f7b60a00655.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-07c69dd101121ed0.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/123b3b4bdb7c887a.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-a55765eeb0df145e.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-ecd5fd86cd1a7fee.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-1c3b0f7b60a00655.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-07c69dd101121ed0.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/1b4378c3e434eac3671a91697f42e2e801d858b1d1ba2307837ef25b5b82c74f/css/c9ea0c12ff500c3e8eb0af987819480e6bb219ce086bd7078b9948c738c0d617-entry.css",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "css": "                               .direct{color:var(--color-audit);border-top:7px solid red}@layer theme{:root{--color-audit:#111}}"
+    },
+    {
+      "event": "combined-global",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "local": true,
+      "global": true
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "css": "                               .direct{color:var(--color-audit);border-top:7px solid red}@layer theme{:root{--color-audit:#111}}"
+    },
+    {
+      "event": "combined-global",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "local": true,
+      "global": true
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-iNjuSA/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

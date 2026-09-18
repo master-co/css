@@ -1,0 +1,4 @@
+src/prepare-entry-graph.ts(54,35): error TS2339: Property 'processedGlobals' does not exist on type '{ source: any; sourceMap: any; globalAnimations: string[]; processedGlobals: any; } | { source: string; sourceMap?: string | undefined; ast?: object | undefined; globalAnimations: string[]; }'.
+  Property 'processedGlobals' does not exist on type '{ source: string; sourceMap?: string | undefined; ast?: object | undefined; globalAnimations: string[]; }'.
+tests/bug-hunt-postcss-resource-policy.test.ts(27,11): error TS7034: Variable 'counts' implicitly has type 'any[]' in some locations where its type cannot be determined.
+tests/bug-hunt-postcss-resource-policy.test.ts(55,12): error TS7005: Variable 'counts' implicitly has an 'any[]' type.
