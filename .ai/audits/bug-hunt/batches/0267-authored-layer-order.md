@@ -27,7 +27,7 @@
 
 ## 驗收
 
-`repros/external-import-order.mjs`（10情境×2瀏覽器＝20觀察）：
+`repros/external-import-order.mjs`（10情境×2 media＝20觀察，**僅Chromium**——本機Firefox啟動失敗使當時的repro在WebKit前中止；0268訂正並補measure）：
 
 | 情境 | 0266 | 0267 |
 |---|---|---|

@@ -42,7 +42,7 @@
 | same-layer | blue | red | red | **否** |
 | external-last | blue | red | 不適用 | 否 |
 
-`same-layer`兩側都在同一個layer，決勝的是**layer內的出現順序**，不是layer順序；展開把外部`@import`提到最前就翻轉了它，任何`@layer`宣告都救不回來。正確分類因此是：明確限制6項、可修**2項**（`different-layers`×2瀏覽器）、固有邊界**5項**（`same-layer`、`external-last`、`conditional-local`）。修復後基準為**9 PASS／11 FAIL**，不是0265寫的11／9。[實測](../evidence/0266-layer-statement-remedy.log)
+`same-layer`兩側都在同一個layer，決勝的是**layer內的出現順序**，不是layer順序；展開把外部`@import`提到最前就翻轉了它，任何`@layer`宣告都救不回來。正確分類因此是：明確限制6項、可修**2項**（`different-layers`的screen／print兩筆；當時僅Chromium，見0268）、固有邊界**5項**（`same-layer`、`external-last`、`conditional-local`）。修復後基準為**9 PASS／11 FAIL**，不是0265寫的11／9。[實測](../evidence/0266-layer-statement-remedy.log)
 
 ## 帳本
 

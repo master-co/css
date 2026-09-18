@@ -39,8 +39,16 @@ try {
   }
 } finally { wasm.dispose() }
 let failures = 0
-for (const name of ['chromium', 'firefox', 'webkit']) {
-  const browser = await browsers[name].launch()
+// A browser that cannot launch must not hide the browsers after it; record the
+// environment failure and carry on so the remaining engines still report.
+const browserFailures = []
+for (const name of (process.env.BH_IMPORT_ORDER_BROWSERS || 'chromium,firefox,webkit').split(',')) {
+  let browser
+  try { browser = await browsers[name].launch() } catch (error) {
+    browserFailures.push({ browser: name, error: String(error).split('\n')[0] })
+    console.log(JSON.stringify({ browser: name, launched: false, error: String(error).split('\n')[0] }))
+    continue
+  }
   try {
     for (const test of cases) {
       for (const media of ['screen', 'print']) {
@@ -70,5 +78,6 @@ for (const name of ['chromium', 'firefox', 'webkit']) {
     }
   } finally { await browser.close() }
 }
-console.log(JSON.stringify({ cases: cases.length, comparisons: cases.length * 6, failures }))
+const launched = (process.env.BH_IMPORT_ORDER_BROWSERS || 'chromium,firefox,webkit').split(',').length - browserFailures.length
+console.log(JSON.stringify({ cases: cases.length, browsers: launched, browserFailures, comparisons: cases.length * 2 * launched, failures }))
 assert.equal(failures, 0, 'External import order/conditions must preserve original browser behavior')
