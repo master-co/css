@@ -259,6 +259,7 @@
 - [0246 PostCSS request adapter](batches/0246-postcss-request-adapter.md)：新副本驗證native loader、插件狀態／訊息與並行隔離；尚未完成資源自動接線。
 - [0247 PostCSS resource policy](batches/0247-postcss-resource-policy.md)：owned副本自動接線資源歷史；刪改不復活、真實Webpack與host chain通過；sibling／diagnostics／watch待續。
 - [0248 Late-resource dev watch](batches/0248-postcss-resource-dev-watch.md)：實際Webpack dev的late資源watch／HMR 16步驟PASS；diagnostics分類無轉發需求；無產品變更。
+- [0249 Late-resource dev recovery](batches/0249-postcss-resource-dev-recovery.md)：資源刪除／還原與定義刪除／還原20步驟PASS，pure對照一致；無產品變更。
 
 ## 目前交接點
 
@@ -268,7 +269,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0248：owned 0247副本在實際`next dev --webpack`驗證late資源：SVG位元組、theme值更新與回復在Master／pure×Chromium／WebKit共16步驟PASS、HMR無整頁reload；compiler對5種stylesheet問題僅拋錯或無diagnostics，不新增轉發。無產品變更；sibling歷史、Turbopack、刪除恢復待續。[證據](evidence/0248-final-checks.json)；[批次](batches/0248-postcss-resource-dev-watch.md)；[前次](progress-history-0248-postcss-resource-dev-watch.md)。
+- 0249：實際Webpack dev驗證late資源刪除／還原與theme定義刪除／還原：Master／pure×Chromium／WebKit共20步驟PASS；缺檔錯誤由stylesheet-loader明確拋出、還原後整頁reload恢復，定義刪除不復活舊值。無產品變更；sibling歷史、Turbopack、promote評估待續。[證據](evidence/0249-final-checks.json)；[批次](batches/0249-postcss-resource-dev-recovery.md)；[前次](progress-history-0249-postcss-resource-dev-recovery.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 
