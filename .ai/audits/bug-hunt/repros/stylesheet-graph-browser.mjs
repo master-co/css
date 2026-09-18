@@ -12,8 +12,10 @@ const output = execFileSync('cargo', ['test', '-p', 'mastercss-compiler', '--tes
 const rendered = output.split('\n').filter(line => line.startsWith('BH_GRAPH_JSON:')).map(line => JSON.parse(line.slice('BH_GRAPH_JSON:'.length)))
 assert.equal(rendered.length, cases.length)
 let comparisons = 0
-for (const name of ['chromium', 'firefox', 'webkit']) {
-  const browser = await browsers[name].launch()
+for (const name of (process.env.BH_BROWSERS || 'chromium,firefox,webkit').split(',')) {
+  // A browser that cannot launch must not hide the ones after it.
+  let browser
+  try { browser = await browsers[name].launch() } catch (error) { console.log(JSON.stringify({ browser: name, launched: false, error: String(error).split('\n')[0] }));continue }
   try {
     for (const test of cases) {
       const assets = rendered.find(result => result.id === test.id)?.assets

@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { createRequire } from 'node:module'
-import { compileManifestFileSync } from '../../../../packages/compiler/src/node.ts'
+import { compileManifestFileSync } from '../../../../packages/compiler/dist/node.js'
 const require = createRequire(new URL('../../../../packages/runtime/package.json', import.meta.url))
 const browsers = require('@playwright/test')
 const cases = [
@@ -24,8 +24,10 @@ try {
     writeFileSync(join(root, 'second.css'), fixture.second || '')
     fixture.compiled = compileManifestFileSync(join(root, 'entry.css'), { preserveNativeCSS: true, classes: ['example'] }).css
   }
-  for (const name of ['chromium', 'firefox', 'webkit']) {
-    const browser = await browsers[name].launch()
+  for (const name of (process.env.BH_BROWSERS || 'chromium,firefox,webkit').split(',')) {
+    // A browser that cannot launch must not hide the ones after it.
+    let browser
+    try { browser = await browsers[name].launch() } catch (error) { console.log(JSON.stringify({ browser: name, launched: false, error: String(error).split('\n')[0] }));continue }
     const results = []
     try {
       for (const fixture of cases) {

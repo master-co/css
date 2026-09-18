@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
-import { createCompiler } from '../../../../packages/compiler/src/index.ts'
+import { createCompiler } from '../../../../packages/compiler/dist/index.js'
 
 const browsers = createRequire(new URL('../../../../packages/runtime/package.json', import.meta.url))('@playwright/test')
 const cases = JSON.parse(readFileSync(new URL('../../../../crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.json', import.meta.url)))
@@ -24,8 +24,10 @@ try {
   }
 } finally { native.dispose(); wasm.dispose() }
 let comparisons = 0
-for (const name of ['chromium', 'firefox', 'webkit']) {
-  const browser = await browsers[name].launch()
+for (const name of (process.env.BH_BROWSERS || 'chromium,firefox,webkit').split(',')) {
+  // A browser that cannot launch must not hide the ones after it.
+  let browser
+  try { browser = await browsers[name].launch() } catch (error) { console.log(JSON.stringify({ browser: name, launched: false, error: String(error).split('\n')[0] }));continue }
   try {
     for (const test of cases) for (const media of ['screen', 'print']) {
       const colors = {}
