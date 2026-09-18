@@ -9,6 +9,9 @@ overrides:
   qs@>=6.0.0 <6.16.0: 6.16.0
   rolldown-plugin-dts: 0.27.4
 
+patchedDependencies:
+  watchpack@2.5.2: 97626eeb101758e1e6ccacbe7cc97f63e245b733618ad68f8c7b6b9f1b02a2a1
+
 importers:
 
   .:
@@ -19652,7 +19655,7 @@ snapshots:
       tslib: 2.8.1
       typescript: 6.0.3
       vite: 8.1.5(@types/node@24.13.3)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.0(supports-color@10.2.2))(sass@1.101.0)(terser@5.49.0)(tsx@4.23.13)(yaml@2.9.0)
-      watchpack: 2.5.2
+      watchpack: 2.5.2(patch_hash=97626eeb101758e1e6ccacbe7cc97f63e245b733618ad68f8c7b6b9f1b02a2a1)
     optionalDependencies:
       '@angular/core': 22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3)
       '@angular/platform-browser': 22.1.5(@angular/animations@22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3)))(@angular/common@22.1.5(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))(rxjs@7.8.2))(@angular/core@22.1.5(@angular/compiler@22.1.5)(rxjs@7.8.2)(zone.js@0.16.3))
@@ -39760,7 +39763,7 @@ snapshots:
 
   walk-up-path@3.0.1: {}
 
-  watchpack@2.5.2:
+  watchpack@2.5.2(patch_hash=97626eeb101758e1e6ccacbe7cc97f63e245b733618ad68f8c7b6b9f1b02a2a1):
     dependencies:
       graceful-fs: 4.2.11
 
@@ -39989,7 +39992,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
-      watchpack: 2.5.2
+      watchpack: 2.5.2(patch_hash=97626eeb101758e1e6ccacbe7cc97f63e245b733618ad68f8c7b6b9f1b02a2a1)
       webpack-sources: 3.5.1
     optionalDependencies:
       webpack-cli: 7.2.3(js-yaml@5.4.1)(json5@2.2.3)(webpack-bundle-analyzer@4.10.1)(webpack-dev-server@5.2.6)(webpack@5.109.2)
@@ -40030,7 +40033,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 4.3.3
       tapable: 2.3.3
-      watchpack: 2.5.2
+      watchpack: 2.5.2(patch_hash=97626eeb101758e1e6ccacbe7cc97f63e245b733618ad68f8c7b6b9f1b02a2a1)
       webpack-sources: 3.5.1
     optionalDependencies:
       webpack-cli: 7.2.3(js-yaml@5.4.1)(json5@2.2.3)(webpack-bundle-analyzer@4.10.1)(webpack-dev-server@6.0.0)(webpack@5.110.3)
