@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0249：實際Webpack dev驗證late資源刪除／還原與theme定義刪除／還原：Master／pure×Chromium／WebKit共20步驟PASS；缺檔錯誤由stylesheet-loader明確拋出、還原後整頁reload恢復，定義刪除不復活舊值。無產品變更；sibling歷史、Turbopack、promote評估待續。[證據](evidence/0249-final-checks.json)；[批次](batches/0249-postcss-resource-dev-recovery.md)；[前次](progress-history-0249-postcss-resource-dev-recovery.md)。
+- 0250：量測owned副本resource hook成本，定位為compiler本身：`compileRenderedStylesheet`／`compileStylesheet`對規則數二次成長（800純CSS規則2.0s、preserveNativeSource 72.5s），profile 90%在native binding，來源索引每規則從頭掃描。新增BH-0062（P1未修復）；62historical／57fixed／5unresolved。無產品變更。[證據](evidence/0250-final-checks.json)；[批次](batches/0250-compiler-rule-count-scaling.md)；[前次](progress-history-0250-compiler-rule-count-scaling.md)。
 
 - 使用者再次授權提交已完成部分：本次提交0171–0172已收尾的帳本、原始證據與6個重現腳本，記錄BH-0033／BH-0034已驗證修復；Benchmark程式與測試混有0173尚未收尾修改，連同BH-0004產品／套件測試及其他對話Site變更保留工作區。重現依賴記錄雜湊的工作區來源，不能宣稱乾淨checkout可獨立重現。0172的359來源中357仍一致，另2個Benchmark檔案已由0173修改；30份原始驗證紀錄、原151個排除檔案與5項建置產物雜湊一致。0173目前19tests／types、36直接控制與36實際cleanup控制、原mutation16／invalidation32／interaction54及smoke均通過，程序已結束；WebKit補充探測首次誤認短測量窗必有刪除，改用獨立延長觀察窗後確認386項刪除與實際CSSOM結果，屬探測時機假設錯誤，沒有改寫原量測時間。下一步整理0173最終來源／證據並同步五份帳本後，才能決定BH-0042結案；目前仍47historical／38fixed／9unresolved，10blocked／4root gates／4原候選、host shutdown限制與0038身分暫停保持，目標active。未推送；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0172-commit-validation.json)。
 
@@ -122,45 +122,13 @@ Renderer received parser nativeCSS alone, dropping lowered compose rules. Render
 
 已修復。原先 raw replacen 選中字串內的 marker，將 composed CSS 寫入 content 並漏掉實際規則；改由 Rust lexer 定位真實 at-rule。Native/Wasm graph 修前6個browserFAIL，修後含原生／direct控制15PASS。[0187證據](evidence/0187-marker-finding.json)。
 
-## BH-0001 · P2 · CSS 字串與註解被當成動畫宣告
+## BH-0062 · P1 · Stylesheet compile 對規則數二次成長
 
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
+[crates/mastercss-compiler/src/variant.rs:290](/Users/aron/master/css/crates/mastercss-compiler/src/variant.rs:290)、[output_mappings.rs:56](/Users/aron/master/css/crates/mastercss-compiler/src/output_mappings.rs:56)。`byte_offset_for_location`／`source_location`／`byte_to_utf16_offset`每次從來源開頭掃描，mapping與每條規則各呼叫多次；純CSS 200／400／800規則的rendered compile為109／387／1450ms，`preserveNativeSource`在800規則達72.5s，profile 90%在native binding。已確認、未修復。修正方向：每個來源建立一次line-start與UTF-16前綴索引並供所有anchor共用。[量測與profile](batches/0250-compiler-rule-count-scaling.md)。
 
-## BH-0003 · P2 · static token 的依賴未保留
+## 已修復 P2 段落（逐字歸檔）
 
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0005 · P2 · SSR 未解碼 numeric HTML references
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0007 · P2 · 無 class 的 HTML 缺 static 初始資源
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0008 · P2 · 嚴格 CSP 下 external hydration 啟動失敗
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0009 · P2 · iframe root 漏掉 class mutation
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0010 · P2 · HTML extraction 未解 character references
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0011 · P2 · Svelte else 分支未提取
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0012 · P2 · scanModule 漏收 .mjs
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
-
-## BH-0014 · P2 · 跳脫字元後 semantic token 範圍偏移
-
-Archived verbatim in [fixed P2 history](report-fixed-p2-history-0183.md).
+以下段落原文逐字保存於 [fixed P2 history](report-fixed-p2-history-0183.md)：BH-0001 · P2 · CSS 字串與註解被當成動畫宣告；BH-0003 · P2 · static token 的依賴未保留；BH-0005 · P2 · SSR 未解碼 numeric HTML references；BH-0007 · P2 · 無 class 的 HTML 缺 static 初始資源；BH-0008 · P2 · 嚴格 CSP 下 external hydration 啟動失敗；BH-0009 · P2 · iframe root 漏掉 class mutation；BH-0010 · P2 · HTML extraction 未解 character references；BH-0011 · P2 · Svelte else 分支未提取；BH-0012 · P2 · scanModule 漏收 .mjs；BH-0014 · P2 · 跳脫字元後 semantic token 範圍偏移。
 
 ## BH-0015 · P2 · 合法 Unicode escape 被 ESLint 誤報（部分修復）
 

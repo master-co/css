@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 61 historical confirmed findings; 57 fixed, 4 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 62 historical confirmed findings; 57 fixed, 5 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -260,6 +260,7 @@
 - [0247 PostCSS resource policy](batches/0247-postcss-resource-policy.md)：owned副本自動接線資源歷史；刪改不復活、真實Webpack與host chain通過；sibling／diagnostics／watch待續。
 - [0248 Late-resource dev watch](batches/0248-postcss-resource-dev-watch.md)：實際Webpack dev的late資源watch／HMR 16步驟PASS；diagnostics分類無轉發需求；無產品變更。
 - [0249 Late-resource dev recovery](batches/0249-postcss-resource-dev-recovery.md)：資源刪除／還原與定義刪除／還原20步驟PASS，pure對照一致；無產品變更。
+- [0250 Compiler rule-count scaling](batches/0250-compiler-rule-count-scaling.md)：resource hook成本量測揭露compiler二次成長；新增BH-0062，未修復。
 
 ## 目前交接點
 
@@ -269,7 +270,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 0249：實際Webpack dev驗證late資源刪除／還原與theme定義刪除／還原：Master／pure×Chromium／WebKit共20步驟PASS；缺檔錯誤由stylesheet-loader明確拋出、還原後整頁reload恢復，定義刪除不復活舊值。無產品變更；sibling歷史、Turbopack、promote評估待續。[證據](evidence/0249-final-checks.json)；[批次](batches/0249-postcss-resource-dev-recovery.md)；[前次](progress-history-0249-postcss-resource-dev-recovery.md)。
+- 0250：量測owned副本resource hook成本，定位為compiler本身：`compileRenderedStylesheet`／`compileStylesheet`對規則數二次成長（800純CSS規則2.0s、preserveNativeSource 72.5s），profile 90%在native binding，來源索引每規則從頭掃描。新增BH-0062（P1未修復）；62historical／57fixed／5unresolved。無產品變更。[證據](evidence/0250-final-checks.json)；[批次](batches/0250-compiler-rule-count-scaling.md)；[前次](progress-history-0250-compiler-rule-count-scaling.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 
