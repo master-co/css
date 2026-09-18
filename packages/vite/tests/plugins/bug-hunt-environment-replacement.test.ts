@@ -6,6 +6,7 @@ import { createRunnableDevEnvironment, createServer, isRunnableDevEnvironment } 
 import { expect, test, vi } from 'vitest'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -39,7 +40,7 @@ for (const managed of [false, true]) for (const perEnvironment of [false, true])
       if (managed) expect(dispose).not.toHaveBeenCalled()
       expect((await replacement.runner.import('/later.js')).css).toContain('green')
       writeFileSync(join(root, 'later.scss'), (managed ? '@master entry;@preserve native;' : '') + '.example{color:purple}')
-      await vi.waitFor(async () => expect((await replacement.runner.import('/later.js')).css).toContain('purple'), { timeout: 5000 })
+      await vi.waitFor(async () => expect((await replacement.runner.import('/later.js')).css).toContain('purple'), { timeout: watchDeadline })
       await server.close()
       if (managed) expect(dispose).toHaveBeenCalledOnce()
     } finally { await server?.close();dispose.mockRestore();rmSync(root, { recursive: true, force: true }) }
@@ -93,7 +94,7 @@ test.each([false, true])('BH-0004 late server environment startup preserves clie
     writeFileSync(partial, '$tone:purple;')
     await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
       { type: 'css-update', path: '/style.scss', acceptedPath: '/style.scss', timestamp: expect.any(Number) }
-    ]) }), { timeout: 5000 })
+    ]) }), { timeout: watchDeadline })
     expect(await (await fetch(url, { headers: { Accept: 'text/css' } })).text()).toContain('purple')
   } finally { await server?.close();rmSync(root, { recursive: true, force: true }) }
 })

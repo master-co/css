@@ -6,6 +6,7 @@ import { createRunnableDevEnvironment, createServer, isRunnableDevEnvironment } 
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { MasterCSSScanner } from '@master/css-tooling/scanner/node'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -52,7 +53,7 @@ for (const managed of [false, true]) {
         }
         if (closing !== 'ssr') expect((await server!.ssrLoadModule('/later.js')).css).toContain('purple')
         if (closing !== 'edge') expect((await edge.runner.import('/later.js')).css).toContain('purple')
-      }, { timeout: 5000 })
+      }, { timeout: watchDeadline })
     } finally {
       try { await server?.close();if (managed && initialized) expect(dispose).toHaveBeenCalledOnce() }
       finally { dispose.mockRestore();rmSync(root, { recursive: true, force: true }) }

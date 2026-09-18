@@ -5,6 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { build } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 async function fixture(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', run: (state: Awaited<ReturnType<typeof setup>>) => Promise<void>, exclude?: string[], managed = false) {
   const state = await setup(mode, exclude, managed)
@@ -31,7 +32,7 @@ async function setup(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', 
     if (event.code === 'END' && terminal) { events.push(terminal);terminal = undefined }
   })
   return { root, reference, style, events, cacheDir,
-    async next() { await vi.waitFor(() => expect(events.length).toBeGreaterThan(0), { timeout: 5000 });return events.shift()! },
+    async next() { await vi.waitFor(() => expect(events.length).toBeGreaterThan(0), { timeout: watchDeadline });return events.shift()! },
     write(text: string) { trace('write', text);mkdirSync(dirname(reference), { recursive: true });writeFileSync(reference, text) },
     cacheFiles() { try { return readdirSync(cacheDir).filter(name => name.startsWith('master-css-watch-')).flatMap(name => readdirSync(join(cacheDir, name)).map(file => join(cacheDir, name, file))) } catch { return [] } },
     output() { return readdirSync(join(root, 'dist'), { recursive: true, withFileTypes: true }).filter(file => file.isFile()).map(file => readFileSync(join(file.parentPath, file.name), 'utf8')).join('\n') },
@@ -56,7 +57,7 @@ for (const managed of [false, true]) for (const mode of ['static', 'runtime', 'p
       // Rolldown retains old watch files even when the next transform omits them.
       // The adapter must stop reconciliation and preserve the current CSS.
       expect(state.events.every(event => event.code === 'BUNDLE_END')).toBe(true)
-      await vi.waitFor(() => expect(state.output()).toContain('padding:4rem'), { timeout: 5000 })
+      await vi.waitFor(() => expect(state.output()).toContain('padding:4rem'), { timeout: watchDeadline })
       expect(state.output()).not.toContain('padding:99rem')
     }, undefined, managed)
   })

@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import { build, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
@@ -83,12 +84,12 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
     if (server && collect) {
       const send = vi.spyOn(server.ws, 'send')
       writeFileSync(join(root, 'a/tokens.css'), '@utilities{paint-a{padding:7rem;background:url("./pixel.svg?v=a#icon")}}.never-a{color:red}')
-      await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'update' })), { timeout: 5000 })
-      await vi.waitFor(async () => expect((await collect!()).join('\n')).toMatch(/padding:\s*7rem/), { timeout: 5000 })
+      await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'update' })), { timeout: watchDeadline })
+      await vi.waitFor(async () => expect((await collect!()).join('\n')).toMatch(/padding:\s*7rem/), { timeout: watchDeadline })
       send.mockClear()
       writeFileSync(join(root, 'a/pixel.svg'), '<svg xmlns="http://www.w3.org/2000/svg" data-owner="a-updated"/>')
-      await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'update' })), { timeout: 5000 })
-      await vi.waitFor(async () => expect((await collect!()).join('\n')).toContain('data-owner="a-updated"'), { timeout: 5000 })
+      await vi.waitFor(() => expect(send).toHaveBeenCalledWith(expect.objectContaining({ type: 'update' })), { timeout: watchDeadline })
+      await vi.waitFor(async () => expect((await collect!()).join('\n')).toContain('data-owner="a-updated"'), { timeout: watchDeadline })
     }
   } finally {
     await server?.environments.client.waitForRequestsIdle()

@@ -6,6 +6,7 @@ import { createServer, type Plugin, type ViteDevServer } from 'vite'
 import { MasterCSSServerRenderer } from '@master/css-server'
 import { afterEach, expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const interception = vi.hoisted(() => ({ afterGlobals: undefined as (() => Promise<void>) | undefined }))
 vi.mock('@master/css-compiler/stylesheet', async importOriginal => {
@@ -54,7 +55,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
     await server.environments.client.waitForRequestsIdle()
     gate = hold(fail)
     pending = server.environments.ssr.transformRequest('/entry.js').catch(error => error)
-    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: 4000 })
+    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: watchDeadline })
     const send = vi.spyOn(server.ws, 'send'), closing = server.environments.ssr.close()
     gate.release();await closing;await pending
     const result = await html(server)
@@ -73,8 +74,8 @@ test.each(modes)('BH-0004 restarting a failed manifest server transfers recovery
     await old.waitForRequestsIdle();await server.restart();expect(server.environments.client).not.toBe(old)
     expect((await html(server)).status).toBe(500)
     oldTransform.mockClear();const send = vi.spyOn(server.ws, 'send');f.write()
-    await vi.waitFor(() => expect(reloaded(send.mock.calls)).toBe(true), { timeout: 4000 })
-    await expect.poll(async () => (await html(server!)).status, { timeout: 4000 }).toBe(200)
+    await vi.waitFor(() => expect(reloaded(send.mock.calls)).toBe(true), { timeout: watchDeadline })
+    await expect.poll(async () => (await html(server!)).status, { timeout: watchDeadline }).toBe(200)
     if (mode === 'pre-render' || mode === 'progressive') expect((await html(server)).text).toContain('.card{padding:7rem}')
     expect(oldTransform).not.toHaveBeenCalled()
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }
@@ -89,7 +90,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
     if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
     gate = hold(fail);f.write('9rem')
     pending = Promise.resolve(hook.call({} as never, { file: f.dependency, server } as never)).catch(error => ({ error }))
-    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: 4000 })
+    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: watchDeadline })
     const send = vi.spyOn(server.ws, 'send'), closing = server.close()
     gate.release();await closing
     expect(await pending).toBeUndefined();expect(send).not.toHaveBeenCalled()
@@ -110,7 +111,7 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
     environment.moduleGraph.invalidateModule(module)
     await expect(environment.transformRequest(module.url)).rejects.toThrow('lifecycle-invalid-class')
     const send = vi.spyOn(server.ws, 'send');f.write('9rem')
-    await vi.waitFor(() => expect(send).toHaveBeenCalled(), { timeout: 4000 })
+    await vi.waitFor(() => expect(send).toHaveBeenCalled(), { timeout: watchDeadline })
     expect(reloaded(send.mock.calls)).toBe(false)
     expect(JSON.stringify(send.mock.calls)).toContain('js-update')
     expect((await environment.transformRequest(module.url))?.code).toContain('9rem')
@@ -123,7 +124,7 @@ for (const fail of [false, true]) test.each(['client', 'server'] as const)('BH-0
     server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'progressive', runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen();expect((await html(server)).status).toBe(500);await server.environments.client.waitForRequestsIdle()
     gate = hold(fail);f.write()
-    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: 4000 })
+    await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: watchDeadline })
     const send = vi.spyOn(server.ws, 'send'), close = closing === 'server' ? server.close() : server.environments.client.close()
     gate.release();await close;await delay(350)
     expect(send, JSON.stringify(send.mock.calls)).not.toHaveBeenCalled()

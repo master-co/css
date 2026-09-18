@@ -4,6 +4,7 @@ import { join } from 'node:path'
 import { BuildEnvironment, build, createBuilder, type Plugin, type ResolvedConfig } from 'vite'
 import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 function files(directory: string): string[] {
   try { return readdirSync(directory, { recursive: true }).map(String).filter(name => name.endsWith('invalidate')) } catch { return [] }
@@ -53,7 +54,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
       if (!('on' in result)) throw new Error('Expected watch build')
       watcher = result
       await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Initial build timeout')), 5000)
+        const timeout = setTimeout(() => reject(new Error('Initial build timeout')), watchDeadline)
         result.on('event', event => {
           if (event.code === 'ERROR') { clearTimeout(timeout);reject(event.error) }
           if (event.code === 'BUNDLE_END') { clearTimeout(timeout);resolve() }

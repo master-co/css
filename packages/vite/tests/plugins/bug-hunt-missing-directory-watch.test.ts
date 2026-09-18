@@ -4,6 +4,7 @@ import { dirname, join } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['reference-one', 'reference-three', 'entry-resource-three'].flatMap(kind => ['default', 'node'].map(backend => ({ mode, kind, backend }))))
@@ -36,7 +37,7 @@ test.each(cases)('BH-0004 missing directory recovers $kind in $mode via $backend
     mkdirSync(dirname(dependency), { recursive: true })
     writeFileSync(dependency, resource ? '<svg xmlns="http://www.w3.org/2000/svg"/>' : tokens)
     // Automatic HMR is the contract; actual watcher events remain diagnostic evidence when reconciliation supplies recovery.
-    await vi.waitFor(() => expect(notified(send.mock.calls), JSON.stringify({ observed })).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(send.mock.calls), JSON.stringify({ observed })).toBe(true), { timeout: watchDeadline })
     const result = await fetch(new URL('style.css', origin));expect(result.status).toBe(200);expect(await result.text()).toContain('7rem')
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(parent, { recursive: true, force: true }) }
 })

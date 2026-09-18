@@ -3,6 +3,7 @@ import { join } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('resource deletion and restoration recover development CSS in %s', async mode => {
   const parent = join(process.cwd(), 'tmp')
@@ -29,12 +30,12 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('resource
     expect(await (await fetch(first)).text()).toBe(svg('red'))
     rmSync(file)
     let missing = initial
-    await expect.poll(async () => { missing = await readCSS();return missing.status }, { timeout: 10000 }).toBe(500)
+    await expect.poll(async () => { missing = await readCSS();return missing.status }, { timeout: watchDeadline }).toBe(500)
     expect(missing.body).toContain('pixel.svg')
     expect(await (await fetch(first)).text()).toBe(svg('red'))
     writeFileSync(file, svg('blue'))
     let restored = missing
-    await expect.poll(async () => { restored = await readCSS();return restored.status }, { timeout: 10000 }).toBe(200)
+    await expect.poll(async () => { restored = await readCSS();return restored.status }, { timeout: watchDeadline }).toBe(200)
     const second = resourceURL(restored.body)
     expect(second.href).not.toBe(first.href)
     expect(await (await fetch(second)).text()).toBe(svg('blue'))

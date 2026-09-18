@@ -6,6 +6,7 @@ import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
 import { sassModuleID } from '../../src/utils/build-sass-source'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -59,7 +60,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
       const loaded = await server.ssrLoadModule('/entry.js')
       expect(Object.keys(loaded.default)).toEqual(['target'])
       writeFileSync(join(root, 'nested/tokens.css'), '@utilities{paint{padding:7rem;background:url("./pixel.svg?v=1#icon")}}')
-      await vi.waitFor(async () => expect(await collect(true)).toMatch(/padding:\s*7rem/), { timeout: 5000 })
+      await vi.waitFor(async () => expect(await collect(true)).toMatch(/padding:\s*7rem/), { timeout: watchDeadline })
     } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(root, { recursive: true, force: true }) }
   })
 }

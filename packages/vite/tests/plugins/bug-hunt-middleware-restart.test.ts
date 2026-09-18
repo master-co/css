@@ -6,6 +6,7 @@ import { dirname, join } from 'node:path'
 import { createServer, type ResolvedConfig } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -55,6 +56,6 @@ test.each([false, true])('BH-0004 middleware restart serves HTML and styles (man
       expect(css.status).toBe(200)
       expect(await css.text()).toContain('green')
       expect((await server!.ssrLoadModule('/server.js')).css).toContain('green')
-    }, { timeout: 5000 })
+    }, { timeout: watchDeadline })
   } finally { await server?.close();await new Promise<void>(resolve => { http.close(() => resolve()) });rmSync(root, { recursive: true, force: true }) }
 })

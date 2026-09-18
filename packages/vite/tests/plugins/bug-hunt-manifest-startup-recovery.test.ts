@@ -5,6 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises'
 import { build, createServer, type Plugin, type ViteDevServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const manifestURL = '/@id/__x00__virtual:master-css-manifest'
@@ -40,15 +41,15 @@ test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers wi
     expect(initial.status).toBe(500);expect(initial.text).toContain('tokens.css');expect(initial.text).not.toContain('<style id="master-css"')
     const send = vi.spyOn(server.ws, 'send')
     f.write('@utilities{paint{@compose definitely-missing-class;}}')
-    await vi.waitFor(() => expect(JSON.stringify(send.mock.calls)).toContain('definitely-missing-class'), { timeout: 4000 })
+    await vi.waitFor(() => expect(JSON.stringify(send.mock.calls)).toContain('definitely-missing-class'), { timeout: watchDeadline })
     expect(hasReload(send.mock.calls)).toBe(false)
     const invalid = await response(server)
     expect(invalid.status).toBe(500);expect(invalid.text).toContain('definitely-missing-class')
     const invalidManifest = await response(server, manifestURL)
     expect(invalidManifest.status).toBe(500);expect(invalidManifest.text).toContain('definitely-missing-class')
     send.mockClear();f.write()
-    await vi.waitFor(() => expect(hasReload(send.mock.calls)).toBe(true), { timeout: 4000 })
-    await expect.poll(async () => (await response(server!)).status, { timeout: 4000 }).toBe(200)
+    await vi.waitFor(() => expect(hasReload(send.mock.calls)).toBe(true), { timeout: watchDeadline })
+    await expect.poll(async () => (await response(server!)).status, { timeout: watchDeadline }).toBe(200)
     const manifest = await response(server, manifestURL)
     expect(manifest.status).toBe(200);expect(manifest.text).toContain('"card"');expect(manifest.text).toContain('7rem')
     if (mode === 'pre-render' || mode === 'progressive') expect((await response(server)).text).toContain('.card{padding:7rem}')
@@ -73,8 +74,8 @@ test.each(['client', 'ssr', 'server'] as const)('BH-0004 manifest bootstrap reco
     else await server.environments[closing].close()
     const send = vi.spyOn(server.ws, 'send');f.write()
     if (closing === 'ssr') {
-      await vi.waitFor(() => expect(hasReload(send.mock.calls)).toBe(true), { timeout: 4000 })
-      await expect.poll(async () => (await response(server!)).status, { timeout: 4000 }).toBe(200)
+      await vi.waitFor(() => expect(hasReload(send.mock.calls)).toBe(true), { timeout: watchDeadline })
+      await expect.poll(async () => (await response(server!)).status, { timeout: watchDeadline }).toBe(200)
       expect((await response(server)).text).toContain('.card{padding:7rem}')
     } else { await delay(350);expect(send).not.toHaveBeenCalled() }
   } finally { await server?.environments.client.waitForRequestsIdle();await server?.close();rmSync(f.parent, { recursive: true, force: true }) }

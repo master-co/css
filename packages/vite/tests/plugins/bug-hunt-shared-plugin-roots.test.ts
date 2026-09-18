@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
 
@@ -44,6 +45,6 @@ test.each([false, true])('BH-0004 concurrent roots isolate styles when sharing p
       expect(css).toContain('purple')
       expect(css).not.toContain('red')
       expect((await byRoot[1].ssrLoadModule('/server.js')).css).toContain('purple')
-    }, { timeout: 5000 })
+    }, { timeout: watchDeadline })
   } finally { await Promise.all(servers.map(server => server.close()));for (const root of roots) rmSync(root, { recursive: true, force: true }) }
 })

@@ -4,6 +4,7 @@ import { dirname, join, relative } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 const cases = modes.flatMap(mode => ['local', 'entry'].flatMap(kind => ['reference-directory', 'resource-file', 'resource-directory'].map(missing => ({ mode, kind, missing }))))
@@ -40,12 +41,12 @@ test.each(cases)('BH-0004 startup $missing recovers $kind in $mode', async ({ mo
     const send = vi.spyOn(server.ws, 'send')
     if (process.env.BH_TRACE) console.log('startup-initial-watch', JSON.stringify({ kind, missing, mode, watched: server.watcher.getWatched() }))
     f.restore()
-    await vi.waitFor(() => expect(notified(send.mock.calls), JSON.stringify({ observed, messages: send.mock.calls })).toBe(true), { timeout: 5000 })
+    await vi.waitFor(() => expect(notified(send.mock.calls), JSON.stringify({ observed, messages: send.mock.calls })).toBe(true), { timeout: watchDeadline })
     let restored = ''
     await expect.poll(async () => {
       const response = await fetch(new URL('style.css', origin));restored = await response.text()
       return response.status
-    }, { timeout: 5000 }).toBe(200)
+    }, { timeout: watchDeadline }).toBe(200)
     const encoded = restored.match(/const __vite__css = ("(?:[^"\\]|\\.)*")/)
     const css = encoded ? JSON.parse(encoded[1]) as string : restored
     expect(css).toMatch(/padding:\s*7rem/)
@@ -72,7 +73,7 @@ test.each([false, true])('BH-0004 failed servers recover independently with shar
     await servers[0].close()
     const send = vi.spyOn(servers[1].ws, 'send')
     fixtures[1].restore()
-    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: 5000 })
+    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const result = await servers[1].environments.client.transformRequest('/style.css')
     expect(result?.code).toContain('7rem')
     expect(result?.code).not.toContain(fixtures[0].parent)
@@ -93,7 +94,7 @@ test.each([false, true])('BH-0004 resource-failing servers recover independently
     await servers[0].close()
     const send = vi.spyOn(servers[1].ws, 'send')
     fixtures[1].restore()
-    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: 5000 })
+    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const result = await servers[1].environments.client.transformRequest('/style.css')
     expect(result?.code).toContain('7rem')
     expect(result?.code).not.toContain(fixtures[0].parent)

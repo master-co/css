@@ -6,6 +6,7 @@ import { expect, test } from 'vitest'
 import masterCSS, { type MasterCSSVitePluginContext } from '../../src/core'
 import BuildStylesheetRecoveryPlugin from '../../src/plugins/build-stylesheet-recovery'
 import { withStylesheetDependencies } from '../../src/utils/failed-stylesheet-dependencies'
+import { watchDeadline } from '../watch-deadline-helper'
 
 function files(directory: string): string[] {
   try { return readdirSync(directory, { recursive: true }).map(String).filter(name => name.endsWith('invalidate')) } catch { return [] }
@@ -70,7 +71,7 @@ test('independent plugin configurations sharing a cache directory release only t
       if (!('on' in watcher)) throw new Error('Expected watcher')
       watchers.push(watcher)
       await new Promise<void>((resolve, reject) => {
-        const timeout = setTimeout(() => reject(new Error('Initial build timeout')), 5000)
+        const timeout = setTimeout(() => reject(new Error('Initial build timeout')), watchDeadline)
         watcher.on('event', event => { if (event.code === 'ERROR') { clearTimeout(timeout);resolve() } })
       })
     }

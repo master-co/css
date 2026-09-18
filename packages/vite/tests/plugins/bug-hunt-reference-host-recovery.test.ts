@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import { build, createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
@@ -61,11 +62,11 @@ test.each(cases)('BH-0004 dev reference recovery $syntax/$kind/startup=$startupM
     const waitNotification = () => vi.waitFor(() => expect(send.mock.calls.some((args: readonly unknown[]) => {
       const message = args[0]
       return Boolean(message && typeof message === 'object' && 'type' in message && ['update', 'full-reload', 'error'].includes(String(message.type)))
-    }), JSON.stringify({ observed, messages: send.mock.calls })).toBe(true), { timeout: 5000 })
+    }), JSON.stringify({ observed, messages: send.mock.calls })).toBe(true), { timeout: watchDeadline })
     if (!startupMissing) {
       rmSync(f.reference)
       await waitNotification()
-      await expect.poll(async () => (await readGraph()).status, { timeout: 5000 }).toBe(500)
+      await expect.poll(async () => (await readGraph()).status, { timeout: watchDeadline }).toBe(500)
     }
     send.mockClear()
     writeFileSync(f.reference, f.tokens(7))
@@ -73,7 +74,7 @@ test.each(cases)('BH-0004 dev reference recovery $syntax/$kind/startup=$startupM
     await expect.poll(async () => {
       const result = await readGraph()
       return result.status === 200 && /padding:\s*7rem/.test(result.body)
-    }, { timeout: 5000 }).toBe(true)
+    }, { timeout: watchDeadline }).toBe(true)
     const restored = await readGraph()
     expect(restored.body).not.toMatch(/\.never|@reference|@compose/)
     const resource = restored.body.match(/url\(["']?([^"'\)]+\.svg[^"'\)]*)["']?\)/)?.[1]
@@ -101,7 +102,7 @@ test.each(cases)('BH-0004 build-watch reference recovery $syntax/$kind/startup=$
       if (event.code === 'BUNDLE_END' || event.code === 'ERROR') terminal = event
       if (event.code === 'END' && terminal) { events.push(terminal); terminal = undefined }
     })
-    const nextEvent = async (phase: string) => { await vi.waitFor(() => expect(events.length, phase).toBeGreaterThan(0), { timeout: 5000 }); return events.shift()! }
+    const nextEvent = async (phase: string) => { await vi.waitFor(() => expect(events.length, phase).toBeGreaterThan(0), { timeout: watchDeadline }); return events.shift()! }
     const initial = await nextEvent('initial')
     expect(initial.code).toBe(startupMissing ? 'ERROR' : 'BUNDLE_END')
     const output = () => readdirSync(join(f.root, 'dist'), { recursive: true, withFileTypes: true }).filter(file => file.isFile()).map(file => readFileSync(join(file.parentPath, file.name), 'utf8')).join('\n')
@@ -138,12 +139,12 @@ test.each([false, true])('BH-0004 external missing reference survives SSR close;
     await server.environments.ssr.close()
     const send = vi.spyOn(server.ws, 'send')
     writeFileSync(reference, '@utilities{paint{padding:7rem}}')
-    await vi.waitFor(() => expect(send.mock.calls.length).toBeGreaterThan(0), { timeout: 5000 })
+    await vi.waitFor(() => expect(send.mock.calls.length).toBeGreaterThan(0), { timeout: watchDeadline })
     expect((await server.environments.client.transformRequest('/style.css'))?.code).toContain('7rem')
     if (!checkObsolete) return
     // Remove this dependency through a successful source transform before another edit.
     writeFileSync(source, '.target{padding:3rem}')
-    await expect.poll(async () => (await server!.environments.client.transformRequest('/style.css'))?.code, { timeout: 5000 }).toContain('3rem')
+    await expect.poll(async () => (await server!.environments.client.transformRequest('/style.css'))?.code, { timeout: watchDeadline }).toContain('3rem')
     await server.environments.client.waitForRequestsIdle()
     send.mockClear()
     const observed = new Promise<void>(resolve => server!.watcher.on('change', file => { if (file === reference) resolve() }))

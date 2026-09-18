@@ -4,6 +4,7 @@ import { createServer as createHTTPServer } from 'node:http'
 import { createRunnableDevEnvironment, createServer, isRunnableDevEnvironment } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const cases = (['static', 'runtime', 'pre-render', 'progressive'] as const).flatMap(mode => [false, true].map(perEnvironment => ({ mode, perEnvironment })))
 
@@ -70,7 +71,7 @@ test.each(cases)('retained graphs survive idle environment replacement mode=$mod
     const later = await readGraph((await replacement.runner.import('/later.js')).css, origin)
     expect(later.css).toMatch(/\.later\s*\{[^}]*color:\s*green/)
     writeFileSync(join(root, 'later-child.css'), '@import "/base/external.css";.later{color:purple;background-image:url("./later%23%3F.svg?q=1#part")}')
-    await vi.waitFor(async () => expect((await readGraph((await replacement.runner.import('/later.js')).css, origin)).css).toMatch(/\.later\s*\{[^}]*color:\s*purple/), { timeout: 10000 })
+    await vi.waitFor(async () => expect((await readGraph((await replacement.runner.import('/later.js')).css, origin)).css).toMatch(/\.later\s*\{[^}]*color:\s*purple/), { timeout: watchDeadline })
     await expectAssets(initial.assets)
     await expectAssets(later.assets)
     for (const file of server.config.server.fs.allow) if (file.includes('/master-css-vite-resources-')) copies.add(file)
@@ -102,7 +103,7 @@ test.each(restartCases)('retained graph restart mode=$mode middleware=$middlewar
     const current = await readGraph((await server.ssrLoadModule('/initial.js')).css, currentOrigin)
     expect([...current.assets.keys()].sort()).not.toEqual([...old.assets.keys()].sort())
     writeFileSync(join(root, 'initial-child.css'), '@import "/base/external.css";.initial{color:purple;background-image:url("./initial%23%3F.svg?q=1#part")}')
-    await vi.waitFor(async () => expect((await readGraph((await server!.ssrLoadModule('/initial.js')).css, currentOrigin)).css).toMatch(/\.initial\s*\{[^}]*color:\s*purple/), { timeout: 10000 })
+    await vi.waitFor(async () => expect((await readGraph((await server!.ssrLoadModule('/initial.js')).css, currentOrigin)).css).toMatch(/\.initial\s*\{[^}]*color:\s*purple/), { timeout: watchDeadline })
     await expectAssets(current.assets)
     for (const file of server.config.server.fs.allow) if (file.includes('/master-css-vite-resources-')) copies.add(file)
   } finally {

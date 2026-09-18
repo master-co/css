@@ -5,6 +5,7 @@ import { dirname, join } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const require = createRequire(import.meta.url)
 const sassDirectory = dirname(createRequire(require.resolve('vite')).resolve('sass'))
@@ -39,7 +40,7 @@ for (const base of ['/', '/nested/']) {
         writeFileSync(join(root, file), source)
         await vi.waitFor(() => expect(send).toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([
           { type: 'css-update', path: '/style.scss', acceptedPath: '/style.scss', timestamp: expect.any(Number) }
-        ]) }), { timeout: 3000 })
+        ]) }), { timeout: watchDeadline })
         expect(send).not.toHaveBeenCalledWith({ type: 'update', updates: expect.arrayContaining([expect.objectContaining({ path: '/other.scss' })]) })
         url.searchParams.set('t', String(Date.now()))
         const updated = await fetch(url, { headers: { Accept: 'text/css' } })

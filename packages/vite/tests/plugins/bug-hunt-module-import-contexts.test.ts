@@ -3,6 +3,7 @@ import { basename, join } from 'node:path'
 import { createServer } from 'vite'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared imported CSS keeps two root module scopes, resources and HMR in %s', async mode => {
   const parent = join(process.cwd(), 'tmp'); mkdirSync(parent, { recursive: true })
@@ -48,7 +49,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('shared i
       const updated = await server!.ssrLoadModule('/entry.js')
       expect(await collect(updated.cssA)).toContain('padding:3rem')
       expect(await collect(updated.cssB)).toContain('padding:3rem')
-    }, { timeout: 5000 })
+    }, { timeout: watchDeadline })
   } finally {
     await server?.environments.client.waitForRequestsIdle(); await server?.close()
     rmSync(root, { recursive: true, force: true })

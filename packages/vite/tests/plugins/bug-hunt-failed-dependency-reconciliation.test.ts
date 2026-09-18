@@ -5,6 +5,7 @@ import { createServer, type PluginOption, type WatchOptions } from 'vite'
 import { setTimeout as delay } from 'node:timers/promises'
 import { expect, test, vi } from 'vitest'
 import masterCSS from '../../src/core'
+import { watchDeadline } from '../watch-deadline-helper'
 
 const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(resource = false) {
@@ -36,7 +37,7 @@ for (const resource of [false, true]) test.each(modes)('BH-0004 reconciles faile
     const response = await fetch(new URL('style.css', origin));expect(response.status).toBe(500);expect(await response.text()).toContain(resource ? 'pixel.svg' : 'tokens.css')
     const send = vi.spyOn(server.ws, 'send')
     f.restore()
-    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(send.mock.calls)).toBe(true), { timeout: watchDeadline })
     expect(observed).toEqual([])
     const recovered = await fetch(new URL('style.css', origin));expect(recovered.status).toBe(200);expect(await recovered.text()).toContain('7rem')
     add.mockRestore()
@@ -66,7 +67,7 @@ test.each(['ssr', 'client', 'server'])('BH-0004 failed dependency reconciliation
     else await result.server.environments[closing].close()
     result.send.mockClear();result.transform.mockClear();f.restore()
     if (closing === 'ssr') {
-      await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: 3000 })
+      await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
       const response = await fetch(new URL('style.css', result.origin));expect(response.status).toBe(200);expect(await response.text()).toContain('7rem')
     } else {
       await delay(350)
@@ -81,7 +82,7 @@ test.each([false, true])('BH-0004 pending reconciliations remain isolated across
     for (const f of fs) results.push(await start(f, shared ? plugins : masterCSS({ mode: 'static', runtime: false })))
     await results[0].server.close();results[0].send.mockClear();results[0].transform.mockClear()
     for (const f of fs) f.restore()
-    await vi.waitFor(() => expect(notified(results[1].send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(results[1].send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const response = await fetch(new URL('style.css', results[1].origin));expect(response.status).toBe(200);expect(await response.text()).toContain('7rem')
     expect(notified(results[0].send.mock.calls)).toBe(false);expect(results[0].transform).not.toHaveBeenCalled()
   } finally { for (let i = 0; i < fs.length; i++) await stop(fs[i], results[i]) }
@@ -93,13 +94,13 @@ test('BH-0004 unchanged failures are not retried continuously and corrected cont
     result = await start(f)
     await delay(350);expect(result.transform).not.toHaveBeenCalled()
     mkdirSync(dirname(f.dependency), { recursive: true });writeFileSync(f.dependency, '@utilities{paint{@compose definitely-missing-class;}}')
-    await vi.waitFor(() => expect(result!.transform).toHaveBeenCalled(), { timeout: 3000 })
-    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('definitely-missing-class'), { timeout: 3000 })
+    await vi.waitFor(() => expect(result!.transform).toHaveBeenCalled(), { timeout: watchDeadline })
+    await vi.waitFor(() => expect(JSON.stringify(result!.send.mock.calls)).toContain('definitely-missing-class'), { timeout: watchDeadline })
     await result.server.environments.client.waitForRequestsIdle()
     const attempts = result.transform.mock.calls.length
     await delay(350);expect(result.transform).toHaveBeenCalledTimes(attempts);expect(notified(result.send.mock.calls)).toBe(false)
     f.restore()
-    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const response = await fetch(new URL('style.css', result.origin));expect(response.status).toBe(200);expect(await response.text()).toContain('7rem')
   } finally { await stop(f, result) }
 })
@@ -113,7 +114,7 @@ test('BH-0004 a successful edit drops obsolete failed dependency reconciliation'
     const events: string[] = []
     result.server.watcher.on('all', (event, file) => { if (file.startsWith(f.parent)) events.push(event) })
     writeFileSync(join(f.root, 'style.css'), '.target{padding:9rem}')
-    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const response = await fetch(new URL('style.css', result.origin));expect(response.status).toBe(200);expect(await response.text()).toContain('9rem')
     result.send.mockClear();result.transform.mockClear();f.restore()
     await delay(350)
@@ -142,11 +143,11 @@ test('BH-0004 two failed owners recover independently in one environment', async
     result = await start(f)
     const initial = await fetch(new URL('second.css', result.origin));expect(initial.status).toBe(500);await initial.text()
     result.transform.mockClear();f.restore()
-    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     expect(result.transform.mock.calls.some(([url]) => url.includes('second.css'))).toBe(false)
     const first = await fetch(new URL('style.css', result.origin));expect(first.status).toBe(200);expect(await first.text()).toContain('7rem')
     result.send.mockClear();mkdirSync(dirname(second), { recursive: true });writeFileSync(second, '@utilities{paint{padding:9rem}}')
-    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(notified(result!.send.mock.calls)).toBe(true), { timeout: watchDeadline })
     const recovered = await fetch(new URL('second.css', result.origin));expect(recovered.status).toBe(200);expect(await recovered.text()).toContain('9rem')
   } finally { await stop(f, result) }
 })
@@ -162,7 +163,7 @@ test.each(['client', 'server'])('BH-0004 closing %s during a reconciliation supp
       if (enabled && id === join(f.root, 'style.css')) { entered = true;await gate }
     } }, ...masterCSS({ mode: 'static', runtime: false })])
     enabled = true;f.restore()
-    await vi.waitFor(() => expect(entered).toBe(true), { timeout: 3000 })
+    await vi.waitFor(() => expect(entered).toBe(true), { timeout: watchDeadline })
     const close = closing === 'server' ? result.server.close() : result.server.environments.client.close()
     release();await close
     result.transform.mockClear();await delay(350)
