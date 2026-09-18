@@ -1,6 +1,6 @@
 # 覆蓋清單
 
-- 0265：把BH-0004剩下的`external-import-order`基準（7 PASS／13 FAIL，0264前後不變）逐案分類：**A** 6項為明確限制（被匯入stylesheet自身含未解析外部`@import`，CSS不允許`@import`在條件／layer區塊內，已有專屬錯誤與測試）；**B** 4項（same-layer、different-layers）可修——基準內`different-layers` FAIL而只多一行`@layer a,b;`的`predeclared-layers` PASS，證明展開時外部import被提前會翻轉layer首次出現順序，補一行依作者順序的`@layer`宣告即可，修後基準為11 PASS／9 FAIL；**C** 3項（external-last、conditional-local）外部與本地皆未分層，只能靠出現順序決勝，而`@import`必須在其他規則之前，屬展開的固有邊界。本批無產品變更。63historical／62fixed／1unresolved。[證據](evidence/0265-final-checks.json)；[批次](batches/0265-external-import-classification.md)；[前次](progress-history-0265-external-imports.md)。
+- 0266：使用者授權後交付兩個長期待審patch。`cb0233d56`把`plugin-runtime.test.ts`的兩個watch測試改為plugin實際實作的契約（replay錯誤進`compilation.errors`、未存在的reset路徑進`missingDependencies`），套用前後雜湊與記錄相符。`68ced2463`以`pnpm patch`正式交付`watchpack@2.5.2`的initial-scan修正（只有掃描確實找到的項目才移除missing watcher），`patch-commit`帶進的12個無關套件與版本漂移已還原，最終lockfile僅7 insertions／4 deletions。**`@master/css-webpack`因此12 files／88 tests全綠**（原2＋1 FAIL）；build 28/28、全套件103/107，未通過僅剩wasm×2、nuxt、vite，與baseline相同。另訂正0265：實測證明`same-layer`無法以`@layer`宣告修復（layer內順序而非layer順序），BH-0004 external可修項由4降為**2**（`different-layers`），修後基準為9 PASS／11 FAIL。pendingApprovals清空。63historical／62fixed／1unresolved。[證據](evidence/0266-final-checks.json)；[批次](batches/0266-approved-patches.md)；[前次](progress-history-0266-approved-patches.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 

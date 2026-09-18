@@ -1,0 +1,7 @@
+# 0266 Previous checkpoint archive
+
+以下0265交接與受影響列逐字保留。
+
+- 0265：把BH-0004剩下的`external-import-order`基準（7 PASS／13 FAIL，0264前後不變）逐案分類：**A** 6項為明確限制（被匯入stylesheet自身含未解析外部`@import`，CSS不允許`@import`在條件／layer區塊內，已有專屬錯誤與測試）；**B** 4項（same-layer、different-layers）可修——基準內`different-layers` FAIL而只多一行`@layer a,b;`的`predeclared-layers` PASS，證明展開時外部import被提前會翻轉layer首次出現順序，補一行依作者順序的`@layer`宣告即可，修後基準為11 PASS／9 FAIL；**C** 3項（external-last、conditional-local）外部與本地皆未分層，只能靠出現順序決勝，而`@import`必須在其他規則之前，屬展開的固有邊界。本批無產品變更。63historical／62fixed／1unresolved。[證據](evidence/0265-final-checks.json)；[批次](batches/0265-external-import-classification.md)；[前次](progress-history-0265-external-imports.md)。
+
+| BH-0004 | P1 | 已確認／部分修正 | CSS import 展開丟失檔案邊界，條件、cascade及managed定義失真 | source-preservation已於0258交付。0263定位根因：definition directive被native at-rule包住無法lowering，源自展開qualified import時的文字包裹。0264交付`fc879fad4`把被匯入stylesheet頂層的六個definition family切出wrapper（保留copied source spans），qualified矩陣60觀察由20失敗變0失敗（direct-native／direct-wasm各12/0），native與Wasm一致；364 Rust tests、compiler 428、next 152 PASS，既有失敗serial下與baseline相同。0265把`external-import-order`的13項失敗分類：6項明確限制（nested未解析外部import，CSS不允許`@import`在條件／layer區塊內）、4項可修（same-layer／different-layers，展開時補依作者順序的`@layer`宣告即可，`predeclared-layers` PASS為證，修後11P/9F）、3項固有邊界（external-last／conditional-local皆未分層）。仍待：該`@layer`宣告（會改CSS輸出，需授權）與完整public／host graph遷移。[0264](batches/0264-qualified-import-definitions.md)；[0263](batches/0263-bh-0004-contained-directives.md) |
