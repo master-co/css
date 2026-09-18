@@ -136,6 +136,14 @@ function nativeTargetPackageContract(commit) {
 }
 
 function contractSurfaceSources(commit) {
+  // Two colour blocks postdate the baseline, so requiring them there makes the
+  // surface impossible to extract at all. Contribute nothing for a block the
+  // baseline never had, and keep it required in the target so a later removal
+  // still fails the surface.
+  const introduced = (source, signature) =>
+    commit === RUST_REFACTOR_CONTRACT_COMMIT && !source.includes(signature)
+      ? ''
+      : extractContractBlock(source, signature)
   const protocol = sourceAtCommit(commit, 'packages/binding/src/protocol.ts')
   const compilerBinding = sourceAtCommit(commit, 'packages/binding/src/compiler-binding-contract.ts')
   const nativeLoader = sourceAtCommit(commit, 'packages/binding/src/native-loader.ts')
@@ -226,8 +234,8 @@ function contractSurfaceSources(commit) {
         + extractContractBlock(language, 'pub struct LanguageCompletionEntryIr')
         + extractContractBlock(language, 'pub struct LanguageCompletionIndexIr')
         + extractContractBlock(language, 'pub struct LanguageColorPresentationIr')
-        + extractContractBlock(language, 'pub struct LanguageColorFormatIr')
-        + extractContractBlock(language, 'pub enum LanguageColorExpressionIr')
+        + introduced(language, 'pub struct LanguageColorFormatIr')
+        + introduced(language, 'pub enum LanguageColorExpressionIr')
         + extractContractBlock(language, 'pub struct LanguageColorCandidateInputIr')
         + extractContractBlock(language, 'pub struct LanguageColorTokenIr')
         + extractContractBlock(language, 'pub struct LanguageColorTokensIr')
