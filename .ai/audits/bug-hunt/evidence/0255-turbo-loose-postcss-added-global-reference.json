@@ -1,0 +1,178 @@
+{
+  "scenario": "postcss-added-global-reference",
+  "bundler": "turbopack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "input": {
+    "a": "@theme{--image-audit:url(\"./new.svg?rev=1#shape\")}.direct{color:#123456;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "addGlobalReference": true,
+    "resourceFixture": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 72ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1386ms\n  Running TypeScript ...\n  Finished TypeScript in 2ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 43ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module-css-module__ZUi-0a__direct card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+        },
+        {
+          "selector": ".card-module-css-module__ZUi-0a__direct",
+          "declarations": "background-image: var(--image-audit);"
+        }
+      ],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module-css-module__ZUi-0a__direct card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+        },
+        {
+          "selector": ".card-module-css-module__ZUi-0a__direct",
+          "declarations": "background-image: var(--image-audit);"
+        }
+      ],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/1vfe8p95_x5ja.css",
+      "text": ".card_direct__vAL_y{color:#123456;border-top:7px solid red}\n.card-module-css-module__ZUi-0a__direct{background-image:var(--image-audit);}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;@theme{--image-audit:url(\"./new.svg?rev=1#shape\")}.direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{border-top:7px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card-module-css-module__ZUi-0a__direct card_direct__vAL_y\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1vfe8p95_x5ja.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1vfe8p95_x5ja.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ZPvtE9/app/card.module.css.module.css",
+      "css": "@import \"../.master/stylesheets/f559d9591a481db1d95f961804ce0dc1c156a7a9497854a63db9d1499173d6ec/ba030202d588bf602a08f60e42310444c55d2d86ba1230ec9e78f720723880ad-entry.css\";\n.direct {\n    composes: card_direct__vAL_y from global\n}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ZPvtE9/.master/stylesheets/f559d9591a481db1d95f961804ce0dc1c156a7a9497854a63db9d1499173d6ec/ba030202d588bf602a08f60e42310444c55d2d86ba1230ec9e78f720723880ad-entry.css.css",
+      "css": ".card_direct__vAL_y {\n  color: #123456;\n  border-top: 7px solid red;\n}"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ZPvtE9/.master/stylesheets/f559d9591a481db1d95f961804ce0dc1c156a7a9497854a63db9d1499173d6ec/ba030202d588bf602a08f60e42310444c55d2d86ba1230ec9e78f720723880ad-entry.css.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

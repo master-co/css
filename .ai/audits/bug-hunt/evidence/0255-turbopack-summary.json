@@ -1,0 +1,747 @@
+[
+  {
+    "file": "0255-turbo-loose-postcss-added-global-reference.json",
+    "scenario": "postcss-added-global-reference",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__ZUi-0a__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__ZUi-0a__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "ba030202d588bf602a08f60e42310444c55d2d86ba1230ec9e78f720723880ad-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-loose-postcss-child-global-resource.json",
+    "scenario": "postcss-child-global-resource",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51757/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__Yo8rqq__direct card_direct__vAL_y other_shared__voRng"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51757/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__Yo8rqq__direct card_direct__vAL_y other_shared__voRng"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-entry.css.css",
+      "a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-78bafb03ed6be1b74229979cf5557593aa88ce4a8f6849f0169039fc3f73d78e.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-loose-postcss-generated-keyframe.json",
+    "scenario": "postcss-generated-keyframe",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__O1jOcG__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__O1jOcG__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "2079ba9f4fd6d09220733485c34b7b218710132fe2ea27891706ca6a7dd74d0c-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-loose-postcss-global-context.json",
+    "scenario": "postcss-global-context",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(17, 17, 17)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__s4grYW__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(17, 17, 17)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__s4grYW__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "74d4ee7d8fe555264661ed5bfd73156456681b49389de8ceeccdd5077ad642f1-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-loose-postcss-global-resource.json",
+    "scenario": "postcss-global-resource",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51774/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__HII6Uq__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51774/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__HII6Uq__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "4ad7918e159c9ffe10dc5f50f1a9010af7f7bfc4b22831d43f4017c2c5348f02-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-loose-postcss-imported-keyframe.json",
+    "scenario": "postcss-imported-keyframe",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other_fade__MHG7W",
+        "frames": 0,
+        "classes": "card-module-css-module__H_mkpq__direct card_direct__vAL_y other_shared__f3TK2"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other_fade__MHG7W",
+        "frames": 0,
+        "classes": "card-module-css-module__H_mkpq__direct card_direct__vAL_y other_shared__f3TK2"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "ea586fee1c3b88293e56ff96556483557259203e6e48639077f6399dee819a9a-entry.css.css",
+      "ea586fee1c3b88293e56ff96556483557259203e6e48639077f6399dee819a9a-335ad91f7ba5d56ff45d631507e11ae040f47e76f447222d7775d5b11ab3ce16.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-added-global-reference-master.json",
+    "scenario": "postcss-added-global-reference",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__qh7RWW__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__qh7RWW__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "b6bacaefdce95f18de7b0fa390ef31a53010bb86d606960d0728c48c6a34b418-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-added-global-reference-pure.json",
+    "scenario": "postcss-added-global-reference",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__pjauLG__direct"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__pjauLG__direct"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-child-global-resource-master.json",
+    "scenario": "postcss-child-global-resource",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51636/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__5V1GKG__direct card_direct__vAL_y other_shared__voRng"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51636/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__5V1GKG__direct card_direct__vAL_y other_shared__voRng"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "79d34c1dc417174d5e50c798e59ba3a1d9beb51fdc934e67d6d3ffde1b74e90d-entry.css.css",
+      "79d34c1dc417174d5e50c798e59ba3a1d9beb51fdc934e67d6d3ffde1b74e90d-e27db9ae2aa4423eeb224d4ebbddcdfc30f7bc523f0ef2893aa0e2dee6c51539.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-child-global-resource-pure.json",
+    "scenario": "postcss-child-global-resource",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 1,
+    "observations": [],
+    "postcssFiles": [
+      "card.module.css",
+      "other.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-composes-master.json",
+    "scenario": "postcss-composes",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__Row5bG__direct card_direct__vAL_y other_shared__f3TK2"
+      },
+      {
+        "browser": "webkit",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__Row5bG__direct card_direct__vAL_y other_shared__f3TK2"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "1afc540067eea1ad487ae736234e2dd6bf878d8834b944cae05e8f4284316104-entry.css.css",
+      "1afc540067eea1ad487ae736234e2dd6bf878d8834b944cae05e8f4284316104-743f3fc2d3b2bbe1743f725b5fb94c3e94a0189a07c238470762db6146b73c55.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-composes-pure.json",
+    "scenario": "postcss-composes",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__erlSxq__direct other-module__MLPdeW__shared"
+      },
+      {
+        "browser": "webkit",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__erlSxq__direct other-module__MLPdeW__shared"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css",
+      "other.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-generated-keyframe-master.json",
+    "scenario": "postcss-generated-keyframe",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__o-Vuvq__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__o-Vuvq__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "38fd9f7b5e2e09a35f8f25c09f5cfd49194758ffddf6b59b12072bb1b477888e-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-generated-keyframe-pure.json",
+    "scenario": "postcss-generated-keyframe",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card-module__BLxoJG__fade",
+        "frames": 0,
+        "classes": "card-module__BLxoJG__direct"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card-module__BLxoJG__fade",
+        "frames": 0,
+        "classes": "card-module__BLxoJG__direct"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-global-context-master.json",
+    "scenario": "postcss-global-context",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(17, 17, 17)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__8v9RYG__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(17, 17, 17)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__8v9RYG__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "442e0eab4f002828a3ae2ad57dcb7032068192c1a146270ccd7c46e69f875444-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-global-context-pure.json",
+    "scenario": "postcss-global-context",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(0, 0, 0)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__jajxDG__direct"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(0, 0, 0)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__jajxDG__direct"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-global-resource-master.json",
+    "scenario": "postcss-global-resource",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51655/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__QxY5IG__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "url(\"http://127.0.0.1:51655/_next/static/media/b1bb5ae33cf22",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module-css-module__QxY5IG__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "4b3fc3f47bbc88eb5053a86837a62caf5eeec8ac972a1ae86a6e4e6d074bd99f-entry.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-global-resource-pure.json",
+    "scenario": "postcss-global-resource",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__VHQKHa__direct"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card-module__VHQKHa__direct"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-imported-keyframe-master.json",
+    "scenario": "postcss-imported-keyframe",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other_fade__MHG7W",
+        "frames": 0,
+        "classes": "card-module-css-module__qeY86W__direct card_direct__vAL_y other_shared__f3TK2"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other_fade__MHG7W",
+        "frames": 0,
+        "classes": "card-module-css-module__qeY86W__direct card_direct__vAL_y other_shared__f3TK2"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css.module.css",
+      "dab255e5de25885e35212e1f29d459b4afa3272993abcefa146b97596dcc4fd1-entry.css.css",
+      "dab255e5de25885e35212e1f29d459b4afa3272993abcefa146b97596dcc4fd1-165bbdf2b1513ce76dd54ab572bdeafb508b8f24868dcb8abe39c440f1297e8f.css.css"
+    ]
+  },
+  {
+    "file": "0255-turbo-postcss-imported-keyframe-pure.json",
+    "scenario": "postcss-imported-keyframe",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other-module__4Cn6pW__fade",
+        "frames": 0,
+        "classes": "card-module___K8Twa__direct other-module__4Cn6pW__shared"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "other-module__4Cn6pW__fade",
+        "frames": 0,
+        "classes": "card-module___K8Twa__direct other-module__4Cn6pW__shared"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css",
+      "other.module.css"
+    ]
+  },
+  {
+    "file": "0255-turbopack-module-animation-master.json",
+    "scenario": "module-animation",
+    "bundler": "turbopack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__th0iuq__direct card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card-module-css-module__th0iuq__direct card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": []
+  },
+  {
+    "file": "0255-turbopack-module-animation-pure.json",
+    "scenario": "module-animation",
+    "bundler": "turbopack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card-module__2vDc6W__fade",
+        "frames": 0,
+        "classes": "card-module__2vDc6W__direct"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card-module__2vDc6W__fade",
+        "frames": 0,
+        "classes": "card-module__2vDc6W__direct"
+      }
+    ],
+    "postcssFiles": []
+  },
+  {
+    "file": "0255-webpack-loose-postcss-global-context.json",
+    "scenario": "postcss-global-context",
+    "bundler": "webpack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": true,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "none",
+        "frames": 0,
+        "classes": "card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": [
+      "card.module.css",
+      "card.module.css"
+    ]
+  },
+  {
+    "file": "0255-webpack-module-animation-master.json",
+    "scenario": "module-animation",
+    "bundler": "webpack",
+    "pure": false,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "fade",
+        "frames": 2,
+        "classes": "card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "fade",
+        "frames": 2,
+        "classes": "card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": []
+  },
+  {
+    "file": "0255-webpack-module-animation-pure.json",
+    "scenario": "module-animation",
+    "bundler": "webpack",
+    "pure": true,
+    "build": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card_direct__vAL_y"
+      },
+      {
+        "browser": "webkit",
+        "pass": false,
+        "color": "rgb(18, 52, 86)",
+        "background": "none",
+        "animation": "card_fade__leUQF",
+        "frames": 0,
+        "classes": "card_direct__vAL_y"
+      }
+    ],
+    "postcssFiles": []
+  }
+]

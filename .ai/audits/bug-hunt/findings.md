@@ -1,6 +1,6 @@
 # 問題索引
 
-- 0254：五份帳本頭部較早交接逐字歸檔至`progress-history-0254-ledger-heads.md`（README 47.0K→26.6K）；0253後`@components`殘餘成長取樣為序列化／配置常數，無線性搜尋frame，已分類不新增finding。無產品變更。[證據](evidence/0254-final-checks.json)；[批次](batches/0254-ledger-archive-manifest-residual.md)；[前次](progress-history-0254-ledger-archive.md)。
+- 0255：Turbopack實際host對照7個PostCSS情境：首輪嚴格檔名比對是confound（Turbopack側檔名為`card.module.css.module.css`），寬鬆比對後確認user PostCSS作用在Turbopack側模組、combined-root與late resource契約不存在；無plugin的`module-animation`證實Turbopack Module引用preset animation時名稱被作用域化且無`@keyframes`，新增BH-0063（P1未修復）。63historical／58fixed／5unresolved。[證據](evidence/0255-final-checks.json)；[批次](batches/0255-next-turbopack-postcss-characterization.md)；[前次](progress-history-0255-next-turbopack-postcss.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -82,6 +82,7 @@
 | BH-0060 | P2 | 已修復 | 多檔診斷與MCP trace將class／警告錯指其他來源 | 逐檔候選對照Rust分類；15新增測試及22built控制通過；[0194](batches/0194-inspection-source-attribution.md) |
 | BH-0061 | P2 | 已修復 | 發布宣告引用缺失或未公開的型別路徑 | binding/tooling/LSP/MCP/Webpack沿用前批；0208補修compiler4個函式宣告，strictTS6通過，31compiler/30Webpack JS不變。[0208](batches/0208-webpack-entry-ownership.md)。 |
 | BH-0062 | P1 | 已修復 | Stylesheet compile 對規則數二次成長，preserveNativeSource 再放大 10–35 倍 | 0251 root新增`source_index.rs`每來源索引；Mapper／native lowering改用，掃描函式語義以窮舉測試固定。HEAD基準4000規則84.6s FAIL→1.05s；0242候選對應patch使800規則rendered 2.0s→17ms、preserveNativeSource 72.5s→96ms，compiler428／Next151 PASS。0252把索引貫穿native／managed lowering與url()引用：compose 4000規則128.6s→1.55s、800規則562→76ms；manifest合併超線性另列待查。0253 manifest合併改key索引：theme／components 4000定義6.0s／7.9s→線性，800定義components 74→27ms。[0253](batches/0253-compiler-manifest-merge.md)；[0252](batches/0252-compiler-lowering-index.md)；[0251](batches/0251-compiler-source-index.md)；[0250](batches/0250-compiler-rule-count-scaling.md) |
+| BH-0063 | P1 | 已確認 | Turbopack CSS Module 引用 Master global animation 時名稱被作用域化且無 keyframes，動畫不執行 | `.module.css`內`animation:fade`：Webpack＋Master輸出`fade`與`@keyframes fade`正常；Turbopack＋Master輸出`card_fade__…`、最終CSS無`@keyframes`、另生空`.…__fade{}`，Chromium／WebKit皆無frames。Turbopack管線缺0237的global animation保護與keyframes交付。[0255](batches/0255-next-turbopack-postcss-characterization.md) |
 
 53 historical confirmed findings: 49 fixed, 4 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
 

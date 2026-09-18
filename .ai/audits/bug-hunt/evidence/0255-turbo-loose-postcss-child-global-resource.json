@@ -1,0 +1,206 @@
+{
+  "scenario": "postcss-child-global-resource",
+  "bundler": "turbopack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./nested/other.module.css\";color:#123456;background-image:var(--image-audit)}",
+    "b": "@theme{--image-audit:url(\"./new%20image.svg?rev=1#shape\")}.shared{border-top:1px solid red}",
+    "file": "nested/other.module.css",
+    "postcss": true,
+    "resourceFixture": true,
+    "resourceFile": "nested/new image.svg",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 72ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1389ms\n  Running TypeScript ...\n  Finished TypeScript in 7ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 41ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module-css-module__Yo8rqq__direct card_direct__vAL_y other_shared__voRng",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "url(\"http://127.0.0.1:51757/_next/static/media/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.05y8h472odo7x.svg\")",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".other_shared__voRng",
+          "declarations": "border-top: 7px solid red;"
+        },
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "color: rgb(18, 52, 86); background-image: var(--image-audit);"
+        },
+        {
+          "selector": ".card-module-css-module__Yo8rqq__direct",
+          "declarations": ""
+        }
+      ],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module-css-module__Yo8rqq__direct card_direct__vAL_y other_shared__voRng",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "url(\"http://127.0.0.1:51757/_next/static/media/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.05y8h472odo7x.svg\")",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".other_shared__voRng",
+          "declarations": "border-top: 7px solid red;"
+        },
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "color: rgb(18, 52, 86); background-image: var(--image-audit);"
+        },
+        {
+          "selector": ".card-module-css-module__Yo8rqq__direct",
+          "declarations": ""
+        }
+      ],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/2p_mcddj010pn.css",
+      "text": ".other_shared__voRng{border-top:7px solid red}\n.card_direct__vAL_y{color:#123456;background-image:var(--image-audit)}@layer theme{:root{--image-audit:url(../media/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.05y8h472odo7x.svg)}}\n.card-module-css-module__Yo8rqq__direct{}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;.direct{composes:shared from \"./nested/other.module.css\";color:#123456;background-image:var(--image-audit)}"
+    },
+    {
+      "file": "app/nested/other.module.css",
+      "text": "@theme{--image-audit:url(\"./new%20image.svg?rev=1#shape\")}.shared{border-top:1px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card-module-css-module__Yo8rqq__direct card_direct__vAL_y other_shared__voRng\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/2p_mcddj010pn.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/media/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.05y8h472odo7x.svg",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/2p_mcddj010pn.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/media/b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.05y8h472odo7x.svg",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-Bv15su/app/card.module.css.module.css",
+      "css": "@import \"../.master/stylesheets/47e72481352cb4f5571e580a680f4ada98aca35fd72f7bbdd6e618f1d453779f/a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-entry.css\";\n.direct {\n    composes: card_direct__vAL_y from global;\n    composes: other_shared__voRng from global\n}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-Bv15su/.master/stylesheets/47e72481352cb4f5571e580a680f4ada98aca35fd72f7bbdd6e618f1d453779f/a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-entry.css.css",
+      "css": "@import \"./a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-78bafb03ed6be1b74229979cf5557593aa88ce4a8f6849f0169039fc3f73d78e.css\";\n\n.card_direct__vAL_y {\n  color: #123456;\n  background-image: var(--image-audit);\n}\n\n@layer theme{:root{--image-audit:url(\"./b1bb5ae33cf22f606137530ed533cdd8f9be7e619f0a714169521f5606eea54c.svg?rev=1#shape\")}}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-Bv15su/.master/stylesheets/47e72481352cb4f5571e580a680f4ada98aca35fd72f7bbdd6e618f1d453779f/a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-78bafb03ed6be1b74229979cf5557593aa88ce4a8f6849f0169039fc3f73d78e.css.css",
+      "css": ".other_shared__voRng {\n  border-top: 1px solid red;\n}"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-Bv15su/.master/stylesheets/47e72481352cb4f5571e580a680f4ada98aca35fd72f7bbdd6e618f1d453779f/a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-78bafb03ed6be1b74229979cf5557593aa88ce4a8f6849f0169039fc3f73d78e.css.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-Bv15su/.master/stylesheets/47e72481352cb4f5571e580a680f4ada98aca35fd72f7bbdd6e618f1d453779f/a86e3cbfb42a57127789310f930ef852cb6b930232b4d05ab929d2cc4c82a9f9-78bafb03ed6be1b74229979cf5557593aa88ce4a8f6849f0169039fc3f73d78e.css.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

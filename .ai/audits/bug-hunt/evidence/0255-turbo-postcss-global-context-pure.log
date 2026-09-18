@@ -1,0 +1,59 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 6ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1025ms
+  Running TypeScript ...
+  Finished TypeScript in 2ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 43ms
+Turbopack build encountered 2 warnings:
+./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:46
+Warning: Parsing CSS source code failed
+[33m[1m>[0m [90m1 |[0m @theme{--color-audit:#[35m111111[0m}.direct{@compose fg:audit;border-top:[35m7[0mpx solid red}
+  [90m  |[0m                                              [33m[1m^[0m
+
+Unknown at rule: @compose
+
+Generated code of PostCSS transform of file content of .ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:
+./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:46
+[33m[1m>[0m [90m1 |[0m @theme{--color-audit:#[35m111111[0m}.direct{@compose fg:audit;border-top:[35m7[0mpx solid red}
+  [90m  |[0m                                              [33m[1m^[0m
+
+Import trace:
+  Server Component:
+    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css
+    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/page.jsx
+
+
+./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:7
+Warning: Parsing CSS source code failed
+[33m[1m>[0m [90m1 |[0m @theme{--color-audit:#[35m111111[0m}.direct{@compose fg:audit;border-top:[35m7[0mpx solid red}
+  [90m  |[0m       [33m[1m^[0m
+
+Unknown at rule: @theme
+
+Generated code of PostCSS transform of file content of .ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:
+./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:7
+[33m[1m>[0m [90m1 |[0m @theme{--color-audit:#[35m111111[0m}.direct{@compose fg:audit;border-top:[35m7[0mpx solid red}
+  [90m  |[0m       [33m[1m^[0m
+
+Import trace:
+  Server Component:
+    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css
+    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/page.jsx
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"postcss-global-context","bundler":"turbopack","pure":true,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card-module__jajxDG__direct","color":"rgb(0, 0, 0)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".card-module__jajxDG__direct","declarations":"border-top: 7px solid red;"}],"pass":false},{"browser":"webkit","id":"probe","phase":"initial","classes":"card-module__jajxDG__direct","color":"rgb(0, 0, 0)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".card-module__jajxDG__direct","declarations":"border-top: 7px solid red;"}],"pass":false}]}

@@ -1,0 +1,68 @@
+{
+  "scenario": "postcss-child-global-resource",
+  "bundler": "turbopack",
+  "pure": true,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./nested/other.module.css\";color:#123456;background-image:var(--image-audit)}",
+    "b": "@theme{--image-audit:url(\"./new%20image.svg?rev=1#shape\")}.shared{border-top:1px solid red}",
+    "file": "nested/other.module.css",
+    "postcss": true,
+    "resourceFixture": true,
+    "resourceFile": "nested/new image.svg",
+    "valid": true
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 6ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\nTurbopack build encountered 1 warning:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css:1:7\nWarning: Parsing CSS source code failed\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--image-audit:url(\u001b[32m\"./new%20image.svg?rev=1#shape\"\u001b[0m)}.shared{border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m       \u001b[33m\u001b[1m^\u001b[0m\n\nUnknown at rule: @theme\n\nGenerated code of PostCSS transform of file content of .ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css:1:7\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--image-audit:url(\u001b[32m\"./new%20image.svg?rev=1#shape\"\u001b[0m)}.shared{border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m       \u001b[33m\u001b[1m^\u001b[0m\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/page.jsx\n\n\n\n> Build error occurred\nError: Turbopack build failed with 1 error:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css:1:22\nError: Module not found: Can't resolve './new%20image.svg'\n\u001b[31m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--image-audit:url(\u001b[32m\"./new%20image.svg?rev=1#shape\"\u001b[0m)}.shared{border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m                      \u001b[31m\u001b[1m^\u001b[0m\n\n\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/page.jsx\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n\n    at <unknown> (./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css:1:22)\n    at <unknown> (https://nextjs.org/docs/messages/module-not-found)\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": ".direct{composes:shared from \"./nested/other.module.css\";color:#123456;background-image:var(--image-audit)}"
+    },
+    {
+      "file": "app/nested/other.module.css",
+      "text": "@theme{--image-audit:url(\"./new%20image.svg?rev=1#shape\")}.shared{border-top:1px solid red}"
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/card.module.css",
+      "css": ".direct{composes:shared from \"./nested/other.module.css\";color:#123456;background-image:var(--image-audit)}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css",
+      "css": "@theme{--image-audit:url(\"./new%20image.svg?rev=1#shape\")}.shared{border-top:1px solid red}"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-ufgVDb/app/nested/other.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

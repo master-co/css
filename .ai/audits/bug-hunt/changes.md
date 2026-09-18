@@ -1,6 +1,6 @@
 # 新增檔案與驗證限制
 
-- 0254：五份帳本頭部較早交接逐字歸檔至`progress-history-0254-ledger-heads.md`（README 47.0K→26.6K）；0253後`@components`殘餘成長取樣為序列化／配置常數，無線性搜尋frame，已分類不新增finding。無產品變更。[證據](evidence/0254-final-checks.json)；[批次](batches/0254-ledger-archive-manifest-residual.md)；[前次](progress-history-0254-ledger-archive.md)。
+- 0255：Turbopack實際host對照7個PostCSS情境：首輪嚴格檔名比對是confound（Turbopack側檔名為`card.module.css.module.css`），寬鬆比對後確認user PostCSS作用在Turbopack側模組、combined-root與late resource契約不存在；無plugin的`module-animation`證實Turbopack Module引用preset animation時名稱被作用域化且無`@keyframes`，新增BH-0063（P1未修復）。63historical／58fixed／5unresolved。[證據](evidence/0255-final-checks.json)；[批次](batches/0255-next-turbopack-postcss-characterization.md)；[前次](progress-history-0255-next-turbopack-postcss.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 

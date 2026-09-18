@@ -1,0 +1,164 @@
+{
+  "scenario": "postcss-global-context",
+  "bundler": "turbopack",
+  "pure": true,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next",
+  "input": {
+    "a": "@theme{--color-audit:#111111}.direct{@compose fg:audit;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "globalContext": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 6ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1025ms\n  Running TypeScript ...\n  Finished TypeScript in 2ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 43ms\nTurbopack build encountered 2 warnings:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:46\nWarning: Parsing CSS source code failed\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--color-audit:#\u001b[35m111111\u001b[0m}.direct{@compose fg:audit;border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m                                              \u001b[33m\u001b[1m^\u001b[0m\n\nUnknown at rule: @compose\n\nGenerated code of PostCSS transform of file content of .ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:46\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--color-audit:#\u001b[35m111111\u001b[0m}.direct{@compose fg:audit;border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m                                              \u001b[33m\u001b[1m^\u001b[0m\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/page.jsx\n\n\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:7\nWarning: Parsing CSS source code failed\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--color-audit:#\u001b[35m111111\u001b[0m}.direct{@compose fg:audit;border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m       \u001b[33m\u001b[1m^\u001b[0m\n\nUnknown at rule: @theme\n\nGenerated code of PostCSS transform of file content of .ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:\n./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css:1:7\n\u001b[33m\u001b[1m>\u001b[0m \u001b[90m1 |\u001b[0m @theme{--color-audit:#\u001b[35m111111\u001b[0m}.direct{@compose fg:audit;border-top:\u001b[35m7\u001b[0mpx solid red}\n  \u001b[90m  |\u001b[0m       \u001b[33m\u001b[1m^\u001b[0m\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/page.jsx\n\n\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module__jajxDG__direct",
+      "color": "rgb(0, 0, 0)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card-module__jajxDG__direct",
+          "declarations": "border-top: 7px solid red;"
+        }
+      ],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card-module__jajxDG__direct",
+      "color": "rgb(0, 0, 0)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card-module__jajxDG__direct",
+          "declarations": "border-top: 7px solid red;"
+        }
+      ],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/3fyrmqqri6jek.css",
+      "text": "@theme{--color-audit:#111}@compose fg:audit;.card-module__jajxDG__direct{border-top:7px solid red}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@theme{--color-audit:#111111}.direct{@compose fg:audit;border-top:7px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{border-top:7px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card-module__jajxDG__direct\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3fyrmqqri6jek.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3fyrmqqri6jek.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/13nu9qjbe2--a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/09xd9-7xlonox.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1mi_l79v1lum8.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/1g5p3wzuxdw80.js",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css",
+      "css": "@theme{--color-audit:#111111}.direct{@compose fg:audit;border-top:7px solid red}"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0247-postcss-resource-policy/packages/next/e2e/bug-hunt-module-edge-rUIO8c/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

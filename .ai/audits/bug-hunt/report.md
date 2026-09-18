@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0254：五份帳本頭部較早交接逐字歸檔至`progress-history-0254-ledger-heads.md`（README 47.0K→26.6K）；0253後`@components`殘餘成長取樣為序列化／配置常數，無線性搜尋frame，已分類不新增finding。無產品變更。[證據](evidence/0254-final-checks.json)；[批次](batches/0254-ledger-archive-manifest-residual.md)；[前次](progress-history-0254-ledger-archive.md)。
+- 0255：Turbopack實際host對照7個PostCSS情境：首輪嚴格檔名比對是confound（Turbopack側檔名為`card.module.css.module.css`），寬鬆比對後確認user PostCSS作用在Turbopack側模組、combined-root與late resource契約不存在；無plugin的`module-animation`證實Turbopack Module引用preset animation時名稱被作用域化且無`@keyframes`，新增BH-0063（P1未修復）。63historical／58fixed／5unresolved。[證據](evidence/0255-final-checks.json)；[批次](batches/0255-next-turbopack-postcss-characterization.md)；[前次](progress-history-0255-next-turbopack-postcss.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -94,6 +94,9 @@ Renderer received parser nativeCSS alone, dropping lowered compose rules. Render
 
 已修復。原先 raw replacen 選中字串內的 marker，將 composed CSS 寫入 content 並漏掉實際規則；改由 Rust lexer 定位真實 at-rule。Native/Wasm graph 修前6個browserFAIL，修後含原生／direct控制15PASS。[0187證據](evidence/0187-marker-finding.json)。
 
+## BH-0063 · P1 · Turbopack Module 引用 global animation 失效
+
+`.module.css`中的`animation:fade`（preset animation）在Turbopack＋Master下被CSS Modules作用域化為`card_fade__…`，最終CSS沒有`@keyframes fade`，Chromium／WebKit的`getAnimations()`皆無frames；Webpack＋Master同一fixture輸出`fade`與2 frames正常。Master的Turbopack管線缺少0237在Webpack路徑的global animation保護與keyframes交付。已確認、未修復；修正方向：在Turbopack前置loader標記global animation引用並交付global keyframes。[對照與證據](batches/0255-next-turbopack-postcss-characterization.md)。
 ## BH-0062 · P1 · Stylesheet compile 對規則數二次成長（fixed）
 
 [crates/mastercss-compiler/src/variant.rs:290](/Users/aron/master/css/crates/mastercss-compiler/src/variant.rs:290)、[output_mappings.rs:56](/Users/aron/master/css/crates/mastercss-compiler/src/output_mappings.rs:56)。`byte_offset_for_location`／`source_location`／`byte_to_utf16_offset`每次從來源開頭掃描，mapping與每條規則各呼叫多次；純CSS 200／400／800規則的rendered compile為109／387／1450ms，`preserveNativeSource`在800規則達72.5s，profile 90%在native binding。0251已修復：`source_index.rs`每來源一次的line-start／UTF-16索引供mapping anchor與native lowering共用；HEAD基準4000規則84.6s→1.05s，0242候選patch使preserveNativeSource 72.5s→96ms。[量測與profile](batches/0250-compiler-rule-count-scaling.md)。 [修復](batches/0251-compiler-source-index.md)。

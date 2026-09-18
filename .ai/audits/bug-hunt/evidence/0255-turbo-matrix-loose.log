@@ -1,0 +1,14 @@
+### turbopack postcss-global-context
+exit=0
+### turbopack postcss-imported-keyframe
+exit=0
+### turbopack postcss-generated-keyframe
+exit=0
+### turbopack postcss-added-global-reference
+exit=0
+### turbopack postcss-child-global-resource
+exit=0
+### turbopack postcss-global-resource
+exit=0
+### webpack control postcss-global-context (loose)
+exit=0

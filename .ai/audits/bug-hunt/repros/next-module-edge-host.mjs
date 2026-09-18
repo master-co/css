@@ -93,6 +93,10 @@ const cases = {
     a: '.direct{color:#123456;border-top:7px solid red;animation:fade 1s linear infinite}',
     b: '.shared{border-top:7px solid red}', postcss: true, keyframeContext: true, expectedAnimation: 'fade', valid: true
   },
+  'module-animation': {
+    a: '.direct{color:#123456;border-top:7px solid red;animation:fade 1s linear infinite}',
+    b: '.shared{border-top:7px solid red}', expectedAnimation: 'fade', valid: true
+  },
   'postcss-imported-keyframe': {
     a: '.direct{composes:shared from "./other.module.css";color:#123456}',
     b: '.shared{border-top:7px solid red;animation:fade 1s linear infinite}',
@@ -219,7 +223,8 @@ try {
     const plugin = join(root, 'audit-postcss.cjs')
     writeFileSync(plugin, `const fs=require('node:fs');const record=row=>fs.appendFileSync(${JSON.stringify(join(root, 'postcss.jsonl'))},JSON.stringify(row)+'\\n');module.exports=()=>({postcssPlugin:'audit-child-preparation',Once(root){record({event:'Once',file:root.source?.input.file,css:root.toString()});
 const file=root.source?.input.file||'';
-if(file.endsWith('/card.module.css')){
+const isCard=${process.env.BH_NEXT_LOOSE_FILE_MATCH === '1' ? '/\\/card\\.module\\.css(\\.module\\.css)?$/.test(file)' : "file.endsWith('/card.module.css')"};
+if(isCard){
  if(${Boolean(cases[scenario].addComposes)})root.walkRules(rule=>{if(rule.selector==='.direct')rule.prepend({prop:'composes',value:'shared from "./other.module.css"'})});
  if(${Boolean(cases[scenario].addImport)})root.prepend({name:'import',params:'"./other.module.css" layer(added) supports(display:grid) screen'});
  if(${Boolean(cases[scenario].addResource || cases[scenario].addGlobalReference)})root.walkRules(rule=>{if(rule.selector==='.direct')rule.append({prop:'background-image',value:${JSON.stringify(cases[scenario].addGlobalReference ? 'var(--image-audit)' : 'url("./new.svg?rev=1#shape")')}})});
@@ -227,7 +232,7 @@ if(file.endsWith('/card.module.css')){
 let addNested=${Boolean(cases[scenario].addNestedComposes)};
 if(${Boolean(cases[scenario].requireComment)}){addNested=false;root.walkComments(comment=>{if(comment.text==='audit-add')addNested=true})}
 if(${Boolean(cases[scenario].requireSpelling)}){addNested=false;root.walkDecls('margin',decl=>{if(decl.value==='0px 0px 0px 0px')addNested=true})}
-if(addNested&&file.endsWith('/other.module.css'))root.walkRules(rule=>{if(rule.selector==='.shared')rule.prepend({prop:'composes',value:'leaf from "./nested/leaf.module.css"'})});
+if(addNested&&${process.env.BH_NEXT_LOOSE_FILE_MATCH === '1' ? '/\\/other\\.module\\.css(\\.module\\.css)?$/.test(file)' : "file.endsWith('/other.module.css')"})root.walkRules(rule=>{if(rule.selector==='.shared')rule.prepend({prop:'composes',value:'leaf from "./nested/leaf.module.css"'})});
 
 if(${Boolean(cases[scenario].globalContext || cases[scenario].keyframeContext)}){
  let local=false,global=false;root.walkRules(rule=>{if(rule.selector==='.direct')local=true;if(rule.selector===':root')global=true});

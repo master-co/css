@@ -1,0 +1,22 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 6ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1029ms
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 43ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"postcss-composes","bundler":"turbopack","pure":true,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card-module__erlSxq__direct other-module__MLPdeW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".other-module__MLPdeW__shared","declarations":"border-top: 7px solid red;"},{"selector":".card-module__erlSxq__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"webkit","id":"probe","phase":"initial","classes":"card-module__erlSxq__direct other-module__MLPdeW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".other-module__MLPdeW__shared","declarations":"border-top: 7px solid red;"},{"selector":".card-module__erlSxq__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true}]}
