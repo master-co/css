@@ -1,0 +1,56 @@
+{
+  "scenario": "postcss-added-nested-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}",
+    "b": ".shared{}",
+    "postcss": true,
+    "addNestedComposes": true,
+    "valid": true
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 80ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\nFailed to compile.\n\n./app/card.module.css\nError: Missing CSS Module export shared in ./other.module.css\n    at prepareNextModule (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module.js:57:40)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runNextTicks (node:internal/process/task_queues:69:3)\n    at process.processImmediate (node:internal/timers:541:9)\n    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module-graph.js:164:19\n    at async prepareNextEntryGraph (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-entry-graph.js:90:10)\n    at async transformStyleSource (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js:54:25)\n\nImport trace for requested module:\n./app/card.module.css\n./app/page.jsx\n  (from ../../dist/stylesheet-loader.js)\n\n\n> Build failed because of webpack errors\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;.direct{composes:shared from \"./other.module.css\";color:#123456}"
+    },
+    {
+      "file": "app/nested/leaf.module.css",
+      "text": ".leaf{border-top:1px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{}"
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-eaYz92/app/card.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-eaYz92/app/other.module.css"
+    }
+  ]
+}

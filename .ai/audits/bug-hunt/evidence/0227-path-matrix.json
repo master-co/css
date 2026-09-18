@@ -1,0 +1,171 @@
+[
+  {
+    "name": "0227-pure-webpack-acyclic-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      }
+    ],
+    "browserFailures": [
+      "firefox"
+    ]
+  },
+  {
+    "name": "0227-candidate-webpack-acyclic-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      }
+    ],
+    "browserFailures": [
+      "firefox"
+    ]
+  },
+  {
+    "name": "0227-pure-turbopack-acyclic-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__nlxPVG__direct other-module__49t8OG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__nlxPVG__direct other-module__49t8OG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      }
+    ],
+    "browserFailures": [
+      "firefox"
+    ]
+  },
+  {
+    "name": "0227-candidate-turbopack-acyclic-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__5txDuW__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__5txDuW__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      }
+    ],
+    "browserFailures": [
+      "firefox"
+    ]
+  },
+  {
+    "name": "0227-candidate-webpack-encoded-composes",
+    "harnessExit": 0,
+    "buildCode": 1,
+    "exported": false,
+    "observations": [],
+    "browserFailures": []
+  },
+  {
+    "name": "0227-pure-turbopack-encoded-composes",
+    "harnessExit": 0,
+    "buildCode": 1,
+    "exported": false,
+    "observations": [],
+    "browserFailures": []
+  },
+  {
+    "name": "0227-candidate-turbopack-encoded-composes",
+    "harnessExit": 0,
+    "buildCode": 1,
+    "exported": false,
+    "observations": [],
+    "browserFailures": []
+  },
+  {
+    "name": "0227-pure-webpack-encoded-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "pass": true
+      }
+    ],
+    "browserFailures": [
+      "firefox"
+    ]
+  }
+]

@@ -1,0 +1,315 @@
+{
+  "scope": "Condition-origin equality is independent of initial appearance assertions. Candidate Turbo selectsstyle where pure host selectsdefault/react-server; these are failures despite matchingborder/color. Escapedspace pureTurbo class name containswhitespace andbothbrowsers failborder.",
+  "comparisons": [
+    {
+      "case": "alias-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "escaped-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 1,
+      "pureBrowserPass": [
+        false,
+        false
+      ],
+      "candidateAppearancePass": [],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [],
+      "originMatches": null
+    },
+    {
+      "case": "escaped-letter-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 1,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [],
+      "originMatches": null
+    },
+    {
+      "case": "fragment-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "package-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "default",
+        "default"
+      ],
+      "candidateOrigin": [
+        "style",
+        "style"
+      ],
+      "originMatches": false
+    },
+    {
+      "case": "package-conditions-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "react-server",
+        "react-server"
+      ],
+      "candidateOrigin": [
+        "style",
+        "style"
+      ],
+      "originMatches": false
+    },
+    {
+      "case": "query-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "raw-percent-composes",
+      "host": "turbopack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "alias-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "escaped-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "fragment-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "package-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "style",
+        "style"
+      ],
+      "candidateOrigin": [
+        "style",
+        "style"
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "package-conditions-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "style",
+        "style"
+      ],
+      "candidateOrigin": [
+        "style",
+        "style"
+      ],
+      "originMatches": true
+    },
+    {
+      "case": "query-composes",
+      "host": "webpack",
+      "pureBuild": 0,
+      "candidateBuild": 0,
+      "pureBrowserPass": [
+        true,
+        true
+      ],
+      "candidateAppearancePass": [
+        true,
+        true
+      ],
+      "pureOrigin": [
+        "",
+        ""
+      ],
+      "candidateOrigin": [
+        "",
+        ""
+      ],
+      "originMatches": true
+    }
+  ]
+}

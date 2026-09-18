@@ -1,0 +1,45 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.js took 89ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|javascript/auto|/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/next-flight-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[0]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[1]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!/Users/aron/master/css/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[13].oneOf[5].use[3]!/Users/aron/master/css/packages/next/e2e/bug-hunt-general-graph-sMO95q/app/card.module.css|rsc': No serializer registered for CssSyntaxError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> CssSyntaxError
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+Failed to compile.
+
+./app/card.module.css:4:3
+Syntax error: Selector "*" is not pure (pure selectors must contain at least one local class or id)
+
+  2 | 
+  3 | @layer base {
+> 4 |   * {
+    |   ^
+  5 |     text-rendering: geometricprecision;
+  6 |   }
+
+
+> Build failed because of webpack errors
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:77:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

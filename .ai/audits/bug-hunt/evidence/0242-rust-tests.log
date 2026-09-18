@@ -1,0 +1,10 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-compiler)
+error[E0063]: missing field `preserve_native_source` in initializer of `CompileNativeCssOptions`
+ --> crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs:9:10
+  |
+9 |         &CompileNativeCssOptions {
+  |          ^^^^^^^^^^^^^^^^^^^^^^^ missing `preserve_native_source`
+
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `mastercss-compiler` (test "bug_hunt_ordered_output") due to 1 previous error
+warning: build failed, waiting for other jobs to finish...

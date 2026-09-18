@@ -1,0 +1,24 @@
+{
+  "files": 49,
+  "missing": [],
+  "absoluteWorkspaceReferences": [
+    "plugin.js",
+    "plugins/virtual-css-import.js",
+    "plugins/runtime-html-assets.js",
+    "plugins/virtual-modules.js",
+    "plugins/manifest-virtual-module.js",
+    "plugins/manifest-loader.js",
+    "utils/transform-style-source.js",
+    "utils/path.js",
+    "Users/aron/master/css/packages/preset/src/default-manifest.js",
+    "Users/aron/master/css/packages/internal/src/style-module.js",
+    "Users/aron/master/css/packages/internal/src/manifest-facade.js",
+    "Users/aron/master/css/packages/internal/src/node.js",
+    "Users/aron/master/css/packages/internal/src/project.js",
+    "Users/aron/master/css/packages/internal/src/manifest-module.js",
+    "Users/aron/master/css/packages/internal/src/manifest-loader.js",
+    "Users/aron/master/css/packages/internal/src/emitted-globals-module.js",
+    "Users/aron/master/css/packages/schema/src/manifest-json.js"
+  ],
+  "note": "String matches are relative bundled paths inside dist (./Users/... and ../Users/...), plus source region comments; not absolute runtime imports. Private bundled source topology will be normalized by building an isolated copy with local internal/schema/preset sources before promotion."
+}

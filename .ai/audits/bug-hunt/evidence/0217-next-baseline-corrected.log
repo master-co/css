@@ -1,0 +1,130 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+stderr | tests/bug-hunt-static-asset-publication.test.ts > static publication delivers resource owners and fresh immutable bytes: nested=false
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:261:11)
+    at createExtractedCSSResult (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:647:12)
+    at MasterCSSStylesheetCollection.compose (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:441:26)
+    at createStaticCSS (/Users/aron/master/css/packages/next/src/static.ts:105:37)
+    at /Users/aron/master/css/packages/next/src/static.ts:152:31
+    at /Users/aron/master/css/packages/next/src/static.ts:164:7
+    at getOrCreateStaticSession (/Users/aron/master/css/packages/next/src/static.ts:252:3)
+    at prepareNextStatic (/Users/aron/master/css/packages/next/src/static.ts:264:19)
+    at /Users/aron/master/css/packages/next/tests/bug-hunt-static-asset-publication.test.ts:36:20
+    at file:///Users/aron/master/css/node_modules/.pnpm/vitest@5.0.0_@opentelemetry+api@1.9.1_@types+node@24.13.3_happy-dom@20.14.0_jsdom@26.1._54b4cf1c56700819599d6cd4e465b482/node_modules/vitest/dist/chunks/run.CQOUYP-x.js:2783:20 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+
+stderr | tests/bug-hunt-static-asset-publication.test.ts > static publication delivers resource owners and fresh immutable bytes: nested=true
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (/Users/aron/master/css/packages/compiler/src/stylesheet/delivery.ts:261:11)
+    at createExtractedCSSResult (/Users/aron/master/css/packages/compiler/src/stylesheet/index.ts:647:12)
+    at MasterCSSStylesheetCollection.compose (/Users/aron/master/css/packages/compiler/src/stylesheet/public.ts:441:26)
+    at createStaticCSS (/Users/aron/master/css/packages/next/src/static.ts:105:37)
+    at /Users/aron/master/css/packages/next/src/static.ts:152:31
+    at /Users/aron/master/css/packages/next/src/static.ts:164:7
+    at getOrCreateStaticSession (/Users/aron/master/css/packages/next/src/static.ts:252:3)
+    at prepareNextStatic (/Users/aron/master/css/packages/next/src/static.ts:264:19)
+    at /Users/aron/master/css/packages/next/tests/bug-hunt-static-asset-publication.test.ts:36:20
+    at file:///Users/aron/master/css/node_modules/.pnpm/vitest@5.0.0_@opentelemetry+api@1.9.1_@types+node@24.13.3_happy-dom@20.14.0_jsdom@26.1._54b4cf1c56700819599d6cd4e465b482/node_modules/vitest/dist/chunks/run.CQOUYP-x.js:2783:20 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+
+stderr | tests/bug-hunt-static-asset-publication.test.ts > static preparation rejects output failures and retries after the failure is removed
+[@master/css-next] failed to write static CSS: Error: EISDIR: illegal operation on a directory, open '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7/.master/next.css'
+    at open (node:internal/fs/promises:1345:25)
+    at writeFile (node:internal/fs/promises:1965:14)
+    at writeStaticCSS (/Users/aron/master/css/packages/next/src/static.ts:140:3)
+    at /Users/aron/master/css/packages/next/src/static.ts:153:9
+    at /Users/aron/master/css/packages/next/src/static.ts:164:7
+    at getOrCreateStaticSession (/Users/aron/master/css/packages/next/src/static.ts:252:3)
+    at prepareNextStatic (/Users/aron/master/css/packages/next/src/static.ts:264:19)
+    at /Users/aron/master/css/packages/next/tests/bug-hunt-static-asset-publication.test.ts:65:5
+    at file:///Users/aron/master/css/node_modules/.pnpm/vitest@5.0.0_@opentelemetry+api@1.9.1_@types+node@24.13.3_happy-dom@20.14.0_jsdom@26.1._54b4cf1c56700819599d6cd4e465b482/node_modules/vitest/dist/chunks/run.CQOUYP-x.js:2783:20 {
+  errno: -21,
+  code: 'EISDIR',
+  syscall: 'open',
+  path: '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7/.master/next.css'
+}
+
+ ❯ tests/bug-hunt-static-asset-publication.test.ts (3 tests | 3 failed) 679ms
+   × static publication delivers resource owners and fresh immutable bytes: nested=false 206ms
+   × static publication delivers resource owners and fresh immutable bytes: nested=true 201ms
+   × static preparation rejects output failures and retries after the failure is removed 271ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-static-asset-publication.test.ts > static publication delivers resource owners and fresh immutable bytes: nested=false
+Error: ENOENT: no such file or directory, open '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-publish-fdjOB5/.master/next.css'
+ ❯ tests/bug-hunt-static-asset-publication.test.ts:37:22
+     35|     writeFileSync(entry, source)
+     36|     const state = (await prepareNextStatic({ mode: 'static' }, { proje…
+     37|     const original = readFileSync(state.outputPath, 'utf8')
+       |                      ^
+     38|     const cssFiles = () => readdirSync(dirname(state.outputPath)).filt…
+     39|     const before = cssFiles().flatMap(resourceURLs)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/bug-hunt-static-asset-publication.test.ts > static publication delivers resource owners and fresh immutable bytes: nested=true
+Error: ENOENT: no such file or directory, open '/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-publish-1yfler/.master/next.css'
+ ❯ tests/bug-hunt-static-asset-publication.test.ts:37:22
+     35|     writeFileSync(entry, source)
+     36|     const state = (await prepareNextStatic({ mode: 'static' }, { proje…
+     37|     const original = readFileSync(state.outputPath, 'utf8')
+       |                      ^
+     38|     const cssFiles = () => readdirSync(dirname(state.outputPath)).filt…
+     39|     const before = cssFiles().flatMap(resourceURLs)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/bug-hunt-static-asset-publication.test.ts > static preparation rejects output failures and retries after the failure is removed
+AssertionError: promise resolved "{ …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "outputPath": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7/.master/next.css",
++   "projectDir": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7",
++   "scanLogPath": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7/.master/next-static-scanned-sources.log",
++   "statePath": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-write-failure-9Qcgz7/.master/next-static-state.json",
+  }
+
+ ❯ tests/bug-hunt-static-asset-publication.test.ts:65:78
+     63|     writeFileSync(join(root, 'app/globals.css'), '@master entry;@prese…
+     64|     mkdirSync(join(root, '.master/next.css'), { recursive: true })
+     65|     await expect(prepareNextStatic({ mode: 'static' }, { projectDir: r…
+       |                                                                              ^
+     66|     rmSync(join(root, '.master/next.css'), { recursive: true })
+     67|     const state = (await prepareNextStatic({ mode: 'static' }, { proje…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  03:00:51
+   Duration  1.17s (tests 62%, transform 27%, import 11%)
+

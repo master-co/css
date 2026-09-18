@@ -1,0 +1,74 @@
+{
+  "scenario": "postcss-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": true,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}",
+    "b": ".shared{border-top:1px solid red}",
+    "postcss": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 125ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.5s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 61ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "1px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "1px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/6e28e721d066e8d4.css",
+      "text": "@import url(\"/_next/static/css/master/2a588954c47fd4496a5bfc3e2912021af81a788971eebb43ff678c7640f7cf43/css/5d992cdc47a0dcdf36b0dac62146e8ea880db0f5c3eb928701d3d7ad7397d552-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/2a588954c47fd4496a5bfc3e2912021af81a788971eebb43ff678c7640f7cf43/css/5d992cdc47a0dcdf36b0dac62146e8ea880db0f5c3eb928701d3d7ad7397d552-8c65a5c134a2bdec8b3fb3061b1eab0ed8aea975ac669e052b594848354ee8fa.css",
+      "text": ".other_shared__f3TK2{border-top:1px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/2a588954c47fd4496a5bfc3e2912021af81a788971eebb43ff678c7640f7cf43/css/5d992cdc47a0dcdf36b0dac62146e8ea880db0f5c3eb928701d3d7ad7397d552-entry.css",
+      "text": "@import \"./5d992cdc47a0dcdf36b0dac62146e8ea880db0f5c3eb928701d3d7ad7397d552-8c65a5c134a2bdec8b3fb3061b1eab0ed8aea975ac669e052b594848354ee8fa.css\";.card_direct__vAL_y{color:#123456}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y other_shared__f3TK2\">"
+  ]
+}

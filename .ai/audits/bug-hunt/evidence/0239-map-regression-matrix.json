@@ -1,0 +1,62 @@
+[
+  {
+    "file": "0239-regression-0238-after-postcss-added-composes-maps.json",
+    "exit": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-after-postcss-added-import-maps.json",
+    "exit": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-after-postcss-added-nested-nonempty-composes-maps.json",
+    "exit": 0,
+    "pass": 3,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-after-postcss-added-resource-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-after-postcss-global-context-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-after-postcss-imported-keyframe-maps.json",
+    "exit": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-rebased-postcss-added-global-reference-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-rebased-postcss-child-global-resource-maps.json",
+    "exit": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-rebased-postcss-global-context-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0239-regression-0238-rebased-postcss-global-resource-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  }
+]

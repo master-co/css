@@ -1,0 +1,74 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/webpack
+
+stderr | tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing resource as compilation errors and recovers without invalidation
+[master-css.webpack] reset replay failed: Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-5phDP4/pixel.svg'
+    at Object.openSync (node:fs:622:18)
+    at readFileSync (node:fs:488:35)
+    at prepareDelivery (/Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:31:5)
+    at compileGraph (/Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:49:19)
+    at registerDeliveredStylesheet (/Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:212:17)
+    at registerStylesheetSource (/Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:400:31)
+    at MasterCSSStylesheetCollection.register (/Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:192:24)
+    at MasterCSSWebpackPlugin.registerStylesheetSource (/Users/aron/master/css/packages/webpack/dist/plugin.js:189:42)
+    at /Users/aron/master/css/packages/webpack/dist/plugin.js:240:70
+    at Array.map (<anonymous>) {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-5phDP4/pixel.svg'
+}
+
+ ❯ tests/bug-hunt-static-watch-recovery.test.ts (2 tests | 2 failed) 1929ms
+   × watch reports a missing child as compilation errors and recovers without invalidation 1244ms
+   × watch reports a missing resource as compilation errors and recovers without invalidation 685ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing child as compilation errors and recovers without invalidation
+AssertionError: expected [ …(9) ] to include '/private/var/folders/_b/768dhtz56ns54…'
+ ❯ tests/bug-hunt-static-watch-recovery.test.ts:38:59
+     36|     expect(failed.fatal).toBeNull()
+     37|     expect(failed.stats?.hasErrors()).toBe(true)
+     38|     expect(failed.stats?.compilation.missingDependencies).toContain(ta…
+       |                                                           ^
+     39|     const beforeRestore = results.length
+     40|     writeFileSync(target, missing === 'child' ? childCSS.replace('red'…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing resource as compilation errors and recovers without invalidation
+AssertionError: expected Error: ENOENT: no such file or directory,… { …(4) } to be null
+
+- Expected:
+null
+
++ Received:
+Error {
+  "message": "ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-5phDP4/pixel.svg'",
+  "errno": -2,
+  "code": "ENOENT",
+  "syscall": "open",
+  "path": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-5phDP4/pixel.svg",
+}
+
+ ❯ tests/bug-hunt-static-watch-recovery.test.ts:36:26
+     34|     unlinkSync(target)
+     35|     const failed = await next(beforeDelete, result => Boolean(result.f…
+     36|     expect(failed.fatal).toBeNull()
+       |                          ^
+     37|     expect(failed.stats?.hasErrors()).toBe(true)
+     38|     expect(failed.stats?.compilation.missingDependencies).toContain(ta…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed (2)
+   Start at  00:39:58
+   Duration  2.38s (tests 84%, transform 11%, import 5%)
+

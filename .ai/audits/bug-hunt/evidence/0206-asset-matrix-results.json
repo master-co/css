@@ -1,0 +1,62 @@
+[
+  {
+    "name": "relative",
+    "base": "./",
+    "exitCode": 0,
+    "summary": [
+      {
+        "pure": false,
+        "experimentalDelivery": false,
+        "assetBase": "./",
+        "nestedAssets": true,
+        "builds": 12,
+        "buildPass": 12,
+        "buildFail": 0,
+        "comparisons": 72,
+        "comparisonPass": 72,
+        "comparisonFail": 0,
+        "scope": "Actual Webpack production static builds, native CSS experiment, selected plugin or explicitly pure host control; all external CSS intercepted locally; no dev/HMR/Next/SSR claim."
+      }
+    ]
+  },
+  {
+    "name": "absolute",
+    "base": "/assets/",
+    "exitCode": 0,
+    "summary": [
+      {
+        "pure": false,
+        "experimentalDelivery": false,
+        "assetBase": "/assets/",
+        "nestedAssets": true,
+        "builds": 12,
+        "buildPass": 12,
+        "buildFail": 0,
+        "comparisons": 72,
+        "comparisonPass": 72,
+        "comparisonFail": 0,
+        "scope": "Actual Webpack production static builds, native CSS experiment, selected plugin or explicitly pure host control; all external CSS intercepted locally; no dev/HMR/Next/SSR claim."
+      }
+    ]
+  },
+  {
+    "name": "cdn",
+    "base": "https://cdn.test/assets/",
+    "exitCode": 0,
+    "summary": [
+      {
+        "pure": false,
+        "experimentalDelivery": false,
+        "assetBase": "https://cdn.test/assets/",
+        "nestedAssets": true,
+        "builds": 12,
+        "buildPass": 12,
+        "buildFail": 0,
+        "comparisons": 72,
+        "comparisonPass": 72,
+        "comparisonFail": 0,
+        "scope": "Actual Webpack production static builds, native CSS experiment, selected plugin or explicitly pure host control; all external CSS intercepted locally; no dev/HMR/Next/SSR claim."
+      }
+    ]
+  }
+]

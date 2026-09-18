@@ -1,0 +1,5 @@
+
+{"observation":{"phase":"interleaved-publication","errors":[],"resources":[{"name":"css/master-css-resource-b00460099d24685dcdbf.svg","digest":"b00460099d24685dcdbf","hashMatchesBytes":true,"contents":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"7\" height=\"7\"><rect width=\"7\" height=\"7\" fill=\"red\"/></svg>","expectedSnapshot":true}],"queryPreserved":true,"result":"PASS"}}
+
+{"observation":{"phase":"next-build-fresh-snapshot","errors":[],"resources":[{"name":"css/master-css-resource-b00460099d24685dcdbf.svg","digest":"b00460099d24685dcdbf","hashMatchesBytes":true,"contents":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"7\" height=\"7\"><rect width=\"7\" height=\"7\" fill=\"red\"/></svg>","expectedSnapshot":true}],"queryPreserved":true,"result":"PASS"}}
+{"summary":{"mutation":"none","triggered":false,"observations":2,"failures":0,"scope":"Actual Webpack builds; owned emitAsset hook changes the owned resource after graph composition but before resource publication. No installed dependency, source or shared artifact mutation."}}

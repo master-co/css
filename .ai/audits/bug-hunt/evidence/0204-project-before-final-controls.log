@@ -1,0 +1,80 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-0204-project-utj3p1w1/packages/compiler
+
+ ❯ tests/bug-hunt-legacy-project-graphs.test.ts (13 tests | 11 failed) 47ms
+   × Node project retains imported definitions:  layer, compose=false 6ms
+   × Node project retains imported definitions:  layer, compose=true 3ms
+   × Node project retains imported definitions:  layer(cards), compose=false 2ms
+   × Node project retains imported definitions:  layer(cards), compose=true 3ms
+   × Node project retains imported definitions:  supports(display:grid), compose=false 3ms
+   × Node project retains imported definitions:  supports(display:grid), compose=true 2ms
+   × Node project retains imported definitions:  print, compose=false 3ms
+   × Node project retains imported definitions:  print, compose=true 2ms
+   × Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=false 2ms
+   × Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=true 2ms
+   × Node project merges prior entries while resolving child-owned references and policies 8ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 11 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards), compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards), compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  supports(display:grid), compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  supports(display:grid), compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  print, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  print, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/11]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project merges prior entries while resolving child-owned references and policies
+AssertionError: expected [] to include 'paint'
+ ❯ tests/bug-hunt-legacy-project-graphs.test.ts:43:46
+     41|     expect(result.css).toMatch(/color:\s*(?:red|#f00)/)
+     42|     expect(result.css).toContain('@layer cards')
+     43|     expect(result.extractionPolicy.safelist).toContain('paint')
+       |                                              ^
+     44|     expect(result.extractionPolicy.include).toContain('./index.html')
+     45|     expect(result.dependencies).toEqual(expect.arrayContaining([first,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/11]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  11 failed | 2 passed (13)
+   Start at  23:43:02
+   Duration  200ms (transform 50%, tests 37%, import 12%, worker 1%)
+

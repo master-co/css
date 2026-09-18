@@ -1,0 +1,66 @@
+--- a/packages/next/src/stylesheet-loader.ts
++++ b/packages/next/src/stylesheet-loader.ts
+@@ -34,7 +34,7 @@
+ 
+ function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
+   try {
+-    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
++    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true })
+     return Boolean(resolution && resolution.kind !== 'plain')
+   } catch {
+     return true
+@@ -66,7 +66,7 @@
+   // Webpack has already run the user's Sass pipeline. Keep its prepared CSS
+   // and original filename. Raw Turbopack inputs are prepared before classification.
+   const loadSass = () => ({ async compileStringAsync(css: string) { return { css } } })
+-  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, ...context })
++  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, ...context, preserveImports: true })
+   if (!resolution) return { code: source, dependencies, sourceMap }
+   if (resolution.kind === 'entry' || resolution.kind === 'master-package-entry') {
+     const addMasterImport = !inspectCSSSync(source).hasMasterCSSImport
+--- a/packages/next/src/static.ts
++++ b/packages/next/src/static.ts
+@@ -80,7 +80,8 @@
+ export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string) {
+   const state = readStaticState(statePath)
+   const resolution = resolveStylesheetSync(resourcePath, source, {
+-    projectDir: state.projectDir
++    projectDir: state.projectDir,
++    preserveImports: true
+   })
+   if (!resolution || (resolution.kind !== 'entry' && resolution.kind !== 'master-package-entry')) return source
+   if (resolution.kind === 'master-package-entry') {
+--- a/packages/webpack/src/stylesheet-loader.ts
++++ b/packages/webpack/src/stylesheet-loader.ts
+@@ -28,7 +28,7 @@
+ 
+ function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
+   try {
+-    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
++    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true })
+     return Boolean(resolution && resolution.kind !== 'plain')
+   } catch {
+     return true
+--- a/packages/webpack/src/utils/transform-style-source.ts
++++ b/packages/webpack/src/utils/transform-style-source.ts
+@@ -45,7 +45,7 @@
+ ) {
+   const { projectDir, masterImport = VIRTUAL_CSS_ID } = options
+   const dependencies: string[] = []
+-  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir })
++  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true })
+   if (!resolution) {
+     return { code: source, dependencies }
+   }
+--- a/packages/webpack/src/plugin.ts
++++ b/packages/webpack/src/plugin.ts
+@@ -316,7 +316,8 @@
+         let resolution: ReturnType<typeof resolveStylesheetSync>
+         try {
+           resolution = resolveStylesheetSync(modulePath, source, {
+-            projectDir: this.cwd
++            projectDir: this.cwd,
++            preserveImports: true
+           })
+         } catch (error) {
+           this.stylesheetDependencyFallbacks.set(

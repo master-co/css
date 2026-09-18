@@ -1,0 +1,284 @@
+{
+  "matrix": [
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:Once",
+        "emit:Once"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "emit:Once",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "emit:Once",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit",
+        "emit:OnceExit"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Declaration",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit",
+        "emit:OnceExit"
+      ]
+    },
+    {
+      "strategy": "tail-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "OnceExit",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit",
+        "emit:OnceExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "Once",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "emit:audit-introduce-resource:Once",
+        "process:Once"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "emit:audit-introduce-resource:Once",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Once",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "emit:audit-introduce-resource:Once",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "Declaration",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "emit:RootExit",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit",
+        "emit:audit-introduce-resource:OnceExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Declaration",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit",
+        "emit:audit-introduce-resource:OnceExit"
+      ]
+    },
+    {
+      "strategy": "after-user-hooks",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:OnceExit",
+        "emit:audit-introduce-resource:OnceExit",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Once",
+      "processingPhase": "Once",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "process:Once"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Once",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Once",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Once",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:Declaration"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Declaration",
+      "processingPhase": "Declaration",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "process:Declaration"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "Declaration",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:Declaration",
+        "process:OnceExit"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Once",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "Declaration",
+      "processed": false,
+      "events": [
+        "introduce:OnceExit"
+      ]
+    },
+    {
+      "strategy": "pure-postcss",
+      "introductionPhase": "OnceExit",
+      "processingPhase": "OnceExit",
+      "processed": true,
+      "events": [
+        "introduce:OnceExit",
+        "process:OnceExit"
+      ]
+    }
+  ],
+  "contextRows": 2,
+  "observations": 62,
+  "errors": []
+}

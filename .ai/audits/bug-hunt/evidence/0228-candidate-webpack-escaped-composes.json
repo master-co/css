@@ -1,0 +1,61 @@
+{
+  "scenario": "escaped-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other\\20 module.module.css\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "file": "other module.module.css",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 83ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.4s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 58ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/7aac0ceec01f7a18.css",
+      "text": "@import url(\"/_next/static/css/master/b93425d7be68bdae0b9418eb33dc9e10bef29a2a89e2509eab7fd2b31c548582/css/5da955198b24c7ac6f096546900a844798579351b1fc50918398abc24c46f7e1-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/b93425d7be68bdae0b9418eb33dc9e10bef29a2a89e2509eab7fd2b31c548582/css/5da955198b24c7ac6f096546900a844798579351b1fc50918398abc24c46f7e1-305a59c480e1406b988bbf54761f8c611190ed321df01b6f68cc27f3581b3e1d.css",
+      "text": ".other_module_shared__zT4LZ{border-top:7px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/b93425d7be68bdae0b9418eb33dc9e10bef29a2a89e2509eab7fd2b31c548582/css/5da955198b24c7ac6f096546900a844798579351b1fc50918398abc24c46f7e1-entry.css",
+      "text": "@import \"./5da955198b24c7ac6f096546900a844798579351b1fc50918398abc24c46f7e1-305a59c480e1406b988bbf54761f8c611190ed321df01b6f68cc27f3581b3e1d.css\";.card_direct__vAL_y{color:#123456}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ]
+}

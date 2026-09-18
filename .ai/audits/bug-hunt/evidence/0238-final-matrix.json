@@ -1,0 +1,38 @@
+[
+  {
+    "case": "postcss-global-resource",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-child-global-resource",
+    "exit": 0,
+    "build": 1,
+    "pass": 0,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-added-global-reference",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-added-resource",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  }
+]

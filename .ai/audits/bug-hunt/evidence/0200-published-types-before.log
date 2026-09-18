@@ -1,0 +1,2 @@
+node_modules/@master/css-binding/dist/compiler-binding-node.d.ts(1,696): error TS7016: Could not find a declaration file for module './protocol.js'. '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-0200-consumer-types-j5iuh4fe/before/node_modules/@master/css-binding/dist/protocol.js' implicitly has an 'any' type.
+node_modules/@master/css-binding/dist/compiler-binding-node.d.ts(2,228): error TS2307: Cannot find module './compiler-binding-contract.js' or its corresponding type declarations.

@@ -1,0 +1,114 @@
+{
+  "source": "@theme{--color-old:#111111;--color-late:#abcdef}.card{color:var(--color-old)}",
+  "initial": {
+    "css": ".card {\n  color: var(--color-old);\n}\n\n@layer theme{:root{--color-old:#111}}",
+    "emittedGlobals": {
+      "variables": {
+        "color-old": 1
+      },
+      "animations": {}
+    }
+  },
+  "processed": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme{:root{--color-old:#123456}}\n\n.once-1 {\n  display: block;\n}",
+  "withContext": {
+    "generatedCSS": "@layer theme{:root{--color-late:#abcdef}}",
+    "emittedGlobals": {
+      "variables": {
+        "color-late": 1,
+        "color-old": 1
+      },
+      "animations": {}
+    }
+  },
+  "cases": [
+    {
+      "name": "without-context",
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme {\n  :root {\n    --color-old: #123456;\n  }\n}\n\n.once-1 {\n  display: block;\n}\n\n@layer theme{:root{--color-old:#111;--color-late:#abcdef}}",
+      "userPasses": 1
+    },
+    {
+      "name": "with-context",
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n}\n\n@layer theme {\n  :root {\n    --color-old: #123456;\n  }\n}\n\n.once-1 {\n  display: block;\n}\n\n@layer theme{:root{--color-late:#abcdef}}",
+      "userPasses": 1
+    },
+    {
+      "name": "second-whole-pass",
+      "css": ".card {\n  color: var(--color-old);\n  background-color: var(--color-late);\n  background-color: var(--color-late);\n}\n\n@layer theme {\n  :root {\n    --color-old: #123456;\n  }\n}\n\n.once-1 {\n  display: block;\n}\n\n@layer theme{:root{--color-late:#fedcba}}\n\n.once-2 {\n  display: block;\n}",
+      "userPasses": 2
+    }
+  ],
+  "onceCalls": 2,
+  "lateVisits": [
+    2
+  ],
+  "observations": [
+    {
+      "browser": "chromium",
+      "case": "without-context",
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": false,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "chromium",
+      "case": "with-context",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "chromium",
+      "case": "second-whole-pass",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": true,
+      "singleUserPass": false
+    },
+    {
+      "browser": "webkit",
+      "case": "without-context",
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": false,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "webkit",
+      "case": "with-context",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "webkit",
+      "case": "second-whole-pass",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": true,
+      "singleUserPass": false
+    }
+  ],
+  "errors": [],
+  "scope": "Actual Next PostCSS plus compiler resource context and two browser controls. Delta emission is verified; full arbitrary-plugin closure is deliberately not claimed."
+}

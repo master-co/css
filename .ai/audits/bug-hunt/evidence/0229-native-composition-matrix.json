@@ -1,0 +1,144 @@
+[
+  {
+    "name": "0229-native-composition-server",
+    "exit": 0,
+    "buildCode": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__nZNYpa__direct card_direct__vAL_y react-server-module__ooj2sG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__nZNYpa__direct card_direct__vAL_y react-server-module__ooj2sG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-native-composition-client",
+    "exit": 0,
+    "buildCode": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__u69lrG__direct card_direct__vAL_y import-module__3o9M0q__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__u69lrG__direct card_direct__vAL_y import-module__3o9M0q__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-native-composition-ordinary",
+    "exit": 0,
+    "buildCode": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__Dr78Ra__direct card_direct__vAL_y other-module__3GlCpq__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__Dr78Ra__direct card_direct__vAL_y other-module__3GlCpq__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-native-composition-mixed",
+    "exit": 0,
+    "buildCode": 0,
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__cggr4q__direct card_direct__vAL_y react-server-module__mckFVa__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      },
+      {
+        "browser": "chromium",
+        "id": "client-probe",
+        "classes": "card-module-css-module__cggr4q__direct card_direct__vAL_y import-module__JPU1gG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__cggr4q__direct card_direct__vAL_y react-server-module__mckFVa__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "client-probe",
+        "classes": "card-module-css-module__cggr4q__direct card_direct__vAL_y import-module__JPU1gG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      }
+    ],
+    "harnessError": null
+  }
+]

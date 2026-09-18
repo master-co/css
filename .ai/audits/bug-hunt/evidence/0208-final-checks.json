@@ -1,0 +1,435 @@
+{
+  "batch": "0208-webpack-entry-ownership",
+  "status": "Bounded entry ownership and compiler declaration repair delivered; delivered immediate child-delete regression remains OPEN",
+  "goal": "active",
+  "previousGoalTurn": "progress;0207watchrepairdelivered",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "findings": {
+    "BH-0004": "Multiple/lazy native ownership repaired for four bounded layouts; delivered immediate child-delete timeout still unresolved, next priority",
+    "BH-0061": "Compiler4private declaration return types repaired; strict externalTS6PASS;JSunchanged"
+  },
+  "results": {
+    "correctedBaseline": "multiple/lazy6PASS6FAIL; pure12PASS",
+    "entryOrderCandidatePureDelivered": "18PASS each",
+    "newEntryBaseline": "2FAIL",
+    "compilerPackageTests": "418PASS with process-only installed Sass; root invocation400PASS is not full suite",
+    "webpackCopiedFullSuite": "82PASS with proposed existing test patch and pre-diagnostic new watch test in owned copy only",
+    "deliveredRegressions": "3PASS1FAIL; immediate first child deletion times out",
+    "watchRegistrationDiagnostics": "Failure repeated; watcher registered while child existed and list includedchild; no next callback",
+    "pureImmediateDeletionControls": "1PASS each: pureWebpack, localnooploader, externalnooploader",
+    "longWatchMatrix": "29PASS; does not clear immediate first-delete failure",
+    "watchSnapshotBrowser": "21PASS",
+    "priorBoundaryBrowser": "12build72browserPASS",
+    "lintTypes": "compiler/WebpackPASS; later diagnostic additions alsoWebpacklint/typesPASS",
+    "publicStrictTypes": "fresh build before annotations fails with workspace-only schema paths; annotated and deliveredPASS including invalidsourceIdsnegativecontrol",
+    "typeOnlyJS": "31compiler+30Webpackunchanged",
+    "example": "isolated unmodified buildPASS;2existingwarnings",
+    "rootAPI": "same existing failure after removingpnpm wrapperlines",
+    "packageGolden": "existing failure plus current additive sourceIds surface; not updated",
+    "contextBudgets": "PASS"
+  },
+  "summaries": {
+    "0208-entry-order-final.log": {
+      "pure": false,
+      "observations": 18,
+      "failures": 0
+    },
+    "0208-entry-order-pure.log": {
+      "pure": true,
+      "observations": 18,
+      "failures": 0
+    },
+    "0208-entry-delivered.log": {
+      "pure": false,
+      "observations": 18,
+      "failures": 0
+    },
+    "0208-watch-corrected.log": {
+      "observations": 9,
+      "failures": 0,
+      "callbacks": 9,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0208-watch-child.log": {
+      "initiallyMissing": "child",
+      "observations": 10,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0208-watch-resource.log": {
+      "initiallyMissing": "resource",
+      "observations": 10,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0208-watch-browser.log": {
+      "observations": 21,
+      "failures": 0,
+      "scope": "Three-browser render and real image decoding of immutable output snapshots from actual compiler.watch callbacks; does not claim live browser HMR."
+    },
+    "0208-boundaries-final.log": {
+      "pure": false,
+      "experimentalDelivery": false,
+      "assetBase": "./",
+      "nestedAssets": false,
+      "builds": 12,
+      "buildPass": 12,
+      "buildFail": 0,
+      "comparisons": 72,
+      "comparisonPass": 72,
+      "comparisonFail": 0,
+      "scope": "Actual Webpack production static builds, native CSS experiment, selected plugin or explicitly pure host control; all external CSS intercepted locally; no dev/HMR/Next/SSR claim."
+    }
+  },
+  "preservation": {
+    "sourceCount": 590,
+    "priorSourcesUnchanged": 571,
+    "changedPriorSources": [
+      ".ai/audits/bug-hunt/repros/build-webpack-copy.py",
+      ".ai/audits/bug-hunt/repros/webpack-static-watch.mjs",
+      "packages/compiler/README.md",
+      "packages/compiler/src/stylesheet/compiled-source.ts",
+      "packages/compiler/src/stylesheet/delivery.ts",
+      "packages/compiler/src/stylesheet/index.ts",
+      "packages/compiler/src/stylesheet/public.ts",
+      "packages/compiler/src/stylesheet/render-source.ts",
+      "packages/webpack/README.md",
+      "packages/webpack/src/plugin.ts",
+      "packages/webpack/src/plugins/generated-css-assets.ts",
+      "packages/webpack/src/utils/build-stylesheet-delivery.ts",
+      "packages/webpack/src/utils/transform-style-source.ts",
+      "packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts"
+    ],
+    "newlyInventoried": [
+      ".ai/audits/bug-hunt/repros/webpack-entry-ownership.mjs",
+      ".ai/audits/bug-hunt/repros/webpack-watch-passthrough.cjs",
+      "packages/compiler/tests/bug-hunt-collection-source-ownership.test.ts",
+      "packages/webpack/src/utils/stylesheet-slot.ts",
+      "packages/webpack/tests/bug-hunt-entry-ownership.test.ts"
+    ],
+    "artifactCount": 475,
+    "changedPriorArtifacts": [
+      "packages/compiler/dist/stylesheet/compiled-source.d.ts",
+      "packages/compiler/dist/stylesheet/delivery.d.ts",
+      "packages/compiler/dist/stylesheet/index.d.ts",
+      "packages/compiler/dist/stylesheet/public.d.ts",
+      "packages/compiler/dist/stylesheet/public.js",
+      "packages/compiler/dist/stylesheet/render-source.d.ts",
+      "packages/webpack/dist/plugin.d.ts",
+      "packages/webpack/dist/plugin.js",
+      "packages/webpack/dist/plugins/generated-css-assets.js",
+      "packages/webpack/dist/utils/build-stylesheet-delivery.d.ts",
+      "packages/webpack/dist/utils/build-stylesheet-delivery.js",
+      "packages/webpack/dist/utils/transform-style-source.js"
+    ],
+    "priorArtifactsUnchanged": 461,
+    "addedArtifacts": [
+      "packages/webpack/dist/utils/stylesheet-slot.d.ts",
+      "packages/webpack/dist/utils/stylesheet-slot.js"
+    ],
+    "otherPackageArtifactsUnchanged": 362,
+    "delivery": "ordered atomic full-directory swaps, compiler first; backups in0208-promotion.json",
+    "existingTestsFixturesSnapshotsDependenciesLockfilesCIReleaseSharedBuildRules": "unchanged this batch; proposed watch contract patch isolated only",
+    "foreignSiteAndHosts": "preserved;no restart",
+    "indexEmpty": true,
+    "commitOrPush": false
+  },
+  "pendingApproval": {
+    "file": "packages/webpack/tests/plugin-runtime.test.ts",
+    "patch": ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch",
+    "rootFileSha256": "378564be3acc2840e4af0010bbec5a9345db9d4bc906d55f61cf016c4583310c",
+    "patchSha256": "e4960863a87b55bc0bbfdde0e0d87d2f120426e21fffcaec8835a0e2509d999d",
+    "isolatedPatchedFileSha256": "da2cf049de005c48c03f1aeacbd1bac13320cf783f8e19e7138ed1254784256f",
+    "scope": "Two existing watch tests and fake compilation mock; compilation.errors and missingDependencies; preserves error identity/logging/recovery assertions",
+    "authorization": "No reply to separate Webpack test patch question; LSP one-line approval applied0203 is distinct"
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR.",
+    "0207 bounded production static watch deletion/restoration/rename/unmanage now29PASS and63snapshot-browserPASS; this supersedes only the bounded watch subset of0206 remaining text. Full multi/lazy-entry, emitted asset pruning, resource snapshots during concurrent writes, local compose/Modules/maps/Sass/customresolvers/development/HMR/Next remain.",
+    "0207 existing Webpack watch test-contract patch remains pending explicit user approval; root test untouched. After approval apply exact repro patch and use a fresh owned build copy for full serial tests.",
+    "0208 simple multiple/lazy andcombinedA-B/B-A productionstatic layouts now18browserPASS; full chunk topology/unusedemission/sourcecleanup/concurrentresources/dev/SSR/Next remain. New public collection sourceIds andcompiler declaration fixes delivered.",
+    "0208 delivered immediate first-child deletion consistently times out after first successful callback despitewatchregistrationwhilefileexists;3PASS1FAIL deliveredregressions. PureWebpack/localnooploader/externalnooploader controlsPASS. This remains a product/path-dependent watch failure under BH-0004; fullcopied82PASS andlongwatch29PASS do not clear it. Next turn trace nativeWatchpack events/dependency metadata, thenverify immediate deletion andall29steps. Do not substitute delays orlateredits for recovery."
+  ],
+  "nextBatch": "FIRST fix delivered immediate child-delete watch failure; then unused CSS/resource ownership, stale collection sources and concurrent writes. Preserve all inherited raw/host/root/platform requirements and0038identitypause.",
+  "evidence": {
+    "0208-annotated-build-state-build.log": {
+      "bytes": 5016,
+      "sha256": "28d660dde23b5b6bdd919f368a754ad776ba927b78604cfa21d636c91e1cab1e"
+    },
+    "0208-annotated-build-state-compiler-build.log": {
+      "bytes": 5647,
+      "sha256": "21c5c2d8f72bee332305b96bf0db849c73b569daf787e5d591aba06153f9b40c"
+    },
+    "0208-annotated-build-state.json": {
+      "bytes": 571,
+      "sha256": "b4840bb2207b769da45ab9fba8c31c96669d73de477a643018e85858c414fee6"
+    },
+    "0208-annotated-controls.json": {
+      "bytes": 132,
+      "sha256": "29b7228bcf317cf09e34c12cb1c365eaaf0d68d7876f8af09c491f921726e32c"
+    },
+    "0208-api-census.log": {
+      "bytes": 169879,
+      "sha256": "dc10f0ea4b46e12c21c6bdc6703bf56891d67411a80ad845344dba3bde6c45a4"
+    },
+    "0208-artifacts-final.json": {
+      "bytes": 73872,
+      "sha256": "4b9003ad3d58c128f13532b73db459a5cbb9d719a55f6c3be52b5335556aee6b"
+    },
+    "0208-before.json": {
+      "bytes": 156308,
+      "sha256": "6cba8f0e0244eeecd6a3558afcf5ed0884e1758a9ba6adf5e6ee7a3790d0a179"
+    },
+    "0208-boundaries-final.log": {
+      "bytes": 36579,
+      "sha256": "6afe55230594046ecc325f49fdfc3c369208ea39b9191132e4eb848bf023b5a8"
+    },
+    "0208-build-state-build.log": {
+      "bytes": 5016,
+      "sha256": "7947c6a8411aa41cc610118447ff878ebe2f2799384887f345dc7ba2d36ecd26"
+    },
+    "0208-build-state-compiler-build.log": {
+      "bytes": 5647,
+      "sha256": "fdc83d692782b91cd95d99bbe03f4f1a438938898a355992ed6acdf23432519f"
+    },
+    "0208-build-state.json": {
+      "bytes": 551,
+      "sha256": "544692de203cbde780dbf3232fd0ccbeb29e280a8188d6c3b035faa6ff12be46"
+    },
+    "0208-collection-tests-corrected.log": {
+      "bytes": 171,
+      "sha256": "00259c2e5a28d62224513dc3d2a607670b1ca60e6d22dba365558249c62289d2"
+    },
+    "0208-collection-tests.log": {
+      "bytes": 760,
+      "sha256": "598ea86fca3fc323bd5b7f5c3740fa0245e1007b2b591290bf22f38955181638"
+    },
+    "0208-compiler-artifact-diff.json": {
+      "bytes": 275,
+      "sha256": "8d74b108062467b9692d526f7f97df3fde84c852fea4b618a52116dd81c68e73"
+    },
+    "0208-compiler-explicit-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0208-compiler-package-tests.log": {
+      "bytes": 2572,
+      "sha256": "e1c06e8c17d0d74a9423d229e8c978d8bc6f8a19008290436bbf8a79ceaec0b3"
+    },
+    "0208-compiler-tests.log": {
+      "bytes": 1520,
+      "sha256": "798ef15d6122d03dc763f5585a450dd1f6ebd49580c3a8962deb6138f1c83400"
+    },
+    "0208-context-final.log": {
+      "bytes": 121,
+      "sha256": "c3b0104798767a70be8c47cce42f3a708843d30872e253f58b82417d684334b8"
+    },
+    "0208-context-source.log": {
+      "bytes": 121,
+      "sha256": "f833ced16db1b842f7138c80d53e810791b9af57788486d36cbdb3f94d00871e"
+    },
+    "0208-delivered-regressions.log": {
+      "bytes": 1202,
+      "sha256": "99e97797f22817353b82d50eae691309b913563d9d867e2fe29bfbc88e7bc785"
+    },
+    "0208-diagnostic-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0208-diagnostic-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0208-entry-before-corrected.log": {
+      "bytes": 9951,
+      "sha256": "4a51223ef0a99a03eefc3fbd69a6a89b29f3ee8ee2533701a2d59c389ee8504e"
+    },
+    "0208-entry-before.log": {
+      "bytes": 9951,
+      "sha256": "5b36bc9ab131f00c79344a19851647310ee955e9891540bac23482c8e71d3a1a"
+    },
+    "0208-entry-candidate.log": {
+      "bytes": 10892,
+      "sha256": "623d78cb7fb26eb3f04635e1e315cf43e8055ef7d5d011ce3eabe50a970ae23f"
+    },
+    "0208-entry-delivered.log": {
+      "bytes": 16200,
+      "sha256": "fd72211fe8760f4157f43fc3ffa974ab0096b986aa9930f6fd591f2775a67507"
+    },
+    "0208-entry-final.log": {
+      "bytes": 10890,
+      "sha256": "3e8a0915e01ffac018369fbc91ee1605111bb70778878062df191cb39b84687a"
+    },
+    "0208-entry-order-final.log": {
+      "bytes": 16198,
+      "sha256": "fbf5b69f9fcf436a67f7cd04ab4eb538b50d133e43efacd106f3737a5ac45303"
+    },
+    "0208-entry-order-pure.log": {
+      "bytes": 11941,
+      "sha256": "2a584a7daad03e19ab571a5e894918032e0ace8007eebe3252609ea52c3e0e9f"
+    },
+    "0208-entry-pure-corrected.log": {
+      "bytes": 8591,
+      "sha256": "30d6daba9625fc9424e8b8e37a803d407ec61bc9b7ecd74d5c22b9cab9cc02a2"
+    },
+    "0208-entry-pure-settled.log": {
+      "bytes": 8591,
+      "sha256": "cec61ffd2bb63accb69c2eb517a00a78187cad3db30406b68937f88dca121cf3"
+    },
+    "0208-entry-pure.log": {
+      "bytes": 8591,
+      "sha256": "cec61ffd2bb63accb69c2eb517a00a78187cad3db30406b68937f88dca121cf3"
+    },
+    "0208-entry-tests-before.log": {
+      "bytes": 2901,
+      "sha256": "095edc56fefe357c3e3f702ba995425b57e0f19cfd458c24ee5ccbad8790ae7c"
+    },
+    "0208-final-build-state-build.log": {
+      "bytes": 5016,
+      "sha256": "da2b77a57c673014c0c9be6df3179ef1bfabd980956c6dfefa9b9f48e0f264e3"
+    },
+    "0208-final-build-state-compiler-build.log": {
+      "bytes": 5647,
+      "sha256": "56621f7e32d29e8b3cad03fbb7a9dd41e0ba933a5273c8a2d8d2db78826ac74e"
+    },
+    "0208-final-build-state.json": {
+      "bytes": 563,
+      "sha256": "4ab81bd4ccd1092dd7518cea86dd4f943915b847ffcb4ece4e7d4e02621abb4c"
+    },
+    "0208-lint-annotated.log": {
+      "bytes": 18,
+      "sha256": "026f36e0d392f35acc79ba9d963ec2dfc7a907bbd950942a3fd90b15631df148"
+    },
+    "0208-lint-final.log": {
+      "bytes": 18,
+      "sha256": "026f36e0d392f35acc79ba9d963ec2dfc7a907bbd950942a3fd90b15631df148"
+    },
+    "0208-lint.log": {
+      "bytes": 18,
+      "sha256": "026f36e0d392f35acc79ba9d963ec2dfc7a907bbd950942a3fd90b15631df148"
+    },
+    "0208-package-contracts-delivered.log": {
+      "bytes": 80942,
+      "sha256": "461bedc75f9ea636617fb9da2b8a7308ed782f4b179c6f415002dc9a289a3f50"
+    },
+    "0208-package-contracts.log": {
+      "bytes": 80942,
+      "sha256": "461bedc75f9ea636617fb9da2b8a7308ed782f4b179c6f415002dc9a289a3f50"
+    },
+    "0208-promotion.json": {
+      "bytes": 37251,
+      "sha256": "8f98f5251cedb3541215c508a5c7978fb5a6e306972b9eaee11585a421b381c3"
+    },
+    "0208-public-types-after-annotations.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0208-public-types-before-annotations.log": {
+      "bytes": 2363,
+      "sha256": "ab7ecfcb5b2552157a4b11987ff1a3be91c277bb8123e1bde8e0820e9f7efaff"
+    },
+    "0208-public-types-delivered.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0208-source-hashes-final.json": {
+      "bytes": 74246,
+      "sha256": "9aa0a042bda3d9c3b11e71033809eb0986f32e83d1dd8c4fc42be6afa519c924"
+    },
+    "0208-types-annotated.log": {
+      "bytes": 66,
+      "sha256": "b42111f2d368cbae7ae37c13455b40b2c23cc0de120817ff0674138286b82c2c"
+    },
+    "0208-types-final.log": {
+      "bytes": 66,
+      "sha256": "b42111f2d368cbae7ae37c13455b40b2c23cc0de120817ff0674138286b82c2c"
+    },
+    "0208-types.log": {
+      "bytes": 66,
+      "sha256": "b42111f2d368cbae7ae37c13455b40b2c23cc0de120817ff0674138286b82c2c"
+    },
+    "0208-watch-browser.log": {
+      "bytes": 5589,
+      "sha256": "30d818307a1a0784a4b85d97d7c8c7b007ab24052ab6f23725e0834f52adcf6e"
+    },
+    "0208-watch-child.log": {
+      "bytes": 635957,
+      "sha256": "bdeb72e290b032ad959526adfe407401ceb058bf76a242c84cbb4f18364946a9"
+    },
+    "0208-watch-corrected.log": {
+      "bytes": 630763,
+      "sha256": "263a66420829500f56aa8b068c36a7425ff041528f0bbd52607460ba0d7d9670"
+    },
+    "0208-watch-external-loader-delete.log": {
+      "bytes": 183,
+      "sha256": "580f0e0b8c0b32473e39c0e8dfa84023f8f5c3b1eada0bd5659412a3264adb5a"
+    },
+    "0208-watch-final.log": {
+      "bytes": 532781,
+      "sha256": "210ba4272d3d1f39e03afec39bdb6dafee4eda03fb9c3c90b3d9514a86af3b26"
+    },
+    "0208-watch-pure-delete.log": {
+      "bytes": 183,
+      "sha256": "c30bb70ae9ed9c36591a7cf7e4bbaa9d83847e084adf90fc686544bc12b8d6f0"
+    },
+    "0208-watch-pure-loader-delete.log": {
+      "bytes": 184,
+      "sha256": "a90f59750fdf430d98349f29919989b7ba06547e3676d482930c03495d3d1d9a"
+    },
+    "0208-watch-registration-diagnostic.log": {
+      "bytes": 3425,
+      "sha256": "2268a8e80f07168680a551ce7c5a874e004ba74330be736c22586b7edd15bffd"
+    },
+    "0208-watch-resource.log": {
+      "bytes": 732310,
+      "sha256": "7b5554209a12923ccfbdfc331c53676c87ed21818ee769021d3982db64baec1c"
+    },
+    "0208-watch-timeout-diagnostic.log": {
+      "bytes": 2337,
+      "sha256": "c17a4977f2944da3713f50974c6bc0a1c8cf3e67830583689ed6f0fb66aad87e"
+    },
+    "0208-webpack-artifact-diff.json": {
+      "bytes": 348,
+      "sha256": "1d13f1619e1c5e6c7c60dfeaa878854c702d56c9a9ab0c686a3fbafd190a6a02"
+    },
+    "0208-webpack-example.log": {
+      "bytes": 2938,
+      "sha256": "7ef0fd5b5a3930255679d4568e105a9c2aaed327f1a0c401aec936c850f8adda"
+    },
+    "0208-webpack-tests-final.log": {
+      "bytes": 872,
+      "sha256": "b5366b92f87ee6a556d4cb5387cbd90bfbc550434f16bb851a33530f5bd7c9ba"
+    },
+    "0208-webpack-tests.log": {
+      "bytes": 1967,
+      "sha256": "55cd2fa6ac33572eab3d5ea97654bd8c880b5cbf02aed6c2d4c637f5601b0777"
+    }
+  }
+}

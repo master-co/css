@@ -1,0 +1,366 @@
+{
+  "hostAttempts": 28,
+  "buildPass": 27,
+  "browserPass": 44,
+  "browserFail": 10,
+  "rows": [
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "baseline",
+      "case": "postcss-added-nested-themed-empty-composes",
+      "exit": 0,
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "baseline",
+      "case": "postcss-themed-merged-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "baseline",
+      "case": "postcss-themed-comment-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "baseline",
+      "case": "postcss-themed-spelling-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "prototype",
+      "case": "postcss-added-nested-themed-empty-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "prototype",
+      "case": "postcss-themed-merged-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "prototype",
+      "case": "postcss-themed-comment-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "prototype",
+      "case": "postcss-themed-spelling-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "pure",
+      "case": "postcss-added-nested-themed-empty-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "pure",
+      "case": "postcss-themed-merged-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "pure",
+      "case": "postcss-themed-comment-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-host-matrix.json",
+      "mode": "pure",
+      "case": "postcss-themed-spelling-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-added-nested-themed-empty-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-themed-merged-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-themed-comment-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-themed-spelling-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-local-generated-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-global-context",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-imported-keyframe",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-preserved-host-matrix.json",
+      "case": "postcss-child-global-resource",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-added-nested-themed-empty-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-themed-merged-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-themed-comment-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-themed-spelling-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-local-generated-composes",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-global-context",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-imported-keyframe",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    },
+    {
+      "matrix": "0240-mapped-host-matrix.json",
+      "case": "postcss-child-global-resource",
+      "exit": 0,
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "browserFailures": [],
+      "harnessError": null
+    }
+  ],
+  "mappedPrototypeBrowserPass": 16,
+  "mappedPrototypeMaps": [
+    {
+      "file": "0240-mapped-postcss-added-nested-themed-empty-composes-maps.json",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0
+    },
+    {
+      "file": "0240-mapped-postcss-child-global-resource-maps.json",
+      "exit": 0,
+      "pass": 2,
+      "fail": 0
+    },
+    {
+      "file": "0240-mapped-postcss-global-context-maps.json",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0
+    },
+    {
+      "file": "0240-mapped-postcss-imported-keyframe-maps.json",
+      "exit": 1,
+      "pass": 1,
+      "fail": 1
+    },
+    {
+      "file": "0240-mapped-postcss-local-generated-composes-maps.json",
+      "exit": 0,
+      "pass": 1,
+      "fail": 0
+    },
+    {
+      "file": "0240-mapped-postcss-themed-comment-composes-maps.json",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0
+    },
+    {
+      "file": "0240-mapped-postcss-themed-merged-composes-maps.json",
+      "exit": 1,
+      "pass": 2,
+      "fail": 1
+    },
+    {
+      "file": "0240-mapped-postcss-themed-spelling-composes-maps.json",
+      "exit": 0,
+      "pass": 3,
+      "fail": 0
+    }
+  ],
+  "firstMinifyPrototypeRustTests": 117,
+  "mappedPrototypeRustPass": 118,
+  "mappedPrototypeRustFail": 3,
+  "clippy": "PASS",
+  "sourcePatch": "/Users/aron/master/css/.ai/audits/bug-hunt/repros/next-rust-preserved-source-mapped-prototype.patch",
+  "patchSha256": "b578d91636dd9773244254fc33b6a3d6c840ee404d155d737e142307d94960dd",
+  "patchApplyCheck": "PASS read-only root",
+  "sourcePatchFiles": [
+    "crates/mastercss-compiler/src/directives.rs",
+    "crates/mastercss-compiler/src/lib.rs",
+    "crates/mastercss-compiler/src/native_source.rs",
+    "crates/mastercss-compiler/tests/bug_hunt_preserved_native_source.rs"
+  ],
+  "nextCandidate": "0239 retained54source/64dist unchanged; Rust prototype only via per-command binding override",
+  "promoted": false
+}

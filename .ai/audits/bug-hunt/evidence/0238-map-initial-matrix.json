@@ -1,0 +1,26 @@
+[
+  {
+    "file": "0238-after-postcss-added-composes-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-after-postcss-added-import-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-after-postcss-added-nested-nonempty-composes-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-after-postcss-added-resource-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-after-postcss-global-context-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-after-postcss-imported-keyframe-maps.json",
+    "exit": 0
+  }
+]

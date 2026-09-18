@@ -1,0 +1,10 @@
+{
+  "exitCode": 1,
+  "baselineSourcesVerified": {
+    "packages/binding-wasm-compiler/src/index.ts": "f2cbbec8681aed5bae12708b811452a5d7500983aab2e760ca67009e2f38173c",
+    "packages/binding-wasm-compiler/src/provider.ts": "dcfecebb36a1064d75b9e301b64e108961acf31608504e47a8db335193b765c8"
+  },
+  "tests": "Unchanged original package tests copied verbatim",
+  "artifacts": "Original complete Wasm artifact directory retained before0199promotion",
+  "scope": "Isolated package baseline;no root output writes"
+}

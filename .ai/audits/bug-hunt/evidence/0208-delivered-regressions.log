@@ -1,0 +1,28 @@
+
+ RUN  v5.0.0 /Users/aron/master/css
+
+[log]
+[log]
+ ❯ packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts (2 tests | 1 failed) 13320ms
+   × watch reports a missing child as compilation errors and recovers without invalidation 10891ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing child as compilation errors and recovers without invalidation
+Error: No automatic watch result after file change
+ ❯ Timeout._onTimeout packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts:25:73
+     23|     if (existing) { resolve(existing); return }
+     24|     const callback = (result: Result) => { if (!predicate(result)) ret…
+     25|     const timer = setTimeout(() => { listeners.delete(callback); rejec…
+       |                                                                         ^
+     26|     listeners.add(callback)
+     27|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 3 passed (4)
+   Start at  01:18:28
+   Duration  15.98s (tests 97%, import 1%, transform 1%)
+

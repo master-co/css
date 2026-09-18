@@ -1,0 +1,65 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack
+
+[success] ../styles/usage.js 1 classes inserted in 0.3ms 
+ ❯ tests/bug-hunt-active-graph.test.ts (3 tests | 1 failed) 20944ms
+   × removal retains shared resource owners and clears detached scanner classes 13588ms
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[success] page.tsx 1 classes inserted in 0.1ms 
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+ ❯ tests/bug-hunt-static-watch-recovery.test.ts (2 tests | 1 failed) 13389ms
+   × watch reports a missing child as compilation errors and recovers without invalidation 10852ms
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+[log]
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-active-graph.test.ts > removal retains shared resource owners and clears detached scanner classes
+Error: No one watch result; callbacks=1
+ ❯ Timeout._onTimeout tests/bug-hunt-active-graph.test.ts:57:71
+     55|       else resolve(result)
+     56|     }
+     57|     const timer = setTimeout(() => { listeners.delete(inspect);reject(…
+       |                                                                       ^
+     58|     listeners.add(inspect);inspect()
+     59|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing child as compilation errors and recovers without invalidation
+Error: No automatic watch result in delete; events=[]; registrations=[{"phase":"initial","childExists":true,"files":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/entry.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/child.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/pixel.svg","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/entry.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn","/private/var/folders/_b","/private/var/folders","/private/var","/private","/","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/dist/stylesheet-loader.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/dist","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh"]}]; after=1, results=[{"errors":[],"dependencies":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/entry.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/child.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/pixel.svg","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/entry.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn","/private/var/folders/_b","/private/var/folders","/private/var","/private","/","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/dist/stylesheet-loader.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/dist","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh"],"missing":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-vnfScH/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/package.json","/private/var/folders/_b/package.json","/private/var/folders/package.json","/private/var/package.json","/private/package.json","/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-y3tvregh/packages/webpack/dist/package.json"]}]
+ ❯ Timeout._onTimeout tests/bug-hunt-static-watch-recovery.test.ts:60:73
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 10 passed (12)
+      Tests  2 failed | 86 passed (88)
+   Start at  02:38:01
+   Duration  68.18s (tests 98%, import 1%, transform 1%)
+

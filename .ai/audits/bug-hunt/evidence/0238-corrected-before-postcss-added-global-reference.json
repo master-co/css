@@ -1,0 +1,176 @@
+{
+  "scenario": "postcss-added-global-reference",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": "@theme{--image-audit:url(\"./new.svg?rev=1#shape\")}.direct{color:#123456;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "addGlobalReference": true,
+    "resourceFixture": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 82ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.4s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 61ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/7ab366f4d20b88d7.css",
+      "text": "@import url(\"/_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css\");\n/*# sourceMappingURL=7ab366f4d20b88d7.css.map*/"
+    },
+    {
+      "file": "_next/static/css/7ab366f4d20b88d7.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/7ab366f4d20b88d7.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/7ab366f4d20b88d7.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css",
+      "text": ".card_direct__vAL_y{color:#123456;background-image:var(--image-audit);border-top:7px solid red}\n/*# sourceMappingURL=deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-DRxP37/app/card.module.css\",\"webpack://_N_E/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css\"],\"names\":[],\"mappings\":\"AAAiF,oBCC/E,aAAc,CACd,mCAAoC,CACpC,wBACF\",\"file\":\"static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css\",\"sourcesContent\":[\"@master entry;@preserve native;@theme{--image-audit:url(\\\"./new.svg?rev=1#shape\\\")}.direct{color:#123456;border-top:7px solid red}\",\".card_direct__vAL_y {\\n  color: #123456;\\n  background-image: var(--image-audit);\\n  border-top: 7px solid red;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;@theme{--image-audit:url(\"./new.svg?rev=1#shape\")}.direct{color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{border-top:7px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/7ab366f4d20b88d7.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-00f9310e007d8ba5.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/7ab366f4d20b88d7.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-00f9310e007d8ba5.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/2bd26be77c344da16c2bad230d902920e44c0b0a217f2b8f83ba541b40359ef9/maps/deeb55fa5abcbe5370349a19385dfd6c2342c6d8d4e3aea43b2f606494e0e756-entry.css",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-DRxP37/app/card.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-DRxP37/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-DRxP37/app/card.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-DRxP37/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

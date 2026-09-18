@@ -1,0 +1,112 @@
+{
+  "scenario": "inline-chain-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": true,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"__AUDIT_INLINE_LOADER__?width=7!__AUDIT_INLINE_LOADER__?width=3!./other.module.css\";color:#123456}",
+    "b": ".shared{border-top:1px solid red}",
+    "inline": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 138ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.6s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 63ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/f0c7e2eb40e19805.css",
+      "text": "@import url(\"/_next/static/css/master/1bf40b099edffc5749d1bf6c7bb27157d729c3fba60ec4a64fd777976398345a/css/4d656abe48b03056b56c4305a3eccd684dc48c963e7e6066f4c978ebe2e13602-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/1bf40b099edffc5749d1bf6c7bb27157d729c3fba60ec4a64fd777976398345a/css/4d656abe48b03056b56c4305a3eccd684dc48c963e7e6066f4c978ebe2e13602-17f5263ce939a95bdbbfa377c47220e96ab649a1d586d2fe46bd4cc21411702b.css",
+      "text": ".other_shared__f3TK2{border-top:7px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/1bf40b099edffc5749d1bf6c7bb27157d729c3fba60ec4a64fd777976398345a/css/4d656abe48b03056b56c4305a3eccd684dc48c963e7e6066f4c978ebe2e13602-entry.css",
+      "text": "@import \"./4d656abe48b03056b56c4305a3eccd684dc48c963e7e6066f4c978ebe2e13602-17f5263ce939a95bdbbfa377c47220e96ab649a1d586d2fe46bd4cc21411702b.css\";.card_direct__vAL_y{color:#123456}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y other_shared__f3TK2\">"
+  ],
+  "inlineLoaderCalls": [
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dwe8aE/app/other.module.css",
+      "query": "",
+      "options": {
+        "width": "3"
+      },
+      "input": ".shared{border-top:1px solid red}",
+      "output": ".shared{border-top:3px solid red}"
+    },
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dwe8aE/app/other.module.css",
+      "query": "",
+      "options": {
+        "width": "7"
+      },
+      "input": ".shared{border-top:3px solid red}",
+      "output": ".shared{border-top:7px solid red}"
+    },
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dwe8aE/app/other.module.css",
+      "query": "",
+      "options": {
+        "width": "3"
+      },
+      "input": ".shared{border-top:1px solid red}",
+      "output": ".shared{border-top:3px solid red}"
+    },
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dwe8aE/app/other.module.css",
+      "query": "",
+      "options": {
+        "width": "7"
+      },
+      "input": ".shared{border-top:3px solid red}",
+      "output": ".shared{border-top:7px solid red}"
+    }
+  ]
+}

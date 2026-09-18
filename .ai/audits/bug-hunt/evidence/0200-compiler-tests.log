@@ -1,0 +1,60 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.5ms 
+[success] app/page.tsx 4 classes inserted in 0.6ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.6ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 2.2ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.3ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms  (repeated 2 times)
+[success] app/page.html 1 classes inserted in 0.1ms 
+ ❯ tests/stylesheet/style-output.test.ts (15 tests | 1 failed) 15012ms
+   ❯ style CSS extraction helpers (15)
+     × keeps non-expandable native imports out of generated managed CSS 2627ms
+[success] index.html 5 classes inserted in 0.4ms 
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/stylesheet/style-output.test.ts > style CSS extraction helpers > keeps non-expandable native imports out of generated managed CSS
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 52 passed (53)
+      Tests  1 failed | 402 passed (403)
+   Start at  22:44:40
+   Duration  17.61s (tests 95%, import 3%, transform 2%)
+

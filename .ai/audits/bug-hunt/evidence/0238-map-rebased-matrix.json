@@ -1,0 +1,18 @@
+[
+  {
+    "file": "0238-rebased-postcss-added-global-reference-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-rebased-postcss-child-global-resource-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-rebased-postcss-global-context-maps.json",
+    "exit": 0
+  },
+  {
+    "file": "0238-rebased-postcss-global-resource-maps.json",
+    "exit": 0
+  }
+]

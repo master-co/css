@@ -1,0 +1,13 @@
+{
+  "entrypoints": [
+    "@master/css-compiler",
+    "@master/css-compiler/node",
+    "@master/css-compiler/project",
+    "@master/css-compiler/project/sync",
+    "@master/css-compiler/stylesheet",
+    "@master/css-compiler/stylesheet/browser",
+    "@master/css-compiler/diagnostics"
+  ],
+  "exitCode": 0,
+  "scope": "Copiedpublishedcompiler, no workspacealiases;strictTS6 skipLibCheckfalse withnegativecontrol"
+}

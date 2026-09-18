@@ -1,0 +1,171 @@
+{
+  "batch": "0201-published-declaration-closure",
+  "status": "Authorized binding declaration repair verified; full goal incomplete",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "finding": "BH-0061 P2 fixed",
+  "authorization": "User explicitly authorized only shared/tsdown-package.config.ts binding declaration bundling rule",
+  "results": {
+    "baselineDefaultBuild": 0,
+    "baselineExternalTypes": 2,
+    "reviewedDefaultBuild": 0,
+    "deliveredStrictPositiveNegativeTypes": 0,
+    "publicEntrypoints": 7,
+    "runtimeSmoke": "7 imports and native inspect PASS",
+    "bindingTests": 25,
+    "bindingLint": "PASS",
+    "configLint": "PASS; shared has no package-local lint script",
+    "runtimeJSByteIdentical": 28,
+    "bindingRelativeDeclarationIssues": "13 before / 0 after",
+    "portableReproduction": "PASS; fresh default baseline fails, approved config passes; JS exact",
+    "otherDeclarationCandidates": {
+      "language-server": 2,
+      "mcp": 1,
+      "tooling": 3
+    }
+  },
+  "preservation": {
+    "sourceCount": 554,
+    "priorSourcesUnchanged": 550,
+    "newlyCoveredSources": 4,
+    "artifactCount": 458,
+    "oldArtifactsUnchanged": 442,
+    "changedArtifacts": [
+      "packages/binding/dist/browser.d.ts",
+      "packages/binding/dist/compiler-binding-browser.d.ts",
+      "packages/binding/dist/compiler-binding-node.d.ts",
+      "packages/binding/dist/compiler-binding.d.ts",
+      "packages/binding/dist/engine-binding-browser.d.ts",
+      "packages/binding/dist/engine-binding-node.d.ts",
+      "packages/binding/dist/engine-binding.d.ts",
+      "packages/binding/dist/index.d.ts",
+      "packages/binding/dist/tooling-binding-browser.d.ts",
+      "packages/binding/dist/tooling-binding-node.d.ts",
+      "packages/binding/dist/tooling-binding.d.ts"
+    ],
+    "addedDeclarations": [
+      "binding-options.d.ts",
+      "binding.d.ts",
+      "compiler-binding-contract.d.ts",
+      "protocol.d.ts",
+      "tooling-binding-contract.d.ts"
+    ],
+    "foreignHosts": "not stopped/restarted",
+    "existingTestsFixturesSnapshotsDependenciesLockfilesCIRelease": "unchanged",
+    "otherPackageBuildRules": "unchanged",
+    "commitOrPush": false
+  },
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0201 binding published declaration defect fixed as BH-0061. Current language-server (2), MCP (1), tooling (3) relative declaration issues remain unconfirmed candidates: reproduce each with fresh default-output builds in disposable copies and strict external consumers; other package build rules are outside this binding-only authorization."
+  ],
+  "next": "Fresh default-output builds and strict external type consumers for tooling, language-server and MCP; classify root causes before any further shared build-rule edits. Continue all retained graph/host/recovery/gate/benchmark/Site work.",
+  "identityConfirmation": "Not received;0038 remains paused",
+  "goal": "active",
+  "checks": {
+    "commands": "all owned commands terminal",
+    "index": "empty",
+    "context": "PASS;0201-context-final.log",
+    "authoredWhitespace": "PASS;verbatim logs and archived history excluded",
+    "reproSyntax": "PASS"
+  },
+  "logs": {
+    "0201-baseline-consumer-types.log": {
+      "bytes": 3727,
+      "sha256": "d027c335be9ae9c75b09f3ca34724d2722cfd727ad30e499eb336481192f5978"
+    },
+    "0201-reviewed-typed-controls.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0201-candidate-consumer-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0201-reviewed-default-build.log": {
+      "bytes": 3736,
+      "sha256": "efceaf59dbe812b6f85f29ef0717285cfd6289db1581af63cc912016490195fa"
+    },
+    "0201-config-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0201-bundled-default-build.log": {
+      "bytes": 3714,
+      "sha256": "c5f9b8ee66b426d9d05a80f3066ff2766d2daab522e11bdeefa48ce0a60b8fcc"
+    },
+    "0201-delivered-binding-tests.log": {
+      "bytes": 662,
+      "sha256": "938fc0291c81d4140e1eb43e3a0cd2b16979bbed4491443770cb1cdf7f2daf6b"
+    },
+    "0201-portable-repro.log": {
+      "bytes": 810,
+      "sha256": "48a066d743126fda24db978a0c3c6e9fea95878722f0d109827b623c3df93d41"
+    },
+    "0201-context-final.log": {
+      "bytes": 121,
+      "sha256": "f74fa80b95a06b899ea869747fb6d5b8e55231092f462e3ca116aba42f468bba"
+    },
+    "0201-delivered-runtime.log": {
+      "bytes": 35,
+      "sha256": "3a9d789d8eca79aed2fb6c974f221abb80d73725223c3f769c3ab4b7b28feb70"
+    },
+    "0201-binding-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0201-reviewed-runtime.log": {
+      "bytes": 35,
+      "sha256": "3a9d789d8eca79aed2fb6c974f221abb80d73725223c3f769c3ab4b7b28feb70"
+    },
+    "0201-delivered-closure.log": {
+      "bytes": 8532,
+      "sha256": "58378e56cdf79a060b71487dd723937d9458b2b8c25ceeda4fa3de20b958709e"
+    },
+    "0201-portable-candidate-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0201-portable-baseline-types.log": {
+      "bytes": 3727,
+      "sha256": "16701d4ad2c3b950b5c174825b4172aa82b0afb1ac8d92b8ff7a8c20b80f69cd"
+    },
+    "0201-delivered-typed-controls.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0201-baseline-default-build.log": {
+      "bytes": 3296,
+      "sha256": "21995116015bf7ba6a3e0b1dc34cf7c57b5b59265e59d40251ceeac62a87c2a5"
+    },
+    "0201-candidate-default-build.log": {
+      "bytes": 5907,
+      "sha256": "ed962aa0a6c793bc5ecd9a6c38f7da87c6fc2d8bde1282a6dec878591b88716a"
+    },
+    "0201-bundled-consumer-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

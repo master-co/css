@@ -1,0 +1,536 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next
+
+ ❯ tests/next-config.test.ts (14 tests | 3 failed) 390ms
+   ❯ withMasterCSS (14)
+     × adds a CSS manifest webpack loader 6ms
+     × adds a CSS manifest Turbopack loader 3ms
+     × adds CSS manifest loaders without runtime aliases or the adapter when mode is null 2ms
+ ❯ tests/stylesheet-loader.test.ts (9 tests | 3 failed) 10858ms
+   ❯ Next style CSS loader (9)
+     × derives native CSS from @master/css instead of hardcoding a package subpath 1599ms
+     × derives native CSS from @master entry directives 1549ms
+     × preserves native CSS and keyframes from imported Master entry graphs 1600ms
+ ❯ tests/bug-hunt-sass-source-offsets.test.ts (9 tests | 2 failed) 4154ms
+   × Next scss entry preserves imported partial reference ownership 1998ms
+   × Next sass entry preserves imported partial reference ownership 2001ms
+ ❯ tests/bug-hunt-output-source-maps.test.ts (6 tests | 1 failed) 4410ms
+   × Next injected package entry retains pure CSS authoring lines in its callback map 1802ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 9 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > Next injected package entry retains pure CSS authoring lines in its callback map
+AssertionError: expected -1 to be greater than or equal to 0
+ ❯ origin tests/bug-hunt-output-source-maps.test.ts:24:60
+     22| function origin(result: Awaited<ReturnType<typeof compile>>, token: st…
+     23|   expect(result.sourceMap).toBeDefined()
+     24|   const offset = result.code.indexOf(token);expect(offset).toBeGreater…
+       |                                                            ^
+     25|   const lines = result.code.slice(0, offset).split('\n')
+     26|   return new SourceMap(result.sourceMap).findEntry(lines.length - 1, l…
+ ❯ tests/bug-hunt-output-source-maps.test.ts:33:12
+ ❯ fixture tests/bug-hunt-output-source-maps.test.ts:13:99
+ ❯ tests/bug-hunt-output-source-maps.test.ts:30:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/9]⎯
+
+ FAIL  tests/bug-hunt-sass-source-offsets.test.ts > Next scss entry preserves imported partial reference ownership
+AssertionError: expected '@import ".master/stylesheets/df5d6e23…' to contain 'padding:2rem'
+
+Expected: "padding:2rem"
+Received: "@import ".master/stylesheets/df5d6e231cfe24656cb89f84f299072115eefb6e655fcbebeca0186315c208d3/9487ec6ce6cb84cc8ff6686f402cacfecc0e833158f69483dbadccbc249a5a54-entry.css";"
+
+ ❯ tests/bug-hunt-sass-source-offsets.test.ts:77:20
+     75|     const source = syntax === 'sass' ? '@use "parts/entry"\n@master en…
+     76|     const result = await compile(root, file, source, [], { implementat…
+     77|     expect(result).toContain('padding:2rem')
+       |                    ^
+     78|     expect(result).not.toContain('99rem')
+     79|   })
+ ❯ fixture tests/bug-hunt-sass-source-offsets.test.ts:16:5
+ ❯ tests/bug-hunt-sass-source-offsets.test.ts:70:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/9]⎯
+
+ FAIL  tests/bug-hunt-sass-source-offsets.test.ts > Next sass entry preserves imported partial reference ownership
+AssertionError: expected '@import ".master/stylesheets/a60e7ef1…' to contain 'padding:2rem'
+
+Expected: "padding:2rem"
+Received: "@import ".master/stylesheets/a60e7ef10d8bc6cba54e6f371b58ed10404a179bc6e6cdb0f14180171d1598db/5fb1dc714060bd4c1e553d1c50d5496cbcbccdcaf0dd15bda0b6427b061abc3c-entry.css";"
+
+ ❯ tests/bug-hunt-sass-source-offsets.test.ts:77:20
+     75|     const source = syntax === 'sass' ? '@use "parts/entry"\n@master en…
+     76|     const result = await compile(root, file, source, [], { implementat…
+     77|     expect(result).toContain('padding:2rem')
+       |                    ^
+     78|     expect(result).not.toContain('99rem')
+     79|   })
+ ❯ fixture tests/bug-hunt-sass-source-offsets.test.ts:16:5
+ ❯ tests/bug-hunt-sass-source-offsets.test.ts:70:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/9]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest webpack loader
+AssertionError: expected [ { …(2) }, { …(2) }, { …(2) } ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++ [
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-manifest\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
+          "options": {
+            "external": true,
+            "module": true,
+            "virtual": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "resourceQuery": /master-css-manifest/,
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "external": true,
+-           "module": true,
++           "emittedGlobals": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++   {
++     "resourceQuery": /master-css-manifest/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "emittedGlobals": true,
++           "external": true,
++           "module": true,
+          },
+        },
+      ],
+-   },
+-   ObjectContaining {
+-     "resourceQuery": {
+-       "not": [
+-         /master-css-manifest/,
+-       ],
+-     },
+-     "test": /\.(css|scss|sass)$/,
+    },
+  ]
+
+ ❯ tests/next-config.test.ts:121:41
+    119|     const resolvedConfig = nextConfig.webpack(webpackConfig as any, {}…
+    120|
+    121|     expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining…
+       |                                         ^
+    122|       expect.objectContaining({
+    123|         test: expect.any(RegExp),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/9]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest Turbopack loader
+AssertionError: expected { '*.svg': { type: 'asset' }, …(4) } to deeply equal { '*': ArrayContaining{…}, …(4) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -28,49 +42,118 @@
+            },
+          ],
+        },
+        "loaders": [
+          {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
+            "options": {
+              "external": true,
+              "module": true,
+            },
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "as": "*.css",
+        "condition": {
+-         "path": Any<RegExp>,
++         "all": [
++           {
++             "path": /\.(css|scss|sass)$/,
++           },
++           {
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
+              },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
+        "loaders": [
+          {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
+            "options": {
+-             "emittedGlobals": true,
++             "sassOptions": {},
+            },
+          },
+        ],
+-       "type": "ecmascript",
++       "type": "css",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+-             "path": /\.(css|scss|sass)$/,
++             "path": /\.(scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
+            },
+            {
+              "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:181:40
+    179|     })
+    180|
+    181|     expect(nextConfig.turbopack.rules).toEqual({
+       |                                        ^
+    182|       '*': expect.arrayContaining([
+    183|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/9]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds CSS manifest loaders without runtime aliases or the adapter when mode is null
+AssertionError: expected { '*.js': [ { …(3) } ], …(3) } to deeply equal { '*': ArrayContaining{…}, …(3) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -26,30 +40,120 @@
+            {
+              "query": /master-css-manifest/,
+            },
+          ],
+        },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "external": true,
++             "module": true,
++           },
++         },
++       ],
+        "type": "ecmascript",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+              "path": /\.(css|scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
++             },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css",
++     },
++     {
++       "as": "*.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.(scss|sass)$/,
+            },
+            {
+              "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
++           },
++           {
++             "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:432:44
+    430|     expect(resolvedConfig.reactStrictMode).toBe(true)
+    431|     expect(resolvedConfig.adapterPath).toBeUndefined()
+    432|     expect(resolvedConfig.turbopack.rules).toEqual({
+       |                                            ^
+    433|       '*': expect.arrayContaining([
+    434|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/9]⎯
+
+ FAIL  tests/stylesheet-loader.test.ts > Next style CSS loader > derives native CSS from @master/css instead of hardcoding a package subpath
+AssertionError: expected '@import "../.master/stylesheets/f59cf…' to contain '@layer base'
+
+Expected: "@layer base"
+Received: "@import "../.master/stylesheets/f59cf3f7c0f519c52d08d1e0790ae2d2868946f87e72e6b2e478b2ccb7cb604d/ff82e4c4ddd3439876adcc0a2f44456f6678c8966c61142eb61cce51e5f52b89-entry.css";"
+
+ ❯ tests/stylesheet-loader.test.ts:41:28
+     39|     const result = await runStylesheetLoader(root, entryPath, '@import…
+     40|
+     41|     expect(result.content).toContain('@layer base')
+       |                            ^
+     42|     expect(result.content).toContain('text-rendering: geometricprecisi…
+     43|     expect(result.content).not.toContain('@master/css/base.css')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/9]⎯
+
+ FAIL  tests/stylesheet-loader.test.ts > Next style CSS loader > derives native CSS from @master entry directives
+AssertionError: expected '@import "../.master/stylesheets/07442…' to contain '@layer base'
+
+Expected: "@layer base"
+Received: "@import "../.master/stylesheets/074425279bed0c9e64e2edd4592fcb06b5ad94773efc91283abab15d36e01083/65e4cededfea5c7991ffbacd3c588ea37e247134e9dd644e7ce7f021aa9d362f-entry.css";"
+
+ ❯ tests/stylesheet-loader.test.ts:55:28
+     53|     const result = await runStylesheetLoader(root, entryPath, '@master…
+     54|
+     55|     expect(result.content).toContain('@layer base')
+       |                            ^
+     56|     expect(result.content).not.toContain('@master entry;')
+     57|     expect(result.dependencies).toContain(entryPath)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/9]⎯
+
+ FAIL  tests/stylesheet-loader.test.ts > Next style CSS loader > preserves native CSS and keyframes from imported Master entry graphs
+AssertionError: expected '@import "../.master/stylesheets/47f23…' to contain '@keyframes active-spin'
+
+Expected: "@keyframes active-spin"
+Received: "@import "../.master/stylesheets/47f236901cf43719a1633cca0449a7d12329b26707e08e43736ee5d358548908/31fc38a435b8d6a58e1ba5f4922ab7c8a6fde9830acac7161109343acfa34cbc-entry.css";"
+
+ ❯ tests/stylesheet-loader.test.ts:76:28
+     74|     ].join('\n'))
+     75|
+     76|     expect(result.content).toContain('@keyframes active-spin')
+       |                            ^
+     77|     expect(result.content).toContain('.native-card')
+     78|     expect(result.content).toContain('--color-active:red')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/9]⎯
+
+
+ Test Files  4 failed | 16 passed (20)
+      Tests  9 failed | 116 passed (125)
+   Start at  03:40:40
+   Duration  112.72s (tests 98%, import 2%)
+

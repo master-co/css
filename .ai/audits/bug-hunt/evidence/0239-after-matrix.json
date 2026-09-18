@@ -1,0 +1,56 @@
+[
+  {
+    "case": "postcss-added-nested-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-added-nested-media-empty-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-added-nested-themed-empty-composes",
+    "exit": 0,
+    "build": 1,
+    "pass": 0,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-added-global-reference",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-global-context",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-local-generated-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  }
+]

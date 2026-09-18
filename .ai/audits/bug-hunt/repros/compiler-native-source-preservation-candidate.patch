@@ -1,0 +1,653 @@
+--- a/crates/mastercss-compiler/src/lib.rs
++++ b/crates/mastercss-compiler/src/lib.rs
+@@ -74,6 +74,9 @@
+     pub from: String,
+     #[serde(default = "default_true", rename = "preserveNativeCSS")]
+     pub preserve_native_css: bool,
++    /// Preserve untouched native source for subsequent host transforms.
++    #[serde(default)]
++    pub preserve_native_source: bool,
+     #[serde(default, skip_serializing_if = "Option::is_none")]
+     pub classes: Option<Vec<String>>,
+ }
+@@ -83,6 +86,7 @@
+         Self {
+             from: default_filename(),
+             preserve_native_css: true,
++            preserve_native_source: false,
+             classes: None,
+         }
+     }
+@@ -627,6 +631,7 @@
+ mod managed;
+ mod native_conditionals;
+ mod native_output;
++mod native_source;
+ pub use native_output::{NativeCssOutput, NativeCssOutputSlot};
+ mod graph_inline;
+ mod native_style;
+--- a/crates/mastercss-compiler/src/directives.rs
++++ b/crates/mastercss-compiler/src/directives.rs
+@@ -1,8 +1,8 @@
+ use super::{
+     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
+     CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap,
+-    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
+-    ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
++    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet, ThemeAtRule,
++    ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
+     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
+     lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
+     normalize_stylesheet_value, rewrite_managed_variant_directives, validate_compose_syntax,
+@@ -88,6 +88,7 @@
+ 
+ pub(crate) struct NativeStyleSlot {
+     pub name: String,
++    pub loc: lightningcss::rules::Location,
+     pub definitions: Vec<CssDirectiveStyleDefinition>,
+ }
+ 
+@@ -105,6 +106,12 @@
+     options: &CompileNativeCssOptions,
+     slots: Option<&mut Vec<NativeStyleSlot>>,
+ ) -> Result<CompileCssDirectivesResult, CompilerError> {
++    if options.preserve_native_source && options.classes.is_some() {
++        return Err(CompilerError::Print {
++            filename: options.from.clone(),
++            message: "preserveNativeSource cannot be combined with class pruning".into(),
++        });
++    }
+     let external_slots = slots.is_some();
+     let mut local_slots = Vec::new();
+     let mut slots = Some(match slots {
+@@ -186,6 +193,7 @@
+     let mut style_definitions = Vec::new();
+     let mut style_order = 0;
+     let mut native_rules = Vec::with_capacity(stylesheet.rules.0.len());
++    let mut consumed = Vec::new();
+     let mut occupied_names = HashSet::new();
+     if super::native_rule_list_has_directives(
+         &rewritten_source,
+@@ -199,6 +207,9 @@
+         }
+     }
+     for rule in stylesheet.rules.0.drain(..) {
++        if let CssRule::Custom(directive) = &rule {
++            consumed.push(directive.start_byte);
++        }
+         match rule {
+             CssRule::Custom(directive) => match directive.name {
+                 DirectiveName::Settings => {
+@@ -250,6 +261,18 @@
+         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
+     }
+ 
++    let preserved = if options.preserve_native_source && options.preserve_native_css {
++        Some(crate::native_source::preserve_native_source(
++            &source_without_entry,
++            source,
++            &rewritten_source,
++            &options.from,
++            &consumed,
++            slots.as_deref().map(Vec::as_slice).unwrap_or_default(),
++        )?)
++    } else {
++        None
++    };
+     let native_output = if !external_slots
+         && let Some(slots) = slots.as_deref_mut().filter(|slots| !slots.is_empty())
+     {
+@@ -261,14 +284,21 @@
+             stylesheet.rules.0 =
+                 crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
+         }
+-        let css = print_native_css(&mut stylesheet, &options.from)?;
+-        let mappings = crate::output_mappings::native_output_mappings(
+-            source,
+-            &rewritten_source,
+-            &options.from,
+-            &stylesheet.rules.0,
+-            &css,
+-        );
++        let css = match &preserved {
++            Some((ordered, _)) => ordered.css.clone(),
++            None => print_native_css(&mut stylesheet, &options.from)?,
++        };
++        let mappings = if let Some((ordered, _)) = &preserved {
++            ordered.mappings.clone()
++        } else {
++            crate::output_mappings::native_output_mappings(
++                source,
++                &rewritten_source,
++                &options.from,
++                &stylesheet.rules.0,
++                &css,
++            )
++        };
+         stylesheet.rules.0 = crate::native_output::strip_style_slots(rules, &names).0;
+         Some(crate::native_output::prepare_native_output(
+             source,
+@@ -288,18 +318,35 @@
+         stylesheet.rules.0 = crate::native_output::retain_style_slots(stylesheet.rules.0, &names);
+     }
+     let native_css = if options.preserve_native_css || external_slots {
+-        print_native_css(&mut stylesheet, &options.from)?
++        match &preserved {
++            Some((ordered, plain)) => {
++                if external_slots {
++                    ordered.css.clone()
++                } else {
++                    plain.css.clone()
++                }
++            }
++            None => print_native_css(&mut stylesheet, &options.from)?,
++        }
+     } else {
+         String::new()
+     };
+ 
+-    let native_mappings = crate::output_mappings::native_output_mappings(
+-        source,
+-        &rewritten_source,
+-        &options.from,
+-        &stylesheet.rules.0,
+-        &native_css,
+-    );
++    let native_mappings = if let Some((ordered, plain)) = &preserved {
++        if external_slots {
++            ordered.mappings.clone()
++        } else {
++            plain.mappings.clone()
++        }
++    } else {
++        crate::output_mappings::native_output_mappings(
++            source,
++            &rewritten_source,
++            &options.from,
++            &stylesheet.rules.0,
++            &native_css,
++        )
++    };
+     Ok(CompileCssDirectivesResult {
+         native_output,
+         native_mappings,
+@@ -333,6 +380,7 @@
+     };
+     slots.push(NativeStyleSlot {
+         name: name.clone(),
++        loc,
+         definitions: definitions.to_vec(),
+     });
+     CssRule::Unknown(lightningcss::rules::unknown::UnknownAtRule {
+--- a/crates/mastercss-compiler/src/imports.rs
++++ b/crates/mastercss-compiler/src/imports.rs
+@@ -373,6 +373,12 @@
+     source: &str,
+     options: &CompileNativeCssOptions,
+ ) -> Result<CompileNativeCssResult, CompilerError> {
++    if options.preserve_native_source && options.classes.is_some() {
++        return Err(CompilerError::Print {
++            filename: options.from.clone(),
++            message: "preserveNativeSource cannot be combined with class pruning".into(),
++        });
++    }
+     let (source, had_master_entry_directive) = remove_master_directive_statements(source);
+     if !options.preserve_native_css {
+         return Ok(CompileNativeCssResult {
+@@ -394,6 +400,14 @@
+         filename: options.from.clone(),
+         range: None,
+     })?;
++    if options.preserve_native_source {
++        drop(stylesheet);
++        return Ok(CompileNativeCssResult {
++            native_css: source.clone(),
++            css: source,
++            had_master_entry_directive,
++        });
++    }
+     if let Some(classes) = &options.classes {
+         let classes = classes.iter().cloned().collect::<HashSet<_>>();
+         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
+--- /dev/null
++++ b/crates/mastercss-compiler/src/native_source.rs
+@@ -0,0 +1,127 @@
++use crate::{
++    CompilerError, CssOutputMapping, byte_offset_for_location, byte_to_utf16_offset,
++    directives::NativeStyleSlot, source_reference_from_bytes,
++};
++use mastercss_lexer::{collect_css_syntax_statements, tokenize_css_syntax};
++use std::collections::HashMap;
++
++#[derive(Clone)]
++pub(crate) struct PreservedSource {
++    pub css: String,
++    pub mappings: Vec<CssOutputMapping>,
++}
++
++/// Audit prototype: copy untouched source spans and replace only compiler-owned
++/// definitions and native lowering slots. The existing Rust lexer owns spans.
++pub(crate) fn preserve_native_source(
++    source: &str,
++    original: &str,
++    rewritten: &str,
++    filename: &str,
++    consumed: &[usize],
++    slots: &[NativeStyleSlot],
++) -> Result<(PreservedSource, PreservedSource), CompilerError> {
++    let error = |message: &str| CompilerError::Print {
++        message: message.into(),
++        filename: filename.into(),
++    };
++    let tokens = tokenize_css_syntax(source);
++    let statements = collect_css_syntax_statements(&tokens);
++    let mut ends = HashMap::new();
++    for statement in statements {
++        let Some(first) = tokens.get(statement.tokens.start) else {
++            continue;
++        };
++        let end = if statement.has_block {
++            let open = tokens
++                .get(statement.tokens.end)
++                .ok_or_else(|| error("Missing source block"))?;
++            tokens
++                .get(open.close.ok_or_else(|| error("Unclosed source block"))?)
++                .ok_or_else(|| error("Missing source block end"))?
++                .bytes
++                .end
++        } else {
++            tokens
++                .get(statement.tokens.end)
++                .map(|token| token.bytes.end)
++                .unwrap_or_else(|| tokens[statement.tokens.end - 1].bytes.end)
++        };
++        ends.insert(first.bytes.start, end);
++    }
++    let mut edits = Vec::new();
++    for start in consumed {
++        let end = *ends
++            .get(start)
++            .ok_or_else(|| error("Consumed directive has no source statement"))?;
++        edits.push((*start, end, String::new()));
++    }
++    for slot in slots {
++        let start = byte_offset_for_location(rewritten, slot.loc.line, slot.loc.column)
++            .ok_or_else(|| error("Lowered slot has no source location"))?;
++        let end = *ends
++            .get(&start)
++            .ok_or_else(|| error("Lowered slot has no source statement"))?;
++        edits.push((start, end, format!("@{};", slot.name)));
++    }
++    edits.sort_by_key(|edit| edit.0);
++    let mut cursor = 0;
++    let mut ordered = PreservedSource {
++        css: String::new(),
++        mappings: Vec::new(),
++    };
++    let mut plain = ordered.clone();
++    let mut anchors = tokens
++        .iter()
++        .flat_map(|token| [token.bytes.start, token.bytes.end])
++        .collect::<Vec<_>>();
++    anchors.extend(source.match_indices('\n').map(|(offset, _)| offset + 1));
++    anchors.sort_unstable();
++    anchors.dedup();
++    let append =
++        |output: &mut PreservedSource, start: usize, end: usize| -> Result<(), CompilerError> {
++            let unchanged = source
++                .get(start..end)
++                .ok_or_else(|| error("Invalid native source range"))?;
++            let generated = output.css.encode_utf16().count() as u32;
++            for offset in std::iter::once(start).chain(
++                anchors
++                    .iter()
++                    .copied()
++                    .filter(|offset| *offset > start && *offset < end),
++            ) {
++                if offset == end {
++                    continue;
++                }
++                let reference = source_reference_from_bytes(original, filename, offset, offset)
++                    .ok_or_else(|| error("Invalid preserved source anchor"))?;
++                let shift = byte_to_utf16_offset(unchanged, offset - start)
++                    .ok_or_else(|| error("Invalid preserved output anchor"))?;
++                output.mappings.push(CssOutputMapping {
++                    generated_start: generated + shift,
++                    generated_end: None,
++                    source: reference,
++                });
++            }
++            output.css.push_str(unchanged);
++            Ok(())
++        };
++    for (start, end, replacement) in edits {
++        if start < cursor || end < start {
++            return Err(error("Overlapping native source edits"));
++        }
++        append(&mut ordered, cursor, start)?;
++        append(&mut plain, cursor, start)?;
++        ordered.css.push_str(&replacement);
++        cursor = end;
++    }
++    append(&mut ordered, cursor, source.len())?;
++    append(&mut plain, cursor, source.len())?;
++    for output in [&mut ordered, &mut plain] {
++        if output.css.trim().is_empty() {
++            output.css.clear();
++            output.mappings.clear();
++        }
++    }
++    Ok((ordered, plain))
++}
+--- a/crates/mastercss-compiler/src/compiled_stylesheet_graph.rs
++++ b/crates/mastercss-compiler/src/compiled_stylesheet_graph.rs
+@@ -171,6 +171,7 @@
+             &CompileNativeCssOptions {
+                 from: node.id.clone(),
+                 preserve_native_css: request.options.preserve_native_css,
++                preserve_native_source: request.options.preserve_native_source,
+                 classes: request
+                     .classes_by_stylesheet
+                     .get(&node.id)
+--- a/crates/mastercss-project/src/lib.rs
++++ b/crates/mastercss-project/src/lib.rs
+@@ -575,6 +575,7 @@
+             &CompileNativeCssOptions {
+                 from: entry_text.clone(),
+                 preserve_native_css: false,
++                preserve_native_source: false,
+                 classes: None,
+             },
+         )?;
+--- a/crates/mastercss-project/src/manifest_graph.rs
++++ b/crates/mastercss-project/src/manifest_graph.rs
+@@ -100,6 +100,7 @@
+             options: CompileNativeCssOptions {
+                 from: request.entry.clone(),
+                 preserve_native_css: false,
++                preserve_native_source: false,
+                 classes: None,
+             },
+             base_manifest: Some(base_manifest),
+--- /dev/null
++++ b/crates/mastercss-compiler/tests/bug_hunt_preserved_native_source.rs
+@@ -0,0 +1,77 @@
++use mastercss_compiler::{CompileNativeCssOptions, compile_css_directives, compile_native_css};
++
++#[test]
++fn preserves_native_bytes_around_consumed_theme() {
++    let native = "/* audit */.shared{color:rgb(255, 0, 0);margin:0px 0px 0px 0px}.empty{}";
++    let result = compile_css_directives(
++        &format!("@theme{{--color-unused:red}}{native}"),
++        &CompileNativeCssOptions { preserve_native_source: true, ..Default::default() },
++    )
++    .unwrap();
++    assert_eq!(result.native_css, native);
++}
++
++#[test]
++fn preserves_unicode_comments_and_literal_directive_text() {
++    let native = "/* 🧪 */.名{content:\"@theme{fake}\"}.empty{}";
++    let result = compile_css_directives(
++        &format!("/* before */@theme{{--color-名:red}}{native}"),
++        &CompileNativeCssOptions { preserve_native_source: true, ..Default::default() },
++    )
++    .unwrap();
++    assert_eq!(result.native_css, format!("/* before */{native}"));
++}
++
++#[test]
++fn preserves_siblings_and_containers_around_lowered_slots() {
++    let source = "@theme{--color-x:red}@media screen{/* keep */.empty{} .composed{@compose p:2rem;} .other{color:rgb(0, 0, 255)}}";
++    let result = compile_css_directives(source, &CompileNativeCssOptions { preserve_native_source: true, ..Default::default() }).unwrap();
++    let output = result.native_output.unwrap();
++    assert_eq!(output.slots.len(), 1);
++    assert!(output.css.contains("@media screen{/* keep */.empty{} "));
++    assert!(output.css.contains(" .other{color:rgb(0, 0, 255)}}"));
++    assert!(output.css.contains(&output.slots[0].marker));
++    assert!(!output.css.contains("@compose"));
++    assert!(!result.native_css.contains("@compose"));
++}
++
++#[test]
++fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
++    let source = "@theme{--color-x:red}\n@components{brand{color:red}}\n.button{@compose brand;}";
++    let result = compile_css_directives(source, &CompileNativeCssOptions { preserve_native_source: true, ..Default::default() }).unwrap();
++    assert!(result.native_css.is_empty());
++    assert_eq!(result.native_output.unwrap().slots.len(), 1);
++}
++
++#[test]
++fn source_preservation_is_opt_in_and_rejects_pruning() {
++    let source = "@theme{--color-x:red}/* retained */.empty{}";
++    let legacy = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
++    assert!(legacy.native_css.is_empty());
++    let error = compile_css_directives(source, &CompileNativeCssOptions { preserve_native_source: true, classes: Some(vec![]), ..Default::default() }).unwrap_err();
++    assert!(error.to_string().contains("cannot be combined with class pruning"));
++}
++
++#[test]
++fn native_only_preservation_retains_source_and_validates_syntax() {
++    let source = "/* untouched */.empty{}.shared{margin:0px 0px 0px 0px}";
++    let options = CompileNativeCssOptions {
++        preserve_native_source: true,
++        ..Default::default()
++    };
++    assert_eq!(compile_native_css(source, &options).unwrap().native_css, source);
++    assert!(!compile_native_css(source, &Default::default()).unwrap().native_css.contains(".empty{}"));
++    assert!(compile_native_css(".broken { color: } }", &options).is_err());
++}
++
++#[test]
++fn native_only_preservation_respects_disabled_output_and_rejects_pruning() {
++    let mut options = CompileNativeCssOptions {
++        preserve_native_source: true,
++        preserve_native_css: false,
++        ..Default::default()
++    };
++    assert!(compile_native_css(".empty{}", &options).unwrap().css.is_empty());
++    options.classes = Some(vec![]);
++    assert!(compile_native_css(".empty{}", &options).unwrap_err().to_string().contains("cannot be combined with class pruning"));
++}
+--- a/crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs
++++ b/crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs
+@@ -9,6 +9,7 @@
+         &CompileNativeCssOptions {
+             from: "/entry.css".into(),
+             preserve_native_css: preserve,
++                preserve_native_source: false,
+             classes: None,
+         },
+     )
+--- a/crates/xtask/templates/rust-contract.ts
++++ b/crates/xtask/templates/rust-contract.ts
+@@ -746,6 +746,8 @@
+ export interface MasterCSSDirectiveCompileOptions {
+   from?: string
+   preserveNativeCSS?: boolean
++  /** Retain untouched source for host transforms; incompatible with class pruning. */
++  preserveNativeSource?: boolean
+   classes?: readonly string[]
+ }
+ 
+--- a/packages/binding/src/protocol.ts
++++ b/packages/binding/src/protocol.ts
+@@ -746,6 +746,8 @@
+ export interface MasterCSSDirectiveCompileOptions {
+   from?: string
+   preserveNativeCSS?: boolean
++  /** Retain untouched source for host transforms; incompatible with class pruning. */
++  preserveNativeSource?: boolean
+   classes?: readonly string[]
+ }
+ 
+--- a/packages/compiler/src/index.ts
++++ b/packages/compiler/src/index.ts
+@@ -21,6 +21,8 @@
+   readonly classes?: readonly string[]
+   readonly from?: string
+   readonly preserveNativeCSS?: boolean
++  /** Keep untouched native source for host transforms; incompatible with class pruning. */
++  readonly preserveNativeSource?: boolean
+   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+ }
+ 
+--- a/packages/compiler/src/contracts.ts
++++ b/packages/compiler/src/contracts.ts
+@@ -9,6 +9,8 @@
+   readonly classes?: readonly string[]
+   readonly from?: string
+   readonly preserveNativeCSS?: boolean
++  /** Keep untouched native source for host transforms; incompatible with class pruning. */
++  readonly preserveNativeSource?: boolean
+   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+ }
+ 
+--- a/packages/compiler/src/session.ts
++++ b/packages/compiler/src/session.ts
+@@ -58,6 +58,7 @@
+       return reviveCompileResult(session.compileCSSDirectives(source, {
+         from: options.from || 'master.css',
+         preserveNativeCSS: options.preserveNativeCSS !== false,
++        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
+         ...(options.classes ? { classes: options.classes } : {})
+       }) as CompileCSSResult)
+     },
+--- a/packages/compiler/src/node-compiler.ts
++++ b/packages/compiler/src/node-compiler.ts
+@@ -228,6 +228,7 @@
+       {
+         from: options.from || 'master.css',
+         preserveNativeCSS: options.preserveNativeCSS !== false,
++        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
+         ...(options.classes ? { classes: options.classes } : {})
+       }
+     )
+@@ -543,7 +544,8 @@
+     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
+     baseManifest: options.baseManifest,
+     resolutionManifest: referenceContext.manifest,
+-    options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false, ...(options.classes ? { classes: options.classes } : {}) },
++    options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
++        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(options.classes ? { classes: options.classes } : {}) },
+     inlineImports: true
+   }))
+   const directives = reviveBindingCompileResult(compiled.directives as CompileCSSResult)
+--- a/packages/compiler/src/stylesheet/browser.ts
++++ b/packages/compiler/src/stylesheet/browser.ts
+@@ -17,6 +17,8 @@
+   readonly classNames?: readonly string[]
+   readonly from?: string
+   readonly preserveNativeCSS?: boolean
++  /** Keep untouched native source for host transforms; incompatible with class pruning. */
++  readonly preserveNativeSource?: boolean
+   readonly binding?: Readonly<{
+     input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
+   }>
+@@ -43,6 +45,7 @@
+     classNames,
+     from,
+     preserveNativeCSS,
++    preserveNativeSource,
+     binding,
+     signal,
+     onDiagnostic
+@@ -58,6 +61,7 @@
+       baseManifest,
+       ...(from ? { from } : {}),
+       ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
++      ...(preserveNativeSource === undefined ? {} : { preserveNativeSource }),
+       ...(onDiagnostic ? { onDiagnostic } : {})
+     })
+   } finally {
+--- a/packages/compiler/src/stylesheet/delivery.ts
++++ b/packages/compiler/src/stylesheet/delivery.ts
+@@ -112,7 +112,8 @@
+       nativeStylesheets,
+       baseManifest: options.baseManifest,
+       resolutionManifest: reference.manifest,
+-      options: { preserveNativeCSS: options.preserveNativeCSS ?? true, ...(classes ? { classes: [...classes] } : {}) }
++      options: { preserveNativeCSS: options.preserveNativeCSS ?? true,
++        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(classes ? { classes: [...classes] } : {}) }
+     })
+     const directives = result.directives as unknown as CompileCSSResult
+     directives.extractionPolicy = mergeCSSDirectiveExtractionPolicy(directives.extractionPolicy)
+--- /dev/null
++++ b/packages/compiler/tests/bug-hunt-preserved-source.test.ts
+@@ -0,0 +1,52 @@
++import { expect, test } from 'vitest'
++import { SourceMap } from 'node:module'
++import { createCompiler } from '../src/index'
++import { compileStylesheet } from '../src/stylesheet/index-public'
++import { compileBrowserStylesheet } from '../src/stylesheet/browser'
++
++const baseManifest = { version: 1 as const, utilities: [] }
++const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
++const source = '@theme{--color-unused:red}' + native
++
++for (const binding of ['native', 'wasm'] as const) {
++  test(`${binding} source preservation is explicit and rejects class pruning`, async () => {
++    using compiler = await createCompiler({ binding })
++    expect(compiler.compileCSS(source).nativeCSS).not.toContain('.empty{}')
++    const options = { baseManifest, from: '/project/entry.css', preserveNativeSource: true }
++    expect(compiler.compileCSS(source, options).nativeCSS).toBe(native)
++    expect(compiler.compileManifest(source, options).css).toBe(native)
++    expect(() => compiler.compileCSS(source, { ...options, classes: [] }))
++      .toThrow('cannot be combined with class pruning')
++    expect(compiler.compileCSS(source, { ...options, preserveNativeCSS: false }).nativeCSS).toBe('')
++  })
++  test(`${binding} graph preparation preserves native input and rejects per-file pruning`, async () => {
++    using compiler = await createCompiler({ binding })
++    const request = {
++      graph: { entry: 'entry', files: { entry: source }, edges: [] },
++      urls: { entry: '/output/entry.css' }, baseManifest,
++      options: { preserveNativeSource: true }
++    }
++    expect(compiler.compileStylesheets(request).css).toBe(native)
++    expect(() => compiler.compileStylesheets({ ...request, classesByStylesheet: { entry: [] } }))
++      .toThrow('cannot be combined with class pruning')
++  })
++}
++
++test('Node stylesheet preparation preserves raw text and exact UTF-16 selector origins', async () => {
++  const result = await compileStylesheet('/project/entry.css', source, { baseManifest, preserveNativeSource: true })
++  expect(result.css).toBe(native)
++  const payload = JSON.parse(result.sourceMap!)
++  const map = new SourceMap(payload)
++  for (const selector of ['.empty', '.shared', '.sibling']) {
++    expect(map.findEntry(0, result.css.indexOf(selector))).toMatchObject({
++      originalSource: 'file:///project/entry.css', originalLine: 0, originalColumn: source.indexOf(selector)
++    })
++  }
++  expect(payload.sourcesContent).toContain(source)
++})
++
++test('Wasm stylesheet preparation retains untouched bytes', async () => {
++  const result = await compileBrowserStylesheet(source, { baseManifest, preserveNativeSource: true })
++  expect(result.nativeCSS).toBe(native)
++  expect(result.css).toBe(native)
++})
+--- a/site/app/[locale]/guide/directives/contract.mdx
++++ b/site/app/[locale]/guide/directives/contract.mdx
+@@ -84,6 +84,21 @@
+ mappings and reference context. Existing file, project, integration and CLI output
+ paths have not yet adopted this delivery model; its guarantees do not extend to
+ those paths. Without resource mappings, the host must preserve original URL bases.
++
++
++### Preparing native CSS for another transformer
++
++Compiler hosts can opt into `preserveNativeSource: true` when another transformer
++needs the untouched native portions of a stylesheet. Master definitions are still
++consumed and native `@compose` rules are still lowered, while unrelated comments,
++empty rules, value spelling, and rule boundaries are retained. The option defaults
++to `false`, preserving the compiler's normal native CSS normalization.
++
++Source preservation cannot be combined with a native class-pruning list, including
++an empty list. `preserveNativeCSS: false` still suppresses native output. The option
++does not prevent subsequent host transforms from optimizing the result or rewriting
++its source map, and it does not discover new Master definitions or generated-global
++references introduced by a later transform.
+ 
+ ---
+ 

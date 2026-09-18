@@ -1,0 +1,166 @@
+{
+  "server": {
+    "invocations": 3,
+    "keys": [
+      "_module",
+      "currentTraceSpan",
+      "rootContext",
+      "sourceMap",
+      "getOptions",
+      "fs",
+      "getResolve",
+      "emitWarning",
+      "emitError",
+      "importModule",
+      "getLogger",
+      "context",
+      "loaderIndex",
+      "loaders",
+      "resourcePath",
+      "resourceQuery",
+      "resourceFragment",
+      "async",
+      "callback",
+      "cacheable",
+      "addDependency",
+      "dependency",
+      "addContextDependency",
+      "addMissingDependency",
+      "getDependencies",
+      "getContextDependencies",
+      "getMissingDependencies",
+      "clearDependencies",
+      "resource",
+      "request",
+      "remainingRequest",
+      "currentRequest",
+      "previousRequest",
+      "query",
+      "data"
+    ],
+    "resolutions": [
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      },
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      },
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      }
+    ],
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__GU0D-a__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__GU0D-a__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      }
+    ]
+  },
+  "client": {
+    "invocations": 3,
+    "keys": [
+      "_module",
+      "currentTraceSpan",
+      "rootContext",
+      "sourceMap",
+      "getOptions",
+      "fs",
+      "getResolve",
+      "emitWarning",
+      "emitError",
+      "importModule",
+      "getLogger",
+      "context",
+      "loaderIndex",
+      "loaders",
+      "resourcePath",
+      "resourceQuery",
+      "resourceFragment",
+      "async",
+      "callback",
+      "cacheable",
+      "addDependency",
+      "dependency",
+      "addContextDependency",
+      "addMissingDependency",
+      "getDependencies",
+      "getContextDependencies",
+      "getMissingDependencies",
+      "clearDependencies",
+      "resource",
+      "request",
+      "remainingRequest",
+      "currentRequest",
+      "previousRequest",
+      "query",
+      "data"
+    ],
+    "resolutions": [
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      },
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      },
+      {
+        "defaults": "browser.module.css",
+        "reactServer": "react-server.module.css",
+        "browser": "browser.module.css",
+        "import": "import.module.css"
+      }
+    ],
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__dXZrjq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__dXZrjq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      }
+    ]
+  }
+}

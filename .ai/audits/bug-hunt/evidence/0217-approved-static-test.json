@@ -1,0 +1,11 @@
+{
+  "patch": ".ai/audits/bug-hunt/repros/next-static-output-graph-test.patch",
+  "patchSha256": "dc8b687acd356e74c4b95146df965ea97085fd502cf3e791c23448314e57a57d",
+  "file": "packages/next/tests/static.test.ts",
+  "fileSha256": "295a7a0f378a2e161fc1e48c3dcad4f34c3ca2e41312b4192f1ef2cb95a1a2b7",
+  "authorization": "User reply: 授權這份既有測試調整",
+  "scope": "Existing assertions read the complete reachable CSS import graph; expected values and fixtures unchanged",
+  "applied": true,
+  "reverseApplyCheck": "PASS",
+  "noNewCommit": true
+}

@@ -1,0 +1,22 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 7ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1144ms
+  Running TypeScript ...
+  Finished TypeScript in 3ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 50ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"package-conditions-composes","bundler":"turbopack","pure":true,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card-module__03s0zW__direct react-server-module__NyBBZW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"react-server","matchingRules":[{"selector":".react-server-module__NyBBZW__shared","declarations":"--origin: react-server; border-top: 7px solid red;"},{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"chromium","id":"client-probe","phase":"initial","classes":"card-module__03s0zW__direct default-module__I6W9JG__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"default","matchingRules":[{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"},{"selector":".default-module__I6W9JG__shared","declarations":"--origin: default; border-top: 7px solid red;"}],"pass":true},{"browser":"chromium","id":"probe","phase":"remounted","classes":"card-module__03s0zW__direct react-server-module__NyBBZW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"react-server","matchingRules":[{"selector":".react-server-module__NyBBZW__shared","declarations":"--origin: react-server; border-top: 7px solid red;"},{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"chromium","id":"client-probe","phase":"remounted","classes":"card-module__03s0zW__direct default-module__I6W9JG__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"default","matchingRules":[{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"},{"selector":".default-module__I6W9JG__shared","declarations":"--origin: default; border-top: 7px solid red;"}],"pass":true},{"browser":"webkit","id":"probe","phase":"initial","classes":"card-module__03s0zW__direct react-server-module__NyBBZW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"react-server","matchingRules":[{"selector":".react-server-module__NyBBZW__shared","declarations":"--origin: react-server; border-top: 7px solid red;"},{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"webkit","id":"client-probe","phase":"initial","classes":"card-module__03s0zW__direct default-module__I6W9JG__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"default","matchingRules":[{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"},{"selector":".default-module__I6W9JG__shared","declarations":"--origin: default; border-top: 7px solid red;"}],"pass":true},{"browser":"webkit","id":"probe","phase":"remounted","classes":"card-module__03s0zW__direct react-server-module__NyBBZW__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"react-server","matchingRules":[{"selector":".react-server-module__NyBBZW__shared","declarations":"--origin: react-server; border-top: 7px solid red;"},{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"webkit","id":"client-probe","phase":"remounted","classes":"card-module__03s0zW__direct default-module__I6W9JG__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"default","matchingRules":[{"selector":".card-module__03s0zW__direct","declarations":"color: rgb(18, 52, 86);"},{"selector":".default-module__I6W9JG__shared","declarations":"--origin: default; border-top: 7px solid red;"}],"pass":true}]}

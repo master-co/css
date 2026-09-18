@@ -1,0 +1,206 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 81ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 3.7s
+  Running TypeScript ...
+  Finished TypeScript in 5ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 55ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{
+  "moduleKind": "entry",
+  "sourceMaps": false,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": false,
+  "lightningcss": false,
+  "bundler": "turbopack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "none",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "0px",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "module-export",
+      "classes": null,
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "none",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "0px",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "module-export",
+      "classes": null,
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "none",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "0px",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "module-export",
+      "classes": null,
+      "pass": false
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "bbde56ac5bf2b5637e3990f7de2b2fc7b59add7d369d28d360c19f461ccbc18a"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "68e2c19272e8071820d6aaa8fc60e946aa9c0b492278f9476c03fe4116249f7c"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "218355aeebade511b1bfc0c73ba23bd450f75f2c19d28b1f26550aaf53fd573d"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "8dc3ceb3cd4693a3441fc39c9030946884f5118d90be986ec665241311d38f15"
+    },
+    {
+      "file": "_next/static/3YAszR54Zl5fVZQwRZDE5/_buildManifest.js",
+      "sha256": "9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"
+    },
+    {
+      "file": "_next/static/3YAszR54Zl5fVZQwRZDE5/_clientMiddlewareManifest.js",
+      "sha256": "5483e3295dc35dfe29ea932efc85341c916f10ff78ff5b0e965e003710893a4a"
+    },
+    {
+      "file": "_next/static/3YAszR54Zl5fVZQwRZDE5/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_next/static/chunks/09xd9-7xlonox.js",
+      "sha256": "83d9c1343c7034f4f08c254bf1976ff9723be20aef7df0135cb1b5d2dd42feda"
+    },
+    {
+      "file": "_next/static/chunks/0cz1d0mv5g_q7.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/13nu9qjbe2--a.js",
+      "sha256": "c042a274794dc3eb3f4bb459ec671d87898667b86ed671b27fd7cb028a34466d"
+    },
+    {
+      "file": "_next/static/chunks/1g5p3wzuxdw80.js",
+      "sha256": "90c593f3b45f2af722a2e9211f6b2589c2fc1308d9360442d59620a67af00d4e"
+    },
+    {
+      "file": "_next/static/chunks/1mi_l79v1lum8.js",
+      "sha256": "dababa03f8a089b4d2682a2d669701e998cabdad4ccc08c12506cef8bebe7571"
+    },
+    {
+      "file": "_next/static/chunks/2mpl1yayv8x1q.css",
+      "sha256": "b1421dc4d952efff9009d576c94ba99d99c288a60f821f732de8a4f9aef4742b"
+    },
+    {
+      "file": "_next/static/chunks/3cn7nbqe_8zyq.css",
+      "sha256": "9e2dd5fb5d86bf61c0b5ff46feb134d843b60cb2db3fbbfdeaef0ed4fefd5b44"
+    },
+    {
+      "file": "_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "sha256": "90844ff36de6c87bed5f2ab6f3b11ee77179506374001d41fca8073623e7d0ef"
+    },
+    {
+      "file": "_next/static/media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "15c0f86c9b398b22155c25fcb7d4282d5222ef25597c3fb7732d18bb39e2cc2e"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "1846e91c799e1f3409c5470f391878bc78d851c167dc834b24d5c805083096f2"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "5b7eade1bf8a48254df1a2b7e822b904dff0fa30790231eaccf6e8525281e06b"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "bbde56ac5bf2b5637e3990f7de2b2fc7b59add7d369d28d360c19f461ccbc18a"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "15c0f86c9b398b22155c25fcb7d4282d5222ef25597c3fb7732d18bb39e2cc2e"
+    },
+    {
+      "file": "index.html",
+      "sha256": "92b24b6d02465f5bd603f206eb0ed1f4ca27de2cbde9eb3bca8aad6f3546dfcb"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "218355aeebade511b1bfc0c73ba23bd450f75f2c19d28b1f26550aaf53fd573d"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/2mpl1yayv8x1q.css",
+      "text": "@layer theme;@layer base{*{text-rendering:geometricprecision}body{-moz-text-size-adjust:100%;text-size-adjust:100%;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;line-height:1.2}a,button{touch-action:manipulation}[role=button],summary,button,[type=button]{-webkit-user-select:none;user-select:none}*,:before,:after{box-sizing:border-box}body{tab-size:2}img,svg,video,canvas,audio,iframe,embed,object{max-width:100%;display:block}html,body{height:-moz-available}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}pre,code,kbd,samp{font-size:1em}::-moz-focus-inner{border-style:none;padding:0}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}[type=search]{appearance:textfield;outline-offset:-2px}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}hr{height:0;color:inherit}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}body,:host{font-family:var(--font-family-sans);font-feature-settings:var(--font-feature-sans,normal)}code,kbd,samp,pre{font-family:var(--font-family-mono);font-feature-settings:var(--font-feature-mono,normal)}a{color:inherit;text-decoration:none}button,input,optgroup,select,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;color:inherit;background-color:#0000;margin:0;padding:0;font-size:100%}*,:before,:after{border-style:solid;border-width:0}body,blockquote,dl,dd,hr,figure,p,pre,h1,h2,h3,h4,h5,h6{margin:0}td,legend,fieldset{padding:0}ul,ol{margin:0;padding:0}body{-webkit-tap-highlight-color:transparent}ul{list-style:none}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}[hidden]{display:none}}@layer defaults,components,utilities;\n\n\n\n\n\n@layer theme{:root{--font-family-sans:var(--font-sans,ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-mono:var(--font-mono,ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}}\n\n"
+    },
+    {
+      "file": "_next/static/chunks/3cn7nbqe_8zyq.css",
+      "text": "@layer theme;@layer base{*{text-rendering:geometricprecision}body{-moz-text-size-adjust:100%;text-size-adjust:100%;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;line-height:1.2}a,button{touch-action:manipulation}[role=button],summary,button,[type=button]{-webkit-user-select:none;user-select:none}*,:before,:after{box-sizing:border-box}body{tab-size:2}img,svg,video,canvas,audio,iframe,embed,object{max-width:100%;display:block}html,body{height:-moz-available}abbr[title]{-webkit-text-decoration:underline dotted;text-decoration:underline dotted}b,strong{font-weight:bolder}pre,code,kbd,samp{font-size:1em}::-moz-focus-inner{border-style:none;padding:0}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}[type=search]{appearance:textfield;outline-offset:-2px}::-webkit-inner-spin-button{height:auto}::-webkit-outer-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}hr{height:0;color:inherit}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}body,:host{font-family:var(--font-family-sans);font-feature-settings:var(--font-feature-sans,normal)}code,kbd,samp,pre{font-family:var(--font-family-mono);font-feature-settings:var(--font-feature-mono,normal)}a{color:inherit;text-decoration:none}button,input,optgroup,select,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;color:inherit;background-color:#0000;margin:0;padding:0;font-size:100%}*,:before,:after{border-style:solid;border-width:0}body,blockquote,dl,dd,hr,figure,p,pre,h1,h2,h3,h4,h5,h6{margin:0}td,legend,fieldset{padding:0}ul,ol{margin:0;padding:0}body{-webkit-tap-highlight-color:transparent}ul{list-style:none}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}[hidden]{display:none}}@layer defaults,components,utilities;\n\n\n\n\n\n.direct{background-image:url(../media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg);width:4px;height:4px}.composed{padding:2rem}@layer theme{:root{--font-family-sans:var(--font-sans,ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-mono:var(--font-mono,ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}}\n\n"
+    }
+  ]
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Some actual browser delivery checks failed
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:128:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

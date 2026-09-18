@@ -1,0 +1,196 @@
+{
+  "scenario": "postcss-themed-comment-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}",
+    "b": "@theme{--color-unused:red}/* audit-add */.shared{display:block}",
+    "postcss": true,
+    "addNestedComposes": true,
+    "requireComment": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 78ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.5s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 62ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "0px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "0px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/436cbbc40a8c916e.css",
+      "text": "@import url(\"/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css\");\n/*# sourceMappingURL=436cbbc40a8c916e.css.map*/"
+    },
+    {
+      "file": "_next/static/css/436cbbc40a8c916e.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/436cbbc40a8c916e.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/436cbbc40a8c916e.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css",
+      "text": ".other_shared__f3TK2{display:block}\n/*# sourceMappingURL=d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/other.module.css\",\"webpack://_N_E/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css\"],\"names\":[],\"mappings\":\"AAAyC,qBCCvC,aACF\",\"file\":\"static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css\",\"sourcesContent\":[\"@theme{--color-unused:red}/* audit-add */.shared{display:block}\",\".other_shared__f3TK2 {\\n  display: block;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css",
+      "text": "@import \"./d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css\";.card_direct__vAL_y{color:#123456}\n/*# sourceMappingURL=d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/%3Cno%20source%3E\",\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/card.module.css\",\"webpack://_N_E/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA,CCA+B,oBCG7B,aACF\",\"file\":\"static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css\",\"sourcesContent\":[null,\"@master entry;@preserve native;.direct{composes:shared from \\\"./other.module.css\\\";color:#123456}\",\"@import \\\"./d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css\\\";\\n\\n.card_direct__vAL_y {\\n  color: #123456;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;.direct{composes:shared from \"./other.module.css\";color:#123456}"
+    },
+    {
+      "file": "app/nested/leaf.module.css",
+      "text": ".leaf{border-top:1px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": "@theme{--color-unused:red}/* audit-add */.shared{display:block}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y other_shared__f3TK2\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/436cbbc40a8c916e.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-dc012fffb68e0465.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/436cbbc40a8c916e.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-dc012fffb68e0465.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/dbba196cbee7b2019445e48f96cb26cae9ba2044dd1d116bfd924d753c6d94ee/maps/d115a38a4a55b0a544bf7bb81ad0d879e2146290c972ce47b9c3fcbb902c46a4-03f8f1ab991c2bee6dd4f745695b81b8364b3fadd9c84ed8b55cb7e8c31b569f.css",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/card.module.css",
+      "css": "@import \"./other.module.css\";\n\n.direct {\n  composes: shared from \"./other.module.css\";\n  color: #123456;\n}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/other.module.css",
+      "css": ".shared {\n  display: block;\n}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/card.module.css",
+      "css": "@import \"./other.module.css\";\n\n.direct {\n  composes: shared from \"./other.module.css\";\n  color: #123456;\n}"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-70yMt2/app/other.module.css",
+      "css": ".shared {\n  display: block;\n}"
+    }
+  ]
+}

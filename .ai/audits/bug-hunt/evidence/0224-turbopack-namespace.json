@@ -1,0 +1,17 @@
+{
+  "scope": "Classification control, NOT a passing source-URI contract or repaired host",
+  "classification": "Pure Next Turbopack identity loader reproduces duplicate URI prefix; BH-0053 namespace requirement remains unfinished",
+  "pureSources": [
+    "turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-KZr25T/app/globals.css",
+    "turbopack:///turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-KZr25T/app/card.module.css"
+  ],
+  "managedSources": [
+    "turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-9pe9By/app/base.module.css",
+    "turbopack:///turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-9pe9By/app/card.module.css",
+    "turbopack:///turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-9pe9By/app/globals.css"
+  ],
+  "pureBrowserChecks": 9,
+  "managedBrowserChecks": 15,
+  "reproducedWithoutMasterCSS": true,
+  "repaired": false
+}

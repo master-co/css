@@ -1,0 +1,122 @@
+[
+  {
+    "mode": "baseline",
+    "case": "postcss-added-nested-themed-empty-composes",
+    "exit": 0,
+    "build": 1,
+    "pass": 0,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "baseline",
+    "case": "postcss-themed-merged-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "baseline",
+    "case": "postcss-themed-comment-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "baseline",
+    "case": "postcss-themed-spelling-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "prototype",
+    "case": "postcss-added-nested-themed-empty-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "prototype",
+    "case": "postcss-themed-merged-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "prototype",
+    "case": "postcss-themed-comment-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "prototype",
+    "case": "postcss-themed-spelling-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 0,
+    "fail": 2,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "pure",
+    "case": "postcss-added-nested-themed-empty-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "pure",
+    "case": "postcss-themed-merged-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "pure",
+    "case": "postcss-themed-comment-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "mode": "pure",
+    "case": "postcss-themed-spelling-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  }
+]

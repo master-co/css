@@ -1,0 +1,88 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 83ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 4 errors:
+./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app
+Error: Module not found: Can't resolve './Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/.master/stylesheets/86a84355fb13afb316f32c3728896fb38ddda6be9ea792f8f40187e0ead493c0/cde835d27f17d1d5ce01d27720b2219fc1a35022d322c6ac404af03687f1c324-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css'
+server relative imports are not implemented yet. Please try an import relative to the file you are importing from.
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app
+Error: Module not found: Can't resolve './Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/.master/stylesheets/86a84355fb13afb316f32c3728896fb38ddda6be9ea792f8f40187e0ead493c0/cde835d27f17d1d5ce01d27720b2219fc1a35022d322c6ac404af03687f1c324-a0b6503e5cf22c95f6c14f8ca385f2b2c1a0dc825faea8a6684a19c564ef1ffb.css'
+server relative imports are not implemented yet. Please try an import relative to the file you are importing from.
+
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css:1:1
+Error: Module not found: Can't resolve '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/.master/stylesheets/86a84355fb13afb316f32c3728896fb38ddda6be9ea792f8f40187e0ead493c0/cde835d27f17d1d5ce01d27720b2219fc1a35022d322c6ac404af03687f1c324-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css'
+[31m[1m>[0m [90m1 |[0m @[36mimport[0m [32m"/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/...[0m
+  [90m  |[0m [31m[1m^[0m
+  [90m2 |[0m @[36mimport[0m [32m"http://127.0.0.1:58961/remote.css?audit=1"[0m layer(remote) supports(display: grid) s...
+  [90m3 |[0m @[36mimport[0m [32m"/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/...[0m
+  [90m4 |[0m
+
+
+
+Import trace:
+  Client Component Browser:
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css [Client Component Browser]
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/layout.jsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css:3:1
+Error: Module not found: Can't resolve '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/.master/stylesheets/86a84355fb13afb316f32c3728896fb38ddda6be9ea792f8f40187e0ead493c0/cde835d27f17d1d5ce01d27720b2219fc1a35022d322c6ac404af03687f1c324-a0b6503e5cf22c95f6c14f8ca385f2b2c1a0dc825faea8a6684a19c564ef1ffb.css'
+  [90m1 |[0m @[36mimport[0m [32m"/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/...[0m
+  [90m2 |[0m @[36mimport[0m [32m"http://127.0.0.1:58961/remote.css?audit=1"[0m layer(remote) supports(display: grid) s...
+[31m[1m>[0m [90m3 |[0m @[36mimport[0m [32m"/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/...[0m
+  [90m  |[0m [31m[1m^[0m
+  [90m4 |[0m
+  [90m5 |[0m .direct {
+  [90m6 |[0m   background-image: url([32m"/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tp...[0m
+
+
+
+Import trace:
+  Client Component Browser:
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css [Client Component Browser]
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/layout.jsx [Server Component]
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css:1:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+    at <unknown> (./.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-PN443s/app/globals.css.css:3:1)
+    at <unknown> (https://nextjs.org/docs/messages/module-not-found)
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:40:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

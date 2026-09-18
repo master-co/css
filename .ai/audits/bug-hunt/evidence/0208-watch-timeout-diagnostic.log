@@ -1,0 +1,21 @@
+
+ RUN  v5.0.0 /Users/aron/master/css
+
+ ❯ packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts (2 tests | 1 failed) 13403ms
+   × watch reports a missing child as compilation errors and recovers without invalidation 10865ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts > watch reports a missing child as compilation errors and recovers without invalidation
+Error: No automatic watch result in delete; after=1, results=[{"errors":[],"dependencies":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw/entry.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw/child.css","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw/pixel.svg","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw/entry.js","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn","/private/var/folders/_b","/private/var/folders","/private/var","/private","/","/Users/aron/master/css/packages/webpack/package.json","/Users/aron/master/css/packages/webpack/dist/stylesheet-loader.js","/Users/aron/master/css/packages/webpack/dist","/Users/aron/master/css/packages/webpack","/Users/aron/master/css/packages","/Users/aron/master/css","/Users/aron/master","/Users/aron","/Users"],"missing":["/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-watch-test-qH2rnw/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/package.json","/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/package.json","/private/var/folders/_b/package.json","/private/var/folders/package.json","/private/var/package.json","/private/package.json","/package.json","/Users/aron/master/css/packages/webpack/dist/package.json"]}]
+ ❯ Timeout._onTimeout packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts:26:73
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 1 passed (2)
+   Start at  01:21:35
+   Duration  13.80s (tests 98%, transform 2%, import 1%)
+

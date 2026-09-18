@@ -1,0 +1,829 @@
+{
+  "workspace": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api",
+  "sourceFiles": {
+    "crates/mastercss-render/Cargo.toml": "c6b673f5f5a47b0883c7e0959a0bcbd57af7289f623f6ad77e8088d166e7b1a5",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.json": "5c6b28dfd10ed406cedbcc4aed5b55cf12328b1378652431efba484aba3abc86",
+    "crates/mastercss-render/tests/bug_hunt_animation_syntax.rs": "2ea041137eab52b06abb11e5e87cf4cdecbacaebaf4944441afff30877a7f89a",
+    "crates/mastercss-render/tests/bug_hunt_animation_variables.rs": "98d90c7084c5ad3ac847d8b8cc9fead35ff77d8e470b74c9098ada0c69c44c5e",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.rs": "b9c670ca42abb086a1f261ffee6ef7823678ba13e56f3df3fe2f4672719a59ba",
+    "crates/mastercss-render/tests/bug_hunt_animation_variables.json": "0eaf5d6483625cbca27b09cae7da20b8130ec8e814b2d5876b4589e216939432",
+    "crates/mastercss-render/tests/bug_hunt_stylesheet_resources.rs": "cd97cfc82e1e9fd1f58702787a2662f43cf3510e34d03a344153e6f3667b9e39",
+    "crates/mastercss-render/tests/bug_hunt_animation_values.rs": "5469393a705dafc660d57ad4318f12cd63e723d9b0ef195f669b884e6d78f1e5",
+    "crates/mastercss-render/tests/bug_hunt_animation_value_slots.rs": "bcc06dcfba88adcf811227a6b9f8b7521f94ce2c5cb66bed9926f861073c3582",
+    "crates/mastercss-render/src/lib.rs": "bcbda11f26a5cdbcfdf3dbfc020e1068d39f98a0aa352ab9f2f92e7f1c91cb93",
+    "crates/mastercss-scanner/Cargo.toml": "7bef1911c367f09fc9cbc7d5495d1e79b14ac6788040c8bdd16e4c2a7152e0d3",
+    "crates/mastercss-scanner/src/lib.rs": "f3201be3ce2bdb6e57b59093daea85b2d3829046ea5b64b201df1b2dc7dab9c5",
+    "crates/mastercss-binding-wasm-compiler/Cargo.toml": "4bbaafda55ddcae033f9cc807ae7d89950acb9e00af4849f5cb95ef1db45e5ad",
+    "crates/mastercss-binding-wasm-compiler/src/lib.rs": "62603d11cfdf96531afd7cecda6a7d991b6dc0a015c0f887e523518395606fa7",
+    "crates/mastercss-language/Cargo.toml": "d923ebff0a2f3632d701c89034ba62fe468d0d57ecb61af74bb370f889af6e44",
+    "crates/mastercss-language/AI.md": "714069269bd672b04f57fb8832cc125bd613f911f861e94e7b0cd1d4e62ba66f",
+    "crates/mastercss-language/tests/bug_hunt_unicode.rs": "c5e0e6db829fda9d3227cd0fef70aee0a153cb2fbe397f0740cfe4434236b9a6",
+    "crates/mastercss-language/tests/bug_hunt_semantic_offsets.rs": "170badd59679e8a7275e75d19a182d91f00351982ec26c187444174aa29e1b73",
+    "crates/mastercss-language/src/session.rs": "a70f81580466de1e12e00e6a4e13281e4008b69a2f8e56f57acbe3eafd5b88a2",
+    "crates/mastercss-language/src/formatting.rs": "73f4a51075865a870d767089764b282fbae15733f3aead4332b9d29bfb7b931b",
+    "crates/mastercss-language/src/positions.rs": "fa623f4923623788795433839ff61420b9478d8bdf350caaf599b705f173475f",
+    "crates/mastercss-language/src/color.rs": "7f0e4c076286aded4c1f202cb73f25a30e089018c2ca351051d364a5d88aa309",
+    "crates/mastercss-language/src/lib.rs": "8bd7313c3c698f275229d7a5260875fab0dd61c1991d326b8dcf6d3846708caf",
+    "crates/mastercss-language/src/semantic_tokens.rs": "c0ed16ed18e962dab1405b6afd30abe4e6cc413fbcb79489fb61cda5cc6faadf",
+    "crates/mastercss-language/src/mdn-completion-registry.json": "ec17b147824652b28983561b753cbf5bd4fd8ce0fe89db2717957030621eb0db",
+    "crates/mastercss-language/src/tests.rs": "e20f607e5cbd4944c872283c6fff6b832433a5acfad9e781ec72b44f78b52261",
+    "crates/mastercss-language/src/document.rs": "72bf0d2f2116dd9c4013c5ff47bb826155c2df36824e2b741434e561d516767d",
+    "crates/mastercss-cli/Cargo.toml": "ace163d1dc71c5aa24088a9caa10fd3e6230f610309abe0b03a8b72f9b5911b0",
+    "crates/mastercss-cli/build.rs": "e56093ee87688ac9b979d5fc72e8df295854c69530af2a11af29ee1457c6bd37",
+    "crates/mastercss-cli/tests/bug_hunt_mjs.rs": "9963e0208183481fcf841eb55a25347b1ec5a749bdf50c3f637ddf9db26f9394",
+    "crates/mastercss-cli/tests/bug_hunt_ordered_output.rs": "484f41af94cb89c9529f61e1ce454b940714756d6186a19281bb593285dacfe2",
+    "crates/mastercss-cli/src/main.rs": "2a12d085706440b858622ec53d445bda81d5f2f8e8261ba3273a2a6e4448a9d7",
+    "crates/mastercss-source/Cargo.toml": "32d8e65748df32fc23f2bd23957ef0af23278235525abea5fe6259ca91a94b11",
+    "crates/mastercss-source/tests/html_character_references.rs": "dd80c55274d6f4078948b019aabf54f006834fac5e8ed51aeae21fce5422313f",
+    "crates/mastercss-source/tests/html_attribute_mapping.rs": "a892b83e11732d24ecb0d4111b493c5210f32f71b11caa2c0ded7437bfdf89a7",
+    "crates/mastercss-source/src/html_class_values.rs": "fbcc0f4814b38ae11f6b937e469e327c400cb1fe4e9a32a9ca24be1e44b27351",
+    "crates/mastercss-source/src/lib.rs": "5626425f3092a852689cbffa52f8c7ac6c913a63dd3d8b7e4ccbd5a68b674e2a",
+    "crates/mastercss-source/src/html_attribute.rs": "a186773175e4af5d0c586e31a3858c392391ceedf283b647c61c8f25fb793962",
+    "crates/mastercss-source/src/html_entities.rs": "5a4338411d3684ea4d9e1ae9dc322dbfe9354e96e08d2ea90a90fd2c8edf0ec4",
+    "crates/mastercss-project/Cargo.toml": "c468184b5603e7d8e9bc0ea716f8d31e87a309ed8594d0f2f7e2ccbc829256e3",
+    "crates/mastercss-project/AI.md": "229a545f76c6c729b651e3e64335c62d48698a7c5b860f539d5197e9ef12a247",
+    "crates/mastercss-project/tests/bug_hunt_manifest_graphs.rs": "eb67948d71c201f0a29a038779571566789bf2639bca43c2be80b125f0019eb0",
+    "crates/mastercss-project/tests/bug_hunt_ordered_output.rs": "abb33b8872f1e53558d0e55d1d9563a3333aab22c0d4b97a9ef4b696298e34e7",
+    "crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs": "c5976167f5ac1502cf1f66396f1fb2cbe0f895ff8e9acb6402885b9300d69890",
+    "crates/mastercss-project/src/filesystem_graph.rs": "b4c394d0dd7ef07128b1d7173a440c5df973001688135ae98515f14c2814c941",
+    "crates/mastercss-project/src/lib.rs": "53302ddd806236519d537def98c1679f62020284d2ad8ad80a96724fdb7197bf",
+    "crates/mastercss-project/src/manifest_graph.rs": "86a3d5a36200d5b73d708ee365d01e3d84257500818d6a60857291f902fa1ce3",
+    "crates/mastercss-project/src/tests.rs": "2d6992503ef814e32dba16a2782c7ed807dfba390ec3ebbce1abc97cf22ede53",
+    "crates/mastercss-engine/Cargo.toml": "05aaaa1fad7f9e148f04f7fc11d518beebcc0303f78e04b11044227818319348",
+    "crates/mastercss-engine/AI.md": "2237c133768aaca39295d0824190fa84f0f52b167b1c08edbc4cb7916c347efe",
+    "crates/mastercss-engine/tests/bug_hunt_lifecycle.rs": "4c8fdeaf6cde4754d9325de2a1f3a169faa451cf1ef8d1f66747b3d7927e5c0c",
+    "crates/mastercss-engine/tests/bug_hunt_static_dependencies.rs": "ce9d2b0f9ba5f2ed3dd499f877bd68ed6fe7487b922534d46212fcc55f44e620",
+    "crates/mastercss-engine/tests/bug_hunt_static_retention.rs": "709ab2bb72355ae5c3d6cf05e76a6b25543c327741feaf5070bf6321d441ce14",
+    "crates/mastercss-engine/src/session.rs": "dfba209236fd71730ce6c6460c35ad2874b76e0fba83c7ce5f4e3b7a81ae829a",
+    "crates/mastercss-engine/src/stylesheet_animation.rs": "a0ba7cc06b7ad741745a80378141221121a6337587b59409a2ef27eb837ca08d",
+    "crates/mastercss-engine/src/stylesheet_resources.rs": "d32f9e56788f61ce532673ac492d30abe039b4ca3a0f371019b239cf721e33ef",
+    "crates/mastercss-engine/src/utility.rs": "0c74289ec175c30166c7058aa49866df1a29581af2e95d092d72ac25f77da715",
+    "crates/mastercss-engine/src/generation.rs": "2351c8b66670712c7c89858074751c05fdf7e03721223d5a569a1dfaedc5efb8",
+    "crates/mastercss-engine/src/render.rs": "934f53a423350eb789156cdbae7ffeefa3ef62eeec40d63c55fd85b4399f8358",
+    "crates/mastercss-engine/src/lib.rs": "dcc4670f4965f1ddd3af1bdd8db2eb1256b8814bc99a5a1a01c2e6e1a24bae9f",
+    "crates/mastercss-engine/src/manifest.rs": "ce89bd365a318cb6304cc143beff27f40b181626f6374f35004eee219842ba97",
+    "crates/mastercss-engine/src/completion.rs": "4aca9160633b14d23089e8eb27280f247fbb2721b1ff77a953c7a40e6f885cf9",
+    "crates/mastercss-engine/src/state.rs": "7cbbae07348ff4e646da30cef9ecd675abc0b370cbd4fde8ec53b1bc87ad19d4",
+    "crates/mastercss-engine/src/tests.rs": "636446fdd48624aa23d423bbff0adb911665afb95fba0ec1ee14944b5edf1ea9",
+    "crates/mastercss-engine/src/resources.rs": "a3c3de1ff8c59f309c54b456159fad2419da6ebff4ad2e30620af60af880cc69",
+    "crates/mastercss-engine/src/stylesheet_animation_value.rs": "0940b84841505384cc837d484983da7da0255db9ba9c8638ad2e39218eec82ec",
+    "crates/mastercss-engine/src/condition.rs": "0ac71afe17b2806e21432247843dd06a6d72667539332efb5b76ad9af66f9e44",
+    "crates/mastercss-engine/src/value_syntax.rs": "6fc8385156307f50bf240b75053a3ac42fe3c39731894f05bcd7524a0fafbbf3",
+    "crates/mastercss-engine/src/tests/lifecycle.rs": "b3b600d7622a64c3915589f3eef7c0d9efdc720d7135759fe3cb727135994ca4",
+    "crates/mastercss-engine/src/tests/syntax.rs": "f0bbed73388b7857274ca67ea859f23dfd1c897d263ce58acf69f88a657fbae7",
+    "crates/mastercss-diagnostics/Cargo.toml": "5451ae3e07539198359bd93c36b443e96d3417de741a4a0ff9e17b5d248af811",
+    "crates/mastercss-diagnostics/src/lib.rs": "812cdd24efca2307e1a9e46d6e130e47ee2a91d386aa6034ba19f696038c4598",
+    "crates/mastercss-lexer/Cargo.toml": "f2ae30fa3512b758d3536834aefc048ea1dbf0575ad3759d35bd1c32590b73c9",
+    "crates/mastercss-lexer/AI.md": "c99fd892c5333091ea54b1df820fd9c6f25406fde3f6eecf802c57fbf03f2d39",
+    "crates/mastercss-lexer/tests/bug_hunt_boundaries.rs": "dba8a15de17e5014a2e5921e316fae32fc136268dbff45e3eb76a8d4a3981a85",
+    "crates/mastercss-lexer/tests/css_syntax.rs": "04952abdb24c68cd015d87dade7b7f883141dcdfed78ea43ff7432e96d97897f",
+    "crates/mastercss-lexer/src/class_list.rs": "37fc611108d95c77603e0905ea96ab63429bcd2e95e3a040376a706be2946bec",
+    "crates/mastercss-lexer/src/variables.rs": "95b31e24b58e079272f3a919013def701e06a6906bebfdfb05f4bfcf995b02ae",
+    "crates/mastercss-lexer/src/at_rules.rs": "c7fdcc2a666684b4f904407b0e2fab027fb30939d892a6fe983f6dabed9ae181",
+    "crates/mastercss-lexer/src/lib.rs": "788d5ef8e7f289ddd4e4a08485dc670a54de41a66769490f1f9897840d362c28",
+    "crates/mastercss-lexer/src/functions.rs": "d2a078b7f6289001d4aa95145468a2c0c370e19b3488c6b852216ea32d063e6a",
+    "crates/mastercss-lexer/src/escape.rs": "6b867280802edada91481d55ce19f5c27bbb661e111f5c453d91092fbad01c55",
+    "crates/mastercss-lexer/src/statements.rs": "198ae53af521f226b9d7936e37971bb7fd393045386c88cc93d5aa8592f26ec0",
+    "crates/mastercss-lexer/src/tests.rs": "204664d885581982fa7704eec87a6474d9c0f5594253f64e3ef0b7c2faceecb9",
+    "crates/mastercss-lexer/src/css_syntax.rs": "fe6b57fb9b2f3961ac9f9929549f0a22b9218b3c95d74ea27447ffb2aa45eef0",
+    "crates/mastercss-lexer/src/directives.rs": "017778779e5fd00628cc3a3d7a18416e5fedb4d714b2fa14763e1607d7dabe65",
+    "crates/mastercss-compiler/Cargo.toml": "e47809334c2174109a4c8c088ea09a9a9389b4b1f7c277ed06156ab3bac168c6",
+    "crates/mastercss-compiler/AI.md": "abf48abc964115f563e7809a8be93ef92505b296c14df0f665f3009519ddbd92",
+    "crates/mastercss-compiler/tests/bug_hunt_standalone_delivery.rs": "1b6ca32705b3524f4492bcb1a242edb809b249aeca4203a2fe2e35d0fe2bb4b3",
+    "crates/mastercss-compiler/tests/bug_hunt_directive_positions.rs": "843c175b4fc848037c7a2be7d8028c90327d77066b29b22fa69cd7d425d1d3b8",
+    "crates/mastercss-compiler/tests/bug_hunt_graph_diagnostics.rs": "49335c46c9c4f7ef6b0e2773cc221bb0f314035d29307f71ccb5f28862601d20",
+    "crates/mastercss-compiler/tests/bug_hunt_native_output_selection.rs": "32f633dd5e19412f8c0b06c29d596a50470bc3d546d6f975556be6d8b73f0493",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_discovery.rs": "830cbfff3e060967faad3946ba23ca131c1667abdb856594f45dee38879d3344",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.json": "e4796c9914f84c967f2a687e8864aec4e396a7b575897188215abf69ed8b5482",
+    "crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs": "309d5ccc4066ba40a3eea6886d7dae72857fa07aef2325ac523d833d955271d4",
+    "crates/mastercss-compiler/tests/bug_hunt_host_import_ownership.rs": "bcfa1edee4f8c8cfdc1445d8a3c4a8cf7cd0e11c601c1c314c2419bed6bb8c9c",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.rs": "32396ca83df4c14bdaaab041ba3ce952556be71c0ec9d75f2dfe741eb903c276",
+    "crates/mastercss-compiler/tests/bug_hunt_compiled_stylesheet_graph.rs": "bd7eb1db737b55d5fde6058bd1dd2ac14215fa0cd3c4ac624c4e9b950760aa0c",
+    "crates/mastercss-compiler/tests/bug_hunt_import_qualifiers.rs": "9c20e63d369a13763b385e9417150e02019c201b069d57bf716872e461540a4b",
+    "crates/mastercss-compiler/tests/bug_hunt_preserved_native_source.rs": "22f50f1283071b83870ff6f5a7a1bdbec53ee8247e9279df8a51504d321ac00b",
+    "crates/mastercss-compiler/tests/bug_hunt_bundle_context.rs": "e20da110271854288d3ac9a0f1eab38849a7323c4b5c8e6990670c52044cff2b",
+    "crates/mastercss-compiler/tests/bug_hunt_native_conditionals.rs": "83608d552a883036a22b956b0301ac1593c73cc1ca0ed99ef10fa0078eb19ca5",
+    "crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs": "e5eb1e937e50bf03a9d065fa6d340ea98acbac1058c0466f06bbf63abc069f2f",
+    "crates/mastercss-compiler/tests/bug_hunt_inline_delivery.rs": "0b835475b310bee17bd333490e887a1489b2c866990922b3c48cbe5fec6b9f4f",
+    "crates/mastercss-compiler/tests/bug_hunt_resource_urls.rs": "d8f3998af8a4ebd272cde4442daeb4ff18fc97ebee437258ad9f5de88a667d07",
+    "crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs": "44316d5321b04692517ce04f4285a1d6417d6b37a5fbdad0c9a7806a3909ced5",
+    "crates/mastercss-compiler/tests/bug_hunt_bundle_graph.rs": "bab6c386c6cef441e4d7a7be40a5ba6500eab78b29c99c338824c5a74571568d",
+    "crates/mastercss-compiler/tests/bug_hunt_inline_graph_maps.rs": "16bb9ed93617921c51b08ff3c971fdf460c14efbff08d345496c2349bae54cca",
+    "crates/mastercss-compiler/src/pattern.rs": "4755639b1871baeaa40d530d3e2be7c4342da23bf88ee060381e99caf1df1034",
+    "crates/mastercss-compiler/src/imports.rs": "095389123af72fcef2c6731a4bf4f7a8565e39fecf06c032066745ba7972298d",
+    "crates/mastercss-compiler/src/stylesheet_resources.rs": "3d964c8c5aa07c24e953f0a9ac19fd88acfb8efcb2bcfb83a24408b157310de8",
+    "crates/mastercss-compiler/src/output_edits.rs": "e22bc8a99af7d089f3f8d493118c19b30f6642af592ca87ae95cb32630239aa5",
+    "crates/mastercss-compiler/src/stylesheet_bundle_api.rs": "3cbbd8c2c2578ffd96f3cf501ef92c322fcb30a88c921404af72946b14c86938",
+    "crates/mastercss-compiler/src/output_mappings.rs": "817b2a0ca60b305d30c96420f844b2cfb3c94a3823a5d8f929bf0629d06ed45c",
+    "crates/mastercss-compiler/src/lib.rs": "0fa9039a228bc473c43da88b0d90c853cc6b6f393142e5c937fe8fabc841a025",
+    "crates/mastercss-compiler/src/graph_inline.rs": "62f13afc33fdc54e9f61abdd0ae856dff58fb580c444260d197deba42ef0eff8",
+    "crates/mastercss-compiler/src/theme.rs": "2f30d221332ec64afb5d2969ca5687678cb7ac415181fd3a69859189f5668539",
+    "crates/mastercss-compiler/src/stylesheet_inline.rs": "fd74ec3ee97ce4277d4bb4627c1b0d981e8242744a339ef878ed122f092d3515",
+    "crates/mastercss-compiler/src/native_style.rs": "7840eb37837e7883284a3e912c45ce74b2b09d25349003845869a18b61f67d39",
+    "crates/mastercss-compiler/src/variant.rs": "5c5e926ed39c5cc8146ea6fb8a9f92e76a7e1b65d7c934ba22cf30c02228d303",
+    "crates/mastercss-compiler/src/stylesheet_bundle.rs": "79ef31f5c16268370f2dfdcaae226b5da5661a2def099405f24746ff1e0817b7",
+    "crates/mastercss-compiler/src/stylesheet_bundle_context.rs": "d85de5b1e02f74b97c884155c521350b1c306538da2cad455b33a1e1e3065034",
+    "crates/mastercss-compiler/src/source_spans.rs": "07524667ed35694bc2a91fe564cc7b3494e5855d9503f283841d454b4fca7346",
+    "crates/mastercss-compiler/src/native_source.rs": "51eec4fb8e6925d654dc81022bcb0b13616b70a328c3a20cb87d941871977287",
+    "crates/mastercss-compiler/src/native_output.rs": "82fb0ca7a942ff300e05389c437365c42521e5403fb6a772bc5c55d198d48b55",
+    "crates/mastercss-compiler/src/tests.rs": "ab4cddda0541b6f9fdcc166ca1a4f787f635e60721023febb225e35e6d675301",
+    "crates/mastercss-compiler/src/native_conditionals.rs": "ad3393ca61e924106a02f18a7c7bbefb93d121e5444ac5e335966ed097584cba",
+    "crates/mastercss-compiler/src/stylesheet_graph.rs": "e2933ef7f0877ae8296fcb8228fb5a9bcf1e93855ec2323b8c67ff40ca4100da",
+    "crates/mastercss-compiler/src/compiled_stylesheet_graph.rs": "796f65289a7ae8ef9c72d443b7e3480dd98238b99adb6293ef84fe2a5471a8ed",
+    "crates/mastercss-compiler/src/syntax.rs": "d1a6bf7f1c54f9c19a59b2d2f8c1e2046e971795814a946696c10dcf3169abf4",
+    "crates/mastercss-compiler/src/managed.rs": "98f9e5f808c2f1721d2f0587d9503f44b1e984512a8b81f437d111295582e918",
+    "crates/mastercss-compiler/src/directives.rs": "93b6257e9a10f530ee0382da598da4345588fe1005d5502ae1a2e723764d2bc9",
+    "crates/mastercss-compiler/src/manifest/preset.rs": "5858f2773750ce08e0efee6fd998e1748edc10546c6ff58377553f4e41de1f5d",
+    "crates/mastercss-compiler/src/manifest/variables.rs": "3644f1d7201ed9d9ab0a684a9bfae3de5d348eddf5ae007259ed9f3f14f765d2",
+    "crates/mastercss-compiler/src/manifest/normalize.rs": "ae9d967fcf2268fc1c293e0c335f82f2c0b1058e796dab0d4c71ffe012619c2a",
+    "crates/mastercss-compiler/src/manifest/mod.rs": "a597bfc21787e85e21ece371b0590c47241889afa72ecf2b8fae4754319ede67",
+    "crates/mastercss-compiler/src/manifest/tests.rs": "4f3e9a1c142d0b6b4ef03174ae68a7c4e35d067a4b0be08ef9db82eeaa6199ec",
+    "crates/mastercss-compiler/src/manifest/utilities.rs": "7d57fb8dc25a6346d974b7bcac106ae4e4a73c54677b4c26cc86fbea755a939b",
+    "crates/mastercss-compiler/src/lower/render.rs": "1faa9c032a6fc2cc9a9405ee8ccfbc31935ab97f18619ecd1bd05a5493b461b2",
+    "crates/mastercss-compiler/src/lower/merge.rs": "23433c51dde91913c523d81051e39d16bf3596782d96531015f21b730e963cd4",
+    "crates/mastercss-compiler/src/lower/mod.rs": "02307366b84b0e66ef53f7e5ccf6cd1b3e0807bd2b53841b80eb39626543d470",
+    "crates/mastercss-compiler/src/lower/output.rs": "22cfb03cc3ef8f73c19815d1ef7ff045d2240d2aefeb50474b3c02097d2002bd",
+    "crates/mastercss-compiler/src/lower/resolution.rs": "9def92dd160b0fe05bc58abf01ed8d91f1ca84ef99ea5779d1c681f3cb97d01c",
+    "crates/mastercss-compiler/src/lower/tests.rs": "8aa6e18f5065b003c74fe5992015e462472e2518afa5a36e88be162c001ee026",
+    "crates/mastercss-compiler/src/lower/api.rs": "16a29a9441a4616a258343815e01aa87078ccd096d13019191598047926b1325",
+    "crates/xtask/Cargo.toml": "c30c5a52b5f7193e3c9eb4c3e70a50b9fca45809530be5ac761ab29d0ce3685b",
+    "crates/xtask/AI.md": "4879edd1e1b6a90cf6f07a649edbf80a29ae9213adc9b3a13ef18bf5ce2517d9",
+    "crates/xtask/templates/rust-contract.ts": "19da99cad4357fe8f0b1f07f11619ce50925e934ffd30dfe75b6503ea6bbffda",
+    "crates/xtask/src/parity.rs": "a717fb3905d09ae35906a7363e89e4f8cbbcdad6244693df3d12d32cff2e3be5",
+    "crates/xtask/src/artifacts.rs": "042bffbfa3a7501cfedf8bcad02893f7ad6971f2a2977ddfdf6718004bac7962",
+    "crates/xtask/src/codegen.rs": "0d61405b8246e4f511a955c7fc7d87ed7dc619eee062d402e6f7792a1bf97313",
+    "crates/xtask/src/main.rs": "466bde01bad2c178ad707c02dfc1bd02a28934cce2573b49064e50c7dfa2c472",
+    "crates/xtask/src/tests.rs": "1306da50a90bedab57830740ec34a89efe9f5058e716f02552db574f9dd0550a",
+    "crates/mastercss-validator/Cargo.toml": "3acf076c5cbc9705142d96b916941fb41f628f3c14c48b773e139814b711879a",
+    "crates/mastercss-validator/src/lib.rs": "bac864deff7a23fa74d76cbf61c8bf966ca3d4f08c44acf3bcc2e2574cad4e50",
+    "crates/mastercss-binding-wasm-engine/Cargo.toml": "c6a4bd09532db79431b9da1f01496042be479ea836dd3dab9e0675ee01ad8fcc",
+    "crates/mastercss-binding-wasm-engine/src/lib.rs": "2a4345109bd0db6ebb99092e111750e2de61c18e6aa5bea65b3f179fa0a6c1fe",
+    "crates/mastercss-binding-wasm-tooling/Cargo.toml": "ef9be3d49aa6e2e1b906efa97a44da4d9e6f862a5526da63565a4741e39d279f",
+    "crates/mastercss-binding-wasm-tooling/src/lib.rs": "29a32b4d23e9a391ce627c5629dd858eb9201574848d039fcb095f32ffcf424b",
+    "crates/mastercss-schema/Cargo.toml": "0bf438850affabedbb18262af759ad33fc6d2e3465faff04d062f9ac696190d7",
+    "crates/mastercss-schema/AI.md": "3d477bf18dd8617ba6def013e812123544ca0debc8ec37adca5320b3424b0395",
+    "crates/mastercss-schema/src/lib.rs": "7a56c88d45b9657ed9fb8f55d11df41c22b6cf3307f4f63dcc4f6d71b04ce7b1",
+    "crates/mastercss-schema/src/manifest.rs": "627f60e40f52f22cf4bf2da78bce236e8d924a628bcd18c4faf458238085f278",
+    "crates/mastercss-schema/src/tests.rs": "082ecf1aca0030f841a4ea3d1db1411494c107255ec10282ce9be105b2f3692c",
+    "crates/mastercss-schema/src/directives.rs": "f18931dae1958ebd5df44ba246a6be94dc7c870ff7e64d4f33ab625d1d576285",
+    "crates/mastercss-schema/src/engine.rs": "867d67f911332b651e3b1d12352a6d3683a84f8802e281b4c03071d78f8d8d3c",
+    "crates/mastercss-binding-native/Cargo.toml": "0636e54a89f90ed881541560373c6c7f17fdcf327d8663595d2109111175fd53",
+    "crates/mastercss-binding-native/build.rs": "75b7c5b4c9d344d27d2750604c21c557b41039460e4e755ff31b9fda5d76be1d",
+    "crates/mastercss-binding-native/AI.md": "25a7cc8ae829551d9dc0eeece179ffff3c8f0b600499d9003bc887577c94b1bf",
+    "crates/mastercss-binding-native/src/compiler.rs": "5abf9ae90f4c9ee9044779bf91ba821b841c1fa8e06871d8039b6d625fcf0dd5",
+    "crates/mastercss-binding-native/src/lib.rs": "80bb9669417e2a650dae9471929651d73db174d391d2ac24bda97ee9aaf53360",
+    "crates/mastercss-binding-native/src/render_scanner.rs": "2b49cf712860cfa7b7a3da87b6303500d181191fd10e96e5d407b532b9ced3fc",
+    "crates/mastercss-binding-native/src/tooling.rs": "f22d4f4dc0f88c28be4d23689dedadcac20eac582646ce2ab6f948ed3ba58322",
+    "crates/mastercss-binding-native/src/engine.rs": "9b9e81579001b945cb595d53c2cf2eacb29623d5e11127ecca8683a95566c2aa",
+    "crates/mastercss-lint/Cargo.toml": "c5b9f7b2e7692890ff2ea4273f226a251451d2225efdac7c0882bbd844283281",
+    "crates/mastercss-lint/AI.md": "a3e886c60a303304bf18c0d7d1e3e19ca02b39304572bd1ca02a75ccb78860b8",
+    "crates/mastercss-lint/src/session.rs": "b6d9cf7e89bea865f36d255ede3c85cf8e08e5bb12476821c2d8fce131caeb55",
+    "crates/mastercss-lint/src/class_list.rs": "3d7082cce1ac377db189e597c1ae1f52ecd1acad6792d798f958faaf6f8d25e1",
+    "crates/mastercss-lint/src/order.rs": "de2163bd944cdfe671a9736a541b669b8377a880bdbd6e93d06fcecf93ae2d55",
+    "crates/mastercss-lint/src/session_canonical.rs": "536617ca9d6144e395412d31d4a9a31046b739c63703f40d58917360b4dc3356",
+    "crates/mastercss-lint/src/lib.rs": "b73c7cad3936b7e5ad749fca3a9adf593d37a296c19e116665c9a4143191564a",
+    "crates/mastercss-lint/src/compose.rs": "c68c8318947c16fdea8e6a7430f55e1f6854085812ee459d13e8ff948920dd00",
+    "crates/mastercss-lint/src/partial_conflicts.rs": "f1fc46f2b479bb1b6991623fdbf5295aeb438e6ed902da8b2f113df3a3099504",
+    "crates/mastercss-lint/src/tests.rs": "3f8d7f6ac784f038b1713f44a6d35e02c25a0382157834849572ca6fd7e5104d",
+    "crates/mastercss-lint/src/conflicts.rs": "2b42792d8ca93f7fe3081849f6c3194f02cef9b9fccc5faa37c1a8b4ab36a6cf",
+    "crates/mastercss-lint/src/session_compose.rs": "6c07bbc68ee8a27008f1673a62906c3be86a81d072c5710f58d56879ba25a31a",
+    "crates/mastercss-lint/src/recommendation.rs": "c808b184211d937ba372c8c8dd8313d5db1811dcb435f7c9943adef232e28e52",
+    "crates/mastercss-lint/src/class_list/tests.rs": "12047e9c5a69330f66a62ea67ef8885d176007ca93ec3fc38fddd9d0cb945d83",
+    "packages/compiler/src/compiler-diagnostics.ts": "342e37c54d83656ea3f4b2deafc52832b97d946c506f88f0a702c2f0cb751f07",
+    "packages/compiler/src/node.ts": "cc417e438f2ae9e96d2f3b0397b8077c11b1b6f80c2869e4fb7e7a9e321cc17a",
+    "packages/compiler/src/contracts.ts": "55f8aba77dbd8b37d76d0a9195099bc877d1d013cf49325669916c69eb775052",
+    "packages/compiler/src/session.ts": "ad7b4463ee0067ac8a3b68f114a2d916322c72b200424cba0f993fb1dc7f79d0",
+    "packages/compiler/src/node-imports.ts": "314144ded1d7a2551a53fc7e261ab0eeaa9b6ba1f687585f4bc33862114a6ec5",
+    "packages/compiler/src/node-compiler.ts": "44cb0728b96599f15009a3d8e093ee9b39769fddd112c0a86fbb0452ee5b2100",
+    "packages/compiler/src/index.ts": "8896664f256d700c9e4c8c93d0f21a21c0af236f509e463f7a2b1a2eaeb0236c",
+    "packages/compiler/src/compiler.ts": "0e27a7eba74242433a8bcf75b0b809baf247ffe93c5b7d1a521b0f5cac01b2f5",
+    "packages/compiler/src/stylesheet/render-source.ts": "6a2dbc5a683ee95604559c311589b2575ae02c6c7829df362638fb9ff30d88fa",
+    "packages/compiler/src/stylesheet/source.ts": "ab101f72a4d88caee619b3a7e32dd63efd0788c99f7b21226614393a22565e6d",
+    "packages/compiler/src/stylesheet/render-core.ts": "dd709747d3ee5823e8556dbe9a67186c23dcf27f2e04efc0a26c18dcb1e5d4c9",
+    "packages/compiler/src/stylesheet/source-context.ts": "0854ab9fd04cf9edd9c08679d0a97c0007375b6d7f337755b33c1b35f8694260",
+    "packages/compiler/src/stylesheet/render-delivery.ts": "810521305c085fc6d748fce9c3098fe8e085b2a725f659751ff5511253387c83",
+    "packages/compiler/src/stylesheet/directives.ts": "76d1c854366634e6825e19552ceb6faa17749fb307f717992cd3f23bac1d8e7d",
+    "packages/compiler/src/stylesheet/browser.ts": "ea5cf3e7c2b48c40feb8411a1b7e8280cc01c8753cb5f1dedd7cf6bcccd19d6a",
+    "packages/compiler/src/stylesheet/types.ts": "d3b47aa6338b79ea8c01cb30ff8a8ab97a8ae4eb2d9e22cf984219deb693edaf",
+    "packages/compiler/src/stylesheet/compiled-source.ts": "1b7f89319514b81920869ed91cef6a00101e4c98dcd0b0bd47ba4f71365d0369",
+    "packages/compiler/src/stylesheet/output-map.ts": "33a7355621112935e8fa9ddc6e6d9f695ba2ce7dbc79518f96df518f9db671b1",
+    "packages/compiler/src/stylesheet/index-public.ts": "0bd6f0a0a528cf97b6b88b31856ce1832a662053dac6f09d50546085d50fdd08",
+    "packages/compiler/src/stylesheet/render.ts": "8e900e2d303d23b59dccf2b2e1f2c40d999990a2ae29d00af4b17db39c1dfc91",
+    "packages/compiler/src/stylesheet/index.ts": "13b60f8fea8bffda998591f1490696e70c7fb8e41cff9906b6d13c555b2598d1",
+    "packages/compiler/src/stylesheet/public.ts": "1bfb1e8bc03aab9bad5e6d7a2ac1190965ceb25c4f604485fed48408b7e3ef1b",
+    "packages/compiler/src/stylesheet/delivery.ts": "3622887e595096bd928a49e8c8ddb100841a21b630a21c81d7729492d11ebfc4",
+    "packages/compiler/src/stylesheet/reference-origins.ts": "361fa34360d235fd05b22fbe55bab4e10055e2f18b70a9276a322d8db5abff58",
+    "packages/compiler/src/project/entries.ts": "5283e9e0fbc3cfee873165b2df151198682281339882ce80fefad18f46907664",
+    "packages/compiler/src/project/binding-project.ts": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8",
+    "packages/compiler/src/project/manifest.ts": "ee2fecce40f803e4fc6af61c8a1ee62809fca921016aca92c4b9bb618c760a43",
+    "packages/compiler/src/project/manifest-sync.ts": "c6783c5204aa1a96809212b1ca193b8d322a5e3f66bce774ddfbbd901e81c836",
+    "packages/compiler/src/project/options.ts": "dee4c53f064a07c9f996d0312dbe99a9096b978e715827e8f126bcc26c94192a",
+    "packages/compiler/src/diagnostics/contracts.ts": "28d4277a8e9b04d94ecd388bb44828d3056a05c1da3a1e623dbb8c6382a99665",
+    "packages/compiler/src/diagnostics/index.ts": "0453a5c4f175afd3c74e02ae79ab06bf85fed2c6f62bbb51a5e6b6239b27c7dd",
+    "packages/compiler/tests/bug-hunt-delivery-output-modes.test.ts": "5b98d63bae1eb37f11de7bad5cb97e5bb3f0271aa21a88541f0577a5b4066dd4",
+    "packages/compiler/tests/bug-hunt-static-retention.json": "e0180768e26c36d8b0441f5047ed75f334f140c682cd719c568805bb9598a5ff",
+    "packages/compiler/tests/bug-hunt-compiled-stylesheets.test.ts": "59031ec00d5144e480c9679b136a2ef762408885703ba7bc644cf4c35e474966",
+    "packages/compiler/tests/bug-hunt-imported-policy-output.test.ts": "773da9020dc42c96cc1b3486e942008f5d1b6d0a473033ce1c766abb57841998",
+    "packages/compiler/tests/browser.test.ts": "d6fce1dea8d18da4953263102a260a5e38661cae201834556b3d9e9d86a1871f",
+    "packages/compiler/tests/bug-hunt-output-source-maps.test.ts": "4506ae644ecd3d0fb77f791766b962367189af1c7a7fa963c2b342c2fe74b134",
+    "packages/compiler/tests/bug-hunt-legacy-project-graphs.test.ts": "6b44418aafb64369952b6ad2a7094bdd08273b49d146b02ea0521fdf2f714919",
+    "packages/compiler/tests/bug-hunt-graph-directive-metadata.test.ts": "f709c0ab7786cb6ea2116eab09488b7975d4ea0d573e078073e84c37b792428f",
+    "packages/compiler/tests/bug-hunt-filesystem-project.test.ts": "526ffd516bf6cc7e4520e529d7927355c0a1b0b4d1f94caffece8d0b6e7af038",
+    "packages/compiler/tests/bug-hunt-resource-urls.test.ts": "e76ae5cb03a8d54228e622456d54608f0bc135078d65fed814b57b5b117572a2",
+    "packages/compiler/tests/bug-hunt-static-retention.test.ts": "94416d1193a6556f06fcaa437d3d248402a67afa68ddfdf9a28dcfb05567c9cb",
+    "packages/compiler/tests/bug-hunt-ordered-direct-output.test.ts": "e338a97a1c11ad1cde13b487da4a57a4165656884e14a607005ae41349ea4be9",
+    "packages/compiler/tests/reference.test.ts": "84bb41998fec6956c4daf0cf88d47b8f7796e8dc6bb716bf7354bbbce21b60c2",
+    "packages/compiler/tests/bug-hunt-rendered-compose.test.ts": "d84fb619768b6feec346d5b71322ca4a41c7399aa767d2097b14d807d3657aad",
+    "packages/compiler/tests/bug-hunt-graph-output-mappings.test.ts": "22643afaf3f8f292c9628fff0a1f20189c7be99987a2e937eaad804ec62035cc",
+    "packages/compiler/tests/bug-hunt-inline-graph-mappings.test.ts": "cf86d71f08aadde97ebd310bcdb739986cc02e2f76df8599dfbb76e34ed3f1a5",
+    "packages/compiler/tests/entry.test.ts": "fc03e2482c463c0083cec2a8393c607ed17106286e7bb19d5b8548219bd622a5",
+    "packages/compiler/tests/bug-hunt-node-import-discovery.test.ts": "3ab2c56faab4d2233c58173d2b4899bdc381b37ff306715d1b2657a4163b265f",
+    "packages/compiler/tests/bug-hunt-collection-source-ownership.test.ts": "334d1ad5bae019cebda9ca70907276962c346ec826ebdbc45c8461a4d4224d49",
+    "packages/compiler/tests/bug-hunt-directive-positions.test.ts": "e328b1961b4a2b338edc20fe4d07915ef5cf779dbfab45f205e2472b5156227b",
+    "packages/compiler/tests/bug-hunt-build-graph.test.ts": "28382313bbb0309f9e7718701f99817e71d85543f94ab2fc5b043d4c85e6c143",
+    "packages/compiler/tests/bug-hunt-bundle-transport.test.ts": "cf6488905542627b0d11d5aad2a1f409e93f75f42fd9e28f133534c89c9cbbf2",
+    "packages/compiler/tests/bug-hunt-host-resolution.test.ts": "8ef9c981bd07a8906477e246fd3852578e022a9f2337face906e0b56a55b3850",
+    "packages/compiler/tests/bug-hunt-default-collection-graphs.test.ts": "be017cab11049b0c4e89a25a68bf15a3f7aca9ae4a041ad0c357797dc7645c30",
+    "packages/compiler/tests/bug-hunt-reference-source-maps.test.ts": "450f5328764e255a49d505ba80edcc41c38be356b5ba2181865055450ef7772f",
+    "packages/compiler/tests/bug-hunt-virtual-sources.test.ts": "b64e2668e5b2c6dc930ee3d1a9dbb2fdf5580a3b9a2a1c0ccce1901168040d8d",
+    "packages/compiler/tests/bug-hunt-project-dependency-observer.test.ts": "2222f6c56e6a1ae35caa25bccc79c63a2561430b91d22d33ff285521fa5162f5",
+    "packages/compiler/tests/bug-hunt-preserved-source.test.ts": "2cce820ed6f43d4007450214a7b3dc411358b0f288437367fd5ad8b1e230242b",
+    "packages/compiler/tests/bug-hunt-imported-local-classification.test.ts": "cc24529c73d3a36789117f934da691ccca5ddd8db2d65878b97d9cca2c01978a",
+    "packages/compiler/tests/bug-hunt-prepared-source-context.test.ts": "16e8f4cb6d75052936539527a3f2d7b4c4ee1826dd95e68a1ad265b5697cf1e7",
+    "packages/compiler/tests/bug-hunt-stylesheet-preparation.test.ts": "4b34c7c10769f8fc36c0859373a929e6c875dd710e18c118b29f00e35d59e883",
+    "packages/compiler/tests/bug-hunt-native-host-transform.test.ts": "bea983d0d14244170845afb7fff62b7657fae078276d181716b5efeef93a53e7",
+    "packages/compiler/tests/bug-hunt-local-transform-delivery.test.ts": "f4c340fddb49645cda4b09836979dc3646efd17046af93053b007561c3e16bba",
+    "packages/compiler/tests/session.test.ts": "3a728154018d81bb4f38a07bda86348110424b7a8e5e6e92482796c48b21f9b9",
+    "packages/compiler/tests/bug-hunt-virtual-reference-ownership.test.ts": "1165bbb789f1d3cf9a7f4e311566f7859f75db73fdd2a5db6ad648a402616290",
+    "packages/compiler/tests/bug-hunt-native-conditionals.test.ts": "31a9e9e57030bfdbc299862beb17ea3a7a9e6bb06ec229778dd5a473175ae2d6",
+    "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "6b644b8724a184f826a4c83e0b0d387dfbefab7f57b76cf46c5a7dd6696f0502",
+    "packages/compiler/tests/bug-hunt-inline-bundle.test.ts": "71c08979c9d924a622c9177441ed726bfaec3c861bdd37219ed6c5b8f67dc228",
+    "packages/compiler/tests/bug-hunt-emitted-globals-graphs.test.ts": "314f090d8e671feb9c4efeae7a0e848e8f85b479a7f7124f9e822fc8597f41ef",
+    "packages/compiler/tests/bug-hunt-project-graphs.test.ts": "e6e3d44e566936749da3538ae6b578450225df02c1af310389a387a0d86718d0",
+    "packages/compiler/tests/css-first-core-migration.test.ts": "fdfd39543b1e06b50ad174b5ffc4b99801cfde3b755efe8e1b85b10c0dd66ac5",
+    "packages/compiler/tests/bug-hunt-file-delivery.test.ts": "0d3ef7441fbcf28194950a36922c85baddc194d253c8d5ce03aa60806a99426a",
+    "packages/compiler/tests/bug-hunt-legacy-compose-position.test.ts": "ea9042072f08bf0b57eafd17853f8db24c00844839a2f64a4113b7d03760b817",
+    "packages/compiler/tests/bug-hunt-stylesheet-diagnostics.test.ts": "f4811a98c598feed97eafab8589e7fef7c50fed3cfd17b013a034800f4bcf905",
+    "packages/compiler/tests/bug-hunt-rendered-delivery.test.ts": "31a28fe393f463fd1e4c073b73c14da22e66704c2e607e4cbf8e34dfe453c4dc",
+    "packages/compiler/tests/bug-hunt-prepared-diagnostic-columns.test.ts": "7782f6ad81c75bd34d124198a65ddff2a250e487e969a5aac75842055dd3a1bf",
+    "packages/compiler/tests/css-first-core-execution.test.ts": "7c19cec929f5d0281cea5086ca784b8e976edaefd37cb11cfe9a684ee6bd7556",
+    "packages/compiler/tests/stylesheet/browser.test.ts": "4354b931f14d852bc4e7de82f514e200cf0966ef12dac7142af18c2cdd09bef1",
+    "packages/compiler/tests/stylesheet/style-output.test.ts": "cc90331db2ee0e154f9c95cc847a010743801817b82e96973b017665c3ae0ea4",
+    "packages/compiler/tests/stylesheet/directives.test.ts": "bd124ff62eb8cc9a823cabc7b10a1c3344f6206cb73c363be7d6b80e4e0d707f",
+    "packages/compiler/tests/stylesheet/public.test.ts": "697625ceb7c2406f6399bc95f9e8a1b740d57b4af24c0cdbd3d7e5ceee0207c5",
+    "packages/compiler/tests/stylesheet/style.test.ts": "aaa33a581550e9032d28a587bc015e85b57b4a2761b75b555f97b6e0f4b02e3e",
+    "packages/compiler/tests/project/test.ts": "0c6be0b7cb455113503e1a260342f26a64e70e916277cc73ccf0c075346d3bde",
+    "packages/compiler/tests/diagnostics/bug-hunt-mjs-discovery.test.ts": "936b917ee9a5cfcec5a8bdbb654e09f86f6fcb9688b4e10f720a78d01cef601f",
+    "packages/compiler/tests/diagnostics/bug-hunt-utf8-bytes.test.ts": "eb7695bd58b743fd1596031f571a9de0bf111f832a8e325b050b064953f525a3",
+    "packages/compiler/tests/diagnostics/index.test.ts": "ebb33c67a7e4d9075fea52e495a9bb029761edd413c6d3eaa315053102ed8bcd",
+    "packages/compiler/tests/diagnostics/bug-hunt-source-attribution.test.ts": "eb450a2ac648538cc366e02b9031a90e072f8b3bd689dffc296a7a4b09b0d177",
+    "packages/compiler/tests/helpers/rust-engine.ts": "b2ddca0d7d146b00e5bf21ac4e3553acf035be981af10c01b3bcc30a95be4704",
+    "packages/compiler/tests/helpers/scanner.ts": "4123d573a94ca533af4ba70ba7fa80f87fe167ec32cc68dd9b11bba94f014bbd",
+    "packages/binding/src/tooling-binding.ts": "386c8457fd44a5158a97e16e6d20df97dd27dfd882f96b4a7b64beda3ac9f29a",
+    "packages/binding/src/tooling.d.ts": "08f8527c505c1ec62a58869de6ca9a397f50a61b4fce304a56ab5cc2331f3afd",
+    "packages/binding/src/compiler-binding-contract.d.ts": "b120193790e588a3f0ebd1c8bafe3a82bb06c2a2301aaabc9d318860dbf55427",
+    "packages/binding/src/compiler-binding-browser.ts": "422da03bf4b5d37857e5e6ee72385a2df5483140b75e0b0ca6f06dddb2c965a4",
+    "packages/binding/src/tooling-binding-node.ts": "e4dc3e9c6a81833cf496bb9a2b2cb65bcca6b79bff501342091ca6d04cbfa1e8",
+    "packages/binding/src/engine-binding.d.ts": "da7a2a360facc65232504c7e808348bcfea2c72a5710c6f0fb7c7659fe0a5841",
+    "packages/binding/src/compiler-binding-node.ts": "76b9aac05a9e4fcbfd4448e2205ff060c23d62b49cdb350421efcf8a232bfa45",
+    "packages/binding/src/normalize-error.d.ts": "1dd882e5a1980ef6ded2fd615f23b07f3592767c0da6250f4c0c8f8d9717008f",
+    "packages/binding/src/version.d.ts": "12f5e9076bbc43171aa03c4c782111f61d1d62a51ebccd10d3b81dec073ba3c8",
+    "packages/binding/src/tooling-binding.d.ts": "01603a8421da2a43e6e23c8194c635ac57d76692bc2d199c1f0cd49a0b86b73b",
+    "packages/binding/src/binding.ts": "dc4badfeaa0b8af5fd34e59c34390a7cc5d000d118392adfa0dfc759999b7993",
+    "packages/binding/src/native-loader.d.ts": "b14f7e95f61643efaaa5e575f0604325812fab85e4ff16b7009eb36dff6ce929",
+    "packages/binding/src/engine-binding-adapter.d.ts": "070f46b421a679ccb96abf9b3cf0a6b752ef4693fe2008ceed729c86c57d7e99",
+    "packages/binding/src/engine-binding-adapter.ts": "e12692d70f2c8d762e1666ce4c42155942f4e2089d986e9ad7558f1afaea92e9",
+    "packages/binding/src/binding.d.ts": "59f57ae7e7ed6dee2c63281d54060588e924807294b3751c1c1ca423aa611674",
+    "packages/binding/src/engine-binding-node.d.ts": "ced9e7e6a0d78e022326478f2d9e53d92e52755d71ab97c075e5dd86058f2243",
+    "packages/binding/src/compiler-binding.d.ts": "b68c85f5bfbd4bb37fc31ed2a4598c40c3bff04b38aabe5a7da5d2796566a747",
+    "packages/binding/src/engine-binding-node.ts": "08f4426eec4773c8cffb8a229eb77f91f89dd711e23cfa9f3533aac57cf61a5a",
+    "packages/binding/src/errors.d.ts": "28f538473e9019853d5c1e7ef7f9d6224186a792340eebf7c799ac2efafec3c8",
+    "packages/binding/src/engine-contract.d.ts": "8e120cb74ea746eccb64871fe6a2dc6a86a7f1f92d53b4d98de4c3ab6d618892",
+    "packages/binding/src/errors.ts": "51b89b36e7dece5f17ee841e25d6f75067164c90f2fbe22be3edab99be4d1428",
+    "packages/binding/src/tooling-binding-wasm.d.ts": "06e63dcb2e9e5ab8567ce5b86892bbf1aac01b402d62e8e71574920cbd62a800",
+    "packages/binding/src/compiler-binding-contract.ts": "2dbcf9957426c3b707daef516415119df9ed76952ff8bd074cf458443b89bf0f",
+    "packages/binding/src/compiler-binding-wasm.ts": "62f6b83f3d7cc318c35b0a04f52983b6c7b50af5a31603329dcbac43fa8dd8da",
+    "packages/binding/src/tooling.ts": "fcbb9753be3a8e09eb308326ff04ef35ff03a8e82d1ee9e0053bd0f57a90a124",
+    "packages/binding/src/compiler-binding-wasm.d.ts": "a074220b541311424315693789469b09738ff8c3d70eee3b9cbe400f1f7fc5b0",
+    "packages/binding/src/engine-contract.ts": "343d269cf430444f3133815e22e35dfba5155335588c8581839470689254a4f1",
+    "packages/binding/src/tooling-browser.ts": "a299256f505b1bee81e963c19ea38f23c30bf3821901305cef14e516879a3885",
+    "packages/binding/src/tooling-binding-wasm.ts": "d63ee12cc4d347c52d588819cdc4daeb8529c198d7129fc59a20d15990d46cd6",
+    "packages/binding/src/native-loader.ts": "cdaab4cb28cc806450865f0c5f448a3e2f24c712a62d97c0e2797aefb7fc3952",
+    "packages/binding/src/compiler-binding-adapter.d.ts": "78062f8948923a1fed83ee28cffce26b1ce44341c9095abd6cf4f6ca2c22c763",
+    "packages/binding/src/engine.d.ts": "38dd75d213d141f3796a5e7289ef174ac9ac102f7a6e0691cfd27d782f37b12f",
+    "packages/binding/src/tooling-binding-adapter.ts": "9596cf60dbee7bac6691330035f6be368f3c49cf5bc5b64bd31efa120c5660c8",
+    "packages/binding/src/engine.ts": "63cb0307423983d621401f70ca496f533a28acb1bfc06700ce4473d5dec3ac51",
+    "packages/binding/src/engine-binding-wasm.ts": "8739d398ff46e3729ee46bee8c3d37bec873a66fa123f0c1c53d25592b21bcba",
+    "packages/binding/src/browser.ts": "ea3e41ad0c97674838ea4c103f47e5261783ccd6442fe1eea002bdfb1b8b01d1",
+    "packages/binding/src/engine-binding-wasm.d.ts": "29e4a311dc97a0e6edfe416fba7f9aa59a57e0435a500cd5b12bfede4c85b356",
+    "packages/binding/src/normalize-error.ts": "b869ed80c7dbb939508469ab1d13ec73c416daea0b92b39162c73ee1b8ef4881",
+    "packages/binding/src/binding-options.ts": "26748dbc36406473131ab74d907a447070e0cf3895c8cf75fee2935b59fc58bb",
+    "packages/binding/src/compiler.d.ts": "60cdbed680e3620298b29954db349e19aa519b37fada31e05cda46461b6bee47",
+    "packages/binding/src/tooling-binding-contract.ts": "cbb8bc0f67131aaa82b3cab4feb28d91e2e45d9bfbf6dca362308d6a6afcde06",
+    "packages/binding/src/tooling-binding-native.ts": "eeb8cfb286cdd1a4c9f32315e3949d9cacd286517bf986052f8ed926a4e4f7e5",
+    "packages/binding/src/protocol.ts": "77805354941327bd47b711a437cd26c596b08a70fc00d2409521c50f8b71abe6",
+    "packages/binding/src/tooling-binding-contract.d.ts": "a82b58db59e8f961b4a9064ea91f2d8e8bb8d24a06ec9c283f804cc2e661e1c0",
+    "packages/binding/src/tooling-binding-browser.ts": "1f25110d06b58b5cfc61fa974a9318130f8240dfe28279261ede148e26384aef",
+    "packages/binding/src/protocol.d.ts": "ddd8168a49cc467f6c9205fdcdff8278a9537815425e0a93e41dac6bb6fed047",
+    "packages/binding/src/compiler-browser.ts": "a536006f2161b98dc653b0cb2f3cdbef06fd69c325dc45870b2a91c1c9703cd3",
+    "packages/binding/src/engine-browser.ts": "852f852778ca95c21db464ab9b5468c727fd012878092d630691234b38f449b5",
+    "packages/binding/src/compiler-binding-adapter.ts": "4ec58246abb4440302359c9cdaaa91d6cfa0916deff38363229cf13d31a01e60",
+    "packages/binding/src/index.ts": "e6dfa90d844697ecf30a7da31b5f7e7ffcbf39038c24777f0a7eb22e58289ea2",
+    "packages/binding/src/tooling-binding-adapter.d.ts": "fb1a0065d401a889787fdc56d81c15e4e3d0ee46ebc6bb0bf796299cc6da778b",
+    "packages/binding/src/compiler.ts": "717679ddb6939ef86537edca45b034c864d25fcab19f8b305a920bbb9e948bca",
+    "packages/binding/src/version.ts": "a506b601b539aaf46629c4e26727ed8d3d397fdd4934cc4593ccd6de44efd4b7",
+    "packages/binding/src/tooling-binding-native.d.ts": "054512c2c09b2e7d04565e82cf12190cf26156533190dcac71407e1cd8eb5ea3",
+    "packages/binding/src/index.d.ts": "d25b2542779d223b2a66c44c9bbbebade43314602eda1ac998f89500efcdc984",
+    "packages/binding/src/compiler-binding-node.d.ts": "6c2f0ad2fc81a8a30836af1ba3e7ef36782f5499c6f37124b09184ee64285fc8",
+    "packages/binding/src/engine-binding.ts": "8cd6a2e752ca0c6394d9fedcf99c375020bc5a6cb0de238837e2343cd51fbc6d",
+    "packages/binding/src/engine-binding-browser.ts": "efeb02436aa761aa3ecda101e9e2ca81379acb1210f0883148d2c72873f329e1",
+    "packages/binding/src/tooling-binding-node.d.ts": "6fbf4ac2f765d2d1f944c1fc7919122e1b481ca894868468ba162ff2e001eb9d",
+    "packages/binding/src/compiler-binding.ts": "c6f276d1598fdc0e18e91822d58eef16b2577d3e83fffded6c84694c0cfcc8cd",
+    "packages/binding/src/binding-options.d.ts": "9ee944286d0098ccfec13246a7b46c2a5459c95b04729b61b8c2b4b26de75148",
+    "packages/binding-wasm-compiler/src/provider-node.ts": "bbe48b209b749c47d4693d04d183ed8d31f9fcca09dab43aebe523062c8641a9",
+    "packages/binding-wasm-compiler/src/provider.d.ts": "ba8f9c561b1b087ead67a43dd800cb320fe3654e2b536c5ceaf9ce7978dfba15",
+    "packages/binding-wasm-compiler/src/index.ts": "55e9cf95fc32c34f024339d8f5b0598c2e99f6e439d86732cfc138c52be56fa2",
+    "packages/binding-wasm-compiler/src/provider.ts": "9e1626118e87114b3deadab1af1d903133efcf01b209f4642cf49da7107c5adb",
+    "packages/binding-wasm-compiler/src/index.d.ts": "133da4698c11187833c5f65616d706d601497b38c469166f149edb05ec34f936",
+    "site/app/[locale]/guide/directives/contract.mdx": "c68f5eb593c0ae1ed70dc91af3ded9ec5268da963d5d6a16f71c51b58a3028e9"
+  },
+  "artifacts": {
+    "packages/compiler/dist/node-imports.js": {
+      "bytes": 10078,
+      "sha256": "9d8c65bfd016ebfe5fe261c5fa0d3378c8956992d15d4b31a48e14d2a2376b7c"
+    },
+    "packages/compiler/dist/node-compiler.js": {
+      "bytes": 16889,
+      "sha256": "b75c08bcb01527b3500e64b96b7b2848bb8a0de699eee0eccbed5d731add9c39"
+    },
+    "packages/compiler/dist/session.d.ts": {
+      "bytes": 2141,
+      "sha256": "4bcdbddf77d8fc1a5d67f51899d0d5903e0d3ad7ed9bc9116f1bd67e264ddd24"
+    },
+    "packages/compiler/dist/session.js": {
+      "bytes": 2685,
+      "sha256": "dde8f71a96e641843cf2fa9c5f4621023dd03716120836b899e57b6cd4e1f7d9"
+    },
+    "packages/compiler/dist/compiler-diagnostics.d.ts": {
+      "bytes": 778,
+      "sha256": "674d8b7e556292571e2ca2264333fd5d9eca87cb1afd1fb47f327e0151c5c82d"
+    },
+    "packages/compiler/dist/node-compiler.d.ts": {
+      "bytes": 7682,
+      "sha256": "91b1a8c9823f13e2474d72f37db45b909b350fe617d4d7b0521dec16fb68f700"
+    },
+    "packages/compiler/dist/index.js": {
+      "bytes": 980,
+      "sha256": "fdabddccf4933734461c2c672693c2551e60be01108937cde4be8a32068534c5"
+    },
+    "packages/compiler/dist/compiler.js": {
+      "bytes": 6992,
+      "sha256": "ac5570347c07c5397c20424d90459c0eee07c68ff279a5f02b91d77eafa0bea7"
+    },
+    "packages/compiler/dist/compiler.d.ts": {
+      "bytes": 2477,
+      "sha256": "b0e6eae23288eeda73ba8d4405a26e177949fcd8d49c9c86a0fc238005ddeaa5"
+    },
+    "packages/compiler/dist/node.js": {
+      "bytes": 2028,
+      "sha256": "cc6ac78af61d6d8d3bef509dbdf8bd29c2a81403231e75049f6e1c400f163918"
+    },
+    "packages/compiler/dist/contracts.d.ts": {
+      "bytes": 1217,
+      "sha256": "4551d24f6fe62416b3eb91e27fcfd565bf725c0cc4f75e2484b68862e553de9a"
+    },
+    "packages/compiler/dist/compiler-diagnostics.js": {
+      "bytes": 510,
+      "sha256": "515dc3368f634d37167b68e847e95cc2d50f3610ebe25f62727b0bf551ccb8d2"
+    },
+    "packages/compiler/dist/node-imports.d.ts": {
+      "bytes": 2555,
+      "sha256": "8df6607e597bdfc4fedbee7f4b6b208b92223180acd52e6a49ba81c3f91ee9d9"
+    },
+    "packages/compiler/dist/index.d.ts": {
+      "bytes": 4773,
+      "sha256": "07206c591323d1cd8cc1fa1586b7ee3e42a0bce21b2df971bd4f581ab3a9ee14"
+    },
+    "packages/compiler/dist/node.d.ts": {
+      "bytes": 3160,
+      "sha256": "9626c4fa14e238dc3a1e299ad50600bdddd594d2c9e568ee6ed3984ffe568e25"
+    },
+    "packages/compiler/dist/contracts.js": {
+      "bytes": 212,
+      "sha256": "a11d9f9b2bb78fbbdc80f60aa67cc332ca49157fc3edf0aa9a30331e6c305f2a"
+    },
+    "packages/compiler/dist/stylesheet/output-map.js": {
+      "bytes": 6859,
+      "sha256": "cd9da24a932b226b378d70f3071988409054e6ee48730761f74155bb41eb7106"
+    },
+    "packages/compiler/dist/stylesheet/index-public.js": {
+      "bytes": 605,
+      "sha256": "99f567c4bd783276753b1a2f56ee2b509d52a20c924a35b71ac25fc7833f1ece"
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.d.ts": {
+      "bytes": 431,
+      "sha256": "ec731f4be94f462bffd725da4206630e8b9867bc59d71bd3f321f77cc514c5c5"
+    },
+    "packages/compiler/dist/stylesheet/types.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/compiler/dist/stylesheet/source.d.ts": {
+      "bytes": 321,
+      "sha256": "653b79938847310ba84d1481b41275d025cacf5798d43c93d73ec86012873fa1"
+    },
+    "packages/compiler/dist/stylesheet/render.d.ts": {
+      "bytes": 532,
+      "sha256": "4bf49f4124eb2e524ed0fe9ce403e59c87dd203b87cf527b6d6b03551dbe4565"
+    },
+    "packages/compiler/dist/stylesheet/delivery.d.ts": {
+      "bytes": 4716,
+      "sha256": "04199d0e9b80667cd8b4dbae9efd36f6e1a314f163aab247bcbb6d01f1b433e0"
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.js": {
+      "bytes": 3521,
+      "sha256": "a55a03fa19cf12fa1b17dc8f29981a6877de852a935d5afa3dc98fd972470b9b"
+    },
+    "packages/compiler/dist/stylesheet/types.d.ts": {
+      "bytes": 5440,
+      "sha256": "b83528103c2b0edc6d3afa91bc022468e1da3ddde861184c0427946cc1208453"
+    },
+    "packages/compiler/dist/stylesheet/public.js": {
+      "bytes": 11148,
+      "sha256": "9435806cafa4a89d57c73bea0f13b7a320f9cc8f96c1f1a07a0fe1fefb2d6956"
+    },
+    "packages/compiler/dist/stylesheet/delivery.js": {
+      "bytes": 15461,
+      "sha256": "654ad4cd47469468d728e41821d404e599735873c0ef6b1f7dd5263442df9adb"
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.js": {
+      "bytes": 1692,
+      "sha256": "a5674544654abc4f750c444bbcba75fe7358c4cd60153502c65e5e70a456f3cb"
+    },
+    "packages/compiler/dist/stylesheet/render.js": {
+      "bytes": 1033,
+      "sha256": "a821d0668607541a9e0a94dd6e7c8c3121efc996d962cacb12f07c8c3ddb04cb"
+    },
+    "packages/compiler/dist/stylesheet/index.js": {
+      "bytes": 22092,
+      "sha256": "0c045eb847f1614895aa7dd28486541af54e45c359e6bbf6db86aeb9ea9b7ce2"
+    },
+    "packages/compiler/dist/stylesheet/index-public.d.ts": {
+      "bytes": 2083,
+      "sha256": "f0e3027b55b00f85bfd56c2a82c647bf8d30957819bdb8ca3358ed0e0db79b8b"
+    },
+    "packages/compiler/dist/stylesheet/render-core.d.ts": {
+      "bytes": 1915,
+      "sha256": "7248f4d5a5691e7dd59f0d064f67f05ea05b3ec541bbb6dc791b14639544062c"
+    },
+    "packages/compiler/dist/stylesheet/source-context.d.ts": {
+      "bytes": 483,
+      "sha256": "6fa7f8f6f1aa066a267baa5bc3344d67862cc70ca89361cd18379f9dfbf7a85b"
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.d.ts": {
+      "bytes": 410,
+      "sha256": "df5b82109771972bff1698ef9bee09cfd3c41a05ee7ded019975992f8936024f"
+    },
+    "packages/compiler/dist/stylesheet/render-source.d.ts": {
+      "bytes": 606,
+      "sha256": "fda572116b08b21454f2d79ab807a1db0d6e6d58514d5bb864af3c7e84acd03e"
+    },
+    "packages/compiler/dist/stylesheet/public.d.ts": {
+      "bytes": 8365,
+      "sha256": "59ee246d68a562b8a2e5c427752bedcf88108086c6eb34c74b5f135ec5dc4d05"
+    },
+    "packages/compiler/dist/stylesheet/output-map.d.ts": {
+      "bytes": 1008,
+      "sha256": "4209638fd20be74387aa66235133dbd2e0686e504e67e0be3a4e7e530be4ca6f"
+    },
+    "packages/compiler/dist/stylesheet/render-source.js": {
+      "bytes": 1242,
+      "sha256": "3069bb69bdeddc24b65160f396eb750686f39c892ae94e0a234ae72f3adb8465"
+    },
+    "packages/compiler/dist/stylesheet/source.js": {
+      "bytes": 1910,
+      "sha256": "7ba71d4b641e26a71409b3d2c7ae0418a702c258ce583cff859c89960fc70623"
+    },
+    "packages/compiler/dist/stylesheet/directives.js": {
+      "bytes": 4746,
+      "sha256": "5dccedeeff2f1d78cffd7de1a83e68f3f15eae65e89ace4888bfeacf442badb1"
+    },
+    "packages/compiler/dist/stylesheet/index.d.ts": {
+      "bytes": 6750,
+      "sha256": "cf9c0e595753b8e477d0477dc73a0e6c15cd05e5ae44fdf369f3eec61cf539a8"
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.d.ts": {
+      "bytes": 718,
+      "sha256": "0d49e75b62c1ce7a00141b6533b2337b85b1f974971c6919bf7206493fae7f9b"
+    },
+    "packages/compiler/dist/stylesheet/browser.js": {
+      "bytes": 2221,
+      "sha256": "618cdcb739390d59ac80159e002889dbe56616b93040f3b8b3917c1d27a8444e"
+    },
+    "packages/compiler/dist/stylesheet/directives.d.ts": {
+      "bytes": 2389,
+      "sha256": "0a805f246e0ba7f5a78ff44bf191ed6ed323a9b1c8559b40d94b0c0bbc45e7b9"
+    },
+    "packages/compiler/dist/stylesheet/browser.d.ts": {
+      "bytes": 1570,
+      "sha256": "aa0366fc8f574ec296e300bc1dfbb83a2795221a5a97cfe1dc16eafe1f7a9437"
+    },
+    "packages/compiler/dist/stylesheet/render-core.js": {
+      "bytes": 1108,
+      "sha256": "d1b197aa682539e242422d209f0fac4e8708fe2c8d194d355be01eab5dc78a48"
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.js": {
+      "bytes": 1567,
+      "sha256": "55b36aec9a7cae4217d2d2a322c8bfd3dfd8361c689c5134691daf69de483647"
+    },
+    "packages/compiler/dist/stylesheet/source-context.js": {
+      "bytes": 3117,
+      "sha256": "82ec61095fe69b1dcf66f78c66f58384b3822e360154af0aba4f04b27d8d4e27"
+    },
+    "packages/compiler/dist/project/options.d.ts": {
+      "bytes": 1124,
+      "sha256": "36098272f7c671a50b321062f61b2f83535f3b411f0be3f37436930ba1949450"
+    },
+    "packages/compiler/dist/project/entries.d.ts": {
+      "bytes": 1398,
+      "sha256": "1e751c612c23d2ad605dc6e0cc576ab6060f3dfbdd1703a1a087659f659faf90"
+    },
+    "packages/compiler/dist/project/options.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/compiler/dist/project/manifest-sync.d.ts": {
+      "bytes": 1070,
+      "sha256": "6c6f46a481cbdc80607b8e43c7a7ca2d2bfccd00367533bfd8b78bf78a97ca1d"
+    },
+    "packages/compiler/dist/project/manifest.js": {
+      "bytes": 1913,
+      "sha256": "d8aa78b2aa7ac4759fd7c00b8ee82e495a1deffe67978362653d264422a7660f"
+    },
+    "packages/compiler/dist/project/manifest-sync.js": {
+      "bytes": 1683,
+      "sha256": "800e50a62978219c887b0c2fcf8d5ba73c54787d8da14d78ee0bb2db471a1568"
+    },
+    "packages/compiler/dist/project/manifest.d.ts": {
+      "bytes": 1020,
+      "sha256": "fda9f703cbe83d089506fabef1c5ea651ab9765b7ffeee1c029e840d4ed0fe8c"
+    },
+    "packages/compiler/dist/project/entries.js": {
+      "bytes": 6345,
+      "sha256": "7ecf42a95f295f9fc56bfce3c1eab3d75fc7be40929ffb5fea466290e99f2a0c"
+    },
+    "packages/compiler/dist/project/binding-project.js": {
+      "bytes": 2942,
+      "sha256": "1e9623fa4015756f8c290cf1c231e0b3f83544d2ede0621cbde532c3189a0d53"
+    },
+    "packages/compiler/dist/project/binding-project.d.ts": {
+      "bytes": 970,
+      "sha256": "21659c44e397105d2751b891a88a1383e3faaf6a1d249a5553feec18ccc147df"
+    },
+    "packages/compiler/dist/diagnostics/index.js": {
+      "bytes": 7592,
+      "sha256": "5eab07a7a725621b41063cc060d379344b52297716384f88239b799e682c5888"
+    },
+    "packages/compiler/dist/diagnostics/contracts.d.ts": {
+      "bytes": 3956,
+      "sha256": "8985abce8da5384705f55be0d7ecb6b6fba89970d8f88c564bc5c262deb7fc7f"
+    },
+    "packages/compiler/dist/diagnostics/index.d.ts": {
+      "bytes": 1669,
+      "sha256": "b950400193eea68150345c51bfe4dd332f480e61453fb3b4c2ffa76aed8236c0"
+    },
+    "packages/compiler/dist/diagnostics/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/binding/dist/protocol.js": {
+      "bytes": 838,
+      "sha256": "37298558631ba9ad4bd5716b248d3db763332916f58fb24421303070c8bd28f4"
+    },
+    "packages/binding/dist/tooling-binding-browser.js": {
+      "bytes": 1082,
+      "sha256": "2b2d3ac2a02b21da435854d80d4bc50aa76c4a6e4c730326fc655681703668de"
+    },
+    "packages/binding/dist/compiler-binding-contract.d.ts": {
+      "bytes": 4691,
+      "sha256": "c0fef055ad1d75a9d6fed269a60c525c2d34d00d67d5034043a4ac2131144986"
+    },
+    "packages/binding/dist/engine-binding.d.ts": {
+      "bytes": 2382,
+      "sha256": "5768544a0200bfdadf30a1385bedae46cb4c3ee80a9e821a3bb9f36a2eff2dbc"
+    },
+    "packages/binding/dist/tooling-binding.d.ts": {
+      "bytes": 2672,
+      "sha256": "7588a50fca17b79a9d8d491ddd9b10bed330b26c7cde242e0fe6cb24796101a2"
+    },
+    "packages/binding/dist/binding.d.ts": {
+      "bytes": 681,
+      "sha256": "46e26af030fd9027eafaaa7e52ac126f25c224b5e62f000ad2b0c9c5a67c69c0"
+    },
+    "packages/binding/dist/binding-options.js": {
+      "bytes": 605,
+      "sha256": "0480d6a5cf2015bdcfbf120f7e392ae9709e4d46488ec38a6f7ffa70d49ab86d"
+    },
+    "packages/binding/dist/normalize-error.js": {
+      "bytes": 2810,
+      "sha256": "3e6ccbad6ba7df76c59824fbe98c062d3895d8032e77789efb676dffe697124c"
+    },
+    "packages/binding/dist/engine-binding-node.d.ts": {
+      "bytes": 845,
+      "sha256": "6036f10ba8c6d5f506bb49efda0c0454bebfe6dbb824b2ed5a8e698cdb63497a"
+    },
+    "packages/binding/dist/compiler-binding.d.ts": {
+      "bytes": 3001,
+      "sha256": "1596155558c909f124bc9aee86686e97814b8ef1e7df1b097620e27435c620a2"
+    },
+    "packages/binding/dist/tooling-binding-native.js": {
+      "bytes": 2674,
+      "sha256": "b13f40c3667146bed1d8a8fd2223a35ffc166a7c7eb3dae9e03e3b983e72144e"
+    },
+    "packages/binding/dist/engine-binding-browser.js": {
+      "bytes": 1376,
+      "sha256": "4fa3aed55d0e953d96af397199e0a64a3f6c9feaa20e8a710b9ed41ce5924a47"
+    },
+    "packages/binding/dist/engine-binding.js": {
+      "bytes": 1802,
+      "sha256": "0f7097f914c4730cc036137c5761e4911d0865e5973b304117ce4bf8f1ebc871"
+    },
+    "packages/binding/dist/compiler-binding.js": {
+      "bytes": 1985,
+      "sha256": "6295c4d34079894ea86209e74672296f2303ef2a0cf2b30cf70803a5d9412141"
+    },
+    "packages/binding/dist/compiler-binding-adapter.js": {
+      "bytes": 4125,
+      "sha256": "a724c514e4c1bd7a086494c2b3a64f35f4684422336862f198b46e1fb733d62d"
+    },
+    "packages/binding/dist/index.js": {
+      "bytes": 392,
+      "sha256": "44198059c4ec762ec3d0479b2adb0527b79cd9fe5b0e97ace1fada1e9b256f5c"
+    },
+    "packages/binding/dist/compiler.js": {
+      "bytes": 3874,
+      "sha256": "158f1282f611d616f61183837269383969b1aecfa67901e7e885c09d3eb84f09"
+    },
+    "packages/binding/dist/version.js": {
+      "bytes": 121,
+      "sha256": "8016343e0675ec28b33103a5d0a2ed9562b3a49aaeac3c05f6122c3ebced72f0"
+    },
+    "packages/binding/dist/tooling-binding-browser.d.ts": {
+      "bytes": 2680,
+      "sha256": "358314b13d81a04d1937857cd07fe4992a23e23bc4ee2b68d13a7a30ce8a29e7"
+    },
+    "packages/binding/dist/binding.js": {
+      "bytes": 1615,
+      "sha256": "ca62a772965266ff7e3738e83c1a861ff66d111fcd162d9c2e12e2d0e83633ab"
+    },
+    "packages/binding/dist/engine-binding-adapter.js": {
+      "bytes": 2183,
+      "sha256": "41800465449e0476b9f0df26b02b959a77c4c12130af72ee130e011bafb1387c"
+    },
+    "packages/binding/dist/engine-binding-browser.d.ts": {
+      "bytes": 972,
+      "sha256": "3c08e2d3b5f3034f7fbfc8bb598c6fb4d87bf8c8b304804cfba72a803b647a09"
+    },
+    "packages/binding/dist/engine-binding-node.js": {
+      "bytes": 969,
+      "sha256": "e543edf05420fd08566d902c34e9ab18d4ab8c18b4391f0b0b016da7c129195f"
+    },
+    "packages/binding/dist/errors.js": {
+      "bytes": 250,
+      "sha256": "9ec6a20598fe0cf505b964a7899a0d7dcf3417ae6e60e80649aad06fbd84d7bf"
+    },
+    "packages/binding/dist/tooling-binding.js": {
+      "bytes": 1325,
+      "sha256": "d2561ecc51721ece1d11181eec2de3abf1ed8d534d2c7a4caca1a0d1a73885f4"
+    },
+    "packages/binding/dist/tooling-binding-contract.d.ts": {
+      "bytes": 7712,
+      "sha256": "30a39148fad0c2f7514f711dd44473193a2a2a3227368a1dec7ebaeb041b1449"
+    },
+    "packages/binding/dist/tooling-binding-node.js": {
+      "bytes": 406,
+      "sha256": "fc2e1abcd294e029ad165bccc31619a7665556aae6b145906640f77964f89166"
+    },
+    "packages/binding/dist/compiler-binding-browser.js": {
+      "bytes": 1560,
+      "sha256": "27dd5001318c57017beceb59d17b80e3b8d5ffb94b5a0f130bb44ab9c5110e3e"
+    },
+    "packages/binding/dist/compiler-binding-node.js": {
+      "bytes": 720,
+      "sha256": "c84fbc0d99f9f16badbfaec95994a2ee223f8bf0dcaeeeca6e69352ba7ff61fd"
+    },
+    "packages/binding/dist/protocol.d.ts": {
+      "bytes": 30276,
+      "sha256": "3d4d5aeafee95766b6ad17246ffd1597245c485a2e0b362ad3b1faf2bdcfd43f"
+    },
+    "packages/binding/dist/tooling-binding-adapter.js": {
+      "bytes": 1004,
+      "sha256": "fe87090adad70635be5fe8eadbd15f617fb85c0b523016654590e15e5ff30c04"
+    },
+    "packages/binding/dist/engine.js": {
+      "bytes": 3041,
+      "sha256": "651a1d73f1d8310a3f79a408a28d2b9854d352ac70c62ba3517e4cd992729649"
+    },
+    "packages/binding/dist/engine-binding-wasm.js": {
+      "bytes": 2603,
+      "sha256": "3cbd2a62426fcb4c0167b2e2508c67643b983bee05c65575a2b55c749b68adfb"
+    },
+    "packages/binding/dist/index.d.ts": {
+      "bytes": 961,
+      "sha256": "a8a88ef9f0572244801c369ba1870314f7b67f437cdfb0f1ee9453f4cc2f2250"
+    },
+    "packages/binding/dist/browser.js": {
+      "bytes": 392,
+      "sha256": "44198059c4ec762ec3d0479b2adb0527b79cd9fe5b0e97ace1fada1e9b256f5c"
+    },
+    "packages/binding/dist/compiler-binding-node.d.ts": {
+      "bytes": 1953,
+      "sha256": "0c9ad613c4814603149ee9d3b6eb3076a5e5330935edfd12a63ca7559cc9ccf0"
+    },
+    "packages/binding/dist/compiler-binding-wasm.js": {
+      "bytes": 3313,
+      "sha256": "9861150e56f7f73b809f94affc231581c1f58844e1d09e8b26c3a975874c076a"
+    },
+    "packages/binding/dist/tooling-binding-node.d.ts": {
+      "bytes": 908,
+      "sha256": "d7f3a29bbe4d94f44abbba7473a3b59a734f7d33ac785aa1410466312f87f827"
+    },
+    "packages/binding/dist/tooling.js": {
+      "bytes": 6924,
+      "sha256": "14147676891f45657c2cfaae1ac3ddbe99ce3a162088dec8d124daf21f842af2"
+    },
+    "packages/binding/dist/compiler-binding-browser.d.ts": {
+      "bytes": 3009,
+      "sha256": "a8368d9422b010c22a3b3df67632a0ade3e595357f456534949fd1c7ac74f10d"
+    },
+    "packages/binding/dist/browser.d.ts": {
+      "bytes": 713,
+      "sha256": "e7796655fd96b79a8e965dc00572e440a511f883d232be6e6bf996d341ba4402"
+    },
+    "packages/binding/dist/tooling-binding-wasm.js": {
+      "bytes": 6905,
+      "sha256": "72b759cb34a428b7e3ddf451aa6c43ab73c70c99d8e5fed9e46dbde85d4ad789"
+    },
+    "packages/binding/dist/binding-options.d.ts": {
+      "bytes": 632,
+      "sha256": "ec457ceed81f0d4ecf81dec974c2da468b1004bb29b40f59631506e3a926833a"
+    },
+    "packages/binding/dist/native-loader.js": {
+      "bytes": 5055,
+      "sha256": "5b3e35b3c5cdbc87feba6195f9e22146b1af23e8029ea170fcf819d54efc046e"
+    },
+    "packages/binding-wasm-compiler/dist/tsconfig.tsbuildinfo": {
+      "bytes": 96375,
+      "sha256": "cba4a26ad9bdaec49d00dd4028a781b7b48373793d3465e33b38d571d9580bea"
+    },
+    "packages/binding-wasm-compiler/dist/provider.js": {
+      "bytes": 558,
+      "sha256": "3e863f8d6ef40f17c2056e4d21faf19217486d557392c7188c887a27e9c8c302"
+    },
+    "packages/binding-wasm-compiler/dist/index.js": {
+      "bytes": 4487,
+      "sha256": "c4fb68388dc1fd52b13304b31e6b24f5873bd1ebed859cc687ac8fecf99994d6"
+    },
+    "packages/binding-wasm-compiler/dist/provider-node.d.ts": {
+      "bytes": 387,
+      "sha256": "db03ee1872ecb6b8b719c62dd9a1fd95be74581045e631a915f3e28cb99053eb"
+    },
+    "packages/binding-wasm-compiler/dist/provider-node.js": {
+      "bytes": 962,
+      "sha256": "e01aaa5471cfaf9fbb984e63624196c310584a9224b127627c3956b732dfc540"
+    },
+    "packages/binding-wasm-compiler/dist/provider.d.ts": {
+      "bytes": 487,
+      "sha256": "6a31fcda9e4ee688a779dde4ce4ad69a8cb0093b4783ec5acb2765fd0a82e2df"
+    },
+    "packages/binding-wasm-compiler/dist/artifacts/mastercss_binding_wasm_compiler.js": {
+      "bytes": 23094,
+      "sha256": "cce9c58865e66f3674d94b4b81f6a662b9ef72a873d123d7c8db9637d19c1ffb"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm.d.ts": {
+      "bytes": 2924,
+      "sha256": "d93330784af781d2aa87ba26f59fa3c7c113b28f0e22c89f241048d5044c0464"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.js": {
+      "bytes": 28353,
+      "sha256": "b1c1f7336268837125d88cb54ec3eca6eff33b4e5bf8a227d48bc8803a6ff1b8"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.d.ts": {
+      "bytes": 5502,
+      "sha256": "81239f21ff715ff6e3acbaccb3309c26e649234ec300f090642ce244bc7e1c3f"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm": {
+      "bytes": 7375458,
+      "sha256": "b11a26f4584805e6cd8de8b5ad659ce62b306c84fbaf112074ef709a9a9d5072"
+    },
+    "mastercss.node": {
+      "bytes": 47959776,
+      "sha256": "5eec3ea3d69f5a81e0931d4ac64ff615908aa7027593aaeed5f32b5986e61bda"
+    }
+  },
+  "nativeBinaryNote": "Pinned after successful build; subsequent Rust production edits format the same error/return struct literals only; final full tests and clippy cover formatted sources.",
+  "dependencyLinks": {
+    "nextCompiler": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/compiler",
+    "sass": "/Users/aron/master/css/node_modules/.pnpm/sass@1.101.0/node_modules/sass"
+  }
+}

@@ -1,0 +1,18 @@
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-package-declarations-65gwfv54/language-server/shared/tsdown-package.config.ts 
+ℹ entry: src/index.ts, src/server.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+ℹ dist/index.js                                                               0.32 kB │ gzip: 0.15 kB
+ℹ dist/server.js                                                              0.26 kB │ gzip: 0.20 kB
+ℹ dist/core.js                                                               25.23 kB │ gzip: 5.56 kB
+ℹ dist/diagnostics.js                                                         3.01 kB │ gzip: 1.07 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/workspace-directories.js   2.65 kB │ gzip: 1.04 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/workspace.js               2.63 kB │ gzip: 0.93 kB
+ℹ dist/settings.js                                                            0.29 kB │ gzip: 0.18 kB
+ℹ dist/index.d.ts                                                             0.43 kB │ gzip: 0.18 kB
+ℹ dist/server.d.ts                                                            0.01 kB │ gzip: 0.03 kB
+ℹ 9 files, total: 34.83 kB
+✔ Build complete in 120ms

@@ -1,0 +1,16 @@
+[
+  {
+    "name": "component",
+    "source": "@master entry;@preserve native;@theme{--color-audit:#111111}@components{brand{color:var(--color-audit)}}.direct{@compose brand;border-top:7px solid red}",
+    "css": ".direct{color:var(--color-audit);border-top:7px solid red}\n\n@layer theme{:root{--color-audit:#111}}",
+    "nativeCSS": ".direct{color:var(--color-audit);border-top:7px solid red}",
+    "generatedCSS": "@layer theme{:root{--color-audit:#111}}"
+  },
+  {
+    "name": "keyframe",
+    "source": "@master entry;@preserve native;@keyframes audit-spin{from{opacity:0}to{opacity:1}}.direct{color:#123456;border-top:7px solid red;animation:audit-spin 1s infinite}",
+    "css": "@keyframes audit-spin {\n  from {\n    opacity: 0;\n  }\n\n  to {\n    opacity: 1;\n  }\n}\n\n.direct {\n  color: #123456;\n  border-top: 7px solid red;\n  animation: 1s infinite audit-spin;\n}",
+    "nativeCSS": "@keyframes audit-spin {\n  from {\n    opacity: 0;\n  }\n\n  to {\n    opacity: 1;\n  }\n}\n\n.direct {\n  color: #123456;\n  border-top: 7px solid red;\n  animation: 1s infinite audit-spin;\n}",
+    "generatedCSS": ""
+  }
+]

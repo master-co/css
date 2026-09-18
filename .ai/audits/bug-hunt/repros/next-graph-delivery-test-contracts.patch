@@ -1,0 +1,94 @@
+--- a/packages/next/tests/stylesheet-loader.test.ts
++++ b/packages/next/tests/stylesheet-loader.test.ts
+@@ -1,3 +1,4 @@
++import { readStylesheetText } from './helpers/stylesheet-output'
+ import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs'
+ import { tmpdir } from 'node:os'
+ import { join } from 'node:path'
+@@ -29,7 +30,7 @@
+     }
+ 
+     masterCSSStylesheetLoader.call(context, source)
+-  }).then((content) => ({ content, dependencies }))
++  }).then((content) => ({ content: readStylesheetText(resourcePath, content), dependencies }))
+ }
+ 
+ describe('Next style CSS loader', () => {
+--- a/packages/next/tests/bug-hunt-sass-source-offsets.test.ts
++++ b/packages/next/tests/bug-hunt-sass-source-offsets.test.ts
+@@ -1,3 +1,4 @@
++import { readStylesheetText } from './helpers/stylesheet-output'
+ import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
+ import { createRequire } from 'node:module'
+ import { dirname, join } from 'node:path'
+@@ -19,7 +20,7 @@
+ function compile(root: string, file: string, source: string, dependencies: string[], sassOptions?: Record<string, unknown>) {
+   return new Promise<string>((resolve, reject) => loader.call({
+     resourcePath: file, rootContext: root, getOptions: () => ({ sassOptions }), addDependency: file => dependencies.push(file),
+-    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(output!)
++    async: () => (error: Error | null, output?: string) => error ? reject(error) : resolve(readStylesheetText(file, output!))
+   }, source))
+ }
+ for (const syntax of ['scss', 'sass']) test(`Next ${syntax} additionalData keeps root diagnostic line`, async () => {
+--- a/packages/next/tests/bug-hunt-output-source-maps.test.ts
++++ b/packages/next/tests/bug-hunt-output-source-maps.test.ts
+@@ -1,3 +1,4 @@
++import { readStylesheetEntry } from './helpers/stylesheet-output'
+ import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+ import { createRequire, SourceMap } from 'node:module'
+ import { join } from 'node:path'
+@@ -16,7 +17,7 @@
+ function compile(root: string, file: string, source: string, options = {}, inputMap?: object) {
+   return new Promise<{ code: string, sourceMap: ConstructorParameters<typeof SourceMap>[0] }>((resolve, reject) => loader.call({
+     rootContext: root, resourcePath: file, getOptions: () => options,
+-    async: () => (error: Error | null, code?: string, sourceMap?: object) => error ? reject(error) : resolve({ code: code!, sourceMap: sourceMap as ConstructorParameters<typeof SourceMap>[0] })
++    async: () => (error: Error | null, code?: string, sourceMap?: object) => error ? reject(error) : resolve(readStylesheetEntry(file, code!, sourceMap as ConstructorParameters<typeof SourceMap>[0]))
+   }, source, inputMap))
+ }
+ function origin(result: Awaited<ReturnType<typeof compile>>, token: string) {
+--- a/packages/next/tests/next-config.test.ts
++++ b/packages/next/tests/next-config.test.ts
+@@ -151,14 +151,9 @@
+             }
+           })
+         ]
+-      }),
+-      expect.objectContaining({
+-        test: /\.(css|scss|sass)$/,
+-        resourceQuery: {
+-          not: [/master-css-manifest/]
+-        }
+       })
+     ]))
++    expect(resolvedConfig.module.rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
+     expect(resolvedConfig.resolve.alias[VIRTUAL_MANIFEST_ID]).toContain(join('node_modules', '.master-css', 'master-css-manifest.js'))
+     expect(resolvedConfig.resolve.alias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(join('node_modules', '.master-css', 'master-css-emitted-globals.js'))
+     expect(resolvedConfig.resolve.alias[nextInstrumentationClientId]).toContain('instrumentation-client.js')
+@@ -230,6 +225,7 @@
+           condition: {
+             all: [
+               { path: /\.(css|scss|sass)$/ },
++              { not: { path: /\.module\.(css|scss|sass)$/ } },
+               { content: expect.any(RegExp) },
+               { not: { query: /master-css-manifest/ } }
+             ]
+@@ -449,6 +445,7 @@
+           condition: {
+             all: [
+               { path: /\.(css|scss|sass)$/ },
++              { not: { path: /\.module\.(css|scss|sass)$/ } },
+               { content: expect.any(RegExp) },
+               { not: { query: /master-css-manifest/ } }
+             ]
+@@ -464,9 +461,9 @@
+     expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules)
+       .toEqual(expect.arrayContaining([
+         expect.objectContaining({ test: expect.any(RegExp) }),
+-        expect.objectContaining({ resourceQuery: /master-css-manifest/ }),
+-        expect.objectContaining({ test: /\.(css|scss|sass)$/ })
++        expect.objectContaining({ resourceQuery: /master-css-manifest/ })
+       ]))
++    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
+     expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
+     expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
+   })

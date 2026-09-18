@@ -1,0 +1,61 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0246-postcss-request-adapter/packages/next
+
+ ❯ tests/bug-hunt-postcss-request-plugins.test.ts (15 tests | 2 failed) 120ms
+   × compiler bridge errors retain their resource owner 2ms
+   × Document roots receive their own lifecycle without repeating prepare 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-postcss-request-plugins.test.ts > compiler bridge errors retain their resource owner
+AssertionError: expected Error: resource failure to have property "plugin" with value 'master-css-resources'
+
+- Expected:
+"master-css-resources"
+
++ Received:
+undefined
+
+ ❯ tests/bug-hunt-postcss-request-plugins.test.ts:129:20
+    127|   const sentinel = new Error('resource failure')
+    128|   await expect(runNative(createPostCSSRequestPlugins([], () => { throw…
+    129|   expect(sentinel).toHaveProperty('plugin', 'master-css-resources')
+       |                    ^
+    130| })
+    131|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-postcss-request-plugins.test.ts > Document roots receive their own lifecycle without repeating prepare
+AssertionError: expected [ 1, 2, 4 ] to deeply equal [ 1, 2, 2 ]
+
+- Expected
++ Received
+
+  [
+    1,
+    2,
+-   2,
++   4,
+  ]
+
+ ❯ tests/bug-hunt-postcss-request-plugins.test.ts:177:40
+    175|   const result = await postcss(adapted).process(document, { from: '/au…
+    176|   expect(result.root).toBe(document)
+    177|   expect([prepares, calls, seen.size]).toEqual([1, 2, 2])
+       |                                        ^
+    178| })
+    179|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 13 passed (15)
+   Start at  07:01:18
+   Duration  449ms (transform 48%, tests 31%, import 20%)
+

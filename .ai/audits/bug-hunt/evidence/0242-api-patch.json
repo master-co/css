@@ -1,0 +1,30 @@
+{
+  "patch": "/Users/aron/master/css/.ai/audits/bug-hunt/repros/compiler-native-source-preservation-candidate.patch",
+  "sha256": "bdc1ac3381d065f441dd5d6d796abfec08f541e673e68b3d146cfc29f66d191f",
+  "files": [
+    "crates/mastercss-compiler/src/lib.rs",
+    "crates/mastercss-compiler/src/directives.rs",
+    "crates/mastercss-compiler/src/imports.rs",
+    "crates/mastercss-compiler/src/native_source.rs",
+    "crates/mastercss-compiler/src/compiled_stylesheet_graph.rs",
+    "crates/mastercss-project/src/lib.rs",
+    "crates/mastercss-project/src/manifest_graph.rs",
+    "crates/mastercss-compiler/tests/bug_hunt_preserved_native_source.rs",
+    "crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs",
+    "crates/xtask/templates/rust-contract.ts",
+    "packages/binding/src/protocol.ts",
+    "packages/compiler/src/index.ts",
+    "packages/compiler/src/contracts.ts",
+    "packages/compiler/src/session.ts",
+    "packages/compiler/src/node-compiler.ts",
+    "packages/compiler/src/stylesheet/browser.ts",
+    "packages/compiler/src/stylesheet/delivery.ts",
+    "packages/compiler/tests/bug-hunt-preserved-source.test.ts",
+    "site/app/[locale]/guide/directives/contract.mdx"
+  ],
+  "applyCheck": {
+    "exit": 0,
+    "stderr": ""
+  },
+  "promoted": false
+}

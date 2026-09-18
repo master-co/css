@@ -1,0 +1,6 @@
+
+{"mutation":"delete","boundary":"first managed stylesheet emit after composition","stylesheet":"css/master-css-616209e63f487bc5751c-0.css"}
+{"observation":{"phase":"interleaved-publication","errors":["ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-resource-snapshot-fDRC5c/pixel.svg'"],"resources":[],"queryPreserved":false,"result":"FAIL"}}
+
+{"observation":{"phase":"next-build-fresh-snapshot","errors":[],"resources":[{"name":"css/master-css-resource-2e8fb7d323fb693a9acb.svg","digest":"2e8fb7d323fb693a9acb","hashMatchesBytes":true,"contents":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"7\" height=\"7\"><rect width=\"7\" height=\"7\" fill=\"blue\"/></svg>","expectedSnapshot":true}],"queryPreserved":true,"result":"PASS"}}
+{"summary":{"mutation":"delete","triggered":true,"observations":2,"failures":1,"scope":"Actual Webpack builds; owned emitAsset hook changes the owned resource after graph composition but before resource publication. No installed dependency, source or shared artifact mutation."}}

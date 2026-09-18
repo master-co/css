@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "cases": 5,
+    "nativeWasmBundleParity": 5,
+    "nativeWasmGraphParity": 5,
+    "browserPass": 20,
+    "browserFail": 0,
+    "originalSelectorMapAnchors": 10,
+    "actualNextBuilds": 0,
+    "actualPostcssFailuresRemaining": 10,
+    "emptyPostcssMap": "Correct from/to still gives mappingsAAAA with selector lookup anchored to original line0 instead of line1; configured noop produces line1 mapping. Actual Next empty-config impact remains unverified."
+  },
+  "contract": "Bundle reconnects known hrefs butdoesnotrelocate managedresourceURLs orcarry sourcemaps. GraphAPIwithexplicitedges andper-ownerresourcesaddressesboundedrelinking;NodeRenderedGraph composesproperlybasedPostCSSmaps. Do notclaimnativebundlebug fromunsupportedextra mapfield orunknownalias.",
+  "harnessCorrections": [
+    "Initial mapproducer omitted to:file, unlike Nextpostcss-loader; duplicate sourcepaths corrected byusingboth from/to.",
+    "Initialchildproducer usedemptyplugins ratherthanconfiguredplugin; configuredpipeline mapsPASS. Separateemptyproducer controlretains sparsemaplimitation.",
+    "Independentempty-map probeinitiallyrequired fromlexicalsymlinkNextpath;MODULE_NOT_FOUND correctedwithrealpathSync. No dependencychanges."
+  ],
+  "limitations": [
+    "Host edges/resource URLs explicitly supplied in this prototype; no automatic Next resolution integration.",
+    "Root/child selector anchors only, no full declaration/global/new-plugin-rule mapping claim.",
+    "PostCSS AST/root context, globals/Modules, snapshots/watch/recovery andactual0232host failures remain."
+  ]
+}

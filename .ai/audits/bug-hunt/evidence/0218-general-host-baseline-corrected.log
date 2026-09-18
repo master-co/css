@@ -1,0 +1,48 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 81ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+
+> Build error occurred
+Error: Turbopack build failed with 1 error:
+./packages/next/e2e/bug-hunt-general-graph-a1dtH7/app/globals.css
+Error: Error evaluating Node.js code
+MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    [at mapStylesheetError (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/source-context.js:13:18)]
+    [at compilePreparedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/compiled-source.js:85:9)]
+    [at compileStylesheetResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:208:9)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:104:5)]
+    [at async compileRenderedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:234:65)]
+    [at async compileRenderedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:114:17)]
+    [at async transformStyleSource (file:///Users/aron/master/css/packages/next/dist/stylesheet-loader.js:57:18)]
+Caused by: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    [at compilePreparedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/compiled-source.js:41:54)]
+    [at compileStylesheetResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:208:9)]
+    [at process.processTicksAndRejections (node:internal/process/task_queues:104:5)]
+    [at async compileRenderedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:234:65)]
+    [at async compileRenderedStylesheet (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:114:17)]
+    [at async transformStyleSource (file:///Users/aron/master/css/packages/next/dist/stylesheet-loader.js:57:18)]
+
+
+    at ignore-listed frames
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:40:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

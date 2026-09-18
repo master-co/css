@@ -1,0 +1,29 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 80ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 2.5s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 61ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"postcss-added-composes","bundler":"webpack","pure":false,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card_direct__vAL_y other_shared__f3TK2","color":"rgb(18, 52, 86)","border":"0px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[],"pass":false},{"browser":"webkit","id":"probe","phase":"initial","classes":"card_direct__vAL_y other_shared__f3TK2","color":"rgb(18, 52, 86)","border":"0px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[],"pass":false}]}

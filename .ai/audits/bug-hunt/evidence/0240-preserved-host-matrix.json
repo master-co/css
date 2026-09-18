@@ -1,0 +1,74 @@
+[
+  {
+    "case": "postcss-added-nested-themed-empty-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-themed-merged-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-themed-comment-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-themed-spelling-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-local-generated-composes",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-global-context",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-imported-keyframe",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "case": "postcss-child-global-resource",
+    "exit": 0,
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "browserFailures": [],
+    "harnessError": null
+  }
+]

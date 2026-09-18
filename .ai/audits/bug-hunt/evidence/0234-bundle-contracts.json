@@ -1,0 +1,820 @@
+{
+  "scope": "Read-only contract probes using existing public native/Wasm bundle APIs on host-processed managed CSS. Extra sourceMap is deliberately supplied to observe unsupported passthrough, not a typed API claim. No Next host repair or map-preservation claim.",
+  "rows": [
+    {
+      "name": "qualified",
+      "input": {
+        "root": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;.direct{padding:2rem}",
+        "child": ".shared{border-top:7px solid red}"
+      },
+      "processed": {
+        "css": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;.direct{padding:3rem}",
+        "sourceMap": {
+          "version": 3,
+          "sources": [
+            "file:///author/root.module.css"
+          ],
+          "names": [],
+          "mappings": "AAAA,wEAAA,CAAA,QAAA,YAAA",
+          "file": "../../../../author/root.module.css",
+          "sourcesContent": [
+            ".direct{padding:2rem}"
+          ]
+        }
+      },
+      "outputs": {
+        "native": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;.direct{padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 73,
+                      "statement": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\" layer(shared) supports(display: grid) screen;.direct{padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        },
+        "wasm": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;.direct{padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 73,
+                      "statement": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\" layer(shared) supports(display: grid) screen;.direct{padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "edges": [
+          {
+            "start": 0,
+            "end": 73,
+            "statement": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;",
+            "specifier": "/initial/child.css",
+            "resolved": "child"
+          }
+        ],
+        "sourceMetadata": [],
+        "outputCarriesMap": false
+      }
+    },
+    {
+      "name": "originalSpecifier",
+      "input": {
+        "root": "@import \"./child.module.css\";.direct{padding:2rem}",
+        "child": ".shared{border-top:7px solid red}"
+      },
+      "processed": {
+        "css": "@import \"./child.module.css\";.direct{padding:3rem}",
+        "sourceMap": {
+          "version": 3,
+          "sources": [
+            "file:///author/root.module.css"
+          ],
+          "names": [],
+          "mappings": "AAAA,4BAAA,CAAA,QAAA,YAAA",
+          "file": "../../../../author/root.module.css",
+          "sourcesContent": [
+            ".direct{padding:2rem}"
+          ]
+        }
+      },
+      "outputs": {
+        "native": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"./child.module.css\";.direct{padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"./child.module.css\";",
+                      "specifier": "./child.module.css",
+                      "resolved": null
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"./child.module.css\";.direct{padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        },
+        "wasm": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"./child.module.css\";.direct{padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"./child.module.css\";",
+                      "specifier": "./child.module.css",
+                      "resolved": null
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"./child.module.css\";.direct{padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "edges": [
+          {
+            "start": 0,
+            "end": 29,
+            "statement": "@import \"./child.module.css\";",
+            "specifier": "./child.module.css",
+            "resolved": null
+          }
+        ],
+        "sourceMetadata": [],
+        "outputCarriesMap": false
+      }
+    },
+    {
+      "name": "managedResource",
+      "input": {
+        "root": "@import \"/initial/child.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:2rem}",
+        "child": ".shared{border-top:7px solid red}"
+      },
+      "processed": {
+        "css": "@import \"/initial/child.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:3rem}",
+        "sourceMap": {
+          "version": 3,
+          "sources": [
+            "file:///author/root.module.css"
+          ],
+          "names": [],
+          "mappings": "AAAA,4BAAA,CAAA,QAAA,wCAAA,CAAA,YAAA",
+          "file": "../../../../author/root.module.css",
+          "sourcesContent": [
+            ".direct{padding:2rem}"
+          ]
+        }
+      },
+      "outputs": {
+        "native": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"/initial/child.css\";",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        },
+        "wasm": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:3rem}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"/initial/child.css\";",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\";.direct{background:url(\"./pixel.svg?rev=1#part\");padding:3rem}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "edges": [
+          {
+            "start": 0,
+            "end": 29,
+            "statement": "@import \"/initial/child.css\";",
+            "specifier": "/initial/child.css",
+            "resolved": "child"
+          }
+        ],
+        "sourceMetadata": [],
+        "outputCarriesMap": false
+      }
+    },
+    {
+      "name": "newHostResource",
+      "input": {
+        "root": "@import \"/initial/child.css\";.direct{padding:2rem}",
+        "child": ".shared{border-top:7px solid red}",
+        "injectResource": true
+      },
+      "processed": {
+        "css": "@import \"/initial/child.css\";.direct{padding:3rem}.added{background:url(\"./new.svg\")}",
+        "sourceMap": {
+          "version": 3,
+          "sources": [
+            "file:///author/root.module.css",
+            "<no source>"
+          ],
+          "names": [],
+          "mappings": "AAAA,4BAAA,CAAA,QAAA,YAAA,CCAA,OAAA,4BAAA",
+          "file": "../../../../author/root.module.css",
+          "sourcesContent": [
+            ".direct{padding:2rem}",
+            null
+          ]
+        }
+      },
+      "outputs": {
+        "native": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\";.direct{padding:3rem}.added{background:url(\"./new.svg\")}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"/initial/child.css\";",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\";.direct{padding:3rem}.added{background:url(\"./new.svg\")}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        },
+        "wasm": {
+          "bundle": {
+            "graph": {
+              "version": 1,
+              "entry": "bundle",
+              "stylesheets": [
+                {
+                  "id": "bundle",
+                  "source": "@import \"root\";",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 15,
+                      "statement": "@import \"root\";",
+                      "specifier": "root",
+                      "resolved": "root"
+                    }
+                  ]
+                },
+                {
+                  "id": "root",
+                  "source": "@import \"/initial/child.css\";.direct{padding:3rem}.added{background:url(\"./new.svg\")}",
+                  "imports": [
+                    {
+                      "start": 0,
+                      "end": 29,
+                      "statement": "@import \"/initial/child.css\";",
+                      "specifier": "/initial/child.css",
+                      "resolved": "child"
+                    }
+                  ]
+                },
+                {
+                  "id": "child",
+                  "source": ".shared{border-top:7px solid red}",
+                  "imports": []
+                }
+              ],
+              "references": []
+            },
+            "sources": [],
+            "slots": 1
+          },
+          "urls": {
+            "bundle": "/published/0.css",
+            "root": "/published/1.css",
+            "child": "/published/2.css"
+          },
+          "assets": [
+            {
+              "id": "bundle",
+              "href": "/published/0.css",
+              "css": "@import \"/published/1.css\";"
+            },
+            {
+              "id": "root",
+              "href": "/published/1.css",
+              "css": "@import \"/published/2.css\";.direct{padding:3rem}.added{background:url(\"./new.svg\")}"
+            },
+            {
+              "id": "child",
+              "href": "/published/2.css",
+              "css": ".shared{border-top:7px solid red}"
+            }
+          ],
+          "outputKeys": [
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ],
+            [
+              "id",
+              "href",
+              "css"
+            ]
+          ]
+        }
+      },
+      "observations": {
+        "edges": [
+          {
+            "start": 0,
+            "end": 29,
+            "statement": "@import \"/initial/child.css\";",
+            "specifier": "/initial/child.css",
+            "resolved": "child"
+          }
+        ],
+        "sourceMetadata": [],
+        "outputCarriesMap": false
+      }
+    }
+  ]
+}

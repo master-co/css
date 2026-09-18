@@ -1,0 +1,13 @@
+{
+  "patch": ".ai/audits/bug-hunt/repros/next-postcss-request-adapter-on-0242.patch",
+  "sha256": "7f4eba9c4f710d3f7abb789586e0b3670abf78e1be05c99757bae8bf7dbdbfcd",
+  "base": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "files": [
+    "src/postcss-request-plugins.ts",
+    "src/webpack-postcss-loader.ts",
+    "tests/bug-hunt-postcss-request-plugins.test.ts"
+  ],
+  "readOnlyCheck": 0,
+  "applied": false,
+  "requires": "Retained0242 Next candidate; new tests use0244 compiler resource API. No automatic resource callback wiring yet."
+}

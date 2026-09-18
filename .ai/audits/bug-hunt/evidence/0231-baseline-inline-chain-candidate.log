@@ -1,0 +1,35 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 85ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|javascript/auto|/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/next-flight-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[0]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/webpack-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[1]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[13].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-va4lg7/app/card.module.css|rsc': No serializer registered for CssSyntaxError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> CssSyntaxError
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+Failed to compile.
+
+./app/card.module.css
+CssSyntaxError: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-va4lg7/transform-loader.cjs:1:1: Unknown word const
+    at Input.error (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/input.js:135:16)
+    at Parser.unknownWord (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:602:22)
+    at Parser.other (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:444:12)
+    at Parser.parse (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:479:16)
+    at parse (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parse.js:11:12)
+    at new LazyResult (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/lazy-result.js:171:16)
+    at Processor.process (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/processor.js:53:14)
+    at prepareNextModule (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module.js:37:102)
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module-graph.js:67:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+
+Import trace for requested module:
+./app/card.module.css
+./app/page.jsx
+  (from ../../dist/stylesheet-loader.js)
+
+
+> Build failed because of webpack errors
+{"scenario":"inline-chain-composes","bundler":"webpack","pure":false,"build":{"code":1,"signal":null,"timedOut":false,"exported":false},"observations":[]}

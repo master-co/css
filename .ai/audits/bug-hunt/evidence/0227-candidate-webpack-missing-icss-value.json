@@ -1,0 +1,20 @@
+{
+  "scenario": "missing-icss-value",
+  "bundler": "webpack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ":import(\"./other.module.css\"){tone:missing}.direct{color:tone}",
+    "b": ":export{tone:#123456}.shared{border-top:7px solid red}"
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 831ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\nFailed to compile.\n\n./app/card.module.css\nError: Missing CSS Module export missing in ./other.module.css\n    at prepareNextModule (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module.js:54:40)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module-graph.js:58:19\n    at async transformStyleSource (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js:55:25)\n\nImport trace for requested module:\n./app/card.module.css\n./app/page.jsx\n  (from ../../dist/stylesheet-loader.js)\n\n\n> Build failed because of webpack errors\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": []
+}

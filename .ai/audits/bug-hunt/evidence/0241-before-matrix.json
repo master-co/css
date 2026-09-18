@@ -1,0 +1,16 @@
+[
+  {
+    "label": "baseline-keyframe",
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "mapExit": 1
+  },
+  {
+    "label": "pure-merged",
+    "build": 0,
+    "pass": 2,
+    "fail": 0,
+    "mapExit": 1
+  }
+]

@@ -16,7 +16,7 @@
 ## 覆蓋與問題
 
 - 75 單位：65 已檢查、0 進行中、0 未開始、10 受阻。
-- 問題：[findings](findings.md), 60 historical confirmed findings; 56 fixed, 4 unresolved; blocked coverage remains unfinished.
+- 問題：[findings](findings.md), 61 historical confirmed findings; 57 fixed, 4 unresolved; blocked coverage remains unfinished.
 - 交付：[依嚴重度排序的報告](report.md)、[新增檔案與驗證限制](changes.md)。
 
 ## 批次索引
@@ -207,6 +207,57 @@
 
 - [0187 Graph output mappings](batches/0187-graph-output-mappings.md)：graph原始位置、BH-0058字串及BH-0057 suppression條件修復；既有直接入口待遷移。
 
+- [0205 Host classification and delivery](batches/0205-host-classification-delivery.md)：有界主機對照與隔離發布實驗完成；正式交付及其他未完成項目保留。
+
+- [0206 Webpack static delivery](batches/0206-webpack-static-delivery.md)：正式graph發布、資產雜湊與公開getter型別修復；其餘host範圍保留。
+
+- [0207 Webpack watch recovery](batches/0207-webpack-watch-recovery.md)：缺檔恢復與相依清理已交付；既有測試契約patch待核准。
+
+- [0208 Webpack entry ownership](batches/0208-webpack-entry-ownership.md)：多入口／lazy污染與compiler宣告修復；剩餘範圍保留。
+
+- [0209 Initial deletion](batches/0209-webpack-initial-delete.md)：Watchpack競態與隔離patch驗證；正式依賴修補待授權。
+- [0210 Active graph](batches/0210-webpack-active-graph.md)：移除模組後舊依賴造成建置失敗；已重現，待修。
+- [0211 Source reconciliation](batches/0211-webpack-source-reconciliation.md)：模組清理／快取還原已交付；完整host/watch範圍保留。
+- [0212 Optimized ownership](batches/0212-webpack-optimized-ownership.md)：同時刪除與有界最佳化控制通過；資源快照待驗。
+- [0213 Resource snapshots](batches/0213-webpack-resource-snapshot.md)：資源快照修正已交付；完整套件兩個既有watch逾時保留。
+- [0214 Watch event trace](batches/0214-webpack-watch-event-trace.md)：入口事件遺漏已捕捉，根因與修復仍待續。
+- [0215 Native watch boundary](batches/0215-webpack-native-watch-boundary.md)：獨立fs.watch也漏報，輪詢對照通過；正式native行為仍未完成。
+- [0216 Next delivery baseline](batches/0216-next-static-delivery-baseline.md)：純Node監看控制通過；Next資源與import交付缺口已重現，待實作。
+- [0217 Next static publication](batches/0217-next-static-publication.md)：交付static完整資源／錯誤重試及明確授權的既有測試調整；一般loader仍待修。
+- [0218 Next general delivery contract](batches/0218-next-general-delivery-contract.md)：排除兩種host不相容URL，建立三瀏覽器通過的隔離graph候選，契約與完整驗證未完成。
+- [0219 Next Webpack import boundary](batches/0219-next-webpack-import-boundary.md)：29項graph斷言通過；純Next確認預設Webpack的layer與外部import缺口，候選未交付。
+- [0220 Next Webpack graph assets](batches/0220-next-webpack-graph-assets.md)：隔離host呈現通過，最終maps失敗；完整測試與交付仍未完成。
+- [0221 Next authored maps](batches/0221-next-webpack-authored-maps.md)：隔離128tests/3e2e與最終maps通過；既有測試patch待授權，候選未交付。
+- [0222 Next Module delivery](batches/0222-next-module-delivery.md)：確認entry Module exports缺口；輕量marker隔離修正通過，候選未交付。
+
+- [0223 Next Module host capabilities](batches/0223-next-module-host-capabilities.md)：隔離scoped exports與compositions通過，Turbopack最終maps仍失敗。
+
+- [0224 Next Turbopack graph maps](batches/0224-next-turbopack-graph-maps.md)：作者來源對映隔離修正通過；重複URI純主機亦重現，未交付。
+
+- [0225 Next Module import graphs](batches/0225-next-module-import-graphs.md)：純主機72PASS、候選54PASS/18FAIL，確認需保留匯入上下文的作用域。
+
+- [0226 Next Module context preparation](batches/0226-next-module-context-preparation.md)：隔離修正scope／ICSS，144browser／24maps／128tests／3e2e通過，完整host契約仍待驗。
+- [0227 Next Module edge contracts](batches/0227-next-module-edge-contracts.md)：循環／缺匯出分類；隔離修復Webpack編碼檔名，Firefox環境限制與完整host要求保留。
+- [0228 Next Module request contracts](batches/0228-next-module-request-contracts.md)：隔離修復Turbo跳脫路徑；條件選擇仍有2browser失敗，主機上下文待續。
+- [0229 Next Module host context](batches/0229-next-module-host-context.md)：證實browser規則邊界；原生composition實驗造成Client失敗，已撤回並保存證據。
+- [0230 Next Module condition phases](batches/0230-next-module-condition-phases.md)：12次條件對照，區分原生Client初始CSS缺失與候選Server branch差異。
+- [0231 Next Module inline loaders](batches/0231-next-module-inline-loaders.md)：隔離候選修正inline query／chain／nested／alias，完整交付仍待續。
+- [0232 Next Module host preparation](batches/0232-next-module-host-preparation.md)：11個實際PostCSS對照定位graph入口／child／generated／exports缺口。
+- [0233 Next Module lowering boundaries](batches/0233-next-module-lowering-boundaries.md)：Rust lowering／PostCSS／Module階段原型與global負對照，actual host仍待修復。
+- [0234 Next Module graph relinking](batches/0234-next-module-graph-relinking.md)：bundle／graph能力對照，20browser／10maps通過，actual Next仍待整合。
+- [0235 Native Next PostCSS transport](batches/0235-next-native-postcss-transport.md)：原生loader機制及actual Client雙browser通過，Server覆蓋／candidate graph仍未完成。
+- [0236 Next PostCSS graph prototype](batches/0236-next-postcss-graph-prototype.md)：五案原型修復與maps通過；global回歸未解，已保存原型並恢复候選。
+- [0237 Next generated global PostCSS](batches/0237-next-generated-global-postcss.md)：global／Module整合通過，保留更新候選，正式交付與完整host要求未完成。
+- [0238 Next PostCSS added dependencies](batches/0238-next-postcss-added-dependencies.md)：新增ICSS與global資源有界修正；新增theme引用及空rule仍待續。
+- [0239 Next native PostCSS input](batches/0239-next-postcss-native-input.md)：普通CSS提前最佳化已修；含Master指令與新global closure仍待續。
+- [0240 Rust preserved PostCSS input](batches/0240-rust-preserved-postcss-input.md)：原文保留與maps原型有界通過；預設契約及2maps未解，沒有promote。
+- [0241 Next PostCSS map context](batches/0241-next-postcss-map-context.md)：child路徑回歸已修；純Next合併selector map限制保留。
+- [0242 Source preservation API](batches/0242-source-preservation-api.md)：明確選用保留原文，預設回歸通過；maps與static cache仍待續。
+- [0243 Native host boundaries](batches/0243-next-native-host-boundaries.md)：逐selector maps損失與Turbo持久快取新增publication反例已定位，未結案。
+- [0244 Rendered resource context](batches/0244-rendered-resource-context.md)：差集API驗證，PostCSS晚出現資源仍有處理順序反例。
+- [0245 PostCSS resource lifecycle](batches/0245-postcss-resource-lifecycle.md)：原生順序與hook後差集對照通過；global刪改計數及正式整合待續。
+- [0246 PostCSS request adapter](batches/0246-postcss-request-adapter.md)：新副本驗證native loader、插件狀態／訊息與並行隔離；尚未完成資源自動接線。
+
 ## 目前交接點
 
 - Commit checkpoint: `50caa3e20` delivers the isolated BH-0048/BH-0049/BH-0050 runtime fixes and four regression files. Fresh 26 tests and internal/Next/Webpack lint PASS. BH-0004, BH-0029, BH-0051 and all other open requirements remain unfinished; 0038 still awaits explicit identity confirmation. Other working changes are preserved. Historical no-commit statements describe their original checkpoints. [Commit validation](evidence/0183-runtime-commit-validation.json).
@@ -215,7 +266,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 使用者授權提交已完成部分：本次納入0198已收尾帳本、原始證據與檔案project重現腳本；產品仍依賴未完成BH-0004 graph，連同套件測試、0199材料及其他對話Site變更保留工作區。證據對應當時工作區，非乾淨checkout驗證。0199已取得compiler374PASS、binding24PASS、browser36PASS；新增policy輸出5FAIL，Wasm舊新版本均3PASS/1FAIL（sourceMappings精確比對），批次尚未收尾。下一步修正policy殘留並完成0199帳本核對；其餘4unresolved／10blocked、0195清理、hosts/maps/gates/benchmarks/Site與0038身分暫停維持，目標active；未推送。[提交核對](evidence/0198-commit-validation.json)；[前次交接](progress-history-0198-commit.md)。
+- 0246：新隔離Next加入request-local PostCSS adapter；143tests、20項最終複驗、3e2e及build／types／lint PASS。修正proxy身分與lastPlugin；資源刪改計數／自動接線仍未完成。[證據](evidence/0246-final-checks.json)；[批次](batches/0246-postcss-request-adapter.md)；[前次](progress-history-0246-postcss-request-adapter.md)。
 
 - 0171–0172 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
 

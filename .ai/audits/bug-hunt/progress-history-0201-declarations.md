@@ -1,0 +1,5 @@
+# 0200 checkpoint preserved before 0201
+
+- 0200：預設collection保留graph，5項policy殘留已修復；19新控制、compiler403、binding25、Rust133及交付browser36＋原生對照36PASS。首次字型import回歸已以Rust宿主匯入所有權修正，既有測試不變。lint/types/build/clippy/fmt/codegen/parity與隔離Site通過；API兩gate仍為0194同一失敗，Wasm既有1FAIL。raw20qualified／39external、全hosts/maps/recovery/gates/benchmarks/Site仍未完成；另保留已重現的發布型別缺檔候選待查。60historical/56fixed/4unresolved、10blocked、0038身分暫停維持；目標active，未提交。[證據](evidence/0200-final-checks.json)；[批次](batches/0200-default-collection-graphs.md)；[前次交接](progress-history-0200-collection.md)。
+
+| PKG-binding | `packages/binding` | 高 | 已檢查 | 0006: native/Wasm load/errors/version/cache/disposal; 32 TS tests; Darwin binary ABI smoke  0103: optional HTML attribute source mapping; native/Wasm and focused/full checks PASS;| Release installation; exhaustive host environments | [0006](batches/0006-binding-contracts.md)  [0103](batches/0103-vue-attribute-mapping.md)  0200：25testsPASS；發布型別缺檔候選待驗完整建置。[證據](evidence/0200-published-types-probe.json) |

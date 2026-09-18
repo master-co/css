@@ -1,0 +1,122 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-graph-directive-metadata.test.ts (15 tests | 14 failed) 174ms
+   × BH-0004 graph metadata preserves child policies: plain external=false 8ms
+   × BH-0004 graph metadata preserves child policies:  layer external=false 2ms
+   × BH-0004 graph metadata preserves child policies:  layer(scope) external=false 2ms
+   × BH-0004 graph metadata preserves child policies:  supports(display:grid) external=false 2ms
+   × BH-0004 graph metadata preserves child policies:  screen external=false 2ms
+   × BH-0004 graph metadata preserves child policies:  layer(scope) supports(display:grid) screen external=false 2ms
+   × BH-0004 graph metadata preserves child policies: plain external=true 2ms
+   × BH-0004 graph metadata preserves child policies:  layer external=true 3ms
+   × BH-0004 graph metadata preserves child policies:  layer(scope) external=true 2ms
+   × BH-0004 graph metadata preserves child policies:  supports(display:grid) external=true 2ms
+   × BH-0004 graph metadata preserves child policies:  screen external=true 1ms
+   × BH-0004 graph metadata preserves child policies:  layer(scope) supports(display:grid) screen external=true 1ms
+   × BH-0004 metadata discovery does not compile native or managed CSS or load references 2ms
+   × BH-0004 registration scans the imported stylesheet source directory 143ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 14 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies: plain external=false
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies: plain external=true
+AssertionError: expected [ 'root/*.html', 'views/*.html' ] to deeply equal [ Array(2) ]
+
+- Expected
++ Received
+
+  [
+    "root/*.html",
+-   "styles/views/*.html",
++   "views/*.html",
+  ]
+
+ ❯ tests/bug-hunt-graph-directive-metadata.test.ts:27:46
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer external=false
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer(scope) external=false
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  supports(display:grid) external=false
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  screen external=false
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer(scope) supports(display:grid) screen external=false
+AssertionError: expected [ 'root/*.html' ] to deeply equal [ Array(2) ]
+
+- Expected
++ Received
+
+  [
+    "root/*.html",
+-   "styles/views/*.html",
+  ]
+
+ ❯ tests/bug-hunt-graph-directive-metadata.test.ts:27:46
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer external=true
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer(scope) external=true
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  supports(display:grid) external=true
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  screen external=true
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 graph metadata preserves child policies:  layer(scope) supports(display:grid) screen external=true
+Unknown Error: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 metadata discovery does not compile native or managed CSS or load references
+AssertionError: expected [ 'entry/*.html' ] to deeply equal [ 'child/*.html', 'entry/*.html' ]
+
+- Expected
++ Received
+
+  [
+-   "child/*.html",
+    "entry/*.html",
+  ]
+
+ ❯ tests/bug-hunt-graph-directive-metadata.test.ts:44:51
+     42|     fixture.file('child.css', "@utilities{broken{@compose unregistered…
+     43|     const result = collectStylesheetDirectivesFromCSSGraph(entry, unde…
+     44|     expect([...result.directives.include].sort()).toEqual(['child/*.ht…
+       |                                                   ^
+     45|     expect(result.dependencies).toHaveLength(2)
+     46|   } finally { fixture.dispose() }
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/14]⎯
+
+ FAIL  tests/bug-hunt-graph-directive-metadata.test.ts > BH-0004 registration scans the imported stylesheet source directory
+TypeError: scanner.destroy is not a function
+ ❯ tests/bug-hunt-graph-directive-metadata.test.ts:73:23
+     71|     expect(css).toContain('.block{display:block}')
+     72|     expect(css).not.toContain('.hidden{display:none}')
+     73|   } finally { scanner.destroy(); fixture.dispose() }
+       |                       ^
+     74| })
+     75|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/14]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  14 failed | 1 passed (15)
+   Start at  22:01:27
+   Duration  576ms (transform 40%, tests 35%, import 25%)
+

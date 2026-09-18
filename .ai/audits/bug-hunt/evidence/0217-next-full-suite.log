@@ -1,0 +1,599 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next
+
+ ❯ tests/next-config.test.ts (14 tests | 3 failed) 384ms
+   ❯ withMasterCSS (14)
+     × adds a CSS manifest webpack loader 6ms
+     × adds a CSS manifest Turbopack loader 3ms
+     × adds CSS manifest loaders without runtime aliases or the adapter when mode is null 2ms
+ ❯ tests/static.test.ts (9 tests | 4 failed) 54029ms
+   ❯ Next static mode (9)
+     × writes extracted CSS from source files including imported modules 5268ms
+     × replaces @master/css imports for dev CSS chunks and preserves ordinary CSS 8977ms
+     × prunes dev CSS chunks that import @master/css 8956ms
+     × updates static CSS when Turbopack reruns the CSS loader 5292ms
+ ❯ tests/playground.test.ts (1 test | 1 failed) 368ms
+   ❯ playground (1)
+     × imports the global CSS entry as a Next config module 367ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest webpack loader
+AssertionError: expected [ { …(2) }, { …(2) }, { …(2) } ] to deeply equal ArrayContaining{…}
+
+- Expected
++ Received
+
+- ArrayContaining [
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++ [
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-manifest\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
+          "options": {
+            "external": true,
+            "module": true,
+            "virtual": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "resourceQuery": /master-css-manifest/,
++   {
++     "test": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "external": true,
+-           "module": true,
++           "emittedGlobals": true,
+          },
+        },
+      ],
+    },
+-   ObjectContaining {
+-     "test": Any<RegExp>,
++   {
++     "resourceQuery": /master-css-manifest/,
+      "use": [
+-       ObjectContaining {
++       {
++         "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
+          "options": {
+-           "emittedGlobals": true,
++           "external": true,
++           "module": true,
+          },
+        },
+      ],
+-   },
+-   ObjectContaining {
+-     "resourceQuery": {
+-       "not": [
+-         /master-css-manifest/,
+-       ],
+-     },
+-     "test": /\.(css|scss|sass)$/,
+    },
+  ]
+
+ ❯ tests/next-config.test.ts:121:41
+    119|     const resolvedConfig = nextConfig.webpack(webpackConfig as any, {}…
+    120|
+    121|     expect(resolvedConfig.module.rules).toEqual(expect.arrayContaining…
+       |                                         ^
+    122|       expect.objectContaining({
+    123|         test: expect.any(RegExp),
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds a CSS manifest Turbopack loader
+AssertionError: expected { '*.svg': { type: 'asset' }, …(4) } to deeply equal { '*': ArrayContaining{…}, …(4) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -28,49 +42,118 @@
+            },
+          ],
+        },
+        "loaders": [
+          {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
+            "options": {
+              "external": true,
+              "module": true,
+            },
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "as": "*.css",
+        "condition": {
+-         "path": Any<RegExp>,
++         "all": [
++           {
++             "path": /\.(css|scss|sass)$/,
++           },
++           {
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
+              },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
+        "loaders": [
+          {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
+            "options": {
+-             "emittedGlobals": true,
++             "sassOptions": {},
+            },
+          },
+        ],
+-       "type": "ecmascript",
++       "type": "css",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+-             "path": /\.(css|scss|sass)$/,
++             "path": /\.(scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
+            },
+            {
+              "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:181:40
+    179|     })
+    180|
+    181|     expect(nextConfig.turbopack.rules).toEqual({
+       |                                        ^
+    182|       '*': expect.arrayContaining([
+    183|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/next-config.test.ts > withMasterCSS > adds CSS manifest loaders without runtime aliases or the adapter when mode is null
+AssertionError: expected { '*.js': [ { …(3) } ], …(3) } to deeply equal { '*': ArrayContaining{…}, …(3) }
+
+- Expected
++ Received
+
+@@ -15,10 +15,24 @@
+          },
+        ],
+        "type": "ecmascript",
+      },
+      {
++       "condition": {
++         "path": /(?:^|[/\\])node_modules[/\\]\.master-css[/\\]master-css-emitted-globals\.js$/,
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "emittedGlobals": true,
++           },
++         },
++       ],
++       "type": "ecmascript",
++     },
++     {
+        "as": "*.js",
+        "condition": {
+          "all": [
+            {
+              "path": /\.css$/,
+@@ -26,30 +40,120 @@
+            {
+              "query": /master-css-manifest/,
+            },
+          ],
+        },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/css-manifest-loader.js",
++           "options": {
++             "external": true,
++             "module": true,
++           },
++         },
++       ],
+        "type": "ecmascript",
+      },
+      {
+        "as": "*.css",
+        "condition": {
+          "all": [
+            {
+              "path": /\.(css|scss|sass)$/,
+            },
+            {
+-             "content": Any<RegExp>,
++             "not": {
++               "path": /\.module\.(css|scss|sass)$/,
++             },
++           },
++           {
++             "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css",
++     },
++     {
++       "as": "*.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.(scss|sass)$/,
+            },
+            {
+              "not": {
++               "path": /\.module\.(scss|sass)$/,
++             },
++           },
++           {
++             "not": {
++               "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++             },
++           },
++           {
++             "not": {
+                "query": /master-css-manifest/,
+              },
+            },
+          ],
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
+          },
++       ],
+        "type": "css",
++     },
++     {
++       "as": "*.module.css",
++       "condition": {
++         "all": [
++           {
++             "path": /\.module\.(css|scss|sass)$/,
++           },
++           {
++             "any": [
++               {
++                 "content": /(?:@master\s+entry\s*;|@import\s+(?:url\(\s*)?(['"])@master\/css\1\s*\)?[^;]*;)|@(compose|at)\b/,
++               },
++               {
++                 "path": /\.(scss|sass)$/,
++               },
++             ],
++           },
++           {
++             "not": {
++               "query": /master-css-manifest/,
++             },
++           },
++         ],
++       },
++       "loaders": [
++         {
++           "loader": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/src/stylesheet-loader.js",
++           "options": {
++             "sassOptions": {},
++           },
++         },
++       ],
++       "type": "css-module",
+      },
+    ],
+    "*.cjs": [
+      {
+        "condition": {
+
+ ❯ tests/next-config.test.ts:432:44
+    430|     expect(resolvedConfig.reactStrictMode).toBe(true)
+    431|     expect(resolvedConfig.adapterPath).toBeUndefined()
+    432|     expect(resolvedConfig.turbopack.rules).toEqual({
+       |                                            ^
+    433|       '*': expect.arrayContaining([
+    434|         expect.objectContaining({
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/playground.test.ts > playground > imports the global CSS entry as a Next config module
+Error: Command failed: pnpm --dir /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next/playground build
+$ pnpm --dir .. build && pnpm exec next build
+$ tsdown --config ../../shared/tsdown-package.config.ts
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × Command "next" not found
+
+[ELIFECYCLE] Command failed with exit code 1.
+
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/shared/tsdown-package.config.ts 
+ℹ entry: src/adapter.ts, src/build-state.ts, src/css-manifest-import-loader.ts, src/css-manifest-loader.ts, src/empty.ts, src/index.ts, src/options.ts, src/prepare-stylesheet.ts, src/sass-source-context.ts, src/static-css-loader.ts, src/static-loader.ts, src/static-publication.ts, src/static.ts, src/stylesheet-loader.ts, src/stylesheet-source-map.ts, src/webpack-stylesheets.ts, src/webpack-virtual-modules.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 46 files
+ℹ dist/index.js                                 20.75 kB │ gzip:  4.17 kB
+ℹ dist/adapter.js                                8.95 kB │ gzip:  2.83 kB
+ℹ dist/static.js                                 8.35 kB │ gzip:  2.32 kB
+ℹ dist/stylesheet-loader.js                      6.06 kB │ gzip:  1.72 kB
+ℹ dist/css-manifest-loader.js                    4.63 kB │ gzip:  1.33 kB
+ℹ dist/css-manifest-import-loader.js             4.38 kB │ gzip:  1.50 kB
+ℹ dist/sass-source-context.js                    3.55 kB │ gzip:  1.42 kB
+ℹ dist/static-publication.js                     3.06 kB │ gzip:  1.18 kB
+ℹ dist/build-state.js                            2.66 kB │ gzip:  0.88 kB
+ℹ dist/webpack-stylesheets.js                    2.65 kB │ gzip:  1.00 kB
+ℹ dist/prepare-stylesheet.js                     1.50 kB │ gzip:  0.65 kB
+ℹ dist/static-css-loader.js                      0.81 kB │ gzip:  0.42 kB
+ℹ dist/options.js                                0.73 kB │ gzip:  0.34 kB
+ℹ dist/static-loader.js                          0.67 kB │ gzip:  0.37 kB
+ℹ dist/stylesheet-source-map.js                  0.65 kB │ gzip:  0.39 kB
+ℹ dist/webpack-virtual-modules.js                0.53 kB │ gzip:  0.30 kB
+ℹ dist/empty.js                                  0.01 kB │ gzip:  0.03 kB
+ℹ dist/preset/src/default-manifest.js          117.06 kB │ gzip: 12.81 kB
+ℹ dist/internal/src/node.js                      3.77 kB │ gzip:  1.05 kB
+ℹ dist/internal/src/manifest-facade.js           2.27 kB │ gzip:  0.82 kB
+ℹ dist/internal/src/manifest-loader.js           1.21 kB │ gzip:  0.49 kB
+ℹ dist/internal/src/emitted-globals-module.js    0.75 kB │ gzip:  0.33 kB
+ℹ dist/internal/src/manifest-module.js           0.73 kB │ gzip:  0.35 kB
+ℹ dist/internal/src/project.js                   0.64 kB │ gzip:  0.33 kB
+ℹ dist/internal/src/style-module.js              0.14 kB │ gzip:  0.14 kB
+ℹ dist/static.d.ts                               2.32 kB │ gzip:  0.71 kB
+ℹ dist/options.d.ts                              1.67 kB │ gzip:  0.60 kB
+ℹ dist/adapter.d.ts                              1.48 kB │ gzip:  0.58 kB
+ℹ dist/build-state.d.ts                          0.85 kB │ gzip:  0.33 kB
+ℹ dist/index.d.ts                                0.75 kB │ gzip:  0.30 kB
+ℹ dist/stylesheet-loader.d.ts                    0.59 kB │ gzip:  0.31 kB
+ℹ dist/css-manifest-import-loader.d.ts           0.55 kB │ gzip:  0.30 kB
+ℹ dist/css-manifest-loader.d.ts                  0.54 kB │ gzip:  0.29 kB
+ℹ dist/static-publication.d.ts                   0.52 kB │ gzip:  0.30 kB
+ℹ dist/prepare-stylesheet.d.ts                   0.48 kB │ gzip:  0.28 kB
+ℹ dist/static-css-loader.d.ts                    0.44 kB │ gzip:  0.27 kB
+ℹ dist/sass-source-context.d.ts                  0.42 kB │ gzip:  0.23 kB
+ℹ dist/static-loader.d.ts                        0.39 kB │ gzip:  0.25 kB
+ℹ dist/webpack-virtual-modules.d.ts              0.30 kB │ gzip:  0.20 kB
+ℹ dist/stylesheet-source-map.d.ts                0.27 kB │ gzip:  0.19 kB
+ℹ dist/webpack-stylesheets.d.ts                  0.21 kB │ gzip:  0.16 kB
+ℹ dist/empty.d.ts                                0.01 kB │ gzip:  0.03 kB
+ℹ 42 files, total: 208.28 kB
+✔ Build complete in 145ms
+
+$ pnpm --dir .. build && pnpm exec next build
+$ tsdown --config ../../shared/tsdown-package.config.ts
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+Error: ERR_PNPM_RECURSIVE_EXEC_FIRST_FAIL
+
+  × Command "next" not found
+
+[ELIFECYCLE] Command failed with exit code 1.
+
+ ❯ buildPlayground tests/playground.test.ts:30:11
+     28|   } catch (error) {
+     29|     const buildError = error as Error & { stdout?: string | Buffer, st…
+     30|     throw new Error([
+       |           ^
+     31|       buildError.message,
+     32|       buildError.stdout?.toString(),
+ ❯ tests/playground.test.ts:72:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/static.test.ts > Next static mode > writes extracted CSS from source files including imported modules
+AssertionError: expected '@import "./next-style-f460672b6e94dc0…' to contain '@layer base'
+
+- Expected
++ Received
+
+- @layer base
++ @import "./next-style-f460672b6e94dc072b21fa928f97ef33c42b5233a83d12e28fd3c7211304a500-6494cc631f9849a026f4d9de66746ff5195000b8a6bae2b474519a33fd28e415.css";
++ @layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}}@layer utilities{.block{display:block}.m\:0{margin:0}}
+
+ ❯ tests/static.test.ts:98:17
+     96|
+     97|     const css = readFileSync(outputPath, 'utf-8')
+     98|     expect(css).toContain('@layer base')
+       |                 ^
+     99|     expect(css).toContain('text-rendering: geometricprecision')
+    100|     expect(css).toContain('display:block')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/static.test.ts > Next static mode > replaces @master/css imports for dev CSS chunks and preserves ordinary CSS
+AssertionError: expected '@import "./next-style-669a494daeca1c1…' to contain '.main'
+
+- Expected
++ Received
+
+- .main
++ @import "./next-style-669a494daeca1c10a3b8fe2b6adf6741e26953a8cd90c5e908217de5250a97b9-f0331c086ab069f9120a7ac43e6ef04368a50d6cf4744be88830b0200287e989.css";
++ @layer theme{:root{--color-primary:red;--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}}@layer utilities{.block{display:block}}
+
+ ❯ tests/static.test.ts:140:47
+    138|     expect(replaced).toBe('@import "../.master/next.css";')
+    139|     expect(replaced).not.toContain('.main')
+    140|     expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
+       |                                               ^
+    141|     expect(readFileSync(outputPath, 'utf-8')).toContain('display:block…
+    142|     expect(readFileSync(outputPath, 'utf-8')).toContain('color: var(--…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/static.test.ts > Next static mode > prunes dev CSS chunks that import @master/css
+AssertionError: expected '@import "./next-style-4c2556fe0464b92…' to contain '.main'
+
+- Expected
++ Received
+
+- .main
++ @import "./next-style-4c2556fe0464b92c4837dc1063bcfff9e2668125096d94fca042070d941d2ab3-7b8bb4d5671c4781d9bee606e6a129e8773d53eea907cfea93c38c2d8c4af30c.css";
++ @layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}}@layer utilities{.block{display:block}}
+
+ ❯ tests/static.test.ts:175:47
+    173|     expect(replaced).toBe('@import "../.master/next.css";')
+    174|     expect(readFileSync(outputPath, 'utf-8')).toContain('display:block…
+    175|     expect(readFileSync(outputPath, 'utf-8')).toContain('.main')
+       |                                               ^
+    176|     expect(replaced).not.toContain('.unused')
+    177|     expect(replaced).toContain('../.master/next.css')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/static.test.ts > Next static mode > updates static CSS when Turbopack reruns the CSS loader
+AssertionError: expected '@import "./next-style-a95f77b55c0b052…' to contain 'color: red'
+
+- Expected
++ Received
+
+- color: red
++ @import "./next-style-a95f77b55c0b052558562de301a0f5c063c3695fd39c5e4e436e2c38a517c719-ebe1761c6fb10a14493aa802653d1c44374df8a93ec6fbc71f3288f7f9ed90ca.css";
++ @layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}}
+
+ ❯ tests/static.test.ts:324:47
+    322|     await scanStaticFixtureModule(statePath, pagePath)
+    323|
+    324|     expect(readFileSync(outputPath, 'utf-8')).toContain('color: red')
+       |                                               ^
+    325|
+    326|     writeFileSync(globalsPath, `
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  3 failed | 16 passed (19)
+      Tests  8 failed | 114 passed (122)
+   Start at  03:04:06
+   Duration  91.97s (tests 98%, import 2%, transform 1%)
+

@@ -1,0 +1,311 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 81ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1848ms
+  Running TypeScript ...
+  Finished TypeScript in 11ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 48ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@import \"./nested/imported.module.css\";@master entry;@preserve native;.direct{width:4px;height:4px;background-image:url(\"./assets/red.svg?direct=1#pixel\")}.composed{@compose p:2rem;}"
+    },
+    {
+      "file": "app/globals.css",
+      "text": "@master entry;"
+    },
+    {
+      "file": "app/nested/child.css",
+      "text": ".nested{width:4px;height:4px;background-image:url(\"./assets/blue.svg?nested=1#pixel\")}"
+    },
+    {
+      "file": "app/nested/imported.module.css",
+      "text": ".imported{margin-left:13px;width:4px;height:4px;background-image:url(\"./assets/blue.svg\")}"
+    }
+  ],
+  "pureLoaderMap": false,
+  "moduleFeature": "imports",
+  "moduleKind": "entry",
+  "sourceMaps": false,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": false,
+  "lightningcss": false,
+  "bundler": "turbopack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.3pwtvbarjo92x.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "module-export",
+      "classes": "card-module-css-module__Wl8QHa__direct card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.3pwtvbarjo92x.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "module-export",
+      "classes": "card-module-css-module__Wl8QHa__direct card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62366/_next/static/media/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.3pwtvbarjo92x.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "module-export",
+      "classes": "card-module-css-module__Wl8QHa__direct card_direct__vAL_y",
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "e89668dc6c180437dd98dcc555d06c9aa4f9f3a5dbab6efa2f5665a7fab4ce8b"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "6cbf4e3c2ef1fb9b7b81d300390718936d75c15ae7e55d4f472326babac4ba18"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "1c592587c473dab5763218d50213a15c41db938217b9d00edd9f2f3aca6349e1"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "f513fd7cc64fe00fcc83491c4bec6530a06eff590e172b42797ede0c6411c3db"
+    },
+    {
+      "file": "_next/static/3IbdykcXgJfqrHX9k-7tb/_buildManifest.js",
+      "sha256": "9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"
+    },
+    {
+      "file": "_next/static/3IbdykcXgJfqrHX9k-7tb/_clientMiddlewareManifest.js",
+      "sha256": "5483e3295dc35dfe29ea932efc85341c916f10ff78ff5b0e965e003710893a4a"
+    },
+    {
+      "file": "_next/static/3IbdykcXgJfqrHX9k-7tb/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_next/static/chunks/09xd9-7xlonox.js",
+      "sha256": "83d9c1343c7034f4f08c254bf1976ff9723be20aef7df0135cb1b5d2dd42feda"
+    },
+    {
+      "file": "_next/static/chunks/0cz1d0mv5g_q7.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/13nu9qjbe2--a.js",
+      "sha256": "c042a274794dc3eb3f4bb459ec671d87898667b86ed671b27fd7cb028a34466d"
+    },
+    {
+      "file": "_next/static/chunks/1g5p3wzuxdw80.js",
+      "sha256": "90c593f3b45f2af722a2e9211f6b2589c2fc1308d9360442d59620a67af00d4e"
+    },
+    {
+      "file": "_next/static/chunks/1mi_l79v1lum8.js",
+      "sha256": "dababa03f8a089b4d2682a2d669701e998cabdad4ccc08c12506cef8bebe7571"
+    },
+    {
+      "file": "_next/static/chunks/3oy443javf8xs.css",
+      "sha256": "75a11da44c802486bc6f65640aa48a730f0f684c5c07a42ba3cd1735eb3fb070"
+    },
+    {
+      "file": "_next/static/chunks/3xbee4xl1b99b.css",
+      "sha256": "53a79f6b4c942bfdb66cbd7b0cc8da83afb16587f385ca4ab967cd821ffa3f29"
+    },
+    {
+      "file": "_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "sha256": "90844ff36de6c87bed5f2ab6f3b11ee77179506374001d41fca8073623e7d0ef"
+    },
+    {
+      "file": "_next/static/media/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.3pwtvbarjo92x.svg",
+      "sha256": "9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c"
+    },
+    {
+      "file": "_next/static/media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "f730300ae1ee9448ca19576cf72cef49e3cfb8f45cef735c246a0af7ed2a2b20"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "4d7940b0702ea1a7d941f84f8e8f5d0a47395a01985564ae89d67d919fdae14b"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "dd763ee76488efe7055fe196bd71581d4d5286873bfd067502a4128c3d2f41c2"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "e89668dc6c180437dd98dcc555d06c9aa4f9f3a5dbab6efa2f5665a7fab4ce8b"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "f730300ae1ee9448ca19576cf72cef49e3cfb8f45cef735c246a0af7ed2a2b20"
+    },
+    {
+      "file": "index.html",
+      "sha256": "963780b18a8b7d4a54070d004455190dc2d20354e24c6b87c9fd8e57ddec3033"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "1c592587c473dab5763218d50213a15c41db938217b9d00edd9f2f3aca6349e1"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/3oy443javf8xs.css",
+      "text": "\n\n"
+    },
+    {
+      "file": "_next/static/chunks/3xbee4xl1b99b.css",
+      "text": ".imported{background-image:url(../media/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.3pwtvbarjo92x.svg);width:4px;height:4px;margin-left:13px}\n.card_direct__vAL_y{background-image:url(../media/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.2nma54lwo8nhx.svg);width:4px;height:4px}.card_composed__2_5B2{padding:2rem}\n.card-module-css-module__Wl8QHa__direct{}.card-module-css-module__Wl8QHa__composed{}\n"
+    }
+  ]
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Some actual browser delivery checks failed
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:190:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

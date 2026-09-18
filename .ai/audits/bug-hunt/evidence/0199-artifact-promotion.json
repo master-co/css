@@ -1,0 +1,25 @@
+{
+  "nativeBefore": "8c0325f241004e771f657f8298d43f7982408978ae5928895670311fe1d3d6aa",
+  "nativeAfter": "76bb646615edb83159c2df6632c3afbdcaafed294d06a2da788ef56433457a0d",
+  "wasmBefore": {
+    "mastercss_binding_wasm_compiler_bg.wasm.d.ts": "7ac5d45ba5f5bb78984bd40c499ac572c04684b37f32338adcb02d2e606fae03",
+    "mastercss_binding_wasm_compiler.js": "e3944d2754b80cbb0e99036a653f28c26987256fc2b7f946e65b020d7543e03a",
+    "mastercss_binding_wasm_compiler.d.ts": "0c4c8bf109c01f6ccf64e6802f9a8dfebf6b4a33909842b56bfba148468f6f83",
+    "mastercss_binding_wasm_compiler_bg.wasm": "d4bbf8d25d00ec4889e0acdfe630e9ce7f9095cf55f4782416803802db2fcf8b"
+  },
+  "wasmAfter": {
+    "mastercss_binding_wasm_compiler_bg.wasm.d.ts": "d93330784af781d2aa87ba26f59fa3c7c113b28f0e22c89f241048d5044c0464",
+    "mastercss_binding_wasm_compiler.js": "b1c1f7336268837125d88cb54ec3eca6eff33b4e5bf8a227d48bc8803a6ff1b8",
+    "mastercss_binding_wasm_compiler.d.ts": "81239f21ff715ff6e3acbaccb3309c26e649234ec300f090642ce244bc7e1c3f",
+    "mastercss_binding_wasm_compiler_bg.wasm": "94bf6a303ccb4926c9dddc4641b495e3024d150e411ab4ba077bfbf448fedfe7"
+  },
+  "operation": "Validated macOS renamex_np RENAME_SWAP(2) exchanges complete Wasm directory; os.replace atomically replaces completed native file. No in-place shared artifact writes.",
+  "sdkHeader": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/stdio.h",
+  "previous405ArtifactsMatchedBeforePromotion": true,
+  "backups": {
+    "wasm": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-0199-bindings-zkt_24qn/wasm-publish",
+    "native": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-0199-bindings-zkt_24qn/native-before.node"
+  },
+  "foreignProcessesStopped": false,
+  "scope": "Fresh-process consumers validated; existing loaded host modules are not restarted or claimed updated. Site needs fresh-host revalidation."
+}

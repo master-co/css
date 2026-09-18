@@ -1,0 +1,18 @@
+[
+  {
+    "check": "tests",
+    "exit": 0
+  },
+  {
+    "check": "e2e",
+    "exit": 0
+  },
+  {
+    "check": "types",
+    "exit": 0
+  },
+  {
+    "check": "lint",
+    "exit": 0
+  }
+]

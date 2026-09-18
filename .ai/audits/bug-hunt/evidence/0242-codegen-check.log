@@ -1,0 +1,4 @@
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.58s
+     Running `.ai/audits/bug-hunt/tmp/0240-rust-target/debug/xtask codegen --check`

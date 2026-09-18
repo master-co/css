@@ -1,0 +1,55 @@
+{
+  "scenario": "package-conditions-composes",
+  "bundler": "turbopack",
+  "pure": false,
+  "client": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"@audit/css-edge\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "package": true,
+    "conditions": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 79ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1640ms\n  Running TypeScript ...\n  Finished TypeScript in 7ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 51ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "classes": "card-module-css-module__SlSfvG__direct card_direct__vAL_y browser_shared__tRKdg",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "browser",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "classes": "card-module-css-module__SlSfvG__direct card_direct__vAL_y browser_shared__tRKdg",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "browser",
+      "pass": false
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/0pegu30yhny0e.css",
+      "text": ".browser_shared__tRKdg{--origin:browser;border-top:7px solid red}\n.card_direct__vAL_y{color:#123456}\n.card-module-css-module__SlSfvG__direct{}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ]
+}

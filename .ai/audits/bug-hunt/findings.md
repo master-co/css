@@ -4,7 +4,7 @@
 
 - 使用者再次授權提交已完成部分：44個已完成Benchmark程式／測試檔已提交`cee5d7aa0`；本次同步0173–0178帳本、證據及重現。44檔符合0178來源雜湊；隔離Benchmark目錄排除0179修改後，98tests、types與report-smoke通過（依賴仍連至工作區，並非完整乾淨checkout驗證；套件無lint script）。0179的5個既有檔修改與3個新helper／test、未收尾材料，以及BH-0004產品／套件測試與其他對話Site變更均保留工作區。47historical／44fixed／3unresolved、10blocked、4root gates／4原候選、native shutdown／WebKit namespace限制及0038身分暫停維持；目標active，未推送。下一步完成0179產物位元組／階段觀察與build-path consumer核對，再同步帳本；歷史HEAD及未提交描述保留當時狀態。[提交核對](evidence/0178-commit-validation.json)。
 
-- 使用者授權提交已完成部分：本次納入0198已收尾帳本、原始證據與檔案project重現腳本；產品仍依賴未完成BH-0004 graph，連同套件測試、0199材料及其他對話Site變更保留工作區。證據對應當時工作區，非乾淨checkout驗證。0199已取得compiler374PASS、binding24PASS、browser36PASS；新增policy輸出5FAIL，Wasm舊新版本均3PASS/1FAIL（sourceMappings精確比對），批次尚未收尾。下一步修正policy殘留並完成0199帳本核對；其餘4unresolved／10blocked、0195清理、hosts/maps/gates/benchmarks/Site與0038身分暫停維持，目標active；未推送。[提交核對](evidence/0198-commit-validation.json)；[前次交接](progress-history-0198-commit.md)。
+- 0246：新隔離Next加入request-local PostCSS adapter；143tests、20項最終複驗、3e2e及build／types／lint PASS。修正proxy身分與lastPlugin；資源刪改計數／自動接線仍未完成。[證據](evidence/0246-final-checks.json)；[批次](batches/0246-postcss-request-adapter.md)；[前次](progress-history-0246-postcss-request-adapter.md)。
 
 
 - 0169–0170 commit history is preserved verbatim in [archived checkpoints](progress-history-0183-output-maps.md).
@@ -40,7 +40,7 @@
 | BH-0001 | P2 | 已修復 | CSS 字串／註解誤作動畫定義或宣告，遺漏／多產 keyframes | engine/render/compiler；0109語法位置、數值/簡寫欄位與變數上下文修復，87value/42variable browser及runtime273通過；[0109](batches/0109-animation-value-context.md)，[原始0002](batches/0002-stylesheet-resources.md) |
 | BH-0002 | P3 | 已修復 | raw stylesheet var() 空白、註解、跳脫與名稱邊界漏掉／誤收依賴 | engine/render；0110共用CSS tokens，25cases/75browser、native/Wasm及runtime273通過；[0110](batches/0110-variable-syntax.md)；[原始0002](batches/0002-stylesheet-resources.md) |
 | BH-0003 | P2 | 已修復 | static token 初始化與最後class刪除後遺失動態／transitive依賴 | engine/compiler；0111共用依賴圖保留與釋放，12Rust groups/132compiler/279runtime及72browser通過；[0111](batches/0111-static-retention.md)；[原始0003](batches/0003-static-resources.md) |
-| BH-0004 | P1 | 已確認／部分修正 | CSS import 展開丟失檔案邊界，條件、cascade及managed定義失真 | 0198 Rust檔案project／native CLI保留定義與compose，16案例／96browserPASS；raw native/Wasm仍20FAIL，external舊入口39FAIL、完整交付／hosts仍未完成。[0198](batches/0198-filesystem-qualified-project.md)；[完整歷史](progress-history-0198-filesystem.md)。 |
+| BH-0004 | P1 | 已確認／部分修正 | CSS import 展開丟失檔案邊界，條件、cascade及managed定義失真 | 0242明確source-preservation選項，Rust124／compiler424及actual4build／8browser通過，預設格式回歸解除。仍為owned候選；global closure／raw20qualified/39external／完整host待續。[0242](batches/0242-source-preservation-api.md)。 |
 | BH-0005 | P2 | 已修復 | numeric HTML references 未 decode，SSR class 與瀏覽器不同 | server；[0007](batches/0007-server-render.md) |
 | BH-0006 | P1 | 已修復 | encoded class 經 SSR style 注入變成可執行 script | server；[0007](batches/0007-server-render.md#bh-0006--p1-已確認html-encoded-class-可逃出-style-並執行腳本) |
 | BH-0007 | P2 | 已修復 | HTML 無 class 屬性時完全遺漏 static theme/keyframe 初始資源 | server；[0007](batches/0007-server-render.md) |
@@ -99,7 +99,7 @@
 | BH-0050 | P2 | 已修復 | Manifest／emittedGlobals分別HMR時復原另一個舊輸入，樣式倒退或重複全域變數 | 分別保留最新接受值；修前4unit/12browserFAIL，修復6新控制/168VitebrowserPASS；[0183](batches/0183-reference-host-recovery.md) / [證據](evidence/0183-runtime-inputs-finding.json) |
 | BH-0051 | P1 | 已確認 | Next --webpack 頂層CSS rule移除原生CSS loaders，CSS被當JS解析 | 管線部分修正；default及LightningCSS production各9browser通過；偶發timeout及完整host邊界仍待驗；[checkpoint](evidence/0183-sass-preparation-final-checks.json) |
 | BH-0052 | P1 | 已修復 | Next/Webpack 三個 virtual URI 繞過 alias，無法編譯 runtime | 精確beforeResolve對映；9控制、實際compiler與3瀏覽器runtime HMR通過；[證據](evidence/0183-next-virtual-findings.json) |
-| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | raw Sass、partial reference／缺檔恢復及additionalData origins已驗；direct output／expanded origins已驗；delivery maps、native細節與完整options/host待驗；[檢查](evidence/0183-output-maps-final-checks.json)  0187新增graph每檔原始outputMappings；bundle／inline／host source maps仍未完成。 |
+| BH-0053 | P1 | 部分修正 | Next/Turbopack 在 Sass 預處理前分類造成編譯失敗 | 0246 request-local adapter機制通過native loader與並行測試；尚未自動接入compiler資源，刪改context／Modules所有權與0243 maps／cache反例保持未完成。[0246](batches/0246-postcss-request-adapter.md)；[此前](progress-history-0246-postcss-request-adapter.md) |
 | BH-0054 | P1 | 已修正 | Next/Turbopack 強制一般 CSS，CSS Module class 匯出為空 | css-module型別及*.module.css後綴均須保留；工作區與隔離版本dev/build三瀏覽器通過；[證據](evidence/0183-next-raw-turbo-module-discovery.json) |
 | BH-0055 | P1 | 已修復 | Next 入口及collection展開時丟失reference，引用自訂class無法編譯 | 原始reference metadata保留；dev/HMR、Turbopack/Webpack production通過；[證據](evidence/0183-next-source-offset-findings.json) |
 | BH-0056 | P1 | 已修復 | compileRenderedStylesheet 遺漏lowered compose規則 | renderer改用完整編譯CSS；單元、建置及三瀏覽器通過；[證據](evidence/0183-next-source-offset-findings.json) |
@@ -107,6 +107,7 @@
 | BH-0058 | P2 | 已修復 | Graph compose marker替換誤改作者字串並漏輸出樣式 | 改依lexer實際at-rule位置替換；修前6browserFAIL、修後15PASS；[0187](evidence/0187-marker-finding.json) |
 | BH-0059 | P2 | 已修復 | compiler診斷與MCP預設glob漏.mjs，遺漏CSS／class trace | [0193](batches/0193-inspection-mjs-discovery.md)；來源／stdio驗證；另有BH-0060 |
 | BH-0060 | P2 | 已修復 | 多檔診斷與MCP trace將class／警告錯指其他來源 | 逐檔候選對照Rust分類；15新增測試及22built控制通過；[0194](batches/0194-inspection-source-attribution.md) |
+| BH-0061 | P2 | 已修復 | 發布宣告引用缺失或未公開的型別路徑 | binding/tooling/LSP/MCP/Webpack沿用前批；0208補修compiler4個函式宣告，strictTS6通過，31compiler/30Webpack JS不變。[0208](batches/0208-webpack-entry-ownership.md)。 |
 
 53 historical confirmed findings: 49 fixed, 4 unresolved. BH-0047 pre-render manifest HMR is fixed; four original candidates, one unresolved Vite-host development shutdown native-handle limitation and blocked coverage remain unfinished. See linked batches for status history and evidence.
 

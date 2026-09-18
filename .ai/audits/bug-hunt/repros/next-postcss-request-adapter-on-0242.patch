@@ -1,0 +1,307 @@
+--- /dev/null
++++ b/packages/next/src/postcss-request-plugins.ts
+@@ -0,0 +1,68 @@
++type Callback = (this: unknown, ...args: unknown[]) => unknown
++export type PostCSSPlugin = Record<string, unknown> | Callback
++interface PostCSSResult { lastPlugin?: PostCSSPlugin }
++export interface PostCSSHookContext {
++  result: PostCSSResult
++  phase: 'Once' | 'RootExit' | 'OnceExit' | 'function'
++}
++export type PostCSSResourceHook = (root: unknown, context: PostCSSHookContext) => void | Promise<void>
++
++/** Adapt normalized host plugins without editing its cached processor or plugins. */
++export function createPostCSSRequestPlugins(plugins: readonly PostCSSPlugin[], after: PostCSSResourceHook): PostCSSPlugin[] {
++  const bridge: Record<string, unknown> = { postcssPlugin: 'master-css-resources' }
++  async function finish(root: unknown, result: PostCSSResult, phase: PostCSSHookContext['phase']) {
++    const previous = result.lastPlugin
++    result.lastPlugin = bridge
++    // Keep the resource owner as lastPlugin on failure for native error attribution.
++    // Visitor callbacks receive proxies; resource ownership needs stable AST identity.
++    const node = (root as { proxyOf?: unknown }).proxyOf ?? root
++    await after(node, { result, phase })
++    result.lastPlugin = previous
++  }
++  function wrapHooks(plugin: Record<string, unknown>) {
++    const wrapped = { ...plugin }
++    function wrap(callback: Callback, phase: string) {
++      const invoke = function(this: unknown, node: unknown, helpers: { result: PostCSSResult }) {
++        helpers.result.lastPlugin = plugin
++        return callback.call(phase === 'Once' ? plugin : this, node, helpers)
++      }
++      if (phase !== 'Once' && phase !== 'RootExit' && phase !== 'OnceExit') return invoke
++      return async function(this: unknown, root: unknown, helpers: { result: PostCSSResult }) {
++        await invoke.call(this, root, helpers)
++        await finish(root, helpers.result, phase)
++      }
++    }
++    for (const [phase, visitor] of Object.entries(plugin)) {
++      if (!/^[A-Z]/.test(phase)) continue
++      if (typeof visitor === 'function') wrapped[phase] = wrap(visitor as Callback, phase)
++      else if (visitor && typeof visitor === 'object') {
++        wrapped[phase] = Object.fromEntries(Object.entries(visitor).map(([filter, callback]) => [
++          filter, typeof callback === 'function' ? wrap(callback as Callback, phase) : callback
++        ]))
++      }
++    }
++    return wrapped
++  }
++  const adapted = plugins.map(plugin => {
++    if (typeof plugin === 'function') {
++      return async function(this: unknown, root: unknown, result: PostCSSResult) {
++        result.lastPlugin = plugin
++        await plugin.call(this, root, result)
++        await finish(root, result, 'function')
++      } as Callback
++    }
++    const wrapped = wrapHooks(plugin)
++    if (typeof plugin.prepare === 'function') {
++      const prepare = plugin.prepare as Callback
++      wrapped.prepare = (result: PostCSSResult) => {
++        const prepared = { ...plugin, ...prepare.call(plugin, result) as object }
++        return wrapHooks(prepared)
++      }
++    }
++    return wrapped
++  })
++  for (const phase of ['Once', 'RootExit', 'OnceExit'] as const) {
++    bridge[phase] = (root: unknown, helpers: { result: PostCSSResult }) => finish(root, helpers.result, phase)
++  }
++  return [...adapted, bridge]
++}
+--- a/packages/next/src/webpack-postcss-loader.ts
++++ b/packages/next/src/webpack-postcss-loader.ts
+@@ -1,16 +1,35 @@
+ import { createRequire } from 'node:module'
++import { createPostCSSRequestPlugins, type PostCSSPlugin, type PostCSSResourceHook } from './postcss-request-plugins'
+ 
+ interface Context {
+-  getOptions(): { loader: string, options: object }
++  getOptions(): { loader: string, options: Record<string, unknown> }
+   callback(error: Error | null, css?: string, map?: object | string, meta?: object): void
+ }
++interface NativePostCSS {
++  postcss(plugins: PostCSSPlugin[]): unknown
++  postcssWithPlugins: { plugins: PostCSSPlugin[] }
++}
+ 
+-/** Preserve the host's options closure and avoid reprocessing published wrappers. */
+-export default function postcssDispatcher(this: Context, css: string, map?: object | string, meta?: { masterPostCSSProcessed?: boolean }) {
++/** Preserve host configuration; resource hooks receive a separate processor per request. */
++export default function postcssDispatcher(this: Context, css: string, map?: object | string, meta?: {
++  masterPostCSSProcessed?: boolean
++  masterPostCSSResources?: PostCSSResourceHook
++}) {
+   if (meta?.masterPostCSSProcessed) return this.callback(null, css, map, meta)
+   const options = this.getOptions()
++  let delegated = options.options
++  if (meta?.masterPostCSSResources) {
++    const resources = meta.masterPostCSSResources
++    const factory = delegated.postcss
++    if (typeof factory !== 'function') throw new TypeError('Native PostCSS factory is required for resource hooks.')
++    const original = delegated
++    delegated = { ...original, postcss: async (...args: unknown[]) => {
++      const configured = await factory.apply(original, args) as NativePostCSS
++      return { ...configured, postcssWithPlugins: configured.postcss(createPostCSSRequestPlugins(configured.postcssWithPlugins.plugins, resources)) }
++    } }
++  }
+   const host = Object.create(this) as Context
+-  host.getOptions = () => options.options as ReturnType<Context['getOptions']>
++  host.getOptions = () => delegated as ReturnType<Context['getOptions']>
+   const implementation = createRequire(import.meta.url)(options.loader)
+   return (implementation.default ?? implementation).call(host, css, map, meta)
+ }
+--- /dev/null
++++ b/packages/next/tests/bug-hunt-postcss-request-plugins.test.ts
+@@ -0,0 +1,191 @@
++import { expect, test } from 'vitest'
++import { createRequire } from 'node:module'
++import { createPostCSSRequestPlugins, type PostCSSResourceHook } from '../src/postcss-request-plugins'
++import postcssDispatcher from '../src/webpack-postcss-loader'
++import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
++
++const require = createRequire(import.meta.url)
++const nextRequire = createRequire(require.resolve('next/package.json'))
++const postcss = nextRequire('postcss')
++const nativeLoader = require('next/dist/build/webpack/loaders/postcss-loader/src/index').default
++interface Declaration { prop: string; value: string; remove(): void }
++interface Root {
++  type: string
++  nodes: Root[]
++  append(node: unknown): void
++  toString(): string
++  walkDecls(callback: (declaration: Declaration) => void): void
++  walkRules(selector: string, callback: (rule: Root) => void): void
++}
++interface Result {
++  lastPlugin: unknown
++  opts: { from: string }
++  root: Root
++  messages: Record<string, unknown>[]
++  warn(message: string): void
++}
++interface Helpers { result: Result; postcss: typeof postcss }
++const phases = ['Once', 'Declaration', 'OnceExit'] as const
++const baseManifest = { version: 1 as const, utilities: [] }
++const initialSource = '@theme{--color-old:#111111;--color-late:#abcdef}.card{color:var(--color-old);audit-trigger:1}'
++
++async function runNative(plugins: unknown[], source: string, file = '/audit/entry.css', hook?: PostCSSResourceHook, sharedProcessor?: { plugins: unknown[] }) {
++  const events: [string, ...unknown[]][] = []
++  const processor = sharedProcessor ?? postcss(plugins)
++  const trace = { traceChild: () => trace, traceAsyncFn: (fn: () => unknown) => Promise.resolve().then(fn), traceFn: (fn: () => unknown) => fn(), setAttribute: () => {} }
++  const output = await new Promise<{ css: string; map: object; meta: { ast: { root: Root } } }>((resolve, reject) => {
++    const options = { postcss: async function(this: unknown) { expect(this).toBe(options);return { postcss, postcssWithPlugins: processor } } }
++    const loader = hook ? postcssDispatcher : nativeLoader
++    loader.call({ resourcePath: file, context: '/audit', currentTraceSpan: trace, sourceMap: true,
++      getOptions: () => hook ? { loader: require.resolve('next/dist/build/webpack/loaders/postcss-loader/src/index'), options } : options,
++      async: () => (error: Error | null, css: string, map: object, metadata: { ast: { root: Root } }) => error ? reject(error) : resolve({ css, map, meta: metadata }),
++      ...Object.fromEntries(['addDependency', 'addBuildDependency', 'addMissingDependency', 'addContextDependency', 'emitWarning', 'emitFile'].map(name => [name, (...args: unknown[]) => events.push([name, ...args])]))
++    }, source, undefined, hook ? { masterPostCSSResources: hook } : undefined)
++  })
++  return { ...output, events }
++}
++
++for (const introduction of phases) for (const processing of phases) {
++  test(`native Next loader resource hooks: ${introduction} -> ${processing}`, async () => {
++    const first = await compileRenderedStylesheet('/audit/entry.css', initialSource, { baseManifest })
++    let emittedGlobals = first.emittedGlobals, introduced = false, once = 0
++    function introduce(root: Root) {
++      if (introduced) return
++      introduced = true
++      root.walkRules('.card', rule => rule.append({ prop: 'background-color', value: 'var(--color-late)' }))
++    }
++    function consume(declaration: Declaration) {
++      if (declaration.prop === '--color-late') declaration.value = '#fedcba'
++    }
++    const producer: Record<string, unknown> = { postcssPlugin: 'producer' }
++    producer[introduction] = introduction === 'Declaration'
++      ? (declaration: Declaration & { root(): Root }) => { if (declaration.prop === 'audit-trigger') introduce(declaration.root()) }
++      : introduce
++    const consumer: Record<string, unknown> = { postcssPlugin: 'consumer', Once(root: Root) {
++      once++
++      root.walkDecls(declaration => { if (declaration.prop === '--color-old') declaration.value = '#123456' })
++      if (processing === 'Once') root.walkDecls(consume)
++    } }
++    if (processing === 'Declaration') consumer.Declaration = consume
++    if (processing === 'OnceExit') consumer.OnceExit = (root: Root) => root.walkDecls(consume)
++    const shared = postcss([producer, consumer]), before = shared.plugins.slice()
++    const plugins = createPostCSSRequestPlugins(shared.plugins, async node => {
++      const root = node as Root
++      const rendered = await compileRenderedStylesheet('/audit/entry.css', root.toString(), { baseManifest: first.manifest, emittedGlobals })
++      emittedGlobals = rendered.emittedGlobals
++      if (rendered.generatedCSS) {
++        const generated = postcss.parse(rendered.generatedCSS)
++        generated.walk((node: { masterCSSGlobal?: boolean }) => { node.masterCSSGlobal = true })
++        root.append(generated.nodes)
++      }
++    })
++    const output = await runNative(plugins, first.css)
++    const late: string[] = [], old: string[] = []
++    output.meta.ast.root.walkDecls(declaration => {
++      if (declaration.prop === '--color-late') late.push(declaration.value)
++      if (declaration.prop === '--color-old') old.push(declaration.value)
++    })
++    expect(late).toEqual([phases.indexOf(processing) >= phases.indexOf(introduction) ? '#fedcba' : '#abcdef'])
++    expect(old).toEqual(['#123456'])
++    expect(once).toBe(1)
++    expect(output.map).toBeDefined()
++    expect(shared.plugins).toEqual(before)
++    expect(shared.plugins[0]).toBe(producer)
++  })
++}
++
++test('prepare, helpers, messages, native dependencies and receiver identity survive', async () => {
++  let prepared = 0, once = 0
++  const receivers = new Set<unknown>()
++  const plugin = { postcssPlugin: 'prepare-probe', prepare(this: unknown, result: Result) {
++    expect(this).toBe(plugin)
++    prepared++
++    return { token: result.opts.from, Once(this: { token: string }, root: Root, helpers: Helpers) {
++      expect(this.token).toBe('/audit/entry.css')
++      receivers.add(this)
++      expect(helpers.result.lastPlugin).toBe(this)
++      expect(helpers.result).toBe(result)
++      expect(helpers.postcss).toBe(postcss)
++      once++
++      root.append({ selector: '.prepared', nodes: [{ prop: 'color', value: 'red' }] })
++      result.warn('kept warning')
++      for (const type of ['dependency', 'build-dependency', 'missing-dependency', 'context-dependency']) result.messages.push({ type, file: '/audit/' + type })
++      result.messages.push({ type: 'asset', file: 'proof.txt', content: 'proof' })
++    }, Declaration: { color(this: unknown, _declaration: Declaration, helpers: Helpers) {
++      expect(this).toBeUndefined()
++      expect(receivers.has(helpers.result.lastPlugin)).toBe(true)
++    } }, OnceExit(this: unknown, _root: Root, helpers: Helpers) {
++      expect(this).toBeUndefined()
++      expect(receivers.has(helpers.result.lastPlugin)).toBe(true)
++    } }
++  } }
++  Object.freeze(plugin)
++  const output = await runNative(createPostCSSRequestPlugins([plugin], () => {}), '.a{color:black}')
++  expect([prepared, once]).toEqual([1, 1])
++  expect(output.css).toContain('.prepared')
++  expect(output.events.map(event => event[0])).toEqual(['emitWarning', 'addDependency', 'addBuildDependency', 'addMissingDependency', 'addContextDependency', 'emitFile'])
++  expect(output.events.find(event => event[0] === 'emitFile')?.slice(1, 3)).toEqual(['proof.txt', 'proof'])
++  expect(plugin).not.toHaveProperty('token')
++})
++
++test('ordinary Once keeps its original receiver and user errors remain identical', async () => {
++  const sentinel = new Error('original user failure')
++  let after = 0
++  const plugin = { postcssPlugin: 'throw-probe', Once(this: unknown) { expect(this).toBe(plugin);throw sentinel } }
++  await expect(runNative(createPostCSSRequestPlugins([plugin], () => { after++ }), '.a{}')).rejects.toBe(sentinel)
++  expect(after).toBe(0)
++})
++
++test('compiler bridge errors retain their resource owner', async () => {
++  const sentinel = new postcss.CssSyntaxError('resource failure')
++  await expect(runNative(createPostCSSRequestPlugins([], () => { throw sentinel }), '.a{}')).rejects.toThrow('resource failure')
++  expect(sentinel).toHaveProperty('plugin', 'master-css-resources')
++})
++
++test('legacy function plugin runs once with original Result and unbound receiver', async () => {
++  let calls = 0
++  const plugin = function(this: unknown, node: unknown, value: unknown) {
++    expect(this).toBeUndefined()
++    calls++
++    const result = value as Result
++    expect(result.root).toBe(node)
++    result.messages.push({ type: 'dependency', file: '/audit/function.css' })
++  }
++  const output = await runNative(createPostCSSRequestPlugins([plugin], () => {}), '.a{}')
++  expect(calls).toBe(1)
++  expect(output.events).toContainEqual(['addDependency', '/audit/function.css'])
++})
++
++test('concurrent Results share frozen host plugins but keep request resources isolated', async () => {
++  const shared = postcss([Object.freeze({ postcssPlugin: 'shared-prepare', prepare(result: Result) {
++    return { Once(root: Root) { root.append({ selector: '.request', nodes: [{ prop: 'content', value: JSON.stringify(result.opts.from) }] }) } }
++  } })])
++  Object.freeze(shared.plugins)
++  const releases: (() => void)[] = []
++  const results = await Promise.all(['red', 'blue'].map(async color => {
++    let inserted = false
++    const hook: PostCSSResourceHook = async node => {
++      if (inserted) return
++      inserted = true
++      await new Promise<void>(resolve => { releases.push(resolve);if (releases.length === 2) releases.forEach(release => release()) })
++      ;(node as Root).append({ selector: '.resource', nodes: [{ prop: 'color', value: color }] })
++    }
++    return runNative(shared.plugins, '.a{}', '/audit/' + color + '.css', hook, shared)
++  }))
++  expect(results[0].css).toContain('red')
++  expect(results[0].css).not.toContain('blue')
++  expect(results[1].css).toContain('blue')
++  expect(results[1].css).not.toContain('red')
++  expect(shared.plugins).toHaveLength(1)
++})
++
++test('Document roots receive their own lifecycle without repeating prepare', async () => {
++  let prepares = 0, calls = 0
++  const document = postcss.document({ nodes: [postcss.parse('.a{}'), postcss.parse('.b{}')] })
++  const seen = new Set<unknown>()
++  const plugin = { postcssPlugin: 'document-probe', prepare() { prepares++;return { Once() { calls++ } } } }
++  const adapted = createPostCSSRequestPlugins([plugin], root => { seen.add(root) })
++  const result = await postcss(adapted).process(document, { from: '/audit/document.css' })
++  expect(result.root).toBe(document)
++  expect([prepares, calls, seen.size]).toEqual([1, 2, 2])
++})

@@ -1,0 +1,286 @@
+{
+  "mode": "poll",
+  "node": "v24.20.0",
+  "uv": "1.52.1",
+  "platform": "darwin",
+  "scope": "Six independent owned directories; direct Node fs.watch or watchFile only. No Webpack, Watchpack, product imports or dependency modifications. Sequential writes wait for events, never forced invalidation.",
+  "failures": 0,
+  "runs": [
+    {
+      "iteration": 0,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066257205,
+          "mtime": 1789066257205.0518
+        },
+        {
+          "stage": "one",
+          "time": 1789066257296,
+          "mtime": 1789066257296.73
+        },
+        {
+          "stage": "none",
+          "time": 1789066257397,
+          "mtime": 1789066257397.354
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066257296,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066257397,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066257498,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    },
+    {
+      "iteration": 1,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066257500,
+          "mtime": 1789066257500.531
+        },
+        {
+          "stage": "one",
+          "time": 1789066257600,
+          "mtime": 1789066257600.0605
+        },
+        {
+          "stage": "none",
+          "time": 1789066257702,
+          "mtime": 1789066257701.7817
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066257599,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066257701,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066257801,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    },
+    {
+      "iteration": 2,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066257805,
+          "mtime": 1789066257805.1377
+        },
+        {
+          "stage": "one",
+          "time": 1789066257904,
+          "mtime": 1789066257903.6572
+        },
+        {
+          "stage": "none",
+          "time": 1789066258005,
+          "mtime": 1789066258004.8542
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066257902,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066258004,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066258104,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    },
+    {
+      "iteration": 3,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066258106,
+          "mtime": 1789066258106.715
+        },
+        {
+          "stage": "one",
+          "time": 1789066258205,
+          "mtime": 1789066258205.4375
+        },
+        {
+          "stage": "none",
+          "time": 1789066258307,
+          "mtime": 1789066258307.2612
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066258205,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066258306,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066258408,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    },
+    {
+      "iteration": 4,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066258409,
+          "mtime": 1789066258409.7961
+        },
+        {
+          "stage": "one",
+          "time": 1789066258509,
+          "mtime": 1789066258509.1694
+        },
+        {
+          "stage": "none",
+          "time": 1789066258610,
+          "mtime": 1789066258609.9712
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066258509,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066258609,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066258711,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    },
+    {
+      "iteration": 5,
+      "edits": [
+        {
+          "stage": "both",
+          "time": 1789066258712,
+          "mtime": 1789066258712.2617
+        },
+        {
+          "stage": "one",
+          "time": 1789066258812,
+          "mtime": 1789066258812.5737
+        },
+        {
+          "stage": "none",
+          "time": 1789066258913,
+          "mtime": 1789066258913.0017
+        }
+      ],
+      "events": [
+        {
+          "time": 1789066258812,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "both"
+        },
+        {
+          "time": 1789066258912,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "one"
+        },
+        {
+          "time": 1789066259014,
+          "type": "poll",
+          "filename": "entry.js",
+          "source": "none"
+        }
+      ],
+      "observed": [
+        "both",
+        "one",
+        "none"
+      ],
+      "finalDisk": "none"
+    }
+  ]
+}

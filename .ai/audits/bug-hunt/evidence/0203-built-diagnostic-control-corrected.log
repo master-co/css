@@ -1,0 +1,69 @@
+{
+  "original": {
+    "version": 2,
+    "code": "compose-quoted-syntax",
+    "domain": "compiler",
+    "severity": "error",
+    "message": "@compose only accepts unquoted class lists",
+    "source": "/Users/aron/master/css/packages/language-server/tests/fixtures/invalid-manifest/index.css",
+    "range": {
+      "start": {
+        "line": 3,
+        "character": 11
+      },
+      "end": {
+        "line": 3,
+        "character": 18
+      }
+    }
+  },
+  "actual": {
+    "range": {
+      "start": {
+        "line": 0,
+        "character": 0
+      },
+      "end": {
+        "line": 0,
+        "character": 0
+      }
+    },
+    "severity": 1,
+    "code": "compose-quoted-syntax",
+    "source": "Master CSS",
+    "message": "Failed to load Master CSS manifest: @compose only accepts unquoted class lists"
+  },
+  "fallback": {
+    "range": {
+      "start": {
+        "line": 0,
+        "character": 0
+      },
+      "end": {
+        "line": 0,
+        "character": 0
+      }
+    },
+    "severity": 1,
+    "code": "manifest-loading-error",
+    "source": "Master CSS",
+    "message": "Failed to load Master CSS manifest: Unstructured loading control"
+  },
+  "assertions": "structured code preserved; generic fallback retained",
+  "scope": "Delivered Node package; read-only existing fixture; no LSP transport listener or foreign server"
+}
+/Users/aron/master/css/node_modules/.pnpm/vscode-jsonrpc@9.0.2/node_modules/vscode-jsonrpc/lib/common/connection.js:873
+            throw new ConnectionError(ConnectionErrors.Disposed, 'Connection is disposed.');
+                  ^
+
+ConnectionError: Connection is disposed.
+    at throwIfClosedOrDisposed (/Users/aron/master/css/node_modules/.pnpm/vscode-jsonrpc@9.0.2/node_modules/vscode-jsonrpc/lib/common/connection.js:873:19)
+    at Object.sendNotification (/Users/aron/master/css/node_modules/.pnpm/vscode-jsonrpc@9.0.2/node_modules/vscode-jsonrpc/lib/common/connection.js:951:13)
+    at RemoteConsoleImpl.send (/Users/aron/master/css/node_modules/.pnpm/vscode-languageserver@10.1.1/node_modules/vscode-languageserver/lib/common/server.js:153:33)
+    at RemoteConsoleImpl.error (/Users/aron/master/css/node_modules/.pnpm/vscode-languageserver@10.1.1/node_modules/vscode-languageserver/lib/common/server.js:137:14)
+    at /Users/aron/master/css/node_modules/.pnpm/vscode-jsonrpc@9.0.2/node_modules/vscode-jsonrpc/lib/common/connection.js:992:24
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  code: 2
+}
+
+Node.js v24.20.0

@@ -1,0 +1,131 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 13ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+Failed to compile.
+
+./app/card.module.css
+HookWebpackError: Cannot read properties of undefined (reading 'anchor')
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316153)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css:3:38)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+    at Hook.CALL_DELEGATE [as _call] (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:6270)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316107)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+-- inner error --
+TypeError: Cannot read properties of undefined (reading 'anchor')
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css:11:80)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316107)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css:3:38)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+
+Generated code for /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css
+ 1 | // Imports
+ 2 | var ___CSS_LOADER_API_IMPORT___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js");
+ 3 | var ___CSS_LOADER_ICSS_IMPORT_0___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css");
+ 4 | var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(false);
+ 5 | ___CSS_LOADER_EXPORT___.i(___CSS_LOADER_ICSS_IMPORT_0___, "", true);
+ 6 | // Module
+ 7 | ___CSS_LOADER_EXPORT___.push([module.id, ".other_shared__f3TK2{border-top:7px solid red}.other_dependent__5v0HO{padding:13px}", ""]);
+ 8 | // Exports
+ 9 | ___CSS_LOADER_EXPORT___.locals = {
+10 | 	"shared": "other_shared__f3TK2",
+11 | 	"dependent": "other_dependent__5v0HO " + ___CSS_LOADER_ICSS_IMPORT_0___.locals["anchor"] + ""
+12 | };
+13 | module.exports = ___CSS_LOADER_EXPORT___;
+14 | 
+
+Generated code for /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css
+ 1 | // Imports
+ 2 | var ___CSS_LOADER_API_IMPORT___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js");
+ 3 | var ___CSS_LOADER_ICSS_IMPORT_0___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css");
+ 4 | var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(false);
+ 5 | ___CSS_LOADER_EXPORT___.i(___CSS_LOADER_ICSS_IMPORT_0___, "", true);
+ 6 | // Module
+ 7 | ___CSS_LOADER_EXPORT___.push([module.id, ".card_direct__vAL_y{color:#123456}.card_anchor__XvxzP{margin-left:11px}", ""]);
+ 8 | // Exports
+ 9 | ___CSS_LOADER_EXPORT___.locals = {
+10 | 	"direct": "card_direct__vAL_y " + ___CSS_LOADER_ICSS_IMPORT_0___.locals["shared"] + "",
+11 | 	"anchor": "card_anchor__XvxzP"
+12 | };
+13 | module.exports = ___CSS_LOADER_EXPORT___;
+14 | 
+
+Import trace for requested module:
+./app/card.module.css
+
+./app/other.module.css
+HookWebpackError: Cannot read properties of undefined (reading 'shared')
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316153)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css:3:38)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316107)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+-- inner error --
+TypeError: Cannot read properties of undefined (reading 'shared')
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css:10:73)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316107)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css:3:38)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+
+Generated code for /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css
+ 1 | // Imports
+ 2 | var ___CSS_LOADER_API_IMPORT___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js");
+ 3 | var ___CSS_LOADER_ICSS_IMPORT_0___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css");
+ 4 | var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(false);
+ 5 | ___CSS_LOADER_EXPORT___.i(___CSS_LOADER_ICSS_IMPORT_0___, "", true);
+ 6 | // Module
+ 7 | ___CSS_LOADER_EXPORT___.push([module.id, ".card_direct__vAL_y{color:#123456}.card_anchor__XvxzP{margin-left:11px}", ""]);
+ 8 | // Exports
+ 9 | ___CSS_LOADER_EXPORT___.locals = {
+10 | 	"direct": "card_direct__vAL_y " + ___CSS_LOADER_ICSS_IMPORT_0___.locals["shared"] + "",
+11 | 	"anchor": "card_anchor__XvxzP"
+12 | };
+13 | module.exports = ___CSS_LOADER_EXPORT___;
+14 | 
+
+Generated code for /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/other.module.css
+ 1 | // Imports
+ 2 | var ___CSS_LOADER_API_IMPORT___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/runtime/api.js");
+ 3 | var ___CSS_LOADER_ICSS_IMPORT_0___ = __webpack_require__("/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[2]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[15].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-2cmRNL/app/card.module.css");
+ 4 | var ___CSS_LOADER_EXPORT___ = ___CSS_LOADER_API_IMPORT___(false);
+ 5 | ___CSS_LOADER_EXPORT___.i(___CSS_LOADER_ICSS_IMPORT_0___, "", true);
+ 6 | // Module
+ 7 | ___CSS_LOADER_EXPORT___.push([module.id, ".other_shared__f3TK2{border-top:7px solid red}.other_dependent__5v0HO{padding:13px}", ""]);
+ 8 | // Exports
+ 9 | ___CSS_LOADER_EXPORT___.locals = {
+10 | 	"shared": "other_shared__f3TK2",
+11 | 	"dependent": "other_dependent__5v0HO " + ___CSS_LOADER_ICSS_IMPORT_0___.locals["anchor"] + ""
+12 | };
+13 | module.exports = ___CSS_LOADER_EXPORT___;
+14 | 
+
+Import trace for requested module:
+./app/other.module.css
+
+
+> Build failed because of webpack errors
+{"scenario":"independent-compose-cycle","bundler":"webpack","pure":true,"build":{"code":1,"signal":null,"timedOut":false,"exported":false},"observations":[]}

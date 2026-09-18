@@ -1,0 +1,581 @@
+[
+  {
+    "name": "0228-candidate-webpack-escaped-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-webpack-escaped-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-turbopack-escaped-composes",
+    "harnessExit": 0,
+    "buildCode": 1,
+    "exported": false,
+    "observations": [],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-turbopack-escaped-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__iR9bRG__direct other module-module__bQyF6W__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__iR9bRG__direct other module-module__bQyF6W__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-webpack-query-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-webpack-query-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-turbopack-query-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__lHEm3q__direct other-module__FzApMG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__lHEm3q__direct other-module__FzApMG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-turbopack-query-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__HHpyrW__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__HHpyrW__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-webpack-fragment-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-webpack-fragment-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-turbopack-fragment-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__TTbBKW__direct other-module__couz4W__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__TTbBKW__direct other-module__couz4W__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-turbopack-fragment-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__GRbn8W__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__GRbn8W__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-webpack-alias-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-webpack-alias-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-turbopack-alias-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__Q5TKEq__direct other-module__uskjdq__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__Q5TKEq__direct other-module__uskjdq__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-turbopack-alias-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__yf-dfG__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__yf-dfG__direct card_direct__vAL_y other_shared__f3TK2",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-webpack-package-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-webpack-package-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-pure-turbopack-package-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module__4uuviq__direct default-module__PJvUyG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "default",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module__4uuviq__direct default-module__PJvUyG__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "default",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  },
+  {
+    "name": "0228-candidate-turbopack-package-composes",
+    "harnessExit": 0,
+    "buildCode": 0,
+    "exported": true,
+    "observations": [
+      {
+        "browser": "chromium",
+        "classes": "card-module-css-module__myZpMq__direct card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "classes": "card-module-css-module__myZpMq__direct card_direct__vAL_y style_shared__NrOe0",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "style",
+        "pass": true
+      }
+    ],
+    "browserFailures": [],
+    "harnessError": null
+  }
+]

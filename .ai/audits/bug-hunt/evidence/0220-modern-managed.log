@@ -1,0 +1,96 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.js took 87ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|/Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[2]!/Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[15].oneOf[10].use[4]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css': No serializer registered for CssSyntaxError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> Error -> CssSyntaxError
+Failed to compile.
+
+./app/globals.css.webpack[javascript/auto]!=!../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[2]!../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[3]!../../dist/stylesheet-loader.js??ruleSet[1].rules[15].oneOf[10].use[4]!./app/globals.css
+Syntax error: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css Unknown word // (1:1)
+
+> 1 | // Imports
+    | ^
+  2 | import ___CSS_LOADER_API_NO_SOURCEMAP_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/noSourceMaps.js";
+  3 | import ___CSS_LOADER_API_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/api.js";
+
+Import trace for requested module:
+./app/globals.css.webpack[javascript/auto]!=!../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[2]!../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[3]!../../dist/stylesheet-loader.js??ruleSet[1].rules[15].oneOf[10].use[4]!./app/globals.css
+./app/globals.css
+  (from ../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js)
+
+./app/globals.css
+Syntax error: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css Unknown word // (1:1)
+
+> 1 | // Imports
+    | ^
+  2 | import ___CSS_LOADER_API_NO_SOURCEMAP_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/noSourceMaps.js";
+  3 | import ___CSS_LOADER_API_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/api.js";
+
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316153)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
+    at symbolIterator (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+    at done (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/neo-async/async.js:1:14824)
+    at Hook.eval [as callAsync] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9222), <anonymous>:15:1)
+    at Hook.CALL_ASYNC_DELEGATE [as _callAsync] (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:6376)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130703
+    at symbolIterator (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/neo-async/async.js:1:14402)
+-- inner error --
+
+Syntax error: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css Unknown word // (1:1)
+
+> 1 | // Imports
+    | ^
+  2 | import ___CSS_LOADER_API_NO_SOURCEMAP_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/noSourceMaps.js";
+  3 | import ___CSS_LOADER_API_IMPORT___ from "../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/api.js";
+
+    at Object.<anonymous> (/Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[2]!/Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[15].oneOf[10].use[4]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css:1:7)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:962868
+    at Hook.eval [as call] (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9000), <anonymous>:7:1)
+    at Hook.CALL_DELEGATE [as _call] (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:6270)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131581
+    at tryRunOrWebpackError (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:316107)
+    at __webpack_require_module__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131548)
+    at __nested_webpack_require_161494__ (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:130983)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:29:131840
+    at symbolIterator (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/neo-async/async.js:1:14444)
+
+Generated code for /Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[2]!/Users/aron/master/css/node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js??ruleSet[1].rules[15].oneOf[10].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[15].oneOf[10].use[4]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css
+1 | throw new Error("Module build failed (from ../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js):\n\nSyntaxError\n\n(1:1) /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-bHTbei/app/globals.css Unknown word //\n\n> 1 | // Imports\n    | ^\n  2 | import ___CSS_LOADER_API_NO_SOURCEMAP_IMPORT___ from \"../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/noSourceMaps.js\";\n  3 | import ___CSS_LOADER_API_IMPORT___ from \"../../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/runtime/api.js\";\n");
+
+Import trace for requested module:
+./app/globals.css
+  (from ../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js)
+  (from ../../../../../../../../../node_modules/.pnpm/css-loader@7.1.5_@rspack+core@2.2.2_webpack@5.110.3/node_modules/css-loader/dist/cjs.js)
+
+
+> Build failed because of webpack errors
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:69:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

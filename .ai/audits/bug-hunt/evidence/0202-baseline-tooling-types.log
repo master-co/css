@@ -1,0 +1,3 @@
+node_modules/@master/css-tooling/dist/scanner/core.d.ts(3,41): error TS2307: Cannot find module './options.js' or its corresponding type declarations.
+node_modules/@master/css-tooling/dist/scanner/node.d.ts(1,95): error TS2307: Cannot find module './options.js' or its corresponding type declarations.
+node_modules/@master/css-tooling/dist/tooling-session.d.ts(43,114): error TS2307: Cannot find module './lint.js' or its corresponding type declarations.

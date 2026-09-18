@@ -1,0 +1,2018 @@
+{
+  "batch": "0212-webpack-optimized-ownership",
+  "status": "Bounded simultaneous deletion and optimized ownership controls verified; no product edit",
+  "goal": "active",
+  "previousGoalTurn": "progress;0211source reconciliation delivered",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "finding": "Existing BH-0004 bounded validation; no newfinding ornewfixcount",
+  "results": {
+    "simultaneous": "60product/40pure stepsPASS",
+    "optimized": "20outputchecksPASS;4missing-resource observations matchhost behavior",
+    "syntax": "PASS",
+    "packageLint": "Not applicable: auditrepros/ledgers only",
+    "aiContext": "PASS"
+  },
+  "simultaneousEvidence": {
+    "0212-both-product-memory.log": {
+      "pure": false,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-both-pure-memory.log": {
+      "pure": true,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-both-product-no-cache.log": {
+      "pure": false,
+      "memoryCache": false,
+      "withManifest": false,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-both-manifest-memory.log": {
+      "pure": false,
+      "memoryCache": true,
+      "withManifest": true,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 11,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-both-pure-no-cache.log": {
+      "pure": true,
+      "memoryCache": false,
+      "withManifest": false,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-both-manifest-no-cache.log": {
+      "pure": false,
+      "memoryCache": false,
+      "withManifest": true,
+      "simultaneous": "both",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-resource-product-memory.log": {
+      "pure": false,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "resource",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-resource-pure-memory.log": {
+      "pure": true,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "resource",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-stylesheet-pure-memory.log": {
+      "pure": true,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "stylesheet",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    },
+    "0212-stylesheet-product-memory.log": {
+      "pure": false,
+      "memoryCache": true,
+      "withManifest": false,
+      "simultaneous": "stylesheet",
+      "observations": [
+        {
+          "stage": "initial",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 0,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 1,
+          "result": "PASS"
+        },
+        {
+          "stage": "unchanged-reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 2,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-again",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 3,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-removed",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 4,
+          "result": "PASS"
+        },
+        {
+          "stage": "detached-resource-restored",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 5,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattached",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 6,
+          "result": "PASS"
+        },
+        {
+          "stage": "simultaneous-detach-delete",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 7,
+          "result": "PASS"
+        },
+        {
+          "stage": "restore-unused-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 8,
+          "result": "PASS"
+        },
+        {
+          "stage": "reattach-restored-files",
+          "checks": {
+            "compilationSucceeds": true,
+            "ownerCSS": true,
+            "resourceEmission": true,
+            "stylesheetDependency": true,
+            "resourceDependency": true,
+            "removedResourceNotMissing": true,
+            "manifestDiscoveryExcluded": true
+          },
+          "sequence": 9,
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native Webpack production watch; styles outside discovery root; remove and restore JS import; no forced invalidation or dependency patch"
+    }
+  },
+  "optimizedEvidence": {
+    "0212-optimized-final-pure-memory.log": {
+      "pure": true,
+      "memoryCache": true,
+      "observations": [
+        {
+          "stage": "initial-unused",
+          "active": false,
+          "sequence": 0,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "activate-direct-style",
+          "active": true,
+          "sequence": 1,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "deactivate-direct-style",
+          "active": false,
+          "sequence": 2,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "remove-unused-resource",
+          "active": false,
+          "sequence": 3,
+          "checks": {
+            "compilationSucceeds": false,
+            "liveCSS": false,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": false,
+          "missingResource": true,
+          "errors": [
+            "Module not found: Error: Can't resolve './pixel.svg' in '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-optimized-graph-78MMfG/styles'"
+          ],
+          "result": "OBSERVED"
+        },
+        {
+          "stage": "restore-unused-resource",
+          "active": false,
+          "sequence": 4,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "reactivate-direct-style",
+          "active": true,
+          "sequence": 5,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native production watch with sideEffects:false on the unused JS owner. Missing resource behavior is observed for comparison with pure Webpack, not assumed to be a product defect."
+    },
+    "0212-optimized-final-product-memory.log": {
+      "pure": false,
+      "memoryCache": true,
+      "observations": [
+        {
+          "stage": "initial-unused",
+          "active": false,
+          "sequence": 0,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "activate-direct-style",
+          "active": true,
+          "sequence": 1,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "deactivate-direct-style",
+          "active": false,
+          "sequence": 2,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "remove-unused-resource",
+          "active": false,
+          "sequence": 3,
+          "checks": {
+            "compilationSucceeds": false,
+            "liveCSS": false,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": false,
+          "missingResource": true,
+          "errors": [
+            "ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-optimized-graph-rrwxAB/styles/pixel.svg'"
+          ],
+          "result": "OBSERVED"
+        },
+        {
+          "stage": "restore-unused-resource",
+          "active": false,
+          "sequence": 4,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "reactivate-direct-style",
+          "active": true,
+          "sequence": 5,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native production watch with sideEffects:false on the unused JS owner. Missing resource behavior is observed for comparison with pure Webpack, not assumed to be a product defect."
+    },
+    "0212-optimized-final-pure-no-cache.log": {
+      "pure": true,
+      "memoryCache": false,
+      "observations": [
+        {
+          "stage": "initial-unused",
+          "active": false,
+          "sequence": 0,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "activate-direct-style",
+          "active": true,
+          "sequence": 1,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "deactivate-direct-style",
+          "active": false,
+          "sequence": 2,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "remove-unused-resource",
+          "active": false,
+          "sequence": 3,
+          "checks": {
+            "compilationSucceeds": false,
+            "liveCSS": false,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": false,
+          "missingResource": true,
+          "errors": [
+            "Module not found: Error: Can't resolve './pixel.svg' in '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-optimized-graph-13SmOc/styles'"
+          ],
+          "result": "OBSERVED"
+        },
+        {
+          "stage": "restore-unused-resource",
+          "active": false,
+          "sequence": 4,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "reactivate-direct-style",
+          "active": true,
+          "sequence": 5,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native production watch with sideEffects:false on the unused JS owner. Missing resource behavior is observed for comparison with pure Webpack, not assumed to be a product defect."
+    },
+    "0212-optimized-final-product-no-cache.log": {
+      "pure": false,
+      "memoryCache": false,
+      "observations": [
+        {
+          "stage": "initial-unused",
+          "active": false,
+          "sequence": 0,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "activate-direct-style",
+          "active": true,
+          "sequence": 1,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "deactivate-direct-style",
+          "active": false,
+          "sequence": 2,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "remove-unused-resource",
+          "active": false,
+          "sequence": 3,
+          "checks": {
+            "compilationSucceeds": false,
+            "liveCSS": false,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": false,
+          "missingResource": true,
+          "errors": [
+            "ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-optimized-graph-lw1rVO/styles/pixel.svg'"
+          ],
+          "result": "OBSERVED"
+        },
+        {
+          "stage": "restore-unused-resource",
+          "active": false,
+          "sequence": 4,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        },
+        {
+          "stage": "reactivate-direct-style",
+          "active": true,
+          "sequence": 5,
+          "checks": {
+            "compilationSucceeds": true,
+            "liveCSS": true,
+            "inactiveCSSMatchesUsage": true,
+            "inactiveResourceMatchesUsage": true
+          },
+          "resourceDependency": true,
+          "missingResource": false,
+          "errors": [],
+          "result": "PASS"
+        }
+      ],
+      "failures": 0,
+      "scope": "Actual native production watch with sideEffects:false on the unused JS owner. Missing resource behavior is observed for comparison with pure Webpack, not assumed to be a product defect."
+    }
+  },
+  "pendingApprovals": {
+    "existingWebpackTestContract": {
+      "file": "packages/webpack/tests/plugin-runtime.test.ts",
+      "patch": ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch",
+      "rootFileSha256": "378564be3acc2840e4af0010bbec5a9345db9d4bc906d55f61cf016c4583310c",
+      "patchSha256": "e4960863a87b55bc0bbfdde0e0d87d2f120426e21fffcaec8835a0e2509d999d",
+      "isolatedPatchedFileSha256": "da2cf049de005c48c03f1aeacbd1bac13320cf783f8e19e7138ed1254784256f",
+      "scope": "Two existing watch tests and fake compilation mock; compilation.errors and missingDependencies; preserves error identity/logging/recovery assertions",
+      "authorization": "No reply to separate Webpack test patch question; LSP one-line approval applied0203 is distinct"
+    },
+    "watchpackDependencyPatch": {
+      "patch": ".ai/audits/bug-hunt/repros/watchpack-initial-scan-removals.patch",
+      "sha256": "497eca85fe84d6eb7a899b16701af80d58ec08dff7b383688a86ed04077d2e74",
+      "version": "2.5.2",
+      "candidate": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-watchpack-patch-onnbwu_j/watchpack",
+      "scope": "Formal patch file, pnpm patchedDependencies and matching lockfile entries; no upgrades/additionaldependencies",
+      "authorization": "Question accepted asynchronously; no explicit reply received",
+      "reason": "User prohibits dependency/lockfile changes without exception",
+      "delivered": false
+    }
+  },
+  "preservation": {
+    "inheritedSourceChanges": [
+      ".ai/audits/bug-hunt/repros/webpack-active-graph.mjs"
+    ],
+    "newRepro": ".ai/audits/bug-hunt/repros/webpack-optimized-graph.mjs",
+    "otherInheritedSourcesUnchanged": 593,
+    "sourceCount": 595,
+    "artifactsUnchanged": 475,
+    "installedWatchpackFilesUnchanged": 19,
+    "indexEmpty": true,
+    "productEdits": false,
+    "commits": false,
+    "paused0038": "No explicit identity confirmation received",
+    "processes": "All owned processes terminal andwatchers/compilers closed"
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR.",
+    "0207 bounded production static watch deletion/restoration/rename/unmanage now29PASS and63snapshot-browserPASS; this supersedes only the bounded watch subset of0206 remaining text. Full multi/lazy-entry, emitted asset pruning, resource snapshots during concurrent writes, local compose/Modules/maps/Sass/customresolvers/development/HMR/Next remain.",
+    "0207 existing Webpack watch test-contract patch remains pending explicit user approval; root test untouched. After approval apply exact repro patch and use a fresh owned build copy for full serial tests.",
+    "0208 simple multiple/lazy andcombinedA-B/B-A productionstatic layouts now18browserPASS; full chunk topology/unusedemission/sourcecleanup/concurrentresources/dev/SSR/Next remain. New public collection sourceIds andcompiler declaration fixes delivered.",
+    "0208 delivered immediate first-child deletion consistently times out after first successful callback despitewatchregistrationwhilefileexists;3PASS1FAIL deliveredregressions. PureWebpack/localnooploader/externalnooploader controlsPASS. This remains a product/path-dependent watch failure under BH-0004; fullcopied82PASS andlongwatch29PASS do not clear it. Next turn trace nativeWatchpack events/dependency metadata, thenverify immediate deletion andall29steps. Do not substitute delays orlateredits for recovery.",
+    "0209 supersedes only the tentative classification of0208first-delete failure: pureWebpack controlledinitialscaninterleaving reproducesWatchpack2.5.2loss; isolatedpatchfixespurecontrol/actual2tests/all29watchsteps. Formal patch/pnpmconfiguration/lockfile delivery stillawaitsexplicitapproval; do not mark complete. ExistingWebpacktestpatch alsoseparatelypending.",
+    "0210 actual Webpack production watch graph removal confirmed stale registered CSS/resource dependencies: product3PASS/4FAIL in both no-cache andmemory-cache; pure7PASS ineach. Deleting anunused image after removing theJSimport incorrectlyfailscompilation. Unused CSS/resource publication itself stops correctly. Fix must reconcilecurrentmodules,restorecached reattached sources withoutsucceedModule, preserveindependentmanifest/sharedowners andclearallreplay/fallback/scannerownership. Stillunfixed; no production edits0210.",
+    "0211 supersedes only the bounded0210 source-removal failure: currentmodule reconciliation, cachedsource restoration and scanner reset delivered; 3newactualtests,4deliveredwatchlayouts28steps,29longwatch and21snapshotbrowserPASS. Fullchunk optimization/tree-shaken modules,simultaneousimport+resource removal,concurrentresource snapshots,allhost/dev/HMR/Next matrices remain.0209Watchpackformalpatch andexistingWebpacktestpatch stillpending explicitapproval.",
+    "0212 bounded simultaneous detach/delete/restore passes60product+40purewatchsteps; optimizedsideEffects owner directCSSactivation/deactivation gives20outputchecks and4matchingmissingresourcecontrols. Zerochunkmodules remain legitimatecompileddependencies inbothpureandproduct. This closes onlythetestedinterleavings/layouts; arbitrarytiming,fullchunk/chunksharing/lazy/SSR/dev/Next andconcurrentresource snapshotsremain. Next deterministicresourcehashversusemittedbytes interleaving atbuild-stylesheet-delivery/resourceURL andGeneratedCSSAssetsPlugin readFileSync."
+  ],
+  "next": [
+    "Deterministicallyinterleave aresourcewritebetweenresourceURLcontenthashingandGeneratedCSSAssetsPluginpublication; compareactualemittedbytesandname",
+    "Fulloptimizedshared/lazy/chunk/SSR/dev/Next matricesremain",
+    "Bothpendingpatchapprovalsand0038identitypause unchanged"
+  ],
+  "evidence": {
+    "0212-both-manifest-memory.log": "7935c910397c8d077d90accafe4eb9aff5c93e13ab07292c5688cee8a99de43a",
+    "0212-both-manifest-no-cache.log": "cf9858aa0613b59009c96f3536ec29eebf36f221133a42be6183003777344a66",
+    "0212-both-product-memory.log": "8237a1d2146f87e7d9521e8f7ffb38171d42e0ff23feda7a686e872fa8a65ccd",
+    "0212-both-product-no-cache.log": "dd56c5e2b3f62c94bea6b6bd0e52aaf17f040cb812191a725310ec7b31a91b06",
+    "0212-both-pure-memory.log": "11635828a239e274639c09006e44f31cbf8b2d153a74adf2150205f80d0d167d",
+    "0212-both-pure-no-cache.log": "67a66dfe78e9493982d28bec1dd8632afa6a8dc6fe284717cf372a2c73b2e4f0",
+    "0212-optimized-final-product-memory.log": "17d6bdc5866363c8bb1a6ce6cd279e0a0edd4f06ac06d0fd5833012efeb0ae03",
+    "0212-optimized-final-product-no-cache.log": "551510d013b0e90220f22e617691e695cab82e1070f48864835bba01a0a20421",
+    "0212-optimized-final-pure-memory.log": "5774483759cfd4f590f05fbb452dd9cbedc68d755771d982a03c616f181eaa11",
+    "0212-optimized-final-pure-no-cache.log": "a239b45baa465c9e114d105196f080f7a34e4bd9cba873b4d614cf8a9207bab7",
+    "0212-optimized-product-memory.log": "2a145fb8bb85492daf33cb6a32553e09e24b1ec79be8eeef1949dc47db496f16",
+    "0212-optimized-product-no-cache.log": "b748a5bb7b0141bf555640d2db4ca7e5caea9e7d1f03219e5f2c25793018e14b",
+    "0212-optimized-pure-memory.log": "284c22db474e3621ee4b6480cb517ce57bb7126fe5977030b20753d9e4f4b2a8",
+    "0212-optimized-pure-no-cache.log": "00d55eb42a073ab14a81ce11075b8aa8fc35ec9f064fdf13139ef45caeb81589",
+    "0212-resource-product-memory.log": "2d3196677636e2c4c4153f5c5d0b04dfaf7bea7dfd25a69b45de8c0d6110c72a",
+    "0212-resource-pure-memory.log": "f5f9320980562701af90887a2a65c5100a0288bd1bd2be4939951beff57c7434",
+    "0212-stylesheet-product-memory.log": "ce97c4aff06fd0cc04b8936cc71d08ba3c83fd36d3bc1012065e61f0bb072eb1",
+    "0212-stylesheet-pure-memory.log": "03ba82f541d07c840cf66189c9a87cfcba24cdd8a427993fc22f49369eb02952",
+    "0212-context-final.log": "9d241141882f0ed928db93202ad7510fbf5adcde66841c6f28f1b88c57e6d245",
+    "0212-syntax.json": "6ed82a97a83985f20e195ddbf017115e928145835d9dc0829e3f2284cb9502d7"
+  }
+}

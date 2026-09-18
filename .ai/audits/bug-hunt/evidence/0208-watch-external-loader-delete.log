@@ -1,0 +1,9 @@
+
+ RUN  v5.0.0 /Users/aron/master/css
+
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 1 skipped (2)
+   Start at  01:25:28
+   Duration  2.19s (tests 79%, transform 14%, import 7%)
+

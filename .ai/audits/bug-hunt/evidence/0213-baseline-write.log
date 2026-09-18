@@ -1,0 +1,6 @@
+
+{"mutation":"write","boundary":"first managed stylesheet emit after composition","stylesheet":"css/master-css-616209e63f487bc5751c-0.css"}
+{"observation":{"phase":"interleaved-publication","errors":[],"resources":[{"name":"css/master-css-resource-b00460099d24685dcdbf.svg","digest":"2e8fb7d323fb693a9acb","hashMatchesBytes":false,"contents":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"7\" height=\"7\"><rect width=\"7\" height=\"7\" fill=\"blue\"/></svg>","expectedSnapshot":false}],"queryPreserved":true,"result":"FAIL"}}
+
+{"observation":{"phase":"next-build-fresh-snapshot","errors":[],"resources":[{"name":"css/master-css-resource-2e8fb7d323fb693a9acb.svg","digest":"2e8fb7d323fb693a9acb","hashMatchesBytes":true,"contents":"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"7\" height=\"7\"><rect width=\"7\" height=\"7\" fill=\"blue\"/></svg>","expectedSnapshot":true}],"queryPreserved":true,"result":"PASS"}}
+{"summary":{"mutation":"write","triggered":true,"observations":2,"failures":1,"scope":"Actual Webpack builds; owned emitAsset hook changes the owned resource after graph composition but before resource publication. No installed dependency, source or shared artifact mutation."}}

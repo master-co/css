@@ -1,0 +1,23 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 6ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 2.0s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 69ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"postcss-themed-merged-composes","bundler":"webpack","pure":true,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".leaf_leaf___2bhH","declarations":"border-top: 7px solid red;"},{"selector":".other_shared__f3TK2, .other_sibling__1VUVz","declarations":"display: block;"},{"selector":".card_direct__vAL_y","declarations":"color: rgb(18, 52, 86);"}],"pass":true},{"browser":"webkit","id":"probe","phase":"initial","classes":"card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"none","animationFrames":[],"matchingRules":[{"selector":".leaf_leaf___2bhH","declarations":"border-top: 7px solid red;"},{"selector":".other_shared__f3TK2, .other_sibling__1VUVz","declarations":"display: block;"},{"selector":".card_direct__vAL_y","declarations":"color: rgb(18, 52, 86);"}],"pass":true}]}

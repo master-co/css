@@ -1,0 +1,425 @@
+{
+  "live": "/Users/aron/master/css/packages/webpack/dist",
+  "backupAfterSwap": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-2ycydhh4/packages/webpack/dist",
+  "before": {
+    "index.d.ts": {
+      "bytes": 255,
+      "sha256": "db539e9fdcbdac93d880e346ce8cf0af644e6f822d3bb3a23d93e00ea8f5c149"
+    },
+    "index.js": {
+      "bytes": 124,
+      "sha256": "9fbbb5b767c954907a0aecffeda3c07557ea8d78210ab8bb3678b3f4cbecc308"
+    },
+    "internal/src/emitted-globals-module.js": {
+      "bytes": 747,
+      "sha256": "fccec07cd4b12563a5ce16cca06581916db686f77d2d9a1fb2de9beb14ba8965"
+    },
+    "internal/src/manifest-facade.js": {
+      "bytes": 2036,
+      "sha256": "1897a7aa5eb45c66583dcc880c7aac4f11743ee21181bd8b2fe884d2eb727752"
+    },
+    "internal/src/manifest-loader.js": {
+      "bytes": 1210,
+      "sha256": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567"
+    },
+    "internal/src/manifest-module.js": {
+      "bytes": 876,
+      "sha256": "9b7f702145a1d9849210414d02344cc8c360c61eb11f3e5a6ec8ea25a1fb3f16"
+    },
+    "internal/src/node.js": {
+      "bytes": 1412,
+      "sha256": "3c3a27e42c2740c85c3a55fe971f4c2254080b9c1976aff8db304678ceda3d26"
+    },
+    "internal/src/project.js": {
+      "bytes": 480,
+      "sha256": "bbc4dc286bc0879ba6037bde375901737d8487f51f425455045b1df7b50af569"
+    },
+    "internal/src/style-module.js": {
+      "bytes": 744,
+      "sha256": "14edd6685b60f795bea69b443b21990fc15c62289638e1dff97b8018c035e2cb"
+    },
+    "options.d.ts": {
+      "bytes": 1089,
+      "sha256": "1354313eacd46ef259f743d30dc60a7c046ed892a37af4da10f5f5d38d973081"
+    },
+    "options.js": {
+      "bytes": 700,
+      "sha256": "547c77f2bdf67849dff9ba0efd53de9e921e4011aae6eaff2843304e1f41acb9"
+    },
+    "plugin.d.ts": {
+      "bytes": 4948,
+      "sha256": "e2a63cb7cdf44e9cc371c73713cfbaf24c510b7f25f6041648f075c11b17d08e"
+    },
+    "plugin.js": {
+      "bytes": 15952,
+      "sha256": "da73a166b204a0faee9a6f6de87ffd3417a693aa2b91786ddc2c7610aac72899"
+    },
+    "plugins/generated-css-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "4ccbdda14834befe704414f866febc4e75db52254e19d862c60afb9b345c6eb1"
+    },
+    "plugins/generated-css-assets.js": {
+      "bytes": 3417,
+      "sha256": "3da631ed002cc722077db9e8de4f4169c148816833f3bf6e4261a81de826c6e9"
+    },
+    "plugins/manifest-json-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "fc925352a312446aea53fc73d04d8f14897ecaec9e85b905c58f73b3d720ef25"
+    },
+    "plugins/manifest-json-assets.js": {
+      "bytes": 845,
+      "sha256": "c11b5c9cc3c3e4294c4a3463f266717da1f8050cdb368eb3612a352dfa0a3dc7"
+    },
+    "plugins/manifest-loader.d.ts": {
+      "bytes": 264,
+      "sha256": "57464fc8af384ab470a4fdefa77cba689882115c0ca2676288b0acfe8616b8b4"
+    },
+    "plugins/manifest-loader.js": {
+      "bytes": 2963,
+      "sha256": "a8774d55fffab6b6f041be7efbf71157c6d4f8ed9bc51b35f6d5564232bba808"
+    },
+    "plugins/manifest-virtual-module.d.ts": {
+      "bytes": 286,
+      "sha256": "ae15cbbf646f26511db412cce7a715061db2d71c096c55409ce24c008388199e"
+    },
+    "plugins/manifest-virtual-module.js": {
+      "bytes": 1589,
+      "sha256": "dfb57f0079b233a265ea258f6e5cc2791031c028fb9f092fb8d7b1e249a8b608"
+    },
+    "plugins/runtime-entry.d.ts": {
+      "bytes": 258,
+      "sha256": "2826f4f6d55f1f169cad5ad53f04787ec2fe9f2b0bc0266a5f850901cd88ee3c"
+    },
+    "plugins/runtime-entry.js": {
+      "bytes": 1160,
+      "sha256": "bf32952f3ce4101b28495b00f8eb5b659ec3478f383358ca9a696f10d23d90c3"
+    },
+    "plugins/runtime-html-assets.d.ts": {
+      "bytes": 274,
+      "sha256": "3f15d385fc11830b7027c41c34a8b934dc194b5a5830311f47fd91b604833180"
+    },
+    "plugins/runtime-html-assets.js": {
+      "bytes": 5362,
+      "sha256": "fbcb32aacf71831181a5f923a1bc377e12aa29c63b0d2e9cb3c25bb61cf2a99b"
+    },
+    "plugins/scanner-lifecycle.d.ts": {
+      "bytes": 270,
+      "sha256": "afa4fa18f1860783344f12e9d5a73a666f470eb407ae57defea5356363bcb692"
+    },
+    "plugins/scanner-lifecycle.js": {
+      "bytes": 1493,
+      "sha256": "073c8b674a792a7cfbfb4442fbd7010a92d34a757c63e9f8a47b905c91c8cd5b"
+    },
+    "plugins/style-entry.d.ts": {
+      "bytes": 252,
+      "sha256": "1dbfb907f39b2b7b6f54f5f1b6b1bc80f163ae195f7e72b6f02d9833932966c5"
+    },
+    "plugins/style-entry.js": {
+      "bytes": 656,
+      "sha256": "acba4e5e21c1f1d794452a2825e850ec4d86854b4d694418f3fa6fbabe7512c0"
+    },
+    "plugins/usage-graph.d.ts": {
+      "bytes": 252,
+      "sha256": "25a8d9c5a965e0c11681cd30e7388ec527f78854ce06203bb68a3913bc94fc23"
+    },
+    "plugins/usage-graph.js": {
+      "bytes": 2394,
+      "sha256": "e8c5a37aa420d97f0a2845a5fd0a37f832ee81067c0503baea5b634251887f78"
+    },
+    "plugins/virtual-css-import.d.ts": {
+      "bytes": 271,
+      "sha256": "2c6654ab615ec505782bebfa123084ebebcc70b20e0dfcff94d38e5c9fdaca1a"
+    },
+    "plugins/virtual-css-import.js": {
+      "bytes": 592,
+      "sha256": "e2f8df1a670fbdf7b6fef6af4a798fa94d70be5e183421bc1d5f086380940dd1"
+    },
+    "plugins/virtual-modules.d.ts": {
+      "bytes": 278,
+      "sha256": "35b93d01924e608bbad3c2e9dbc1ac7ed5188e7bfc3b6d2098a4922066f26a93"
+    },
+    "plugins/virtual-modules.js": {
+      "bytes": 961,
+      "sha256": "4cb0593dbe78dd663d01c003f62975e4ca7923bf0a65287287c3a3b91a62b1b3"
+    },
+    "preset/src/default-manifest.js": {
+      "bytes": 117064,
+      "sha256": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2"
+    },
+    "runtime.d.ts": {
+      "bytes": 11,
+      "sha256": "4f1bad288ada6326583a3e6a0a54d7627a03eac3b668adeea9dded12ac5656b8"
+    },
+    "runtime.js": {
+      "bytes": 1449,
+      "sha256": "1d51cfca4b571d379e0cd605954d2ccb4a28f723107ac6273e971a2d145a1e99"
+    },
+    "schema/src/manifest-json.js": {
+      "bytes": 2201,
+      "sha256": "7e0637ade67745bacaf56c38508eec689a2ceb84890b77aa12b370300e028b0e"
+    },
+    "stylesheet-loader.d.ts": {
+      "bytes": 566,
+      "sha256": "f404c0c230c85d1833e31394df10c8d2bf118188fe9ad945bfd1e07796dfaed8"
+    },
+    "stylesheet-loader.js": {
+      "bytes": 2104,
+      "sha256": "d6a95c0d5c4a57ec1c6707dd722c5279a37de6ab655ee3ea8f16fd9e61daa438"
+    },
+    "utils/build-stylesheet-delivery.d.ts": {
+      "bytes": 774,
+      "sha256": "5de2f7e5049427ae9265d230c560abd7af73d755b961225eca84c8ceea4f370c"
+    },
+    "utils/build-stylesheet-delivery.js": {
+      "bytes": 2800,
+      "sha256": "f74bd87f083d05b7afcc07f50a965aad690817d447d571db1e68a5dd57139258"
+    },
+    "utils/file-dependencies.d.ts": {
+      "bytes": 345,
+      "sha256": "e29e2261722c339491c777717b53f8a5afc4dfcff20ab1b7cddb2f4490f7ef2f"
+    },
+    "utils/file-dependencies.js": {
+      "bytes": 464,
+      "sha256": "f65f4c508b434d2004ee5ca297765dc0ead53b65c843320d30f2f30375af369d"
+    },
+    "utils/path.d.ts": {
+      "bytes": 356,
+      "sha256": "39311af5a10e33b1ca05a93c4ad8d1a7dee2b84d966c58e59f75d767cb2f4333"
+    },
+    "utils/path.js": {
+      "bytes": 699,
+      "sha256": "20fdc68451aaec981553bfad566cfbd6fc4a26d98f685fddc72838414adeda90"
+    },
+    "utils/stylesheet-slot.d.ts": {
+      "bytes": 133,
+      "sha256": "10b5b0af41e0a3fcb700ae6b24ac49147059f96139538ef62abe1e47a5bd3a83"
+    },
+    "utils/stylesheet-slot.js": {
+      "bytes": 364,
+      "sha256": "3fc292f00caa41dedddea8b2cf03b5d939fd7db452683800528fc56c2b0d3063"
+    },
+    "utils/transform-style-source.d.ts": {
+      "bytes": 434,
+      "sha256": "ccd1e3fa1ac0c0da1e1ccdd2b187ef7612c3d6e8aecc047233e59af9ebe8b02a"
+    },
+    "utils/transform-style-source.js": {
+      "bytes": 3080,
+      "sha256": "d0c2cc9a149dcaf784236623f08b8564ecdef1ff74355cdc83f9544a7932fabe"
+    }
+  },
+  "after": {
+    "index.d.ts": {
+      "bytes": 255,
+      "sha256": "db539e9fdcbdac93d880e346ce8cf0af644e6f822d3bb3a23d93e00ea8f5c149"
+    },
+    "index.js": {
+      "bytes": 124,
+      "sha256": "9fbbb5b767c954907a0aecffeda3c07557ea8d78210ab8bb3678b3f4cbecc308"
+    },
+    "internal/src/emitted-globals-module.js": {
+      "bytes": 747,
+      "sha256": "fccec07cd4b12563a5ce16cca06581916db686f77d2d9a1fb2de9beb14ba8965"
+    },
+    "internal/src/manifest-facade.js": {
+      "bytes": 2036,
+      "sha256": "1897a7aa5eb45c66583dcc880c7aac4f11743ee21181bd8b2fe884d2eb727752"
+    },
+    "internal/src/manifest-loader.js": {
+      "bytes": 1210,
+      "sha256": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567"
+    },
+    "internal/src/manifest-module.js": {
+      "bytes": 876,
+      "sha256": "9b7f702145a1d9849210414d02344cc8c360c61eb11f3e5a6ec8ea25a1fb3f16"
+    },
+    "internal/src/node.js": {
+      "bytes": 1412,
+      "sha256": "3c3a27e42c2740c85c3a55fe971f4c2254080b9c1976aff8db304678ceda3d26"
+    },
+    "internal/src/project.js": {
+      "bytes": 480,
+      "sha256": "bbc4dc286bc0879ba6037bde375901737d8487f51f425455045b1df7b50af569"
+    },
+    "internal/src/style-module.js": {
+      "bytes": 744,
+      "sha256": "14edd6685b60f795bea69b443b21990fc15c62289638e1dff97b8018c035e2cb"
+    },
+    "options.d.ts": {
+      "bytes": 1089,
+      "sha256": "1354313eacd46ef259f743d30dc60a7c046ed892a37af4da10f5f5d38d973081"
+    },
+    "options.js": {
+      "bytes": 700,
+      "sha256": "547c77f2bdf67849dff9ba0efd53de9e921e4011aae6eaff2843304e1f41acb9"
+    },
+    "plugin.d.ts": {
+      "bytes": 5029,
+      "sha256": "7be8c007cf702232e0af331ebd46a6723d1a3a941fde8aaee5adb79211363596"
+    },
+    "plugin.js": {
+      "bytes": 16034,
+      "sha256": "986aed8c3c29c4e6454f553166df7c12b794b7b3460aad5ee27d6c008b53fe56"
+    },
+    "plugins/generated-css-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "4ccbdda14834befe704414f866febc4e75db52254e19d862c60afb9b345c6eb1"
+    },
+    "plugins/generated-css-assets.js": {
+      "bytes": 3646,
+      "sha256": "eb90b9d8dc6ad62008b1066ee0d01e2ca000a79d8ade9e67ef2d423a2bfac86d"
+    },
+    "plugins/manifest-json-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "fc925352a312446aea53fc73d04d8f14897ecaec9e85b905c58f73b3d720ef25"
+    },
+    "plugins/manifest-json-assets.js": {
+      "bytes": 845,
+      "sha256": "c11b5c9cc3c3e4294c4a3463f266717da1f8050cdb368eb3612a352dfa0a3dc7"
+    },
+    "plugins/manifest-loader.d.ts": {
+      "bytes": 264,
+      "sha256": "57464fc8af384ab470a4fdefa77cba689882115c0ca2676288b0acfe8616b8b4"
+    },
+    "plugins/manifest-loader.js": {
+      "bytes": 2963,
+      "sha256": "a8774d55fffab6b6f041be7efbf71157c6d4f8ed9bc51b35f6d5564232bba808"
+    },
+    "plugins/manifest-virtual-module.d.ts": {
+      "bytes": 286,
+      "sha256": "ae15cbbf646f26511db412cce7a715061db2d71c096c55409ce24c008388199e"
+    },
+    "plugins/manifest-virtual-module.js": {
+      "bytes": 1589,
+      "sha256": "dfb57f0079b233a265ea258f6e5cc2791031c028fb9f092fb8d7b1e249a8b608"
+    },
+    "plugins/runtime-entry.d.ts": {
+      "bytes": 258,
+      "sha256": "2826f4f6d55f1f169cad5ad53f04787ec2fe9f2b0bc0266a5f850901cd88ee3c"
+    },
+    "plugins/runtime-entry.js": {
+      "bytes": 1160,
+      "sha256": "bf32952f3ce4101b28495b00f8eb5b659ec3478f383358ca9a696f10d23d90c3"
+    },
+    "plugins/runtime-html-assets.d.ts": {
+      "bytes": 274,
+      "sha256": "3f15d385fc11830b7027c41c34a8b934dc194b5a5830311f47fd91b604833180"
+    },
+    "plugins/runtime-html-assets.js": {
+      "bytes": 5362,
+      "sha256": "fbcb32aacf71831181a5f923a1bc377e12aa29c63b0d2e9cb3c25bb61cf2a99b"
+    },
+    "plugins/scanner-lifecycle.d.ts": {
+      "bytes": 270,
+      "sha256": "afa4fa18f1860783344f12e9d5a73a666f470eb407ae57defea5356363bcb692"
+    },
+    "plugins/scanner-lifecycle.js": {
+      "bytes": 1493,
+      "sha256": "073c8b674a792a7cfbfb4442fbd7010a92d34a757c63e9f8a47b905c91c8cd5b"
+    },
+    "plugins/style-entry.d.ts": {
+      "bytes": 252,
+      "sha256": "1dbfb907f39b2b7b6f54f5f1b6b1bc80f163ae195f7e72b6f02d9833932966c5"
+    },
+    "plugins/style-entry.js": {
+      "bytes": 656,
+      "sha256": "acba4e5e21c1f1d794452a2825e850ec4d86854b4d694418f3fa6fbabe7512c0"
+    },
+    "plugins/usage-graph.d.ts": {
+      "bytes": 252,
+      "sha256": "25a8d9c5a965e0c11681cd30e7388ec527f78854ce06203bb68a3913bc94fc23"
+    },
+    "plugins/usage-graph.js": {
+      "bytes": 2394,
+      "sha256": "e8c5a37aa420d97f0a2845a5fd0a37f832ee81067c0503baea5b634251887f78"
+    },
+    "plugins/virtual-css-import.d.ts": {
+      "bytes": 271,
+      "sha256": "2c6654ab615ec505782bebfa123084ebebcc70b20e0dfcff94d38e5c9fdaca1a"
+    },
+    "plugins/virtual-css-import.js": {
+      "bytes": 592,
+      "sha256": "e2f8df1a670fbdf7b6fef6af4a798fa94d70be5e183421bc1d5f086380940dd1"
+    },
+    "plugins/virtual-modules.d.ts": {
+      "bytes": 278,
+      "sha256": "35b93d01924e608bbad3c2e9dbc1ac7ed5188e7bfc3b6d2098a4922066f26a93"
+    },
+    "plugins/virtual-modules.js": {
+      "bytes": 961,
+      "sha256": "4cb0593dbe78dd663d01c003f62975e4ca7923bf0a65287287c3a3b91a62b1b3"
+    },
+    "preset/src/default-manifest.js": {
+      "bytes": 117064,
+      "sha256": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2"
+    },
+    "runtime.d.ts": {
+      "bytes": 11,
+      "sha256": "4f1bad288ada6326583a3e6a0a54d7627a03eac3b668adeea9dded12ac5656b8"
+    },
+    "runtime.js": {
+      "bytes": 1449,
+      "sha256": "1d51cfca4b571d379e0cd605954d2ccb4a28f723107ac6273e971a2d145a1e99"
+    },
+    "schema/src/manifest-json.js": {
+      "bytes": 2201,
+      "sha256": "7e0637ade67745bacaf56c38508eec689a2ceb84890b77aa12b370300e028b0e"
+    },
+    "stylesheet-loader.d.ts": {
+      "bytes": 566,
+      "sha256": "f404c0c230c85d1833e31394df10c8d2bf118188fe9ad945bfd1e07796dfaed8"
+    },
+    "stylesheet-loader.js": {
+      "bytes": 2104,
+      "sha256": "d6a95c0d5c4a57ec1c6707dd722c5279a37de6ab655ee3ea8f16fd9e61daa438"
+    },
+    "utils/build-stylesheet-delivery.d.ts": {
+      "bytes": 812,
+      "sha256": "03348119dfbad502b2cf83b620a06b0bdb509f3e6db08e8ffe099557ebdf0502"
+    },
+    "utils/build-stylesheet-delivery.js": {
+      "bytes": 2973,
+      "sha256": "f8984a9be33af8a794233ab705ed35a4970409793a849fbff9c7fec60cfd52ec"
+    },
+    "utils/file-dependencies.d.ts": {
+      "bytes": 345,
+      "sha256": "e29e2261722c339491c777717b53f8a5afc4dfcff20ab1b7cddb2f4490f7ef2f"
+    },
+    "utils/file-dependencies.js": {
+      "bytes": 464,
+      "sha256": "f65f4c508b434d2004ee5ca297765dc0ead53b65c843320d30f2f30375af369d"
+    },
+    "utils/path.d.ts": {
+      "bytes": 356,
+      "sha256": "39311af5a10e33b1ca05a93c4ad8d1a7dee2b84d966c58e59f75d767cb2f4333"
+    },
+    "utils/path.js": {
+      "bytes": 699,
+      "sha256": "20fdc68451aaec981553bfad566cfbd6fc4a26d98f685fddc72838414adeda90"
+    },
+    "utils/stylesheet-slot.d.ts": {
+      "bytes": 133,
+      "sha256": "10b5b0af41e0a3fcb700ae6b24ac49147059f96139538ef62abe1e47a5bd3a83"
+    },
+    "utils/stylesheet-slot.js": {
+      "bytes": 364,
+      "sha256": "3fc292f00caa41dedddea8b2cf03b5d939fd7db452683800528fc56c2b0d3063"
+    },
+    "utils/transform-style-source.d.ts": {
+      "bytes": 434,
+      "sha256": "ccd1e3fa1ac0c0da1e1ccdd2b187ef7612c3d6e8aecc047233e59af9ebe8b02a"
+    },
+    "utils/transform-style-source.js": {
+      "bytes": 3080,
+      "sha256": "d0c2cc9a149dcaf784236623f08b8564ecdef1ff74355cdc83f9544a7932fabe"
+    }
+  },
+  "changed": [
+    "plugin.d.ts",
+    "plugin.js",
+    "plugins/generated-css-assets.js",
+    "utils/build-stylesheet-delivery.d.ts",
+    "utils/build-stylesheet-delivery.js"
+  ],
+  "removed": [],
+  "status": "atomically swapped andverified"
+}

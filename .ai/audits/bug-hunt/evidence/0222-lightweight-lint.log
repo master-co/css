@@ -1,0 +1,54 @@
+$ eslint
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-UnMFbh/app/layout.jsx
+  1:8  error  Strings must use singlequote  quotes
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-UnMFbh/next.config.js
+  1:31   error  Strings must use singlequote  quotes
+  1:89   error  Strings must use singlequote  quotes
+  1:98   error  Strings must use singlequote  quotes
+  1:107  error  Strings must use singlequote  quotes
+  1:142  error  Strings must use singlequote  quotes
+  1:158  error  Strings must use singlequote  quotes
+  1:168  error  Strings must use singlequote  quotes
+  1:181  error  Strings must use singlequote  quotes
+  1:188  error  Strings must use singlequote  quotes
+  1:246  error  Extra semicolon               semi
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-h3qx4Y/app/layout.jsx
+  1:8  error  Strings must use singlequote  quotes
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-h3qx4Y/app/page.jsx
+  1:20  error  Strings must use singlequote  quotes
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-h3qx4Y/next.config.js
+  1:31   error  Strings must use singlequote  quotes
+  1:89   error  Strings must use singlequote  quotes
+  1:98   error  Strings must use singlequote  quotes
+  1:107  error  Strings must use singlequote  quotes
+  1:143  error  Strings must use singlequote  quotes
+  1:159  error  Strings must use singlequote  quotes
+  1:169  error  Strings must use singlequote  quotes
+  1:182  error  Strings must use singlequote  quotes
+  1:189  error  Strings must use singlequote  quotes
+  1:247  error  Extra semicolon               semi
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-iPo5Gl/app/layout.jsx
+  1:8  error  Strings must use singlequote  quotes
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-iPo5Gl/next.config.js
+  1:31   error  Strings must use singlequote  quotes
+  1:89   error  Strings must use singlequote  quotes
+  1:98   error  Strings must use singlequote  quotes
+  1:107  error  Strings must use singlequote  quotes
+  1:143  error  Strings must use singlequote  quotes
+  1:159  error  Strings must use singlequote  quotes
+  1:169  error  Strings must use singlequote  quotes
+  1:182  error  Strings must use singlequote  quotes
+  1:189  error  Strings must use singlequote  quotes
+  1:247  error  Extra semicolon               semi
+
+✖ 34 problems (34 errors, 0 warnings)
+  34 errors and 0 warnings potentially fixable with the `--fix` option.
+
+[ELIFECYCLE] Command failed with exit code 1.

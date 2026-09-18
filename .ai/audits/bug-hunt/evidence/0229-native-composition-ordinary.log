@@ -1,0 +1,50 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 78ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1801ms
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 49ms
+Turbopack build encountered 1 warning:
+./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/card.module.css.module.css:6:9
+Warning: Parsing CSS source code failed
+  [90m4 |[0m     composes: shared [36mfrom[0m [32m"./other.module.css"[0m
+  [90m5 |[0m }
+[33m[1m>[0m [90m6 |[0m :[36mimport[0m([32m'./other.module.css'[0m) {
+  [90m  |[0m         [33m[1m^[0m
+  [90m7 |[0m   i__imported_shared_0: shared
+  [90m8 |[0m }
+
+'import' is not recognized as a valid pseudo-class. Did you mean '::import' (pseudo-element) or is this a typo?
+
+Generated code of PostCSS transform of loaders [/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js] transform of file content of .ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/card.module.css:
+./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/card.module.css.module.css:6:9
+  [90m4 |[0m     composes: shared [36mfrom[0m [32m"./other.module.css"[0m
+  [90m5 |[0m }
+[33m[1m>[0m [90m6 |[0m :[36mimport[0m([32m'./other.module.css'[0m) {
+  [90m  |[0m         [33m[1m^[0m
+  [90m7 |[0m   i__imported_shared_0: shared
+  [90m8 |[0m }
+
+Import trace:
+  Client Component Browser:
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/card.module.css.module.css [Client Component Browser]
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/card.module.css [Server Component]
+    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Gp64tQ/app/page.jsx [Server Component]
+
+
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"acyclic-composes","bundler":"turbopack","pure":false,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","classes":"card-module-css-module__Dr78Ra__direct card_direct__vAL_y other-module__3GlCpq__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","pass":true},{"browser":"webkit","id":"probe","classes":"card-module-css-module__Dr78Ra__direct card_direct__vAL_y other-module__3GlCpq__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","pass":true}]}

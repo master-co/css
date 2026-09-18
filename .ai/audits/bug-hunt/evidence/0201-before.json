@@ -1,0 +1,2391 @@
+{
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "previousGoalTurn": "progress;0200defaultcollection andhost-importownership repairverified",
+  "sources": {
+    ".ai/audits/bug-hunt/repros/benchmark-cssom-report.mjs": "85fd9dbc769c09ef6e20e7d2d4a1e251d8d50d8ede8ba40faa9758923120b066",
+    ".ai/audits/bug-hunt/repros/benchmark-cssom-traversal.mjs": "1f6e00c9c3336a73ef1ad2820e5f08b4276cac4aaa3d644c8791e4938400cdc9",
+    ".ai/audits/bug-hunt/repros/benchmark-diagnostic-mime.mjs": "de1383b17b3b4edd29e77fea689b82ccd05fcd061e15e42d4bca47ea85bb24ac",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-http.mjs": "9e32e7d64bea02feef21b594630c715a839c7dc5fcc1efef7786836062237c28",
+    ".ai/audits/bug-hunt/repros/benchmark-docs-live.mjs": "6055530250927a7d42445666e0958857ca508cc3a75f571529f83d5ac7886fbf",
+    ".ai/audits/bug-hunt/repros/benchmark-namespace-browser.mjs": "cc4b389548c2e5aa66162e88b3a2f8167ea77cd456e04662fa582d938a1db510",
+    ".ai/audits/bug-hunt/repros/benchmark-phase-boundaries.mjs": "2f4c02333e6a28deb222e667ae9a1a3c9686c759bc7aeacf5cb95a0e01e79d17",
+    ".ai/audits/bug-hunt/repros/benchmark-phase-report.mjs": "7ede81b614d722032258143e8a3914a0e2b989848b3794a58387bc18d8ce114d",
+    ".ai/audits/bug-hunt/repros/benchmark-retained-readers.mjs": "8a55ffe73f5a550f514f4f0c3f1f22cc91424378db3126ab3ca9c5ad0a659d18",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-array-report.mjs": "b844ef4b59d1b2dfa53c742b6f9c6dcb492e06bf44012c57abf57cd8b2189f6e",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-array-scenarios.mjs": "51c5425f5e1e1d1cce826cd4f73fd3512b08995938c783a9d414833eb90198f6",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-arrays.mjs": "6c4ee496ebe9fa6a118d3ed5cd78f1da5cf7cb3c9cee7be838e12f252d010915",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-capabilities.mjs": "571b9244acc2ff3563b194bf6e5505b5234173844dbedb92ca4bb39d776da16a",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-preparation-report.mjs": "c8e4e62c85d4643851b0ea97dee5eef5eb0d6b3c65f561fb08513a98b3494479",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-preparation.mjs": "9644945219a63c699ba0568d11bf4dd1a913f839032dc69f2aeaccbce9897265",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-readers.mjs": "9e40200e17d8ff9af2b7d1fedbe409f12cc449f9d82145ac2835e98fcf47872d",
+    ".ai/audits/bug-hunt/repros/benchmark-runtime-report.mjs": "c830b4869b5a5205367d593067461cee1596abbd346cb99f7135638edde8c06b",
+    ".ai/audits/bug-hunt/repros/benchmark-specificity-browser.mjs": "30c6ecccbe94d86fccf3cfa3f853c761b8b12820a98d158fc492673573a1058f",
+    ".ai/audits/bug-hunt/repros/benchmark-specificity-report.mjs": "a9576e51ffc93743ad687a12541ba2918d6cb2158b4e0af58f3e64b5d6a42a07",
+    ".ai/audits/bug-hunt/repros/benchmark-startup-bin-contract.mjs": "6707ed1c1409fe70083552e76ab4daa091d92b25dcccafe67ff1439c99443226",
+    ".ai/audits/bug-hunt/repros/benchmark-startup-report.mjs": "1263706610a4a5f1a54256c6f8a5f973ac89fb9e067500294f28b1463a8b1b8c",
+    ".ai/audits/bug-hunt/repros/benchmark-style-other-scenarios.mjs": "02687f18ac294f1357afe246b689826de320a03d7cf67884c6c51097cd768513",
+    ".ai/audits/bug-hunt/repros/benchmark-style-validity-report.mjs": "04ec123799b2c8bdee6ddb9a0f6da1ab50d5873331134f0a3ed2951c154fd764",
+    ".ai/audits/bug-hunt/repros/benchmark-style-validity.mjs": "81a810e254abab5c93d1fd43fdb0d3da6a2389871db23774b834a21d29d881cd",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-observation.mjs": "8c39c2a0845e59cdac34441a35a4edd5705d85c9aac37968a7d39478edb09f0d",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-reports.mjs": "378a524fb00e623a844262ccd2702a208844b4732c2bebf400596b8ee689d807",
+    ".ai/audits/bug-hunt/repros/benchmark-vite-source-controls.mjs": "2d96b6f75d558c36fb380e4d89ed1f596cc16fd61207611168c7792cb8982d5b",
+    ".ai/audits/bug-hunt/repros/benchmark-wasm-delivery.mjs": "66f5700bfd509b60b2823d997ed80ca29d38640c2afcd51c5cbd789b8041c538",
+    ".ai/audits/bug-hunt/repros/benchmark-wasm-report.mjs": "38a08c4caf21ed70f99d00a094d03ead75848593550848fe54838feb2add5f95",
+    ".ai/audits/bug-hunt/repros/build-stylesheet-delivery.mjs": "ad68d68280ea6c9e37c81d43e9d39dd73cb606e9d766ad0929bfd19515a791e2",
+    ".ai/audits/bug-hunt/repros/build-watch-failed-dependency.mjs": "0b2cdc53641c715d44e03aea87fb3bc37f15b77eca29861ce9acbfd6ac57af3a",
+    ".ai/audits/bug-hunt/repros/bundle-browser-wasm.mjs": "baa4949c33cd8087c0506701ecb3551f0d0121881fe6b90ab15bd0e7b9d38199",
+    ".ai/audits/bug-hunt/repros/bundle-context-browser.mjs": "eca6a9e8d6d73768117abf1fb3a44008a9142021313a761d7e7e5fd3a28be82b",
+    ".ai/audits/bug-hunt/repros/bundle-context-probe.rs": "0b0ffa21aa52d48fba2f95cf7c7603e412c862b74dc0a57cdee66b400f6923a4",
+    ".ai/audits/bug-hunt/repros/bundle-graph-browser.mjs": "6bff743a5acae63bf8c4d842bdec52893fe9aff0da1438764adda010d3af87fa",
+    ".ai/audits/bug-hunt/repros/bundle-graph-probe.rs": "5ca212f1cffc0dac4052335a67b09afba7500808a9561b3378fee1c246f97f24",
+    ".ai/audits/bug-hunt/repros/bundle-public-browser.mjs": "8e4ae84b09facceadaa151f339c6ce4545435ab678baf370060b37555ca5371b",
+    ".ai/audits/bug-hunt/repros/bundle-slot-publication.mjs": "98a71320e345bf6a11d3d87e9cf7e7417e1c83365e8e97492f4f8c2220f7af14",
+    ".ai/audits/bug-hunt/repros/chokidar-late-registration.mjs": "be331344bf277c692bef88b7d54ae4ddd0523906b37930dfb49f7bad914d9946",
+    ".ai/audits/bug-hunt/repros/cli-asset-retention-browser.mjs": "b0943d4e519c1480accff865dcbeb4a3e9f40cbf132cc29c67db84f1727bfd08",
+    ".ai/audits/bug-hunt/repros/cli-ownership-stress.mjs": "d309a9c10f9b0aac58c0f76b5340a0c7aafdb14cbecb11ca408868330ffdbc1b",
+    ".ai/audits/bug-hunt/repros/cli-publication-browser.mjs": "b46756546fafd75f1055286f2122d199984df5beec3bff81c40f2456038cd988",
+    ".ai/audits/bug-hunt/repros/cli-stylesheet-delivery.mjs": "f8d1a2a99d465216d7ed64b22b9e7768844afa6c8ed44f16dd40c112fbb1e557",
+    ".ai/audits/bug-hunt/repros/cli-watch-recovery.mjs": "04e5ea3a859876f7f129292b6f563f666ffbc2c9dc21eeed8978a004f0dea41d",
+    ".ai/audits/bug-hunt/repros/compiled-stylesheets-browser.mjs": "2e41723dc4afd82b81dcd88770ca7e7f1bf5f50885d90be65411a8ca772be94b",
+    ".ai/audits/bug-hunt/repros/compiler-stylesheet-preparation.mjs": "c3d51874cd14bf212021c645507007d70dde4e8972e25580aca0d4f0b4bdd0cc",
+    ".ai/audits/bug-hunt/repros/conditional-native-compose.mjs": "c750ced33684b9895a02a67ccb9f3a78dfacfe24eb0906cd5be898d864994e4c",
+    ".ai/audits/bug-hunt/repros/default-collection-graphs-browser.mjs": "264a609e4c8cc54121074e95cdbbf4d40c13661acf718e01f82e507f05cba268",
+    ".ai/audits/bug-hunt/repros/file-manifest-delivery-browser.mjs": "d029d2120d1a83c49fcd9ffe0040829ad23b95ea1b737c67bccb2f3897eec565",
+    ".ai/audits/bug-hunt/repros/filesystem-project-browser.mjs": "f7412d8068191f7cb05a897e40bbb831c98beb78688c15d5ae6f905fbf80b7b7",
+    ".ai/audits/bug-hunt/repros/generate-wasm-isolated.rs": "f5600ddb4d41044b1bd0eaea7c67dc2ea087221aad16bc999e701b3b56896014",
+    ".ai/audits/bug-hunt/repros/graph-compose-marker-browser.mjs": "64ef268bdea324206bcb547142e6310328d49b3b5873fab20921b716e01552f6",
+    ".ai/audits/bug-hunt/repros/graph-directive-metadata-browser.mjs": "d784aa1304627df39192e801ec8d8352e1e04d5f000c39764b9d702382fbba1c",
+    ".ai/audits/bug-hunt/repros/graph-suppressed-conditions.mjs": "f15f139b47d06f8846b5deb07751eedfaf6159e1157e1d79b5199b25c90835af",
+    ".ai/audits/bug-hunt/repros/inline-bundle-browser.mjs": "06352799478b3e6c8dafbf69b4e91347b9681cc749424755b7f09ec4d7a39d8c",
+    ".ai/audits/bug-hunt/repros/inspection-attribution-stdio.mjs": "5a5f7ff0b22fef469cfbf32440d142dedff46d1b28d5a3e454125238f12fba8f",
+    ".ai/audits/bug-hunt/repros/inspection-mjs-discovery.mjs": "f957a87a7141e6b1224eef02f5199e72b0f587462995c040f4e501ff37f9abf2",
+    ".ai/audits/bug-hunt/repros/inspection-source-attribution.mjs": "829d62d367283fec3ac5d3594d0d95c623be5f5e8f116bfc360e1f7fb201421a",
+    ".ai/audits/bug-hunt/repros/legacy-compose-imports.mjs": "42918d210d003c98bbc9c0ae030a86387274a89340d4dd4d43a0928a4c7c2ddb",
+    ".ai/audits/bug-hunt/repros/legacy-native-compose.mjs": "7b40e6405d2e6f6037fb3910ac1ec3d538b06f5d505c7855dad45ce35825a954",
+    ".ai/audits/bug-hunt/repros/local-transform-delivery.mjs": "a34f515291824ae2ef58fb60bc0be79b887d74da9fb809e5779525451264ba0e",
+    ".ai/audits/bug-hunt/repros/native-cli-ordered.mjs": "dcbd2beff710991aca881266fcff5c0d6b97737f477a140b08ec3f4c917b40c6",
+    ".ai/audits/bug-hunt/repros/native-conditional-matrix.mjs": "f21f33c920b6a651948ad515798d101b92c22f1a0fd0643d45981b52497236a2",
+    ".ai/audits/bug-hunt/repros/next-css-source-map.mjs": "bdb217dec84a7dba19d6f3b3f87952e139dd745ada52eb017861d94f69065153",
+    ".ai/audits/bug-hunt/repros/next-entry-reference-context.mjs": "a02ca225093b9a3775f0a71df34d39af988121af89dcaf4446a2beb9acc0dd4e",
+    ".ai/audits/bug-hunt/repros/next-runtime-start-hmr-browser.mjs": "6323d7b9e33d739e56b9a5ebd16ec937dd53a28a844bb65171de6ef1521e8b8d",
+    ".ai/audits/bug-hunt/repros/next-webpack-css-pipeline-browser.mjs": "1a34b5a654755fa9a0d75f4b9280a674724aea6d61df752794e424f3eef77b32",
+    ".ai/audits/bug-hunt/repros/next-webpack-virtual-modules.mjs": "fc48b97820c95e826f729e88b22daa06611e90bb65dabdb62814e0021bd2f12e",
+    ".ai/audits/bug-hunt/repros/node-engine-wasm-default-loading.mjs": "ef2e6e7538cf8d6ab6c740e16635c5fcc1c89bbd7f8d20ccec7e26eb03074ded",
+    ".ai/audits/bug-hunt/repros/node-import-discovery-browser.mjs": "cce6c197934717196ace879bbbd992fc3ddc68b9c6f7b6aed72d690230aec1e6",
+    ".ai/audits/bug-hunt/repros/node-package-conditions.tsconfig.json": "ad7029416ae71eb11427f88ee38b8f0cd45b7f6f39284af993841edc788c061b",
+    ".ai/audits/bug-hunt/repros/node-wasm-default-loading.mjs": "de59134ba7ca0e5833e2dd2ff5503aa6878bc0ed9ad9288cac0913dcbb99b811",
+    ".ai/audits/bug-hunt/repros/project-manifest-query-browser.mjs": "87ae9ef79c4dcd65a5b9b7c928ec5bcad23a18776cd67234db414629bdf5384a",
+    ".ai/audits/bug-hunt/repros/qualified-managed-direct.mjs": "d640967b5896a1d2d83b91079083ffa8044be17d4f0c1757b227f4f50796633f",
+    ".ai/audits/bug-hunt/repros/qualified-managed-matrix.mjs": "d8f3c3b9a4a78d0e0bc6def16dbc9ffe186b851f1f48db130f6749527d7e0212",
+    ".ai/audits/bug-hunt/repros/qualified-rendered-browser.mjs": "a10a1a20d2862a6d3cfa2450daa179eaf196d41e212d331d8884315fdddcc62c",
+    ".ai/audits/bug-hunt/repros/rendered-delivery-browser.mjs": "4c64041eadc4536225de46657b9ef0088f0f038d3589cc577431eb92210c31e4",
+    ".ai/audits/bug-hunt/repros/resource-url-browser.mjs": "e09934b50156d824ca6e5594946b8c0345ff04e80c3af5054c541117774dd34b",
+    ".ai/audits/bug-hunt/repros/stylesheet-graph-browser.mjs": "47ba7c886fa7ea5d84de4c70da96333f98c1a3dd69617e3e6a25acd7db66ca25",
+    ".ai/audits/bug-hunt/repros/stylesheet-output-modes.mjs": "987c95faa056fac7a1b7cfbf3e570cb59f2fd72f1cd820bf7f8114a85730c7a2",
+    ".ai/audits/bug-hunt/repros/stylesheet-source-diagnostics.mjs": "786f37f86bdfb518dbb13e91048dd9dbac4cceee3f020764fa3b432c75256a59",
+    ".ai/audits/bug-hunt/repros/vite-build-startup-browser.mjs": "a00e0e9bf9ba41b66e9135d1d71d14ca5e821f0279511119924f89750ffb5936",
+    ".ai/audits/bug-hunt/repros/vite-css-hash-matrix.mjs": "f2dc2c28c88b066e377be8f63f96189e823005f5f7c85b2628d863f9cc6e0bd7",
+    ".ai/audits/bug-hunt/repros/vite-css-modules-watch.mjs": "784a63f885a6eec846a04e7f16516f032882a482f349caf94bf64c471592cf8a",
+    ".ai/audits/bug-hunt/repros/vite-css-modules.mjs": "99340fae68f75487165730f29192848c8fb9404e8da966ae243f274cf04b313a",
+    ".ai/audits/bug-hunt/repros/vite-custom-environments.mjs": "90d25fed0268af988aeadfdf8acca77d8d250ced902165fec08a709e66b06402",
+    ".ai/audits/bug-hunt/repros/vite-dev-graph-resources.mjs": "e009617a85cde88d9430fd788686f8800dbed831f1eeec878692ce327cb4b957",
+    ".ai/audits/bug-hunt/repros/vite-dev-graph-restart.mjs": "614f86d3255fda030e294c4b46cb54ac6d0c9d27e8160f364435d9ca08c471d0",
+    ".ai/audits/bug-hunt/repros/vite-dev-resource-recovery.mjs": "385befa089ffee5c2881ea37e5c6c5ec216ba5f566039026265b583be51bd385",
+    ".ai/audits/bug-hunt/repros/vite-dev-style-requests.mjs": "8427e108937fcfd199126e0656b57ee3f080982a45be00721f73f2d24fec1906",
+    ".ai/audits/bug-hunt/repros/vite-external-directory-browser.mjs": "0f00aa149d90ec57653f5482669315ba35b26e3f6d4f768ddf7fe6b5e9882faf",
+    ".ai/audits/bug-hunt/repros/vite-failed-watch-control.mjs": "f0a624c25b3f57a4f3c74fdbbbff448d2b20394386d26ae11d79eef70f81fbb8",
+    ".ai/audits/bug-hunt/repros/vite-final-css-hash.mjs": "3ca1a10996ef928b19fd202c1732b19a77a9dad31aebe9231cddbc74a5141e60",
+    ".ai/audits/bug-hunt/repros/vite-graph-resources.mjs": "02b423ac2e4ed019582b849d1d87c7ec59661c4dceb506f6e343b1366977d1bf",
+    ".ai/audits/bug-hunt/repros/vite-host-inputs.mjs": "9f238e835f81be6815c085972aed9563f2fe7a5af3b14dbf4a32df6eabfda85e",
+    ".ai/audits/bug-hunt/repros/vite-host-resolution.mjs": "dff722c637c8373bd47f56168c18d106b813faec73516610ebce68097d8899c6",
+    ".ai/audits/bug-hunt/repros/vite-imported-local-resources.mjs": "6f65897a1f4421ba53652803032ca85c98b3f79ddcafc6113e35fc940c06153b",
+    ".ai/audits/bug-hunt/repros/vite-imported-module-exports.mjs": "0dc631b07b540914a40dc79ed49cd578dcaae5e237c39c039008cd6846d44bd3",
+    ".ai/audits/bug-hunt/repros/vite-imported-module-resources.mjs": "7ba03b3cf1005bf63db7491a5d9d36a319dddac438ae40a5095e5ce24383ed61",
+    ".ai/audits/bug-hunt/repros/vite-inline-custom-urls.mjs": "9d3a274e0b546b6b9392801cab5156a0c3171e00b32afb338d7c69890f9a48e5",
+    ".ai/audits/bug-hunt/repros/vite-inline-delivery.mjs": "e1daa80030de9e8d70bbe3e791332399b2ee1210487f86d826b9f998cc604263",
+    ".ai/audits/bug-hunt/repros/vite-inline-node-hosts.mjs": "2a5b4d955437afe2d7a0f64fd59872381a53b49f020b4c5618a8cd28b6651447",
+    ".ai/audits/bug-hunt/repros/vite-inline-paired-assets.mjs": "cfd9645bb445465e2f698e6527e7536ef8ee75761d477f8c72d005ef3bd95fb5",
+    ".ai/audits/bug-hunt/repros/vite-inline-pruning.mjs": "909af19f1ad08fdbfab7ce2040f2153f6f60b94421dffa6ff1f8586ddf35b1fe",
+    ".ai/audits/bug-hunt/repros/vite-inline-ssr-browser.mjs": "cc37db7ab0f8d2492ab2e6a66b79f0fed2650d635f3577c72bf3b120aa748dda",
+    ".ai/audits/bug-hunt/repros/vite-inline-url-matrix.mjs": "5cb43329093a7152199f3c70c76fe49a43008682268c474eed1ff821cb1c12df",
+    ".ai/audits/bug-hunt/repros/vite-inline-watch.mjs": "f656a2b3a798fae6dc15d191c4c8548c3f1fbc48323d6a643b8ad9f2d4b316ce",
+    ".ai/audits/bug-hunt/repros/vite-inline-workers.mjs": "18e69ea871e9c4b222c817b05e4d69be04ffaa29dd6460869705472e33f37b7e",
+    ".ai/audits/bug-hunt/repros/vite-local-graph-resources.mjs": "a6dfd45930d74e6c436e7865006c9ccce6b1cb58cc4bc75e9f3fbc17678eff5d",
+    ".ai/audits/bug-hunt/repros/vite-local-query-resources.mjs": "9fbaa43b0dbd13c917ecc5e5b17457da3e036a69286fd49e77a206ee88cefa1d",
+    ".ai/audits/bug-hunt/repros/vite-manifest-lifecycle-browser.mjs": "b5c9a646141c70e7279673dd3d891597da40b9a44bc822226c80697de474f051",
+    ".ai/audits/bug-hunt/repros/vite-manifest-startup-browser.mjs": "655468368f7d15bdb1b22223f19ce3fe5cfbea5fad4e18f011c0eb0ec9dd6340",
+    ".ai/audits/bug-hunt/repros/vite-missing-directory-watcher.mjs": "d9a1008b7b27344ff0803dc7a4a80dc89d9dac3c474c7dbd1579877811bcacbe",
+    ".ai/audits/bug-hunt/repros/vite-missing-import-watch.mjs": "584b49a5cef6918de76b55d1cc346a4e245e10d22d0b755d22625f04ae53e2ac",
+    ".ai/audits/bug-hunt/repros/vite-missing-module-host.mjs": "b807fced0cc135093a1ef0d431e9be80796d7859ca6ffbbc59dd9061aa5a4486",
+    ".ai/audits/bug-hunt/repros/vite-module-envelope-probe.mjs": "57b58963e88ca5ecf42aea3593e9d5805f147138b19adb6a554e39a07aa38526",
+    ".ai/audits/bug-hunt/repros/vite-module-hmr-consumer.mjs": "111d9136d3f5a5bcf585a53a6f4c2aace7ac58e1094a059a583408727ee7b6f9",
+    ".ai/audits/bug-hunt/repros/vite-module-hmr.mjs": "72ab936912e4694c0d582ba0bf822d996f3ead375a12ad762af8db9483f3fa68",
+    ".ai/audits/bug-hunt/repros/vite-module-import-host-controls.mjs": "bb43b867e966aabe65cacc644d5844d4760d528fd7963e75b296a36c60d83cae",
+    ".ai/audits/bug-hunt/repros/vite-module-origin-projection.mjs": "0cd7dcb5592a444e0c4e1423b07fddf1b556e98270bdfab043d53519a203b1ca",
+    ".ai/audits/bug-hunt/repros/vite-module-resolver.mjs": "4cfee8903a3fb9be6f5ad01259aa043133e85f505377f31176c3d3993a0081db",
+    ".ai/audits/bug-hunt/repros/vite-module-url-host.mjs": "7559d045ae0fe0f06d6532d48da006f94b21454b5c3f22b3a209b2b8493f4499",
+    ".ai/audits/bug-hunt/repros/vite-obsolete-reconciliation-events.mjs": "94ce56572b9e6cf878a9d02b7c646049ce9bf28d783542f82ae44523766705af",
+    ".ai/audits/bug-hunt/repros/vite-proxy-direct-browser.mjs": "a62f3e11db9d1f82681ab9f5c3b572ed3a8d16656645cde66a8ea1506bbf6ac7",
+    ".ai/audits/bug-hunt/repros/vite-pure-resource-paths.mjs": "6c3b43f724217473b02e4c5f76bb47b79279e7ebba889336d854a37f8f222111",
+    ".ai/audits/bug-hunt/repros/vite-qualified-dev-status.mjs": "44ab258612af90f42019c52abc32651f8cb3691ee481c56f21351c9ef269e25f",
+    ".ai/audits/bug-hunt/repros/vite-qualified-prerender.mjs": "695863a9d16c0c39547ae5f8dc05b392c98d2c21a924991065bd40d5cdf3e8be",
+    ".ai/audits/bug-hunt/repros/vite-reconciliation-diagnostics-browser.mjs": "664477b79d306b66ace79394df46e51765f66a4a2e984718b82736b7b51b1202",
+    ".ai/audits/bug-hunt/repros/vite-reference-recovery-browser.mjs": "f1793589bb70e75b9e72c14ba5637b737a534bacdc17b5f636ef299d5e5e42f0",
+    ".ai/audits/bug-hunt/repros/vite-retained-sass-references.mjs": "e930c1bddea575e636c14b37b65cb644251b8ac5b8086a99bb8b5f0675dad1cd",
+    ".ai/audits/bug-hunt/repros/vite-runtime-dev-base.mjs": "750f6298f7715b6eebbc06d61ddabfee029cad4b38a4e1b689804c0c264d17c8",
+    ".ai/audits/bug-hunt/repros/vite-runtime-input-updates-browser.mjs": "b80d4135c3a09c416adac234baf4361bce3715258be0601e7a92ec9be449a3ee",
+    ".ai/audits/bug-hunt/repros/vite-runtime-start-hmr-browser.mjs": "d0c32b3ae4572e5a5c1f58f79188343b659639a1d1dcfd717b018bb4b90fddff",
+    ".ai/audits/bug-hunt/repros/vite-sass-diagnostics.mjs": "4e533fecbbf20fd99cf12ba66046d6638a0c8a59b40e423a9105016d950c1c04",
+    ".ai/audits/bug-hunt/repros/vite-sass-environments.mjs": "59d0d1879855f6862341d0988cec65e4fb3161dc501dd6b11380195dee1cef86",
+    ".ai/audits/bug-hunt/repros/vite-sass-inputs.mjs": "d7f7f7dd999a43a04ef5bd8cfb3935fbc2abec40462a7a44748270ce81019533",
+    ".ai/audits/bug-hunt/repros/vite-sass-module-resources.mjs": "77ff9c2e4ee3663b5f0fc8437d121b3d07bd6019fb506b9a44584fe1b476a8f0",
+    ".ai/audits/bug-hunt/repros/vite-sass-partial-hmr.mjs": "83115d24b91b62bd19949fc745d794100ce6d6e3f294f41a7e043edcb554b1ed",
+    ".ai/audits/bug-hunt/repros/vite-sass-partial-references.mjs": "96ce77b8fe025e6276c7230cf42d1d45b1d4ed6822ee52f33c856ed07b61022d",
+    ".ai/audits/bug-hunt/repros/vite-sass-watch.mjs": "b95c49163c56a381b0d8a097a4a86ba1ad068956934e6ed97d12375b9e902b2d",
+    ".ai/audits/bug-hunt/repros/vite-shared-plugin-builds.mjs": "9e2cce650e61d53023dd5b366316e54c1d728792e5001adb5e8499f0f43b4848",
+    ".ai/audits/bug-hunt/repros/vite-shutdown-handles.mjs": "44a9fdad4d64e70a01255e33bc32657928da0d007d438bd9cd287f79568b2457",
+    ".ai/audits/bug-hunt/repros/vite-startup-resource-browser.mjs": "6fc04b60780a10a8a820c22ea56eba5bae95ab07ba48c6e1833de9d09b998d34",
+    ".ai/audits/bug-hunt/repros/vite-virtual-shutdown.mjs": "4b36524994e203b6c9704151e79e783d6e3d0753bd18749e7b2ed8a2bb91355a",
+    ".ai/audits/bug-hunt/repros/vite-virtual-watch.mjs": "0eb5d6c8aedeecf0af20a96f2a4419d0a66734bd44c667e30b0cf7fdd72ec34a",
+    ".ai/audits/bug-hunt/repros/vite-watch-initial-events.mjs": "4e7bfd0add193f88d036a46748fb0622cf21379e176700e402b3d8413064b25b",
+    ".ai/audits/bug-hunt/repros/vite-watch-registration-window.mjs": "d03f2e87364f5c058e0315ca65d15106f81cfede35d70e11df6213d4c24540eb",
+    ".ai/audits/bug-hunt/repros/vscode-restart-host.mjs": "41ed4c6002b5bbdbbdecd55cf53f9a08fb85c8b4c73a82f835cd48dae6aaa3bb",
+    ".ai/audits/bug-hunt/repros/vscode-settings-revalidation.mjs": "012c0226cf0841edf72f18a621f6510cb366b577d7e7990934070860645cc58e",
+    ".ai/audits/bug-hunt/repros/webpack-runtime-start-hmr-browser.mjs": "4602770d38ffb7bb132aa6c7247f9463e2b5f9433626832dc0dbf8887e255c71",
+    ".ai/audits/bug-hunt/repros/webpack-shared-dist.mjs": "bd5c6ad2e9ccd79c66d454672257cd075b7f6d3f4b0983734300666944166cf3",
+    "benchmarks/AI.md": "bce8aa400e6b70920514dbf8e8b74f0ac06896d21379b4155e18d7d2e6acfa07",
+    "benchmarks/browser-css-cost/browser-css-cost.bench.ts": "57410d9713c8684199359603acf56a9576208392c921f630ee54030b49ca8c98",
+    "benchmarks/browser-css-cost/snapshot.json": "728de47738c49b3f4c87be913b26188e62d0593a68dbc0f13a18f4eb31c1c529",
+    "benchmarks/browser-css-cost/update-snapshot.mjs": "b4c999132d270f721b754775ed3bed10a9b1c59d89be492d57b6f6c011cb5f4d",
+    "benchmarks/browser-lifecycle/browser-lifecycle.bench.ts": "d08ed65d5e4f3f3e06dec913e81b7a1811c24e9413d733966ea4d99c16316fa2",
+    "benchmarks/browser-lifecycle/check-readiness.mjs": "63dd9f35a0de8e37195f6205156fe1a670d0c186f06e342cc2441d9cbd8b7760",
+    "benchmarks/browser-lifecycle/compare-stability.mjs": "24d1b4c7d4c11870f3a21ecfbb101961934ddb51afe2ea811cfe6f583e509b84",
+    "benchmarks/browser-lifecycle/long-session-evidence.json": "1da5ae591dd5fe50f60c369ef8a5546334c6c140734e4d6296debd154e47158a",
+    "benchmarks/browser-lifecycle/run-report.ts": "58ac40afda0920ee256fb0e1ab5254f6d4393ea2d1c88b1009e81b7ae081811b",
+    "benchmarks/browser-lifecycle/snapshot.json": "4121c7c435d682c92408e5933b5b8376bec30ae10e2278177ce6bbc2367266c0",
+    "benchmarks/browser-lifecycle/update-long-session-evidence.mjs": "3520cfa193fe80fddc49fdd4f419ad9b0ca04b44868538ab131593333ea6456f",
+    "benchmarks/browser-lifecycle/update-snapshot.mjs": "e2cb4dfa80ae1dc64dbd3ea7f0bd3b18b06afe1a97b08ded98d15d5d53dbae62",
+    "benchmarks/build-diagnostics/build-diagnostics.bench.ts": "c8c59bec6318e2cc362cb57fe8b5f612f71c6a20e4ed9bdba551771aac84cf80",
+    "benchmarks/build-diagnostics/diagnostic-summary.md": "864b8a4dbce57878f6c85aad7636e699a943767a8c17f9b74a628e0db22e35b6",
+    "benchmarks/build-diagnostics/run-diagnostic.ts": "9904963ad32b278032ace67f8e3509079d0c777880940805a16ff80aacd1c4a2",
+    "benchmarks/build-path-diagnostics/snapshot.json": "5ba967017b816e77e32780384fd73886353bfccaa5c3cb07a5e18ff56389ba95",
+    "benchmarks/build-path-diagnostics/update-snapshot.mjs": "1472dfc0a2f35804dc292829a87418b37c213e1ead8ddfb9e7b912f5464a9236",
+    "benchmarks/build-performance/build-performance.bench.ts": "81d159ed921ea4cb6fc0affe237aa302255164ed35d04d8b39c43a37e194cb43",
+    "benchmarks/ci/compare-benchmark-history.js": "9e1a9212634b3833381e104a879915dcdb862d19eebff5d53f0316eb344f200e",
+    "benchmarks/ci/write-benchmark-report.js": "fb4d736ff182dc1541827aabb7e649a531f19a727492f92aeecc7b72ea6cd137",
+    "benchmarks/compiler-diagnostics/compiler-diagnostics.bench.ts": "d00bc48587effade835db98c85d81282b86931f789670201725f53ccbc547787",
+    "benchmarks/compiler-diagnostics/run-diagnostic.ts": "9aca2ee481997c32124d7b6fbeaeb7549d8572bcf8eeca28367a14cad7977f01",
+    "benchmarks/css-output-size/css-output-size.bench.ts": "c2e838114d9938d7392145bd02b51204d0464354dc4698bbaf34f50880b016d8",
+    "benchmarks/css-structure/css-structure.bench.ts": "be78fde023023d5b05c8c18803e016ed1f3d05243e55bb656c28603e16dfdb22",
+    "benchmarks/docs-page-css-size/docs-page-css-size.bench.ts": "309037a2d1a87d49ad8aa950e9b34e2ab29dab19ed019b0997dfbdc939108d85",
+    "benchmarks/docs-page-css-size/input.json": "681de1a855e5dba4018f206246ae813ffbc0aa1e5646f2ca91970f42f932473f",
+    "benchmarks/docs-page-css-size/shared.ts": "caeded5bb9f5d3ee3a95214043ab51014d4f597fefdd6c9e61d162fbd9962bde",
+    "benchmarks/docs-page-css-size/snapshot.json": "9b6f3bb35a8946d4ef6ae849162b42f3614935ace720ed2d6b2d2218561c2c9e",
+    "benchmarks/extraction-diagnostics/extraction-diagnostics.bench.ts": "31c455a346d4b48f331f3f457446069b3876f6382e7fee34dec29a3f9b039850",
+    "benchmarks/extraction-diagnostics/run-diagnostic.ts": "74f31252fc472f353a69685612c324a423cf8f8356deea32723b1068abb22d0c",
+    "benchmarks/fixtures/manifest.ts": "a6f6a2432cec88c52701b22d36d0ec0d99accb706b9f887d0ab0263f47ed2514",
+    "benchmarks/fixtures/static.ts": "ebe40d5c6a96021b2c1a40c8bfce39f7138a620a997b0e776d1fefe2364d4724",
+    "benchmarks/interaction-cost/interaction-cost.bench.ts": "1efd5b551eac5384a55ecbf2018d29f876b1dc42ecbeec9b58a5a77ed0bc2d6a",
+    "benchmarks/interaction-cost/run-report.ts": "5c26dda142b2da007c2017b2b544f5e5299b6d382d9d56c94961e5b660bcc05e",
+    "benchmarks/interaction-cost/snapshot.json": "75cb4f662739f6f1dbbbabe7831b7faa815918a58f1ccd561b6d4c083787fb51",
+    "benchmarks/interaction-cost/update-snapshot.mjs": "4b00f38590421f594db2062aaa234b33345942801e1926c4c15c5262680a12f7",
+    "benchmarks/master-delivery-modes/master-delivery-modes.bench.ts": "e4ccf2bc138f252364cc8648624cad5a9dca88e8185e7543b7646f1aba45d56b",
+    "benchmarks/master-delivery-modes/run-report.ts": "712ccd60876b83f61e6ce3341493699ac780e9f6cb0fc762695118866cdb2d57",
+    "benchmarks/master-delivery-modes/snapshot.json": "7d7a1ec9ca4f7ac1dd36ed94bfceb26578112c73a9227169635184522f094421",
+    "benchmarks/master-delivery-modes/update-snapshot.mjs": "d5e99815b714af6de40c97b87942d82d948ab50b3c36afcb8600533053c5bff3",
+    "benchmarks/package.json": "dc24d79b77c1a0caee366457ae8fee8f5492245522bdf97123bb3c505305734a",
+    "benchmarks/progressive-hydration-diagnostics/progressive-hydration-diagnostics.bench.ts": "85573a29631dd565e92742c382840e3e1833332c55f42b0a24416e0613d0d0a3",
+    "benchmarks/progressive-hydration-diagnostics/run-report.ts": "9ca018c73f7bc34895c873e589b2ec65e45c4a63059bb34e6af18dbecfb74fe2",
+    "benchmarks/report-smoke/report-smoke.bench.ts": "fca68eef4ef2a8449d40a046b69076cfa62fbee92574d00c02cf1f3cb2d24812",
+    "benchmarks/runtime-mutation-diagnostics/diagnostic-summary.md": "be589276de136f0b43d25f770cc5145eb67ed1ad33fad3cdb18141236630db3b",
+    "benchmarks/runtime-mutation-diagnostics/run-report.ts": "fb2de0071ea3cc406ceb724fd77cc53fa5ee694e14405dd7043bd61c4e1c452c",
+    "benchmarks/runtime-mutation-diagnostics/runtime-mutation-diagnostics.bench.ts": "a2d43453909ee93950143b7b8a5804b1a87b8196885ea9128b30d34aefdd5293",
+    "benchmarks/runtime-style-invalidation-diagnostics/run-report.ts": "78b8daa83c1fa4eaed71a9bce6b4302c53748eec8a413b0b84e8885573eff168",
+    "benchmarks/runtime-style-invalidation-diagnostics/runtime-style-invalidation-diagnostics.bench.ts": "5ad216e53b5900288bef6787f928a0a669cf6f2378a2f2a3a0d72606a8d18f31",
+    "benchmarks/shared/browser-cost.ts": "58f423dd5739ce38e4406f1c7ae3c14aaf021564e551f1fa6499f26c31a6d785",
+    "benchmarks/shared/browser-lifecycle-measurement.ts": "2e6c1469214bf02b7cc861ee6b1a61723f8867e4eeb55eb2989c4be4ef8502d8",
+    "benchmarks/shared/browser-lifecycle-metrics.ts": "c3816c8ff8661d66fc0810d6023d1074dbb7867b65ae72a7039124bde402b882",
+    "benchmarks/shared/browser-lifecycle-page.ts": "8eccb2d39108de8ddbb2b3bddb5d6cc9804e238d2696f69919afb5872ebb7878",
+    "benchmarks/shared/browser-lifecycle-samples.ts": "cba6e90872ef43867f45e06711a8904f35d3ab0abf1358a1066aaf75a3c066ab",
+    "benchmarks/shared/browser-lifecycle-server.ts": "b6cb0652528ed7403c2e6b8e20e81c55daff83ca46ed0637c8b39271ad72463d",
+    "benchmarks/shared/browser-lifecycle.ts": "a3be15cd0e76cf81444c5592271d98f1fb881fb5bdb5c8fd2d6c7b38c90fad03",
+    "benchmarks/shared/build-diagnostics.ts": "7d15252149f9419c894ef4c08ea8fb0c8eb9425c28e99bed2143cbea31680c9d",
+    "benchmarks/shared/bytes.ts": "214c13c5236b01915f94a88039444834850be5977bc07cbc9b65223c745ff49f",
+    "benchmarks/shared/compiler-diagnostics.ts": "c06eb205b483e517abc89349c297172576688d0f4b7a05bdb59d60d4c4394b75",
+    "benchmarks/shared/css-structure.ts": "00e46e8f95e079166e102601f250def2853e3472f745ea28900e1bfeb2b89314",
+    "benchmarks/shared/cssom.ts": "058166c9d58cd16b179cfd5b389c873613fbc836a71afae059161275393d5794",
+    "benchmarks/shared/delivery-mode-harness.ts": "413fa166edf99e36523aa543e9c7fb849609b59298026277813f708e506394b9",
+    "benchmarks/shared/delivery-mode-metrics.ts": "7806f77d743742995090fae9acf87675a99e464177327eae85032088e27b5e75",
+    "benchmarks/shared/delivery-mode-report.ts": "a0afee729c2f9c255bb9bb7cd7fe537109187d0849c82bfeb66f052acaa92d46",
+    "benchmarks/shared/delivery-mode-samples.ts": "6ae7311c9fc8192da67f41d48c535bebe25d550df07ad99e9dab77e0b692ca2b",
+    "benchmarks/shared/delivery-modes.ts": "0ca92e0e9704455c30043e55a354130d7b58fcd8f8eb76a73c30f1028f51baa3",
+    "benchmarks/shared/environment.ts": "6d7d2f13d87d973e81008d8037a81dd9fada14c94a449b53272491109178d620",
+    "benchmarks/shared/extraction-diagnostics.ts": "c39c5c40f7319f52572702cbb0ef092c0ec75d07bff312e1020f1b6d91edcb10",
+    "benchmarks/shared/fixtures.ts": "1937a8cb0f35718d26a6237f8280c37ba29d30bd229e1dc68642aa0db33b8097",
+    "benchmarks/shared/interaction-cost-config.ts": "373f9c35ed682d1d750f902d964f79485cb90421bd2e0b1e3d3c38d220c965ce",
+    "benchmarks/shared/interaction-cost-harness.ts": "adc075eb5a8b684894cbe07ffc9e2c8aec7a4085d27560aabc11d5f055b6695e",
+    "benchmarks/shared/interaction-cost-metrics.ts": "70c6b31f376a93d1bcc159da0a7def58ec53279b208a80242d6b0b2161b8777a",
+    "benchmarks/shared/interaction-cost-page.ts": "cdd12d8dfdaa4d7251a1d58e12389aeb16fe9c125875fa2117101b8837a109e2",
+    "benchmarks/shared/interaction-cost.ts": "00e5d45d18deabbdaba3cf8fd5879177e6c308f13cb3666460bdacbc93cc24c4",
+    "benchmarks/shared/progressive-hydration-diagnostics.ts": "aa2b782a67be17306d49c5d12b400fb3e37a43882b5c19a24438579fff074e6e",
+    "benchmarks/shared/report.ts": "5ae3dc0ac1f055ca86a163513dc481898fcd597003aadb5f48e52a8b533573ef",
+    "benchmarks/shared/runner.ts": "1e28bd995935340b9dc43840b9303170cd41ce9d76023540ae5ce63d0b21c395",
+    "benchmarks/shared/runtime-mutation-diagnostic-metrics.ts": "b4cffe4dba4e3e611f4f39730278d5710828402849eee3ab61898fe885639f80",
+    "benchmarks/shared/runtime-mutation-diagnostic-samples.ts": "0dbc6ab9fbf15daceef322e2640cb6c27dd32ce00b8ae43d314cb22527774f97",
+    "benchmarks/shared/runtime-mutation-diagnostics.ts": "0b809ca9ccd84b7c09fde249419499e16b96a3a8b21ce4d0fe60789e5497c654",
+    "benchmarks/shared/runtime-payload.ts": "78ad64a4526be8a5aac92882e97e1429d28cd504d4e17d918857a092c20913b8",
+    "benchmarks/shared/runtime-preparation.ts": "d81df0f226c27cdf48313df2fb8da6045fc1e79fa8f356e2de50b00efc6eda1e",
+    "benchmarks/shared/runtime-state.ts": "68b175b3819a3297a2acb3f13e68578185838b1fb0ced1521595626d000b4692",
+    "benchmarks/shared/runtime-style-invalidation-config.ts": "efb82278a1be80404508fb9ddb2bc7071bdeb82450a727d4a31def6223101627",
+    "benchmarks/shared/runtime-style-invalidation-diagnostics.ts": "2359c73ea0b8b938cf846c2d3359a60515a92518ebfb9db5552d5e2c8a353d83",
+    "benchmarks/shared/runtime-style-invalidation-metrics.ts": "98a792007a108f356cb8d099374eadfaa9c81044103a8d98f1d712c7f4f42959",
+    "benchmarks/shared/runtime-style-invalidation-samples.ts": "c18cadae654a051e07343c61acac6d168fb8b93d24c53636f1e153ad8c915acd",
+    "benchmarks/shared/runtime-style-invalidation-variants.ts": "4a0d6de40b20bce26b12b277a950652bce5a108bb57ea363bd2114b857c93e81",
+    "benchmarks/shared/scanned-sources.mjs": "37b003ffdcecb02318c21331239b9e271d60286187c12c07e980a7ee3a15d993",
+    "benchmarks/shared/selector-specificity.ts": "99bfc4ef81d40c4ac6bd602b2672e2fc4b7e9cb7dca398b4e36d964f4021dbf3",
+    "benchmarks/shared/startup-diagnostics.ts": "76dc85032533b0be728ddfaca477ffdbd52a065b85ce0919ee208036a01cc170",
+    "benchmarks/shared/static-build.ts": "bbcbd12f418133ae0570ddf2500ee49fa4a1e1c44c67b3be00aaa7b0cbe635d4",
+    "benchmarks/shared/stats.ts": "327cbac45fb3679cf39287285062ff17529e209de6736322949b8f6218fbe5c4",
+    "benchmarks/shared/stylesheet-diagnostic-metrics.ts": "397acf6336586d463cc595dec7b3b61b34737a213967a5f11423f85b39389125",
+    "benchmarks/shared/stylesheet-diagnostic.ts": "5f1f55eef22bee904b32050158055428413ff17b7f14518ce3a16a1a5a078896",
+    "benchmarks/shared/types.ts": "a6f1e9913ef42eda6e7183280e119c72c8584aa9508c3ece18a644ffbcb5fff6",
+    "benchmarks/shared/vite-diagnostic-instrumentation.mjs": "d2e30fce13f77fa235a82c04cd9ef5a4ff50c9304a403a7018cf92b4bc3f4744",
+    "benchmarks/startup-diagnostics/run-diagnostic.ts": "64385144db2167e82159e3341c8882b83c99b0b9c7cd09a710465db77e9cc2be",
+    "benchmarks/startup-diagnostics/startup-diagnostics.bench.ts": "42f10bdcdb08af1402bb9531564fe840053d3496e1215a0fbe3b9a54188076c9",
+    "benchmarks/tailwind-static-comparison/snapshot.json": "d4228030168ae21aec480f058ec5f340b2e7f3414d28d8a38a3ec6b86c12ccb2",
+    "benchmarks/tailwind-static-comparison/update-snapshot.mjs": "d2f3400acb6bac2fc8e7e61aed51cb7557b33220c6e1cd17db322b2e1f93e831",
+    "benchmarks/tests/bug-hunt-cssom.test.ts": "7ca702bbfcd6d5556ff029b975307addb0d46b46acad7a9d4a2d9a71cdf9bba5",
+    "benchmarks/tests/bug-hunt-diagnostic-phases.test.ts": "d38760c1cec2a31a5b0d4120ecf690d21c5f8c156841bdb89ddc6b5e746d4564",
+    "benchmarks/tests/bug-hunt-docs-css-resources.test.ts": "80101e70e29c4318d8644c3709f4a64a5ae33debb1453c31bbe1f911bd69e123",
+    "benchmarks/tests/bug-hunt-runtime-arrays.test.ts": "6fef132e07173d5339b1b792f685f67ec186bac447e68d39b3331505f861c046",
+    "benchmarks/tests/bug-hunt-runtime-payload.test.ts": "acf9bc75c26d634b712361621f52929e2464c273de08f56e4db1aeced965b37e",
+    "benchmarks/tests/bug-hunt-runtime-preparation.test.ts": "184a135ac445a0c30c9859ff769fa7061badb29326c48643d4277c25cba1acda",
+    "benchmarks/tests/bug-hunt-runtime-state.test.ts": "93974005d564588c2189f05c96489b72487f633e66eb688f2bddc1741390a0e8",
+    "benchmarks/tests/bug-hunt-specificity.test.ts": "99b945eccbc3c26429bee1192c3929dec17e5f86dd3ab8148cb99b0807346725",
+    "benchmarks/tests/bug-hunt-vite-observation.test.ts": "d168c861f78fe25a8fb440f54e0c9bc38a14bdb98e70052b9d9efab2d3732d0b",
+    "benchmarks/tsconfig.json": "dd38fd22c2c863038846bcc3f910add238543216f53560c885a68a5fc8af5b70",
+    "crates/mastercss-binding-native/src/compiler.rs": "5abf9ae90f4c9ee9044779bf91ba821b841c1fa8e06871d8039b6d625fcf0dd5",
+    "crates/mastercss-binding-wasm-compiler/src/lib.rs": "62603d11cfdf96531afd7cecda6a7d991b6dc0a015c0f887e523518395606fa7",
+    "crates/mastercss-cli/src/main.rs": "2a12d085706440b858622ec53d445bda81d5f2f8e8261ba3273a2a6e4448a9d7",
+    "crates/mastercss-cli/tests/bug_hunt_ordered_output.rs": "484f41af94cb89c9529f61e1ce454b940714756d6186a19281bb593285dacfe2",
+    "crates/mastercss-compiler/src/compiled_stylesheet_graph.rs": "7bacd23710e627827c390113556f32087572ea2c6e7bfe3b111e1b1f00ef2d20",
+    "crates/mastercss-compiler/src/directives.rs": "3946868cfaa9b9ec1a71c99ec7457506a5ffd664be64f1fe9df3aa346e12f351",
+    "crates/mastercss-compiler/src/graph_inline.rs": "62f13afc33fdc54e9f61abdd0ae856dff58fb580c444260d197deba42ef0eff8",
+    "crates/mastercss-compiler/src/imports.rs": "4e6cad43d65cee8addf3a384123d1e18f99b30f9f0c91bb8d9ea9e275884f8cf",
+    "crates/mastercss-compiler/src/lib.rs": "f37eeebc1a7349a3a5adaddab708755b7b380003fe6baf7b93fb739576bf471e",
+    "crates/mastercss-compiler/src/lower/api.rs": "16a29a9441a4616a258343815e01aa87078ccd096d13019191598047926b1325",
+    "crates/mastercss-compiler/src/lower/merge.rs": "23433c51dde91913c523d81051e39d16bf3596782d96531015f21b730e963cd4",
+    "crates/mastercss-compiler/src/lower/mod.rs": "02307366b84b0e66ef53f7e5ccf6cd1b3e0807bd2b53841b80eb39626543d470",
+    "crates/mastercss-compiler/src/lower/output.rs": "22cfb03cc3ef8f73c19815d1ef7ff045d2240d2aefeb50474b3c02097d2002bd",
+    "crates/mastercss-compiler/src/lower/render.rs": "1faa9c032a6fc2cc9a9405ee8ccfbc31935ab97f18619ecd1bd05a5493b461b2",
+    "crates/mastercss-compiler/src/native_conditionals.rs": "ad3393ca61e924106a02f18a7c7bbefb93d121e5444ac5e335966ed097584cba",
+    "crates/mastercss-compiler/src/native_output.rs": "82fb0ca7a942ff300e05389c437365c42521e5403fb6a772bc5c55d198d48b55",
+    "crates/mastercss-compiler/src/native_style.rs": "7840eb37837e7883284a3e912c45ce74b2b09d25349003845869a18b61f67d39",
+    "crates/mastercss-compiler/src/output_edits.rs": "e22bc8a99af7d089f3f8d493118c19b30f6642af592ca87ae95cb32630239aa5",
+    "crates/mastercss-compiler/src/output_mappings.rs": "817b2a0ca60b305d30c96420f844b2cfb3c94a3823a5d8f929bf0629d06ed45c",
+    "crates/mastercss-compiler/src/source_spans.rs": "07524667ed35694bc2a91fe564cc7b3494e5855d9503f283841d454b4fca7346",
+    "crates/mastercss-compiler/src/stylesheet_bundle.rs": "79ef31f5c16268370f2dfdcaae226b5da5661a2def099405f24746ff1e0817b7",
+    "crates/mastercss-compiler/src/stylesheet_bundle_api.rs": "3cbbd8c2c2578ffd96f3cf501ef92c322fcb30a88c921404af72946b14c86938",
+    "crates/mastercss-compiler/src/stylesheet_bundle_context.rs": "d85de5b1e02f74b97c884155c521350b1c306538da2cad455b33a1e1e3065034",
+    "crates/mastercss-compiler/src/stylesheet_graph.rs": "e2933ef7f0877ae8296fcb8228fb5a9bcf1e93855ec2323b8c67ff40ca4100da",
+    "crates/mastercss-compiler/src/stylesheet_inline.rs": "fd74ec3ee97ce4277d4bb4627c1b0d981e8242744a339ef878ed122f092d3515",
+    "crates/mastercss-compiler/src/stylesheet_resources.rs": "3d964c8c5aa07c24e953f0a9ac19fd88acfb8efcb2bcfb83a24408b157310de8",
+    "crates/mastercss-compiler/tests/bug_hunt_bundle_context.rs": "e20da110271854288d3ac9a0f1eab38849a7323c4b5c8e6990670c52044cff2b",
+    "crates/mastercss-compiler/tests/bug_hunt_bundle_graph.rs": "bab6c386c6cef441e4d7a7be40a5ba6500eab78b29c99c338824c5a74571568d",
+    "crates/mastercss-compiler/tests/bug_hunt_compiled_stylesheet_graph.rs": "bd7eb1db737b55d5fde6058bd1dd2ac14215fa0cd3c4ac624c4e9b950760aa0c",
+    "crates/mastercss-compiler/tests/bug_hunt_directive_positions.rs": "843c175b4fc848037c7a2be7d8028c90327d77066b29b22fa69cd7d425d1d3b8",
+    "crates/mastercss-compiler/tests/bug_hunt_graph_diagnostics.rs": "49335c46c9c4f7ef6b0e2773cc221bb0f314035d29307f71ccb5f28862601d20",
+    "crates/mastercss-compiler/tests/bug_hunt_graph_output_mappings.rs": "e5eb1e937e50bf03a9d065fa6d340ea98acbac1058c0466f06bbf63abc069f2f",
+    "crates/mastercss-compiler/tests/bug_hunt_host_import_ownership.rs": "bcfa1edee4f8c8cfdc1445d8a3c4a8cf7cd0e11c601c1c314c2419bed6bb8c9c",
+    "crates/mastercss-compiler/tests/bug_hunt_import_qualifiers.rs": "9c20e63d369a13763b385e9417150e02019c201b069d57bf716872e461540a4b",
+    "crates/mastercss-compiler/tests/bug_hunt_inline_delivery.rs": "0b835475b310bee17bd333490e887a1489b2c866990922b3c48cbe5fec6b9f4f",
+    "crates/mastercss-compiler/tests/bug_hunt_inline_graph_maps.rs": "16bb9ed93617921c51b08ff3c971fdf460c14efbff08d345496c2349bae54cca",
+    "crates/mastercss-compiler/tests/bug_hunt_native_conditionals.rs": "83608d552a883036a22b956b0301ac1593c73cc1ca0ed99ef10fa0078eb19ca5",
+    "crates/mastercss-compiler/tests/bug_hunt_native_output_selection.rs": "32f633dd5e19412f8c0b06c29d596a50470bc3d546d6f975556be6d8b73f0493",
+    "crates/mastercss-compiler/tests/bug_hunt_ordered_output.rs": "bc4a6f06fc3ac57767f5554e3a691b9b3c2fd7e044a0d76366459ac3f63b469d",
+    "crates/mastercss-compiler/tests/bug_hunt_output_mappings.rs": "44316d5321b04692517ce04f4285a1d6417d6b37a5fbdad0c9a7806a3909ced5",
+    "crates/mastercss-compiler/tests/bug_hunt_resource_urls.rs": "d8f3998af8a4ebd272cde4442daeb4ff18fc97ebee437258ad9f5de88a667d07",
+    "crates/mastercss-compiler/tests/bug_hunt_standalone_delivery.rs": "1b6ca32705b3524f4492bcb1a242edb809b249aeca4203a2fe2e35d0fe2bb4b3",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_discovery.rs": "830cbfff3e060967faad3946ba23ca131c1667abdb856594f45dee38879d3344",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.json": "e4796c9914f84c967f2a687e8864aec4e396a7b575897188215abf69ed8b5482",
+    "crates/mastercss-compiler/tests/bug_hunt_stylesheet_graph.rs": "32396ca83df4c14bdaaab041ba3ce952556be71c0ec9d75f2dfe741eb903c276",
+    "crates/mastercss-engine/src/lib.rs": "dcc4670f4965f1ddd3af1bdd8db2eb1256b8814bc99a5a1a01c2e6e1a24bae9f",
+    "crates/mastercss-engine/src/resources.rs": "a3c3de1ff8c59f309c54b456159fad2419da6ebff4ad2e30620af60af880cc69",
+    "crates/mastercss-engine/src/session.rs": "dfba209236fd71730ce6c6460c35ad2874b76e0fba83c7ce5f4e3b7a81ae829a",
+    "crates/mastercss-engine/src/stylesheet_animation.rs": "a0ba7cc06b7ad741745a80378141221121a6337587b59409a2ef27eb837ca08d",
+    "crates/mastercss-engine/src/stylesheet_resources.rs": "d32f9e56788f61ce532673ac492d30abe039b4ca3a0f371019b239cf721e33ef",
+    "crates/mastercss-engine/tests/bug_hunt_static_retention.rs": "709ab2bb72355ae5c3d6cf05e76a6b25543c327741feaf5070bf6321d441ce14",
+    "crates/mastercss-project/src/filesystem_graph.rs": "b4c394d0dd7ef07128b1d7173a440c5df973001688135ae98515f14c2814c941",
+    "crates/mastercss-project/src/lib.rs": "b83d76103f319ec41f3e053c675f854c6c0bcdaf89a5c573c54a4c279e332656",
+    "crates/mastercss-project/src/manifest_graph.rs": "1ee91c8a23b08f136d8bb4e8b0e64a5b5ae7032cbf2cf2875448838d2fa868ec",
+    "crates/mastercss-project/tests/bug_hunt_filesystem_boundaries.rs": "c5976167f5ac1502cf1f66396f1fb2cbe0f895ff8e9acb6402885b9300d69890",
+    "crates/mastercss-project/tests/bug_hunt_manifest_graphs.rs": "eb67948d71c201f0a29a038779571566789bf2639bca43c2be80b125f0019eb0",
+    "crates/mastercss-project/tests/bug_hunt_ordered_output.rs": "abb33b8872f1e53558d0e55d1d9563a3333aab22c0d4b97a9ef4b696298e34e7",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.json": "5c6b28dfd10ed406cedbcc4aed5b55cf12328b1378652431efba484aba3abc86",
+    "crates/mastercss-render/tests/bug_hunt_variable_syntax.rs": "b9c670ca42abb086a1f261ffee6ef7823678ba13e56f3df3fe2f4672719a59ba",
+    "crates/mastercss-schema/src/directives.rs": "f18931dae1958ebd5df44ba246a6be94dc7c870ff7e64d4f33ab625d1d576285",
+    "crates/xtask/templates/rust-contract.ts": "61c7ff379eb5341e1fce138b10693932d4b988cac1cbee9a7ce72f9455dd3da7",
+    "packages/binding-wasm-compiler/src/index.ts": "55e9cf95fc32c34f024339d8f5b0598c2e99f6e439d86732cfc138c52be56fa2",
+    "packages/binding-wasm-compiler/src/provider.ts": "9e1626118e87114b3deadab1af1d903133efcf01b209f4642cf49da7107c5adb",
+    "packages/binding/src/compiler-binding-adapter.ts": "4ec58246abb4440302359c9cdaaa91d6cfa0916deff38363229cf13d31a01e60",
+    "packages/binding/src/compiler-binding-browser.ts": "422da03bf4b5d37857e5e6ee72385a2df5483140b75e0b0ca6f06dddb2c965a4",
+    "packages/binding/src/compiler-binding-contract.ts": "2dbcf9957426c3b707daef516415119df9ed76952ff8bd074cf458443b89bf0f",
+    "packages/binding/src/compiler-binding-wasm.ts": "62f6b83f3d7cc318c35b0a04f52983b6c7b50af5a31603329dcbac43fa8dd8da",
+    "packages/binding/src/compiler-binding.ts": "c6f276d1598fdc0e18e91822d58eef16b2577d3e83fffded6c84694c0cfcc8cd",
+    "packages/binding/src/compiler.ts": "717679ddb6939ef86537edca45b034c864d25fcab19f8b305a920bbb9e948bca",
+    "packages/binding/src/native-loader.ts": "cdaab4cb28cc806450865f0c5f448a3e2f24c712a62d97c0e2797aefb7fc3952",
+    "packages/binding/src/normalize-error.ts": "b869ed80c7dbb939508469ab1d13ec73c416daea0b92b39162c73ee1b8ef4881",
+    "packages/binding/src/protocol.ts": "fa1c1f3d18ac810378e61e1608303d94df7d780dd0ab44d8dfff690537084f46",
+    "packages/binding/tests/bug-hunt-host-import-ownership.test.ts": "00f0f4eda7be384cbda6ffa582359991e9137f88c222c417ce8b7559922570d3",
+    "packages/binding/tests/bug-hunt-stylesheet-discovery.test.ts": "eb921901405c654bb1b0531b6aa6f2f98522d69b5601a90b182fe7407e43156e",
+    "packages/cli/README.md": "0a40c1ca4251314facadd81b346b8118bcac275cbcb9f4d571144f09cff56e8c",
+    "packages/cli/src/asset-ownership.ts": "00215fb078e60ae8e3c7cc2b7e7d4af3909567856e7f8612b48b15ffef31a65c",
+    "packages/cli/src/generate.ts": "ed0ac983281507d9e926ed9edeade2b2ce713e7a6b42018b2efd3e44e5ad2567",
+    "packages/cli/src/publication-lock.ts": "143f009bacd3c612b8eb8f7ecf447852a8a1a9cb8a3db6abddab1f122f1b19fc",
+    "packages/cli/src/publication.ts": "ecc7fa7b87141d1a1770fecabb8de23c6eb713b85f839bfa076fa70a3998fcd6",
+    "packages/cli/tests/bug-hunt-asset-cleanup.test.ts": "9f164904e20a76ca6cdd81e6f8493f779b731a13d9e676701bfebdff2773e117",
+    "packages/cli/tests/bug-hunt-asset-ownership.test.ts": "712d19b3abd3cdc4dd535c62046a74bcc1b15527a948504a07d2cff42665ab23",
+    "packages/cli/tests/bug-hunt-ownership-interruption.test.ts": "e1c96a80a7ebbe608b47f16e182107a5c8241a0f776a34d61b38a3efc567894d",
+    "packages/cli/tests/bug-hunt-publication-faults.test.ts": "b91c105cd11cf5226d402023126d8b6083295a63d5ca78e6755aaac1d5251d79",
+    "packages/cli/tests/bug-hunt-publication.test.ts": "d9f3c135565e463dca44a15e083cd368d4a863fc483b3d88539cb070032f7f78",
+    "packages/cli/tests/bug-hunt-stylesheet-delivery.test.ts": "89cb5f81d619e4591654868fef7651535cd6eebb8f7e375e594ce5706f7a5322",
+    "packages/cli/tests/bug-hunt-watch-recovery.test.ts": "57ac5974e6e8caf8a00849484aa02e8fedb610953082b418de43f8702ffbf03b",
+    "packages/compiler/README.md": "cbd722ef9a1435814c4b27637d96fbd6d093391770fc91fa0438fe2a4a148cf2",
+    "packages/compiler/src/compiler.ts": "0e27a7eba74242433a8bcf75b0b809baf247ffe93c5b7d1a521b0f5cac01b2f5",
+    "packages/compiler/src/contracts.ts": "f1c5538bc340906f0cb8ffcd72eb2915a4b2d1bd0e035c77913ec448bf3bcbd2",
+    "packages/compiler/src/diagnostics/index.ts": "0453a5c4f175afd3c74e02ae79ab06bf85fed2c6f62bbb51a5e6b6239b27c7dd",
+    "packages/compiler/src/index.ts": "4c7e6a3223ac7693cdac3d819cda60d8eb36ce7e5d79c9ab7a5a2f7db601abdf",
+    "packages/compiler/src/node-compiler.ts": "a18b2fcd85aa19072888698849711062c80ee9c903fde9d557d3a62778930919",
+    "packages/compiler/src/node-imports.ts": "314144ded1d7a2551a53fc7e261ab0eeaa9b6ba1f687585f4bc33862114a6ec5",
+    "packages/compiler/src/node.ts": "cc417e438f2ae9e96d2f3b0397b8077c11b1b6f80c2869e4fb7e7a9e321cc17a",
+    "packages/compiler/src/project/binding-project.ts": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8",
+    "packages/compiler/src/project/manifest-sync.ts": "c6783c5204aa1a96809212b1ca193b8d322a5e3f66bce774ddfbbd901e81c836",
+    "packages/compiler/src/project/manifest.ts": "ee2fecce40f803e4fc6af61c8a1ee62809fca921016aca92c4b9bb618c760a43",
+    "packages/compiler/src/project/options.ts": "dee4c53f064a07c9f996d0312dbe99a9096b978e715827e8f126bcc26c94192a",
+    "packages/compiler/src/session.ts": "6aaa3bb4190e5b3df3603800194fadc8bdf7acf3955fcb1d8b511dcf6e2420ca",
+    "packages/compiler/src/stylesheet/compiled-source.ts": "df3d4711491b287c4fb3265ca6b5ca1d82402f9c299f40d96c5d5e2f2f51dca0",
+    "packages/compiler/src/stylesheet/delivery.ts": "a6967602886be2d7ea17161535585c09e9cd23ebadb0871f2e333419173d33a5",
+    "packages/compiler/src/stylesheet/directives.ts": "76d1c854366634e6825e19552ceb6faa17749fb307f717992cd3f23bac1d8e7d",
+    "packages/compiler/src/stylesheet/index-public.ts": "0bd6f0a0a528cf97b6b88b31856ce1832a662053dac6f09d50546085d50fdd08",
+    "packages/compiler/src/stylesheet/index.ts": "be81245ef0be5e3738506723b147de3f4473dc814cf347c7bee3dd8b41ba39cb",
+    "packages/compiler/src/stylesheet/output-map.ts": "33a7355621112935e8fa9ddc6e6d9f695ba2ce7dbc79518f96df518f9db671b1",
+    "packages/compiler/src/stylesheet/public.ts": "cc2399b15137dd05065648235ce7de6b88b98ba54ce9879c8857cb5ab70e8831",
+    "packages/compiler/src/stylesheet/reference-origins.ts": "361fa34360d235fd05b22fbe55bab4e10055e2f18b70a9276a322d8db5abff58",
+    "packages/compiler/src/stylesheet/render-delivery.ts": "810521305c085fc6d748fce9c3098fe8e085b2a725f659751ff5511253387c83",
+    "packages/compiler/src/stylesheet/render-source.ts": "368ffc01c65ee3ff862b78b317dbb5fccbd6dc3da70b08d4ba3eded6de2ca375",
+    "packages/compiler/src/stylesheet/source-context.ts": "0854ab9fd04cf9edd9c08679d0a97c0007375b6d7f337755b33c1b35f8694260",
+    "packages/compiler/src/stylesheet/source.ts": "ab101f72a4d88caee619b3a7e32dd63efd0788c99f7b21226614393a22565e6d",
+    "packages/compiler/src/stylesheet/types.ts": "d3b47aa6338b79ea8c01cb30ff8a8ab97a8ae4eb2d9e22cf984219deb693edaf",
+    "packages/compiler/tests/bug-hunt-build-graph.test.ts": "28382313bbb0309f9e7718701f99817e71d85543f94ab2fc5b043d4c85e6c143",
+    "packages/compiler/tests/bug-hunt-bundle-transport.test.ts": "cf6488905542627b0d11d5aad2a1f409e93f75f42fd9e28f133534c89c9cbbf2",
+    "packages/compiler/tests/bug-hunt-compiled-stylesheets.test.ts": "59031ec00d5144e480c9679b136a2ef762408885703ba7bc644cf4c35e474966",
+    "packages/compiler/tests/bug-hunt-default-collection-graphs.test.ts": "be017cab11049b0c4e89a25a68bf15a3f7aca9ae4a041ad0c357797dc7645c30",
+    "packages/compiler/tests/bug-hunt-delivery-output-modes.test.ts": "5b98d63bae1eb37f11de7bad5cb97e5bb3f0271aa21a88541f0577a5b4066dd4",
+    "packages/compiler/tests/bug-hunt-directive-positions.test.ts": "e328b1961b4a2b338edc20fe4d07915ef5cf779dbfab45f205e2472b5156227b",
+    "packages/compiler/tests/bug-hunt-emitted-globals-graphs.test.ts": "314f090d8e671feb9c4efeae7a0e848e8f85b479a7f7124f9e822fc8597f41ef",
+    "packages/compiler/tests/bug-hunt-file-delivery.test.ts": "0d3ef7441fbcf28194950a36922c85baddc194d253c8d5ce03aa60806a99426a",
+    "packages/compiler/tests/bug-hunt-filesystem-project.test.ts": "526ffd516bf6cc7e4520e529d7927355c0a1b0b4d1f94caffece8d0b6e7af038",
+    "packages/compiler/tests/bug-hunt-graph-directive-metadata.test.ts": "f709c0ab7786cb6ea2116eab09488b7975d4ea0d573e078073e84c37b792428f",
+    "packages/compiler/tests/bug-hunt-graph-output-mappings.test.ts": "22643afaf3f8f292c9628fff0a1f20189c7be99987a2e937eaad804ec62035cc",
+    "packages/compiler/tests/bug-hunt-host-resolution.test.ts": "8ef9c981bd07a8906477e246fd3852578e022a9f2337face906e0b56a55b3850",
+    "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "6b644b8724a184f826a4c83e0b0d387dfbefab7f57b76cf46c5a7dd6696f0502",
+    "packages/compiler/tests/bug-hunt-imported-local-classification.test.ts": "cc24529c73d3a36789117f934da691ccca5ddd8db2d65878b97d9cca2c01978a",
+    "packages/compiler/tests/bug-hunt-imported-policy-output.test.ts": "773da9020dc42c96cc1b3486e942008f5d1b6d0a473033ce1c766abb57841998",
+    "packages/compiler/tests/bug-hunt-inline-bundle.test.ts": "71c08979c9d924a622c9177441ed726bfaec3c861bdd37219ed6c5b8f67dc228",
+    "packages/compiler/tests/bug-hunt-inline-graph-mappings.test.ts": "cf86d71f08aadde97ebd310bcdb739986cc02e2f76df8599dfbb76e34ed3f1a5",
+    "packages/compiler/tests/bug-hunt-legacy-compose-position.test.ts": "ea9042072f08bf0b57eafd17853f8db24c00844839a2f64a4113b7d03760b817",
+    "packages/compiler/tests/bug-hunt-local-transform-delivery.test.ts": "f4c340fddb49645cda4b09836979dc3646efd17046af93053b007561c3e16bba",
+    "packages/compiler/tests/bug-hunt-native-conditionals.test.ts": "31a9e9e57030bfdbc299862beb17ea3a7a9e6bb06ec229778dd5a473175ae2d6",
+    "packages/compiler/tests/bug-hunt-native-host-transform.test.ts": "bea983d0d14244170845afb7fff62b7657fae078276d181716b5efeef93a53e7",
+    "packages/compiler/tests/bug-hunt-node-import-discovery.test.ts": "3ab2c56faab4d2233c58173d2b4899bdc381b37ff306715d1b2657a4163b265f",
+    "packages/compiler/tests/bug-hunt-ordered-direct-output.test.ts": "e338a97a1c11ad1cde13b487da4a57a4165656884e14a607005ae41349ea4be9",
+    "packages/compiler/tests/bug-hunt-output-source-maps.test.ts": "4506ae644ecd3d0fb77f791766b962367189af1c7a7fa963c2b342c2fe74b134",
+    "packages/compiler/tests/bug-hunt-prepared-diagnostic-columns.test.ts": "7782f6ad81c75bd34d124198a65ddff2a250e487e969a5aac75842055dd3a1bf",
+    "packages/compiler/tests/bug-hunt-prepared-source-context.test.ts": "16e8f4cb6d75052936539527a3f2d7b4c4ee1826dd95e68a1ad265b5697cf1e7",
+    "packages/compiler/tests/bug-hunt-project-dependency-observer.test.ts": "2222f6c56e6a1ae35caa25bccc79c63a2561430b91d22d33ff285521fa5162f5",
+    "packages/compiler/tests/bug-hunt-project-graphs.test.ts": "e6e3d44e566936749da3538ae6b578450225df02c1af310389a387a0d86718d0",
+    "packages/compiler/tests/bug-hunt-reference-source-maps.test.ts": "450f5328764e255a49d505ba80edcc41c38be356b5ba2181865055450ef7772f",
+    "packages/compiler/tests/bug-hunt-rendered-compose.test.ts": "d84fb619768b6feec346d5b71322ca4a41c7399aa767d2097b14d807d3657aad",
+    "packages/compiler/tests/bug-hunt-rendered-delivery.test.ts": "31a28fe393f463fd1e4c073b73c14da22e66704c2e607e4cbf8e34dfe453c4dc",
+    "packages/compiler/tests/bug-hunt-resource-urls.test.ts": "e76ae5cb03a8d54228e622456d54608f0bc135078d65fed814b57b5b117572a2",
+    "packages/compiler/tests/bug-hunt-static-retention.json": "e0180768e26c36d8b0441f5047ed75f334f140c682cd719c568805bb9598a5ff",
+    "packages/compiler/tests/bug-hunt-static-retention.test.ts": "94416d1193a6556f06fcaa437d3d248402a67afa68ddfdf9a28dcfb05567c9cb",
+    "packages/compiler/tests/bug-hunt-stylesheet-diagnostics.test.ts": "f4811a98c598feed97eafab8589e7fef7c50fed3cfd17b013a034800f4bcf905",
+    "packages/compiler/tests/bug-hunt-stylesheet-preparation.test.ts": "4b34c7c10769f8fc36c0859373a929e6c875dd710e18c118b29f00e35d59e883",
+    "packages/compiler/tests/bug-hunt-virtual-reference-ownership.test.ts": "1165bbb789f1d3cf9a7f4e311566f7859f75db73fdd2a5db6ad648a402616290",
+    "packages/compiler/tests/bug-hunt-virtual-sources.test.ts": "b64e2668e5b2c6dc930ee3d1a9dbb2fdf5580a3b9a2a1c0ccce1901168040d8d",
+    "packages/compiler/tests/diagnostics/bug-hunt-mjs-discovery.test.ts": "936b917ee9a5cfcec5a8bdbb654e09f86f6fcb9688b4e10f720a78d01cef601f",
+    "packages/compiler/tests/diagnostics/bug-hunt-source-attribution.test.ts": "eb450a2ac648538cc366e02b9031a90e072f8b3bd689dffc296a7a4b09b0d177",
+    "packages/internal/src/manifest-loader.ts": "aeea6a15063792dfa159ea02dcc16b9dd6986a2d79b266c51b81a1c3fd27315e",
+    "packages/internal/src/manifest-virtual-module.ts": "b60ee206a1119edbdada71c16ce86ba2c64561226f9c62b0aa51aa73245198c1",
+    "packages/internal/src/runtime-bootstrap.ts": "92da9918c309b75a5ed1c95873f0933ac9cb0b323cedf3894b1a91ccbedc5e35",
+    "packages/internal/tests/bug-hunt-manifest-hmr.test.ts": "9e1b117d095be132abfacfccc2d72afeb01d8486531a6ae5f68faf7aa462173c",
+    "packages/internal/tests/bug-hunt-runtime-input-updates.test.ts": "bc2a7679383bfd69b3f3c1fa93128390d266f62135c546d2b2f1c30e3e256f92",
+    "packages/internal/tests/bug-hunt-runtime-start-hmr.test.ts": "2cd980dff1403a72b7a0ab8465cd260b191ebafb7de235e31d07bed23e062b5f",
+    "packages/mcp/src/scan.ts": "f3942610779c1d660f429e59009958302e80456ac6a8e289baa94112544e6ef5",
+    "packages/mcp/tests/bug-hunt-mjs-discovery.test.ts": "ebe02753ffec5211aa0ae1815eeeedb9e27033ed42ba93497796bd0cd5a00d89",
+    "packages/next/src/index.ts": "3ee20b647bcc3cf2306f7086d332e8c4760bd2ee05359323e68745a4bd1d13dc",
+    "packages/next/src/prepare-stylesheet.ts": "f3e2d73042d08e6129fd31d5ffa341b985803dd5092bff773ab571df973b0327",
+    "packages/next/src/sass-source-context.ts": "c9647b5ce29c6876ae90551be3e407087017bf507466f91da0f63b2289392e28",
+    "packages/next/src/stylesheet-loader.ts": "b630f06bc4b6e34a110e4585307f1c2709b7318ab14524fe59d8ec7ddef0a71e",
+    "packages/next/src/stylesheet-source-map.ts": "320dc02e8c2caeb78956223fe210334909b48aa1f0bf38667ed606a97a0938ea",
+    "packages/next/src/webpack-stylesheets.ts": "7b2533f2be68ead6997b80b190d9038b5a19bacea1d455b24e5353718c8204df",
+    "packages/next/src/webpack-virtual-modules.ts": "a142fbe877b957e817da2742a38aa03f7a9b09708a9c703bac0126fdbe6d5d43",
+    "packages/next/tests/bug-hunt-entry-reference-build-state.test.ts": "9c9f44a28b313e96e7bd2002a6888b66477fc91f31fbcac0b698152bc1679593",
+    "packages/next/tests/bug-hunt-output-source-maps.test.ts": "3b4807370390da55c4d3f6e48ed6a322c4a04dc050729d3f0cf72870ffc047eb",
+    "packages/next/tests/bug-hunt-preprocessed-stylesheet.test.ts": "4571ed6db3648a2094b4c7f09a653d6719983bab59bc8e141bf2975c0fc73526",
+    "packages/next/tests/bug-hunt-raw-sass-context.test.ts": "f6b11a68d3a26f39887e224f0df94e755ed3583d1472c3bfedd6b3a88ba05f97",
+    "packages/next/tests/bug-hunt-runtime-start-hmr.test.ts": "2a086ca6c13dfc6c771a0fa7b9d4462c2dc7774126c9e2e3c7c9c6a3aca08a67",
+    "packages/next/tests/bug-hunt-sass-directive-terminators.test.ts": "36d6d0b5105746ab09d8a267dd1cd139897bc24e86dce9065b07ffcd44a54c22",
+    "packages/next/tests/bug-hunt-sass-source-offsets.test.ts": "07770248c248b52859102e5262c9a3f6d38c92202bb33973d733d8590e042d1a",
+    "packages/next/tests/bug-hunt-turbopack-css-module.test.ts": "ea89286d7d8b4f7fef57a92fcb3ef3e31af466eb79d03457081ea3a070a31e50",
+    "packages/next/tests/bug-hunt-webpack-css-pipeline.test.ts": "d72117a7a48114af11dc5cf791ee7acb864681e7b4506f7c9a88580edc20a8a3",
+    "packages/next/tests/bug-hunt-webpack-virtual-modules.test.ts": "34d5679945fe8fbe8f0f9c80fe9c3ee82cc6220b8c50de7efc3c1f1446f889c9",
+    "packages/runtime/e2e/bug-hunt-static-retention.test.ts": "0150f1dd8a00ca1dbba20d4a9f9fd72679957ea89fbb1629dc7a8de21c775f7b",
+    "packages/schema/src/css-directives.ts": "490795934d1c7fa4d7405113562999f2ad8f6e1406a72d112a944592fc2be858",
+    "packages/tooling/README.md": "524c0a85e2465188618e3d6d2c8a64033cdad8980c1fd4d1d38f54c420048c25",
+    "packages/tooling/src/scanner/core.ts": "c01538da334da3d554991eb17341b6098b3492741a72f6b6da881061bb0f7236",
+    "packages/tooling/src/scanner/index.ts": "70c15c7a15779629fbcf8d6e4d449ac05f8f13738056abf44e63516114f2fac6",
+    "packages/tooling/src/scanner/node.ts": "70c15c7a15779629fbcf8d6e4d449ac05f8f13738056abf44e63516114f2fac6",
+    "packages/tooling/tests/scanner/bug-hunt-source-result.test.ts": "b64c6a503929feb5eee7e12ef007c4b0109943f089329b9c3b2a6f7d8c66f8bd",
+    "packages/vite/README.md": "9d26bae6b5d0cb4a0aa18acbdd92828f899be70f033bfd21bcd3742f72714f6c",
+    "packages/vite/src/core.ts": "3028d5978a85843977a77f13cb71e9378a6609bb0687446214eeddc4d05fc9db",
+    "packages/vite/src/plugins/build-stylesheet-recovery.ts": "40adc8e43219a7131ad51db906d49286292f1c1871076116e33947291c51d92a",
+    "packages/vite/src/plugins/dev-stylesheet.ts": "5d9428df2e2d523078a67a75f18639a9bd004b815c7e4833faeab58822711d18",
+    "packages/vite/src/plugins/inject-runtime.ts": "97c11253babb63bfdd2c63af1c0bb08467c2161e99a01c9a450d9bc888f7bc74",
+    "packages/vite/src/plugins/inline-stylesheet.ts": "d0b7b331f886148539811b210d932d81e9f7b05ab27febbb64e2901d6ddddbac",
+    "packages/vite/src/plugins/local-compose.ts": "8da4ec9464ac1ed81a1c5545db0da61e09aab29b96c34392806b276979416402",
+    "packages/vite/src/plugins/manifest-virtual-module.ts": "688662c0c7e7b4d36bef40019a797a875e679123b3fcf062ba9fb777620c718f",
+    "packages/vite/src/plugins/pre-render.ts": "37b3a3262bbaf0001215806a653e4450d876d26410997296bb1f75208f5318da",
+    "packages/vite/src/plugins/runtime-preload.ts": "ae2c3e651ebc5f399548cccc52881c5ae86f7d3f76081bbf5f5ca70f9e3c5fb2",
+    "packages/vite/src/plugins/sass-source.ts": "8e0f72417cdbb9c8f30b4cbaba17c940fd22ed569c67fb7d211a989fb9797843",
+    "packages/vite/src/plugins/scanner.ts": "8709f1e1c340c4977f6ccbab63474839e7dea1bc5b8bfba4fe86d75f1fad863f",
+    "packages/vite/src/plugins/style-entry-build.ts": "a93fbcd5e25dadb8c350fdbf23684712e9451363f31e65203089700f43b75590",
+    "packages/vite/src/plugins/style-entry-hmr.ts": "73f7d852b79c27aa5bd919ea4831d8ea627f6b573ac9828affea2a0725e0d576",
+    "packages/vite/src/plugins/style-entry.ts": "31870ba2e4841e5639239efd1a5e08a343ccbe31abc7464da1d8f7047317084e",
+    "packages/vite/src/plugins/stylesheet-recovery.ts": "8bd6966f684b0bddd1b06ea855ae4fe384b18ccd8b8e77417093cbfb953620c7",
+    "packages/vite/src/utils/build-import-resolver.ts": "2f7fcc878d204baffd0c407e72960bf5f01628f876ef05f12a3922d1a5422968",
+    "packages/vite/src/utils/build-sass-source.ts": "877bd1a66b511adcf4d0042dd78f121bd25c9611e521bd4a8a29488e1ee05db4",
+    "packages/vite/src/utils/build-stylesheet-delivery.ts": "0a74c27396c87aac989e5847520d0f56d85e2b4ed4077616bcceccea6c35fa73",
+    "packages/vite/src/utils/build-watch-recovery.ts": "e298d0ee9aefc6c50d7f41fe8d34b7fabf084f38affdda841a2e354245da92cb",
+    "packages/vite/src/utils/dev-stylesheet-delivery.ts": "1fdd9111dcb5cac54ba8a95f338cb857cd808544c608886dec47aa7e9dff4a66",
+    "packages/vite/src/utils/environment-closing.ts": "2f072eb39cde39c52a99ece3798a68ed7043aa292ff465f5604814e401655d48",
+    "packages/vite/src/utils/extracted-css.ts": "9f9640f559022befe2659ced3dcbf165d14960defb277799929d8c54262043d3",
+    "packages/vite/src/utils/failed-dependency-reconciliation.ts": "14512aca1c591f16879b8c92303314c4446e431bb8c71a351181fcd6d8743246",
+    "packages/vite/src/utils/failed-stylesheet-dependencies.ts": "391e71849c9fffd98abde23663beae4f52750bf5665fda1e6926d75de021eba5",
+    "packages/vite/src/utils/inline-stylesheet.ts": "0ef553942fe8b11876d7c2d1fa9db894f2a0e3c812e843c38ff82934c013b41f",
+    "packages/vite/src/utils/local-stylesheet.ts": "1571bd562842184c49d732fd8c38e99a0cde47e7ba0e6631ab0490701ef1439c",
+    "packages/vite/src/utils/manifest-recovery.ts": "997c91db5e904e91be404e7b2606a3a7d9cae0e40d7bd4d8e05b5451df713383",
+    "packages/vite/src/utils/module-sources.ts": "be4f602c97f091b66adc5d40096812d53a980ba97c015fa2002285aec0f912b6",
+    "packages/vite/src/utils/recovery-error.ts": "15eaeea235f13af86541863f5cf10bf4f5539bc72d92ef11516935a369954458",
+    "packages/vite/src/utils/register-style-source.ts": "89b174d274cd0282943839f7258aba5cee980e7b7c925d7c25ae2b6875074638",
+    "packages/vite/src/utils/sass-diagnostics.ts": "bb69a4d84a878f2d1a54ae83984615fa679cf0f588d47db3ee5899f30e3d00c1",
+    "packages/vite/src/utils/sass-proxy-access.ts": "5ee8b848c92d8ad8b11bbcaee94d034ce9266600019b762b055d57d18e4a64a5",
+    "packages/vite/src/utils/sass-source-markers.ts": "30728b692e13b48f8f66dcc90f8261a83cd800c8dcab8ae8fd68f35a83be05f6",
+    "packages/vite/src/utils/scanner-context.ts": "e92e17ad3e60495feb65cf42954e21407259c7b1f732dd6040d7cdc12cef950b",
+    "packages/vite/src/utils/scoped-plugins.ts": "7d5bf6046b0704ac75d114ddbddf6a03531e863492d7c36131fc8f9f6255ce94",
+    "packages/vite/tests/bug-hunt-final-css-hash.test.ts": "20a66976820f6fe7d987adc62216cf6753bb91d15a7a9fdfdabb1a4a8734d249",
+    "packages/vite/tests/plugins/bug-hunt-build-config-recovery.test.ts": "6786df4bb181ba6ec1a85fa7c3155ffc4ed3252c2918aff0bf7695af36bf8156",
+    "packages/vite/tests/plugins/bug-hunt-build-failure-lifecycle.test.ts": "79ed013b162717a146f289654dae12435b63aeb73a183e02aed988d416062577",
+    "packages/vite/tests/plugins/bug-hunt-build-recovery-ownership.test.ts": "c24841cadc1992952fee65aaf69b33feb221f81c464d40b2da8049c02673e1d9",
+    "packages/vite/tests/plugins/bug-hunt-css-modules.test.ts": "33921a1723e05f43a7f7277c00198340103ef87d6d7aea87290211728c6a3be6",
+    "packages/vite/tests/plugins/bug-hunt-custom-environment-close.test.ts": "09d873c711d72383b36544ed95ccb4ec01bab36c0646dda40931ece2de15f49f",
+    "packages/vite/tests/plugins/bug-hunt-dev-graph-environments.test.ts": "7e3694a27f73855f75aed22b2b6d938afd17aaea1e24bee44e9919ae8cdf56be",
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-lifecycle.test.ts": "ef9f3484adb25aa3ac42a805e9b576188f03f66b32e56ea88f8f71f0e3fc7849",
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-paths.test.ts": "8e77960bd5a4db4d5e8b9ebaacc1a800ac439000c6d381a919590a214dfbc16e",
+    "packages/vite/tests/plugins/bug-hunt-dev-resource-recovery.test.ts": "983e8c504b70b11ee5a8709d4d2f24f92a7c23ce7796d339bafc08c146d1c948",
+    "packages/vite/tests/plugins/bug-hunt-dev-stylesheet-graphs.test.ts": "329f166162cc72da84a7bc31ade160ae2b7d5c246052c728627a26daeb71e65a",
+    "packages/vite/tests/plugins/bug-hunt-environment-replacement.test.ts": "e5de4c6cc712270eb2b5426d6a836c1b39ed275601636894f011840245f6317f",
+    "packages/vite/tests/plugins/bug-hunt-failed-dependency-reconciliation.test.ts": "b0ec38d66b766ae4f70eefdff6edf65293e67f7355310b17d9deb1920e326b7e",
+    "packages/vite/tests/plugins/bug-hunt-hmr-server-lifecycle.test.ts": "a8e4a66b86a3c61d57cff4be0ac893dc45e19500243ceac76ada25f5044a6184",
+    "packages/vite/tests/plugins/bug-hunt-imported-module-exports.test.ts": "6df8fbe55306fadc00c257ddd34b35566c7dc8290424ca9922faf6b469d72951",
+    "packages/vite/tests/plugins/bug-hunt-imported-sass-original-maps.test.ts": "9d9f35029b1bad507c006813e264acd38f9664c7d5abb6b11ae5ba882db0ff3f",
+    "packages/vite/tests/plugins/bug-hunt-inline-built-urls.test.ts": "f7a84abbde3be8a2bf8dbb59f84efb8a33bc63110fded86170665e6d7cacf1fb",
+    "packages/vite/tests/plugins/bug-hunt-inline-ssr.test.ts": "e786e92d65bf55d9e816f7e7d20b3524f835d0fb4505e087d0c5b0dfafd40c8f",
+    "packages/vite/tests/plugins/bug-hunt-inline-stylesheet.test.ts": "924585b9df9c48dfa5d4b64a6969b871fb1c8cd8c56aad5677ec1281ba3a3088",
+    "packages/vite/tests/plugins/bug-hunt-local-compose-graphs.test.ts": "09e6e0043eaf41677f04b4cab2876e9fdc46a56c0bb17946a383288fb8ddc49b",
+    "packages/vite/tests/plugins/bug-hunt-local-graph-requests.test.ts": "1391aae1f5ed0986f2e6eff6e4f2269aa3d3344679bec9251a0f58925ea1c699",
+    "packages/vite/tests/plugins/bug-hunt-local-query-graphs.test.ts": "cb0a600abad628c68063b49dfaa2fe3ffc2d70bd994e500d093726c26d5ff08b",
+    "packages/vite/tests/plugins/bug-hunt-local-sass-url-hmr.test.ts": "6e6692ddc263325fc01724664a18e874aad52dc13382392aa9d24cd3e9ccc6cd",
+    "packages/vite/tests/plugins/bug-hunt-manifest-lifecycle.test.ts": "87dd6b7512c7e519de481ed7e9b9f5b9bbcce359d6d3d0600e963e3d3a5947e1",
+    "packages/vite/tests/plugins/bug-hunt-manifest-startup-recovery.test.ts": "9849335894aceae28a3a242db9317878b9637c287e650932dee99970eac68c96",
+    "packages/vite/tests/plugins/bug-hunt-middleware-restart.test.ts": "9cb071ca636f9de24feb7f468d8369e40cb49e02808af5894157977af2aa76c5",
+    "packages/vite/tests/plugins/bug-hunt-missing-directory-watch.test.ts": "f1e3e5150d1ec7cd94d3bb1d4565a35260751413a17b56d5d449e4d307ebab53",
+    "packages/vite/tests/plugins/bug-hunt-module-development.test.ts": "5cb5a340b02ae6cc56890c2d4b511482194138adf99cab6fe53d719a4c1b75b9",
+    "packages/vite/tests/plugins/bug-hunt-module-duplicate-inputs.test.ts": "ec91e6ecccd4623dd42f1fc09c39bfdcf0cf31a6b6a2b0ccfab79ce5063d1ece",
+    "packages/vite/tests/plugins/bug-hunt-module-import-contexts.test.ts": "67e55463afdb14ed811ea0ae1d7ccb9b14717c6772dc7c2251d9e939077b8ce4",
+    "packages/vite/tests/plugins/bug-hunt-module-import-diagnostics.test.ts": "b78258276ec4af8129af84964dd3c9edb20e8929d9db4d72415b1752da155499",
+    "packages/vite/tests/plugins/bug-hunt-module-sass-import-contexts.test.ts": "8895660d6f76d04ab637224e66a712a54a08893baffcd5d75687753843b4211f",
+    "packages/vite/tests/plugins/bug-hunt-prerender-manifest-hmr.test.ts": "803dfed76ec8d0dae04973ee4bbdf01ddba6b4105172875ca4ed4c05e2742d7a",
+    "packages/vite/tests/plugins/bug-hunt-reference-host-recovery.test.ts": "30fae5737341bff8fff30ab6741fce0e78f51ab9223f1db9f15e7abf8b1a2af1",
+    "packages/vite/tests/plugins/bug-hunt-retained-sass-references.test.ts": "ede908dce113047b483f01a7c18f8b36870a0ca96d48cdafd28808c1432d0ddf",
+    "packages/vite/tests/plugins/bug-hunt-runtime-dev-base.test.ts": "f260ba3b7b07f6219dbea63b74fd9dbe60d061dffdef3244dec5fff4d3535e75",
+    "packages/vite/tests/plugins/bug-hunt-sass-diagnostics.test.ts": "b6af7ff69b8ae09f956553142a3a96266efb437dfc3a8d68f5348b09832b9ac8",
+    "packages/vite/tests/plugins/bug-hunt-sass-environment.test.ts": "7733f6bcf97f6a41e4b6079c8976c61604e5a702905314ea51c762f59de2280d",
+    "packages/vite/tests/plugins/bug-hunt-sass-partial-references.test.ts": "2a22d3cb9d2bf5a2afc3f9bbbb4986bf7da47bbc465299045bc4a04458907ff8",
+    "packages/vite/tests/plugins/bug-hunt-sass-proxy-direct.test.ts": "774d9b8708db8531a6a5a0147ea71c71bea72ea1c21a32a42a471bb8fa1d8c18",
+    "packages/vite/tests/plugins/bug-hunt-sass-source.test.ts": "867ee86b6efaca58889c7da5017d99b6ced9a22742331afcf6acecfca6b2a45b",
+    "packages/vite/tests/plugins/bug-hunt-sass-url-build.test.ts": "7706b4679cfad374bc94de760cc69fdf8bd044a299c92fcebbb44811c9643b96",
+    "packages/vite/tests/plugins/bug-hunt-sass-url-hmr.test.ts": "3e28ff9e48e3023a63496425f497a497e87db1192259eebc021a8cc8db0af7e1",
+    "packages/vite/tests/plugins/bug-hunt-shared-plugin-builds.test.ts": "5447553cc1f691f04dfee56f13bd2f7b5fa895f841a0ae47c9947c25b17153b2",
+    "packages/vite/tests/plugins/bug-hunt-shared-plugin-roots.test.ts": "ecfdf61b770411a64285b768cfb9ed099ad8c29b8ee5c1b1c1de9805a958960e",
+    "packages/vite/tests/plugins/bug-hunt-startup-dependencies.test.ts": "33b8d463b0620d4920d9261c9e8ab0c254e897907aceb43b247b09eaca5f8577",
+    "packages/vite/tests/plugins/pre-render.test.ts": "5aaa8a250b739e8fccab874854ff9fabcbaeee555724d9b3c4b48347825025e3",
+    "packages/vite/tests/plugins/style-entry-build.test.ts": "e4798bef9250b8e471a34ed910d29adff664b9a96c31dab4dc69babca4e1dcee",
+    "packages/vite/tests/plugins/style-entry-vite-build.test.ts": "5954f0fc641da5a89ff25d3be2d624cf8a1f9a120c4c512f0cde5973d62166eb",
+    "packages/vite/tests/plugins/style-entry.test.ts": "c0d24ccf2866d92b63c49f839eea8c439ec10257440f840cabe1f460f7f4e8e8",
+    "packages/vite/tests/utils/bug-hunt-dev-resource-snapshots.test.ts": "d368b3e7ddb594c11da7ebb6d4d9ed8282da1846317568d44430a9cc36320590",
+    "packages/vite/tests/utils/bug-hunt-local-build-order.test.ts": "ea39883bb16526fd09904abd6fe5b558cbd8f07386251b469cfe40acd7923c7b",
+    "packages/vite/tests/utils/bug-hunt-local-slot-numbers.test.ts": "42091313a7d8b9df66f17c77c361bd5c36abab224cdb85c295c39baacb632d37",
+    "packages/vite/tests/utils/bug-hunt-preprocessor-dependencies.test.ts": "b080e2dd5c8cbc2a0771016222ad189cb5893e838c0eddfd32a96be15c1944cd",
+    "packages/vite/tests/utils/bug-hunt-sass-import-preparation.test.ts": "a961a35d12b77a5453cd696fd397ea054f8c781ee1a61b9f9f90fba7af2c9f32",
+    "packages/vite/tests/utils/bug-hunt-sass-missing-dependency.test.ts": "3a222021eeeed27f12303c0aad0e40d40efbaf2eb9360f1d4f9de5080df98c8d",
+    "packages/vite/tests/utils/bug-hunt-scanner-lifecycle.test.ts": "6f9de64a308c96424509b6b4944342943e88deea2c0ff61843f74c9e637927fc",
+    "packages/vscode/generate.ts": "10ed89fa4b0216c3ce593eb6f42046e0c04b24bd05b500b4ff86d910d29ec1b9",
+    "packages/vscode/package.json": "fc9cc6c7d8a8e96fc9c3a4e1ad4b65b449359c40ba5b732cfe1b64ca2f5ef5c8",
+    "packages/vscode/src/extension.min.ts": "68b8c264dd6bc84e97431892f6d007f9107f1cdcc18c702774c6a4972a412d1d",
+    "packages/vscode/src/server.min.ts": "ea8cfef853925343c2e799648169d34c1c7ee178575eba24765c5a858826bdee",
+    "packages/vscode/tests/bug-hunt-settings-host.cjs": "3aa0231c00bee8a1a55fb2a1d091e29d9aef6bd9c925b4a7dd6a7d19aa9f91d8",
+    "packages/webpack/src/runtime.ts": "999c9a7ae91096ecfc2ad3656d8bfa98c9e0584cae5f1bff519d1c170e4893ae",
+    "packages/webpack/tests/bug-hunt-runtime-start-hmr.test.ts": "449c607dd5b6fc52313bd3f11118c776b5efcdc7e858ce6f9a76236feece752e",
+    "site/AGENTS.md": "63f2c50380ed6303237cce215ce27af1d620d094c215e28d1b1538a3c070e3bb",
+    "site/CLAUDE.md": "336cc4fbf19beaada7ccf9986414fa91851a8d7a07dfb3ccbe800a69eed0ab49",
+    "site/app/[locale]/guide/directives/contract.mdx": "e0d18a25d1e68d62f4b9c41279f12c057313f45e01c4360d0c7c01227318bdec",
+    "site/next.config.js": "cdff6a89875a85dc7e836786546879b9630a7901751208b9d66246b431c6925a"
+  },
+  "artifacts": {
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.d.ts": {
+      "bytes": 5502,
+      "sha256": "81239f21ff715ff6e3acbaccb3309c26e649234ec300f090642ce244bc7e1c3f"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.js": {
+      "bytes": 28353,
+      "sha256": "b1c1f7336268837125d88cb54ec3eca6eff33b4e5bf8a227d48bc8803a6ff1b8"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm": {
+      "bytes": 7351886,
+      "sha256": "083bc84c3a2aa34597fa44b07db40fad411e9c00e39fc7b266178bb22b146628"
+    },
+    "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm.d.ts": {
+      "bytes": 2924,
+      "sha256": "d93330784af781d2aa87ba26f59fa3c7c113b28f0e22c89f241048d5044c0464"
+    },
+    "packages/binding-wasm-compiler/dist/artifacts/mastercss_binding_wasm_compiler.js": {
+      "bytes": 23094,
+      "sha256": "cce9c58865e66f3674d94b4b81f6a662b9ef72a873d123d7c8db9637d19c1ffb"
+    },
+    "packages/binding-wasm-compiler/dist/index.js": {
+      "bytes": 4487,
+      "sha256": "c4fb68388dc1fd52b13304b31e6b24f5873bd1ebed859cc687ac8fecf99994d6"
+    },
+    "packages/binding-wasm-compiler/dist/provider-node.d.ts": {
+      "bytes": 387,
+      "sha256": "db03ee1872ecb6b8b719c62dd9a1fd95be74581045e631a915f3e28cb99053eb"
+    },
+    "packages/binding-wasm-compiler/dist/provider-node.js": {
+      "bytes": 962,
+      "sha256": "e01aaa5471cfaf9fbb984e63624196c310584a9224b127627c3956b732dfc540"
+    },
+    "packages/binding-wasm-compiler/dist/provider.d.ts": {
+      "bytes": 487,
+      "sha256": "6a31fcda9e4ee688a779dde4ce4ad69a8cb0093b4783ec5acb2765fd0a82e2df"
+    },
+    "packages/binding-wasm-compiler/dist/provider.js": {
+      "bytes": 558,
+      "sha256": "3e863f8d6ef40f17c2056e4d21faf19217486d557392c7188c887a27e9c8c302"
+    },
+    "packages/binding-wasm-engine/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 929757,
+      "sha256": "4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"
+    },
+    "packages/binding/artifacts/mastercss.node": {
+      "bytes": 47681776,
+      "sha256": "7722ea1d0e77f58af1ac8297bb4193b82138b54a3bae2d8ea29ef8388fdac794"
+    },
+    "packages/binding/artifacts/mcss": {
+      "bytes": 37873560,
+      "sha256": "6255a3c60521174cd937c5f579f7f089c4530ff55200f92b37db351cee85255b"
+    },
+    "packages/binding/dist/binding-options.js": {
+      "bytes": 605,
+      "sha256": "0480d6a5cf2015bdcfbf120f7e392ae9709e4d46488ec38a6f7ffa70d49ab86d"
+    },
+    "packages/binding/dist/binding.js": {
+      "bytes": 1615,
+      "sha256": "ca62a772965266ff7e3738e83c1a861ff66d111fcd162d9c2e12e2d0e83633ab"
+    },
+    "packages/binding/dist/browser.d.ts": {
+      "bytes": 713,
+      "sha256": "223fb728aacf461cd563f0c3501442367c2942833f1a039c8e462a98149f58c3"
+    },
+    "packages/binding/dist/browser.js": {
+      "bytes": 392,
+      "sha256": "44198059c4ec762ec3d0479b2adb0527b79cd9fe5b0e97ace1fada1e9b256f5c"
+    },
+    "packages/binding/dist/compiler-binding-adapter.js": {
+      "bytes": 4125,
+      "sha256": "a724c514e4c1bd7a086494c2b3a64f35f4684422336862f198b46e1fb733d62d"
+    },
+    "packages/binding/dist/compiler-binding-browser.d.ts": {
+      "bytes": 3290,
+      "sha256": "b0b6073363a9991ffbc52f8b616c1211eaad615a68d44adef6dbd96e7ab4f08c"
+    },
+    "packages/binding/dist/compiler-binding-browser.js": {
+      "bytes": 1560,
+      "sha256": "27dd5001318c57017beceb59d17b80e3b8d5ffb94b5a0f130bb44ab9c5110e3e"
+    },
+    "packages/binding/dist/compiler-binding-node.d.ts": {
+      "bytes": 2062,
+      "sha256": "a239c17493bf77e924cc5914458db061fb179b2104a277da4ba107c6a86c940e"
+    },
+    "packages/binding/dist/compiler-binding-node.js": {
+      "bytes": 720,
+      "sha256": "c84fbc0d99f9f16badbfaec95994a2ee223f8bf0dcaeeeca6e69352ba7ff61fd"
+    },
+    "packages/binding/dist/compiler-binding-wasm.js": {
+      "bytes": 3313,
+      "sha256": "9861150e56f7f73b809f94affc231581c1f58844e1d09e8b26c3a975874c076a"
+    },
+    "packages/binding/dist/compiler-binding.d.ts": {
+      "bytes": 3282,
+      "sha256": "0488ed1f065ec58d6f24c69e97e68cc33be9fd893f75bb1624f89853cb5367e0"
+    },
+    "packages/binding/dist/compiler-binding.js": {
+      "bytes": 1985,
+      "sha256": "6295c4d34079894ea86209e74672296f2303ef2a0cf2b30cf70803a5d9412141"
+    },
+    "packages/binding/dist/compiler.js": {
+      "bytes": 3874,
+      "sha256": "158f1282f611d616f61183837269383969b1aecfa67901e7e885c09d3eb84f09"
+    },
+    "packages/binding/dist/engine-binding-adapter.js": {
+      "bytes": 2183,
+      "sha256": "41800465449e0476b9f0df26b02b959a77c4c12130af72ee130e011bafb1387c"
+    },
+    "packages/binding/dist/engine-binding-browser.d.ts": {
+      "bytes": 933,
+      "sha256": "10048bc4bb972b469dbe6dd5cf9d0fde663cf751d3c7e8653f2259d7a93497ed"
+    },
+    "packages/binding/dist/engine-binding-browser.js": {
+      "bytes": 1376,
+      "sha256": "4fa3aed55d0e953d96af397199e0a64a3f6c9feaa20e8a710b9ed41ce5924a47"
+    },
+    "packages/binding/dist/engine-binding-node.d.ts": {
+      "bytes": 1104,
+      "sha256": "98467a3b7f9e6a4d3dbcdcaea541fa54a1f689c9c8ede114859903e1294b6f6f"
+    },
+    "packages/binding/dist/engine-binding-node.js": {
+      "bytes": 969,
+      "sha256": "e543edf05420fd08566d902c34e9ab18d4ab8c18b4391f0b0b016da7c129195f"
+    },
+    "packages/binding/dist/engine-binding-wasm.js": {
+      "bytes": 2603,
+      "sha256": "3cbd2a62426fcb4c0167b2e2508c67643b983bee05c65575a2b55c749b68adfb"
+    },
+    "packages/binding/dist/engine-binding.d.ts": {
+      "bytes": 2448,
+      "sha256": "236ae69158c526ed041d812a6d2bafa483f1e244a399bc3f2d58a018d8b57193"
+    },
+    "packages/binding/dist/engine-binding.js": {
+      "bytes": 1802,
+      "sha256": "0f7097f914c4730cc036137c5761e4911d0865e5973b304117ce4bf8f1ebc871"
+    },
+    "packages/binding/dist/engine.js": {
+      "bytes": 3041,
+      "sha256": "651a1d73f1d8310a3f79a408a28d2b9854d352ac70c62ba3517e4cd992729649"
+    },
+    "packages/binding/dist/errors.js": {
+      "bytes": 250,
+      "sha256": "9ec6a20598fe0cf505b964a7899a0d7dcf3417ae6e60e80649aad06fbd84d7bf"
+    },
+    "packages/binding/dist/index.d.ts": {
+      "bytes": 961,
+      "sha256": "5341bd2d683e564986892bf52c8d8693521e8d7c40218ef985c3cd78e5b58076"
+    },
+    "packages/binding/dist/index.js": {
+      "bytes": 392,
+      "sha256": "44198059c4ec762ec3d0479b2adb0527b79cd9fe5b0e97ace1fada1e9b256f5c"
+    },
+    "packages/binding/dist/native-loader.js": {
+      "bytes": 5055,
+      "sha256": "5b3e35b3c5cdbc87feba6195f9e22146b1af23e8029ea170fcf819d54efc046e"
+    },
+    "packages/binding/dist/normalize-error.js": {
+      "bytes": 2810,
+      "sha256": "3e6ccbad6ba7df76c59824fbe98c062d3895d8032e77789efb676dffe697124c"
+    },
+    "packages/binding/dist/protocol.js": {
+      "bytes": 838,
+      "sha256": "37298558631ba9ad4bd5716b248d3db763332916f58fb24421303070c8bd28f4"
+    },
+    "packages/binding/dist/tooling-binding-adapter.js": {
+      "bytes": 1004,
+      "sha256": "fe87090adad70635be5fe8eadbd15f617fb85c0b523016654590e15e5ff30c04"
+    },
+    "packages/binding/dist/tooling-binding-browser.d.ts": {
+      "bytes": 2761,
+      "sha256": "1c00e97d773de92a87e537be5365375bf4a37c207cbf6555a43bc23a08f0e6e1"
+    },
+    "packages/binding/dist/tooling-binding-browser.js": {
+      "bytes": 1082,
+      "sha256": "2b2d3ac2a02b21da435854d80d4bc50aa76c4a6e4c730326fc655681703668de"
+    },
+    "packages/binding/dist/tooling-binding-native.js": {
+      "bytes": 2674,
+      "sha256": "b13f40c3667146bed1d8a8fd2223a35ffc166a7c7eb3dae9e03e3b983e72144e"
+    },
+    "packages/binding/dist/tooling-binding-node.d.ts": {
+      "bytes": 1048,
+      "sha256": "087ce5f3cb538addc98cb87ded10e19f5fe8e21e2b3a41f51da915c8d8359923"
+    },
+    "packages/binding/dist/tooling-binding-node.js": {
+      "bytes": 406,
+      "sha256": "fc2e1abcd294e029ad165bccc31619a7665556aae6b145906640f77964f89166"
+    },
+    "packages/binding/dist/tooling-binding-wasm.js": {
+      "bytes": 6905,
+      "sha256": "72b759cb34a428b7e3ddf451aa6c43ab73c70c99d8e5fed9e46dbde85d4ad789"
+    },
+    "packages/binding/dist/tooling-binding.d.ts": {
+      "bytes": 2753,
+      "sha256": "568f294b48f101ee33c313ff0ef7e16b9e0e4196ceba2920f2b90cba8d1b3429"
+    },
+    "packages/binding/dist/tooling-binding.js": {
+      "bytes": 1325,
+      "sha256": "d2561ecc51721ece1d11181eec2de3abf1ed8d534d2c7a4caca1a0d1a73885f4"
+    },
+    "packages/binding/dist/tooling.js": {
+      "bytes": 6924,
+      "sha256": "14147676891f45657c2cfaae1ac3ddbe99ce3a162088dec8d124daf21f842af2"
+    },
+    "packages/binding/dist/version.js": {
+      "bytes": 121,
+      "sha256": "8016343e0675ec28b33103a5d0a2ed9562b3a49aaeac3c05f6122c3ebced72f0"
+    },
+    "packages/cli/dist/bin/index.js": {
+      "bytes": 128,
+      "sha256": "81a3cefcde14b37a6d1acfa0dbec63f6d17a50310b3130734fc7092dc14a9936"
+    },
+    "packages/cli/dist/core.js": {
+      "bytes": 3221,
+      "sha256": "3cb9385d61a8ca852266ba3d99672c040409be55ff4ed6a884b4e7629bad8696"
+    },
+    "packages/cli/dist/generate.js": {
+      "bytes": 13086,
+      "sha256": "dc84d12fee3d6d65ab14ecd5f8835cd5348d311b9d41c30bfbb832aaa83d1af9"
+    },
+    "packages/compiler/dist/compiler-diagnostics.d.ts": {
+      "bytes": 778,
+      "sha256": "674d8b7e556292571e2ca2264333fd5d9eca87cb1afd1fb47f327e0151c5c82d"
+    },
+    "packages/compiler/dist/compiler-diagnostics.js": {
+      "bytes": 510,
+      "sha256": "515dc3368f634d37167b68e847e95cc2d50f3610ebe25f62727b0bf551ccb8d2"
+    },
+    "packages/compiler/dist/compiler.d.ts": {
+      "bytes": 2477,
+      "sha256": "b0e6eae23288eeda73ba8d4405a26e177949fcd8d49c9c86a0fc238005ddeaa5"
+    },
+    "packages/compiler/dist/compiler.js": {
+      "bytes": 6992,
+      "sha256": "ac5570347c07c5397c20424d90459c0eee07c68ff279a5f02b91d77eafa0bea7"
+    },
+    "packages/compiler/dist/contracts.d.ts": {
+      "bytes": 1082,
+      "sha256": "bcef427ecbd1aa16e43befceeca6aa47825f25d831bffafeed98edd9f7affe4b"
+    },
+    "packages/compiler/dist/contracts.js": {
+      "bytes": 212,
+      "sha256": "a11d9f9b2bb78fbbdc80f60aa67cc332ca49157fc3edf0aa9a30331e6c305f2a"
+    },
+    "packages/compiler/dist/diagnostics/contracts.d.ts": {
+      "bytes": 3956,
+      "sha256": "8985abce8da5384705f55be0d7ecb6b6fba89970d8f88c564bc5c262deb7fc7f"
+    },
+    "packages/compiler/dist/diagnostics/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/compiler/dist/diagnostics/index.d.ts": {
+      "bytes": 1669,
+      "sha256": "b950400193eea68150345c51bfe4dd332f480e61453fb3b4c2ffa76aed8236c0"
+    },
+    "packages/compiler/dist/diagnostics/index.js": {
+      "bytes": 7592,
+      "sha256": "5eab07a7a725621b41063cc060d379344b52297716384f88239b799e682c5888"
+    },
+    "packages/compiler/dist/index.d.ts": {
+      "bytes": 4638,
+      "sha256": "b63fa69cb9b5d06cdba4000ccdaed60a345a6a5a0ee46c213eeb81eb8dae406d"
+    },
+    "packages/compiler/dist/index.js": {
+      "bytes": 980,
+      "sha256": "fdabddccf4933734461c2c672693c2551e60be01108937cde4be8a32068534c5"
+    },
+    "packages/compiler/dist/node-compiler.d.ts": {
+      "bytes": 7682,
+      "sha256": "91b1a8c9823f13e2474d72f37db45b909b350fe617d4d7b0521dec16fb68f700"
+    },
+    "packages/compiler/dist/node-compiler.js": {
+      "bytes": 16910,
+      "sha256": "171266ed2fa010eb618e3e8d586ab7622d0de6545b464553cae597cf1da7a84b"
+    },
+    "packages/compiler/dist/node-imports.d.ts": {
+      "bytes": 2555,
+      "sha256": "8df6607e597bdfc4fedbee7f4b6b208b92223180acd52e6a49ba81c3f91ee9d9"
+    },
+    "packages/compiler/dist/node-imports.js": {
+      "bytes": 10078,
+      "sha256": "9d8c65bfd016ebfe5fe261c5fa0d3378c8956992d15d4b31a48e14d2a2376b7c"
+    },
+    "packages/compiler/dist/node.d.ts": {
+      "bytes": 3160,
+      "sha256": "9626c4fa14e238dc3a1e299ad50600bdddd594d2c9e568ee6ed3984ffe568e25"
+    },
+    "packages/compiler/dist/node.js": {
+      "bytes": 2028,
+      "sha256": "cc6ac78af61d6d8d3bef509dbdf8bd29c2a81403231e75049f6e1c400f163918"
+    },
+    "packages/compiler/dist/project/binding-project.d.ts": {
+      "bytes": 970,
+      "sha256": "21659c44e397105d2751b891a88a1383e3faaf6a1d249a5553feec18ccc147df"
+    },
+    "packages/compiler/dist/project/binding-project.js": {
+      "bytes": 2942,
+      "sha256": "1e9623fa4015756f8c290cf1c231e0b3f83544d2ede0621cbde532c3189a0d53"
+    },
+    "packages/compiler/dist/project/entries.d.ts": {
+      "bytes": 1398,
+      "sha256": "1e751c612c23d2ad605dc6e0cc576ab6060f3dfbdd1703a1a087659f659faf90"
+    },
+    "packages/compiler/dist/project/entries.js": {
+      "bytes": 6345,
+      "sha256": "7ecf42a95f295f9fc56bfce3c1eab3d75fc7be40929ffb5fea466290e99f2a0c"
+    },
+    "packages/compiler/dist/project/manifest-sync.d.ts": {
+      "bytes": 1070,
+      "sha256": "6c6f46a481cbdc80607b8e43c7a7ca2d2bfccd00367533bfd8b78bf78a97ca1d"
+    },
+    "packages/compiler/dist/project/manifest-sync.js": {
+      "bytes": 1683,
+      "sha256": "800e50a62978219c887b0c2fcf8d5ba73c54787d8da14d78ee0bb2db471a1568"
+    },
+    "packages/compiler/dist/project/manifest.d.ts": {
+      "bytes": 1020,
+      "sha256": "fda9f703cbe83d089506fabef1c5ea651ab9765b7ffeee1c029e840d4ed0fe8c"
+    },
+    "packages/compiler/dist/project/manifest.js": {
+      "bytes": 1913,
+      "sha256": "d8aa78b2aa7ac4759fd7c00b8ee82e495a1deffe67978362653d264422a7660f"
+    },
+    "packages/compiler/dist/project/options.d.ts": {
+      "bytes": 1124,
+      "sha256": "36098272f7c671a50b321062f61b2f83535f3b411f0be3f37436930ba1949450"
+    },
+    "packages/compiler/dist/project/options.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/compiler/dist/session.d.ts": {
+      "bytes": 2141,
+      "sha256": "4bcdbddf77d8fc1a5d67f51899d0d5903e0d3ad7ed9bc9116f1bd67e264ddd24"
+    },
+    "packages/compiler/dist/session.js": {
+      "bytes": 2575,
+      "sha256": "4cbe0caab382ae1cab6cbc7cc45fdf550b2e3f4b994ad727ef518b9b8740341a"
+    },
+    "packages/compiler/dist/stylesheet/browser.d.ts": {
+      "bytes": 1435,
+      "sha256": "040d4a9211a67a384555ae784fee53f7a4870653bc293673fb9d0cef36a15b16"
+    },
+    "packages/compiler/dist/stylesheet/browser.js": {
+      "bytes": 2128,
+      "sha256": "6c1e32c0e94a0bfd966473543c57a8416e1b5ab01cfca0a8f1c0d1a8bf369839"
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.d.ts": {
+      "bytes": 829,
+      "sha256": "d514b2856d8272787100f6d093105d8a7432545e24a1a10514fb3f89dc830415"
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.js": {
+      "bytes": 3521,
+      "sha256": "a55a03fa19cf12fa1b17dc8f29981a6877de852a935d5afa3dc98fd972470b9b"
+    },
+    "packages/compiler/dist/stylesheet/delivery.d.ts": {
+      "bytes": 5005,
+      "sha256": "c1b08d21fb289f3b6fa03dc986e43510a90cc90865913fcf707834f2b9cc67ce"
+    },
+    "packages/compiler/dist/stylesheet/delivery.js": {
+      "bytes": 15351,
+      "sha256": "9409af8ab96cc903c948dec7dae41842b6e70a98ceb93579d42770fcd073a572"
+    },
+    "packages/compiler/dist/stylesheet/directives.d.ts": {
+      "bytes": 2389,
+      "sha256": "0a805f246e0ba7f5a78ff44bf191ed6ed323a9b1c8559b40d94b0c0bbc45e7b9"
+    },
+    "packages/compiler/dist/stylesheet/directives.js": {
+      "bytes": 4746,
+      "sha256": "5dccedeeff2f1d78cffd7de1a83e68f3f15eae65e89ace4888bfeacf442badb1"
+    },
+    "packages/compiler/dist/stylesheet/index-public.d.ts": {
+      "bytes": 2083,
+      "sha256": "f0e3027b55b00f85bfd56c2a82c647bf8d30957819bdb8ca3358ed0e0db79b8b"
+    },
+    "packages/compiler/dist/stylesheet/index-public.js": {
+      "bytes": 605,
+      "sha256": "99f567c4bd783276753b1a2f56ee2b509d52a20c924a35b71ac25fc7833f1ece"
+    },
+    "packages/compiler/dist/stylesheet/index.d.ts": {
+      "bytes": 7637,
+      "sha256": "ce058fb8cb496e24032369e1d0a06c7ac69b35ca1c3d7a985f077e66b2de3d10"
+    },
+    "packages/compiler/dist/stylesheet/index.js": {
+      "bytes": 22092,
+      "sha256": "0c045eb847f1614895aa7dd28486541af54e45c359e6bbf6db86aeb9ea9b7ce2"
+    },
+    "packages/compiler/dist/stylesheet/output-map.d.ts": {
+      "bytes": 1008,
+      "sha256": "4209638fd20be74387aa66235133dbd2e0686e504e67e0be3a4e7e530be4ca6f"
+    },
+    "packages/compiler/dist/stylesheet/output-map.js": {
+      "bytes": 6859,
+      "sha256": "cd9da24a932b226b378d70f3071988409054e6ee48730761f74155bb41eb7106"
+    },
+    "packages/compiler/dist/stylesheet/public.d.ts": {
+      "bytes": 8220,
+      "sha256": "3bbdc65f23e8c5e05ff9522dd62f6ea20d418a75e7d1e04f0a49a123852de98c"
+    },
+    "packages/compiler/dist/stylesheet/public.js": {
+      "bytes": 10979,
+      "sha256": "e7cfe75d72f9696723b6d9a3cf76841104c253d3421a8ac9cd3f54c512e3afa3"
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.d.ts": {
+      "bytes": 431,
+      "sha256": "ec731f4be94f462bffd725da4206630e8b9867bc59d71bd3f321f77cc514c5c5"
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.js": {
+      "bytes": 1692,
+      "sha256": "a5674544654abc4f750c444bbcba75fe7358c4cd60153502c65e5e70a456f3cb"
+    },
+    "packages/compiler/dist/stylesheet/render-core.d.ts": {
+      "bytes": 1915,
+      "sha256": "7248f4d5a5691e7dd59f0d064f67f05ea05b3ec541bbb6dc791b14639544062c"
+    },
+    "packages/compiler/dist/stylesheet/render-core.js": {
+      "bytes": 1108,
+      "sha256": "d1b197aa682539e242422d209f0fac4e8708fe2c8d194d355be01eab5dc78a48"
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.d.ts": {
+      "bytes": 410,
+      "sha256": "df5b82109771972bff1698ef9bee09cfd3c41a05ee7ded019975992f8936024f"
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.js": {
+      "bytes": 1567,
+      "sha256": "55b36aec9a7cae4217d2d2a322c8bfd3dfd8361c689c5134691daf69de483647"
+    },
+    "packages/compiler/dist/stylesheet/render-source.d.ts": {
+      "bytes": 607,
+      "sha256": "1ef0e9d6feb9067cc80f877d19b1a73463ebbb7e3e0a5caa239a9e9eb4071320"
+    },
+    "packages/compiler/dist/stylesheet/render-source.js": {
+      "bytes": 1242,
+      "sha256": "3069bb69bdeddc24b65160f396eb750686f39c892ae94e0a234ae72f3adb8465"
+    },
+    "packages/compiler/dist/stylesheet/render.d.ts": {
+      "bytes": 532,
+      "sha256": "4bf49f4124eb2e524ed0fe9ce403e59c87dd203b87cf527b6d6b03551dbe4565"
+    },
+    "packages/compiler/dist/stylesheet/render.js": {
+      "bytes": 1033,
+      "sha256": "a821d0668607541a9e0a94dd6e7c8c3121efc996d962cacb12f07c8c3ddb04cb"
+    },
+    "packages/compiler/dist/stylesheet/source-context.d.ts": {
+      "bytes": 483,
+      "sha256": "6fa7f8f6f1aa066a267baa5bc3344d67862cc70ca89361cd18379f9dfbf7a85b"
+    },
+    "packages/compiler/dist/stylesheet/source-context.js": {
+      "bytes": 3117,
+      "sha256": "82ec61095fe69b1dcf66f78c66f58384b3822e360154af0aba4f04b27d8d4e27"
+    },
+    "packages/compiler/dist/stylesheet/source.d.ts": {
+      "bytes": 321,
+      "sha256": "653b79938847310ba84d1481b41275d025cacf5798d43c93d73ec86012873fa1"
+    },
+    "packages/compiler/dist/stylesheet/source.js": {
+      "bytes": 1910,
+      "sha256": "7ba71d4b641e26a71409b3d2c7ae0418a702c258ce583cff859c89960fc70623"
+    },
+    "packages/compiler/dist/stylesheet/types.d.ts": {
+      "bytes": 5440,
+      "sha256": "b83528103c2b0edc6d3afa91bc022468e1da3ddde861184c0427946cc1208453"
+    },
+    "packages/compiler/dist/stylesheet/types.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/mcp/dist/bin/index.d.ts": {
+      "bytes": 11,
+      "sha256": "4f1bad288ada6326583a3e6a0a54d7627a03eac3b668adeea9dded12ac5656b8"
+    },
+    "packages/mcp/dist/bin/index.js": {
+      "bytes": 1769,
+      "sha256": "17e08b345c3ac1d2a8d46179d82c8a7f86a794892ee265861697bef149169743"
+    },
+    "packages/mcp/dist/classes.js": {
+      "bytes": 7052,
+      "sha256": "a09c6fd112d4a8b2376c62667368c9a9b8abc46d9684cf2b8268fb8dc36a48df"
+    },
+    "packages/mcp/dist/compare.js": {
+      "bytes": 4710,
+      "sha256": "1a20d749d1f6b35a2d6f635d6c12fa373b2d12fdb0d380f677a402f55e1633d6"
+    },
+    "packages/mcp/dist/context.js": {
+      "bytes": 7534,
+      "sha256": "3e262c58025e66499bd0e9e5bab9e447473187a271c5841eae849c8670847143"
+    },
+    "packages/mcp/dist/contributor.js": {
+      "bytes": 26302,
+      "sha256": "4bfd360df2a7b677af75b1fcb912075489ba63d40f21725477494ead643a51ab"
+    },
+    "packages/mcp/dist/directives.js": {
+      "bytes": 4652,
+      "sha256": "bc3cd7e540f28d3bd8006d21be7cee1fafd7bca087b874861f27f28fa138e544"
+    },
+    "packages/mcp/dist/document.js": {
+      "bytes": 1384,
+      "sha256": "1383d90638ced2c31fd1e51e5553f4e00e6e245769517b7968697a944fb4553e"
+    },
+    "packages/mcp/dist/format.js": {
+      "bytes": 3216,
+      "sha256": "6bd9a49729257eced66a4f387fbe96f237a22334b36c5b7f31303649ead785f8"
+    },
+    "packages/mcp/dist/index.d.ts": {
+      "bytes": 152,
+      "sha256": "ab1d4901c0775125db87f966a7edb6176c8fd7db545a3576919ab1f4e85c8f7c"
+    },
+    "packages/mcp/dist/index.js": {
+      "bytes": 153,
+      "sha256": "36e1eef68df25015c3b70ecd02e3835135f22d0a9fd56134cc2a5d92f0af9f8b"
+    },
+    "packages/mcp/dist/internal/src/workspace.js": {
+      "bytes": 2572,
+      "sha256": "542cb610df2331b528a847839b58b95a956092552a8a7f9e6ea72b8f19123535"
+    },
+    "packages/mcp/dist/language.js": {
+      "bytes": 1575,
+      "sha256": "cf5986911ffb3ddeb7e3383463664257a17a18da8c1720020e646f143c41b1bc"
+    },
+    "packages/mcp/dist/lint.js": {
+      "bytes": 4738,
+      "sha256": "2b3fdff0680622c376d31de2af9a87f226111e3b98441f9c6bc82869896dbe5f"
+    },
+    "packages/mcp/dist/manifest-query.js": {
+      "bytes": 5366,
+      "sha256": "71d3af337fe7b65a21ef0b93e6b6778519c62e6d4b331e0ae147cf8eaa70e797"
+    },
+    "packages/mcp/dist/manifest-summary.js": {
+      "bytes": 2141,
+      "sha256": "1ce5b15f18c69a4398b58bfcfba9627ecad505617bc8abe1c4deeff2b312433f"
+    },
+    "packages/mcp/dist/preview-write-lock.js": {
+      "bytes": 2816,
+      "sha256": "bc13853420f889c4d72aab086d5775e24a040731a5e7388a78cda33474dff85f"
+    },
+    "packages/mcp/dist/project.js": {
+      "bytes": 1543,
+      "sha256": "afc0c5a06a4a88e34fcb9f63a4612454173ca49b4ab0b6be24aa10b43db4264b"
+    },
+    "packages/mcp/dist/result.js": {
+      "bytes": 772,
+      "sha256": "33ad202d9301b8acc3049bdc65e038760441132b5754c4a8f785b55e86519b6e"
+    },
+    "packages/mcp/dist/scan.js": {
+      "bytes": 4375,
+      "sha256": "f0c7e8ee87f7fdce2ecdfca36e504521595439d9f3e6c167f5fb0b83eb038929"
+    },
+    "packages/mcp/dist/server.js": {
+      "bytes": 17066,
+      "sha256": "d434e4cdc1de60711bcc655e6456f7b9073eec00f1dee2220c7b6b72a7f93eb8"
+    },
+    "packages/mcp/dist/setup.js": {
+      "bytes": 6797,
+      "sha256": "5b8581d9584abf45a0c4011e02bc8c6a1a9a5c279cf782f51431def258f24bc1"
+    },
+    "packages/mcp/dist/tooling-session.js": {
+      "bytes": 1165,
+      "sha256": "85267a1d111434b83d39af6fff332eef7b5880ac7fcdf7dde1d934a8c746251a"
+    },
+    "packages/next/dist/adapter.js": {
+      "bytes": 8952,
+      "sha256": "1400b374035edc59b4531df8f67dec5fc6f5ec16eef5f4eab36b60bb5deedf93"
+    },
+    "packages/next/dist/build-state.js": {
+      "bytes": 2658,
+      "sha256": "0e63cadd38ce30dfb05dc35e0057b93d8f16a2804b9a9c70492f8e90d2d55234"
+    },
+    "packages/next/dist/css-manifest-import-loader.js": {
+      "bytes": 4378,
+      "sha256": "d04b66c5206ff43d0b3c01a350c4bd69e77e761de9290ebe905d0eaf9589c6ba"
+    },
+    "packages/next/dist/css-manifest-loader.js": {
+      "bytes": 4633,
+      "sha256": "5293e70bc06ddb33ef5c2c04113e598f173c885c9595532950f4efb81d410ea5"
+    },
+    "packages/next/dist/empty.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/next/dist/index.js": {
+      "bytes": 20753,
+      "sha256": "974884b0a243d09e91f79d18b2bc057c81dd811aaf8056f29b773382832a09ef"
+    },
+    "packages/next/dist/internal/src/emitted-globals-module.js": {
+      "bytes": 747,
+      "sha256": "fccec07cd4b12563a5ce16cca06581916db686f77d2d9a1fb2de9beb14ba8965"
+    },
+    "packages/next/dist/internal/src/manifest-facade.js": {
+      "bytes": 2266,
+      "sha256": "adec18f1f11d9f8ce40af0d3671656ee5092caf0e1260825c8864f073edc3bc6"
+    },
+    "packages/next/dist/internal/src/manifest-loader.js": {
+      "bytes": 1210,
+      "sha256": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567"
+    },
+    "packages/next/dist/internal/src/manifest-module.js": {
+      "bytes": 734,
+      "sha256": "088165920d737126068fbad8a934e1c69f7952c71ade410093f330c0f0c376d3"
+    },
+    "packages/next/dist/internal/src/node.js": {
+      "bytes": 3767,
+      "sha256": "a8747f937db99d893ff83e818c9f2956a04ba908b27c520178bd88dbf8ec099b"
+    },
+    "packages/next/dist/internal/src/project.js": {
+      "bytes": 641,
+      "sha256": "26daa0caa3aa739b74e7b9f3de3a1c5123630b88db7c9dcbb3c352b16b3ee324"
+    },
+    "packages/next/dist/internal/src/style-module.js": {
+      "bytes": 137,
+      "sha256": "65a32ce2dd07b9588a0fc5e08d8f9fbadee3c17907ef5eab0fe12ce5cc04e9f5"
+    },
+    "packages/next/dist/options.js": {
+      "bytes": 731,
+      "sha256": "35606b783e7947c6006e7a68f943d82d21273db6a2be5846fe02059eb93651df"
+    },
+    "packages/next/dist/prepare-stylesheet.js": {
+      "bytes": 1502,
+      "sha256": "aefc328efebe9ae2e206915a3f3eab87db16b3f5c32202c496b23de3b845baec"
+    },
+    "packages/next/dist/preset/src/default-manifest.js": {
+      "bytes": 117064,
+      "sha256": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2"
+    },
+    "packages/next/dist/sass-source-context.js": {
+      "bytes": 3547,
+      "sha256": "2d55dcbd73e36f8f5469031674f2e90e60351891342da58142a1747b74d3bec6"
+    },
+    "packages/next/dist/static-css-loader.js": {
+      "bytes": 812,
+      "sha256": "9fcd3e2db2a6b8c79b7175d6090e4b632d898d850fdbf54f19f30e30b18f7881"
+    },
+    "packages/next/dist/static-loader.js": {
+      "bytes": 668,
+      "sha256": "5da53696ca929a2e3a180c73c388a5dc6ee3a02fbc3e0b66df82f4f8bb9c0a04"
+    },
+    "packages/next/dist/static.js": {
+      "bytes": 7988,
+      "sha256": "904645b9035652f7827ce8485966688c7827f55d5227af739b21b68dea24553f"
+    },
+    "packages/next/dist/stylesheet-loader.js": {
+      "bytes": 6056,
+      "sha256": "75612ed2829709109841a77b9fcb1a118f78fc6b111de4079222a6e8c1e7ccf7"
+    },
+    "packages/next/dist/stylesheet-source-map.js": {
+      "bytes": 646,
+      "sha256": "d5febf2ce73e0edf8c20dea2b797a329ca34ce0a48006d2ac3f78fae3634149e"
+    },
+    "packages/next/dist/webpack-stylesheets.js": {
+      "bytes": 2646,
+      "sha256": "68305277568c06197eee9cd0526969ae2d8adfad19ce7cc6bbf37c4e8cca5ccd"
+    },
+    "packages/next/dist/webpack-virtual-modules.js": {
+      "bytes": 528,
+      "sha256": "de15b9d8f2afd6aa2559302e8eb2bff56c1df00ba561e80ebfcd9747194aae54"
+    },
+    "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm": {
+      "bytes": 929757,
+      "sha256": "4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318"
+    },
+    "packages/runtime/dist/default-manifest.json": {
+      "bytes": 82513,
+      "sha256": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977"
+    },
+    "packages/runtime/dist/global.min.js": {
+      "bytes": 49716,
+      "sha256": "5159131ac7234afc9aa60bee12269a775c25a5db6550cf375ea8adfd38e39667"
+    },
+    "packages/schema/dist/css-common.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/schema/dist/css-directives.js": {
+      "bytes": 855,
+      "sha256": "796ff9a358ef460ccf0a4e7e021fc5fa93105144abe74bf46b8bb7b260e7fb3a"
+    },
+    "packages/schema/dist/css-syntax.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/schema/dist/diagnostics.js": {
+      "bytes": 1057,
+      "sha256": "30058f921ae3dbe04f647606bf0603c88a5c921d8a94f2d290f498418d9633f3"
+    },
+    "packages/schema/dist/emitted-globals.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/schema/dist/hydration-manifest.js": {
+      "bytes": 981,
+      "sha256": "7e962cefa3e960fd82c7a72611def1936191ea47df8415e88056705c3236437a"
+    },
+    "packages/schema/dist/index.js": {
+      "bytes": 668,
+      "sha256": "5a97bb74524f18494b81780a294fb920296afb5cd4240651db5a1fe98496e733"
+    },
+    "packages/schema/dist/integration.js": {
+      "bytes": 297,
+      "sha256": "244358c19447353ac7e1e7c9292c4378168a29c4afd4f447903fb0a991eda80a"
+    },
+    "packages/schema/dist/manifest-json.js": {
+      "bytes": 2191,
+      "sha256": "22fa42e9350da7c4ef9f639c53290f0d8c11bb22f13705737635be4b8b174257"
+    },
+    "packages/schema/dist/manifest.js": {
+      "bytes": 1328,
+      "sha256": "fa9ba235ef1f6d34a73293a15f0d82f9a66203218d91d8abfc87e0137edcf56e"
+    },
+    "packages/schema/dist/native-css-shorthand.js": {
+      "bytes": 1603,
+      "sha256": "22f9af37b7d6ae34a43a108df381ac0ad9db91fef35f71847bf6f4608cf8636c"
+    },
+    "packages/schema/dist/runtime-style.js": {
+      "bytes": 134,
+      "sha256": "4dd32b228889647f4310f57e5db6dea55ef5f2070cc46a88d753e88f2dd0e20a"
+    },
+    "packages/schema/dist/utility-type.js": {
+      "bytes": 296,
+      "sha256": "36e1ba8455079da897b6f8b22b8efdd9c5877fb010d6cbfd17c3c84e9c374e6d"
+    },
+    "packages/tooling/dist/browser.d.ts": {
+      "bytes": 212,
+      "sha256": "e6add98c876a671738bd8f0341d03569e6923549fff57208d121f67e9cf79b24"
+    },
+    "packages/tooling/dist/browser.js": {
+      "bytes": 144,
+      "sha256": "8f56d36b09a02672c7e84256d79f22fb1aad9d2401d0a7036d806555cdef83a8"
+    },
+    "packages/tooling/dist/builtins.d.ts": {
+      "bytes": 653,
+      "sha256": "1d7782ebd5b0d34da93fae9b39df4074811adba2a2cc819936f1d5eea937456f"
+    },
+    "packages/tooling/dist/builtins.js": {
+      "bytes": 7976,
+      "sha256": "b2cb4a5c2f21f3873f0ea4112087e6a53824370f644c781e26df6960ce5374e4"
+    },
+    "packages/tooling/dist/css.d.ts": {
+      "bytes": 1171,
+      "sha256": "251ce47826a825e1084cd05cba4c223a3d862fc13705d354f7c00820d3698f0a"
+    },
+    "packages/tooling/dist/css.js": {
+      "bytes": 3697,
+      "sha256": "b8ce5483e9a69c9e5b3d59250792719f9dd3dc0090f004d6317593dd6dba2065"
+    },
+    "packages/tooling/dist/host.d.ts": {
+      "bytes": 328,
+      "sha256": "0c1b979bd2b7f5a1e5513522f05f8d0a3a1d81748b14ccff694fc161b229db6d"
+    },
+    "packages/tooling/dist/host.js": {
+      "bytes": 744,
+      "sha256": "69effe05c5ad65da3e93cd78a1301c14217d3b5f880c9f26d9e43d4b4508b442"
+    },
+    "packages/tooling/dist/immutable.d.ts": {
+      "bytes": 137,
+      "sha256": "4a5386de666542be2ed370721c5a0d2c9997ef7e7597db834b14b20253d05fa8"
+    },
+    "packages/tooling/dist/immutable.js": {
+      "bytes": 305,
+      "sha256": "b201d612fbabf76549d1cd9611c5e87173c66d10dd2029ee1f4c32d77c83b75c"
+    },
+    "packages/tooling/dist/index.d.ts": {
+      "bytes": 674,
+      "sha256": "3aef9c701633d1e807572ef3db9266e4a95f936fd64ac2ad28813a8fe7d58cdc"
+    },
+    "packages/tooling/dist/index.js": {
+      "bytes": 144,
+      "sha256": "8f56d36b09a02672c7e84256d79f22fb1aad9d2401d0a7036d806555cdef83a8"
+    },
+    "packages/tooling/dist/language/binding-session.d.ts": {
+      "bytes": 466,
+      "sha256": "2c5f7348e41470226d662a6344c8ccf42454fab70c7cf6d2eaaf52d5aa49880f"
+    },
+    "packages/tooling/dist/language/binding-session.js": {
+      "bytes": 463,
+      "sha256": "816ca32b156e648c0511a7d48e76ce81418be95c9d73936fd461af3dec55b0c1"
+    },
+    "packages/tooling/dist/language/browser.d.ts": {
+      "bytes": 762,
+      "sha256": "64a7944a1acb858cba8172f18e283f0034f1699fed30ccd18caf81e16b3f0e8b"
+    },
+    "packages/tooling/dist/language/browser.js": {
+      "bytes": 617,
+      "sha256": "b9d5d9eed7a1839d99a22efe73284611b78cad7caf21e6d55d8527ca96520243"
+    },
+    "packages/tooling/dist/language/common.d.ts": {
+      "bytes": 1976,
+      "sha256": "ddbebb07908423a30fbcf50c95b66984dd0f69fde4fb5ba94db1f478f0054268"
+    },
+    "packages/tooling/dist/language/common.js": {
+      "bytes": 1571,
+      "sha256": "bb081fcdd75c9b7ab0b7e5290ebc300ec9a1c32dddec8020a8685ca0abd84a79"
+    },
+    "packages/tooling/dist/language/contracts.d.ts": {
+      "bytes": 5542,
+      "sha256": "f8f06da85565bfcef33f8b183885a1116f48efca5a17d08bc33254aa5bee8088"
+    },
+    "packages/tooling/dist/language/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/language/index.d.ts": {
+      "bytes": 4520,
+      "sha256": "b6b6041ccc1d8db4a62ebdf759d7fc1d737054a658961d51d3fad34ab1598f69"
+    },
+    "packages/tooling/dist/language/index.js": {
+      "bytes": 2448,
+      "sha256": "4c95811b9d8522de596a970fb34d87362b04ddf798ff605417c896725a399c94"
+    },
+    "packages/tooling/dist/language/master-css.d.ts": {
+      "bytes": 743,
+      "sha256": "b8f91271c62d64370c9667897dfd25f7710c66900b7f4f361e451c7008d46115"
+    },
+    "packages/tooling/dist/language/master-css.js": {
+      "bytes": 975,
+      "sha256": "5fcbfefc87cc96fcfc49bbd8245161aaa176f58f0878e26be79868471f5e90ae"
+    },
+    "packages/tooling/dist/language/node.d.ts": {
+      "bytes": 1289,
+      "sha256": "5a8aac21ab00e629af7ae724e78d80fdbe3cd3711cd33d9bb28ac91a40fd3f89"
+    },
+    "packages/tooling/dist/language/node.js": {
+      "bytes": 1213,
+      "sha256": "cdc7223323ade3293df02b6b9d0e6d4f13aac96fa5e83fc90405dd5edced63ae"
+    },
+    "packages/tooling/dist/language/semantic/scopes.d.ts": {
+      "bytes": 5754,
+      "sha256": "8b27e402f6ec711af352643890031b643f28b0468aa42741564ca23916d40a08"
+    },
+    "packages/tooling/dist/language/semantic/scopes.js": {
+      "bytes": 4162,
+      "sha256": "76062e24b8064a8c912addcbf0791aaae23d592b3b10d7a645b155d3412d83c3"
+    },
+    "packages/tooling/dist/language/semantic/types.d.ts": {
+      "bytes": 943,
+      "sha256": "b5d462c7249dac6d73e17c6183b8f7d6f9e6a69ae03c9f895446176d99063d46"
+    },
+    "packages/tooling/dist/language/semantic/types.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/language/session.d.ts": {
+      "bytes": 1780,
+      "sha256": "559eb140719da60147b8cc71e16e3f9e2ff53f53f4d3f19d1aefbede8e302e56"
+    },
+    "packages/tooling/dist/language/session.js": {
+      "bytes": 2938,
+      "sha256": "2fb2b60f967f49bd3b3f5042f135821def9fc6ac913e26a4988cc83c894b8629"
+    },
+    "packages/tooling/dist/language/settings.d.ts": {
+      "bytes": 594,
+      "sha256": "e90fc4e9c9c41b742e3315a041937ed97ab60f6718833efb7c3e34b06b3d9f19"
+    },
+    "packages/tooling/dist/language/settings.js": {
+      "bytes": 608,
+      "sha256": "d7bd7d84de4fcbb0d72bafbcbbe77ab65f483a67451278ffc4ea05ed7b40dedf"
+    },
+    "packages/tooling/dist/language/utils/mdn-css-data.d.ts": {
+      "bytes": 440,
+      "sha256": "afbe3102a39c072255e50816bacee5f9259d162b45671ac7321b045dddf17ca3"
+    },
+    "packages/tooling/dist/language/utils/mdn-css-data.js": {
+      "bytes": 2445,
+      "sha256": "afd87a403b06315496019bc88232586a53747708f417805c05994253af474587"
+    },
+    "packages/tooling/dist/lexer/browser.d.ts": {
+      "bytes": 408,
+      "sha256": "57c94a7563b2a1014a8906c3a6aeefa7eee40bb6cd7424e77d519b4ceaa676a8"
+    },
+    "packages/tooling/dist/lexer/browser.js": {
+      "bytes": 452,
+      "sha256": "405585cad303fb2144e0fd03e1263d18f75cba6f77eb036a62faa37aabc0ba9c"
+    },
+    "packages/tooling/dist/lexer/contracts.d.ts": {
+      "bytes": 1551,
+      "sha256": "624e01a2097a9bf28b2ad22b4ae7ca5fe31aa5d1a19dbd25fe49e7c64983e57e"
+    },
+    "packages/tooling/dist/lexer/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/lexer/index.d.ts": {
+      "bytes": 1043,
+      "sha256": "dcc1093d3aad605baf7dbbc2851d7c47d45b4c99dfa44dc48b1793e8d234b508"
+    },
+    "packages/tooling/dist/lexer/index.js": {
+      "bytes": 329,
+      "sha256": "94184cd2e61294b521baab251e3eb6c6879a40fd4ba77ee247fda200c6ee181e"
+    },
+    "packages/tooling/dist/lexer/node.d.ts": {
+      "bytes": 397,
+      "sha256": "da39a08ecc68a1e3c9677bff43dd2fc910915d6c3fea98094ccb6febf97b85ec"
+    },
+    "packages/tooling/dist/lexer/node.js": {
+      "bytes": 321,
+      "sha256": "999a1920e036ee578f5f804b4a6d252bf88e4f0a0a178207f25f765e7ba6d92e"
+    },
+    "packages/tooling/dist/lexer/session.d.ts": {
+      "bytes": 838,
+      "sha256": "935a126db4c577f4e9577e774235aa25b521ec721cfbb3a97467673518c7b873"
+    },
+    "packages/tooling/dist/lexer/session.js": {
+      "bytes": 805,
+      "sha256": "74619852d04960faebceaf5ac4aa7edf2dc49dc67a0b021d21ad12db80abaf36"
+    },
+    "packages/tooling/dist/lint/analysis.d.ts": {
+      "bytes": 2985,
+      "sha256": "78597b2ff98db6ce176764fc2e2a79cfa66433dea40600867f93e77bf5dc07e9"
+    },
+    "packages/tooling/dist/lint/analysis.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/lint/binding-session.d.ts": {
+      "bytes": 1926,
+      "sha256": "6fd3e550e907bc3d5e34f8c3b12a4a3c17d19974557b60c1ed03559361aefd1d"
+    },
+    "packages/tooling/dist/lint/binding-session.js": {
+      "bytes": 3822,
+      "sha256": "94a264a56cf2d8b7e8f4a1b78dcbac2edaac557ac5df8ed76908038d0a637a9a"
+    },
+    "packages/tooling/dist/lint/constants.d.ts": {
+      "bytes": 287,
+      "sha256": "837ff4e47a7877245c016e6c9b96f64f04df9b669f7d605b8c23d016c90c7646"
+    },
+    "packages/tooling/dist/lint/constants.js": {
+      "bytes": 507,
+      "sha256": "ba9fb3443eec070530e32bd47e5206ff8bb0495737ca4d300ce2b0a81f51666d"
+    },
+    "packages/tooling/dist/lint/contracts.d.ts": {
+      "bytes": 1234,
+      "sha256": "8040a3112da9160d686b3ceb03b2d5a009aed18c7865f2ff4aa6337c5d099488"
+    },
+    "packages/tooling/dist/lint/contracts.js": {
+      "bytes": 443,
+      "sha256": "9d064147220359e0fbcf333517daa3309be830783b83ec14e08016b7ebe15b26"
+    },
+    "packages/tooling/dist/lint/diagnostic-format.d.ts": {
+      "bytes": 386,
+      "sha256": "9c3e42fd2a2f32a9d9aca6e7fee94e92239e6241d7ad1887c64d2c7902e74d7f"
+    },
+    "packages/tooling/dist/lint/diagnostic-format.js": {
+      "bytes": 557,
+      "sha256": "936a1a135f78949371fcfa4063f47f2a57077a843fd7df303cfe4fcaf3728090"
+    },
+    "packages/tooling/dist/lint/diagnostics.d.ts": {
+      "bytes": 2187,
+      "sha256": "24bd04fe00f1113acfbcaca2958968f1639df99255ea52b57bc09198f3583caa"
+    },
+    "packages/tooling/dist/lint/diagnostics.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/lint/index.d.ts": {
+      "bytes": 4131,
+      "sha256": "5b037ff4a6df5663ba52ef2e2fe2bec8ef979063f2681bab57350c44ba50c2de"
+    },
+    "packages/tooling/dist/lint/index.js": {
+      "bytes": 1079,
+      "sha256": "fbe5ca2153e09a83002d9a93068dae1e50ee9c5d471f24e1c4835c82fb12a115"
+    },
+    "packages/tooling/dist/lint/node.d.ts": {
+      "bytes": 306,
+      "sha256": "371e0eb2d777ddbecddfc82c3527c449009c67a92ceffbf5255acd4055817a82"
+    },
+    "packages/tooling/dist/lint/node.js": {
+      "bytes": 320,
+      "sha256": "09c1d929931b95b9bbd29575c741af32d1d83237ea46a694f575defa9fd47bf7"
+    },
+    "packages/tooling/dist/lint/rule-signatures.d.ts": {
+      "bytes": 820,
+      "sha256": "0db5e23acccac6900fbcfb85a65b0519ce41d1923a75b09da47370d975ff0cb9"
+    },
+    "packages/tooling/dist/lint/rule-signatures.js": {
+      "bytes": 1347,
+      "sha256": "80670ef051b0d1d60fe00da94bf8f9f4a8cc0bcda6f531c700a3bddcfc6ac95b"
+    },
+    "packages/tooling/dist/lint/source.d.ts": {
+      "bytes": 3680,
+      "sha256": "7aa9015a74db23bf76ac771373bddfbc91d5eafabef5c03c29a67fea230fe20d"
+    },
+    "packages/tooling/dist/lint/source.js": {
+      "bytes": 10164,
+      "sha256": "aaad12007c4a1781c9e5cbcd63479efc2cfb5ada3f704dd776ef65eb35ac39ed"
+    },
+    "packages/tooling/dist/node.d.ts": {
+      "bytes": 571,
+      "sha256": "fadd58bbb2b6761cea1e3a08e7218e5d7a41152551d3b2607e5567435fa17aaf"
+    },
+    "packages/tooling/dist/node.js": {
+      "bytes": 1431,
+      "sha256": "fc6edf0e95ebf4b92346d919d90a38127ae2e83e8f0cc82ea39f0a888f1da985"
+    },
+    "packages/tooling/dist/scanner/binding-session.d.ts": {
+      "bytes": 2561,
+      "sha256": "b9131199df508c87df268c825163a39914bbd4858768e671c592b09637460750"
+    },
+    "packages/tooling/dist/scanner/binding-session.js": {
+      "bytes": 2621,
+      "sha256": "0bc560f70775849bdda627598d2c2c02b50c6057940482d57ca76f975ee9aec7"
+    },
+    "packages/tooling/dist/scanner/core.d.ts": {
+      "bytes": 4402,
+      "sha256": "de6c3e31b438b4388d669f11fbe54caeadedea1b1702e2ce6a1ced8718d9e13c"
+    },
+    "packages/tooling/dist/scanner/core.js": {
+      "bytes": 11859,
+      "sha256": "f1f9016036a2b5bc489fb354e37ac9e27d8a702be3a1f043e9cf3d150c02860c"
+    },
+    "packages/tooling/dist/scanner/index.d.ts": {
+      "bytes": 368,
+      "sha256": "3ded4be89c458d6310458ebaa4008fe21b87d704983fad38887e6913abcf05ed"
+    },
+    "packages/tooling/dist/scanner/index.js": {
+      "bytes": 188,
+      "sha256": "3a5a6364817147c84dc9b30a0ec5a1e4ab6aabbe5138d34d7f99d4190be2b34d"
+    },
+    "packages/tooling/dist/scanner/node.d.ts": {
+      "bytes": 368,
+      "sha256": "3ded4be89c458d6310458ebaa4008fe21b87d704983fad38887e6913abcf05ed"
+    },
+    "packages/tooling/dist/scanner/node.js": {
+      "bytes": 188,
+      "sha256": "3a5a6364817147c84dc9b30a0ec5a1e4ab6aabbe5138d34d7f99d4190be2b34d"
+    },
+    "packages/tooling/dist/scanner/options/index.d.ts": {
+      "bytes": 685,
+      "sha256": "d30d26fbdcc60c83e21aa7d9a98d1ba194284846d98a8577b9662b6e8b848779"
+    },
+    "packages/tooling/dist/scanner/options/index.js": {
+      "bytes": 1331,
+      "sha256": "0547d37e86d8b9d2a4ca8826832b8a85bf4d336bf7112469d52e741390608c48"
+    },
+    "packages/tooling/dist/source/adapters/optional-peer.d.ts": {
+      "bytes": 465,
+      "sha256": "eeb001804c4e7b9b0c6029de49b194fb9a81dfffbec5f7684cbbfdd290e149f5"
+    },
+    "packages/tooling/dist/source/adapters/optional-peer.js": {
+      "bytes": 1121,
+      "sha256": "e769e00e1274e54c93c411b40914dd825dc42225e1fe516ba87c97475c51905a"
+    },
+    "packages/tooling/dist/source/adapters/oxc.d.ts": {
+      "bytes": 160,
+      "sha256": "13e5358d15db05d0654914d8d7280786a6cff9b13df8e590ee27037ef2faf5fc"
+    },
+    "packages/tooling/dist/source/adapters/oxc.js": {
+      "bytes": 234,
+      "sha256": "7e080b206df8298796909200357d58812e7b39adb511801cfdd643f2f975ba36"
+    },
+    "packages/tooling/dist/source/adapters/svelte.d.ts": {
+      "bytes": 346,
+      "sha256": "8855a76ea607ca9a7b21b3f32988415214dc432be34a258a2e4d380fcf259dd9"
+    },
+    "packages/tooling/dist/source/adapters/svelte.js": {
+      "bytes": 2745,
+      "sha256": "345317fcf02cbdd3a80d760a9c9ec7bdb92cbbf045a6ef2a343a4ab238423294"
+    },
+    "packages/tooling/dist/source/adapters/types.d.ts": {
+      "bytes": 428,
+      "sha256": "3173df21a19f4ec721d5e53a2818f7439e3acbd84da56ed833cd9f0121623950"
+    },
+    "packages/tooling/dist/source/adapters/types.js": {
+      "bytes": 325,
+      "sha256": "1a1326eb566253400968104278af3b48d14d9a6ec615de86d83beb8c1a5311b6"
+    },
+    "packages/tooling/dist/source/adapters/vue.d.ts": {
+      "bytes": 325,
+      "sha256": "de9ca0d666081eb4523b27dc2cb12e4eee4213898a8801a60ca17fdb9be0ac04"
+    },
+    "packages/tooling/dist/source/adapters/vue.js": {
+      "bytes": 1625,
+      "sha256": "6b78285704b7529be7af95e8a30c15590bc2dc39ef218e25c3ff72c5f48ddd6f"
+    },
+    "packages/tooling/dist/source/browser.d.ts": {
+      "bytes": 466,
+      "sha256": "c5a78fdf15cac9f85ed184c7e6634bbe1baa8e8cc948a46ae44a854ee226fd8b"
+    },
+    "packages/tooling/dist/source/browser.js": {
+      "bytes": 423,
+      "sha256": "4cde6b762e8226f955844bde641d8fe4a386055a2f5f1d2ce32bcf8525b6e5fd"
+    },
+    "packages/tooling/dist/source/contracts.d.ts": {
+      "bytes": 1131,
+      "sha256": "bbf8b57a786d4f2bef6143aef13c4e406ac02dfc233475bd6b86b9ac370b4427"
+    },
+    "packages/tooling/dist/source/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/source/index.d.ts": {
+      "bytes": 934,
+      "sha256": "81f28f3807cec604f246db675a8b7db84414138f9eb126390dc14a235e408094"
+    },
+    "packages/tooling/dist/source/index.js": {
+      "bytes": 321,
+      "sha256": "99e7aa462268f97d2463d568db9d8edcdc91c72956001e9756693496929ca3c6"
+    },
+    "packages/tooling/dist/source/native.d.ts": {
+      "bytes": 496,
+      "sha256": "bf6e3448cc50cedd24d11a30dcd79bcb77364ec69a72419e208bfa27b39d65e2"
+    },
+    "packages/tooling/dist/source/native.js": {
+      "bytes": 751,
+      "sha256": "0ee7f035e72622ffccb2923acb6fd79586fe80acc73e1625c97296e0e95f44d1"
+    },
+    "packages/tooling/dist/source/node.d.ts": {
+      "bytes": 388,
+      "sha256": "1263d9355ea62c363bdd15c8944ca78766cbea82768acea3be98fd062d70ee86"
+    },
+    "packages/tooling/dist/source/node.js": {
+      "bytes": 313,
+      "sha256": "03334988e1f40de55c7ca7f5da0ad1900c8ad15b0d0b3e31694d975b98252eec"
+    },
+    "packages/tooling/dist/source/session.d.ts": {
+      "bytes": 1383,
+      "sha256": "b1fc35fc6f6f3cfec157deb23ba1de44c93f3897483fe31f6da05766dfd7291a"
+    },
+    "packages/tooling/dist/source/session.js": {
+      "bytes": 1533,
+      "sha256": "5619dc761f87b7621795ef2e05b670d898d10de65ba98eec1f41db0e494aee59"
+    },
+    "packages/tooling/dist/tooling-session.d.ts": {
+      "bytes": 4460,
+      "sha256": "0c9f98b2c81b8934d96df6ac9eb02186c8e06667f281b9d66a45e880e5b14cbe"
+    },
+    "packages/tooling/dist/tooling-session.js": {
+      "bytes": 6370,
+      "sha256": "551ea2a810b552d4f4960625f032a0616f108f1ee82f52da19270f9dc5f1af6b"
+    },
+    "packages/tooling/dist/validator/binding-session.d.ts": {
+      "bytes": 901,
+      "sha256": "3c93c1da1793cc366027e456ce76e43cafa0e01b6edd19d41eed3bdfddf88e00"
+    },
+    "packages/tooling/dist/validator/binding-session.js": {
+      "bytes": 885,
+      "sha256": "ebd984c3fcdd19eafda8eb55ed1040d02fbb22d18ba55c650fd483af491b5542"
+    },
+    "packages/tooling/dist/validator/contracts.d.ts": {
+      "bytes": 476,
+      "sha256": "fa9480177df1acd523ae46866bac9fbb8fac53f5af312515975df07357f415bc"
+    },
+    "packages/tooling/dist/validator/contracts.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/tooling/dist/validator/index.d.ts": {
+      "bytes": 630,
+      "sha256": "3372d784b09476029e8d5937577e7095384e070ad41240fdc935f61d0c57279f"
+    },
+    "packages/tooling/dist/validator/index.js": {
+      "bytes": 345,
+      "sha256": "34be4c3e568d7c5ce1db1163979595541f5cc1c7c21ccb4ceb292a89da392623"
+    },
+    "packages/tooling/dist/validator/node.d.ts": {
+      "bytes": 329,
+      "sha256": "64406d41764efcbb4df98f7dfbb065a4a0c5f5626398dc7e29de8d7e65a4e886"
+    },
+    "packages/tooling/dist/validator/node.js": {
+      "bytes": 337,
+      "sha256": "d73327ac40fcfdbb52658c24bca47fd37634bb63beed4d92d8e9464a08985182"
+    },
+    "packages/tooling/dist/validator/types/syntax-error.d.ts": {
+      "bytes": 457,
+      "sha256": "e2b2918274c8234326deb74bfb5b8f59c0118e466c55123bcb1da18a5043683f"
+    },
+    "packages/tooling/dist/validator/types/syntax-error.js": {
+      "bytes": 11,
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881"
+    },
+    "packages/vite/dist/common.d.ts": {
+      "bytes": 937,
+      "sha256": "328dd2c5ad24a0843897e4a778f626c454afdb8b201e452444209d5065d753b3"
+    },
+    "packages/vite/dist/common.js": {
+      "bytes": 1507,
+      "sha256": "7121d67e80402c4b616b3cb85b627db24683103d9db66f088aee1f5d8a6ff1da"
+    },
+    "packages/vite/dist/core.d.ts": {
+      "bytes": 959,
+      "sha256": "2c7f1a6357f76bec167a82395fc7217bbad6bd5d4f20e12630f2714ae46e8cd1"
+    },
+    "packages/vite/dist/core.js": {
+      "bytes": 5748,
+      "sha256": "f8c9941633bdfa3371e01643553ab22fc25f0355164914a93e7298cabcd91f02"
+    },
+    "packages/vite/dist/index.d.ts": {
+      "bytes": 252,
+      "sha256": "cf9ebbd1bd1baa66e2b3c6e71d9c7ec6043d7fedf625e85438260003d6562eea"
+    },
+    "packages/vite/dist/index.js": {
+      "bytes": 131,
+      "sha256": "2caaef1a705ac942e404dda151bf14a9f3de579f6ff51a5282a12e8b8e5a5633"
+    },
+    "packages/vite/dist/internal/src/emitted-globals-module.js": {
+      "bytes": 527,
+      "sha256": "671913028263fff1e4121422700496416d1fdfded6a6c078ff0148d0866948c0"
+    },
+    "packages/vite/dist/internal/src/manifest-facade.js": {
+      "bytes": 3687,
+      "sha256": "163dd5a411481286ccac221fc264bcf69fd1041dc9a9caff5521e5c4b6866695"
+    },
+    "packages/vite/dist/internal/src/manifest-loader.js": {
+      "bytes": 1210,
+      "sha256": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567"
+    },
+    "packages/vite/dist/internal/src/manifest-module.js": {
+      "bytes": 761,
+      "sha256": "689d72c84c93b8dba7d60408cee4a86b36aeaaf3b7bea572b7a1a9d5e62d8373"
+    },
+    "packages/vite/dist/internal/src/manifest-virtual-module.js": {
+      "bytes": 2939,
+      "sha256": "50f05616de52f8b6feadaa590565ccb7fb291619bad889014cb4ede5480d473e"
+    },
+    "packages/vite/dist/internal/src/node.js": {
+      "bytes": 875,
+      "sha256": "1f2d478994e4a1ea1d2000ad5b43112683426b16cf6910bfbb30bcece88cdd6c"
+    },
+    "packages/vite/dist/internal/src/project.js": {
+      "bytes": 480,
+      "sha256": "bbc4dc286bc0879ba6037bde375901737d8487f51f425455045b1df7b50af569"
+    },
+    "packages/vite/dist/internal/src/runtime-bootstrap.js": {
+      "bytes": 2547,
+      "sha256": "7b28c7769e7590332d23d7bf4eb7c9e89c0fabef117dd9cf2ff853a8c9dd4bd7"
+    },
+    "packages/vite/dist/internal/src/style-module.js": {
+      "bytes": 137,
+      "sha256": "65a32ce2dd07b9588a0fc5e08d8f9fbadee3c17907ef5eab0fe12ce5cc04e9f5"
+    },
+    "packages/vite/dist/modes/pre-render.d.ts": {
+      "bytes": 365,
+      "sha256": "50d18f695fdbcc34bc5782e61b1109f4ad00ac06f42f2a19fc1732b27f41be37"
+    },
+    "packages/vite/dist/modes/pre-render.js": {
+      "bytes": 230,
+      "sha256": "e0c2f638a5bf64ad3ea5bd2325eb4ac26c0cc748c01bdabd426e341501104628"
+    },
+    "packages/vite/dist/modes/progressive.d.ts": {
+      "bytes": 370,
+      "sha256": "bad91ff9f6a63b082026b8d34a1cb8ac1f51b4cb34d76b147e7202caf865b718"
+    },
+    "packages/vite/dist/modes/progressive.js": {
+      "bytes": 485,
+      "sha256": "a9146f03446cf59c181e9791ac8f7a575e4864b7e67ac6fcddb2aff951ed9eac"
+    },
+    "packages/vite/dist/modes/runtime.d.ts": {
+      "bytes": 358,
+      "sha256": "ec0017511b8c762cff35a74dbc543f37aa2f5e90a1fb144ceb67ea1746549939"
+    },
+    "packages/vite/dist/modes/runtime.js": {
+      "bytes": 742,
+      "sha256": "7d4fad8f7e36c20ec02db290e582ed05c557fd91318b1b79163099ea5487295f"
+    },
+    "packages/vite/dist/modes/static.d.ts": {
+      "bytes": 357,
+      "sha256": "d585162fc102c9d40f5de1d261e3a9496ae76f5e78efd1c63554115a8b0f4c56"
+    },
+    "packages/vite/dist/modes/static.js": {
+      "bytes": 133,
+      "sha256": "7117c63f85250adef6ace1ae5eb9628e34b98d2c4fee75f6f5c463f44d9b68e9"
+    },
+    "packages/vite/dist/options.d.ts": {
+      "bytes": 988,
+      "sha256": "c1aa138470eda69ee9eed995cdf485a5bb0e484582d8a14cf46e75678970e316"
+    },
+    "packages/vite/dist/options.js": {
+      "bytes": 647,
+      "sha256": "0df7b7f09e7816f7332670ab51de79117fa15274662ceeee87f33363b9792cb9"
+    },
+    "packages/vite/dist/plugins/avoid-fouc.d.ts": {
+      "bytes": 371,
+      "sha256": "21d90df4c9576ea7e91d42631d6e66e9550957c705bd24ad698868720568dc33"
+    },
+    "packages/vite/dist/plugins/avoid-fouc.js": {
+      "bytes": 1546,
+      "sha256": "5a46ab997b98048ff6aed0f374948512cf9fb183b2e5b8a12b0883da27baa6c2"
+    },
+    "packages/vite/dist/plugins/build-stylesheet-recovery.d.ts": {
+      "bytes": 386,
+      "sha256": "867f10af5ac9678eff5a3227efce38cfcd0a4065f620f8832860dfe186ba1934"
+    },
+    "packages/vite/dist/plugins/build-stylesheet-recovery.js": {
+      "bytes": 1139,
+      "sha256": "4828a2b01c9aa5f8af03efb4d7cf7b14e72c85706f27e3db80b39fb588dd4445"
+    },
+    "packages/vite/dist/plugins/context.d.ts": {
+      "bytes": 362,
+      "sha256": "2eba301aa9e5d72478a5083b93e3730e159eeb36dcd40be5a0e05e9887a9feeb"
+    },
+    "packages/vite/dist/plugins/context.js": {
+      "bytes": 332,
+      "sha256": "aaf9b4df56650a8ffce3646fb838a87017a1606a095fef09d5349a3249818ee8"
+    },
+    "packages/vite/dist/plugins/dev-stylesheet.d.ts": {
+      "bytes": 268,
+      "sha256": "4d87b88ca566287317d290145883ef353470492d7f91fee9087ba4f581299a80"
+    },
+    "packages/vite/dist/plugins/dev-stylesheet.js": {
+      "bytes": 2484,
+      "sha256": "045bf15b49e227969c7beb6cb4cd907873b0f09dc4752b52a96907435778984e"
+    },
+    "packages/vite/dist/plugins/emitted-globals-virtual-module.d.ts": {
+      "bytes": 312,
+      "sha256": "090cf89dcdd758800c7d3872eb6a19a5194bb00b2605480f56d2a4e2014bdee1"
+    },
+    "packages/vite/dist/plugins/emitted-globals-virtual-module.js": {
+      "bytes": 824,
+      "sha256": "a9d6a3b0185c89baa2ada6b2190e9c34a71b8b2efb9e1be4812bd5a9970f80c6"
+    },
+    "packages/vite/dist/plugins/inject-runtime.d.ts": {
+      "bytes": 411,
+      "sha256": "068a178e6eeef3b80ee261870e2fcfa76741089713c94b26b401a5ba12e653bb"
+    },
+    "packages/vite/dist/plugins/inject-runtime.js": {
+      "bytes": 1237,
+      "sha256": "50ecbf30b7be79f4078112015fa96b3355269a9b09e18dc1ad8cd945ef00fe18"
+    },
+    "packages/vite/dist/plugins/inline-stylesheet.d.ts": {
+      "bytes": 360,
+      "sha256": "964ee2b17a70ab29d59645022f480cfa3504976e071e9e433e7d067d046a4ea9"
+    },
+    "packages/vite/dist/plugins/inline-stylesheet.js": {
+      "bytes": 8915,
+      "sha256": "cc23f04dc3e99ed70b9630eb90538a68a7e22fc9e665418c6d4a5c67236254e9"
+    },
+    "packages/vite/dist/plugins/local-compose.d.ts": {
+      "bytes": 378,
+      "sha256": "434b534e475a82f978f4eb5adbd2e465bd842708ff6fbd4f1920918424e5148b"
+    },
+    "packages/vite/dist/plugins/local-compose.js": {
+      "bytes": 7458,
+      "sha256": "86bd4972f28497b7b26e9923bb93cd54f5504c2da6daf2b0909bab6ed8d8d30b"
+    },
+    "packages/vite/dist/plugins/manifest-loader.d.ts": {
+      "bytes": 271,
+      "sha256": "287e67d74bf85fa0b4436881be6fb8b069cc807363f26a01f405408f852a6e5b"
+    },
+    "packages/vite/dist/plugins/manifest-loader.js": {
+      "bytes": 4018,
+      "sha256": "e1f0b7feea76aab738a4f7e0c60288dd1b42bff8c40c3cfcbcc439de189f15c8"
+    },
+    "packages/vite/dist/plugins/manifest-preload.d.ts": {
+      "bytes": 274,
+      "sha256": "5ba29d6eb2062ca5d2ba7c5d1518a7358771d4dcec4f5edbd820a65756b65d09"
+    },
+    "packages/vite/dist/plugins/manifest-preload.js": {
+      "bytes": 1309,
+      "sha256": "e6f24e9de27f5c6e222dd2dc0ccc6bac74af8e044e5168b033d777a059553deb"
+    },
+    "packages/vite/dist/plugins/manifest-virtual-module.d.ts": {
+      "bytes": 293,
+      "sha256": "8f80a13a64c753f634dc5841a1e7941f4a16be33f179c6b35cff59aeb5d4dc5f"
+    },
+    "packages/vite/dist/plugins/manifest-virtual-module.js": {
+      "bytes": 1797,
+      "sha256": "db7a6d5cf94e94db5892ac52b76b034686193ceabee46d7f157b3686b08067b3"
+    },
+    "packages/vite/dist/plugins/pre-render.d.ts": {
+      "bytes": 369,
+      "sha256": "7ca553ee673390d67c779648715486391dae0855aa06825609186ea55eac6d8f"
+    },
+    "packages/vite/dist/plugins/pre-render.js": {
+      "bytes": 7544,
+      "sha256": "57bdd72d99f6d5c49443157b6c1386712bff310b46a50e250c14db26a7046cdb"
+    },
+    "packages/vite/dist/plugins/runtime-bootstrap.d.ts": {
+      "bytes": 185,
+      "sha256": "475d290d5149272a4bcbbad46c6795bb6a7d58c43154c50d1d1f36620e1f30fc"
+    },
+    "packages/vite/dist/plugins/runtime-bootstrap.js": {
+      "bytes": 567,
+      "sha256": "31911ac3dd1d84679c68d5cb6cb172270a20af0199403386096907d79a417388"
+    },
+    "packages/vite/dist/plugins/runtime-preload.d.ts": {
+      "bytes": 271,
+      "sha256": "7c5bc4ecb99ec34372e24d0896d44fb31513d76e884fac32769ec6ac455f2e54"
+    },
+    "packages/vite/dist/plugins/runtime-preload.js": {
+      "bytes": 2431,
+      "sha256": "716ae9c359122afe729fb585d69649ee90a666f7efbce8348381cfe48dc75bf6"
+    },
+    "packages/vite/dist/plugins/sass-source.d.ts": {
+      "bytes": 336,
+      "sha256": "9f7e085a7fe74d28abb9efd93b5a9e5ec6b19352bf64a0870ed5c95571b3ec6d"
+    },
+    "packages/vite/dist/plugins/sass-source.js": {
+      "bytes": 6273,
+      "sha256": "5885f94294f2d79b841c4b37af778363aef81ae227a57332df969bd3d0bfca94"
+    },
+    "packages/vite/dist/plugins/scanner.d.ts": {
+      "bytes": 362,
+      "sha256": "09eb53f750f00b866a37cd08fc58d510a1c9ebb953b9427817e0b3a82c0c2508"
+    },
+    "packages/vite/dist/plugins/scanner.js": {
+      "bytes": 895,
+      "sha256": "5501196cce10fca5925ddb3f1efa46629035e55d830b928bcafdb3eab9272359"
+    },
+    "packages/vite/dist/plugins/style-entry-build.d.ts": {
+      "bytes": 389,
+      "sha256": "edd0f8d56acb6f05bb4fb7bf0bde89978607fb3b6016e55520b6a2e92fb86a3b"
+    },
+    "packages/vite/dist/plugins/style-entry-build.js": {
+      "bytes": 5295,
+      "sha256": "782c06cebe79f381fde434f6d83c05accb4ec5a2d2b639ef1264541133f64da6"
+    },
+    "packages/vite/dist/plugins/style-entry-hmr.d.ts": {
+      "bytes": 435,
+      "sha256": "17585f23ad998c0638db469860ec4b0be02b9a54eb0269be6ece04ffff9cf36a"
+    },
+    "packages/vite/dist/plugins/style-entry-hmr.js": {
+      "bytes": 3378,
+      "sha256": "7207e6459886712c9cd1f5295ceb6582af74ecccbe8453a482a2034d390d9a74"
+    },
+    "packages/vite/dist/plugins/style-entry.d.ts": {
+      "bytes": 373,
+      "sha256": "5d4d3e57d00e4b12c792ef2b7b2543e39601daad18111fbbfe2c11febcb86aa3"
+    },
+    "packages/vite/dist/plugins/style-entry.js": {
+      "bytes": 3832,
+      "sha256": "2a8c5bb968ef2c2dff58f91db887ed7f747c51b3c560ab4f9e88630768d5bac7"
+    },
+    "packages/vite/dist/plugins/stylesheet-recovery.d.ts": {
+      "bytes": 375,
+      "sha256": "bf933a0d1e57bcd561f85895246f07a632039a2e797b261162ac18291d240565"
+    },
+    "packages/vite/dist/plugins/stylesheet-recovery.js": {
+      "bytes": 3014,
+      "sha256": "f170e9bbe839b1de6841eb992e7278366f5d1f67fad5e9b34fd84513fd3bd5df"
+    },
+    "packages/vite/dist/plugins/usage-graph.d.ts": {
+      "bytes": 373,
+      "sha256": "0fa592f1decd77fe70d1ac3c62dd574b3131a057fce24f04f2762f9e60e30a03"
+    },
+    "packages/vite/dist/plugins/usage-graph.js": {
+      "bytes": 619,
+      "sha256": "5239eb1069cd1e8e919dde970ad1a1c574e357a55ab8f642eeb7946cf58fef1f"
+    },
+    "packages/vite/dist/preset/src/default-manifest.js": {
+      "bytes": 117064,
+      "sha256": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2"
+    },
+    "packages/vite/dist/utils/build-import-resolver.d.ts": {
+      "bytes": 1515,
+      "sha256": "30877e51dbda38e57989df14635a57cee974bef3c2d7414e6aa9baa81fc4278e"
+    },
+    "packages/vite/dist/utils/build-import-resolver.js": {
+      "bytes": 4244,
+      "sha256": "b481940876a8f56a80a060b6003b2cf96b2f0c3e929de2a60c064b74f358485b"
+    },
+    "packages/vite/dist/utils/build-sass-source.d.ts": {
+      "bytes": 2239,
+      "sha256": "f9c0c27efadfcaa47a5e16ecfbda67c6c3ed359912c542c9f1b36351543b3f48"
+    },
+    "packages/vite/dist/utils/build-sass-source.js": {
+      "bytes": 8485,
+      "sha256": "4e83f56a1f39ae0e40a6645d519034b213db390e56307c000d45f7c61dba888f"
+    },
+    "packages/vite/dist/utils/build-stylesheet-delivery.d.ts": {
+      "bytes": 1050,
+      "sha256": "9da6943079b492d774aa2232daa1e5799499587d7e4116b5c990193db616b45b"
+    },
+    "packages/vite/dist/utils/build-stylesheet-delivery.js": {
+      "bytes": 4190,
+      "sha256": "9f3e426e2446c9272d7e7481ed7c0b970da1d238f724cab36690e3ad116ad56a"
+    },
+    "packages/vite/dist/utils/build-watch-recovery.d.ts": {
+      "bytes": 867,
+      "sha256": "a167886b018f6bfd783365ccca562811e114fa39db83dc0cce4e045ef4c59b0e"
+    },
+    "packages/vite/dist/utils/build-watch-recovery.js": {
+      "bytes": 1953,
+      "sha256": "f3098a4d18bf4a33c10315276b2c7377120f539f676ca6ab70f77fd4c7b10bcd"
+    },
+    "packages/vite/dist/utils/dev-stylesheet-delivery.d.ts": {
+      "bytes": 1084,
+      "sha256": "b2b001c3ae5a7575456e7819cb9619bf60dcb13c0c83bca7814f09aa297f13d2"
+    },
+    "packages/vite/dist/utils/dev-stylesheet-delivery.js": {
+      "bytes": 3333,
+      "sha256": "bd614a4d710c3d20b7c1e1feb8f7673fb5e66daa619aa1dc7c352e8399260641"
+    },
+    "packages/vite/dist/utils/environment-closing.d.ts": {
+      "bytes": 262,
+      "sha256": "d5e8d973e02ccc511082548914422f531af63975239633a82377a6a4319b2df5"
+    },
+    "packages/vite/dist/utils/environment-closing.js": {
+      "bytes": 850,
+      "sha256": "1f4d77187a9b99fa343e3ef37f629dab4a551ab4600f8c00eb64a08b0f7a6177"
+    },
+    "packages/vite/dist/utils/extracted-css.d.ts": {
+      "bytes": 418,
+      "sha256": "bb5623529e447b73de4779e51e756ca19dad84aa0ea719a706e62b053ab15d4f"
+    },
+    "packages/vite/dist/utils/extracted-css.js": {
+      "bytes": 1262,
+      "sha256": "c9230a6985166669c245e4f60d6ad0b4267306bf9264d64eb0d5ce9dc665a988"
+    },
+    "packages/vite/dist/utils/failed-dependency-reconciliation.d.ts": {
+      "bytes": 1933,
+      "sha256": "7dd5f741a38f4e1f16e77f1fd918062d6c6d7a2e422d53c55ec6b464e57eb946"
+    },
+    "packages/vite/dist/utils/failed-dependency-reconciliation.js": {
+      "bytes": 5582,
+      "sha256": "45faf023989007a5b5151b680d35c626887e059737dc87be1fd2f49165990a61"
+    },
+    "packages/vite/dist/utils/failed-stylesheet-dependencies.d.ts": {
+      "bytes": 1194,
+      "sha256": "9c3481ace86464e07a64a5a9864a9930d0e34327394ac0c4ce26a52e1d282681"
+    },
+    "packages/vite/dist/utils/failed-stylesheet-dependencies.js": {
+      "bytes": 3630,
+      "sha256": "54a0b1f24615166b8d3df18ac61672adf83f26d7cee757a3709131adce4caf2c"
+    },
+    "packages/vite/dist/utils/html.d.ts": {
+      "bytes": 447,
+      "sha256": "6b27712993cb387c925b8b4ed89a97512672503640341a48e864f2b993f96ed1"
+    },
+    "packages/vite/dist/utils/html.js": {
+      "bytes": 1938,
+      "sha256": "f743e287b36fa0c703dac8aa37e0976961aea85dcbc4fd7d6bfede39f9c533b5"
+    },
+    "packages/vite/dist/utils/inline-stylesheet.d.ts": {
+      "bytes": 2500,
+      "sha256": "b6ea8f88a82abf8826306a8ed6b088b829ff396a1206d6a4dd6c29ee58b650c7"
+    },
+    "packages/vite/dist/utils/inline-stylesheet.js": {
+      "bytes": 5093,
+      "sha256": "b0c67b3ace3c023e5cc34a3783c3d9992b71e18c455cd484b64738fef1c37738"
+    },
+    "packages/vite/dist/utils/local-stylesheet.d.ts": {
+      "bytes": 711,
+      "sha256": "835b66734bad5a298faa53805ab3730b2d05d544fe26ca8378bfb9a24f3eca19"
+    },
+    "packages/vite/dist/utils/local-stylesheet.js": {
+      "bytes": 740,
+      "sha256": "8e3199f3ca1a983db1404c8198e79ff94ce4dd8e64d4ca1ea718373200a1def9"
+    },
+    "packages/vite/dist/utils/manifest-recovery.d.ts": {
+      "bytes": 728,
+      "sha256": "2b73ce537d389ddff3dab949dc5ce347468409f7756be0a03e65f4c897913dc4"
+    },
+    "packages/vite/dist/utils/manifest-recovery.js": {
+      "bytes": 2509,
+      "sha256": "17b9f62a65cb2734b0a595659d8e330cb781245eb9fdfb48ad77fade06a3b45b"
+    },
+    "packages/vite/dist/utils/module-sources.d.ts": {
+      "bytes": 1167,
+      "sha256": "e12e8e09b0e73ed652ac1fb3882f2ec0e39a532cf53709ac21a525cd7d59ad06"
+    },
+    "packages/vite/dist/utils/module-sources.js": {
+      "bytes": 4538,
+      "sha256": "48e871a6f3a7f414a16a13db57c924d6874b9fc2b16ad61eb1b8fdc50d3d7a66"
+    },
+    "packages/vite/dist/utils/path.d.ts": {
+      "bytes": 222,
+      "sha256": "28c99bcd0b0a61ddc5efd962734f2bae78d0654808c13f949e2edf798a25dbe6"
+    },
+    "packages/vite/dist/utils/path.js": {
+      "bytes": 508,
+      "sha256": "e8c0263d1e8d31c3357ad1425540e09fb0620264ba5e6ceb4bfefa465cfc65ad"
+    },
+    "packages/vite/dist/utils/recovery-error.d.ts": {
+      "bytes": 220,
+      "sha256": "03adf14b7abd1353278a58691f871e57b0e882ad997e65ff08595c0c3db0b4a9"
+    },
+    "packages/vite/dist/utils/recovery-error.js": {
+      "bytes": 494,
+      "sha256": "309d9a7c2c3d11166480bdf3824b5fbe1578e615e1b08b32d8812ec67e677947"
+    },
+    "packages/vite/dist/utils/register-style-source.d.ts": {
+      "bytes": 497,
+      "sha256": "0a582732ed7d0b96212f767bb3f94d216d239a9c77d06d0d4a00f9d80ccddba6"
+    },
+    "packages/vite/dist/utils/register-style-source.js": {
+      "bytes": 1015,
+      "sha256": "3f9d7de7eec8076981a1c8f2133eac329297e5c2e40c1bedcfd2de53a3fc07c2"
+    },
+    "packages/vite/dist/utils/sass-diagnostics.d.ts": {
+      "bytes": 349,
+      "sha256": "3e6cee5c59016f928aea4758ebc90f9718a744e51d6e438a59b49ae31023f5fb"
+    },
+    "packages/vite/dist/utils/sass-diagnostics.js": {
+      "bytes": 4507,
+      "sha256": "a8d604a530809cc81c06946ca6f2d923c3b217443e93549cb709cc1a1beb2cdc"
+    },
+    "packages/vite/dist/utils/sass-proxy-access.d.ts": {
+      "bytes": 292,
+      "sha256": "0e96281a56d0924c5c86259890b0cae80e67affd7bd7464bdb81728f5a53d8b5"
+    },
+    "packages/vite/dist/utils/sass-proxy-access.js": {
+      "bytes": 1262,
+      "sha256": "66ce5557694bb03bcab91571e441a357a6b760a8f58600d335a4070ff3677264"
+    },
+    "packages/vite/dist/utils/sass-source-markers.d.ts": {
+      "bytes": 498,
+      "sha256": "2decfe2e115d836c6f89322f6895105b78e6f231688a67c940c8f4211431d593"
+    },
+    "packages/vite/dist/utils/sass-source-markers.js": {
+      "bytes": 1425,
+      "sha256": "ddb0660e274327e52020f36ba3ede177713674fcf43fc1dce1a5b783e0f4a6c1"
+    },
+    "packages/vite/dist/utils/scanner-context.d.ts": {
+      "bytes": 1217,
+      "sha256": "d8d63cf102b81ece5badec59c5ccdc4856a465c312dbc76aa844c3df9f4c31ae"
+    },
+    "packages/vite/dist/utils/scanner-context.js": {
+      "bytes": 3665,
+      "sha256": "014cce4b4f63f3306bf48a62331bb12a9bf59010a8ed867304f290dab7eec52f"
+    },
+    "packages/vite/dist/utils/scoped-plugins.d.ts": {
+      "bytes": 265,
+      "sha256": "b518bb915a236a4bf68fb4d5b0134709796e03a9833e2486339f2554b5706729"
+    },
+    "packages/vite/dist/utils/scoped-plugins.js": {
+      "bytes": 3059,
+      "sha256": "89c69013f731beeb7abf6899dd6da69d06f346592bfe36d3abc892cbe72b3fdf"
+    },
+    "packages/vite/dist/utils/write-file.d.ts": {
+      "bytes": 224,
+      "sha256": "502c49f2d8a079ee7966a0ab38a47792afc3ec22242bb41de142fa33f5633571"
+    },
+    "packages/vite/dist/utils/write-file.js": {
+      "bytes": 333,
+      "sha256": "12f46814bf79e380b7b046eb80a5f0d1ea14ba3d43af6d915aad2ad7f6d97ed0"
+    },
+    "packages/webpack/dist/index.d.ts": {
+      "bytes": 255,
+      "sha256": "db539e9fdcbdac93d880e346ce8cf0af644e6f822d3bb3a23d93e00ea8f5c149"
+    },
+    "packages/webpack/dist/index.js": {
+      "bytes": 124,
+      "sha256": "9fbbb5b767c954907a0aecffeda3c07557ea8d78210ab8bb3678b3f4cbecc308"
+    },
+    "packages/webpack/dist/internal/src/emitted-globals-module.js": {
+      "bytes": 747,
+      "sha256": "fccec07cd4b12563a5ce16cca06581916db686f77d2d9a1fb2de9beb14ba8965"
+    },
+    "packages/webpack/dist/internal/src/manifest-facade.js": {
+      "bytes": 2036,
+      "sha256": "1897a7aa5eb45c66583dcc880c7aac4f11743ee21181bd8b2fe884d2eb727752"
+    },
+    "packages/webpack/dist/internal/src/manifest-loader.js": {
+      "bytes": 1210,
+      "sha256": "753b231f3ff5b1dc0f603fee51d7e6a1548fd03018680103fc6a0794e36b4567"
+    },
+    "packages/webpack/dist/internal/src/manifest-module.js": {
+      "bytes": 876,
+      "sha256": "9b7f702145a1d9849210414d02344cc8c360c61eb11f3e5a6ec8ea25a1fb3f16"
+    },
+    "packages/webpack/dist/internal/src/node.js": {
+      "bytes": 1412,
+      "sha256": "3c3a27e42c2740c85c3a55fe971f4c2254080b9c1976aff8db304678ceda3d26"
+    },
+    "packages/webpack/dist/internal/src/project.js": {
+      "bytes": 480,
+      "sha256": "bbc4dc286bc0879ba6037bde375901737d8487f51f425455045b1df7b50af569"
+    },
+    "packages/webpack/dist/internal/src/style-module.js": {
+      "bytes": 744,
+      "sha256": "14edd6685b60f795bea69b443b21990fc15c62289638e1dff97b8018c035e2cb"
+    },
+    "packages/webpack/dist/options.d.ts": {
+      "bytes": 1089,
+      "sha256": "1354313eacd46ef259f743d30dc60a7c046ed892a37af4da10f5f5d38d973081"
+    },
+    "packages/webpack/dist/options.js": {
+      "bytes": 700,
+      "sha256": "547c77f2bdf67849dff9ba0efd53de9e921e4011aae6eaff2843304e1f41acb9"
+    },
+    "packages/webpack/dist/plugin.d.ts": {
+      "bytes": 4644,
+      "sha256": "83f80a08e50b66118f105b32486804a4d7208626d15ee17a072e9303fc8d64e8"
+    },
+    "packages/webpack/dist/plugin.js": {
+      "bytes": 13235,
+      "sha256": "3daa5b6b8160693cffa6455e81b9eb94e6aa5ac6142d1743be2793c4ddbea009"
+    },
+    "packages/webpack/dist/plugins/generated-css-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "4ccbdda14834befe704414f866febc4e75db52254e19d862c60afb9b345c6eb1"
+    },
+    "packages/webpack/dist/plugins/generated-css-assets.js": {
+      "bytes": 1825,
+      "sha256": "2d85bd90b192e7cec38e24beb4012dfb94b30681f602f15f7f37a618ad3a2277"
+    },
+    "packages/webpack/dist/plugins/manifest-json-assets.d.ts": {
+      "bytes": 277,
+      "sha256": "fc925352a312446aea53fc73d04d8f14897ecaec9e85b905c58f73b3d720ef25"
+    },
+    "packages/webpack/dist/plugins/manifest-json-assets.js": {
+      "bytes": 845,
+      "sha256": "c11b5c9cc3c3e4294c4a3463f266717da1f8050cdb368eb3612a352dfa0a3dc7"
+    },
+    "packages/webpack/dist/plugins/manifest-loader.d.ts": {
+      "bytes": 264,
+      "sha256": "57464fc8af384ab470a4fdefa77cba689882115c0ca2676288b0acfe8616b8b4"
+    },
+    "packages/webpack/dist/plugins/manifest-loader.js": {
+      "bytes": 2963,
+      "sha256": "a8774d55fffab6b6f041be7efbf71157c6d4f8ed9bc51b35f6d5564232bba808"
+    },
+    "packages/webpack/dist/plugins/manifest-virtual-module.d.ts": {
+      "bytes": 286,
+      "sha256": "ae15cbbf646f26511db412cce7a715061db2d71c096c55409ce24c008388199e"
+    },
+    "packages/webpack/dist/plugins/manifest-virtual-module.js": {
+      "bytes": 1589,
+      "sha256": "dfb57f0079b233a265ea258f6e5cc2791031c028fb9f092fb8d7b1e249a8b608"
+    },
+    "packages/webpack/dist/plugins/runtime-entry.d.ts": {
+      "bytes": 258,
+      "sha256": "2826f4f6d55f1f169cad5ad53f04787ec2fe9f2b0bc0266a5f850901cd88ee3c"
+    },
+    "packages/webpack/dist/plugins/runtime-entry.js": {
+      "bytes": 1160,
+      "sha256": "bf32952f3ce4101b28495b00f8eb5b659ec3478f383358ca9a696f10d23d90c3"
+    },
+    "packages/webpack/dist/plugins/runtime-html-assets.d.ts": {
+      "bytes": 274,
+      "sha256": "3f15d385fc11830b7027c41c34a8b934dc194b5a5830311f47fd91b604833180"
+    },
+    "packages/webpack/dist/plugins/runtime-html-assets.js": {
+      "bytes": 5362,
+      "sha256": "fbcb32aacf71831181a5f923a1bc377e12aa29c63b0d2e9cb3c25bb61cf2a99b"
+    },
+    "packages/webpack/dist/plugins/scanner-lifecycle.d.ts": {
+      "bytes": 270,
+      "sha256": "afa4fa18f1860783344f12e9d5a73a666f470eb407ae57defea5356363bcb692"
+    },
+    "packages/webpack/dist/plugins/scanner-lifecycle.js": {
+      "bytes": 1409,
+      "sha256": "3b6847061b3cf123612a4d14d906817e774ed0d6c9afab40a292cf01e8574758"
+    },
+    "packages/webpack/dist/plugins/style-entry.d.ts": {
+      "bytes": 252,
+      "sha256": "1dbfb907f39b2b7b6f54f5f1b6b1bc80f163ae195f7e72b6f02d9833932966c5"
+    },
+    "packages/webpack/dist/plugins/style-entry.js": {
+      "bytes": 555,
+      "sha256": "87d19bf34ce50f033585ec091a9e67a6fd81dba37e47637d3705df1fe30062d5"
+    },
+    "packages/webpack/dist/plugins/usage-graph.d.ts": {
+      "bytes": 252,
+      "sha256": "25a8d9c5a965e0c11681cd30e7388ec527f78854ce06203bb68a3913bc94fc23"
+    },
+    "packages/webpack/dist/plugins/usage-graph.js": {
+      "bytes": 1507,
+      "sha256": "44f441880738e191def60cc3a32d2e1440b007f4f65c6f240acfadbafc84ec68"
+    },
+    "packages/webpack/dist/plugins/virtual-css-import.d.ts": {
+      "bytes": 271,
+      "sha256": "2c6654ab615ec505782bebfa123084ebebcc70b20e0dfcff94d38e5c9fdaca1a"
+    },
+    "packages/webpack/dist/plugins/virtual-css-import.js": {
+      "bytes": 592,
+      "sha256": "e2f8df1a670fbdf7b6fef6af4a798fa94d70be5e183421bc1d5f086380940dd1"
+    },
+    "packages/webpack/dist/plugins/virtual-modules.d.ts": {
+      "bytes": 278,
+      "sha256": "35b93d01924e608bbad3c2e9dbc1ac7ed5188e7bfc3b6d2098a4922066f26a93"
+    },
+    "packages/webpack/dist/plugins/virtual-modules.js": {
+      "bytes": 961,
+      "sha256": "4cb0593dbe78dd663d01c003f62975e4ca7923bf0a65287287c3a3b91a62b1b3"
+    },
+    "packages/webpack/dist/preset/src/default-manifest.js": {
+      "bytes": 117064,
+      "sha256": "2681d43df639f490f860534d242f7e5f82c694a055f0c8f93a6660ebca78c0b2"
+    },
+    "packages/webpack/dist/runtime.d.ts": {
+      "bytes": 11,
+      "sha256": "4f1bad288ada6326583a3e6a0a54d7627a03eac3b668adeea9dded12ac5656b8"
+    },
+    "packages/webpack/dist/runtime.js": {
+      "bytes": 1449,
+      "sha256": "1d51cfca4b571d379e0cd605954d2ccb4a28f723107ac6273e971a2d145a1e99"
+    },
+    "packages/webpack/dist/schema/src/manifest-json.js": {
+      "bytes": 2201,
+      "sha256": "7e0637ade67745bacaf56c38508eec689a2ceb84890b77aa12b370300e028b0e"
+    },
+    "packages/webpack/dist/stylesheet-loader.d.ts": {
+      "bytes": 488,
+      "sha256": "c1a32ec5628cd6b7cb5d0185d6f841acd294b7550189e94e344edda93da2067c"
+    },
+    "packages/webpack/dist/stylesheet-loader.js": {
+      "bytes": 1756,
+      "sha256": "8059e32255b562809a8b87ed2de44a9dc671e0a5b5557c753028148ae4265f78"
+    },
+    "packages/webpack/dist/utils/file-dependencies.d.ts": {
+      "bytes": 345,
+      "sha256": "e29e2261722c339491c777717b53f8a5afc4dfcff20ab1b7cddb2f4490f7ef2f"
+    },
+    "packages/webpack/dist/utils/file-dependencies.js": {
+      "bytes": 464,
+      "sha256": "f65f4c508b434d2004ee5ca297765dc0ead53b65c843320d30f2f30375af369d"
+    },
+    "packages/webpack/dist/utils/path.d.ts": {
+      "bytes": 356,
+      "sha256": "39311af5a10e33b1ca05a93c4ad8d1a7dee2b84d966c58e59f75d767cb2f4333"
+    },
+    "packages/webpack/dist/utils/path.js": {
+      "bytes": 699,
+      "sha256": "20fdc68451aaec981553bfad566cfbd6fc4a26d98f685fddc72838414adeda90"
+    },
+    "packages/webpack/dist/utils/transform-style-source.d.ts": {
+      "bytes": 364,
+      "sha256": "5880cf414e14c8da4167942b1c00c0d7ecc8112872b79a751472fb91b71dc00c"
+    },
+    "packages/webpack/dist/utils/transform-style-source.js": {
+      "bytes": 2729,
+      "sha256": "002fe78a142bc6fea870f4fbcfffc043773ca918cad03030e5a217986176a2bb"
+    }
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0200published-binding declaration candidate: before/currentdist externalTS6consumer failsTS7016protocol andTS2307compiler-binding-contract. Verify defaultoutput disposablebuild andcompletecrosspackage/rootbuild ownership;source type-check is insufficient. Do not modifysharedbuild/releaseflow undercurrentconstraints."
+  ],
+  "identityConfirmation": "Notreceived;0038paused",
+  "goal": "active"
+}

@@ -1,0 +1,68 @@
+{
+  "source": ".shared{border-top:1px solid red}",
+  "prepared": {
+    "css": ".shared{border-top:3px solid red}",
+    "map": {
+      "version": 3,
+      "sources": [
+        "other.module.css"
+      ],
+      "names": [],
+      "mappings": "AAAA,QAAQ,wBAAwB",
+      "file": "other.module.css",
+      "sourcesContent": [
+        ".shared{border-top:1px solid red}"
+      ]
+    }
+  },
+  "rows": [
+    {
+      "where": "result-only",
+      "css": ".shared{border-top:3px solid red}",
+      "map": {
+        "version": 3,
+        "sources": [
+          "other.module.css"
+        ],
+        "names": [],
+        "mappings": "AAAA,QAAQ,wBAAwB",
+        "file": "other.module.css",
+        "sourcesContent": [
+          ".shared{border-top:3px solid red}"
+        ]
+      }
+    },
+    {
+      "where": "parse-and-result",
+      "css": ".shared{border-top:3px solid red}",
+      "map": {
+        "version": 3,
+        "sources": [
+          "other.module.css"
+        ],
+        "names": [],
+        "mappings": "AAAA,QAAQ,wBAAwB",
+        "file": "other.module.css",
+        "sourcesContent": [
+          ".shared{border-top:1px solid red}"
+        ]
+      }
+    },
+    {
+      "where": "process",
+      "css": ".shared{border-top:3px solid red}",
+      "map": {
+        "version": 3,
+        "sources": [
+          "other.module.css"
+        ],
+        "names": [],
+        "mappings": "AAAA,QAAQ,wBAAwB",
+        "file": "other.module.css",
+        "sourcesContent": [
+          ".shared{border-top:1px solid red}"
+        ]
+      }
+    }
+  ]
+}

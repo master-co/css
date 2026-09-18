@@ -1,0 +1,67 @@
+
+{"id":"unqualified-false-false","qualifier":"","rootEntry":false,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":"unqualified-false-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-false-false","assets":[{"file":"entry.css","css":".card{color:red}.root{display:block}"}]}
+
+{"id":"unqualified-false-true","qualifier":"","rootEntry":false,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+
+{"id":"unqualified-true-false","qualifier":"","rootEntry":true,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":"unqualified-true-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":"unqualified-true-false","assets":[{"file":"entry.css","css":".card{color:red}.root{display:block}"}]}
+
+{"id":"unqualified-true-true","qualifier":"","rootEntry":true,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+
+{"id":" layer(cards)-false-false","qualifier":" layer(cards)","rootEntry":false,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":" layer(cards)-false-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-false-false","assets":[{"file":"entry.css","css":"@layer cards{.card{color:red}}.root{display:block}"}]}
+
+{"id":" layer(cards)-false-true","qualifier":" layer(cards)","rootEntry":false,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+
+{"id":" layer(cards)-true-false","qualifier":" layer(cards)","rootEntry":true,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":" layer(cards)-true-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" layer(cards)-true-false","assets":[{"file":"entry.css","css":"@layer cards{.card{color:red}}.root{display:block}"}]}
+
+{"id":" layer(cards)-true-true","qualifier":" layer(cards)","rootEntry":true,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+
+{"id":" supports(display:grid) print-false-false","qualifier":" supports(display:grid) print","rootEntry":false,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":" supports(display:grid) print-false-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-false-false","assets":[{"file":"entry.css","css":"@supports (display:grid){@media print{.card{color:red}}}.root{display:block}"}]}
+
+{"id":" supports(display:grid) print-false-true","qualifier":" supports(display:grid) print","rootEntry":false,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+
+{"id":" supports(display:grid) print-true-false","qualifier":" supports(display:grid) print","rootEntry":true,"external":false,"build":"PASS","dependencies":["entry.js","","node_modules/.master-css/master-utilities.css","node_modules/.master-css","node_modules"]}
+{"id":" supports(display:grid) print-true-false","browser":"chromium","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","browser":"chromium","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","browser":"firefox","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","browser":"firefox","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","browser":"webkit","media":"screen","values":{"author":{"color":"rgb(0, 0, 0)","display":"block"},"built":{"color":"rgb(0, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","browser":"webkit","media":"print","values":{"author":{"color":"rgb(255, 0, 0)","display":"block"},"built":{"color":"rgb(255, 0, 0)","display":"block"}},"missing":[],"errors":[],"remoteRequests":[],"result":"PASS"}
+{"id":" supports(display:grid) print-true-false","assets":[{"file":"entry.css","css":"@supports (display:grid){@media print{.card{color:red}}}.root{display:block}"}]}
+
+{"id":" supports(display:grid) print-true-true","qualifier":" supports(display:grid) print","rootEntry":true,"external":true,"build":"FAIL","error":"MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.","dependencies":[]}
+{"summary":{"builds":12,"buildPass":6,"buildFail":6,"comparisons":36,"comparisonPass":36,"comparisonFail":0,"scope":"Actual Webpack production static builds, native CSS experiment, current delivered plugin; all external CSS intercepted locally; no dev/HMR/Next/SSR claim."}}

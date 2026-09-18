@@ -1,0 +1,31 @@
+{
+  "scenario": "inline-query-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"__AUDIT_INLINE_LOADER__?width=7!./other.module.css\";color:#123456}",
+    "b": ".shared{border-top:1px solid red}",
+    "inline": true,
+    "valid": true
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 186ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|javascript/auto|/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/next-flight-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[0]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/webpack-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[1]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[13].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-tMVLM1/app/card.module.css|rsc': No serializer registered for CssSyntaxError\n<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> CssSyntaxError\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\nFailed to compile.\n\n./app/card.module.css\nCssSyntaxError: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-tMVLM1/transform-loader.cjs:1:1: Unknown word const\n    at Input.error (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/input.js:135:16)\n    at Parser.unknownWord (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:602:22)\n    at Parser.other (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:444:12)\n    at Parser.parse (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parser.js:479:16)\n    at parse (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/parse.js:11:12)\n    at new LazyResult (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/lazy-result.js:171:16)\n    at Processor.process (/Users/aron/master/css/node_modules/.pnpm/postcss@8.5.23/node_modules/postcss/lib/processor.js:53:14)\n    at prepareNextModule (file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module.js:37:102)\n    at file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/prepare-module-graph.js:67:25\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n\nImport trace for requested module:\n./app/card.module.css\n./app/page.jsx\n  (from ../../dist/stylesheet-loader.js)\n\n\n> Build failed because of webpack errors\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ]
+}

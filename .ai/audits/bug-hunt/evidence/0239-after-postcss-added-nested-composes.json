@@ -1,0 +1,239 @@
+{
+  "scenario": "postcss-added-nested-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}",
+    "b": ".shared{}",
+    "postcss": true,
+    "addNestedComposes": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 77ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.5s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 62ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/58645b934197fc7f.css",
+      "text": "@import url(\"/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css\");\n/*# sourceMappingURL=58645b934197fc7f.css.map*/"
+    },
+    {
+      "file": "_next/static/css/58645b934197fc7f.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/58645b934197fc7f.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/58645b934197fc7f.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css",
+      "text": ".leaf_leaf___2bhH{border-top:7px solid red}\n/*# sourceMappingURL=8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css\",\"webpack://_N_E/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css\"],\"names\":[],\"mappings\":\"AAAA,kBCCE,wBACF\",\"file\":\"static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css\",\"sourcesContent\":[\".leaf{border-top:1px solid red}\",\".leaf_leaf___2bhH {\\n  border-top: 7px solid red;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css",
+      "text": "@import \"./8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css\";\n/*# sourceMappingURL=8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/%00next-css:module:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/%3Cno%20source%3E\"],\"names\":[],\"mappings\":\"AAAA,iJAAA\",\"file\":\"static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css\",\"sourcesContent\":[null],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css",
+      "text": "@import \"./8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css\";.card_direct__vAL_y{color:#123456}\n/*# sourceMappingURL=8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/%3Cno%20source%3E\",\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/card.module.css\",\"webpack://_N_E/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA,CCA+B,oBCG7B,aACF\",\"file\":\"static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css\",\"sourcesContent\":[null,\"@master entry;@preserve native;.direct{composes:shared from \\\"./other.module.css\\\";color:#123456}\",\"@import \\\"./8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css\\\";\\n\\n.card_direct__vAL_y {\\n  color: #123456;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;.direct{composes:shared from \"./other.module.css\";color:#123456}"
+    },
+    {
+      "file": "app/nested/leaf.module.css",
+      "text": ".leaf{border-top:1px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/58645b934197fc7f.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-66fe3a82ea9dbb8a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/58645b934197fc7f.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-66fe3a82ea9dbb8a.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-c2dce5581474ecd9094eaa2078bc8eb885fa910673f9aa97c276eec3705e523a.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/0ee9ad5cebd2912e39fbade12c3b891f82ac47e3c9b8aa7a3782ff154685a17d/maps/8f1add8f72e7a0b89933095f02eb7d1977bf4355c0d490da9c591329c7adc7d3-a6ca98e9eb0534be9a0ef42c0fa442387d5e0a9c2d90ff624814e77935fdea4e.css",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/card.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/other.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/card.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/other.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-nUOg07/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

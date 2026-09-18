@@ -1,0 +1,72 @@
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/shared/tsdown-package.config.ts 
+ℹ entry: src/compiler-diagnostics.ts, src/compiler.ts, src/contracts.ts, src/index.ts, src/node-compiler.ts, src/node-imports.ts, src/node.ts, src/session.ts, src/diagnostics/contracts.ts, src/diagnostics/index.ts, src/project/binding-project.ts, src/project/entries.ts, src/project/manifest-sync.ts, src/project/manifest.ts, src/project/options.ts, src/stylesheet/browser.ts, src/stylesheet/compiled-source.ts, src/stylesheet/delivery.ts, src/stylesheet/directives.ts, src/stylesheet/index-public.ts, src/stylesheet/index.ts, src/stylesheet/output-map.ts, src/stylesheet/public.ts, src/stylesheet/reference-origins.ts, src/stylesheet/render-core.ts, src/stylesheet/render-delivery.ts, src/stylesheet/render-source.ts, src/stylesheet/render.ts, src/stylesheet/source-context.ts, src/stylesheet/source.ts, src/stylesheet/types.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+ℹ Cleaning 65 files
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+ℹ dist/stylesheet/index.js                22.09 kB │ gzip: 4.89 kB
+ℹ dist/node-compiler.js                   16.89 kB │ gzip: 4.00 kB
+ℹ dist/stylesheet/delivery.js             15.46 kB │ gzip: 4.15 kB
+ℹ dist/stylesheet/public.js               11.15 kB │ gzip: 2.51 kB
+ℹ dist/node-imports.js                    10.08 kB │ gzip: 2.74 kB
+ℹ dist/diagnostics/index.js                7.59 kB │ gzip: 2.31 kB
+ℹ dist/compiler.js                         6.99 kB │ gzip: 1.83 kB
+ℹ dist/stylesheet/output-map.js            6.86 kB │ gzip: 2.37 kB
+ℹ dist/project/entries.js                  6.34 kB │ gzip: 1.66 kB
+ℹ dist/stylesheet/directives.js            4.75 kB │ gzip: 1.42 kB
+ℹ dist/stylesheet/compiled-source.js       3.52 kB │ gzip: 1.16 kB
+ℹ dist/stylesheet/source-context.js        3.12 kB │ gzip: 1.14 kB
+ℹ dist/project/binding-project.js          2.94 kB │ gzip: 1.05 kB
+ℹ dist/session.js                          2.69 kB │ gzip: 0.83 kB
+ℹ dist/stylesheet/browser.js               2.22 kB │ gzip: 0.75 kB
+ℹ dist/node.js                             2.03 kB │ gzip: 0.60 kB
+ℹ dist/project/manifest.js                 1.91 kB │ gzip: 0.71 kB
+ℹ dist/stylesheet/source.js                1.91 kB │ gzip: 0.81 kB
+ℹ dist/stylesheet/reference-origins.js     1.69 kB │ gzip: 0.79 kB
+ℹ dist/project/manifest-sync.js            1.68 kB │ gzip: 0.66 kB
+ℹ dist/stylesheet/render-delivery.js       1.57 kB │ gzip: 0.62 kB
+ℹ dist/stylesheet/render-source.js         1.24 kB │ gzip: 0.56 kB
+ℹ dist/stylesheet/render-core.js           1.11 kB │ gzip: 0.49 kB
+ℹ dist/stylesheet/render.js                1.03 kB │ gzip: 0.41 kB
+ℹ dist/index.js                            0.98 kB │ gzip: 0.32 kB
+ℹ dist/stylesheet/index-public.js          0.60 kB │ gzip: 0.19 kB
+ℹ dist/compiler-diagnostics.js             0.51 kB │ gzip: 0.20 kB
+ℹ dist/contracts.js                        0.21 kB │ gzip: 0.16 kB
+ℹ dist/diagnostics/contracts.js            0.01 kB │ gzip: 0.03 kB
+ℹ dist/project/options.js                  0.01 kB │ gzip: 0.03 kB
+ℹ dist/stylesheet/types.js                 0.01 kB │ gzip: 0.03 kB
+ℹ dist/stylesheet/public.d.ts              8.37 kB │ gzip: 1.66 kB
+ℹ dist/node-compiler.d.ts                  7.68 kB │ gzip: 1.66 kB
+ℹ dist/stylesheet/index.d.ts               6.75 kB │ gzip: 1.20 kB
+ℹ dist/stylesheet/types.d.ts               5.44 kB │ gzip: 1.38 kB
+ℹ dist/index.d.ts                          4.77 kB │ gzip: 1.31 kB
+ℹ dist/stylesheet/delivery.d.ts            4.72 kB │ gzip: 1.27 kB
+ℹ dist/diagnostics/contracts.d.ts          3.96 kB │ gzip: 0.89 kB
+ℹ dist/node.d.ts                           3.16 kB │ gzip: 0.66 kB
+ℹ dist/node-imports.d.ts                   2.56 kB │ gzip: 0.88 kB
+ℹ dist/compiler.d.ts                       2.48 kB │ gzip: 0.67 kB
+ℹ dist/stylesheet/directives.d.ts          2.39 kB │ gzip: 0.66 kB
+ℹ dist/session.d.ts                        2.14 kB │ gzip: 0.60 kB
+ℹ dist/stylesheet/index-public.d.ts        2.08 kB │ gzip: 0.39 kB
+ℹ dist/stylesheet/render-core.d.ts         1.92 kB │ gzip: 0.59 kB
+ℹ dist/diagnostics/index.d.ts              1.67 kB │ gzip: 0.54 kB
+ℹ dist/stylesheet/browser.d.ts             1.57 kB │ gzip: 0.58 kB
+ℹ dist/project/entries.d.ts                1.40 kB │ gzip: 0.39 kB
+ℹ dist/contracts.d.ts                      1.22 kB │ gzip: 0.51 kB
+ℹ dist/project/options.d.ts                1.12 kB │ gzip: 0.39 kB
+ℹ dist/project/manifest-sync.d.ts          1.07 kB │ gzip: 0.31 kB
+ℹ dist/project/manifest.d.ts               1.02 kB │ gzip: 0.29 kB
+ℹ dist/stylesheet/output-map.d.ts          1.01 kB │ gzip: 0.43 kB
+ℹ dist/project/binding-project.d.ts        0.97 kB │ gzip: 0.40 kB
+ℹ dist/compiler-diagnostics.d.ts           0.78 kB │ gzip: 0.25 kB
+ℹ dist/stylesheet/compiled-source.d.ts     0.72 kB │ gzip: 0.38 kB
+ℹ dist/stylesheet/render-source.d.ts       0.61 kB │ gzip: 0.32 kB
+ℹ dist/stylesheet/render.d.ts              0.53 kB │ gzip: 0.19 kB
+ℹ dist/stylesheet/source-context.d.ts      0.48 kB │ gzip: 0.28 kB
+ℹ dist/stylesheet/reference-origins.d.ts   0.43 kB │ gzip: 0.26 kB
+ℹ dist/stylesheet/render-delivery.d.ts     0.41 kB │ gzip: 0.24 kB
+ℹ dist/stylesheet/source.d.ts              0.32 kB │ gzip: 0.19 kB
+ℹ 62 files, total: 212.93 kB
+✔ Build complete in 143ms

@@ -1,0 +1,35 @@
+{
+  "scope": "Owned candidate Module preprocessor; actual host exported maps and graph behavior tested separately",
+  "checks": [
+    {
+      "name": "Webpack preserves directives and scopes classes through Next",
+      "pass": true
+    },
+    {
+      "name": "Webpack rejects an impure authored selector",
+      "pass": true
+    },
+    {
+      "name": "Webpack prepared selector map resolves original file/line/column/content",
+      "pass": true
+    },
+    {
+      "name": "Turbopack preserves directives and scopes classes through Next",
+      "pass": true
+    },
+    {
+      "name": "Turbopack rejects an impure authored selector",
+      "pass": true
+    },
+    {
+      "name": "Turbopack prepared selector map resolves original file/line/column/content",
+      "pass": true
+    },
+    {
+      "name": "delegates configured Webpack getLocalIdent and preserves ICSS values",
+      "pass": true
+    }
+  ],
+  "passed": 7,
+  "failed": 0
+}

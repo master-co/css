@@ -1,0 +1,423 @@
+{
+  "scope": "Read-only native compiler boundary inspection, not a host fix or full parity claim",
+  "rows": [
+    {
+      "name": "compose",
+      "source": "@master entry;@preserve native;.direct{@compose p:2rem;color:#123456;border-top:7px solid red}",
+      "resultKeys": [
+        "entry",
+        "stylesheets",
+        "manifest",
+        "resolutionManifest",
+        "directives"
+      ],
+      "directiveKeys": [
+        "manifestInput",
+        "extractionPolicy",
+        "classNames",
+        "nativeClassNames",
+        "warnings",
+        "nativeCSS",
+        "css",
+        "generatedCSS",
+        "dependencies",
+        "styleDefinitions"
+      ],
+      "stylesheets": [
+        {
+          "id": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/compose.module.css",
+          "href": "./0.css",
+          "css": ".direct{padding:2rem;color:#123456;border-top:7px solid red}",
+          "outputMappings": [
+            {
+              "generatedStart": 0,
+              "generatedEnd": 7,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/compose.module.css",
+                "range": {
+                  "start": 31,
+                  "end": 38
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 32
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 39
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 8,
+              "generatedEnd": 20,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/compose.module.css",
+                "range": {
+                  "start": 48,
+                  "end": 54
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 49
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 55
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 21,
+              "generatedEnd": 34,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/compose.module.css",
+                "range": {
+                  "start": 55,
+                  "end": 68
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 56
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 69
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 35,
+              "generatedEnd": 59,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/compose.module.css",
+                "range": {
+                  "start": 55,
+                  "end": 68
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 56
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 69
+                  }
+                }
+              }
+            }
+          ],
+          "nativeCSS": "",
+          "generatedCSS": ".direct{padding:2rem;color:#123456;border-top:7px solid red}"
+        }
+      ]
+    },
+    {
+      "name": "exports",
+      "source": "@master entry;@preserve native;.original{color:#123456;border-top:7px solid red}",
+      "resultKeys": [
+        "entry",
+        "stylesheets",
+        "manifest",
+        "resolutionManifest",
+        "directives"
+      ],
+      "directiveKeys": [
+        "manifestInput",
+        "extractionPolicy",
+        "classNames",
+        "nativeClassNames",
+        "warnings",
+        "nativeCSS",
+        "css",
+        "generatedCSS",
+        "dependencies"
+      ],
+      "stylesheets": [
+        {
+          "id": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/exports.module.css",
+          "href": "./0.css",
+          "css": ".original {\n  color: #123456;\n  border-top: 7px solid red;\n}",
+          "outputMappings": [
+            {
+              "generatedStart": 0,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/exports.module.css",
+                "range": {
+                  "start": 31,
+                  "end": 31
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 32
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 32
+                  }
+                }
+              }
+            }
+          ],
+          "nativeCSS": ".original {\n  color: #123456;\n  border-top: 7px solid red;\n}",
+          "generatedCSS": ""
+        }
+      ]
+    },
+    {
+      "name": "components",
+      "source": "@master entry;@preserve native;@components{brand{border-top:7px solid red}}.direct{@compose brand;color:#123456}",
+      "classes": [
+        "brand"
+      ],
+      "resultKeys": [
+        "entry",
+        "stylesheets",
+        "manifest",
+        "resolutionManifest",
+        "directives"
+      ],
+      "directiveKeys": [
+        "manifestInput",
+        "extractionPolicy",
+        "classNames",
+        "nativeClassNames",
+        "warnings",
+        "nativeCSS",
+        "css",
+        "generatedCSS",
+        "dependencies",
+        "styleDefinitions"
+      ],
+      "stylesheets": [
+        {
+          "id": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/components.module.css",
+          "href": "./0.css",
+          "css": ".direct{border-top:7px solid red;color:#123456}",
+          "outputMappings": [
+            {
+              "generatedStart": 0,
+              "generatedEnd": 7,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/components.module.css",
+                "range": {
+                  "start": 75,
+                  "end": 82
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 76
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 83
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 8,
+              "generatedEnd": 32,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/components.module.css",
+                "range": {
+                  "start": 92,
+                  "end": 97
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 93
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 98
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 33,
+              "generatedEnd": 46,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/components.module.css",
+                "range": {
+                  "start": 98,
+                  "end": 111
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 99
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 112
+                  }
+                }
+              }
+            }
+          ],
+          "nativeCSS": "",
+          "generatedCSS": ".direct{border-top:7px solid red;color:#123456}"
+        }
+      ]
+    },
+    {
+      "name": "shared",
+      "source": "@master entry;@preserve native;@import \"./child.module.css\";.direct{composes:shared from \"./child.module.css\";color:#123456}",
+      "child": ".shared{@compose p:2rem;border-top:7px solid red}",
+      "resultKeys": [
+        "entry",
+        "stylesheets",
+        "manifest",
+        "resolutionManifest",
+        "directives"
+      ],
+      "directiveKeys": [
+        "manifestInput",
+        "extractionPolicy",
+        "classNames",
+        "nativeClassNames",
+        "warnings",
+        "nativeCSS",
+        "css",
+        "generatedCSS",
+        "dependencies",
+        "styleDefinitions"
+      ],
+      "stylesheets": [
+        {
+          "id": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/shared.module.css",
+          "href": "./0.css",
+          "css": "@import \"./1.css\";\n\n.direct {\n  composes: shared from \"./child.module.css\";\n  color: #123456;\n}",
+          "outputMappings": [
+            {
+              "generatedStart": 0,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/shared.module.css",
+                "range": {
+                  "start": 31,
+                  "end": 31
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 32
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 32
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 20,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/shared.module.css",
+                "range": {
+                  "start": 60,
+                  "end": 60
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 61
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 61
+                  }
+                }
+              }
+            }
+          ],
+          "nativeCSS": "@import \"./1.css\";\n\n.direct {\n  composes: shared from \"./child.module.css\";\n  color: #123456;\n}",
+          "generatedCSS": ""
+        },
+        {
+          "id": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/child.module.css",
+          "href": "./1.css",
+          "css": ".shared{padding:2rem;border-top:7px solid red}",
+          "outputMappings": [
+            {
+              "generatedStart": 0,
+              "generatedEnd": 7,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/child.module.css",
+                "range": {
+                  "start": 0,
+                  "end": 7
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 1
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 8
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 8,
+              "generatedEnd": 20,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/child.module.css",
+                "range": {
+                  "start": 17,
+                  "end": 23
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 18
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 24
+                  }
+                }
+              }
+            },
+            {
+              "generatedStart": 21,
+              "generatedEnd": 45,
+              "source": {
+                "file": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-lowering-stages-WvnXI0/child.module.css",
+                "range": {
+                  "start": 24,
+                  "end": 48
+                },
+                "loc": {
+                  "start": {
+                    "line": 1,
+                    "column": 25
+                  },
+                  "end": {
+                    "line": 1,
+                    "column": 49
+                  }
+                }
+              }
+            }
+          ],
+          "nativeCSS": "",
+          "generatedCSS": ".shared{padding:2rem;border-top:7px solid red}"
+        }
+      ]
+    }
+  ]
+}

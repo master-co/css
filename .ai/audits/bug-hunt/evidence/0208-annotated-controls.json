@@ -1,0 +1,10 @@
+{
+  "compiler": {
+    "unchangedJS": 31
+  },
+  "webpack": {
+    "unchangedJS": 30
+  },
+  "strictTypesExit": 0,
+  "exampleExit": 0
+}

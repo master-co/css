@@ -1,0 +1,84 @@
+{
+  "scope": "Next bundled Webpack and native PostCSS loader; no actual Next app or candidate integration",
+  "root": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv",
+  "nativeLoader": "/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js",
+  "rows": [
+    {
+      "scenario": "configured",
+      "factoryCalls": 0,
+      "readEvents": [],
+      "events": [],
+      "errors": [
+        {
+          "moduleIdentifier": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/capture.cjs!/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/dispatcher.cjs??native-configured!/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs??ruleSet[1].rules[0].use[2]!/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css?variant=configured",
+          "moduleName": "../../../../../../private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css?variant=configured",
+          "message": "Module build failed (from ../../../../../../private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs):\nError: Native option reference unavailable\n    at run (/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs:18:29)"
+        }
+      ],
+      "warnings": [],
+      "dependencies": {
+        "files": [
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn",
+          "/var/folders/_b",
+          "/var/folders",
+          "/var",
+          "/",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn",
+          "/private/var/folders/_b",
+          "/private/var/folders",
+          "/private/var",
+          "/private",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/capture.cjs",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/dispatcher.cjs",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/capture.cjs",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/dispatcher.cjs",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs"
+        ],
+        "build": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/capture.cjs",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/dispatcher.cjs",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/bridge.cjs"
+        ],
+        "missing": [
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/package.json",
+          "/var/folders/_b/package.json",
+          "/var/folders/package.json",
+          "/var/package.json",
+          "/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/package.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css.js",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css.json",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/card.module.css.wasm",
+          "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-orvGsv/configured/package.json"
+        ],
+        "contexts": []
+      },
+      "assets": [
+        "result.cjs"
+      ],
+      "output": null,
+      "checks": {}
+    }
+  ],
+  "harnessError": "AssertionError [ERR_ASSERTION]: configured: exact native options factory reused once\n\n0 !== 1\n\n    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-native-postcss-transport.mjs:143:12",
+  "events": [],
+  "cleaned": true
+}

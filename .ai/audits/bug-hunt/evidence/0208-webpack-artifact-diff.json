@@ -1,0 +1,17 @@
+{
+  "old": 49,
+  "new": 51,
+  "added": [
+    "utils/stylesheet-slot.d.ts",
+    "utils/stylesheet-slot.js"
+  ],
+  "removed": [],
+  "changed": [
+    "plugin.d.ts",
+    "plugin.js",
+    "plugins/generated-css-assets.js",
+    "utils/build-stylesheet-delivery.d.ts",
+    "utils/build-stylesheet-delivery.js",
+    "utils/transform-style-source.js"
+  ]
+}

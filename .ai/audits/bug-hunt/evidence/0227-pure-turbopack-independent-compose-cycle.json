@@ -1,0 +1,20 @@
+{
+  "scenario": "independent-compose-cycle",
+  "bundler": "turbopack",
+  "pure": true,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}.anchor{margin-left:11px}",
+    "b": ".shared{border-top:7px solid red}.dependent{composes:anchor from \"./card.module.css\";padding:13px}"
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 11ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 4.4s\n  Running TypeScript ...\n  Finished TypeScript in 3ms ...\n  Collecting page data using 1 worker ...\nError: Failed to collect configuration for /\n    at ignore-listed frames {\n  [cause]: TypeError: Cannot define property anchor, object is not extensible\n      at Object.defineProperty (<anonymous>)\n      at module evaluation (app/page.jsx:1:1)\n  > 1 | import styles from \"./card.module.css\";export default function Page(){return <div id=\"probe\" className={styles.direct}>Probe</div>}\n      | ^\n}\n\n> Build error occurred\nError: Failed to collect page data for /\n    at ignore-listed frames {\n  type: 'Error'\n}\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": []
+}

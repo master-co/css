@@ -1,0 +1,329 @@
+[
+  {
+    "name": "0229-context-client",
+    "exit": 0,
+    "buildCode": 0,
+    "contexts": [
+      {
+        "keys": [
+          "_module",
+          "currentTraceSpan",
+          "rootContext",
+          "sourceMap",
+          "getOptions",
+          "fs",
+          "getResolve",
+          "emitWarning",
+          "emitError",
+          "importModule",
+          "getLogger",
+          "context",
+          "loaderIndex",
+          "loaders",
+          "resourcePath",
+          "resourceQuery",
+          "resourceFragment",
+          "async",
+          "callback",
+          "cacheable",
+          "addDependency",
+          "dependency",
+          "addContextDependency",
+          "addMissingDependency",
+          "getDependencies",
+          "getContextDependencies",
+          "getMissingDependencies",
+          "clearDependencies",
+          "resource",
+          "request",
+          "remainingRequest",
+          "currentRequest",
+          "previousRequest",
+          "query",
+          "data"
+        ],
+        "ruleTag": "browser",
+        "moduleKeys": [
+          "__reserved"
+        ],
+        "resourcePath": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx/app/card.module.css",
+        "resourceQuery": "",
+        "rootContext": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx",
+        "resolutions": {
+          "defaults": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx/node_modules/@audit/css-edge/browser.module.css",
+          "reactServer": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx/node_modules/@audit/css-edge/react-server.module.css",
+          "browser": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx/node_modules/@audit/css-edge/browser.module.css",
+          "import": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-fDesbx/node_modules/@audit/css-edge/import.module.css"
+        }
+      }
+    ],
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__scDNWa__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__scDNWa__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-context-server",
+    "exit": 0,
+    "buildCode": 0,
+    "contexts": [
+      {
+        "keys": [
+          "_module",
+          "currentTraceSpan",
+          "rootContext",
+          "sourceMap",
+          "getOptions",
+          "fs",
+          "getResolve",
+          "emitWarning",
+          "emitError",
+          "importModule",
+          "getLogger",
+          "context",
+          "loaderIndex",
+          "loaders",
+          "resourcePath",
+          "resourceQuery",
+          "resourceFragment",
+          "async",
+          "callback",
+          "cacheable",
+          "addDependency",
+          "dependency",
+          "addContextDependency",
+          "addMissingDependency",
+          "getDependencies",
+          "getContextDependencies",
+          "getMissingDependencies",
+          "clearDependencies",
+          "resource",
+          "request",
+          "remainingRequest",
+          "currentRequest",
+          "previousRequest",
+          "query",
+          "data"
+        ],
+        "ruleTag": "browser",
+        "moduleKeys": [
+          "__reserved"
+        ],
+        "resourcePath": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE/app/card.module.css",
+        "resourceQuery": "",
+        "rootContext": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE",
+        "resolutions": {
+          "defaults": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE/node_modules/@audit/css-edge/browser.module.css",
+          "reactServer": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE/node_modules/@audit/css-edge/react-server.module.css",
+          "browser": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE/node_modules/@audit/css-edge/browser.module.css",
+          "import": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-li28TE/node_modules/@audit/css-edge/import.module.css"
+        }
+      }
+    ],
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__p4CaVq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__p4CaVq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-context-pure-mixed",
+    "exit": 0,
+    "buildCode": 0,
+    "contexts": null,
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module__tBub9a__direct react-server-module__YZ1wuW__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      },
+      {
+        "browser": "chromium",
+        "id": "client-probe",
+        "classes": "card-module__tBub9a__direct import-module__pLt0ka__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module__tBub9a__direct react-server-module__YZ1wuW__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "react-server",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "client-probe",
+        "classes": "card-module__tBub9a__direct import-module__pLt0ka__shared",
+        "color": "rgb(18, 52, 86)",
+        "border": "0px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "",
+        "pass": false
+      }
+    ],
+    "harnessError": null
+  },
+  {
+    "name": "0229-context-mixed",
+    "exit": 0,
+    "buildCode": 0,
+    "contexts": [
+      {
+        "keys": [
+          "_module",
+          "currentTraceSpan",
+          "rootContext",
+          "sourceMap",
+          "getOptions",
+          "fs",
+          "getResolve",
+          "emitWarning",
+          "emitError",
+          "importModule",
+          "getLogger",
+          "context",
+          "loaderIndex",
+          "loaders",
+          "resourcePath",
+          "resourceQuery",
+          "resourceFragment",
+          "async",
+          "callback",
+          "cacheable",
+          "addDependency",
+          "dependency",
+          "addContextDependency",
+          "addMissingDependency",
+          "getDependencies",
+          "getContextDependencies",
+          "getMissingDependencies",
+          "clearDependencies",
+          "resource",
+          "request",
+          "remainingRequest",
+          "currentRequest",
+          "previousRequest",
+          "query",
+          "data"
+        ],
+        "ruleTag": "browser",
+        "moduleKeys": [
+          "__reserved"
+        ],
+        "resourcePath": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z/app/card.module.css",
+        "resourceQuery": "",
+        "rootContext": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z",
+        "resolutions": {
+          "defaults": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z/node_modules/@audit/css-edge/browser.module.css",
+          "reactServer": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z/node_modules/@audit/css-edge/react-server.module.css",
+          "browser": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z/node_modules/@audit/css-edge/browser.module.css",
+          "import": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-6zPc2Z/node_modules/@audit/css-edge/import.module.css"
+        }
+      }
+    ],
+    "observations": [
+      {
+        "browser": "chromium",
+        "id": "probe",
+        "classes": "card-module-css-module__QSFhJq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      },
+      {
+        "browser": "chromium",
+        "id": "client-probe",
+        "classes": "card-module-css-module__QSFhJq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      },
+      {
+        "browser": "webkit",
+        "id": "probe",
+        "classes": "card-module-css-module__QSFhJq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": false
+      },
+      {
+        "browser": "webkit",
+        "id": "client-probe",
+        "classes": "card-module-css-module__QSFhJq__direct card_direct__vAL_y browser_shared__tRKdg",
+        "color": "rgb(18, 52, 86)",
+        "border": "7px",
+        "margin": "0px",
+        "padding": "0px",
+        "origin": "browser",
+        "pass": true
+      }
+    ],
+    "harnessError": null
+  }
+]

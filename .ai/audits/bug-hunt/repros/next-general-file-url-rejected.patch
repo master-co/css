@@ -1,0 +1,85 @@
+--- a/packages/next/src/static-publication.ts
++++ b/packages/next/src/static-publication.ts
+@@ -7,7 +7,7 @@
+ 
+ const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex')
+ 
+-async function publishFile(file: string, bytes: Buffer, immutable: boolean) {
++export async function publishFile(file: string, bytes: Buffer, immutable: boolean) {
+   try {
+     const current = await readFile(file)
+     if (current.equals(bytes)) return
+--- a/packages/next/src/stylesheet-loader.ts
++++ b/packages/next/src/stylesheet-loader.ts
+@@ -1,3 +1,4 @@
++import { deliverNextStylesheet } from './stylesheet-delivery'
+ import { prependStylesheetLineMap } from './stylesheet-source-map'
+ import { dirname, extname, resolve } from 'node:path'
+ import { fileURLToPath } from 'node:url'
+@@ -73,14 +74,15 @@
+     const compilationSource = addMasterImport ? `@import "@master/css";\n${source}` : source
+     const renderedMap = addMasterImport ? prependStylesheetLineMap(resourcePath, source, sourceMap) : sourceMap
+     dependencies.push(...resolution.dependencies)
+-    const result = await compileRenderedStylesheet(resourcePath, compilationSource, {
++    const result = await deliverNextStylesheet(resourcePath, projectDir ?? dirname(resourcePath), onDependency, delivery => compileRenderedStylesheet(resourcePath, compilationSource, {
++      delivery,
+       baseManifest: defaultBuildManifest,
+       loadSass,
+       ...context,
+       sourceMap: renderedMap,
+       projectDir,
+       preserveNativeCSS: true
+-    })
++    }))
+     dependencies.push(...(result.dependencies || []))
+     return {
+       code: result.css || result.nativeCSS || '',
+--- /dev/null
++++ b/packages/next/src/stylesheet-delivery.ts
+@@ -0,0 +1,46 @@
++import { createHash } from 'node:crypto'
++import { readFileSync } from 'node:fs'
++import { extname, join } from 'node:path'
++import { fileURLToPath, pathToFileURL } from 'node:url'
++import type { MasterCSSCompiledStylesheet, MasterCSSStylesheetDeliveryOptions } from '@master/css-compiler/stylesheet'
++import { publishFile } from './static-publication'
++
++const hash = (value: string | Buffer) => createHash('sha256').update(value).digest('hex')
++
++/** The host loads entry CSS in place; publish every retained child before returning it. */
++export async function deliverNextStylesheet(file: string, projectDir: string, onDependency: (file: string) => void,
++  compile: (delivery: MasterCSSStylesheetDeliveryOptions) => Promise<MasterCSSCompiledStylesheet>) {
++  const directory = join(projectDir, '.master/stylesheets', hash(file))
++  const href = (output: string) => pathToFileURL(output).href
++  const resources = new Map<string, Buffer>()
++  const read = (file: string) => {
++    let bytes = resources.get(file)
++    if (!bytes) { bytes = readFileSync(file);resources.set(file, bytes) }
++    return bytes
++  }
++  let revision = ''
++  const delivery: MasterCSSStylesheetDeliveryOptions = {
++    entryURL: href(file),
++    stylesheetURL: (owner, variant) => href(join(directory, `${revision}${hash(owner + (variant ?? ''))}.css`)),
++    resourceURL: owner => href(join(directory, `${hash(read(owner))}${extname(owner)}`)),
++    onDependency
++  }
++  let result = await compile(delivery)
++  revision = hash(JSON.stringify(result.stylesheets)) + '-'
++  result = await compile(delivery)
++  const assets = new Map<string, Buffer>()
++  const add = (url: string, bytes: Buffer) => {
++    const output = fileURLToPath(new URL(url, pathToFileURL(file)))
++    if (output === file) throw new Error(`Cannot overwrite the Next stylesheet source: ${file}`)
++    if (assets.has(output) && !assets.get(output)!.equals(bytes)) throw new Error(`Conflicting Next stylesheet asset: ${output}`)
++    assets.set(output, bytes)
++  }
++  for (const asset of result.stylesheets ?? []) {
++    if (asset.id === result.entry) continue
++    const map = Buffer.from(asset.sourceMap).toString('base64')
++    add(asset.href, Buffer.from(asset.css + `\n/*# sourceMappingURL=data:application/json;base64,${map} */\n`))
++  }
++  for (const asset of result.resources ?? []) add(asset.href, read(asset.file))
++  for (const [output, bytes] of assets) { await publishFile(output, bytes, true);onDependency(output) }
++  return result
++}

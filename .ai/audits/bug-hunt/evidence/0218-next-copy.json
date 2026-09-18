@@ -1,0 +1,7 @@
+{
+  "root": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq",
+  "package": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next",
+  "scope": "Owned disposable package; no shared build or promotion",
+  "buildExitCode": 0,
+  "buildLog": "/Users/aron/master/css/.ai/audits/bug-hunt/evidence/0218-next-copy-build.log"
+}

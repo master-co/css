@@ -1,0 +1,262 @@
+{
+  "batch": "0206-webpack-static-delivery",
+  "status": "Bounded Webpack production static graph repair and public getter types delivered; full objective incomplete",
+  "goal": "active",
+  "previousGoalTurn": "progress;0205actualhostcontrolsanddeliveryproof",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "findings": {
+    "BH-0004": "Production static Webpack subset repaired; full raw/host scope remains",
+    "BH-0061": "Existing public declaration issue extended to Webpack; repaired via7publicindexedgetter annotations; no newID"
+  },
+  "results": {
+    "newRegressionBaseline": "4FAIL;old delivery/flatten errors",
+    "newRegressionStagedAndDelivered": "4PASS each",
+    "fullPackageSerialTests": 78,
+    "normalizedTopologyFullTests": 78,
+    "stagedBrowser": {
+      "builds": 56,
+      "comparisons": 336,
+      "failures": 0,
+      "matrices": "original12/72,order8/48,nestedrelative/absolute/CDN36/216"
+    },
+    "deliveredBrowser": {
+      "builds": 12,
+      "comparisons": 72,
+      "failures": 0
+    },
+    "contentHashesAndResources": "stable repeat;child CSS andresource edits change entryhash;exactSVGbytes;query/fragment andcleanrebuild removal PASS",
+    "lintTypesIsolatedBuild": "PASS",
+    "exampleBuild": "PASS;two existingwarnings",
+    "publicTypes": "old6errors/initialcandidate7errors;staged/delivered strictTS6PASS;invalidoptionnegativecontrolPASS",
+    "typeAnnotationRuntimeJS": "all29unchanged",
+    "declarationClosure": "0affectedpackages",
+    "apiCensus": "existingFAIL byte-identical to0200"
+  },
+  "preservation": {
+    "sourceCount": 578,
+    "priorInventoryUnchanged": 567,
+    "changedPriorInventoryFiles": [
+      ".ai/audits/bug-hunt/repros/build-stylesheet-delivery.mjs",
+      ".ai/audits/bug-hunt/repros/webpack-import-boundaries.mjs"
+    ],
+    "newlyInventoriedWebpackFiles": 9,
+    "newSourceFiles": [
+      "packages/webpack/src/utils/build-stylesheet-delivery.ts",
+      "packages/webpack/tests/bug-hunt-static-graph-delivery.test.ts"
+    ],
+    "existingWebpackFilesChanged": 7,
+    "artifactCount": 473,
+    "priorArtifactsUnchanged": 462,
+    "priorArtifactsChanged": 9,
+    "newArtifacts": 2,
+    "otherPackagesNativeWasmRuntimeArtifacts": "424unchanged",
+    "delivery": "atomicfull-directoryswap;38priorWebpackartifactsunchanged;no removedfiles",
+    "existingTestsFixturesSnapshotsDependenciesLockfilesCIReleaseSharedBuildRules": "unchanged",
+    "foreignSiteAndHosts": "preserved;no restart",
+    "commitOrPush": false
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR."
+  ],
+  "next": "Actual static Webpack build-watch CSS/resource edits, deletion and recovery;thenmultiple/lazyentries,localcompose/Modules,maps,unusedresources,Sass/resolvers andNext hostdelivery. Keep allinheritedrequirements and0038pause.",
+  "identityConfirmation": "Notreceived;0038paused",
+  "checks": {
+    "context": "PASS;0206-context-final.log",
+    "sourcesArtifacts": "578sources/473artifacts verified",
+    "reproSyntaxAuthoredWhitespace": "PASS;verbatim logs/historyexcluded",
+    "index": "empty",
+    "commands": "all0206ownedcommands terminal",
+    "promotionBackup": "0206-promotion.json;do not rebuild oldbackup stagingdist"
+  },
+  "logs": {
+    "0206-api-census-final.log": {
+      "bytes": 169797,
+      "sha256": "94b83b7b0131cfc6455de7199fcdf06cfa72baa056bf391b608e8c81a23ad34b"
+    },
+    "0206-api-census.log": {
+      "bytes": 169797,
+      "sha256": "94b83b7b0131cfc6455de7199fcdf06cfa72baa056bf391b608e8c81a23ad34b"
+    },
+    "0206-asset-matrix-results.json": {
+      "bytes": 1800,
+      "sha256": "58714cfdfc362a62afdb48d833dfc27d49abe57b307e5a201e43f9a44d2408dc"
+    },
+    "0206-before-type-annotations-js.json": {
+      "bytes": 2872,
+      "sha256": "c2181d23a8c299f534c74f79062750603172b542b5515385cb114b1bcfce6068"
+    },
+    "0206-before.json": {
+      "bytes": 153394,
+      "sha256": "590717d2d32c3136cd5523550e950e2af4682df89ba95709f846e2f5574259ee"
+    },
+    "0206-boundaries-delivered.log": {
+      "bytes": 36339,
+      "sha256": "c5a7029bef04e6799b28bbc202c5b8172c80a1d02272cfb5fcbe9dc7ac1ba9b8"
+    },
+    "0206-build-state.json": {
+      "bytes": 285,
+      "sha256": "16932ac9f1cc9b1f107b02506af1ea8b9a882f20cc7cb43a297b4c81133dc10f"
+    },
+    "0206-candidate-local-imports.json": {
+      "bytes": 1244,
+      "sha256": "f844454cb5cb9963162ed10f7a2d82333e3bf8264353ea5d9907bfc49cd58dd6"
+    },
+    "0206-context-final.log": {
+      "bytes": 121,
+      "sha256": "bad97f7010f527d984262b3fe65333625e15c7e2be01dec111d21fd4a2a37353"
+    },
+    "0206-context-initial.log": {
+      "bytes": 121,
+      "sha256": "8d565d0205807bad0c9131e9612989829f4cbdd5cd2315d7870fb137a6458677"
+    },
+    "0206-declaration-closure.json": {
+      "bytes": 7070,
+      "sha256": "8a6d0e7137d1838621c80ac581908cda31ccdb30c917a6248966fb4231e18731"
+    },
+    "0206-delivery-artifact-diff-normalized.json": {
+      "bytes": 470,
+      "sha256": "12ec2e44c9acd46064992bc2422dd9cb11b7e47dd1bb59f220dede3c88f4fdf4"
+    },
+    "0206-delivery-artifact-diff.json": {
+      "bytes": 1816,
+      "sha256": "4ed92bfbe9e3372e2964bda27ad2e036a1c3877e8a8d50088082466be31545eb"
+    },
+    "0206-delivery-build-state.json": {
+      "bytes": 340,
+      "sha256": "8d6b3175d8e7b66a5882bd00fcf5c21977e48b874bfc6a92c88ac10b92f702df"
+    },
+    "0206-promotion.json": {
+      "bytes": 14757,
+      "sha256": "965a02cc7334ab31595b30bd45f231b9e4101d4aa5d6d2ce5afd89ded3f428bc"
+    },
+    "0206-published-types-before.log": {
+      "bytes": 1194,
+      "sha256": "1edd723731e7b93f850ae58ece5c9a4ef8ae28347f95cf74abd606ed1e096ad0"
+    },
+    "0206-published-types-delivered.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0206-published-types-final.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0206-published-types-negative.log": {
+      "bytes": 140,
+      "sha256": "98239f6c9aaf477fd4456af6e0dc10e12c5fdee802a091cd4fed942176405fda"
+    },
+    "0206-published-types.log": {
+      "bytes": 1074,
+      "sha256": "a055099bf085e799b61fadfef19adac0458aec8f410ffdd47e2d93da66cd1883"
+    },
+    "0206-regression-after.log": {
+      "bytes": 747,
+      "sha256": "0249e93c2f4712d60ca89c69df972bbc87836fe478d18b3eee869fe883d5ded9"
+    },
+    "0206-regression-before.log": {
+      "bytes": 5160,
+      "sha256": "39884620ddd5e3cf128f75e952712eebe74e3a32ffe4cadb374d61fe9cbac16d"
+    },
+    "0206-regression-delivered.log": {
+      "bytes": 684,
+      "sha256": "6e9ff87d80dd737122b2a1932955e342c29045306b1834b5809445af527e9443"
+    },
+    "0206-webpack-assets-absolute.log": {
+      "bytes": 36632,
+      "sha256": "895a6ef276388834e698035476429bef72c6521c50472a8e39cce50f5fde0ba3"
+    },
+    "0206-webpack-assets-cdn.log": {
+      "bytes": 36648,
+      "sha256": "f75f0750a43bd48d37753cf287db82ccf338828c6fe6439535e1dabce3f74aa1"
+    },
+    "0206-webpack-assets-relative.log": {
+      "bytes": 36626,
+      "sha256": "02bf2d445292f1abb1a3096b9b0e0c96f1cd02a19bffddc4a9e8b070396b86c6"
+    },
+    "0206-webpack-boundaries-initial.log": {
+      "bytes": 36301,
+      "sha256": "cd04ad1b82ac257b0f6bb81289d3ed25bcca5d9cbc1e7202203d8c0bdcdee463"
+    },
+    "0206-webpack-build-initial.log": {
+      "bytes": 6349,
+      "sha256": "1a2259d208fb692b80729bd92fcf9b6cb25c1582d0dd1e9c5dfb2ad834df2b30"
+    },
+    "0206-webpack-delivery-build-final.log": {
+      "bytes": 4853,
+      "sha256": "3d76c88208890aa2579887bcf53c1a23e8a80f77cc7068babaeb11bfe32f99dc"
+    },
+    "0206-webpack-delivery-build-normalized.log": {
+      "bytes": 4853,
+      "sha256": "c5204b4c24e34c7a5752e7c5f9553b75651c6d216242a1b854d717cdf7835bce"
+    },
+    "0206-webpack-delivery-build.log": {
+      "bytes": 6350,
+      "sha256": "32ae28c3bd362d785b7e33443429343513d5347b41bcac2118538c93a17f1b23"
+    },
+    "0206-webpack-example-build.log": {
+      "bytes": 2673,
+      "sha256": "cc23565f713bc99a2d7ac536f24d41fedfd1b44f9dae25e3d5e8bb1849f45033"
+    },
+    "0206-webpack-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0206-webpack-lint-initial.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0206-webpack-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0206-webpack-order-initial.log": {
+      "bytes": 15973,
+      "sha256": "c4809443216da027b6dbc8ab5ce98d179bde449b7b85fcf0f1273149c828cc5b"
+    },
+    "0206-webpack-tests-normalized.log": {
+      "bytes": 859,
+      "sha256": "d2fb5a87d4b3fff10206f5d854016b724d7e5b685ac37926a4fefb92dad9f9be"
+    },
+    "0206-webpack-tests-serial.log": {
+      "bytes": 864,
+      "sha256": "1dc7e39d3a542be35151bf848a00acf0073acf282067d8cbc841167b84d053f7"
+    },
+    "0206-webpack-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0206-webpack-types-initial.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0206-webpack-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    }
+  }
+}

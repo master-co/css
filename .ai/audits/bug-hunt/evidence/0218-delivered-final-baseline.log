@@ -1,0 +1,27 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/next
+
+ ❯ tests/bug-hunt-loader-graph-delivery.test.ts (3 tests | 2 failed) 2259ms
+   × general Next loader publishes retained nested-resource graph 707ms
+   × general Next loader publishes retained external-import graph 688ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-loader-graph-delivery.test.ts > general Next loader publishes retained nested-resource graph
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/bug-hunt-loader-graph-delivery.test.ts > general Next loader publishes retained external-import graph
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 1 passed (3)
+   Start at  03:41:28
+   Duration  2.78s (tests 84%, transform 11%, import 5%)
+

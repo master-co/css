@@ -1,0 +1,125 @@
+{
+  "scenario": "postcss-local-generated-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": true,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{@compose p:2rem;color:#123456;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "generated": true,
+    "local": true,
+    "expectedPadding": "48px",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 73ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.7s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 60ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "48px",
+      "origin": "",
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "48px",
+      "origin": "",
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/2fd9146f899827ee.css",
+      "text": "@import url(\"/_next/static/css/master/a64bfd8f6aaf89b6bb70b18f4a81511ebd910d0abc67797b2ccc26a8f358ac9d/css/4ae7fa8bf6e36d8cd2f45d4b40a032e35071d4a2978219541c660fb496bf6361-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/cf57a72a03adda60.css",
+      "text": ".card_direct__vAL_y{padding:3rem;color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/a64bfd8f6aaf89b6bb70b18f4a81511ebd910d0abc67797b2ccc26a8f358ac9d/css/4ae7fa8bf6e36d8cd2f45d4b40a032e35071d4a2978219541c660fb496bf6361-entry.css",
+      "text": ".placeholder{display:block}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y\">"
+  ],
+  "postcssCalls": [
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "padding",
+      "before": "2rem",
+      "after": "3rem"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "padding",
+      "before": "3rem",
+      "after": "3rem"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "padding",
+      "before": "2rem",
+      "after": "3rem"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+      "property": "padding",
+      "before": "3rem",
+      "after": "3rem"
+    }
+  ]
+}

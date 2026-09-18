@@ -1,0 +1,378 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.js took 86ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 3.2s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 63ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@import \"./nested/imported.module.css\";@master entry;@preserve native;.direct{width:4px;height:4px;background-image:url(\"./assets/red.svg?direct=1#pixel\")}.composed{@compose p:2rem;}"
+    },
+    {
+      "file": "app/globals.css",
+      "text": "@master entry;"
+    },
+    {
+      "file": "app/nested/child.css",
+      "text": ".nested{width:4px;height:4px;background-image:url(\"./assets/blue.svg?nested=1#pixel\")}"
+    },
+    {
+      "file": "app/nested/imported.module.css",
+      "text": ".imported{margin-left:13px;width:4px;height:4px;background-image:url(\"./assets/blue.svg\")}"
+    }
+  ],
+  "pureLoaderMap": false,
+  "moduleFeature": "imports",
+  "moduleKind": "entry",
+  "sourceMaps": false,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": false,
+  "lightningcss": false,
+  "bundler": "webpack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "import-scope-leak",
+      "margin": "13px",
+      "background": "url(\"http://127.0.0.1:62411/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg\")",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-scope",
+      "selector": ".imported",
+      "pass": false
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "c3145c71f970098a9c1ce24667a2a51a6703495165050c3f1d32e61efcc110ac"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "8d4a493154c802323dd3534ac4218b8fb85350479d177c521c8a4932243d4b13"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "1961020470ee1be5189bd1f60c7ddbeda622a7c913136f942ce24810bdb641b6"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "425190adf9a294d79ed4661a6744f373ab7e36c5f2cde14d23f77864d20050e7"
+    },
+    {
+      "file": "_next/static/PZrBsD3RkEoJNKaGD92BX/_buildManifest.js",
+      "sha256": "fc9f9d16595c40b13da98fd1556b3e2bded6509cb20f9b1e8b7c6bb4bcd89842"
+    },
+    {
+      "file": "_next/static/PZrBsD3RkEoJNKaGD92BX/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_next/static/chunks/194-1c3b0f7b60a00655.js",
+      "sha256": "8cc4ccb2aacdfd686492fdc3d7dee5ebbada02a21af29ecdcfb932654ef6e5ac"
+    },
+    {
+      "file": "_next/static/chunks/3b56f0b9-ecd5fd86cd1a7fee.js",
+      "sha256": "aab37667defa74737c8bba05582b2cf4a6d110fac71a868be01fa3a29db78562"
+    },
+    {
+      "file": "_next/static/chunks/app/_global-error/page-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/app/_not-found/page-e336cca8619c8618.js",
+      "sha256": "601952fd9b1395a300f6f5115fdfd03c352769c52758c28ca1d4b95c076c8aea"
+    },
+    {
+      "file": "_next/static/chunks/app/layout-a567be60001fecf7.js",
+      "sha256": "3c3b01805fcde700c8759cc32bcb0df56c6eba28a6139f40bc466eee62d4dd22"
+    },
+    {
+      "file": "_next/static/chunks/app/page-e46fefea354f48ae.js",
+      "sha256": "59cbc8c1a21d4199f6f99691ce062763532f02b39361f1f4680b518a1f688502"
+    },
+    {
+      "file": "_next/static/chunks/framework-20f4df068c44d36f.js",
+      "sha256": "f056cbebb646bf970e077851fffa392f9124de3c54ddd2f42d0ba390745ae4bc"
+    },
+    {
+      "file": "_next/static/chunks/main-app-07c69dd101121ed0.js",
+      "sha256": "b4d013e39501483781e0c6168fdce4966f368905bbe8824f875117baddb9a1f0"
+    },
+    {
+      "file": "_next/static/chunks/main-edcc4b98296f6bf3.js",
+      "sha256": "1eeb5025cd0d8ee2c5011fdde9507c96976129d79be8f669a47b9f88912cd07d"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/app-error-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/forbidden-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/global-error-e9da0c54dbc7f353.js",
+      "sha256": "75376583bd38f1333410376bc3cf090ed33f4ad0df335c1900d5a2605b968a3e"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/not-found-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/unauthorized-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/webpack-1f92d577d470dbc6.js",
+      "sha256": "e2059b56dbffb510fe3dfedb977d72a2c8b14a5c9cb3c7e8c7f25fdec057be57"
+    },
+    {
+      "file": "_next/static/css/a037246ed385b8c6.css",
+      "sha256": "9dcb0a429b8b95ec9f0587aff256a55032b127246556649f8beaf20cb8c8efb6"
+    },
+    {
+      "file": "_next/static/css/b5df9dda4bc12d1b.css",
+      "sha256": "c2c9a402b3a5f35103222a8915f38b4f5f68033f834dd3bd265086813c63d7c3"
+    },
+    {
+      "file": "_next/static/css/master/399220b204e5ec52b89be3dd55d85e67811953df9c3e8c4dfd3603502c60e285/css/3c57452843e360b424fc82bbdae0d2b0c23857ed81f45f226e1aaaedd219ea3e-entry.css",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg",
+      "sha256": "9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c"
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-b1e21b93e489259e46f854f799e85a87fcd5382224b28342351b81f334861cf0.css",
+      "sha256": "6080e3b4795f02e4572c3c2562ee204998742e06136cefd9df491bb5f6a38ef3"
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-entry.css",
+      "sha256": "37784c13b8f234593a60d993aff2158ee9866b69300964073c4161efc5c50a2b"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "430c2ca5e29363d68a0e92f0db14dc1dec411cbcb76ece5d9922cc28364a043c"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "5d608a7a4ffe7b84657ee4bd910edda88aa6f8af87cee8ac54078951c5670c3f"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "75a76bf35fdd984e7d9d1463d1fc7f6de00c496f7a0482ff699b22df2a7b5d20"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "c3145c71f970098a9c1ce24667a2a51a6703495165050c3f1d32e61efcc110ac"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "430c2ca5e29363d68a0e92f0db14dc1dec411cbcb76ece5d9922cc28364a043c"
+    },
+    {
+      "file": "index.html",
+      "sha256": "aad1fdba78ce646ddfc406def8eddb31a7254993e926f14cf916f674beab959f"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "1961020470ee1be5189bd1f60c7ddbeda622a7c913136f942ce24810bdb641b6"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/a037246ed385b8c6.css",
+      "text": "@import url(\"/_next/static/css/master/399220b204e5ec52b89be3dd55d85e67811953df9c3e8c4dfd3603502c60e285/css/3c57452843e360b424fc82bbdae0d2b0c23857ed81f45f226e1aaaedd219ea3e-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/b5df9dda4bc12d1b.css",
+      "text": "@import url(\"/_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/399220b204e5ec52b89be3dd55d85e67811953df9c3e8c4dfd3603502c60e285/css/3c57452843e360b424fc82bbdae0d2b0c23857ed81f45f226e1aaaedd219ea3e-entry.css",
+      "text": ""
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-b1e21b93e489259e46f854f799e85a87fcd5382224b28342351b81f334861cf0.css",
+      "text": ".imported{background-image:url(9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg);width:4px;height:4px;margin-left:13px}"
+    },
+    {
+      "file": "_next/static/css/master/b7197661abd45e7e5bb198f137362d520343c87e1d524ae0070d90be62dbab5f/css/f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-entry.css",
+      "text": "@import \"./f84a4c49a5603151e26fa74338cdb6a632f94f9333cd5b92649ed7230e2ae621-b1e21b93e489259e46f854f799e85a87fcd5382224b28342351b81f334861cf0.css\";.card_direct__vAL_y{background-image:url(9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel);width:4px;height:4px}.card_composed__2_5B2{padding:2rem}"
+    }
+  ]
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Some actual browser delivery checks failed
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:190:10 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: '==',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

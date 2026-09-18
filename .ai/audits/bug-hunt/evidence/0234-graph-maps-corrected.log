@@ -1,0 +1,76 @@
+{
+  "cases": 5,
+  "nativeWasmParity": true,
+  "observations": [
+    {
+      "name": "qualified",
+      "edges": [
+        {
+          "start": 23,
+          "end": 96,
+          "statement": "@import \"/initial/child.css\" layer(shared) supports(display:grid) screen;",
+          "specifier": "/initial/child.css",
+          "resolved": "child"
+        }
+      ],
+      "sourceMetadata": [],
+      "outputCarriesMap": false
+    },
+    {
+      "name": "originalSpecifier",
+      "edges": [
+        {
+          "start": 23,
+          "end": 52,
+          "statement": "@import \"./child.module.css\";",
+          "specifier": "./child.module.css",
+          "resolved": null
+        }
+      ],
+      "sourceMetadata": [],
+      "outputCarriesMap": false
+    },
+    {
+      "name": "managedResource",
+      "edges": [
+        {
+          "start": 23,
+          "end": 52,
+          "statement": "@import \"/initial/child.css\";",
+          "specifier": "/initial/child.css",
+          "resolved": "child"
+        }
+      ],
+      "sourceMetadata": [],
+      "outputCarriesMap": false
+    },
+    {
+      "name": "newHostResource",
+      "edges": [
+        {
+          "start": 23,
+          "end": 52,
+          "statement": "@import \"/initial/child.css\";",
+          "specifier": "/initial/child.css",
+          "resolved": "child"
+        }
+      ],
+      "sourceMetadata": [],
+      "outputCarriesMap": false
+    },
+    {
+      "name": "sharedBasename",
+      "edges": [
+        {
+          "start": 23,
+          "end": 52,
+          "statement": "@import \"/initial/child.css\";",
+          "specifier": "/initial/child.css",
+          "resolved": "child"
+        }
+      ],
+      "sourceMetadata": [],
+      "outputCarriesMap": false
+    }
+  ]
+}

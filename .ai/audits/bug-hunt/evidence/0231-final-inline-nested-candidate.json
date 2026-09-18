@@ -1,0 +1,99 @@
+{
+  "scenario": "inline-nested-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": true,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./nested/branch.module.css\";color:#123456}",
+    "b": ".shared{border-top:1px solid red}",
+    "inline": true,
+    "nestedInline": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 78ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 3.6s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 83ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y branch_shared__LIX9K other_shared__voRng",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y branch_shared__LIX9K other_shared__voRng",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "matchingRules": [],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/a16796145d4907fb.css",
+      "text": "@import url(\"/_next/static/css/master/2b389af46e6fa1f9e6409465895a44dc6a0325d6b9f24d0fb69ca3eb9fc51cea/css/06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/2b389af46e6fa1f9e6409465895a44dc6a0325d6b9f24d0fb69ca3eb9fc51cea/css/06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-1caeff1fa48f284c9dd711d9fcd186cf107caae4aed044027452a42321beaff3.css",
+      "text": "@import \"./06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-3995dfafa3a41d882e8c4e5605e9a5901d402ce3d96dd8fcac4166a2f44c57cb.css\";"
+    },
+    {
+      "file": "_next/static/css/master/2b389af46e6fa1f9e6409465895a44dc6a0325d6b9f24d0fb69ca3eb9fc51cea/css/06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-3995dfafa3a41d882e8c4e5605e9a5901d402ce3d96dd8fcac4166a2f44c57cb.css",
+      "text": ".other_shared__voRng{border-top:7px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/2b389af46e6fa1f9e6409465895a44dc6a0325d6b9f24d0fb69ca3eb9fc51cea/css/06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-entry.css",
+      "text": "@import \"./06335e58fe57b81c3a85992c837a287156d800deee2eace9a363a92b88aaa4d5-1caeff1fa48f284c9dd711d9fcd186cf107caae4aed044027452a42321beaff3.css\";.card_direct__vAL_y{color:#123456}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y branch_shared__LIX9K other_shared__voRng\">"
+  ],
+  "inlineLoaderCalls": [
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dbq3eB/app/nested/other.module.css",
+      "query": "",
+      "options": {
+        "width": "7"
+      },
+      "input": ".shared{border-top:1px solid red}",
+      "output": ".shared{border-top:7px solid red}"
+    },
+    {
+      "resource": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Dbq3eB/app/nested/other.module.css",
+      "query": "",
+      "options": {
+        "width": "7"
+      },
+      "input": ".shared{border-top:1px solid red}",
+      "output": ".shared{border-top:7px solid red}"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "sourcePatch": "/Users/aron/master/css/.ai/audits/bug-hunt/repros/next-postcss-map-context-candidate.patch",
+  "patchSha256": "2fe088e4f2f2ea03b666d94345bc6982954cdf69167cf516f83011b0a91c07d6",
+  "sourcePatchFiles": [
+    "packages/next/src/index.ts",
+    "packages/next/src/prepare-entry-graph.ts",
+    "packages/next/src/prepare-global-module.ts",
+    "packages/next/src/prepare-module-graph.ts",
+    "packages/next/src/prepare-module.ts",
+    "packages/next/src/prepare-postcss.ts",
+    "packages/next/src/static-publication.ts",
+    "packages/next/src/stylesheet-delivery.ts",
+    "packages/next/src/stylesheet-input-loader.ts",
+    "packages/next/src/stylesheet-loader.ts",
+    "packages/next/src/stylesheet-map-loader.ts",
+    "packages/next/src/stylesheet-source-loader.ts",
+    "packages/next/src/webpack-css-loader.ts",
+    "packages/next/src/webpack-postcss-loader.ts",
+    "packages/next/src/webpack-stylesheets.ts"
+  ],
+  "patchApplyCheck": "PASS read-only root",
+  "candidateChanges": [
+    "src/prepare-module-graph.ts"
+  ]
+}

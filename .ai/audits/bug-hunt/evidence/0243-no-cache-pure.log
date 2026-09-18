@@ -1,0 +1,1 @@
+{"traced":false,"phases":[{"phase":"initial","build":0,"valid":true,"callbacks":1,"publications":1},{"phase":"changed-source","build":0,"valid":true,"callbacks":1,"publications":2},{"phase":"deleted-publications","build":0,"valid":true,"callbacks":1,"publications":1}],"errors":[]}

@@ -1,0 +1,13 @@
+--- a/shared/tsdown-package.config.ts
++++ b/shared/tsdown-package.config.ts
+@@ -106,7 +106,9 @@
+     alwaysBundle: [privateInternalPackagePattern],
+     dts: {
+       alwaysBundle: [privateInternalPackagePattern],
+-      neverBundle: [/^[^./]/, /^\.{1,2}\//]
++      neverBundle: packageJSON.name === '@master/css-binding'
++        ? [/^[^./]/]
++        : [/^[^./]/, /^\.{1,2}\//]
+     }
+   },
+   plugins: [

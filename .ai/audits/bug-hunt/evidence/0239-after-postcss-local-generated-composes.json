@@ -1,0 +1,235 @@
+{
+  "scenario": "postcss-local-generated-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{@compose p:2rem;color:#123456;border-top:7px solid red}",
+    "b": ".shared{border-top:7px solid red}",
+    "postcss": true,
+    "generated": true,
+    "local": true,
+    "expectedPadding": "48px",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 80ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 3.0s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 60ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "48px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+        }
+      ],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "48px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [
+        {
+          "selector": ".card_direct__vAL_y",
+          "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+        }
+      ],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/aaa88f6b878b9010.css",
+      "text": "@import url(\"/_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css\");\n/*# sourceMappingURL=aaa88f6b878b9010.css.map*/"
+    },
+    {
+      "file": "_next/static/css/aaa88f6b878b9010.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/aaa88f6b878b9010.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/aaa88f6b878b9010.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/f69d3d7b6e1bde23.css",
+      "text": ".card_direct__vAL_y{padding:3rem;color:#123456;border-top:7px solid red}\n/*# sourceMappingURL=f69d3d7b6e1bde23.css.map*/"
+    },
+    {
+      "file": "_next/static/css/f69d3d7b6e1bde23.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css\",\"webpack://_N_E/app/card.module.css\"],\"names\":[],\"mappings\":\"AAAA,oBAAiB,YCAG,CDAI,aCAU,CDAV,wBCAmC\",\"file\":\"static/css/f69d3d7b6e1bde23.css\",\"sourcesContent\":[\".direct{@compose p:2rem;color:#123456;border-top:7px solid red}\",\".direct{padding:2rem;color:#123456;border-top:7px solid red}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css",
+      "text": ".placeholder{display:block}\n/*# sourceMappingURL=9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/globals.css\",\"webpack://_N_E/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css\"],\"names\":[],\"mappings\":\"AAA+B,aCC7B,aACF\",\"file\":\"static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css\",\"sourcesContent\":[\"@master entry;@preserve native;.placeholder{display:block}\",\".placeholder {\\n  display: block;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": ".direct{@compose p:2rem;color:#123456;border-top:7px solid red}"
+    },
+    {
+      "file": "app/globals.css",
+      "text": "@master entry;@preserve native;.placeholder{display:block}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": ".shared{border-top:7px solid red}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/aaa88f6b878b9010.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/f69d3d7b6e1bde23.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-60f7be363042a66c.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/aaa88f6b878b9010.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/f69d3d7b6e1bde23.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-60f7be363042a66c.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/28909f1e23cea6d4968461baf72ce59a5a85e8372b5199736a98f618f8a5927b/maps/9158409fa864a09bbb82a1c971e25cd5ce5fd25288128e297c312ed3ecc92fc1-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "padding",
+      "before": "2rem",
+      "after": "3rem"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "padding",
+      "before": "3rem",
+      "after": "3rem"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "padding",
+      "before": "2rem",
+      "after": "3rem"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/card.module.css",
+      "property": "padding",
+      "before": "3rem",
+      "after": "3rem"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-IXMDab/app/globals.css"
+    }
+  ]
+}

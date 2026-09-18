@@ -4,7 +4,11 @@ import { tmpdir } from 'node:os'
 import { join, extname } from 'node:path'
 import { createRequire } from 'node:module'
 import { createMasterCSSVitePlugin } from '../../../../packages/vite/dist/index.js'
-import WebpackPlugin from '../../../../packages/webpack/dist/index.js'
+import { pathToFileURL } from 'node:url'
+import { resolve } from 'node:path'
+const WebpackPlugin = (await import(process.env.MASTER_WEBPACK_PLUGIN ? pathToFileURL(resolve(process.env.MASTER_WEBPACK_PLUGIN)).href : new URL('../../../../packages/webpack/dist/index.js', import.meta.url).href)).default
+const hosts = process.env.BH_HOST ? [process.env.BH_HOST] : ['vite', 'webpack']
+assert(hosts.every(host => ['vite', 'webpack'].includes(host)))
 const vr = createRequire(new URL('../../../../packages/vite/package.json', import.meta.url))
 const wr = createRequire(new URL('../../../../packages/webpack/package.json', import.meta.url))
 const { build } = await import(vr.resolve('vite'))
@@ -30,7 +34,7 @@ try {
     writeFileSync(join(root, 'after.css'), test.after || '')
     writeFileSync(join(root, 'entry.js'), `${test.before ? "import './before.css';" : ''}import './entry.css';${test.after ? "import './after.css';" : ''}`)
     writeFileSync(join(root, 'index.html'), '<div class="example">test</div><script type="module" src="./entry.js"></script>')
-    for (const host of ['vite', 'webpack']) {
+    for (const host of hosts) {
       const out = join(root, `out-${host}`)
       rmSync(out, { recursive: true, force: true })
       try {
@@ -79,6 +83,6 @@ try {
       console.log(JSON.stringify({ host, id: test.id, assets }))
     }
   }
-  const summary = { builds: cases.length * 2, buildFailures: results.filter(r => r.phase === 'build').length, comparisons: results.filter(r => r.phase === 'browser').length, browserFailures: results.filter(r => r.phase === 'browser' && r.result === 'FAIL').length }
+  const summary = { builds: cases.length * hosts.length, buildFailures: results.filter(r => r.phase === 'build').length, comparisons: results.filter(r => r.phase === 'browser').length, browserFailures: results.filter(r => r.phase === 'browser' && r.result === 'FAIL').length }
   console.log(JSON.stringify(summary)); if (summary.buildFailures || summary.browserFailures) process.exitCode = 1
 } finally { rmSync(root, { recursive: true, force: true }) }

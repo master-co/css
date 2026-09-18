@@ -1,0 +1,449 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.js took 122ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 4.0s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 65ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{
+  "globalParent": false,
+  "expectedImportScoped": true,
+  "importedPlainCSS": true,
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@import \"./nested/imported.css\";@master entry;@preserve native;.direct{width:4px;height:4px;background-image:url(\"./assets/red.svg?direct=1#pixel\")}.composed{@compose p:2rem;}"
+    },
+    {
+      "file": "app/globals.css",
+      "text": "@master entry;"
+    },
+    {
+      "file": "app/nested/child.css",
+      "text": ".nested{width:4px;height:4px;background-image:url(\"./assets/blue.svg?nested=1#pixel\")}"
+    },
+    {
+      "file": "app/nested/imported.css",
+      "text": ".imported{margin-left:13px;width:4px;height:4px;background-image:url(\"./assets/blue.svg\")}"
+    }
+  ],
+  "pureLoaderMap": false,
+  "moduleFeature": "imports",
+  "moduleKind": "entry",
+  "sourceMaps": true,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": false,
+  "lightningcss": false,
+  "bundler": "webpack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:52440/_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-scope",
+      "selector": ".imported_imported__QmzKJ",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:52440/_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-scope",
+      "selector": ".imported_imported__QmzKJ",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:52440/_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-scope",
+      "selector": ".imported_imported__QmzKJ",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "module-export",
+      "classes": "card_direct__vAL_y",
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "361cd02d0cc8bc1e18a32fe998e7f9d1cf0a14f083fcb0ba40befb659859b292"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "1657fb7c62c3cbdb5d535d9178ff33f1aa6b8be2f7f8131fea02e662faabba4b"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "df8e32ef795fb584ac785fbb43a45258d12c766153b93b9b46fb2c107ed747c5"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "5ba0ab5d58d5e2ffad8921e38d7a2325b109c2411eaa1b18b64a55a2c37db9c9"
+    },
+    {
+      "file": "_next/static/P47mbEd73k9-2jpQh9hu2/_buildManifest.js",
+      "sha256": "fc9f9d16595c40b13da98fd1556b3e2bded6509cb20f9b1e8b7c6bb4bcd89842"
+    },
+    {
+      "file": "_next/static/P47mbEd73k9-2jpQh9hu2/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_next/static/chunks/194-4facec2e446527b7.js",
+      "sha256": "9e3d2a6bdb1d5719736985490100f3c8ab4d3f3243a10f67d7374afde3a87fce"
+    },
+    {
+      "file": "_next/static/chunks/194-4facec2e446527b7.js.map",
+      "sha256": "ef6a330dc6eadb7e854eb46f57b5493a5943044daa552a520d46295f83a387fc"
+    },
+    {
+      "file": "_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "sha256": "2a12dea98763a62cad942da11d4f9c06a1cc375af32a85ccea2f34754ec1e702"
+    },
+    {
+      "file": "_next/static/chunks/3b56f0b9-088186f00d851c75.js.map",
+      "sha256": "199c20b4e58ff2280cc2006489d1a259265dd4c92fe9b2d0ace18ed4b918daa9"
+    },
+    {
+      "file": "_next/static/chunks/app/_global-error/page-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/app/_not-found/page-51535d57b048cdf5.js",
+      "sha256": "149b4250bc05d247ccea0f2db3818eb8bba73b896add5c7ca7126eed35ddb012"
+    },
+    {
+      "file": "_next/static/chunks/app/_not-found/page-51535d57b048cdf5.js.map",
+      "sha256": "8b3cfb7bc6f44104a91d18b2a6a6d56cf9e7e90dc3b5e1e65b32640c931bd3db"
+    },
+    {
+      "file": "_next/static/chunks/app/layout-9570fcd5ea8a1e52.js",
+      "sha256": "2cd53d21195e5bbc66388686fc54d90dff8f46581bf9e9c9c226b4e6a40bc5b4"
+    },
+    {
+      "file": "_next/static/chunks/app/layout-9570fcd5ea8a1e52.js.map",
+      "sha256": "6c180c49f7e152d78bbda7fa74b9aa96266f169fd3694fc51de4260b02b5dc84"
+    },
+    {
+      "file": "_next/static/chunks/app/page-b83e8400e9e51b3a.js",
+      "sha256": "38acd06a4f777eff5484e334f8c962ce8d27ebffb21f5edfbd667f6d146eb658"
+    },
+    {
+      "file": "_next/static/chunks/app/page-b83e8400e9e51b3a.js.map",
+      "sha256": "65d13364923ab46b4d3f2407d793f3da7cf929596fb378753cfdf8027bb6e928"
+    },
+    {
+      "file": "_next/static/chunks/framework-df5f5c5ad2f7df03.js",
+      "sha256": "aeb092f9551bd9d7564545844316016111b0e89cf0e07143ec86aefc2e58d5bc"
+    },
+    {
+      "file": "_next/static/chunks/framework-df5f5c5ad2f7df03.js.map",
+      "sha256": "1f3353bda72371bc499233fc5314447aecfa6a6ab27b351e9a0d2bbe1fcfbe5f"
+    },
+    {
+      "file": "_next/static/chunks/main-7fadd143eb96cfe9.js",
+      "sha256": "035ad837cf37d9adcc643af98fa63949c6e7a8bf68e77cd3ab2ecdb4f71e856b"
+    },
+    {
+      "file": "_next/static/chunks/main-7fadd143eb96cfe9.js.map",
+      "sha256": "1056cb4fc25c40e76584344714ff650349d8060686315bc62fe767c8dd609546"
+    },
+    {
+      "file": "_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "sha256": "3243f7b75953f6eeb7663ef682b8559490cdedc1f35b6e982b7a30e40dcb2ab6"
+    },
+    {
+      "file": "_next/static/chunks/main-app-6b28e1a29e412053.js.map",
+      "sha256": "a039e5514a84fc695a795c4e017de27434c1a81a019145672753babcfc5bdc70"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/app-error-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/forbidden-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/global-error-b6a6b5ffac72ad10.js",
+      "sha256": "9ae193c51dc245cc0c6cf7d14217d16f0f4c86ab5974b73a54010debe10a3872"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/global-error-b6a6b5ffac72ad10.js.map",
+      "sha256": "9fe6aeeb526ee259fb7c874048871f3c025cdc0fdb0d05e8c8f18d260e5edd20"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/not-found-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/unauthorized-480979e135bf383d.js",
+      "sha256": "fc34e6f70750eace00b7f9104679af79ecb37594ee22d83a334df8db91621677"
+    },
+    {
+      "file": "_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/webpack-3aa382d6651fd3bd.js",
+      "sha256": "0591adf82b2d7a61c41d26e45e37cbafe25498723b36bb4321cb98ddd7f4efd0"
+    },
+    {
+      "file": "_next/static/chunks/webpack-3aa382d6651fd3bd.js.map",
+      "sha256": "32455179bee1443f903b45e9a0fbd51dd90fe664ab5056d16824130b3997a046"
+    },
+    {
+      "file": "_next/static/css/a819be6aa93ab591.css",
+      "sha256": "897bcfeda6c2f077db6eb269cf65ff39f6c7ea6b08e116f729b5c76ad8637be9"
+    },
+    {
+      "file": "_next/static/css/a819be6aa93ab591.css.map",
+      "sha256": "140121465d10fdcf33d20f91e0e37dd4fa7befeff01b82dd8175d361df04562f"
+    },
+    {
+      "file": "_next/static/css/b5cb88532b714165.css",
+      "sha256": "d2325a6ff8b4ca5e23aa2299ab30ee20d70b9a7bf0fba40105dc1ea76d32a151"
+    },
+    {
+      "file": "_next/static/css/b5cb88532b714165.css.map",
+      "sha256": "40a1043beab0c8e9d905478e37ce5a42eb431eb1835f5d394a8aaacb8bb0e2de"
+    },
+    {
+      "file": "_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css",
+      "sha256": "cd00b37e4c1792bc14ac7947463ba378929a61115a6ecead2c884c3c0276a64a"
+    },
+    {
+      "file": "_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css.map",
+      "sha256": "f8c3ba26d21761824adc88d413e910542827da78da215f0eb3acc965b1055ab4"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css",
+      "sha256": "4678bf4c5ccc7a5a79f68a4a235a8fc873514912aeb673b2ca1545cc4d34a3f4"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css.map",
+      "sha256": "55e2696b5d7669545e96e0da6fa8e9d001996e30683b7ed7ccd578fb091ce572"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css",
+      "sha256": "8b11c5e1de49af24302a48ff06acf439addfa284f4bc451a6c1e9b278e824092"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css.map",
+      "sha256": "5172edf4d979e3669a43b4112bbf367f210d6e993f5a6aa0295059e5b459078b"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg",
+      "sha256": "9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "5a24a56b4d50c1c44606ae4c023ddcebece769a5c6fdabf2c7ed6d362937e69f"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "25f04124329042c7c1d8c6ffbd625977d0970da3c78991c778773c1e2e831eee"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "45a97a5e80a3d54639cca9a41dc1dd272826afd60c191c9ebceca450a50dec9e"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "361cd02d0cc8bc1e18a32fe998e7f9d1cf0a14f083fcb0ba40befb659859b292"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "5a24a56b4d50c1c44606ae4c023ddcebece769a5c6fdabf2c7ed6d362937e69f"
+    },
+    {
+      "file": "index.html",
+      "sha256": "1a023476024c03b2a9cdef2e8e66e38aad1868199eac0f824a276688dba9921e"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "df8e32ef795fb584ac785fbb43a45258d12c766153b93b9b46fb2c107ed747c5"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/a819be6aa93ab591.css",
+      "text": "@import url(\"/_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css\");\n/*# sourceMappingURL=a819be6aa93ab591.css.map*/"
+    },
+    {
+      "file": "_next/static/css/a819be6aa93ab591.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/a819be6aa93ab591.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/a819be6aa93ab591.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/b5cb88532b714165.css",
+      "text": "@import url(\"/_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css\");\n/*# sourceMappingURL=b5cb88532b714165.css.map*/"
+    },
+    {
+      "file": "_next/static/css/b5cb88532b714165.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/b5cb88532b714165.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/b5cb88532b714165.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css",
+      "text": "\n/*# sourceMappingURL=8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[],\"names\":[],\"mappings\":\"\",\"file\":\"static/css/master/3babdc550f8e26ec22f7b117a0cef584e51c1282629d8bfae97809e373d8d63e/maps/8c9d6537598f1aff4af66423d01696d36052bd04c401228b8d9995a05a572b08-entry.css\",\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css",
+      "text": ".imported_imported__QmzKJ{background-image:url(9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg);width:4px;height:4px;margin-left:13px}\n/*# sourceMappingURL=6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-WPH4J5/app/nested/imported.css\",\"webpack://_N_E/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css\"],\"names\":[],\"mappings\":\"AAAA,0BCCE,0FAA+F,CAC/F,SAAU,CACV,UAAW,CACX,gBACF\",\"file\":\"static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css\",\"sourcesContent\":[\".imported{margin-left:13px;width:4px;height:4px;background-image:url(\\\"./assets/blue.svg\\\")}\",\".imported_imported__QmzKJ {\\n  background-image: url(\\\"./9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg\\\");\\n  width: 4px;\\n  height: 4px;\\n  margin-left: 13px;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css",
+      "text": "@import \"./6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css\";.card_direct__vAL_y{background-image:url(9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel);width:4px;height:4px}.card_composed__2_5B2{padding:2rem}\n/*# sourceMappingURL=6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-WPH4J5/app/card.module.css\",\"webpack://_N_E/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA,CAA+D,oBCG7D,yGAA8G,CAC9G,SAAU,CACV,UACF,CDNoJ,sBAAmB,YCQrI\",\"file\":\"static/css/master/5c51b87133dad207ce1837ac9344614e9f5abeea57c4d5194ad9c227111147a6/maps/6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-entry.css\",\"sourcesContent\":[\"@import \\\"./nested/imported.css\\\";@master entry;@preserve native;.direct{width:4px;height:4px;background-image:url(\\\"./assets/red.svg?direct=1#pixel\\\")}.composed{@compose p:2rem;}\",\"@import \\\"./6ed730b825ee26f94d22235ea97ccf900ad7939afcb607bcc3bddfa807820bb6-eeefe508de41e32b220efc68ab4f6ba1d2883405a68ca18b8993e32a222dd8b5.css\\\";\\n\\n.card_direct__vAL_y {\\n  background-image: url(\\\"./9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\\\");\\n  width: 4px;\\n  height: 4px;\\n}\\n\\n.card_composed__2_5B2{padding:2rem}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ]
+}

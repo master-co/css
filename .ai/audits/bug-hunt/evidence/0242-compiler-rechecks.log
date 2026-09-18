@@ -1,0 +1,44 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/compiler
+
+ ❯ tests/entry.test.ts (4 tests | 1 failed) 14ms
+   × resolves CSS-only preset package root to stylesheet entry 3ms
+ ❯ tests/bug-hunt-output-source-maps.test.ts (6 tests | 1 failed) 92ms
+   × raw Sass output map chains imported partial sources through native printing and compose lowering 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > raw Sass output map chains imported partial sources through native printing and compose lowering
+Error: Cannot find module 'sass'
+Require stack:
+- /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/compiler/src/stylesheet/source.ts
+ ❯ resolve ../../../../../../../scripts/typescript-tooling-compat.mjs:43:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/entry.test.ts > resolves CSS-only preset package root to stylesheet entry
+AssertionError: expected '/Users/aron/master/css/packages/prese…' to be '/Users/aron/master/css/.ai/audits/bug…' // Object.is equality
+
+Expected: "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/preset/src/index.css"
+Received: "/Users/aron/master/css/packages/preset/src/index.css"
+
+ ❯ tests/entry.test.ts:57:17
+     55|   const expectedEntry = resolve(repoRoot, 'packages/preset/src/index.c…
+     56|
+     57|   expect(entry).toBe(expectedEntry)
+       |                 ^
+     58|   expect(entry ? existsSync(entry) : false).toBe(true)
+     59| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 8 passed (10)
+   Start at  06:03:00
+   Duration  410ms (transform 55%, tests 24%, import 20%, worker 1%)
+

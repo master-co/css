@@ -1,0 +1,88 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.js took 101ms
+- Experiments (use with caution):
+  · cpus: 1
+  ✓ useLightningcss
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+lightningcss-loader error Error: Can't resolve 'http://127.0.0.1:60264/remote.css?audit=1' in '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/.master/stylesheets/2aef9828c18264cbeefbe71f913a167c6d7e895602e484e03797cc9db5934629'
+    at ignore-listed frames {
+  details: "resolve 'http://127.0.0.1:60264/remote.css?audit=1' in '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/.master/stylesheets/2aef9828c18264cbeefbe71f913a167c6d7e895602e484e03797cc9db5934629'\n" +
+    '  Parsed request is a module\n' +
+    '  using description file: /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/package.json (relative path: ./.master/stylesheets/2aef9828c18264cbeefbe71f913a167c6d7e895602e484e03797cc9db5934629)\n' +
+    "    Field 'browser' doesn't contain a valid alias configuration\n" +
+    '    resolve as module\n' +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/.master/stylesheets/2aef9828c18264cbeefbe71f913a167c6d7e895602e484e03797cc9db5934629/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/.master/stylesheets/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/.master/node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/node_modules\n' +
+    "        /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/bug-hunt-general-graph-S58xMF/node_modules/http: doesn't exist\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/e2e/node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/node_modules\n' +
+    "        /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next/node_modules/http: doesn't exist\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/node_modules\n' +
+    "        /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/node_modules/http: doesn't exist\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/tmp/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/master/css/.ai/audits/bug-hunt/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/master/css/.ai/audits/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/master/css/.ai/node_modules doesn't exist or is not a directory\n" +
+    '      looking for modules in /Users/aron/master/css/node_modules\n' +
+    "        /Users/aron/master/css/node_modules/http: doesn't exist\n" +
+    "      /Users/aron/master/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/aron/node_modules doesn't exist or is not a directory\n" +
+    "      /Users/node_modules doesn't exist or is not a directory\n" +
+    "      /node_modules doesn't exist or is not a directory"
+}
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+Failed to compile.
+
+.master/stylesheets/2aef9828c18264cbeefbe71f913a167c6d7e895602e484e03797cc9db5934629/961d2a4a33b812e60d3a3e12a89e0cfebf63d6339c6e436a3304e4d80d367941-entry.css
+Module not found: Can't resolve 'http://127.0.0.1:60264/remote.css?audit=1'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/globals.css
+
+./app/globals.css
+Error: Can't resolve 'http://127.0.0.1:60264/remote.css?audit=1'
+    at finishWithoutResolve (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:191683)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:192583
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:193216
+    at eval (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9222), <anonymous>:16:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:193216
+    at eval (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9222), <anonymous>:27:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:175093
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:193216
+    at eval (eval at create (/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:14:9222), <anonymous>:16:1)
+    at /Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/compiled/webpack/bundle5.js:1:208844
+
+https://nextjs.org/docs/messages/module-not-found
+
+
+> Build failed because of webpack errors
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:63:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

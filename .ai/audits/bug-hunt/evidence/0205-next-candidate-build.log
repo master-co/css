@@ -1,0 +1,49 @@
+ℹ tsdown v0.23.0 powered by rolldown v1.2.7
+ℹ config file: /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-0205-classification-gaxqfbxd/shared/tsdown-package.config.ts 
+ℹ entry: src/adapter.ts, src/build-state.ts, src/css-manifest-import-loader.ts, src/css-manifest-loader.ts, src/empty.ts, src/index.ts, src/options.ts, src/prepare-stylesheet.ts, src/sass-source-context.ts, src/static-css-loader.ts, src/static-loader.ts, src/static.ts, src/stylesheet-loader.ts, src/stylesheet-source-map.ts, src/webpack-stylesheets.ts, src/webpack-virtual-modules.ts
+ℹ target: node24.0.0
+ℹ tsconfig: tsconfig.prod.json
+ℹ Build start
+TypeScript 7.0 does not yet have a stable API and is experimental. Some options will be unavailable.
+ℹ dist/index.js                                                                20.91 kB │ gzip:  4.19 kB
+ℹ dist/adapter.js                                                               8.98 kB │ gzip:  2.84 kB
+ℹ dist/static.js                                                                8.05 kB │ gzip:  2.23 kB
+ℹ dist/stylesheet-loader.js                                                     6.14 kB │ gzip:  1.74 kB
+ℹ dist/css-manifest-loader.js                                                   4.82 kB │ gzip:  1.35 kB
+ℹ dist/css-manifest-import-loader.js                                            4.50 kB │ gzip:  1.52 kB
+ℹ dist/sass-source-context.js                                                   3.55 kB │ gzip:  1.42 kB
+ℹ dist/build-state.js                                                           2.69 kB │ gzip:  0.90 kB
+ℹ dist/webpack-stylesheets.js                                                   2.65 kB │ gzip:  1.00 kB
+ℹ dist/prepare-stylesheet.js                                                    1.50 kB │ gzip:  0.65 kB
+ℹ dist/static-css-loader.js                                                     0.81 kB │ gzip:  0.42 kB
+ℹ dist/options.js                                                               0.73 kB │ gzip:  0.34 kB
+ℹ dist/static-loader.js                                                         0.67 kB │ gzip:  0.37 kB
+ℹ dist/stylesheet-source-map.js                                                 0.65 kB │ gzip:  0.39 kB
+ℹ dist/webpack-virtual-modules.js                                               0.53 kB │ gzip:  0.30 kB
+ℹ dist/empty.js                                                                 0.01 kB │ gzip:  0.03 kB
+ℹ dist/Users/aron/master/css/packages/preset/src/default-manifest.js          117.12 kB │ gzip: 12.84 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/node.js                      3.82 kB │ gzip:  1.07 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/manifest-facade.js           2.32 kB │ gzip:  0.84 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/manifest-loader.js           1.26 kB │ gzip:  0.52 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/emitted-globals-module.js    0.80 kB │ gzip:  0.35 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/manifest-module.js           0.79 kB │ gzip:  0.37 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/project.js                   0.70 kB │ gzip:  0.35 kB
+ℹ dist/Users/aron/master/css/packages/internal/src/style-module.js              0.19 kB │ gzip:  0.15 kB
+ℹ dist/static.d.ts                                                              2.24 kB │ gzip:  0.68 kB
+ℹ dist/options.d.ts                                                             1.67 kB │ gzip:  0.60 kB
+ℹ dist/adapter.d.ts                                                             1.48 kB │ gzip:  0.58 kB
+ℹ dist/build-state.d.ts                                                         0.85 kB │ gzip:  0.33 kB
+ℹ dist/index.d.ts                                                               0.75 kB │ gzip:  0.30 kB
+ℹ dist/stylesheet-loader.d.ts                                                   0.59 kB │ gzip:  0.31 kB
+ℹ dist/css-manifest-import-loader.d.ts                                          0.55 kB │ gzip:  0.30 kB
+ℹ dist/css-manifest-loader.d.ts                                                 0.54 kB │ gzip:  0.29 kB
+ℹ dist/prepare-stylesheet.d.ts                                                  0.48 kB │ gzip:  0.28 kB
+ℹ dist/static-css-loader.d.ts                                                   0.44 kB │ gzip:  0.27 kB
+ℹ dist/sass-source-context.d.ts                                                 0.42 kB │ gzip:  0.23 kB
+ℹ dist/static-loader.d.ts                                                       0.39 kB │ gzip:  0.25 kB
+ℹ dist/webpack-virtual-modules.d.ts                                             0.30 kB │ gzip:  0.20 kB
+ℹ dist/stylesheet-source-map.d.ts                                               0.27 kB │ gzip:  0.19 kB
+ℹ dist/webpack-stylesheets.d.ts                                                 0.21 kB │ gzip:  0.16 kB
+ℹ dist/empty.d.ts                                                               0.01 kB │ gzip:  0.03 kB
+ℹ 40 files, total: 205.37 kB
+✔ Build complete in 155ms

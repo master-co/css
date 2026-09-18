@@ -1,0 +1,65 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/webpack
+
+[log]
+[log]
+[log]
+[log]
+ ❯ tests/bug-hunt-static-graph-delivery.test.ts (4 tests | 4 failed) 2390ms
+   × publishes external child imports with their boundaries:  1239ms
+   × publishes external child imports with their boundaries:  layer(cards) 459ms
+   × publishes external child imports with their boundaries:  supports(display:grid) print 368ms
+   × nested CSS and resource edits change the real entry content hash and preserve resource payloads 323ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-static-graph-delivery.test.ts > publishes external child imports with their boundaries: 
+Unknown Error: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/bug-hunt-static-graph-delivery.test.ts > publishes external child imports with their boundaries:  layer(cards)
+ FAIL  tests/bug-hunt-static-graph-delivery.test.ts > publishes external child imports with their boundaries:  supports(display:grid) print
+ FAIL  tests/bug-hunt-static-graph-delivery.test.ts > nested CSS and resource edits change the real entry content hash and preserve resource payloads
+Error: ERROR in css ./entry.css
+Module build failed (from ../../../../../../../Users/aron/master/css/packages/webpack/dist/stylesheet-loader.js):
+MasterCSSError: Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first
+    at normalizeBindingError (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:42:9)
+    at callBinding (file:///Users/aron/master/css/packages/binding/dist/normalize-error.js:53:9)
+    at invoke (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:19:10)
+    at Object.resolveCSSImportGraph (file:///Users/aron/master/css/packages/binding/dist/compiler-binding-adapter.js:43:39)
+    at file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:40:60
+    at callCompilerBinding (file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:22:10)
+    at resolveCSSImportGraphSource (file:///Users/aron/master/css/packages/compiler/dist/node-compiler.js:40:17)
+    at resolveStylesheetImportGraph (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:73:9)
+    at resolveMasterStyleSource (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:111:29)
+    at resolveStylesheetSync (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:28:167)
+
+ ❯ tests/bug-hunt-static-graph-delivery.test.ts:17:65
+     15|   try {
+     16|     const stats = await new Promise<webpack.Stats>((resolve, reject) =…
+     17|       if (error || !stats || stats.hasErrors()) reject(error || new Er…
+       |                                                                 ^
+     18|       else resolve(stats)
+     19|     }))
+ ❯ finalCallback ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compiler.js:597:32
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compiler.js:622:13
+ ❯ Hook.eval [as callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10
+ ❯ Hook.CALL_ASYNC_DELEGATE [as _callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/Hook.js:21:14
+ ❯ onCompiled ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compiler.js:620:21
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compiler.js:1477:17
+ ❯ Hook.eval [as callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/HookCodeFactory.js:31:10
+ ❯ Hook.CALL_ASYNC_DELEGATE [as _callAsync] ../../node_modules/.pnpm/tapable@2.3.3/node_modules/tapable/lib/Hook.js:21:14
+ ❯ ../../node_modules/.pnpm/webpack@5.110.3_clean-css@5.3.3_cssnano@8.0.10_postcss@8.5.28__csso@5.0.5_esbuild@0.28._e880896f3a151cb8cc72e4403296ae2c/node_modules/webpack/lib/Compiler.js:1473:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  00:10:45
+   Duration  4.02s (tests 61%, transform 30%, import 9%)
+

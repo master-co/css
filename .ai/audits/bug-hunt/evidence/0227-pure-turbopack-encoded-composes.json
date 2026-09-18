@@ -1,0 +1,23 @@
+{
+  "scenario": "encoded-composes",
+  "bundler": "turbopack",
+  "pure": true,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other%20module.module.css\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "file": "other module.module.css",
+    "valid": true
+  },
+  "build": {
+    "code": 1,
+    "signal": null,
+    "timedOut": false,
+    "exported": false,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 6ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n\n> Build error occurred\nError: Turbopack build failed with 2 errors:\n./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/card.module.css\nError: Module not found: Can't resolve './other%20module.module.css'\n\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/page.jsx\n\nhttps://nextjs.org/docs/messages/module-not-found\n\n\n./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/card.module.css\nError: An issue occurred while resolving a CSS module `composes:` rule\nModule relative './other%20module.module.css' referenced in `composes: ... from ...;` can't be resolved.\n\n\nImport trace:\n  Server Component:\n    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/card.module.css\n    ./.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-WFVav5/app/page.jsx\n\n\n    at <unknown> (https://nextjs.org/docs/messages/module-not-found)\n"
+  },
+  "observations": [],
+  "stylesheets": [],
+  "errors": [],
+  "browserFailures": []
+}

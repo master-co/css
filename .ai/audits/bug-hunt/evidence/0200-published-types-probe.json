@@ -1,0 +1,21 @@
+{
+  "scope": "Copied before/current built binding dist andunchangedpackage manifest only; directinstalledTS6 no workspacealiases;no packageinstall",
+  "results": {
+    "before": {
+      "exitCode": 2,
+      "missingDeclarationFiles": [
+        "protocol.d.ts",
+        "compiler-binding-contract.d.ts"
+      ]
+    },
+    "current": {
+      "exitCode": 2,
+      "missingDeclarationFiles": [
+        "protocol.d.ts",
+        "compiler-binding-contract.d.ts"
+      ]
+    }
+  },
+  "scratchRemoved": true,
+  "classification": "New retained artifact-type candidate;rootsharedbuild-flow repair is outsidecurrentmutationconstraints;completeownercrosspackagebaseline remains next"
+}

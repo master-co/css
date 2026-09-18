@@ -1,0 +1,415 @@
+{
+  "sourceMaps": true,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": false,
+  "lightningcss": false,
+  "bundler": "webpack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "nested",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg?nested=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "external",
+      "color": "rgb(21, 34, 55)",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "nested",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg?nested=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "external",
+      "color": "rgb(21, 34, 55)",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "nested",
+      "background": "url(\"http://127.0.0.1:62201/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg?nested=1#pixel\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "external",
+      "color": "rgb(21, 34, 55)",
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "4d5c41dacaf13290d412731ed5931ecf0f88e99a0b889905ebff91ab87cfb60a"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "c43aa84bddd74c28e10609703f263ad35a74f9ef91ace0c979708e9b0b4f74a2"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "83ad024787241d13ed36b5cb6af57f37a04a8c4649bf845217e6bb10a0c15cce"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "035b1570a7cd9179c19126bae0bf67084960596dd437b1126988c61a7a30fc8b"
+    },
+    {
+      "file": "_next/static/chunks/194-4facec2e446527b7.js",
+      "sha256": "9e3d2a6bdb1d5719736985490100f3c8ab4d3f3243a10f67d7374afde3a87fce"
+    },
+    {
+      "file": "_next/static/chunks/194-4facec2e446527b7.js.map",
+      "sha256": "ef6a330dc6eadb7e854eb46f57b5493a5943044daa552a520d46295f83a387fc"
+    },
+    {
+      "file": "_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "sha256": "2a12dea98763a62cad942da11d4f9c06a1cc375af32a85ccea2f34754ec1e702"
+    },
+    {
+      "file": "_next/static/chunks/3b56f0b9-088186f00d851c75.js.map",
+      "sha256": "199c20b4e58ff2280cc2006489d1a259265dd4c92fe9b2d0ace18ed4b918daa9"
+    },
+    {
+      "file": "_next/static/chunks/app/_global-error/page-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/app/_not-found/page-51535d57b048cdf5.js",
+      "sha256": "149b4250bc05d247ccea0f2db3818eb8bba73b896add5c7ca7126eed35ddb012"
+    },
+    {
+      "file": "_next/static/chunks/app/_not-found/page-51535d57b048cdf5.js.map",
+      "sha256": "8b3cfb7bc6f44104a91d18b2a6a6d56cf9e7e90dc3b5e1e65b32640c931bd3db"
+    },
+    {
+      "file": "_next/static/chunks/app/layout-d594fe196b0a6317.js",
+      "sha256": "932378f0a59a377ea4a57a73eeff3b1675756bfa308a3cd1dc0499e778a0a7fd"
+    },
+    {
+      "file": "_next/static/chunks/app/layout-d594fe196b0a6317.js.map",
+      "sha256": "74b6b5db52dce0e7b01e7a9a14d23a5d122703417492adda14f61978e0f0ca8a"
+    },
+    {
+      "file": "_next/static/chunks/app/page-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/framework-df5f5c5ad2f7df03.js",
+      "sha256": "aeb092f9551bd9d7564545844316016111b0e89cf0e07143ec86aefc2e58d5bc"
+    },
+    {
+      "file": "_next/static/chunks/framework-df5f5c5ad2f7df03.js.map",
+      "sha256": "1f3353bda72371bc499233fc5314447aecfa6a6ab27b351e9a0d2bbe1fcfbe5f"
+    },
+    {
+      "file": "_next/static/chunks/main-7fadd143eb96cfe9.js",
+      "sha256": "035ad837cf37d9adcc643af98fa63949c6e7a8bf68e77cd3ab2ecdb4f71e856b"
+    },
+    {
+      "file": "_next/static/chunks/main-7fadd143eb96cfe9.js.map",
+      "sha256": "1056cb4fc25c40e76584344714ff650349d8060686315bc62fe767c8dd609546"
+    },
+    {
+      "file": "_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "sha256": "3243f7b75953f6eeb7663ef682b8559490cdedc1f35b6e982b7a30e40dcb2ab6"
+    },
+    {
+      "file": "_next/static/chunks/main-app-6b28e1a29e412053.js.map",
+      "sha256": "a039e5514a84fc695a795c4e017de27434c1a81a019145672753babcfc5bdc70"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/app-error-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/forbidden-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/global-error-b6a6b5ffac72ad10.js",
+      "sha256": "9ae193c51dc245cc0c6cf7d14217d16f0f4c86ab5974b73a54010debe10a3872"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/global-error-b6a6b5ffac72ad10.js.map",
+      "sha256": "9fe6aeeb526ee259fb7c874048871f3c025cdc0fdb0d05e8c8f18d260e5edd20"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/not-found-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/next/dist/client/components/builtin/unauthorized-05606a3b078479dc.js",
+      "sha256": "e718a51526ea4b058abc78f73525e405a7b26fbb6bffbbb5ba2aa77196bb33e3"
+    },
+    {
+      "file": "_next/static/chunks/polyfills-42372ed130431b0a.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/webpack-0a5a1e93e23e456c.js",
+      "sha256": "70802fb04071c50614207a36ed6cafc4f9d935d333655823a6f78f6bf5d14646"
+    },
+    {
+      "file": "_next/static/chunks/webpack-0a5a1e93e23e456c.js.map",
+      "sha256": "b0a1d3a069d43aee51c2defe621a28672b2e16398a228d3f12dc6f5bb7221d7d"
+    },
+    {
+      "file": "_next/static/css/e399f97ddd3a517d.css",
+      "sha256": "39ca741f40029ab0340942d4ae3f81af1b9ff86b8fe522eb38f8a1464a75b63b"
+    },
+    {
+      "file": "_next/static/css/e399f97ddd3a517d.css.map",
+      "sha256": "c3440004cb15f67b353d39f81ba2c90b073beffee295f93a1c0c5b04ea7ae99f"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg",
+      "sha256": "9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css",
+      "sha256": "e0a650ed5dd7c94b4a340c5bf75463bfa8229d4e77ca426666bd854063abe343"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css.map",
+      "sha256": "04b1dfa979e9de254dbb4abd86de14191815ee8a8c246914ff9501c49dd59aeb"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css",
+      "sha256": "7c65e33ffd80011412eb2d03bf109f171999e64110beef8365617ca76175786d"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css.map",
+      "sha256": "fef1b97d47ecfb404056ef3838c6e4fd96e7ed15026bba03a6a8e27c3e9277f3"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css",
+      "sha256": "945086075630e1afc68207ee5edc47eab415cacb821f55d2d7db9f5a7c73b585"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css.map",
+      "sha256": "648ac336a8a5981d754cf7c576e8088f5155a0a8080ed52c2f80255a7b66216b"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css",
+      "sha256": "0033b98a6aa31089d0bad9257fca81eb298078f1a888e5519314fd06e7e6aa01"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css.map",
+      "sha256": "b68008a2826f299f3d087c29d460d67955693304633af01787e68723a87004fe"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css",
+      "sha256": "5555b1ba44d6a8cc8bd8c1a738440aa7c7dca73e7c630831a46f6c3a08f95dc5"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css.map",
+      "sha256": "d92a423df50692920bb2fea1790952901f3ddc8eecc095a54e48624a553598d3"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css",
+      "sha256": "eb22966d48d771853ea9b03e2b44df2f6354943c749afffa359f1475262031e4"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css.map",
+      "sha256": "42cd597a246833bc2a1e52a2e3d27e6d886a39a23670decd32f32717c5d9143e"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css",
+      "sha256": "f58baafff1ef2e07b95396668889dd26809cadb7552cee6708b15b05f7473c75"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css.map",
+      "sha256": "13743a11a3643181750a44409646250b189b6d16104b27eb23dc544ad80b91d8"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css",
+      "sha256": "8e99173157e28f672c26cab6ed052f3f73f7476d1efcb4b542edc6d3bc809ec8"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css.map",
+      "sha256": "1463431b64fc7bd0274a0cee153f79de01b57504e25d108eb4159d5fb080c7df"
+    },
+    {
+      "file": "_next/static/gX1lfgnpTgOpunnfPZjDu/_buildManifest.js",
+      "sha256": "fc9f9d16595c40b13da98fd1556b3e2bded6509cb20f9b1e8b7c6bb4bcd89842"
+    },
+    {
+      "file": "_next/static/gX1lfgnpTgOpunnfPZjDu/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "00303a75646e0d5287d45222000f30c64d6a99ac2942bfd4a5d98e6dcd5fe07f"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "963313420114206199f44fea4825ab11823bbfa881cb19e4496fad749f8c5ca2"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "b7708cfe47268a828f76b864682a546addaa73ab2ace1f252f19d17ab9fb0bc2"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "4d5c41dacaf13290d412731ed5931ecf0f88e99a0b889905ebff91ab87cfb60a"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "00303a75646e0d5287d45222000f30c64d6a99ac2942bfd4a5d98e6dcd5fe07f"
+    },
+    {
+      "file": "index.html",
+      "sha256": "a0778cf237f360267083e5d0c1260c8a9e645f5ada11335f088cf64d025a95a7"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "83ad024787241d13ed36b5cb6af57f37a04a8c4649bf845217e6bb10a0c15cce"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/e399f97ddd3a517d.css",
+      "text": "@import url(\"/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css\");\n/*# sourceMappingURL=e399f97ddd3a517d.css.map*/"
+    },
+    {
+      "file": "_next/static/css/e399f97ddd3a517d.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/e399f97ddd3a517d.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/e399f97ddd3a517d.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css",
+      "text": "@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css\";@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css\";@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css\";@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css\";\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/preset/src/index.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA,CACA,iJAAA,CACA,iJAAA,CACA,iJAAA\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css\",\"sourcesContent\":[\"@import \\\"./base.css\\\";\\n@import \\\"./theme.css\\\";\\n@import \\\"./variants.css\\\";\\n@import \\\"./utilities.css\\\";\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css",
+      "text": "\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css.map",
+      "text": "{\"version\":3,\"sources\":[],\"names\":[],\"mappings\":\"\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-7927cffd66e2fdcdcbed101029468af28b81933d7e4b0ad77034b0fdf6df0b18.css\",\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css",
+      "text": "@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-53272a44daa2e9348ce16b8ff8defc8b9fb62c80c920d0028d5360d62c1eae18.css\";\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/packages/css/src/index.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css\",\"sourcesContent\":[\"@import \\\"@master/css-preset\\\";\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css",
+      "text": ".nested{background-image:url(9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg?nested=1#pixel);width:4px;height:4px}\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-9HLSiK/app/nested/child.css\",\"webpack://_N_E/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css\"],\"names\":[],\"mappings\":\"AAAA,QCCE,yGAA8G,CAC9G,SAAU,CACV,UACF\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css\",\"sourcesContent\":[\".nested{width:4px;height:4px;background-image:url(\\\"./assets/blue.svg?nested=1#pixel\\\")}\",\".nested {\\n  background-image: url(\\\"./9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c.svg?nested=1#pixel\\\");\\n  width: 4px;\\n  height: 4px;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css",
+      "text": "@layer theme;@layer base{*{text-rendering:geometricprecision}body{-webkit-text-size-adjust:100%;-moz-text-size-adjust:100%;-ms-text-size-adjust:100%;text-size-adjust:100%;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased;line-height:1.2}a,button{touch-action:manipulation}[role=button],[type=button],button,summary{-webkit-user-select:none;user-select:none}*,:after,:before{box-sizing:border-box}body{-moz-tab-size:2;tab-size:2}audio,canvas,embed,iframe,img,object,svg,video{max-width:100%;display:block}body,html{height:-moz-available}abbr[title]{text-decoration:underline dotted}b,strong{font-weight:bolder}code,kbd,pre,samp{font-size:1em}::-moz-focus-inner{border-style:none;padding:0}:-moz-ui-invalid{box-shadow:none}progress{vertical-align:baseline}[type=search]{appearance:textfield;outline-offset:-2px}::-webkit-inner-spin-button,::-webkit-outer-spin-button{height:auto}::-webkit-search-decoration{-webkit-appearance:none}::-webkit-file-upload-button{-webkit-appearance:button;font:inherit}hr{height:0;color:inherit}small{font-size:80%}sub,sup{vertical-align:baseline;font-size:75%;line-height:0;position:relative}sub{bottom:-.25em}sup{top:-.5em}table{text-indent:0;border-color:inherit}:host,body{font-family:var(--font-family-sans);font-feature-settings:var(--font-feature-sans,normal)}code,kbd,pre,samp{font-family:var(--font-family-mono);font-feature-settings:var(--font-feature-mono,normal)}a{color:inherit;text-decoration:none}button,input,optgroup,select,textarea{font:inherit;font-feature-settings:inherit;font-variation-settings:inherit;color:inherit;background-color:#0000;margin:0;padding:0;font-size:100%}*,:after,:before{border-style:solid;border-width:0}blockquote,body,dd,dl,figure,h1,h2,h3,h4,h5,h6,hr,p,pre{margin:0}fieldset,legend,ol,td,ul{padding:0}ol,ul{margin:0}body{-webkit-tap-highlight-color:transparent}ul{list-style:none}h1,h2,h3,h4,h5,h6{font-size:inherit;font-weight:inherit}[hidden]{display:none}}@layer defaults, components, utilities;\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/preset/src/base.css\",\"webpack://_N_E/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css\"],\"names\":[],\"mappings\":\"AAAA,YAAA,CAAA,YAIE,ECAE,iCACF,CDIA,KCDE,6BAA8B,CAC9B,0BAA2B,CAC3B,yBAA0B,CAC1B,qBAAsB,CACtB,iCAAkC,CAClC,kCAAmC,CACnC,eACF,CDKA,SCFE,yBACF,CDMA,2CCHE,wBAAyB,CACzB,gBACF,CDQA,iBCLE,qBACF,CDSA,KCNE,eAAgB,CAChB,UACF,CDUA,+CCPE,cAAe,CACf,aACF,CDaA,UCVE,qBACF,CDgBA,YCbE,gCACF,CDiBA,SCdE,kBACF,CDkBA,kBCfE,aACF,CDsBA,mBCnBE,iBAAkB,CAClB,SACF,CDuBA,iBCpBE,eACF,CDwBA,SCrBE,uBACF,CDyBA,cCtBE,oBAAqB,CACrB,mBACF,CD0BA,wDCvBE,WACF,CD2BA,4BCxBE,uBACF,CD4BA,6BCzBE,yBAA0B,CAC1B,YACF,CD6BA,GC1BE,QAAS,CACT,aACF,CD8BA,MC3BE,aACF,CD+BA,QC5BE,uBAAwB,CACxB,aAAc,CACd,aAAc,CACd,iBACF,CDgCA,IC7BE,aACF,CDiCA,IC9BE,SACF,CDkCA,MC/BE,aAAc,CACd,oBACF,CDmCA,WChCE,mCAAoC,CACpC,qDACF,CDoCA,kBCjCE,mCAAoC,CACpC,qDACF,CDuCA,ECpCE,aAAc,CACd,oBACF,CDwCA,sCCrCE,YAAa,CACb,6BAA8B,CAC9B,+BAAgC,CAChC,aAAc,CACd,sBAAuB,CACvB,QAAS,CACT,SAAU,CACV,cACF,CDyCA,iBCtCE,kBAAmB,CACnB,cACF,CD0CA,wDCvCE,QACF,CDgDA,yBC7CE,SAMF,CDuCA,MCzCE,QAEF,CD6CA,KC1CE,uCACF,CD8CA,GC3CE,eACF,CD+CA,kBC5CE,iBAAkB,CAClB,mBACF,CDgDA,SC7CE,YACF,CACF,CDhLA,sCAAA\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-bd49b92ca4f12d72424e2b5689ea228d8d6412a299c94edf9932b9b8ae026de9.css\",\"sourcesContent\":[\"@layer theme, base, defaults, components, utilities;\\n\\n@layer base {\\n  /* Improve text rendering precision across browsers. */\\n  * {\\n    text-rendering: geometricPrecision;\\n  }\\n\\n  /* Normalize body text metrics and font smoothing. */\\n  body {\\n    line-height: 1.2;\\n    text-size-adjust: 100%;\\n    -webkit-text-size-adjust: 100%;\\n    -moz-text-size-adjust: 100%;\\n    -ms-text-size-adjust: 100%;\\n    -moz-osx-font-smoothing: grayscale;\\n    -webkit-font-smoothing: antialiased;\\n  }\\n\\n  /* Remove touch delay from common interactive elements. */\\n  a, button {\\n    touch-action: manipulation;\\n  }\\n\\n  /* Prevent accidental text selection on button-like controls. */\\n  [role=button], summary,\\n  button, [type=button] {\\n    -webkit-user-select: none;\\n    user-select: none;\\n  }\\n\\n  /* Use border-box sizing for all elements and pseudo-elements. */\\n  *, ::before, ::after {\\n    box-sizing: border-box;\\n  }\\n\\n  /* Normalize tab width for readable preformatted text. */\\n  body {\\n    -moz-tab-size: 2;\\n    tab-size: 2;\\n  }\\n\\n  /* Make embedded media responsive and block-level by default. */\\n  img, svg, video, canvas, audio, iframe, embed, object {\\n    max-width: 100%;\\n    display: block;\\n  }\\n\\n  /* consistent */\\n\\n  /* Keep the root viewport height consistent on modern and WebKit browsers. */\\n  html, body {\\n    height: 100dvh;\\n    height: -webkit-fill-available;\\n    height: -moz-available;\\n  }\\n\\n  /* Ensure abbreviated text with titles has a consistent underline style. */\\n  abbr[title] {\\n    text-decoration: underline dotted;\\n  }\\n\\n  /* Keep bold text semantically stronger than surrounding text. */\\n  b, strong {\\n    font-weight: bolder;\\n  }\\n\\n  /* Normalize monospace-related element sizing. */\\n  pre,\\n  code,\\n  kbd,\\n  samp {\\n    font-size: 1em;\\n  }\\n\\n  /* Remove Firefox inner focus padding and border from controls. */\\n  ::-moz-focus-inner {\\n    border-style: none;\\n    padding: 0;\\n  }\\n\\n  /* Remove Firefox invalid field shadows. */\\n  :-moz-ui-invalid {\\n    box-shadow: none;\\n  }\\n\\n  /* Align progress elements consistently with surrounding text. */\\n  progress {\\n    vertical-align: baseline;\\n  }\\n\\n  /* Normalize search input appearance and outline offset. */\\n  [type=\\\"search\\\"] {\\n    appearance: textfield;\\n    outline-offset: -2px;\\n  }\\n\\n  /* Keep WebKit number input spin buttons at their native height. */\\n  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {\\n    height: auto;\\n  }\\n\\n  /* Remove WebKit search input decoration. */\\n  ::-webkit-search-decoration {\\n    -webkit-appearance: none;\\n  }\\n\\n  /* Normalize WebKit file upload button appearance and font. */\\n  ::-webkit-file-upload-button {\\n    -webkit-appearance: button;\\n    font: inherit;\\n  }\\n\\n  /* Normalize horizontal rule size and color inheritance. */\\n  hr {\\n    height: 0;\\n    color: inherit;\\n  }\\n\\n  /* Normalize small text sizing. */\\n  small {\\n    font-size: 80%;\\n  }\\n\\n  /* Normalize superscript and subscript sizing and positioning context. */\\n  sub, sup {\\n    font-size: 75%;\\n    line-height: 0;\\n    position: relative;\\n    vertical-align: baseline;\\n  }\\n\\n  /* Position subscripts consistently below the baseline. */\\n  sub {\\n    bottom: -0.25em;\\n  }\\n\\n  /* Position superscripts consistently above the baseline. */\\n  sup {\\n    top: -0.5em;\\n  }\\n\\n  /* Normalize table indentation and border color inheritance. */\\n  table {\\n    text-indent: 0;\\n    border-color: inherit;\\n  }\\n\\n  /* Apply the default sans font stack to documents and shadow hosts. */\\n  body, :host {\\n    font-family: var(--font-family-sans);\\n    font-feature-settings: var(--font-feature-sans, normal);\\n  }\\n\\n  /* Apply the default monospace font stack to code-related elements. */\\n  code, kbd, samp, pre {\\n    font-family: var(--font-family-mono);\\n    font-feature-settings: var(--font-feature-mono, normal);\\n  }\\n\\n  /* remove */\\n\\n  /* Remove default link color and underline styles. */\\n  a {\\n    color: inherit;\\n    text-decoration: none;\\n  }\\n\\n  /* Reset form control typography, spacing, color, and background. */\\n  button, input, optgroup, select, textarea {\\n    font: inherit;\\n    font-feature-settings: inherit;\\n    font-variation-settings: inherit;\\n    font-size: 100%;\\n    margin: 0;\\n    padding: 0;\\n    color: inherit;\\n    background-color: transparent;\\n  }\\n\\n  /* Remove default borders while keeping solid border style as the baseline. */\\n  *, ::before, ::after {\\n    border-width: 0;\\n    border-style: solid;\\n  }\\n\\n  /* Remove default margins from common block and text elements. */\\n  body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {\\n    margin: 0;\\n  }\\n\\n  /* Remove default padding from table cells and form grouping elements. */\\n  td, legend, fieldset {\\n    padding: 0;\\n  }\\n\\n  /* Remove default list spacing. */\\n  ul, ol {\\n    margin: 0;\\n    padding: 0;\\n  }\\n\\n  /* Remove mobile tap highlight color. */\\n  body {\\n    -webkit-tap-highlight-color: transparent;\\n  }\\n\\n  /* Remove unordered list markers. */\\n  ul {\\n    list-style: none;\\n  }\\n\\n  /* Reset heading typography to inherit from surrounding text. */\\n  h1, h2, h3, h4, h5, h6 {\\n    font-size: inherit;\\n    font-weight: inherit;\\n  }\\n\\n  /* Hide elements marked with the hidden attribute. */\\n  [hidden] {\\n    display: none;\\n  }\\n}\\n\",\"@layer theme;\\n\\n@layer base {\\n  * {\\n    text-rendering: geometricprecision;\\n  }\\n\\n  body {\\n    -webkit-text-size-adjust: 100%;\\n    -moz-text-size-adjust: 100%;\\n    -ms-text-size-adjust: 100%;\\n    text-size-adjust: 100%;\\n    -moz-osx-font-smoothing: grayscale;\\n    -webkit-font-smoothing: antialiased;\\n    line-height: 1.2;\\n  }\\n\\n  a, button {\\n    touch-action: manipulation;\\n  }\\n\\n  [role=\\\"button\\\"], summary, button, [type=\\\"button\\\"] {\\n    -webkit-user-select: none;\\n    user-select: none;\\n  }\\n\\n  *, :before, :after {\\n    box-sizing: border-box;\\n  }\\n\\n  body {\\n    -moz-tab-size: 2;\\n    tab-size: 2;\\n  }\\n\\n  img, svg, video, canvas, audio, iframe, embed, object {\\n    max-width: 100%;\\n    display: block;\\n  }\\n\\n  html, body {\\n    height: -moz-available;\\n  }\\n\\n  abbr[title] {\\n    text-decoration: underline dotted;\\n  }\\n\\n  b, strong {\\n    font-weight: bolder;\\n  }\\n\\n  pre, code, kbd, samp {\\n    font-size: 1em;\\n  }\\n\\n  ::-moz-focus-inner {\\n    border-style: none;\\n    padding: 0;\\n  }\\n\\n  :-moz-ui-invalid {\\n    box-shadow: none;\\n  }\\n\\n  progress {\\n    vertical-align: baseline;\\n  }\\n\\n  [type=\\\"search\\\"] {\\n    appearance: textfield;\\n    outline-offset: -2px;\\n  }\\n\\n  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {\\n    height: auto;\\n  }\\n\\n  ::-webkit-search-decoration {\\n    -webkit-appearance: none;\\n  }\\n\\n  ::-webkit-file-upload-button {\\n    -webkit-appearance: button;\\n    font: inherit;\\n  }\\n\\n  hr {\\n    height: 0;\\n    color: inherit;\\n  }\\n\\n  small {\\n    font-size: 80%;\\n  }\\n\\n  sub, sup {\\n    vertical-align: baseline;\\n    font-size: 75%;\\n    line-height: 0;\\n    position: relative;\\n  }\\n\\n  sub {\\n    bottom: -.25em;\\n  }\\n\\n  sup {\\n    top: -.5em;\\n  }\\n\\n  table {\\n    text-indent: 0;\\n    border-color: inherit;\\n  }\\n\\n  body, :host {\\n    font-family: var(--font-family-sans);\\n    font-feature-settings: var(--font-feature-sans, normal);\\n  }\\n\\n  code, kbd, samp, pre {\\n    font-family: var(--font-family-mono);\\n    font-feature-settings: var(--font-feature-mono, normal);\\n  }\\n\\n  a {\\n    color: inherit;\\n    text-decoration: none;\\n  }\\n\\n  button, input, optgroup, select, textarea {\\n    font: inherit;\\n    font-feature-settings: inherit;\\n    font-variation-settings: inherit;\\n    color: inherit;\\n    background-color: #0000;\\n    margin: 0;\\n    padding: 0;\\n    font-size: 100%;\\n  }\\n\\n  *, :before, :after {\\n    border-style: solid;\\n    border-width: 0;\\n  }\\n\\n  body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {\\n    margin: 0;\\n  }\\n\\n  td, legend, fieldset {\\n    padding: 0;\\n  }\\n\\n  ul, ol {\\n    margin: 0;\\n    padding: 0;\\n  }\\n\\n  body {\\n    -webkit-tap-highlight-color: transparent;\\n  }\\n\\n  ul {\\n    list-style: none;\\n  }\\n\\n  h1, h2, h3, h4, h5, h6 {\\n    font-size: inherit;\\n    font-weight: inherit;\\n  }\\n\\n  [hidden] {\\n    display: none;\\n  }\\n}\\n\\n@layer defaults, components, utilities;\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css",
+      "text": "\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css.map",
+      "text": "{\"version\":3,\"sources\":[],\"names\":[],\"mappings\":\"\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-cb5d20f67f315ddcce5f2007652b3d4b014cdf7bd9cfa617b002b1f9a96d9344.css\",\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css",
+      "text": "\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css.map",
+      "text": "{\"version\":3,\"sources\":[],\"names\":[],\"mappings\":\"\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-d6aaeb593fe5384ed9a4c1ec5797c3576fcd9440e29e141b2df10efe69003560.css\",\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css",
+      "text": "@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css\";@import \"http://127.0.0.1:62193/remote.css?audit=1\" layer(remote) supports(display: grid) screen;@import \"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css\" layer(card);.direct{background-image:url(9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel);width:4px;height:4px}.composed{padding:2rem}@layer theme{:root{--font-family-sans:var(--font-sans,ui-sans-serif),system-ui,-apple-system,BlinkMacSystemFont,\"Segoe UI\",Roboto,\"Helvetica Neue\",Arial,\"Noto Sans\",sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\",\"Segoe UI Symbol\",\"Noto Color Emoji\";--font-family-mono:var(--font-mono,ui-monospace),SFMono-Regular,Menlo,Monaco,Consolas,\"Liberation Mono\",\"Courier New\",monospace}}\n/*# sourceMappingURL=eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css\",\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-9HLSiK/app/globals.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAiJ,CCAlH,gGAAA,CAAgG,6JAAA,CAAyC,QDKtK,yGAA8G,CAC9G,SAAU,CACV,UACF,CCR6P,UAAmB,YDU1P,CAEtB,aAAa,MAAM,sOAAoP,CAAC,+HAAuI,CAAC\",\"file\":\"static/css/master/a2b14bdbaf673b1888a5c5c1cc52e3d02fc48d74df300bb6a9d14ffdfecd36ab/maps/eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-entry.css\",\"sourcesContent\":[\"@import \\\"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-8b3697fd0abf5cc7538681f772e93ec43e85dccd41b440ca080527acbeb03a06.css\\\";\\n@import \\\"http://127.0.0.1:62193/remote.css?audit=1\\\" layer(remote) supports(display: grid) screen;\\n@import \\\"./eec42f315592621e450fd727eb5f4f99e329cc3d794bc044f3c9f5325deada5b-949d63dc7f91ed581078954770700ec411e95e2f5fe1aa529742c5206e1b8088.css\\\" layer(card);\\n\\n.direct {\\n  background-image: url(\\\"./9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89.svg?direct=1#pixel\\\");\\n  width: 4px;\\n  height: 4px;\\n}\\n\\n.composed{padding:2rem}\\n\\n@layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \\\"Segoe UI\\\", Roboto, \\\"Helvetica Neue\\\", Arial, \\\"Noto Sans\\\", sans-serif, \\\"Apple Color Emoji\\\", \\\"Segoe UI Emoji\\\", \\\"Segoe UI Symbol\\\", \\\"Noto Color Emoji\\\";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \\\"Liberation Mono\\\", \\\"Courier New\\\", monospace}}\",\"@master entry;@preserve native;@import \\\"http://127.0.0.1:62193/remote.css?audit=1\\\" layer(remote) supports(display:grid) screen;@import \\\"./nested/child.css\\\" layer(card);.direct{width:4px;height:4px;background-image:url(\\\"./assets/red.svg?direct=1#pixel\\\")}.composed{@compose p:2rem;}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ]
+}

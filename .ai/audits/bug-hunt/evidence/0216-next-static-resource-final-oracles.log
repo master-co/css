@@ -1,0 +1,182 @@
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:290:60)
+    at createExtractedCSSResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:446:10)
+    at MasterCSSStylesheetCollection.compose (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:211:24)
+    at createStaticCSS (file:///Users/aron/master/css/packages/next/dist/static.js:56:36)
+    at file:///Users/aron/master/css/packages/next/dist/static.js:91:43
+    at async file:///Users/aron/master/css/packages/next/dist/static.js:99:3
+    at async getOrCreateStaticSession (file:///Users/aron/master/css/packages/next/dist/static.js:161:2)
+    at async prepareNextStatic (file:///Users/aron/master/css/packages/next/dist/static.js:171:2)
+    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-static-resource-delivery.mjs:31:19 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:290:60)
+    at createExtractedCSSResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:446:10)
+    at MasterCSSStylesheetCollection.compose (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:211:24)
+    at createStaticCSS (file:///Users/aron/master/css/packages/next/dist/static.js:56:36)
+    at file:///Users/aron/master/css/packages/next/dist/static.js:91:43
+    at async transformStaticStyleSource (file:///Users/aron/master/css/packages/next/dist/static.js:52:2)
+    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-static-resource-delivery.mjs:32:24 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:290:60)
+    at createExtractedCSSResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:446:10)
+    at MasterCSSStylesheetCollection.compose (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:211:24)
+    at createStaticCSS (file:///Users/aron/master/css/packages/next/dist/static.js:56:36)
+    at file:///Users/aron/master/css/packages/next/dist/static.js:91:43
+    at async file:///Users/aron/master/css/packages/next/dist/static.js:99:3
+    at async getOrCreateStaticSession (file:///Users/aron/master/css/packages/next/dist/static.js:161:2)
+    at async prepareNextStatic (file:///Users/aron/master/css/packages/next/dist/static.js:171:2)
+    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-static-resource-delivery.mjs:31:19 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+[@master/css-next] failed to write static CSS: MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.
+    at composeDeliveredStylesheets (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/delivery.js:290:60)
+    at createExtractedCSSResult (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/index.js:446:10)
+    at MasterCSSStylesheetCollection.compose (file:///Users/aron/master/css/packages/compiler/dist/stylesheet/public.js:211:24)
+    at createStaticCSS (file:///Users/aron/master/css/packages/next/dist/static.js:56:36)
+    at file:///Users/aron/master/css/packages/next/dist/static.js:91:43
+    at async transformStaticStyleSource (file:///Users/aron/master/css/packages/next/dist/static.js:52:2)
+    at async file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-static-resource-delivery.mjs:32:24 {
+  code: 'CSS_IMPORT_ERROR',
+  domain: 'compiler',
+  diagnostics: [],
+  payload: {
+    code: 'CSS_IMPORT_ERROR',
+    domain: 'compiler',
+    message: 'This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.'
+  }
+}
+{
+  "scope": "Actual delivered Next stylesheet/static functions with owned source files; validates local CSS resource references before Next bundling. Not a full Next build or browser claim.",
+  "results": [
+    {
+      "kind": "plain",
+      "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-TsngjD",
+      "normalLoader": {
+        "css": "@layer theme;\n\n@layer base {\n  * {\n    text-rendering: geometricprecision;\n  }\n\n  body {\n    -webkit-text-size-adjust: 100%;\n    -moz-text-size-adjust: 100%;\n    -ms-text-size-adjust: 100%;\n    text-size-adjust: 100%;\n    -moz-osx-font-smoothing: grayscale;\n    -webkit-font-smoothing: antialiased;\n    line-height: 1.2;\n  }\n\n  a, button {\n    touch-action: manipulation;\n  }\n\n  [role=\"button\"], summary, button, [type=\"button\"] {\n    -webkit-user-select: none;\n    user-select: none;\n  }\n\n  *, :before, :after {\n    box-sizing: border-box;\n  }\n\n  body {\n    -moz-tab-size: 2;\n    tab-size: 2;\n  }\n\n  img, svg, video, canvas, audio, iframe, embed, object {\n    max-width: 100%;\n    display: block;\n  }\n\n  html, body {\n    height: -moz-available;\n  }\n\n  abbr[title] {\n    text-decoration: underline dotted;\n  }\n\n  b, strong {\n    font-weight: bolder;\n  }\n\n  pre, code, kbd, samp {\n    font-size: 1em;\n  }\n\n  ::-moz-focus-inner {\n    border-style: none;\n    padding: 0;\n  }\n\n  :-moz-ui-invalid {\n    box-shadow: none;\n  }\n\n  progress {\n    vertical-align: baseline;\n  }\n\n  [type=\"search\"] {\n    appearance: textfield;\n    outline-offset: -2px;\n  }\n\n  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {\n    height: auto;\n  }\n\n  ::-webkit-search-decoration {\n    -webkit-appearance: none;\n  }\n\n  ::-webkit-file-upload-button {\n    -webkit-appearance: button;\n    font: inherit;\n  }\n\n  hr {\n    height: 0;\n    color: inherit;\n  }\n\n  small {\n    font-size: 80%;\n  }\n\n  sub, sup {\n    vertical-align: baseline;\n    font-size: 75%;\n    line-height: 0;\n    position: relative;\n  }\n\n  sub {\n    bottom: -.25em;\n  }\n\n  sup {\n    top: -.5em;\n  }\n\n  table {\n    text-indent: 0;\n    border-color: inherit;\n  }\n\n  body, :host {\n    font-family: var(--font-family-sans);\n    font-feature-settings: var(--font-feature-sans, normal);\n  }\n\n  code, kbd, samp, pre {\n    font-family: var(--font-family-mono);\n    font-feature-settings: var(--font-feature-mono, normal);\n  }\n\n  a {\n    color: inherit;\n    text-decoration: none;\n  }\n\n  button, input, optgroup, select, textarea {\n    font: inherit;\n    font-feature-settings: inherit;\n    font-variation-settings: inherit;\n    color: inherit;\n    background-color: #0000;\n    margin: 0;\n    padding: 0;\n    font-size: 100%;\n  }\n\n  *, :before, :after {\n    border-style: solid;\n    border-width: 0;\n  }\n\n  body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {\n    margin: 0;\n  }\n\n  td, legend, fieldset {\n    padding: 0;\n  }\n\n  ul, ol {\n    margin: 0;\n    padding: 0;\n  }\n\n  body {\n    -webkit-tap-highlight-color: transparent;\n  }\n\n  ul {\n    list-style: none;\n  }\n\n  h1, h2, h3, h4, h5, h6 {\n    font-size: inherit;\n    font-weight: inherit;\n  }\n\n  [hidden] {\n    display: none;\n  }\n}\n\n@layer defaults, components, utilities;\n\n\n\n\n.probe {\n  color: red;\n}\n\n@layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}}",
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-TsngjD/app/globals.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ]
+      },
+      "normalResources": [],
+      "normalPass": true,
+      "staticLoader": "@import \"../.master/next.css\";",
+      "generatedCSS": ".probe {\n  color: red;\n}\n",
+      "generatedFiles": [
+        "next-static-state.json",
+        "next.css"
+      ],
+      "resources": [],
+      "staticPass": true,
+      "pass": true
+    },
+    {
+      "kind": "direct-resource",
+      "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-S0mpNU",
+      "normalLoader": {
+        "css": "@layer theme;\n\n@layer base {\n  * {\n    text-rendering: geometricprecision;\n  }\n\n  body {\n    -webkit-text-size-adjust: 100%;\n    -moz-text-size-adjust: 100%;\n    -ms-text-size-adjust: 100%;\n    text-size-adjust: 100%;\n    -moz-osx-font-smoothing: grayscale;\n    -webkit-font-smoothing: antialiased;\n    line-height: 1.2;\n  }\n\n  a, button {\n    touch-action: manipulation;\n  }\n\n  [role=\"button\"], summary, button, [type=\"button\"] {\n    -webkit-user-select: none;\n    user-select: none;\n  }\n\n  *, :before, :after {\n    box-sizing: border-box;\n  }\n\n  body {\n    -moz-tab-size: 2;\n    tab-size: 2;\n  }\n\n  img, svg, video, canvas, audio, iframe, embed, object {\n    max-width: 100%;\n    display: block;\n  }\n\n  html, body {\n    height: -moz-available;\n  }\n\n  abbr[title] {\n    text-decoration: underline dotted;\n  }\n\n  b, strong {\n    font-weight: bolder;\n  }\n\n  pre, code, kbd, samp {\n    font-size: 1em;\n  }\n\n  ::-moz-focus-inner {\n    border-style: none;\n    padding: 0;\n  }\n\n  :-moz-ui-invalid {\n    box-shadow: none;\n  }\n\n  progress {\n    vertical-align: baseline;\n  }\n\n  [type=\"search\"] {\n    appearance: textfield;\n    outline-offset: -2px;\n  }\n\n  ::-webkit-inner-spin-button, ::-webkit-outer-spin-button {\n    height: auto;\n  }\n\n  ::-webkit-search-decoration {\n    -webkit-appearance: none;\n  }\n\n  ::-webkit-file-upload-button {\n    -webkit-appearance: button;\n    font: inherit;\n  }\n\n  hr {\n    height: 0;\n    color: inherit;\n  }\n\n  small {\n    font-size: 80%;\n  }\n\n  sub, sup {\n    vertical-align: baseline;\n    font-size: 75%;\n    line-height: 0;\n    position: relative;\n  }\n\n  sub {\n    bottom: -.25em;\n  }\n\n  sup {\n    top: -.5em;\n  }\n\n  table {\n    text-indent: 0;\n    border-color: inherit;\n  }\n\n  body, :host {\n    font-family: var(--font-family-sans);\n    font-feature-settings: var(--font-feature-sans, normal);\n  }\n\n  code, kbd, samp, pre {\n    font-family: var(--font-family-mono);\n    font-feature-settings: var(--font-feature-mono, normal);\n  }\n\n  a {\n    color: inherit;\n    text-decoration: none;\n  }\n\n  button, input, optgroup, select, textarea {\n    font: inherit;\n    font-feature-settings: inherit;\n    font-variation-settings: inherit;\n    color: inherit;\n    background-color: #0000;\n    margin: 0;\n    padding: 0;\n    font-size: 100%;\n  }\n\n  *, :before, :after {\n    border-style: solid;\n    border-width: 0;\n  }\n\n  body, blockquote, dl, dd, hr, figure, p, pre, h1, h2, h3, h4, h5, h6 {\n    margin: 0;\n  }\n\n  td, legend, fieldset {\n    padding: 0;\n  }\n\n  ul, ol {\n    margin: 0;\n    padding: 0;\n  }\n\n  body {\n    -webkit-tap-highlight-color: transparent;\n  }\n\n  ul {\n    list-style: none;\n  }\n\n  h1, h2, h3, h4, h5, h6 {\n    font-size: inherit;\n    font-weight: inherit;\n  }\n\n  [hidden] {\n    display: none;\n  }\n}\n\n@layer defaults, components, utilities;\n\n\n\n\n.probe {\n  background-image: url(\"./assets/pixel.svg?audit=1#pixel\");\n  width: 4px;\n  height: 4px;\n}\n\n@layer theme{:root{--font-family-sans:var(--font-sans, ui-sans-serif), system-ui, -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, \"Helvetica Neue\", Arial, \"Noto Sans\", sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\", \"Noto Color Emoji\";--font-family-mono:var(--font-mono, ui-monospace), SFMono-Regular, Menlo, Monaco, Consolas, \"Liberation Mono\", \"Courier New\", monospace}}",
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-S0mpNU/app/globals.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ]
+      },
+      "normalResources": [
+        {
+          "url": "./assets/pixel.svg?audit=1#pixel",
+          "file": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-S0mpNU/app/assets/pixel.svg",
+          "exists": true
+        }
+      ],
+      "normalPass": true,
+      "staticLoader": "@import \"../.master/next.css\";",
+      "error": "Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-S0mpNU/.master/next.css'",
+      "staticPass": false,
+      "pass": false
+    },
+    {
+      "kind": "imported-resource",
+      "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-HRFVX0",
+      "normalLoader": {
+        "error": "MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.",
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-HRFVX0/app/globals.css",
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-HRFVX0/app/nested/child.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ]
+      },
+      "normalResources": [],
+      "normalPass": false,
+      "staticLoader": "@import \"../.master/next.css\";",
+      "error": "Error: ENOENT: no such file or directory, open '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-HRFVX0/.master/next.css'",
+      "staticPass": false,
+      "pass": false
+    },
+    {
+      "kind": "external-import",
+      "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-f93ivV",
+      "normalLoader": {
+        "error": "MasterCSSError: This stylesheet retains import or resource boundaries and requires stylesheet asset delivery.",
+        "dependencies": [
+          "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-static-resource-f93ivV/app/globals.css",
+          "/Users/aron/master/css/packages/css/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/index.css",
+          "/Users/aron/master/css/packages/preset/src/base.css",
+          "/Users/aron/master/css/packages/preset/src/theme.css",
+          "/Users/aron/master/css/packages/preset/src/variants.css",
+          "/Users/aron/master/css/packages/preset/src/utilities.css"
+        ]
+      },
+      "normalResources": [],
+      "normalPass": false,
+      "staticLoader": "@import \"../.master/next.css\";\n@import \"https://example.invalid/theme.css\" layer(remote);",
+      "generatedCSS": "\n\n.probe {\n  color: red;\n}\n",
+      "generatedFiles": [
+        "next-static-state.json",
+        "next.css"
+      ],
+      "resources": [],
+      "staticPass": true,
+      "pass": false
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+--- a/crates/mastercss-compiler/src/directives.rs
++++ b/crates/mastercss-compiler/src/directives.rs
+@@ -1,7 +1,7 @@
+ use super::{
+     CompileCssDirectivesResult, CompileNativeCssOptions, CompilerError, CssDirectiveManifestInput,
+     CssDirectiveReferenceStatement, CssDirectiveStyleDefinition, CssRule, DirectiveName, HashMap,
+-    HashSet, MinifyOptions, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
++    HashSet, NativeClassNameCollector, ParserOptions, PrinterOptions, StyleSheet,
+     ThemeAtRule, ThemeAtRuleParser, Visit, decode_css_quoted_string, directive_error,
+     extraction_policy_from_statements, filter_native_css_rules, lower_custom_variant_rule,
+     lower_managed_rule_list, lower_settings_rule, lower_theme_rule, mask_managed_pattern_names,
+@@ -347,12 +347,7 @@
+     stylesheet: &mut StyleSheet<'_, ThemeAtRule>,
+     filename: &str,
+ ) -> Result<String, CompilerError> {
+-    stylesheet
+-        .minify(MinifyOptions::default())
+-        .map_err(|error| CompilerError::Print {
+-            message: error.to_string(),
+-            filename: filename.into(),
+-        })?;
++    // Audit prototype: defer native optimization until after the host pipeline.
+     let css = stylesheet
+         .to_css(PrinterOptions::default())
+         .map_err(|error| CompilerError::Print {

@@ -1,0 +1,231 @@
+{
+  "rows": [
+    {
+      "file": "0238-after-postcss-added-composes.json",
+      "scenario": "postcss-added-composes",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-added-global-reference.json",
+      "scenario": "postcss-added-global-reference",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-added-import.json",
+      "scenario": "postcss-added-import",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-added-nested-nonempty-composes.json",
+      "scenario": "postcss-added-nested-nonempty-composes",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-added-resource.json",
+      "scenario": "postcss-added-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-global-context.json",
+      "scenario": "postcss-global-context",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-global-resource.json",
+      "scenario": "postcss-global-resource",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-after-postcss-imported-keyframe.json",
+      "scenario": "postcss-imported-keyframe",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-before-postcss-added-composes.json",
+      "scenario": "postcss-added-composes",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-before-postcss-added-global-reference.json",
+      "scenario": "postcss-added-global-reference",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-before-postcss-added-import.json",
+      "scenario": "postcss-added-import",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-before-postcss-added-nested-composes.json",
+      "scenario": "postcss-added-nested-composes",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-before-postcss-added-resource.json",
+      "scenario": "postcss-added-resource",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-before-postcss-global-resource.json",
+      "scenario": "postcss-global-resource",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": true
+    },
+    {
+      "file": "0238-corrected-before-postcss-added-composes.json",
+      "scenario": "postcss-added-composes",
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-corrected-before-postcss-added-global-reference.json",
+      "scenario": "postcss-added-global-reference",
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-corrected-before-postcss-added-import.json",
+      "scenario": "postcss-added-import",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-corrected-before-postcss-added-nested-composes.json",
+      "scenario": "postcss-added-nested-composes",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-corrected-before-postcss-added-resource.json",
+      "scenario": "postcss-added-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-corrected-before-postcss-global-resource.json",
+      "scenario": "postcss-global-resource",
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-final-postcss-added-global-reference.json",
+      "scenario": "postcss-added-global-reference",
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-final-postcss-added-resource.json",
+      "scenario": "postcss-added-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-final-postcss-child-global-resource.json",
+      "scenario": "postcss-child-global-resource",
+      "build": 1,
+      "pass": 0,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-final-postcss-global-resource.json",
+      "scenario": "postcss-global-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-rebased-postcss-added-global-reference.json",
+      "scenario": "postcss-added-global-reference",
+      "build": 0,
+      "pass": 0,
+      "fail": 2,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-rebased-postcss-child-global-resource.json",
+      "scenario": "postcss-child-global-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-rebased-postcss-global-context.json",
+      "scenario": "postcss-global-context",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    },
+    {
+      "file": "0238-rebased-postcss-global-resource.json",
+      "scenario": "postcss-global-resource",
+      "build": 0,
+      "pass": 2,
+      "fail": 0,
+      "scriptSyntaxFailure": false
+    }
+  ],
+  "mapInputs": 10,
+  "mapPass": 16,
+  "mapFail": 0
+}

@@ -1,0 +1,34 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-ok_jpz5i/packages/next
+
+ ❯ tests/bug-hunt-static-asset-publication.test.ts (4 tests | 1 failed | 3 skipped) 9975ms
+   × static CSS loader reports newly discovered resource dependencies in the same invocation 9973ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-static-asset-publication.test.ts > static CSS loader reports newly discovered resource dependencies in the same invocation
+AssertionError: expected [ …(3) ] to include '/var/folders/_b/768dhtz56ns54x1r867j6…'
+ ❯ tests/bug-hunt-static-asset-publication.test.ts:106:26
+    104|       async: () => (error, content) => error ? reject(error) : resolve…
+    105|     }, source))
+    106|     expect(dependencies).toContain(image)
+       |                          ^
+    107|     expect(dependencies.some(file => dirname(file) === dirname(state.o…
+    108|     const outputFiles = readdirSync(dirname(state.outputPath)).filter(…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 skipped (4)
+   Start at  03:21:54
+   Duration  15.43s (tests 68%, transform 26%, import 6%)
+
+  Transform  transforming modules took 3.83s · 26% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

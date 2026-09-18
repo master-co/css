@@ -1,0 +1,39 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/language-server
+
+ ❯ tests/diagnostics.test.ts (9 tests | 1 failed) 3122ms
+   ❯ invalid-manifest (2)
+     × publishes manifest loading diagnostics 298ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/diagnostics.test.ts > invalid-manifest > publishes manifest loading diagnostics
+AssertionError: expected 'compose-quoted-syntax' to be 'manifest-loading-error' // Object.is equality
+
+Expected: "manifest-loading-error"
+Received: "compose-quoted-syntax"
+
+ ❯ tests/diagnostics.test.ts:146:33
+    144|     const diagnostics = sendDiagnostics.mock.calls.at(-1)?.[0].diagnos…
+    145|     expect(diagnostics).toHaveLength(1)
+    146|     expect(diagnostics[0].code).toBe('manifest-loading-error')
+       |                                 ^
+    147|     expect(diagnostics[0].message).toContain('Failed to load Master CS…
+    148|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 7 passed (8)
+      Tests  1 failed | 38 passed (39)
+   Start at  23:25:42
+   Duration  4.26s (tests 57%, transform 32%, import 11%)
+
+  Transform  transforming modules took 6.11s · 32% of tracked time, re-done on every run
+             persist transforms across runs with fsModuleCache: true
+             learn more: https://vitest.dev/guide/improving-performance#caching-between-reruns
+

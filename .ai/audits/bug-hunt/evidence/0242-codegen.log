@@ -1,0 +1,60 @@
+   Compiling unicode-ident v1.0.24
+   Compiling serde_core v1.0.229
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling syn v2.0.119
+   Compiling syn v3.0.5
+   Compiling indexmap v2.14.2
+   Compiling crossbeam-utils v0.8.23
+   Compiling serde v1.0.229
+   Compiling serde_derive v1.0.229
+   Compiling crossbeam-epoch v0.9.21
+   Compiling crossbeam-deque v0.8.8
+   Compiling phf_macros v0.13.1
+   Compiling rayon-core v1.13.0
+   Compiling serde_json v1.0.151
+   Compiling phf v0.13.1
+   Compiling thiserror-impl v2.0.20
+   Compiling cssparser-macros v0.7.0
+   Compiling typenum v1.20.1
+   Compiling thiserror v2.0.20
+   Compiling hybrid-array v0.4.14
+   Compiling cssparser v0.37.0
+   Compiling anyhow v1.0.104
+   Compiling foldhash v0.2.0
+   Compiling hashbrown v0.16.1
+   Compiling rayon v1.12.0
+   Compiling syn v1.0.109
+   Compiling mastercss-schema v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-schema)
+   Compiling stable_deref_trait v1.2.1
+   Compiling fallible-iterator v0.3.0
+   Compiling semver v1.0.28
+   Compiling leb128fmt v0.1.0
+   Compiling heck v0.5.0
+   Compiling wasm-bindgen-shared v0.2.128
+   Compiling walrus-macro v0.26.0
+   Compiling parcel_selectors v0.28.3
+   Compiling wasm-encoder v0.245.1
+   Compiling wasmparser v0.245.1
+   Compiling gimli v0.32.3
+   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-lexer)
+   Compiling lightningcss-derive v1.0.0-alpha.43
+   Compiling id-arena v2.3.0
+   Compiling cssparser-color v0.5.0
+   Compiling block-buffer v0.12.1
+   Compiling crypto-common v0.2.2
+   Compiling const-oid v0.10.2
+   Compiling leb128 v0.2.7
+   Compiling lightningcss v1.0.0-alpha.72
+   Compiling walrus v0.26.5
+   Compiling digest v0.11.3
+   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-engine)
+   Compiling cpufeatures v0.3.1
+   Compiling rustc-demangle v0.1.28
+   Compiling base64 v0.22.1
+   Compiling wasm-bindgen-cli-support v0.2.128
+   Compiling sha2 v0.11.0
+   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-compiler)
+   Compiling xtask v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/xtask)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 29.50s
+     Running `.ai/audits/bug-hunt/tmp/0240-rust-target/debug/xtask codegen`

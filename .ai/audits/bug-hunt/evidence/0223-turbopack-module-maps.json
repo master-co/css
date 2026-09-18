@@ -1,0 +1,18 @@
+{
+  "bundler": "turbopack",
+  "scope": "Exact scoped selector mappings to authored Module file, line, column and sourcesContent in actual Next exported CSS",
+  "checks": [
+    {
+      "authored": ".direct",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: {\"generatedLine\":1,\"generatedColumn\":0,\"originalSource\":\"turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-lCAaiL/.master/stylesheets/cdb3b1bc4295e02a0c0836d6fbf421c6800cf5de120b6305a2fa4f2906bd85d0/b1a5766c3d884a64ce2458abd2631f73b404b8e4dd231647e0481c2b080fa318-entry.css\",\"originalLine\":0,\"originalColumn\":0}"
+    },
+    {
+      "authored": ".composed",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: {\"generatedLine\":1,\"generatedColumn\":155,\"originalSource\":\"turbopack:///[project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-lCAaiL/.master/stylesheets/cdb3b1bc4295e02a0c0836d6fbf421c6800cf5de120b6305a2fa4f2906bd85d0/b1a5766c3d884a64ce2458abd2631f73b404b8e4dd231647e0481c2b080fa318-entry.css\",\"originalLine\":6,\"originalColumn\":0}"
+    }
+  ],
+  "passed": 0,
+  "failed": 2
+}

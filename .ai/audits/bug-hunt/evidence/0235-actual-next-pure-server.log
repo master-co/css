@@ -1,0 +1,23 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 6ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1500ms
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 52ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"rows":[{"scenario":"configured","checks":{"nativeOptionReferenceAndImmutableRead":true,"nativeContextMessagesAndSingleProcessing":true,"outputAndMap":true},"map":{"entry":{"generatedLine":0,"generatedColumn":0,"originalSource":"file:///private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/configured/card.module.css","originalLine":3,"originalColumn":0},"expectedFile":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/configured/card.module.css","expectedLine":3,"expectedColumn":0,"fullSource":true,"pass":true},"errors":0},{"scenario":"different-options","checks":{"nativeOptionReferenceAndImmutableRead":true,"nativeContextMessagesAndSingleProcessing":true,"outputAndMap":true},"map":{"entry":{"generatedLine":0,"generatedColumn":0,"originalSource":"file:///private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/different-options/card.module.css","originalLine":3,"originalColumn":0},"expectedFile":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/different-options/card.module.css","expectedLine":3,"expectedColumn":0,"fullSource":true,"pass":true},"errors":0},{"scenario":"ordinary","checks":{"nativeOptionReferenceAndImmutableRead":true,"nativeContextMessagesAndSingleProcessing":true,"outputAndMap":true},"map":{"entry":{"generatedLine":1,"generatedColumn":0,"originalSource":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/ordinary/card.module.css","originalLine":1,"originalColumn":0},"expectedFile":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/ordinary/card.module.css","expectedLine":1,"expectedColumn":0,"fullSource":true,"pass":true},"errors":0},{"scenario":"empty","checks":{"nativeOptionReferenceAndImmutableRead":true,"outputAndMap":"observed"},"map":{"entry":{"generatedLine":0,"generatedColumn":0,"originalSource":"file:///private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/empty/card.module.css","originalLine":3,"originalColumn":0},"expectedFile":"/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-postcss-transport-ZzUySU/empty/card.module.css","expectedLine":3,"expectedColumn":0,"fullSource":true,"pass":true},"errors":0},{"scenario":"error","checks":{"nativeOptionReferenceAndImmutableRead":true,"errorPropagatesWithoutFallback":true},"errors":2}],"cleaned":true}

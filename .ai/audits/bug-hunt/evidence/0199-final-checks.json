@@ -1,0 +1,276 @@
+{
+  "batch": "0199-graph-directive-metadata",
+  "status": "Metadata behavior verified;legacy registration/composition output andfullgoal incomplete",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "previousGoalTurn": "progress;0198audit commit3b5c98d61 and290excludedfiles preserved",
+  "finding": "BH-0004 partial consumer repair;no newID/fixedcount",
+  "results": {
+    "correctedMetadataBefore": "14FAIL/1PASS",
+    "metadataAfter": "16PASS",
+    "discoveryNativeWasm": "7PASS",
+    "bindingAll": "24PASS",
+    "compilerCurrent": {
+      "pass": 379,
+      "fail": 5,
+      "files": 52,
+      "retainedFailure": "consumed source/safelist text inqualified legacy output",
+      "graphControls": "5PASS"
+    },
+    "builtBrowserBefore": "36FAIL/36authorPASS",
+    "builtBrowserAfter": "36PASS/36authorPASS",
+    "wasmExistingSuite": "3PASS/1FAIL;verified originalsource/artifactbaseline also3PASS/1FAIL",
+    "threePackageLintTypes": "PASS",
+    "threeIsolatedBuilds": "PASS",
+    "nativeWasmClippy": "PASS",
+    "rustFmt": "PASS",
+    "codegen": "PASS",
+    "parity": "PASS",
+    "site": "isolatedprepare/lintPASS0errors75warnings;notlivevalidation"
+  },
+  "preservation": {
+    "changedSources": [
+      "crates/mastercss-binding-native/src/compiler.rs",
+      "crates/mastercss-binding-wasm-compiler/src/lib.rs",
+      "packages/binding-wasm-compiler/src/index.ts",
+      "packages/binding-wasm-compiler/src/provider.ts",
+      "packages/binding/src/compiler-binding-adapter.ts",
+      "packages/binding/src/compiler-binding-contract.ts",
+      "packages/binding/src/compiler-binding-wasm.ts",
+      "packages/binding/src/compiler.ts",
+      "packages/binding/src/native-loader.ts",
+      "packages/compiler/README.md",
+      "packages/compiler/src/stylesheet/directives.ts",
+      "packages/compiler/src/stylesheet/index.ts",
+      "site/app/[locale]/guide/directives/contract.mdx"
+    ],
+    "newSources": [
+      "packages/compiler/tests/bug-hunt-graph-directive-metadata.test.ts",
+      "packages/compiler/tests/bug-hunt-imported-policy-output.test.ts",
+      "packages/binding/tests/bug-hunt-stylesheet-discovery.test.ts",
+      ".ai/audits/bug-hunt/repros/generate-wasm-isolated.rs",
+      ".ai/audits/bug-hunt/repros/graph-directive-metadata-browser.mjs"
+    ],
+    "sourceCount": 546,
+    "artifactCount": 453,
+    "changedArtifacts": [
+      "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.d.ts",
+      "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler.js",
+      "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm",
+      "packages/binding-wasm-compiler/artifacts/mastercss_binding_wasm_compiler_bg.wasm.d.ts",
+      "packages/binding-wasm-compiler/dist/artifacts/mastercss_binding_wasm_compiler.js",
+      "packages/binding-wasm-compiler/dist/index.js",
+      "packages/binding/artifacts/mastercss.node",
+      "packages/binding/dist/compiler-binding-adapter.js",
+      "packages/binding/dist/compiler-binding-wasm.js",
+      "packages/binding/dist/compiler.js",
+      "packages/compiler/dist/stylesheet/directives.d.ts",
+      "packages/compiler/dist/stylesheet/directives.js",
+      "packages/compiler/dist/stylesheet/index.js"
+    ],
+    "unchangedPriorSources": 528,
+    "sourceInventory": "0199-source-hashes-final.json",
+    "artifactInventory": "0199-artifacts-final.json",
+    "priorDocs": "exact priorbytes recovered byremoving onlyaddedparagraphs",
+    "delivery": "atomic exchanges;no in-place shared build;recordedcompletebackups retained",
+    "foreignHosts": "notstopped orrestarted;normalfresh-hostverification pending",
+    "originalTestsFixturesSnapshotsDependenciesLockfilesCIRelease": "unchangedin0199",
+    "index": "empty",
+    "newCommitOrPush": false
+  },
+  "counts": {
+    "historical": 60,
+    "fixed": 56,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0198 filesystem nativeproject/CLI consumer repaired andverified;low-level rawsource20qualified failures re-confirmed,parse-only file andmetadata flattening consumers remain next;this does not closeBH-0004.",
+    "0199qualified legacy registration/composition retains consumed source/safelist in5cases;graph-rendered controls5PASS. Migrate graph storage andcomposition withreference origins,manifest merging,class pruning,Masterbase/nativeoutput switches;no TS semanticfallback.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished."
+  ],
+  "next": "Migrate legacy registration andcomposition asonepath usingpreparedgraphs andexistingRust compiler;first fivepolicy failures,thenqualified manageddefinitions,nativecompose,reference/sourceownership,package switchesandmaps. Continue0195/Webpackisolation,fullhosts/gates/benchmarks/Site requirements.",
+  "identityConfirmation": "Notreceived;0038additionalverificationpaused",
+  "goal": "active",
+  "checks": {
+    "context": "PASS;0199-context-final.log",
+    "sourcePreservation": "546hashesverified",
+    "artifactPreservation": "453inventory13expectedchanges440unchanged",
+    "commands": "all0199ownedtests/builds/isolatedSite andfinalcompilerlint/types terminal",
+    "authoredWhitespace": "PASS;verbatimlogs/historyexcluded",
+    "reproSyntax": "Node syntaxPASS;standaloneRustformatPASS afterformat-onlycorrection;existing successfulcompile evidence preserved",
+    "priorExcludedFiles": "287of290 exact;onlynewpolicytest,0199batchdoc andnewRustreproformat intentionallyupdatedthiscontinuation"
+  },
+  "logs": {
+    "0199-binding-default-tests.log": {
+      "bytes": 650,
+      "sha256": "c4a86b87cfd0677d8953734b53c3cc11f8a07b4336c6f0d6ec5367a4efb1753d"
+    },
+    "0199-binding-isolated-build.log": {
+      "bytes": 7275,
+      "sha256": "a72f86dd212c12c7fd977b440772b8707c50103c36701771ba18a9c381ee968a"
+    },
+    "0199-binding-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0199-binding-type-check.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0199-binding-wasm-compiler-isolated-build.log": {
+      "bytes": 1598,
+      "sha256": "3a6085ab20738dab36583580de603153c24b192feb318b8c3f406ffb68595d15"
+    },
+    "0199-binding-wasm-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0199-binding-wasm-compiler-type-check.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0199-built-registration-after.log": {
+      "bytes": 13920,
+      "sha256": "a3502b6bf26eda45a005724cbc6d87f8ee7e3492301d099f117190ee165e9fea"
+    },
+    "0199-built-registration-before-corrected.log": {
+      "bytes": 19986,
+      "sha256": "6d265c5b4d847cddf787f59bf320778ff457632a7e9f0e8378524655b825181d"
+    },
+    "0199-built-registration-before.log": {
+      "bytes": 1108,
+      "sha256": "b00708302564fc5421d7ffd955990fdf8254b933e72d1ceb1b5090ef0cc1f2ab"
+    },
+    "0199-clippy.log": {
+      "bytes": 1344,
+      "sha256": "2f9e19ca2fe0dfbe6bf5daa3af8735ff58589dfe6c4bcc7b17ef8a76a466f620"
+    },
+    "0199-codegen-check.log": {
+      "bytes": 122,
+      "sha256": "3d3e54f9b620b116aa4fe096d81fd79dd799ee79dba6a20c87e4dbe3d6f25ee3"
+    },
+    "0199-compiler-complete-current-tests.log": {
+      "bytes": 6808,
+      "sha256": "94ca504d7444c774422c05e039ce8552fae5a41370c63aeb6519435ad60e533c"
+    },
+    "0199-compiler-default-tests.log": {
+      "bytes": 1492,
+      "sha256": "0bdb6b9215af463e2bfbdfe606e30462996dfedc5c3f7a4e5edbb65ac9dae244"
+    },
+    "0199-compiler-final-lint.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0199-compiler-final-types.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0199-compiler-isolated-build.log": {
+      "bytes": 12094,
+      "sha256": "432defe957d5e4736e4849c5b183ca3bd4e0049170bff16ffc8313cf9a4abb59"
+    },
+    "0199-compiler-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0199-compiler-tests.log": {
+      "bytes": 1642,
+      "sha256": "c272e311dea15e3275a96461554d7b45d687e3f0f8b6d36ce1e5ff547e5bab7d"
+    },
+    "0199-compiler-type-check.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0199-compiler-types-initial.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0199-context-final.log": {
+      "bytes": 121,
+      "sha256": "0da6e1e1f21e7566d0d247f171f545ef1db87819d45d5094e3c9730e35a66f88"
+    },
+    "0199-discovery-parity.log": {
+      "bytes": 660,
+      "sha256": "0999d50f00210b2e3c44a58b52d1044c82ff7a4268353522f350e210b1b6d223"
+    },
+    "0199-isolated-bindgen-compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0199-isolated-wasm-generate.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0199-metadata-after.log": {
+      "bytes": 652,
+      "sha256": "e7448d70639b9ddfe838ce8f7729c2e5a0e8a6301d951564a4ca8580c21ede5b"
+    },
+    "0199-metadata-before-corrected.log": {
+      "bytes": 7056,
+      "sha256": "0e384b2ba5e874ba7252ea7a35dce835c4c3ad202af05ae5802add3314f52ae9"
+    },
+    "0199-metadata-before.log": {
+      "bytes": 6730,
+      "sha256": "dc9e259ab3bab5dece1134a6255dede1502c66a9a7d3268a1755ec6a20f58f9f"
+    },
+    "0199-native-target-build.log": {
+      "bytes": 174,
+      "sha256": "d02b701c185968ece24d7eee3227cd4936f68a29d5802eef8ca0aa45df809b4c"
+    },
+    "0199-parity.log": {
+      "bytes": 113,
+      "sha256": "0dca719e10cc1314902c2d91fb3372cd49923abf71e20aa8a476b69c3cc14de5"
+    },
+    "0199-policy-graph-controls.log": {
+      "bytes": 10414,
+      "sha256": "ab0ffefd4935003772be08a7485bfcda493775cfa79fbd004392bf03e73c7584"
+    },
+    "0199-retained-policy-failures.log": {
+      "bytes": 5659,
+      "sha256": "d1d772a21cfd11213f89f749ca476fd19488aa49b1ea021d1fffd088f7f92077"
+    },
+    "0199-rust-fmt.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0199-site-corrected-lint.log": {
+      "bytes": 13695,
+      "sha256": "c915d9cc3af341bd26574ccd3a441134f0d1a834c93b91e80b2569825a2f620e"
+    },
+    "0199-site-corrected-prepare.log": {
+      "bytes": 2237,
+      "sha256": "f88ca0c524544d8aca47894a87e4f4b5e66f966082bb7bd3411c381224bee067"
+    },
+    "0199-wasm-baseline-corrected-tests.log": {
+      "bytes": 1650,
+      "sha256": "68dba58b0d0258afc7f52bac47917e01a7b7bd7c7bf923ec4480110e65157ce3"
+    },
+    "0199-wasm-baseline-tests.log": {
+      "bytes": 225,
+      "sha256": "731aadac205686de1163c0226d03d4379cdf4b9497a0fcace160ec337aa7fac1"
+    },
+    "0199-wasm-default-tests.log": {
+      "bytes": 1572,
+      "sha256": "91a534aad80e4b0408ec9a947c24dced50edcfd93f38604b69548949389d49d0"
+    },
+    "0199-wasm-target-build.log": {
+      "bytes": 178,
+      "sha256": "936e5ee761841b73cf1dc3e04e73f728acca8e3fea4b3bda6cdd96fbc9c4054a"
+    }
+  }
+}

@@ -1,0 +1,74 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.js took 87ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+
+-----
+[1m[31mFATAL[39m[0m: An unexpected Turbopack error occurred. A panic log has been written to /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/next-panic-9afce7336078164ee79e3e1ecefd448d.log.
+
+To help make Turbopack better, report this error by clicking here: https://bugs.nextjs.org/search?category=turbopack-error-report&title=Turbopack%20Error%3A%20Failed%20to%20write%20app%20endpoint%20%2Fpage&body=Turbopack%20version%3A%20%60299180d3%60%0ANext.js%20version%3A%20%600.0.0%60%0A%0AError%20message%3A%0A%60%60%60%0AFailed%20to%20write%20app%20endpoint%20%2Fpage%0A%0ACaused%20by%3A%0A-%20%5Bproject%5D%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2Fapp%2Fcard.module.css%20%5Bapp-rsc%5D%20%28css%20module%29%0A-%20reading%20file%20%22%2FUsers%2Faron%2Fmaster%2Fcss%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2F%5C0next-css%3Amodule%3A%2FUsers%2Faron%2Fmaster%2Fcss%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2Fapp%2Fnested%2Fimported.module.css%22%0A-%20file%20name%20contained%20an%20unexpected%20NUL%20byte%0A%0ADebug%20info%3A%0A-%20Execution%20of%20get_all_written_entrypoints_with_issues_operation%20failed%0A-%20Execution%20of%20EntrypointsOperation%3A%3Anew%20failed%0A-%20Execution%20of%20all_entrypoints_write_to_disk_operation%20failed%0A-%20Execution%20of%20output_assets_operation%20failed%0A-%20Execution%20of%20%3CAppEndpoint%20as%20Endpoint%3E%3A%3Aoutput%20failed%0A-%20Failed%20to%20write%20app%20endpoint%20%2Fpage%0A-%20Execution%20of%20AppEndpoint%3A%3Aoutput%20failed%0A-%20Execution%20of%20whole_app_module_graph_operation%20failed%0A-%20Execution%20of%20%2AProject%3A%3Aget_all_additional_entries%20failed%0A-%20Execution%20of%20ModuleGraph%3A%3Afrom_graphs%20failed%0A-%20Execution%20of%20ModuleGraph%3A%3Afrom_graphs_inner%20failed%0A-%20Execution%20of%20SingleModuleGraph%3A%3Anew_with_entries%20failed%0A-%20%5Bproject%5D%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2Fapp%2Fcard.module.css%20%5Bapp-rsc%5D%20%28css%20module%29%0A-%20Execution%20of%20primary_chunkable_referenced_modules%20failed%0A-%20Execution%20of%20%3CEcmascriptCssModule%20as%20Module%3E%3A%3Areferences%20failed%0A-%20Execution%20of%20EcmascriptCssModule%3A%3Amodule_references%20failed%0A-%20Execution%20of%20EcmascriptCssModule%3A%3Aclasses%20failed%0A-%20Execution%20of%20%3CCssModule%20as%20ProcessCss%3E%3A%3Aget_css_with_placeholder%20failed%0A-%20Execution%20of%20%2Aprocess_css_with_placeholder%20failed%0A-%20Execution%20of%20parse_css%20failed%0A-%20Execution%20of%20%3CPostCssTransformedAsset%20as%20Asset%3E%3A%3Acontent%20failed%0A-%20Execution%20of%20PostCssTransformedAsset%3A%3Aprocess%20failed%0A-%20Execution%20of%20%3CWebpackLoadersProcessedAsset%20as%20Asset%3E%3A%3Acontent%20failed%0A-%20Execution%20of%20WebpackLoadersProcessedAsset%3A%3Aprocess%20failed%0A-%20Execution%20of%20evaluate_webpack_loader%20failed%0A-%20Execution%20of%20%3CDiskFileSystem%20as%20FileSystem%3E%3A%3Aread%20failed%0A-%20reading%20file%20%22%2FUsers%2Faron%2Fmaster%2Fcss%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2F%5C0next-css%3Amodule%3A%2FUsers%2Faron%2Fmaster%2Fcss%2F.ai%2Faudits%2Fbug-hunt%2Ftmp%2Fmaster-next-copy-3z8i_q4c%2Fpackages%2Fnext%2Fe2e%2Fbug-hunt-general-graph-kTB5bo%2Fapp%2Fnested%2Fimported.module.css%22%0A-%20file%20name%20contained%20an%20unexpected%20NUL%20byte%0A%60%60%60&labels=Turbopack,Turbopack%20Panic%20Backtrace
+-----
+
+
+> Build error occurred
+Error [TurbopackInternalError]: Failed to write app endpoint /page
+
+Caused by:
+- [project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/app/card.module.css [app-rsc] (css module)
+- reading file "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/\0next-css:module:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/app/nested/imported.module.css"
+- file name contained an unexpected NUL byte
+
+Debug info:
+- Execution of get_all_written_entrypoints_with_issues_operation failed
+- Execution of EntrypointsOperation::new failed
+- Execution of all_entrypoints_write_to_disk_operation failed
+- Execution of output_assets_operation failed
+- Execution of <AppEndpoint as Endpoint>::output failed
+- Failed to write app endpoint /page
+- Execution of AppEndpoint::output failed
+- Execution of whole_app_module_graph_operation failed
+- Execution of *Project::get_all_additional_entries failed
+- Execution of ModuleGraph::from_graphs failed
+- Execution of ModuleGraph::from_graphs_inner failed
+- Execution of SingleModuleGraph::new_with_entries failed
+- [project]/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/app/card.module.css [app-rsc] (css module)
+- Execution of primary_chunkable_referenced_modules failed
+- Execution of <EcmascriptCssModule as Module>::references failed
+- Execution of EcmascriptCssModule::module_references failed
+- Execution of EcmascriptCssModule::classes failed
+- Execution of <CssModule as ProcessCss>::get_css_with_placeholder failed
+- Execution of *process_css_with_placeholder failed
+- Execution of parse_css failed
+- Execution of <PostCssTransformedAsset as Asset>::content failed
+- Execution of PostCssTransformedAsset::process failed
+- Execution of <WebpackLoadersProcessedAsset as Asset>::content failed
+- Execution of WebpackLoadersProcessedAsset::process failed
+- Execution of evaluate_webpack_loader failed
+- Execution of <DiskFileSystem as FileSystem>::read failed
+- reading file "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/\0next-css:module:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-kTB5bo/app/nested/imported.module.css"
+- file name contained an unexpected NUL byte
+    at <unknown> (TurbopackInternalError: Failed to write app endpoint /page) {
+  type: 'TurbopackInternalError',
+  location: undefined
+}
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Next build failed; signal=null
+
+1 !== 0
+
+    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-general-graph-host.mjs:121:10
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.20.0

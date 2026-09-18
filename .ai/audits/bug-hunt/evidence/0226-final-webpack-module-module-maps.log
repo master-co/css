@@ -1,0 +1,41 @@
+{
+  "bundler": "webpack",
+  "scope": "Exact selector mappings to authored file, line, column and sourcesContent in actual Next exported CSS",
+  "checks": [
+    {
+      "authored": ".direct",
+      "pass": true,
+      "position": {
+        "generatedLine": 0,
+        "generatedColumn": 146,
+        "originalSource": "webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-w7yQ2v/app/card.module.css",
+        "originalLine": 0,
+        "originalColumn": 70
+      }
+    },
+    {
+      "authored": ".composed",
+      "pass": true,
+      "position": {
+        "generatedLine": 0,
+        "generatedColumn": 293,
+        "originalSource": "webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-w7yQ2v/app/card.module.css",
+        "originalLine": 0,
+        "originalColumn": 155
+      }
+    },
+    {
+      "authored": ".imported",
+      "pass": true,
+      "position": {
+        "generatedLine": 0,
+        "generatedColumn": 0,
+        "originalSource": "webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-general-graph-w7yQ2v/app/nested/imported.module.css",
+        "originalLine": 0,
+        "originalColumn": 0
+      }
+    }
+  ],
+  "passed": 3,
+  "failed": 0
+}

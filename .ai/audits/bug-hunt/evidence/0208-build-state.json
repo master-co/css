@@ -1,0 +1,9 @@
+{
+  "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-fylhgr8m",
+  "package": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-webpack-copy-fylhgr8m/packages/webpack",
+  "scope": "Owned disposable package; no shared build or promotion",
+  "compilerBuildExitCode": 0,
+  "compilerBuildLog": "/Users/aron/master/css/.ai/audits/bug-hunt/evidence/0208-build-state-compiler-build.log",
+  "buildExitCode": 0,
+  "buildLog": "/Users/aron/master/css/.ai/audits/bug-hunt/evidence/0208-build-state-build.log"
+}

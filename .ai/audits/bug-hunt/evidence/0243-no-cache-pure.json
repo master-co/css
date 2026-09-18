@@ -1,0 +1,190 @@
+{
+  "root": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin",
+  "traced": false,
+  "hostRead": false,
+  "contextDependency": false,
+  "pure": true,
+  "disableCache": true,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "compiler": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/compiler/dist/stylesheet/index-public.js",
+  "bindingOverride": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/mastercss.node",
+  "phases": [
+    {
+      "phase": "initial",
+      "build": {
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 11ms\n- Experiments (use with caution):\n  · cpus: 1\n  ⨯ turbopackFileSystemCacheForBuild\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 963ms\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/4) ...\n  Generating static pages using 1 worker (1/4) \r\n  Generating static pages using 1 worker (2/4) \r\n  Generating static pages using 1 worker (3/4) \r\n✓ Generating static pages using 1 worker (4/4) in 49ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n└ ○ /nested\n\n\n○  (Static)  prerendered as static content\n\n"
+      },
+      "callbacks": [
+        {
+          "time": 1789684029295,
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/app/globals.css",
+          "outputs": [
+            {
+              "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/f5581205944e53f65a5ff69e8ce72292a88ad7f8c488360412c375490775e7b2.css",
+              "exists": true,
+              "registered": true
+            }
+          ],
+          "dependencies": [
+            "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/f5581205944e53f65a5ff69e8ce72292a88ad7f8c488360412c375490775e7b2.css"
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "file": ".master/stylesheets/pure/f5581205944e53f65a5ff69e8ce72292a88ad7f8c488360412c375490775e7b2.css",
+          "bytes": 21,
+          "text": ".original{color:red}\n"
+        }
+      ],
+      "html": [
+        {
+          "file": "out/404.html",
+          "manifests": []
+        },
+        {
+          "file": "out/_not-found.html",
+          "manifests": []
+        },
+        {
+          "file": "out/index.html",
+          "manifests": []
+        },
+        {
+          "file": "out/nested.html",
+          "manifests": []
+        }
+      ],
+      "css": [
+        {
+          "file": "out/_next/static/chunks/3i_zbcui8bjj7.css",
+          "text": ".original{color:red}\n\n"
+        }
+      ],
+      "valid": true
+    },
+    {
+      "phase": "changed-source",
+      "build": {
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 11ms\n- Experiments (use with caution):\n  · cpus: 1\n  ⨯ turbopackFileSystemCacheForBuild\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 863ms\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/4) ...\n  Generating static pages using 1 worker (1/4) \r\n  Generating static pages using 1 worker (2/4) \r\n  Generating static pages using 1 worker (3/4) \r\n✓ Generating static pages using 1 worker (4/4) in 52ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n└ ○ /nested\n\n\n○  (Static)  prerendered as static content\n\n"
+      },
+      "callbacks": [
+        {
+          "time": 1789684030875,
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/app/globals.css",
+          "outputs": [
+            {
+              "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css",
+              "exists": true,
+              "registered": true
+            }
+          ],
+          "dependencies": [
+            "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css"
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "file": ".master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css",
+          "bytes": 44,
+          "text": ".original{color:red}\n.updated{padding:13px}\n"
+        },
+        {
+          "file": ".master/stylesheets/pure/f5581205944e53f65a5ff69e8ce72292a88ad7f8c488360412c375490775e7b2.css",
+          "bytes": 21,
+          "text": ".original{color:red}\n"
+        }
+      ],
+      "html": [
+        {
+          "file": "out/404.html",
+          "manifests": []
+        },
+        {
+          "file": "out/_not-found.html",
+          "manifests": []
+        },
+        {
+          "file": "out/index.html",
+          "manifests": []
+        },
+        {
+          "file": "out/nested.html",
+          "manifests": []
+        }
+      ],
+      "css": [
+        {
+          "file": "out/_next/static/chunks/1f4jrttq5pzsv.css",
+          "text": ".original{color:red}.updated{padding:13px}\n\n"
+        }
+      ],
+      "valid": true
+    },
+    {
+      "phase": "deleted-publications",
+      "build": {
+        "code": 0,
+        "signal": null,
+        "timedOut": false,
+        "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 12ms\n- Experiments (use with caution):\n  · cpus: 1\n  ⨯ turbopackFileSystemCacheForBuild\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 865ms\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/4) ...\n  Generating static pages using 1 worker (1/4) \r\n  Generating static pages using 1 worker (2/4) \r\n  Generating static pages using 1 worker (3/4) \r\n✓ Generating static pages using 1 worker (4/4) in 49ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n├ ○ /_not-found\n└ ○ /nested\n\n\n○  (Static)  prerendered as static content\n\n"
+      },
+      "callbacks": [
+        {
+          "time": 1789684032368,
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/app/globals.css",
+          "outputs": [
+            {
+              "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css",
+              "exists": true,
+              "registered": true
+            }
+          ],
+          "dependencies": [
+            "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-initial-publication-Q1Adin/.master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css"
+          ]
+        }
+      ],
+      "publications": [
+        {
+          "file": ".master/stylesheets/pure/a927b0a35a63e874282259b68b7099f77a00d3907090fd4d5709f926367ca8b9.css",
+          "bytes": 44,
+          "text": ".original{color:red}\n.updated{padding:13px}\n"
+        }
+      ],
+      "html": [
+        {
+          "file": "out/404.html",
+          "manifests": []
+        },
+        {
+          "file": "out/_not-found.html",
+          "manifests": []
+        },
+        {
+          "file": "out/index.html",
+          "manifests": []
+        },
+        {
+          "file": "out/nested.html",
+          "manifests": []
+        }
+      ],
+      "css": [
+        {
+          "file": "out/_next/static/chunks/1f4jrttq5pzsv.css",
+          "text": ".original{color:red}.updated{padding:13px}\n\n"
+        }
+      ],
+      "valid": true
+    }
+  ],
+  "errors": []
+}

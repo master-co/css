@@ -1,0 +1,33 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 98ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy] Skipped not serializable cache item 'Compilation/modules|javascript/auto|/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/next-flight-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[0]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/webpack-css-loader.js??ruleSet[1].rules[13].oneOf[5].use[1]!/Users/aron/master/css/node_modules/.pnpm/next@16.3.4_@babel+core@7.29.7_supports-color@5.5.0__@opentelemetry+api@1.9.1_@playwrig_32ca514ff86563f2cff62a7dc4559350/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/dist/stylesheet-loader.js??ruleSet[1].rules[13].oneOf[5].use[3]!/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-lWg9sn/app/card.module.css|ssr': No serializer registered for ModuleNotFoundError
+<w> while serializing webpack/lib/cache/PackFileCacheStrategy.PackContentItems -> webpack/lib/NormalModule -> webpack/lib/ModuleBuildError -> ModuleNotFoundError
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+Failed to compile.
+
+./app/card.module.css
+Module not found: Can't resolve '../../transform-loader.cjs'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.jsx
+
+./app/card.module.css
+Module not found: Module not found: Can't resolve '../../transform-loader.cjs'
+
+https://nextjs.org/docs/messages/module-not-found
+
+Import trace for requested module:
+./app/page.jsx
+
+
+> Build failed because of webpack errors
+{"scenario":"inline-nested-composes","bundler":"webpack","pure":false,"build":{"code":1,"signal":null,"timedOut":false,"exported":false},"observations":[]}

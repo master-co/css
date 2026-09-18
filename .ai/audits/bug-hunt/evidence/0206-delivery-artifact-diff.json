@@ -1,0 +1,47 @@
+{
+  "oldCount": 47,
+  "newCount": 49,
+  "added": [
+    "Users/aron/master/css/packages/internal/src/emitted-globals-module.js",
+    "Users/aron/master/css/packages/internal/src/manifest-facade.js",
+    "Users/aron/master/css/packages/internal/src/manifest-loader.js",
+    "Users/aron/master/css/packages/internal/src/manifest-module.js",
+    "Users/aron/master/css/packages/internal/src/node.js",
+    "Users/aron/master/css/packages/internal/src/project.js",
+    "Users/aron/master/css/packages/internal/src/style-module.js",
+    "Users/aron/master/css/packages/preset/src/default-manifest.js",
+    "Users/aron/master/css/packages/schema/src/manifest-json.js",
+    "utils/build-stylesheet-delivery.d.ts",
+    "utils/build-stylesheet-delivery.js"
+  ],
+  "removed": [
+    "internal/src/emitted-globals-module.js",
+    "internal/src/manifest-facade.js",
+    "internal/src/manifest-loader.js",
+    "internal/src/manifest-module.js",
+    "internal/src/node.js",
+    "internal/src/project.js",
+    "internal/src/style-module.js",
+    "preset/src/default-manifest.js",
+    "schema/src/manifest-json.js"
+  ],
+  "changed": [
+    "plugin.d.ts",
+    "plugin.js",
+    "plugins/generated-css-assets.js",
+    "plugins/manifest-loader.js",
+    "plugins/manifest-virtual-module.js",
+    "plugins/runtime-html-assets.js",
+    "plugins/style-entry.js",
+    "plugins/usage-graph.js",
+    "plugins/virtual-css-import.js",
+    "plugins/virtual-modules.js",
+    "stylesheet-loader.d.ts",
+    "stylesheet-loader.js",
+    "utils/path.js",
+    "utils/transform-style-source.d.ts",
+    "utils/transform-style-source.js"
+  ],
+  "unchanged": 23,
+  "harnessNote": "An attempted command had a placeholder working directory and failed before process creation; corrected to the recorded actual directory. No product or build invocation failure."
+}

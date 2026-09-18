@@ -1,0 +1,367 @@
+{
+  "workspace": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0244-global-resource-api",
+  "sourceFiles": {
+    "packages/compiler/src/compiler-diagnostics.ts": "342e37c54d83656ea3f4b2deafc52832b97d946c506f88f0a702c2f0cb751f07",
+    "packages/compiler/src/compiler.ts": "0e27a7eba74242433a8bcf75b0b809baf247ffe93c5b7d1a521b0f5cac01b2f5",
+    "packages/compiler/src/contracts.ts": "55f8aba77dbd8b37d76d0a9195099bc877d1d013cf49325669916c69eb775052",
+    "packages/compiler/src/diagnostics/contracts.ts": "28d4277a8e9b04d94ecd388bb44828d3056a05c1da3a1e623dbb8c6382a99665",
+    "packages/compiler/src/diagnostics/index.ts": "0453a5c4f175afd3c74e02ae79ab06bf85fed2c6f62bbb51a5e6b6239b27c7dd",
+    "packages/compiler/src/index.ts": "8896664f256d700c9e4c8c93d0f21a21c0af236f509e463f7a2b1a2eaeb0236c",
+    "packages/compiler/src/node-compiler.ts": "44cb0728b96599f15009a3d8e093ee9b39769fddd112c0a86fbb0452ee5b2100",
+    "packages/compiler/src/node-imports.ts": "314144ded1d7a2551a53fc7e261ab0eeaa9b6ba1f687585f4bc33862114a6ec5",
+    "packages/compiler/src/node.ts": "cc417e438f2ae9e96d2f3b0397b8077c11b1b6f80c2869e4fb7e7a9e321cc17a",
+    "packages/compiler/src/project/binding-project.ts": "47bed4e182cf68d49a0edde256e12a9a41dca97f6997ded914ba8496fad63bc8",
+    "packages/compiler/src/project/entries.ts": "5283e9e0fbc3cfee873165b2df151198682281339882ce80fefad18f46907664",
+    "packages/compiler/src/project/manifest-sync.ts": "c6783c5204aa1a96809212b1ca193b8d322a5e3f66bce774ddfbbd901e81c836",
+    "packages/compiler/src/project/manifest.ts": "ee2fecce40f803e4fc6af61c8a1ee62809fca921016aca92c4b9bb618c760a43",
+    "packages/compiler/src/project/options.ts": "dee4c53f064a07c9f996d0312dbe99a9096b978e715827e8f126bcc26c94192a",
+    "packages/compiler/src/session.ts": "ad7b4463ee0067ac8a3b68f114a2d916322c72b200424cba0f993fb1dc7f79d0",
+    "packages/compiler/src/stylesheet/browser.ts": "73ef2e12dd472f9bdf0a6496354c8fc126f6a8bf3690e2261f02e584bef69443",
+    "packages/compiler/src/stylesheet/compiled-source.ts": "1b7f89319514b81920869ed91cef6a00101e4c98dcd0b0bd47ba4f71365d0369",
+    "packages/compiler/src/stylesheet/delivery.ts": "3622887e595096bd928a49e8c8ddb100841a21b630a21c81d7729492d11ebfc4",
+    "packages/compiler/src/stylesheet/directives.ts": "76d1c854366634e6825e19552ceb6faa17749fb307f717992cd3f23bac1d8e7d",
+    "packages/compiler/src/stylesheet/index-public.ts": "ac0938769edaa18a50d6adc853ee27f401435109e6f97200861990f0a7a80751",
+    "packages/compiler/src/stylesheet/index.ts": "30ecc531940161be34cdedc670b0aefefeb3906a72042e97454ed167e954687f",
+    "packages/compiler/src/stylesheet/output-map.ts": "33a7355621112935e8fa9ddc6e6d9f695ba2ce7dbc79518f96df518f9db671b1",
+    "packages/compiler/src/stylesheet/public.ts": "c2fe44cdc5447b8fe7af6569f369c882fef1fd571188c2f2e5b4e3553f817851",
+    "packages/compiler/src/stylesheet/reference-origins.ts": "361fa34360d235fd05b22fbe55bab4e10055e2f18b70a9276a322d8db5abff58",
+    "packages/compiler/src/stylesheet/render-core.ts": "dd709747d3ee5823e8556dbe9a67186c23dcf27f2e04efc0a26c18dcb1e5d4c9",
+    "packages/compiler/src/stylesheet/render-delivery.ts": "b89e43cb2e88473ad62d0e9252a9950ef866ec2f466cce0ef504b07063cea346",
+    "packages/compiler/src/stylesheet/render-source.ts": "6a2dbc5a683ee95604559c311589b2575ae02c6c7829df362638fb9ff30d88fa",
+    "packages/compiler/src/stylesheet/render.ts": "8e900e2d303d23b59dccf2b2e1f2c40d999990a2ae29d00af4b17db39c1dfc91",
+    "packages/compiler/src/stylesheet/source-context.ts": "0854ab9fd04cf9edd9c08679d0a97c0007375b6d7f337755b33c1b35f8694260",
+    "packages/compiler/src/stylesheet/source.ts": "ab101f72a4d88caee619b3a7e32dd63efd0788c99f7b21226614393a22565e6d",
+    "packages/compiler/src/stylesheet/types.ts": "a563973a86533289da643f129e13f34b29fb5b0f109327e4a31c4983df0f5e2d",
+    "packages/compiler/tests/browser.test.ts": "d6fce1dea8d18da4953263102a260a5e38661cae201834556b3d9e9d86a1871f",
+    "packages/compiler/tests/bug-hunt-build-graph.test.ts": "28382313bbb0309f9e7718701f99817e71d85543f94ab2fc5b043d4c85e6c143",
+    "packages/compiler/tests/bug-hunt-bundle-transport.test.ts": "cf6488905542627b0d11d5aad2a1f409e93f75f42fd9e28f133534c89c9cbbf2",
+    "packages/compiler/tests/bug-hunt-collection-source-ownership.test.ts": "334d1ad5bae019cebda9ca70907276962c346ec826ebdbc45c8461a4d4224d49",
+    "packages/compiler/tests/bug-hunt-compiled-stylesheets.test.ts": "59031ec00d5144e480c9679b136a2ef762408885703ba7bc644cf4c35e474966",
+    "packages/compiler/tests/bug-hunt-default-collection-graphs.test.ts": "be017cab11049b0c4e89a25a68bf15a3f7aca9ae4a041ad0c357797dc7645c30",
+    "packages/compiler/tests/bug-hunt-delivery-output-modes.test.ts": "5b98d63bae1eb37f11de7bad5cb97e5bb3f0271aa21a88541f0577a5b4066dd4",
+    "packages/compiler/tests/bug-hunt-directive-positions.test.ts": "e328b1961b4a2b338edc20fe4d07915ef5cf779dbfab45f205e2472b5156227b",
+    "packages/compiler/tests/bug-hunt-emitted-globals-graphs.test.ts": "314f090d8e671feb9c4efeae7a0e848e8f85b479a7f7124f9e822fc8597f41ef",
+    "packages/compiler/tests/bug-hunt-file-delivery.test.ts": "0d3ef7441fbcf28194950a36922c85baddc194d253c8d5ce03aa60806a99426a",
+    "packages/compiler/tests/bug-hunt-filesystem-project.test.ts": "526ffd516bf6cc7e4520e529d7927355c0a1b0b4d1f94caffece8d0b6e7af038",
+    "packages/compiler/tests/bug-hunt-graph-directive-metadata.test.ts": "f709c0ab7786cb6ea2116eab09488b7975d4ea0d573e078073e84c37b792428f",
+    "packages/compiler/tests/bug-hunt-graph-output-mappings.test.ts": "22643afaf3f8f292c9628fff0a1f20189c7be99987a2e937eaad804ec62035cc",
+    "packages/compiler/tests/bug-hunt-host-resolution.test.ts": "8ef9c981bd07a8906477e246fd3852578e022a9f2337face906e0b56a55b3850",
+    "packages/compiler/tests/bug-hunt-import-conditions.test.ts": "6b644b8724a184f826a4c83e0b0d387dfbefab7f57b76cf46c5a7dd6696f0502",
+    "packages/compiler/tests/bug-hunt-imported-local-classification.test.ts": "cc24529c73d3a36789117f934da691ccca5ddd8db2d65878b97d9cca2c01978a",
+    "packages/compiler/tests/bug-hunt-imported-policy-output.test.ts": "773da9020dc42c96cc1b3486e942008f5d1b6d0a473033ce1c766abb57841998",
+    "packages/compiler/tests/bug-hunt-inline-bundle.test.ts": "71c08979c9d924a622c9177441ed726bfaec3c861bdd37219ed6c5b8f67dc228",
+    "packages/compiler/tests/bug-hunt-inline-graph-mappings.test.ts": "cf86d71f08aadde97ebd310bcdb739986cc02e2f76df8599dfbb76e34ed3f1a5",
+    "packages/compiler/tests/bug-hunt-legacy-compose-position.test.ts": "ea9042072f08bf0b57eafd17853f8db24c00844839a2f64a4113b7d03760b817",
+    "packages/compiler/tests/bug-hunt-legacy-project-graphs.test.ts": "6b44418aafb64369952b6ad2a7094bdd08273b49d146b02ea0521fdf2f714919",
+    "packages/compiler/tests/bug-hunt-local-transform-delivery.test.ts": "f4c340fddb49645cda4b09836979dc3646efd17046af93053b007561c3e16bba",
+    "packages/compiler/tests/bug-hunt-native-conditionals.test.ts": "31a9e9e57030bfdbc299862beb17ea3a7a9e6bb06ec229778dd5a473175ae2d6",
+    "packages/compiler/tests/bug-hunt-native-host-transform.test.ts": "bea983d0d14244170845afb7fff62b7657fae078276d181716b5efeef93a53e7",
+    "packages/compiler/tests/bug-hunt-node-import-discovery.test.ts": "3ab2c56faab4d2233c58173d2b4899bdc381b37ff306715d1b2657a4163b265f",
+    "packages/compiler/tests/bug-hunt-ordered-direct-output.test.ts": "e338a97a1c11ad1cde13b487da4a57a4165656884e14a607005ae41349ea4be9",
+    "packages/compiler/tests/bug-hunt-output-source-maps.test.ts": "4506ae644ecd3d0fb77f791766b962367189af1c7a7fa963c2b342c2fe74b134",
+    "packages/compiler/tests/bug-hunt-prepared-diagnostic-columns.test.ts": "7782f6ad81c75bd34d124198a65ddff2a250e487e969a5aac75842055dd3a1bf",
+    "packages/compiler/tests/bug-hunt-prepared-source-context.test.ts": "16e8f4cb6d75052936539527a3f2d7b4c4ee1826dd95e68a1ad265b5697cf1e7",
+    "packages/compiler/tests/bug-hunt-preserved-source.test.ts": "2cce820ed6f43d4007450214a7b3dc411358b0f288437367fd5ad8b1e230242b",
+    "packages/compiler/tests/bug-hunt-project-dependency-observer.test.ts": "2222f6c56e6a1ae35caa25bccc79c63a2561430b91d22d33ff285521fa5162f5",
+    "packages/compiler/tests/bug-hunt-project-graphs.test.ts": "e6e3d44e566936749da3538ae6b578450225df02c1af310389a387a0d86718d0",
+    "packages/compiler/tests/bug-hunt-reference-source-maps.test.ts": "450f5328764e255a49d505ba80edcc41c38be356b5ba2181865055450ef7772f",
+    "packages/compiler/tests/bug-hunt-rendered-compose.test.ts": "d84fb619768b6feec346d5b71322ca4a41c7399aa767d2097b14d807d3657aad",
+    "packages/compiler/tests/bug-hunt-rendered-delivery.test.ts": "31a28fe393f463fd1e4c073b73c14da22e66704c2e607e4cbf8e34dfe453c4dc",
+    "packages/compiler/tests/bug-hunt-rendered-resource-context.test.ts": "402716725fc712fc8c0872d106376c3d305a6e54b7b82a9879523077ddc4fc47",
+    "packages/compiler/tests/bug-hunt-resource-urls.test.ts": "e76ae5cb03a8d54228e622456d54608f0bc135078d65fed814b57b5b117572a2",
+    "packages/compiler/tests/bug-hunt-static-retention.json": "e0180768e26c36d8b0441f5047ed75f334f140c682cd719c568805bb9598a5ff",
+    "packages/compiler/tests/bug-hunt-static-retention.test.ts": "94416d1193a6556f06fcaa437d3d248402a67afa68ddfdf9a28dcfb05567c9cb",
+    "packages/compiler/tests/bug-hunt-stylesheet-diagnostics.test.ts": "f4811a98c598feed97eafab8589e7fef7c50fed3cfd17b013a034800f4bcf905",
+    "packages/compiler/tests/bug-hunt-stylesheet-preparation.test.ts": "4b34c7c10769f8fc36c0859373a929e6c875dd710e18c118b29f00e35d59e883",
+    "packages/compiler/tests/bug-hunt-virtual-reference-ownership.test.ts": "1165bbb789f1d3cf9a7f4e311566f7859f75db73fdd2a5db6ad648a402616290",
+    "packages/compiler/tests/bug-hunt-virtual-sources.test.ts": "b64e2668e5b2c6dc930ee3d1a9dbb2fdf5580a3b9a2a1c0ccce1901168040d8d",
+    "packages/compiler/tests/css-first-core-execution.test.ts": "7c19cec929f5d0281cea5086ca784b8e976edaefd37cb11cfe9a684ee6bd7556",
+    "packages/compiler/tests/css-first-core-migration.test.ts": "fdfd39543b1e06b50ad174b5ffc4b99801cfde3b755efe8e1b85b10c0dd66ac5",
+    "packages/compiler/tests/diagnostics/bug-hunt-mjs-discovery.test.ts": "936b917ee9a5cfcec5a8bdbb654e09f86f6fcb9688b4e10f720a78d01cef601f",
+    "packages/compiler/tests/diagnostics/bug-hunt-source-attribution.test.ts": "eb450a2ac648538cc366e02b9031a90e072f8b3bd689dffc296a7a4b09b0d177",
+    "packages/compiler/tests/diagnostics/bug-hunt-utf8-bytes.test.ts": "eb7695bd58b743fd1596031f571a9de0bf111f832a8e325b050b064953f525a3",
+    "packages/compiler/tests/diagnostics/index.test.ts": "ebb33c67a7e4d9075fea52e495a9bb029761edd413c6d3eaa315053102ed8bcd",
+    "packages/compiler/tests/entry.test.ts": "fc03e2482c463c0083cec2a8393c607ed17106286e7bb19d5b8548219bd622a5",
+    "packages/compiler/tests/helpers/rust-engine.ts": "b2ddca0d7d146b00e5bf21ac4e3553acf035be981af10c01b3bcc30a95be4704",
+    "packages/compiler/tests/helpers/scanner.ts": "4123d573a94ca533af4ba70ba7fa80f87fe167ec32cc68dd9b11bba94f014bbd",
+    "packages/compiler/tests/project/test.ts": "0c6be0b7cb455113503e1a260342f26a64e70e916277cc73ccf0c075346d3bde",
+    "packages/compiler/tests/reference.test.ts": "84bb41998fec6956c4daf0cf88d47b8f7796e8dc6bb716bf7354bbbce21b60c2",
+    "packages/compiler/tests/session.test.ts": "3a728154018d81bb4f38a07bda86348110424b7a8e5e6e92482796c48b21f9b9",
+    "packages/compiler/tests/stylesheet/browser.test.ts": "4354b931f14d852bc4e7de82f514e200cf0966ef12dac7142af18c2cdd09bef1",
+    "packages/compiler/tests/stylesheet/directives.test.ts": "bd124ff62eb8cc9a823cabc7b10a1c3344f6206cb73c363be7d6b80e4e0d707f",
+    "packages/compiler/tests/stylesheet/public.test.ts": "697625ceb7c2406f6399bc95f9e8a1b740d57b4af24c0cdbd3d7e5ceee0207c5",
+    "packages/compiler/tests/stylesheet/style-output.test.ts": "cc90331db2ee0e154f9c95cc847a010743801817b82e96973b017665c3ae0ea4",
+    "packages/compiler/tests/stylesheet/style.test.ts": "aaa33a581550e9032d28a587bc015e85b57b4a2761b75b555f97b6e0f4b02e3e",
+    "site/app/[locale]/guide/directives/contract.mdx": "f791d06c99e93fd3eed3a46eb6d70969f392a2e941eada4f640cd11bcef632fa",
+    "packages/preset/src/base.css": "4fe689f35c1778c30f9b4bfb5256a28aea1204f7596bba0b3f934852ec85ba32",
+    "packages/preset/src/default-manifest.json": "33ebcbffc6ee1f2f3c6b027084161c2bf6506910a47304f34893a020665ed977",
+    "packages/preset/src/default-manifest.json.d.ts": "bcf62632f74392577ba37663aa31d0c2acd212c52084328c1d7fca2e4efabf37",
+    "packages/preset/src/default-native.css": "f4a81d70cb21de001d2f3fa28cf6295038179b15e6cf66e9a4d611bedf1da56f",
+    "packages/preset/src/index.css": "12da77d35ae427ec481f6f448c936c04660616743d0d50faa050f3ee74bb2ebc",
+    "packages/preset/src/theme.css": "2f134733254508e24393ab40074ca1b666c108482b93c6121a70f4585b488c72",
+    "packages/preset/src/utilities.css": "0aeb0b2bf95998a509fb8ad52b6adce5863ff738b04340c8a436191a55a8bcb5",
+    "packages/preset/src/variants.css": "39ccecbbf6ef4fc720293f411f31cefd6364c90f0318acc5bfdded93ecb130e2"
+  },
+  "artifacts": {
+    "packages/compiler/dist/compiler-diagnostics.d.ts": {
+      "sha256": "674d8b7e556292571e2ca2264333fd5d9eca87cb1afd1fb47f327e0151c5c82d",
+      "bytes": 778
+    },
+    "packages/compiler/dist/compiler-diagnostics.js": {
+      "sha256": "515dc3368f634d37167b68e847e95cc2d50f3610ebe25f62727b0bf551ccb8d2",
+      "bytes": 510
+    },
+    "packages/compiler/dist/compiler.d.ts": {
+      "sha256": "b0e6eae23288eeda73ba8d4405a26e177949fcd8d49c9c86a0fc238005ddeaa5",
+      "bytes": 2477
+    },
+    "packages/compiler/dist/compiler.js": {
+      "sha256": "ac5570347c07c5397c20424d90459c0eee07c68ff279a5f02b91d77eafa0bea7",
+      "bytes": 6992
+    },
+    "packages/compiler/dist/contracts.d.ts": {
+      "sha256": "4551d24f6fe62416b3eb91e27fcfd565bf725c0cc4f75e2484b68862e553de9a",
+      "bytes": 1217
+    },
+    "packages/compiler/dist/contracts.js": {
+      "sha256": "a11d9f9b2bb78fbbdc80f60aa67cc332ca49157fc3edf0aa9a30331e6c305f2a",
+      "bytes": 212
+    },
+    "packages/compiler/dist/diagnostics/contracts.d.ts": {
+      "sha256": "8985abce8da5384705f55be0d7ecb6b6fba89970d8f88c564bc5c262deb7fc7f",
+      "bytes": 3956
+    },
+    "packages/compiler/dist/diagnostics/contracts.js": {
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11
+    },
+    "packages/compiler/dist/diagnostics/index.d.ts": {
+      "sha256": "b950400193eea68150345c51bfe4dd332f480e61453fb3b4c2ffa76aed8236c0",
+      "bytes": 1669
+    },
+    "packages/compiler/dist/diagnostics/index.js": {
+      "sha256": "5eab07a7a725621b41063cc060d379344b52297716384f88239b799e682c5888",
+      "bytes": 7592
+    },
+    "packages/compiler/dist/index.d.ts": {
+      "sha256": "07206c591323d1cd8cc1fa1586b7ee3e42a0bce21b2df971bd4f581ab3a9ee14",
+      "bytes": 4773
+    },
+    "packages/compiler/dist/index.js": {
+      "sha256": "fdabddccf4933734461c2c672693c2551e60be01108937cde4be8a32068534c5",
+      "bytes": 980
+    },
+    "packages/compiler/dist/node-compiler.d.ts": {
+      "sha256": "91b1a8c9823f13e2474d72f37db45b909b350fe617d4d7b0521dec16fb68f700",
+      "bytes": 7682
+    },
+    "packages/compiler/dist/node-compiler.js": {
+      "sha256": "b75c08bcb01527b3500e64b96b7b2848bb8a0de699eee0eccbed5d731add9c39",
+      "bytes": 16889
+    },
+    "packages/compiler/dist/node-imports.d.ts": {
+      "sha256": "8df6607e597bdfc4fedbee7f4b6b208b92223180acd52e6a49ba81c3f91ee9d9",
+      "bytes": 2555
+    },
+    "packages/compiler/dist/node-imports.js": {
+      "sha256": "9d8c65bfd016ebfe5fe261c5fa0d3378c8956992d15d4b31a48e14d2a2376b7c",
+      "bytes": 10078
+    },
+    "packages/compiler/dist/node.d.ts": {
+      "sha256": "9626c4fa14e238dc3a1e299ad50600bdddd594d2c9e568ee6ed3984ffe568e25",
+      "bytes": 3160
+    },
+    "packages/compiler/dist/node.js": {
+      "sha256": "cc6ac78af61d6d8d3bef509dbdf8bd29c2a81403231e75049f6e1c400f163918",
+      "bytes": 2028
+    },
+    "packages/compiler/dist/project/binding-project.d.ts": {
+      "sha256": "21659c44e397105d2751b891a88a1383e3faaf6a1d249a5553feec18ccc147df",
+      "bytes": 970
+    },
+    "packages/compiler/dist/project/binding-project.js": {
+      "sha256": "1e9623fa4015756f8c290cf1c231e0b3f83544d2ede0621cbde532c3189a0d53",
+      "bytes": 2942
+    },
+    "packages/compiler/dist/project/entries.d.ts": {
+      "sha256": "1e751c612c23d2ad605dc6e0cc576ab6060f3dfbdd1703a1a087659f659faf90",
+      "bytes": 1398
+    },
+    "packages/compiler/dist/project/entries.js": {
+      "sha256": "7ecf42a95f295f9fc56bfce3c1eab3d75fc7be40929ffb5fea466290e99f2a0c",
+      "bytes": 6345
+    },
+    "packages/compiler/dist/project/manifest-sync.d.ts": {
+      "sha256": "6c6f46a481cbdc80607b8e43c7a7ca2d2bfccd00367533bfd8b78bf78a97ca1d",
+      "bytes": 1070
+    },
+    "packages/compiler/dist/project/manifest-sync.js": {
+      "sha256": "800e50a62978219c887b0c2fcf8d5ba73c54787d8da14d78ee0bb2db471a1568",
+      "bytes": 1683
+    },
+    "packages/compiler/dist/project/manifest.d.ts": {
+      "sha256": "fda9f703cbe83d089506fabef1c5ea651ab9765b7ffeee1c029e840d4ed0fe8c",
+      "bytes": 1020
+    },
+    "packages/compiler/dist/project/manifest.js": {
+      "sha256": "d8aa78b2aa7ac4759fd7c00b8ee82e495a1deffe67978362653d264422a7660f",
+      "bytes": 1913
+    },
+    "packages/compiler/dist/project/options.d.ts": {
+      "sha256": "36098272f7c671a50b321062f61b2f83535f3b411f0be3f37436930ba1949450",
+      "bytes": 1124
+    },
+    "packages/compiler/dist/project/options.js": {
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11
+    },
+    "packages/compiler/dist/session.d.ts": {
+      "sha256": "4bcdbddf77d8fc1a5d67f51899d0d5903e0d3ad7ed9bc9116f1bd67e264ddd24",
+      "bytes": 2141
+    },
+    "packages/compiler/dist/session.js": {
+      "sha256": "dde8f71a96e641843cf2fa9c5f4621023dd03716120836b899e57b6cd4e1f7d9",
+      "bytes": 2685
+    },
+    "packages/compiler/dist/stylesheet/browser.d.ts": {
+      "sha256": "b6dfb0555983bf03d12390a3c2e3faaf7940db2d94905a558ebbf6cfcffdb110",
+      "bytes": 1709
+    },
+    "packages/compiler/dist/stylesheet/browser.js": {
+      "sha256": "8e21b25118472076e256a009f63d43fc0e83c1465fee5656f6489d357924cd3d",
+      "bytes": 2258
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.d.ts": {
+      "sha256": "0d49e75b62c1ce7a00141b6533b2337b85b1f974971c6919bf7206493fae7f9b",
+      "bytes": 718
+    },
+    "packages/compiler/dist/stylesheet/compiled-source.js": {
+      "sha256": "a55a03fa19cf12fa1b17dc8f29981a6877de852a935d5afa3dc98fd972470b9b",
+      "bytes": 3521
+    },
+    "packages/compiler/dist/stylesheet/delivery.d.ts": {
+      "sha256": "04199d0e9b80667cd8b4dbae9efd36f6e1a314f163aab247bcbb6d01f1b433e0",
+      "bytes": 4716
+    },
+    "packages/compiler/dist/stylesheet/delivery.js": {
+      "sha256": "654ad4cd47469468d728e41821d404e599735873c0ef6b1f7dd5263442df9adb",
+      "bytes": 15461
+    },
+    "packages/compiler/dist/stylesheet/directives.d.ts": {
+      "sha256": "0a805f246e0ba7f5a78ff44bf191ed6ed323a9b1c8559b40d94b0c0bbc45e7b9",
+      "bytes": 2389
+    },
+    "packages/compiler/dist/stylesheet/directives.js": {
+      "sha256": "5dccedeeff2f1d78cffd7de1a83e68f3f15eae65e89ace4888bfeacf442badb1",
+      "bytes": 4746
+    },
+    "packages/compiler/dist/stylesheet/index-public.d.ts": {
+      "sha256": "6022e9348d940021b279024e0fe2c64b048eb1762cca3ca6cafe1ec45baf5191",
+      "bytes": 2174
+    },
+    "packages/compiler/dist/stylesheet/index-public.js": {
+      "sha256": "99f567c4bd783276753b1a2f56ee2b509d52a20c924a35b71ac25fc7833f1ece",
+      "bytes": 605
+    },
+    "packages/compiler/dist/stylesheet/index.d.ts": {
+      "sha256": "19f148a71c6e1d2dd1d3138941dd654b35b8641bde2ccd7f9cfbebb7b18404b9",
+      "bytes": 6903
+    },
+    "packages/compiler/dist/stylesheet/index.js": {
+      "sha256": "b92ca4ca2e93623acd8131283d058c0fa843747d8711733f11c61d16cb579463",
+      "bytes": 22134
+    },
+    "packages/compiler/dist/stylesheet/output-map.d.ts": {
+      "sha256": "4209638fd20be74387aa66235133dbd2e0686e504e67e0be3a4e7e530be4ca6f",
+      "bytes": 1008
+    },
+    "packages/compiler/dist/stylesheet/output-map.js": {
+      "sha256": "cd9da24a932b226b378d70f3071988409054e6ee48730761f74155bb41eb7106",
+      "bytes": 6859
+    },
+    "packages/compiler/dist/stylesheet/public.d.ts": {
+      "sha256": "18ab6a57654e2ecf55a0b6f204fbe9498a077c44436371d8af1fd38cb3fcbbf9",
+      "bytes": 8653
+    },
+    "packages/compiler/dist/stylesheet/public.js": {
+      "sha256": "9435806cafa4a89d57c73bea0f13b7a320f9cc8f96c1f1a07a0fe1fefb2d6956",
+      "bytes": 11148
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.d.ts": {
+      "sha256": "ec731f4be94f462bffd725da4206630e8b9867bc59d71bd3f321f77cc514c5c5",
+      "bytes": 431
+    },
+    "packages/compiler/dist/stylesheet/reference-origins.js": {
+      "sha256": "a5674544654abc4f750c444bbcba75fe7358c4cd60153502c65e5e70a456f3cb",
+      "bytes": 1692
+    },
+    "packages/compiler/dist/stylesheet/render-core.d.ts": {
+      "sha256": "7248f4d5a5691e7dd59f0d064f67f05ea05b3ec541bbb6dc791b14639544062c",
+      "bytes": 1915
+    },
+    "packages/compiler/dist/stylesheet/render-core.js": {
+      "sha256": "d1b197aa682539e242422d209f0fac4e8708fe2c8d194d355be01eab5dc78a48",
+      "bytes": 1108
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.d.ts": {
+      "sha256": "c0f4a2034de274cf7a942ecaa0b9239edb593b81863ebcf1769852a351bb7b5d",
+      "bytes": 426
+    },
+    "packages/compiler/dist/stylesheet/render-delivery.js": {
+      "sha256": "1021401d90d79a2a4718006b2f9b9318b4f159658c664d025f368f429242fec3",
+      "bytes": 1610
+    },
+    "packages/compiler/dist/stylesheet/render-source.d.ts": {
+      "sha256": "fda572116b08b21454f2d79ab807a1db0d6e6d58514d5bb864af3c7e84acd03e",
+      "bytes": 606
+    },
+    "packages/compiler/dist/stylesheet/render-source.js": {
+      "sha256": "3069bb69bdeddc24b65160f396eb750686f39c892ae94e0a234ae72f3adb8465",
+      "bytes": 1242
+    },
+    "packages/compiler/dist/stylesheet/render.d.ts": {
+      "sha256": "4bf49f4124eb2e524ed0fe9ce403e59c87dd203b87cf527b6d6b03551dbe4565",
+      "bytes": 532
+    },
+    "packages/compiler/dist/stylesheet/render.js": {
+      "sha256": "a821d0668607541a9e0a94dd6e7c8c3121efc996d962cacb12f07c8c3ddb04cb",
+      "bytes": 1033
+    },
+    "packages/compiler/dist/stylesheet/source-context.d.ts": {
+      "sha256": "6fa7f8f6f1aa066a267baa5bc3344d67862cc70ca89361cd18379f9dfbf7a85b",
+      "bytes": 483
+    },
+    "packages/compiler/dist/stylesheet/source-context.js": {
+      "sha256": "82ec61095fe69b1dcf66f78c66f58384b3822e360154af0aba4f04b27d8d4e27",
+      "bytes": 3117
+    },
+    "packages/compiler/dist/stylesheet/source.d.ts": {
+      "sha256": "653b79938847310ba84d1481b41275d025cacf5798d43c93d73ec86012873fa1",
+      "bytes": 321
+    },
+    "packages/compiler/dist/stylesheet/source.js": {
+      "sha256": "7ba71d4b641e26a71409b3d2c7ae0418a702c258ce583cff859c89960fc70623",
+      "bytes": 1910
+    },
+    "packages/compiler/dist/stylesheet/types.d.ts": {
+      "sha256": "b367315bfc5075cae5373646c1829cf5da22a1669370d90711fb35a92265f303",
+      "bytes": 5693
+    },
+    "packages/compiler/dist/stylesheet/types.js": {
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11
+    }
+  },
+  "readOnlyProviderLinks": {
+    "packages/binding-wasm-engine": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/binding-wasm-engine",
+    "packages/binding-wasm-tooling": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/binding-wasm-tooling",
+    "packages/internal": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/internal",
+    "packages/binding": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/binding",
+    "packages/binding-wasm-compiler": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/binding-wasm-compiler",
+    "packages/schema": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/schema",
+    "parity": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/parity"
+  },
+  "nativeBinding": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/mastercss.node",
+  "nativeSha256": "5eec3ea3d69f5a81e0931d4ac64ff615908aa7027593aaeed5f32b5986e61bda",
+  "nextCompilerLink": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/compiler"
+}

@@ -1,0 +1,56 @@
+    Checking allocator-api2 v0.2.21
+    Checking serde v1.0.229
+    Checking hashbrown v0.17.1
+    Checking smallvec v1.16.0
+    Checking memchr v2.8.3
+    Checking indexmap v2.14.2
+    Checking thiserror v2.0.20
+    Checking cssparser v0.37.0
+    Checking serde_json v1.0.151
+    Checking parcel_selectors v0.28.3
+    Checking mastercss-schema v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-schema)
+    Checking cssparser-color v0.5.0
+    Checking lightningcss v1.0.0-alpha.72
+    Checking mastercss-lexer v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-lexer)
+    Checking mastercss-engine v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-engine)
+   Compiling phf_shared v0.14.0
+    Checking castaway v0.2.4
+    Checking oxc_data_structures v0.148.0
+    Checking static_assertions v1.1.0
+    Checking compact_str v0.10.0
+    Checking oxc_allocator v0.148.0
+   Compiling phf v0.14.0
+    Checking oxc_estree v0.148.0
+    Checking oxc_str v0.148.0
+   Compiling oxc_ast_macros v0.148.0
+   Compiling phf_generator v0.14.0
+   Compiling phf_macros v0.14.0
+    Checking oxc_span v0.148.0
+    Checking smawk v0.3.3
+    Checking unicode-linebreak v0.1.5
+    Checking cow-utils v0.1.3
+    Checking unicode-width v0.2.2
+    Checking textwrap v0.16.2
+    Checking bytecount v0.6.9
+    Checking nonmax v0.5.5
+    Checking percent-encoding v2.3.2
+    Checking unicode-id-start v1.4.0
+    Checking unicode-segmentation v1.13.3
+    Checking oxc_diagnostics v0.148.0
+    Checking oxc_index v5.0.0
+    Checking dragonbox_ecma v0.1.12
+    Checking num-traits v0.2.19
+    Checking oxc_syntax v0.148.0
+    Checking oxc_regular_expression v0.148.0
+    Checking oxc_ast v0.148.0
+    Checking mastercss-compiler v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-compiler)
+    Checking num-integer v0.1.47
+    Checking num-bigint v0.5.1
+    Checking oxc_ast_visit v0.148.0
+    Checking oxc_ecmascript v0.148.0
+    Checking oxc_parser v0.148.0
+    Checking htmlparser v0.2.1
+    Checking mastercss-project v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-project)
+    Checking mastercss-source v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-source)
+    Checking mastercss-scanner v0.0.0 (/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/crates/mastercss-scanner)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 12.46s

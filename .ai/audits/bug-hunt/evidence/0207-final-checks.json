@@ -1,0 +1,337 @@
+{
+  "batch": "0207-webpack-watch-recovery",
+  "status": "Bounded production static watch repair delivered; existing test-contract approval and full objective incomplete",
+  "goal": "active",
+  "previousGoalTurn": "progress;0206staticdeliveryandpublictypes",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "findings": {
+    "BH-0004": "Bounded production static watch failure/recovery and unused dependency cleanup repaired; broader raw/host matrices remain"
+  },
+  "results": {
+    "finalNewTestBaseline": "2FAIL",
+    "deliveredNewTests": "2PASS",
+    "stagedWatch": "29PASS",
+    "stagedSnapshotBrowser": "63PASS; actual emitted snapshots, not live HMR",
+    "deliveredWatch": "9PASS",
+    "completeCopiedSuite": "80PASS with proposed existing-test patch ONLY in isolated copy",
+    "rootExistingSuite": "Not claimed green; two prior contracts still await approved migration",
+    "lint": "PASS",
+    "packageTypeCheck": "PASS",
+    "publicStrictTS6": "PASS after explicit Node/ESNext ambient config correction",
+    "isolatedExample": "PASS with2existingwarnings",
+    "contextBudgets": "PASS",
+    "authoredTrackedWhitespace": "PASS"
+  },
+  "watchSummaries": {
+    "0207-watch-cleanup-after.log": {
+      "observations": 9,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0207-watch-child-final.log": {
+      "initiallyMissing": "child",
+      "observations": 10,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0207-watch-resource-final.log": {
+      "initiallyMissing": "resource",
+      "observations": 10,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0207-watch-delivered.log": {
+      "observations": 9,
+      "failures": 0,
+      "callbacks": 10,
+      "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+    },
+    "0207-watch-browser-normal.log": {
+      "observations": 21,
+      "failures": 0,
+      "scope": "Three-browser render and real image decoding of immutable output snapshots from actual compiler.watch callbacks; does not claim live browser HMR."
+    },
+    "0207-watch-browser-child.log": {
+      "observations": 21,
+      "failures": 0,
+      "scope": "Three-browser render and real image decoding of immutable output snapshots from actual compiler.watch callbacks; does not claim live browser HMR."
+    },
+    "0207-watch-browser-resource.log": {
+      "observations": 21,
+      "failures": 0,
+      "scope": "Three-browser render and real image decoding of immutable output snapshots from actual compiler.watch callbacks; does not claim live browser HMR."
+    }
+  },
+  "pendingApproval": {
+    "file": "packages/webpack/tests/plugin-runtime.test.ts",
+    "patch": ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch",
+    "rootFileSha256": "378564be3acc2840e4af0010bbec5a9345db9d4bc906d55f61cf016c4583310c",
+    "patchSha256": "e4960863a87b55bc0bbfdde0e0d87d2f120426e21fffcaec8835a0e2509d999d",
+    "isolatedPatchedFileSha256": "da2cf049de005c48c03f1aeacbd1bac13320cf783f8e19e7138ed1254784256f",
+    "scope": "Two existing watch tests and fake compilation mock; compilation.errors and missingDependencies; preserves error identity/logging/recovery assertions",
+    "authorization": "No reply to separate Webpack test patch question; LSP one-line approval applied0203 is distinct"
+  },
+  "preservation": {
+    "sourceCount": 585,
+    "priorInventoryUnchanged": 572,
+    "changedPriorInventory": [
+      "packages/webpack/README.md",
+      "packages/webpack/src/plugin.ts",
+      "packages/webpack/src/plugins/generated-css-assets.ts",
+      "packages/webpack/src/plugins/usage-graph.ts",
+      "packages/webpack/src/stylesheet-loader.ts",
+      "packages/webpack/src/utils/transform-style-source.ts"
+    ],
+    "newlyInventoried": [
+      "packages/webpack/src/plugins/scanner-lifecycle.ts",
+      "packages/webpack/tests/plugin-runtime.test.ts",
+      "packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts",
+      ".ai/audits/bug-hunt/repros/build-webpack-copy.py",
+      ".ai/audits/bug-hunt/repros/webpack-static-watch.mjs",
+      ".ai/audits/bug-hunt/repros/webpack-watch-browser.mjs",
+      ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch"
+    ],
+    "artifactCount": 473,
+    "changedArtifacts": [
+      "packages/webpack/dist/plugin.d.ts",
+      "packages/webpack/dist/plugin.js",
+      "packages/webpack/dist/plugins/generated-css-assets.js",
+      "packages/webpack/dist/plugins/scanner-lifecycle.js",
+      "packages/webpack/dist/plugins/usage-graph.js",
+      "packages/webpack/dist/stylesheet-loader.d.ts",
+      "packages/webpack/dist/stylesheet-loader.js",
+      "packages/webpack/dist/utils/transform-style-source.d.ts",
+      "packages/webpack/dist/utils/transform-style-source.js"
+    ],
+    "unchangedArtifacts": 464,
+    "otherPackageArtifacts": 424,
+    "delivery": "Atomic full-directory swap;49Webpackfiles/9changed/40unchanged;backup0207-promotion.json",
+    "existingTestsFixturesSnapshotsDependenciesLockfilesCIReleaseSharedBuildRules": "unchanged this batch; proposed existing test patch isolated only",
+    "foreignSiteAndHosts": "preserved; no restart",
+    "indexEmpty": true,
+    "commitOrPush": false
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR.",
+    "0207 bounded production static watch deletion/restoration/rename/unmanage now29PASS and63snapshot-browserPASS; this supersedes only the bounded watch subset of0206 remaining text. Full multi/lazy-entry, emitted asset pruning, resource snapshots during concurrent writes, local compose/Modules/maps/Sass/customresolvers/development/HMR/Next remain.",
+    "0207 existing Webpack watch test-contract patch remains pending explicit user approval; root test untouched. After approval apply exact repro patch and use a fresh owned build copy for full serial tests."
+  ],
+  "nextBatch": "Multiple/lazy production static entries; unused emitted asset ownership and concurrent resource-write snapshots. No0038work without explicit identity confirmation.",
+  "evidence": {
+    "0207-artifacts-final.json": {
+      "bytes": 73554,
+      "sha256": "746f90bfacbcd7e7f6da3e34d00742978d89ca647a5723e6de46dd2017376c3e"
+    },
+    "0207-before.json": {
+      "bytes": 154861,
+      "sha256": "77b45eb21295e5417d614c89e85a7307375834738ab9e5192de627b82c6afcc2"
+    },
+    "0207-build-cleanup-state-build.log": {
+      "bytes": 4830,
+      "sha256": "5310592f2f551a15781e24b02ad469c96c092f47f8ac5aeb55c1b26fd483af78"
+    },
+    "0207-build-cleanup-state.json": {
+      "bytes": 416,
+      "sha256": "b6d939a6f4e47b9ab6a6377231f436037452e2cbbe244761ee6433d6ff8a0f77"
+    },
+    "0207-build-recovery-state-build.log": {
+      "bytes": 4830,
+      "sha256": "007f7206aaac595cf5967ccf3e91643b2c5394ab98742f181e0f40c43968dfd3"
+    },
+    "0207-build-recovery-state.json": {
+      "bytes": 417,
+      "sha256": "a1a5945e780c0dd0f8856744e20a34d8a445908bcd15c9847430d267ca6f9c40"
+    },
+    "0207-build-state-build.log": {
+      "bytes": 4830,
+      "sha256": "c748fd5e79b59ca9ea00a8b802af27436d2938546fbf1600ef9940275aea0075"
+    },
+    "0207-build-state.json": {
+      "bytes": 408,
+      "sha256": "35f209bf1963f3a5c12889bb83c2db2b39cf542ed091ba1ca4ea5f0a662e2097"
+    },
+    "0207-context-final.log": {
+      "bytes": 121,
+      "sha256": "5251f695a5c86ed51fc7fce0a17d9e30b3ec6215c2c09d46edf3ff6a630fb0d5"
+    },
+    "0207-context-initial.log": {
+      "bytes": 121,
+      "sha256": "a3679e6201776e8e15f5c910985efa4323f3ce6c04ffad71af61615bcec6a28d"
+    },
+    "0207-initial-child-before.log": {
+      "bytes": 113038,
+      "sha256": "16dbde3d385052fb9308e211f4c85088ad13fb7cae9b2c2a29a43aa7f65e944a"
+    },
+    "0207-initial-resource-before.log": {
+      "bytes": 733675,
+      "sha256": "87f23112ca4c6070b2e2959d93f1271799532661195b475fdfbfcaadbe53b4dc"
+    },
+    "0207-promotion.json": {
+      "bytes": 15046,
+      "sha256": "3d7f8bfa77b52c42ba97e14e57ac655cac06547fc076e4db9522138b174aad6b"
+    },
+    "0207-published-types-corrected.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "0207-published-types.log": {
+      "bytes": 24610,
+      "sha256": "589a84aa6515c3c67bd168ef437af1a11c84b63575ec8ad7bdcde26af2ff4b2a"
+    },
+    "0207-regressions-before-final.log": {
+      "bytes": 2432,
+      "sha256": "7a33f75e97f92fbe128e66c760ea17f0904dd3d18632ed1195e13ee01ac059ee"
+    },
+    "0207-regressions-before.log": {
+      "bytes": 4160,
+      "sha256": "b4086dc2781d55007ea1741f26a366bda1fdd95b40e4ac097fa743ba8dea7d9f"
+    },
+    "0207-regressions-delivered.log": {
+      "bytes": 170,
+      "sha256": "9856efaea7c5bd1bdd85452e1e98534d196672383bac88d2ac39237e2f3546c8"
+    },
+    "0207-source-hashes-final.json": {
+      "bytes": 73598,
+      "sha256": "6493fcff5a7291c94430912a688d93e5adb4cb4f1132636867c05bdd6a1829f1"
+    },
+    "0207-watch-before-corrected.log": {
+      "bytes": 113941,
+      "sha256": "27d1d9368bbfcdde07e2d1426bb0dc0ceba4d226b57f31d2a44fd6e6476e0138"
+    },
+    "0207-watch-before.log": {
+      "bytes": 1781,
+      "sha256": "fbbcea30901999f6700033f1ce426412e7c5d9c83854c56bdcf0e3016de36aeb"
+    },
+    "0207-watch-browser-child.log": {
+      "bytes": 5613,
+      "sha256": "51be80efff40e6071f82c2abba3be19d96b9b115fcfaf9e04c870dc05bd3361d"
+    },
+    "0207-watch-browser-normal.log": {
+      "bytes": 5589,
+      "sha256": "30d818307a1a0784a4b85d97d7c8c7b007ab24052ab6f23725e0834f52adcf6e"
+    },
+    "0207-watch-browser-resource.log": {
+      "bytes": 5613,
+      "sha256": "51be80efff40e6071f82c2abba3be19d96b9b115fcfaf9e04c870dc05bd3361d"
+    },
+    "0207-watch-candidate.log": {
+      "bytes": 530026,
+      "sha256": "eee7e73a0147f70459a8dc802ce6a00a3a90ea498bb58ff05d23a50c185d5e5f"
+    },
+    "0207-watch-child-after.log": {
+      "bytes": 545224,
+      "sha256": "cddc6bda86ddd8e7a6b0a637c4b1e8527648305e7fa7bb7d6f379d33300bfeb1"
+    },
+    "0207-watch-child-final.log": {
+      "bytes": 643427,
+      "sha256": "9c0918d6c7f2f2ff8b8258bafc7e8365cf00a76b29e1b80b7357e2e86ecc8bac"
+    },
+    "0207-watch-cleanup-after.log": {
+      "bytes": 544075,
+      "sha256": "bfee4a416c6bac5731235d12fa1f75f9b96f4d09bff56073e0100b9a6c6b66ea"
+    },
+    "0207-watch-cleanup-diagnostic.log": {
+      "bytes": 447422,
+      "sha256": "17349a4a8ad197d4b2525ffa4a55bd289a12d65b5d02176978a642f6e7b98ed9"
+    },
+    "0207-watch-delivered.log": {
+      "bytes": 536869,
+      "sha256": "41958af44b1b4beaf9f290f6195e54e4f0bddf070fe86af00e583df137d122c3"
+    },
+    "0207-watch-manifest-trace.log": {
+      "bytes": 544471,
+      "sha256": "cebaad7516bdfaeba105fa9ef2336e2b075733d35da1479132a46584453ff7db"
+    },
+    "0207-watch-normal-after.log": {
+      "bytes": 444192,
+      "sha256": "67e52193aa04099eb159b074fd81a28ec1b32cb236af7c7d02df9ff41e28c7aa"
+    },
+    "0207-watch-reset-trace.log": {
+      "bytes": 454639,
+      "sha256": "6dfe6ea86111dae541a1ac603596e0e67aee5c1f5f2b67132e379d77452d1fdf"
+    },
+    "0207-watch-resource-after.log": {
+      "bytes": 642813,
+      "sha256": "a2e52e07922562f285736f427d60e2d723b5c98fcec44689e0a7deb9fcb26006"
+    },
+    "0207-watch-resource-final.log": {
+      "bytes": 741016,
+      "sha256": "2c2cf3ab27d3e9951cb8eacaffee05bd47f145991e6939f7c96fcc338fc27987"
+    },
+    "0207-webpack-example-build.log": {
+      "bytes": 2938,
+      "sha256": "74ae7134c499ef4e86b81c51b0bdfde6f3c67c4797380c6c78383edd7329cb01"
+    },
+    "0207-webpack-lint-final.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0207-webpack-lint-initial.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0207-webpack-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0207-webpack-tests-candidate-contract.log": {
+      "bytes": 858,
+      "sha256": "85d9ec967b02d68ab78fe0d752415385dceaaf7a44f3d52200aeb545de4b2ebb"
+    },
+    "0207-webpack-tests-final-candidate.log": {
+      "bytes": 858,
+      "sha256": "692590108e608f247c836f219daa898b78afab696d0cd07a644bcaf2ea710914"
+    },
+    "0207-webpack-tests-initial.log": {
+      "bytes": 2907,
+      "sha256": "7c4f54857df9c626e65adafbf8125dfb18e5166e0ae109ebe6f2ebeef4a5ef89"
+    },
+    "0207-webpack-types-final.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0207-webpack-types-initial.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    },
+    "0207-webpack-types.log": {
+      "bytes": 299,
+      "sha256": "b7cf7a064bd2676865e7e07f143d5c44b80b8818304297873c5b0e1b95c8d116"
+    }
+  },
+  "progressReport": {
+    "path": ".ai/audits/bug-hunt/progress-0207.md",
+    "sha256": "6c184594ffd323c23c9267c8b72da6fa599b91c65dcc724f4b7a1df53444e9d8",
+    "findings": 61,
+    "coverageRows": 75,
+    "generatorCorrection": "Initial ID filter omitted SITE-main and count assertion stopped before any report write; corrected filter includes75units. Not a product failure."
+  }
+}

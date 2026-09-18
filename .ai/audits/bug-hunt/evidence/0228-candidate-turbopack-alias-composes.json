@@ -1,0 +1,53 @@
+{
+  "scenario": "alias-composes",
+  "bundler": "turbopack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"audit-style\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "alias": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 84ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1370ms\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 45ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "classes": "card-module-css-module__yf-dfG__direct card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "classes": "card-module-css-module__yf-dfG__direct card_direct__vAL_y other_shared__f3TK2",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/2fq87xfc5izv2.css",
+      "text": ".other_shared__f3TK2{border-top:7px solid red}\n.card_direct__vAL_y{color:#123456}\n.card-module-css-module__yf-dfG__direct{}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ]
+}

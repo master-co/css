@@ -1,0 +1,18 @@
+{
+  "patch": ".ai/audits/bug-hunt/repros/compiler-rendered-resource-context-on-0242.patch",
+  "base": ".ai/audits/bug-hunt/tmp/0242-source-preservation-api",
+  "files": [
+    "packages/compiler/src/stylesheet/types.ts",
+    "packages/compiler/src/stylesheet/public.ts",
+    "packages/compiler/src/stylesheet/index-public.ts",
+    "packages/compiler/src/stylesheet/index.ts",
+    "packages/compiler/src/stylesheet/render-delivery.ts",
+    "packages/compiler/src/stylesheet/browser.ts",
+    "packages/compiler/tests/bug-hunt-rendered-resource-context.test.ts",
+    "site/app/[locale]/guide/directives/contract.mdx"
+  ],
+  "sha256": "c36ed85502df3693b74caa508b643af8ac7b13db2f47806b48dccf88685ed1c2",
+  "check": 0,
+  "applied": false,
+  "requires": "0242 compiler-native-source-preservation-candidate.patch and its owned native/Wasm providers; not a standalone root patch"
+}

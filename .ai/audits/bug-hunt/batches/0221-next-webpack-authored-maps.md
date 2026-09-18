@@ -1,0 +1,27 @@
+# Batch0221: Next Webpack authored maps
+
+Bounded candidate verification complete; authorization and product delivery remain unfinished. Previous goal turn: progress; actual0220export maps identify intermediate CSS instead ofauthor files. All638selectedsources/493artifacts match0220; ownedcandidate45source/testfiles unchangedatstart. Goalactive, all36remainingentries inherited. No rootproductpromotion ornewcommit;0038identitypause andpendingWebpackapprovals persist.
+
+Ownedcandidate master-next-copy-3z8i_q4c nowpasses compiler-authored sourceMap viaimmutablemetadata andWebpackemitFile thirdargument; alwaysstripspublisher-inlinecomment fromWebpackCSSbytes. Removeddisprovenminimizedflag. TurbopackprivateCSSinline mapdelivery staysunchanged. Nextvalidateactualfinalbrowser-readablemaps/hostrendering, thenreviewexistingpipelinecontractandfullsuite/e2e.
+
+Initial edit used root-relative paths fromownedpackagecwd andfailedbeforeanyedit; subsequentbuildwasunchangedcandidate, notfixevidence. Correctededit runsfromworkspace root andbuild followsseparately.
+
+ActualdefaultWebpack/maps,Lightning/maps andTurbopack each12browserPASS. DefaultandLightningfinalmapcontrols each13PASS (11dispatcher +2actualauthored-sourcechecks). Candidateconfig+pipeline19PASS,lint/scopedtypesPASS. Fullsuite running; e2e next. Four-file existing-test patch preparedwithroot/candidatesha256 in0221-test-contract-patch.json; noauthorizationasked/appliedyet. Productpatchrecordedseparatelyasnext-webpack-authored-maps-candidate.patch; earlier0220patchremainsitsownhistoricalevidence.
+
+Firstfullsuite127PASS/1FAIL: playground retained0220metadata withsameCSSrevision, andnewmetadataformatconflictedwithimmutablepublication. This is acandidateformat/revision bug, not a reason todeleteoldcache. Candidate nowincludespublicationversion2 inrevisionhashandmetadata, dispatcherrequiresversion2; oldfilespreserved. Rerunfullsuiteande2eagainstpreservedcache.
+
+Version2 fullsuite128PASS; all8oldversion1cachefiles hash-identical (before/afterevidence). Versionedlint/scopedtypes and11dispatchercontrolsPASS. Existing3e2e runningserially; finalversion2maphostrevalidation followsbeforeauthorizationrequest. No rootproduct/tests applied.
+
+Existinge2e3PASS (staticexport,manifestquery,devHMR). The suiteandrequiredexistingflows areverifiedinownedcopy; stillnotclaimingallNextModules/Sass/SSR/custompublicPathwatchmatricescomplete. Finalversion2defaultWebpackandLightningactualhostrunsinprogress.
+
+## Final verified state
+
+- Finalversion2defaultWebpack andLightning each12browserPASS and13dispatcher/finalmapcontrolsPASS. Finalmapsresolveauthoredglobals.css/child.css withmatchingselectorline/columnandsourcesContent. BeforeversioningTurbopack12browserPASS; version2fullplaygroundand3originale2ePASS. This isboundedgraphdelivery evidence, not proof ofallModules/Sass/custompublicPath/SSR/dev/watchcases.
+- Fullversion2suite128PASS; original3e2ePASS; candidatepackage lint/scopednoEmittypesPASS. Firstfullsuite127PASS/1immutablemetadataFAIL andprior0220intermittenttimeoutretainedhistorically; no deletionofoldcacheorignoringfailure. Eightoldversion1cachefiles remainhashidentical.
+- Askedexplicitauthorizationfor`repros/next-graph-delivery-test-contracts.patch`: fourrootexistingtests, threegraph/mapreaderadaptationspreserveCSSexpectations; next-configupdatesoldtop-levelCSSruleexpectationandModuleexclusion. Rootfilesstillunchanged; no replyreceivedatcheckpoint. Source/candidatehashesandpatchscopein0221-test-contract-patch.json. Newauditpipelineexpectationupdatedonlyinownedcopy, preservingdelegatedloaderoptionsandhostordering.
+- Productpatch`repros/next-webpack-authored-maps-candidate.patch` andownedcandidate`evidence/0221-candidate-source.json` recordthevalidatedimplementation. Candidatehasneverbeenpromoted; rootNextstatic0217delivery andallshared493artifacts unchanged. Allownedprocessesterminal. No commits, dependencies, lockfile, fixtures, CI/releaseorforeignSiteedits.
+- All36inheritedremainingentriespreservedverbatimwithoneboundedupdateappended. Counts57fixed/4unresolved,65checked/10blocked unchanged. Two priorWebpackapprovalsand0038identitypause persist; the newNexttestapproval isseparate.
+
+## Direct handoff
+
+Next0222: ifuserapprovesexactfour-testpatch, verifyroot/candidatehashes, applyitandthevalidatedminimalNextproductcandidate plusnewauditpipelineadaptation, runrequiredrootlint/types, andpromoteonlyafullybuiltownedNextdistatomicallywithbackup; verifydeliveredgraph/mapsandtests. Neverrebuild0217atomicbackup. Ifapprovalstillpending, continueindependentownedcandidateModules/Sass/deployment/dev/HMRvalidation; donotapplydependentrootchanges oraskagain. Preserveallraw/host/watch/platform/Site/rootgate/benchmarkrequirements andimmutableassetretentionlimits. Goalactive; no completionclaim.

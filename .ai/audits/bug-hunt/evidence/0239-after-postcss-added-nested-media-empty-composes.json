@@ -1,0 +1,239 @@
+{
+  "scenario": "postcss-added-nested-media-empty-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "client": false,
+  "mixed": false,
+  "remount": false,
+  "passScope": "appearance and original server condition contract",
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other.module.css\";color:#123456}",
+    "b": "@media screen{.shared{}}",
+    "postcss": true,
+    "addNestedComposes": true,
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 78ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.5s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 63ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "probe",
+      "phase": "initial",
+      "classes": "card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "background": "none",
+      "animation": "none",
+      "animationFrames": [],
+      "matchingRules": [],
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/42859c9a8ff4dc94.css",
+      "text": "@import url(\"/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css\");\n/*# sourceMappingURL=42859c9a8ff4dc94.css.map*/"
+    },
+    {
+      "file": "_next/static/css/42859c9a8ff4dc94.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/42859c9a8ff4dc94.css\"],\"names\":[],\"mappings\":\"AAAA,wLAAwL\",\"file\":\"static/css/42859c9a8ff4dc94.css\",\"sourcesContent\":[\"@import url(\\\"/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css\\\");\\n\\n\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css",
+      "text": ".leaf_leaf___2bhH{border-top:7px solid red}\n/*# sourceMappingURL=965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css\",\"webpack://_N_E/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css\"],\"names\":[],\"mappings\":\"AAAA,kBCCE,wBACF\",\"file\":\"static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css\",\"sourcesContent\":[\".leaf{border-top:1px solid red}\",\".leaf_leaf___2bhH {\\n  border-top: 7px solid red;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css",
+      "text": "@import \"./965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css\";\n/*# sourceMappingURL=965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/%00next-css:module:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/%3Cno%20source%3E\"],\"names\":[],\"mappings\":\"AAAA,iJAAA\",\"file\":\"static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css\",\"sourcesContent\":[null],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css",
+      "text": "@import \"./965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css\";.card_direct__vAL_y{color:#123456}\n/*# sourceMappingURL=965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css.map*/"
+    },
+    {
+      "file": "_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css.map",
+      "text": "{\"version\":3,\"sources\":[\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/%3Cno%20source%3E\",\"webpack://_N_E/file:/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/card.module.css\",\"webpack://_N_E/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css\"],\"names\":[],\"mappings\":\"AAAA,iJAAA,CCA+B,oBCG7B,aACF\",\"file\":\"static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css\",\"sourcesContent\":[null,\"@master entry;@preserve native;.direct{composes:shared from \\\"./other.module.css\\\";color:#123456}\",\"@import \\\"./965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css\\\";\\n\\n.card_direct__vAL_y {\\n  color: #123456;\\n}\"],\"sourceRoot\":\"\",\"ignoreList\":[]}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ],
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@master entry;@preserve native;.direct{composes:shared from \"./other.module.css\";color:#123456}"
+    },
+    {
+      "file": "app/nested/leaf.module.css",
+      "text": ".leaf{border-top:1px solid red}"
+    },
+    {
+      "file": "app/other.module.css",
+      "text": "@media screen{.shared{}}"
+    }
+  ],
+  "exportedProbeTags": [
+    "<div id=\"probe\" class=\"card_direct__vAL_y other_shared__f3TK2 leaf_leaf___2bhH\">"
+  ],
+  "requests": [
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/42859c9a8ff4dc94.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-b43da32d38d64060.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css",
+      "status": 200
+    },
+    {
+      "url": "/",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/42859c9a8ff4dc94.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/webpack-b43da32d38d64060.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/3b56f0b9-088186f00d851c75.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/194-4facec2e446527b7.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/chunks/main-app-6b28e1a29e412053.js",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-entry.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a6535234b0f2af0638f3bbeeb2fa3278c10e8c4e4061c1aa829c04ec948f27e2.css",
+      "status": 200
+    },
+    {
+      "url": "/_next/static/css/master/f49affad99690be28fd3a2c9a6b4b260f29a0973a131e0433713a29ae10042ff/maps/965cf9a08626dabd22b3c789c3f55ee391655cfbed5c45c7a3e9ff72cfb8e953-a1b367a67712a89992dbece30c092edb79f38a3e83d0714328116019c212c621.css",
+      "status": 200
+    }
+  ],
+  "postcssCalls": [
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/card.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/other.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/card.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/other.module.css"
+    },
+    {
+      "event": "Once",
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "1px solid red",
+      "after": "7px solid red"
+    },
+    {
+      "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-kOe2lK/app/nested/leaf.module.css",
+      "property": "border-top",
+      "before": "7px solid red",
+      "after": "7px solid red"
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/0244-global-resource-api/packages/compiler
+
+[success] index.html 6 classes inserted in 0.5ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] app/page.tsx 4 classes inserted in 0.6ms 
+[success] index.html 5 classes inserted in 1.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 6 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+ ❯ tests/session.test.ts (0 test)
+[success] index.html 5 classes inserted in 2.1ms 
+[success] app/page.html 2 classes inserted in 0.1ms 
+[success] index.html 5 classes inserted in 1.1ms 
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.4ms 
+ ❯ tests/entry.test.ts (4 tests | 1 failed) 14ms
+   × resolves CSS-only preset package root to stylesheet entry 3ms
+[success] index.html 5 classes inserted in 0.4ms 
+[success] index.html 5 classes inserted in 0.3ms 
+[success] index.html 5 classes inserted in 0.3ms 
+[success] index.html 5 classes inserted in 0.3ms 
+[success] app/page.html 2 classes inserted in 0.2ms 
+[success] index.html 5 classes inserted in 0.3ms 
+[success] app/page.html 1 classes inserted in 0.1ms 
+[success] index.html 6 classes inserted in 0.4ms  (repeated 9 times)
+[success] app/page.html 1 classes inserted in 0.1ms 
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/session.test.ts [ tests/session.test.ts ]
+Error: ENOENT: no such file or directory, open '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0244-global-resource-api/parity/rust-semantic-corpus.json'
+ ❯ tests/session.test.ts:24:41
+     22|
+     23| const defaultManifest = defaultManifestJSON as unknown as MasterCSSMan…
+     24| const semanticParityCorpus = JSON.parse(readFileSync(
+       |                                         ^
+     25|   new URL('../../../parity/rust-semantic-corpus.json', import.meta.url…
+     26|   'utf8'
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/entry.test.ts > resolves CSS-only preset package root to stylesheet entry
+AssertionError: expected '/Users/aron/master/css/.ai/audits/bug…' to be '/Users/aron/master/css/.ai/audits/bug…' // Object.is equality
+
+Expected: "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0244-global-resource-api/packages/preset/src/index.css"
+Received: "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/packages/preset/src/index.css"
+
+ ❯ tests/entry.test.ts:57:17
+     55|   const expectedEntry = resolve(repoRoot, 'packages/preset/src/index.c…
+     56|
+     57|   expect(entry).toBe(expectedEntry)
+       |                 ^
+     58|   expect(entry ? existsSync(entry) : false).toBe(true)
+     59| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 55 passed (57)
+      Tests  1 failed | 425 passed (426)
+   Start at  06:38:22
+   Duration  14.01s (tests 93%, import 4%, transform 3%)
+

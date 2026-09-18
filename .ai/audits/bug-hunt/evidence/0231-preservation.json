@@ -1,0 +1,27 @@
+{
+  "source-hashes-final": {
+    "count": 655,
+    "changedExisting": [
+      ".ai/audits/bug-hunt/repros/next-module-graph-controls.mjs",
+      ".ai/audits/bug-hunt/repros/next-module-edge-host.mjs"
+    ]
+  },
+  "artifacts-final": {
+    "count": 493,
+    "changedExisting": []
+  },
+  "candidate-source": {
+    "count": 49,
+    "changedExisting": [
+      "src/prepare-module.ts",
+      "src/prepare-module-graph.ts"
+    ]
+  },
+  "candidate-dist": {
+    "count": 54,
+    "changedExisting": [
+      "prepare-module-graph.js",
+      "prepare-module.d.ts"
+    ]
+  }
+}

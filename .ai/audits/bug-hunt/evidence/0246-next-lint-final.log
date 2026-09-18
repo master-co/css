@@ -1,0 +1,6 @@
+
+/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0246-postcss-request-adapter/packages/next/tests/bug-hunt-postcss-request-plugins.test.ts
+  104:7  error  Unexpected aliasing of 'this' to local variable  @typescript-eslint/no-this-alias
+
+✖ 1 problem (1 error, 0 warnings)
+

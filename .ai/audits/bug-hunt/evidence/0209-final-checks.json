@@ -1,0 +1,263 @@
+{
+  "batch": "0209-webpack-initial-delete",
+  "status": "Upstream Watchpack race proved; dependency patch validated in isolated copy; formal delivery pending explicit approval",
+  "goal": "active",
+  "previousGoalTurn": "progress;0208entryrepairandwatchfailureevidence",
+  "head": "3b5c98d61c6dc69ee3546d9d4f822e9e835f308e",
+  "counts": {
+    "historical": 61,
+    "fixed": 57,
+    "unresolved": 4,
+    "checkedCoverage": 65,
+    "blockedCoverage": 10
+  },
+  "finding": "Existing BH-0004 first-delete requirement reclassified as Watchpack2.5.2 initial-scan race; still incomplete until approved formal dependency delivery and verification",
+  "results": {
+    "deliveredTrace": "No filesystem callback after first deletion; watcher registration includedexistingchild",
+    "pureControlledInterleaving": "REPRODUCED withoutplugin; deletionbetweenreaddirandlstat",
+    "patchedPure": "PASS; correctremovedcallbackandcompilationerror",
+    "patchedPureNoDeletion": "PASS; nofalsemissingnotification",
+    "patchedActualProductTests": "2PASS",
+    "patchedLongWatch": "29PASS",
+    "webpackLintAndTypes": "PASS",
+    "contextBudgets": "PASS"
+  },
+  "parsedEvidence": {
+    "0209-pure-initial-scan.log": {
+      "pureWebpack": true,
+      "controlledInterleaving": true,
+      "triggered": true,
+      "events": [
+        {
+          "event": "compilation",
+          "errors": []
+        },
+        {
+          "event": "watch-registration",
+          "containsChild": true
+        },
+        {
+          "event": "delete-between-readdir-and-lstat",
+          "file": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-pure-initial-scan-ibAW92/child.css"
+        }
+      ],
+      "missingChildReported": false,
+      "result": "REPRODUCED"
+    },
+    "0209-pure-patched-initial-scan.log": {
+      "patched": true,
+      "control": false,
+      "pureWebpack": true,
+      "controlledInterleaving": true,
+      "triggered": true,
+      "events": [
+        {
+          "event": "compilation",
+          "errors": []
+        },
+        {
+          "event": "watch-registration",
+          "containsChild": true
+        },
+        {
+          "event": "delete-between-readdir-and-lstat",
+          "file": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-pure-initial-scan-gE00A6/child.css"
+        },
+        {
+          "event": "watch-filesystem-callback",
+          "removed": [
+            "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-pure-initial-scan-gE00A6/child.css"
+          ]
+        },
+        {
+          "event": "compilation",
+          "errors": [
+            "Module not found: Error: Can't resolve './child.css' in '/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-pure-initial-scan-gE00A6'"
+          ]
+        },
+        {
+          "event": "watch-registration",
+          "containsChild": false
+        }
+      ],
+      "missingChildReported": true,
+      "result": "PASS"
+    },
+    "0209-pure-patched-control.log": {
+      "patched": true,
+      "control": true,
+      "pureWebpack": true,
+      "controlledInterleaving": true,
+      "triggered": false,
+      "events": [
+        {
+          "event": "compilation",
+          "errors": []
+        },
+        {
+          "event": "watch-registration",
+          "containsChild": true
+        }
+      ],
+      "missingChildReported": false,
+      "result": "PASS"
+    },
+    "0209-long-watch.log": {
+      "summary": {
+        "observations": 9,
+        "failures": 0,
+        "callbacks": 9,
+        "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+      }
+    },
+    "0209-long-watch-child.log": {
+      "summary": {
+        "initiallyMissing": "child",
+        "observations": 10,
+        "failures": 0,
+        "callbacks": 10,
+        "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+      }
+    },
+    "0209-long-watch-resource.log": {
+      "summary": {
+        "initiallyMissing": "resource",
+        "observations": 10,
+        "failures": 0,
+        "callbacks": 10,
+        "scope": "Actual Webpack production static compiler.watch with native filesystem events; no manual invalidate, forced polling, dev server/HMR/browser/SSR claim. All output snapshots captured at callbacks."
+      }
+    }
+  },
+  "pendingApprovals": {
+    "existingWebpackTestContract": {
+      "file": "packages/webpack/tests/plugin-runtime.test.ts",
+      "patch": ".ai/audits/bug-hunt/repros/webpack-watch-compilation-contract.patch",
+      "rootFileSha256": "378564be3acc2840e4af0010bbec5a9345db9d4bc906d55f61cf016c4583310c",
+      "patchSha256": "e4960863a87b55bc0bbfdde0e0d87d2f120426e21fffcaec8835a0e2509d999d",
+      "isolatedPatchedFileSha256": "da2cf049de005c48c03f1aeacbd1bac13320cf783f8e19e7138ed1254784256f",
+      "scope": "Two existing watch tests and fake compilation mock; compilation.errors and missingDependencies; preserves error identity/logging/recovery assertions",
+      "authorization": "No reply to separate Webpack test patch question; LSP one-line approval applied0203 is distinct"
+    },
+    "watchpackDependencyPatch": {
+      "patch": ".ai/audits/bug-hunt/repros/watchpack-initial-scan-removals.patch",
+      "sha256": "497eca85fe84d6eb7a899b16701af80d58ec08dff7b383688a86ed04077d2e74",
+      "version": "2.5.2",
+      "candidate": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-watchpack-patch-onnbwu_j/watchpack",
+      "scope": "Formal patch file, pnpm patchedDependencies and matching lockfile entries; no upgrades/additionaldependencies",
+      "authorization": "Question accepted asynchronously; no explicit reply received",
+      "reason": "User prohibits dependency/lockfile changes without exception",
+      "delivered": false
+    }
+  },
+  "preservation": {
+    "sourceCount": 592,
+    "changedPriorSources": [
+      ".ai/audits/bug-hunt/repros/webpack-static-watch.mjs",
+      "packages/webpack/tests/bug-hunt-static-watch-recovery.test.ts"
+    ],
+    "priorSourcesUnchanged": 588,
+    "newlyInventoried": [
+      ".ai/audits/bug-hunt/repros/webpack-watch-initial-scan.mjs",
+      ".ai/audits/bug-hunt/repros/watchpack-initial-scan-removals.patch"
+    ],
+    "artifactCount": 475,
+    "allArtifactsUnchanged": true,
+    "all19InstalledWatchpackFilesUnchanged": true,
+    "productionSource": "unchanged",
+    "dependencyWorkspaceLockfilePolicy": "unchanged",
+    "existingTestsFixturesSnapshotsCIRelease": "unchanged",
+    "foreignSiteAndHosts": "preserved; no restart",
+    "indexEmpty": true,
+    "commitOrPush": false
+  },
+  "remaining": [
+    "BH-0004 full public/host graph migration remains. Original10 external-import cases now60PASS via built Node rendered delivery (126 comparisons with11 extra controls); raw flatten+compile baseline remains21PASS/39FAIL and must not be called repaired.",
+    "BH-0004 low-level native/Wasm qualified flatten+compile still20FAIL/4PASS; renderedNode12PASS0188. Other project/raw/file/delivery consumers and full URL/host/watch matrices remain unfinished.",
+    "BH-0029 Rspack static loss;0038 additional verification still paused pending explicit identity confirmation",
+    "BH-0051 complete Next/Webpack boundaries and intermittent Sass mount/HMR timeout",
+    "BH-0053 separate delivery asset maps, finer native declaration anchors, complete Sass options/hosts/static/SSR",
+    "Original six default-filter Vite build-watch startup failures now pass;2custom-filter recovery failures plus configuration-error cache cleanup failure remain;shared owner retention fixed",
+    "Full graph/host/watch/recovery/base/assets/renderBuiltUrl/SSR/Nuxt/Webpack matrices",
+    "Four root gates: API census, package API golden, runtime-size baseline, historical extraction migration",
+    "Original candidates all classified: legacy native-compose position covered by existing BH-0057 in0197;Webpack shared-dist is a harness race (formal parallel isolation still unfinished);Node Wasm excluded0192;compiler/MCP .mjs fixed asBH-0059. This classification does not close remaining harness/platform/graph requirements.",
+    "Vite immediate-close native async handle shutdown0157-58",
+    "WebKit26.6 namespace universal cascade deviation0177",
+    "Full benchmark matrices, reliable long sessions/history/owner Rust profiling",
+    "Site changes from other work require revalidation; all10blocked coverage items remain incomplete",
+    "0195 adds pure Vite native watcher initial-create evidence and20expanded setup cleanup failures; these are remaining scopes, not20newfinding IDs. Candidate rejected; no completion claim.",
+    "0200defaultcollection graph and0199metadata consumers repaired;raw/parse-only/classification andremainingpublic/host delivery paths still require verification/repair. BH-0004 raw20qualified/39external remain.",
+    "Compiler-Wasm original exact import result test rejects existing sourceMappings;pre0199 andcurrent both3PASS/1FAIL. Keep this test-contract migration unfinished.",
+    "0206 production static Webpack now publishes full retained stylesheet/resource graphs with current-compilation dependencies;78tests,staged336browser anddelivered72browser PASS. Complete development/watch/HMR,localcompose/CSSModules,maps,multi/lazy-entry,unusedresource pruning,resource snapshots during concurrent writes,Sass/customresolver andadditionaldeployment matrices remain unfinished. Next loader/static graph publication still requires its own implementation;raw20qualified/39external requirements unchanged.",
+    "0204 default compiler suite cannotresolveoptionalSass (415PASS/1environmentFAIL). Process-onlyNODE_PATH toinstalledSass1.104.0 gives416PASS. Formalportabletest/hostSassprovisioning remains incomplete;node_modules/dependencies/lockfiles unchanged.",
+    "0205 pure Webpack native CSS experiment still reproduces external-import layer/media hoisting.0206 shields the bounded managed production static route through complete graph publication. Do not extrapolate to other native host routes,development,ordinary unmanaged graphs or SSR.",
+    "0207 bounded production static watch deletion/restoration/rename/unmanage now29PASS and63snapshot-browserPASS; this supersedes only the bounded watch subset of0206 remaining text. Full multi/lazy-entry, emitted asset pruning, resource snapshots during concurrent writes, local compose/Modules/maps/Sass/customresolvers/development/HMR/Next remain.",
+    "0207 existing Webpack watch test-contract patch remains pending explicit user approval; root test untouched. After approval apply exact repro patch and use a fresh owned build copy for full serial tests.",
+    "0208 simple multiple/lazy andcombinedA-B/B-A productionstatic layouts now18browserPASS; full chunk topology/unusedemission/sourcecleanup/concurrentresources/dev/SSR/Next remain. New public collection sourceIds andcompiler declaration fixes delivered.",
+    "0208 delivered immediate first-child deletion consistently times out after first successful callback despitewatchregistrationwhilefileexists;3PASS1FAIL deliveredregressions. PureWebpack/localnooploader/externalnooploader controlsPASS. This remains a product/path-dependent watch failure under BH-0004; fullcopied82PASS andlongwatch29PASS do not clear it. Next turn trace nativeWatchpack events/dependency metadata, thenverify immediate deletion andall29steps. Do not substitute delays orlateredits for recovery.",
+    "0209 supersedes only the tentative classification of0208first-delete failure: pureWebpack controlledinitialscaninterleaving reproducesWatchpack2.5.2loss; isolatedpatchfixespurecontrol/actual2tests/all29watchsteps. Formal patch/pnpmconfiguration/lockfile delivery stillawaitsexplicitapproval; do not mark complete. ExistingWebpacktestpatch alsoseparatelypending."
+  ],
+  "next": "On explicit approval, persist/test onlyWatchpackpatchandmatchingdependencylockrecords. Whilependingcontinue unusedsource/assetownership andconcurrentresource snapshots. Allraw20qualified/39external/fullhost/rootgate/platform/Site requirements and0038identitypause retained.",
+  "evidence": {
+    "0209-artifacts-final.json": {
+      "bytes": 73872,
+      "sha256": "4b9003ad3d58c128f13532b73db459a5cbb9d719a55f6c3be52b5335556aee6b"
+    },
+    "0209-before.json": {
+      "bytes": 158090,
+      "sha256": "b23080a5f0d037e5db5b1a87ed2cb2568a8c4ce16e750a4adf22dfb586a45828"
+    },
+    "0209-context-final.log": {
+      "bytes": 121,
+      "sha256": "f7c502b8b9c9b8082b25d3cd42a63d82789f5af1b74ed2921f4e36d6bb76cdb7"
+    },
+    "0209-long-watch-child.log": {
+      "bytes": 627935,
+      "sha256": "a1defaf147f6d2170bc32709565e96eeeafbc83cbd48a769b8d0e48032cd2c8e"
+    },
+    "0209-long-watch-resource.log": {
+      "bytes": 724644,
+      "sha256": "0b39b0351d1b1a2b40cb0ed7b12497cb455eb49c682a03e83b0a5f148461a559"
+    },
+    "0209-long-watch.log": {
+      "bytes": 623828,
+      "sha256": "a9b6e01e5f99a03f2abef629186fc0ab0c37c6595751b74ece1d272a6386e656"
+    },
+    "0209-product-patched-watch.log": {
+      "bytes": 170,
+      "sha256": "2f2c2cc802a453c06968e48792c6d7d95f8f1d481ef2d2b054556f520e4878aa"
+    },
+    "0209-pure-initial-scan.log": {
+      "bytes": 371,
+      "sha256": "ffc9ce4d6aca5e2016d998ae97663a5b1efdffe205c8344d429cbd44158acc07"
+    },
+    "0209-pure-patched-control.log": {
+      "bytes": 243,
+      "sha256": "1916ab505d60813766b2601de106ccb5e011139a051d3416db46863595e48d31"
+    },
+    "0209-pure-patched-initial-scan.log": {
+      "bytes": 783,
+      "sha256": "a119f99932d7a16f39fe7c1227d06d2b5d24256e2dee330c34a30086cd641167"
+    },
+    "0209-source-hashes-final.json": {
+      "bytes": 74515,
+      "sha256": "e5327b793d23852eb345c3da3c68d348784d9c7c2f81f546fbb5e00603e89e5b"
+    },
+    "0209-watch-events.log": {
+      "bytes": 3773,
+      "sha256": "fcae78364eb9ce3ec75aae9d8f9e348b70e5b9db16cb42dd45c5979b4fb403b9"
+    },
+    "0209-watchpack-patch-state.json": {
+      "bytes": 2285,
+      "sha256": "9d970fe6dcc01d0a4e23b4f6122cf5b9b942b643c385a2341907d1278cdbfe9b"
+    },
+    "0209-webpack-lint.log": {
+      "bytes": 9,
+      "sha256": "ebfee82d478f07b1e725885398b7046100b7b6a51ffc6438f52db8dc0230ea78"
+    },
+    "0209-webpack-types.log": {
+      "bytes": 33,
+      "sha256": "1da8c99f35e2df790d3e432c1353c83a2d5f958dbf4370f8404943a44e711307"
+    }
+  }
+}

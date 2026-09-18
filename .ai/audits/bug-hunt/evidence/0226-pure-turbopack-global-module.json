@@ -1,0 +1,273 @@
+{
+  "globalParent": true,
+  "expectedImportScoped": true,
+  "importedPlainCSS": false,
+  "authoredStylesheets": [
+    {
+      "file": "app/card.module.css",
+      "text": "@import \"./nested/imported.module.css\";.direct{width:4px;height:4px;background-image:url(\"./assets/red.svg?direct=1#pixel\")}.composed{padding:2rem;}"
+    },
+    {
+      "file": "app/globals.css",
+      "text": "@import \"./nested/imported.module.css\";.direct{width:4px;height:4px;background-image:url(\"./assets/red.svg?direct=1#pixel\")}.composed{padding:2rem;}"
+    },
+    {
+      "file": "app/nested/child.css",
+      "text": ".nested{width:4px;height:4px;background-image:url(\"./assets/blue.svg?nested=1#pixel\")}"
+    },
+    {
+      "file": "app/nested/imported.module.css",
+      "text": ".imported{margin-left:13px;width:4px;height:4px;background-image:url(\"./assets/blue.svg\")}"
+    }
+  ],
+  "pureLoaderMap": false,
+  "moduleFeature": "imports",
+  "moduleKind": "pure",
+  "sourceMaps": false,
+  "cssLoaderControl": null,
+  "externalImportControl": false,
+  "pureNext": true,
+  "lightningcss": false,
+  "bundler": "turbopack",
+  "scope": "Actual Next export (managed general loader mode:runtime/runtime:false, or explicit pure-Next control), then three-browser SVG decoding, composed padding and qualified external CSS rendering. No live HMR or dynamic SSR claim.",
+  "observations": [
+    {
+      "browser": "chromium",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:49295/_next/static/media/red.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-scope",
+      "selector": ".imported-module__1H2nvW__imported",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "chromium",
+      "id": "global-entry-class",
+      "classes": "direct",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:49295/_next/static/media/red.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-scope",
+      "selector": ".imported-module__1H2nvW__imported",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "firefox",
+      "id": "global-entry-class",
+      "classes": "direct",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "direct",
+      "background": "url(\"http://127.0.0.1:49295/_next/static/media/red.2nma54lwo8nhx.svg\")",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"red\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "import-scope-policy",
+      "margin": "0px",
+      "background": "none",
+      "expectedImportScoped": true,
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-scope",
+      "selector": ".imported-module__1H2nvW__imported",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "retained-import-resource",
+      "margin": "13px",
+      "status": 200,
+      "width": 4,
+      "height": 4,
+      "body": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"4\" height=\"4\"><path fill=\"blue\" d=\"M0 0h4v4H0z\"/></svg>",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "generated",
+      "padding": "32px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "id": "global-entry-class",
+      "classes": "direct",
+      "pass": true
+    }
+  ],
+  "files": [
+    {
+      "file": "404.html",
+      "sha256": "75f11963507263f99a2c87925f683dbbdd1e07bd6ed0d6baa94bdb96d21d4ce5"
+    },
+    {
+      "file": "__next.__PAGE__.txt",
+      "sha256": "db67a17431becef186ffd48b8665814f5ceb8f656af692bf91f38c2ff733282b"
+    },
+    {
+      "file": "__next._full.txt",
+      "sha256": "8275a27947b22880fb91e299f1826f971d4bbfb722ed768a2bc22cbee3b4af4c"
+    },
+    {
+      "file": "__next._tree.txt",
+      "sha256": "f737fa380c826aab8cfe7018f483cf0a057553b4d77fbd6af6a2dda0b0e513d2"
+    },
+    {
+      "file": "_next/static/cCThypXJjpK6HQnNk260o/_buildManifest.js",
+      "sha256": "9476e0afd3f9da68a64e6ec58631191fd3eaca62c9f5a377e7517fe9a89e59ea"
+    },
+    {
+      "file": "_next/static/cCThypXJjpK6HQnNk260o/_clientMiddlewareManifest.js",
+      "sha256": "5483e3295dc35dfe29ea932efc85341c916f10ff78ff5b0e965e003710893a4a"
+    },
+    {
+      "file": "_next/static/cCThypXJjpK6HQnNk260o/_ssgManifest.js",
+      "sha256": "678f6ce2cb80b1fe72fc67e7412be6e2ab6ada083111b64f7c40d35e3cba5e00"
+    },
+    {
+      "file": "_next/static/chunks/09xd9-7xlonox.js",
+      "sha256": "83d9c1343c7034f4f08c254bf1976ff9723be20aef7df0135cb1b5d2dd42feda"
+    },
+    {
+      "file": "_next/static/chunks/0cz1d0mv5g_q7.js",
+      "sha256": "0973c1d64c88adc8e3c950410cb58b288f72118d5965b78049438deb8f2f9683"
+    },
+    {
+      "file": "_next/static/chunks/13nu9qjbe2--a.js",
+      "sha256": "c042a274794dc3eb3f4bb459ec671d87898667b86ed671b27fd7cb028a34466d"
+    },
+    {
+      "file": "_next/static/chunks/1csqc9k5zk0-r.css",
+      "sha256": "931a40791ac3868cff4e4e7fc60a7821b9d4827220bfbc7d0edd05f900729fc8"
+    },
+    {
+      "file": "_next/static/chunks/1g5p3wzuxdw80.js",
+      "sha256": "90c593f3b45f2af722a2e9211f6b2589c2fc1308d9360442d59620a67af00d4e"
+    },
+    {
+      "file": "_next/static/chunks/1mi_l79v1lum8.js",
+      "sha256": "dababa03f8a089b4d2682a2d669701e998cabdad4ccc08c12506cef8bebe7571"
+    },
+    {
+      "file": "_next/static/chunks/turbopack-0b_yw9ibui8wc.js",
+      "sha256": "90844ff36de6c87bed5f2ab6f3b11ee77179506374001d41fca8073623e7d0ef"
+    },
+    {
+      "file": "_next/static/media/blue.3pwtvbarjo92x.svg",
+      "sha256": "9ab9f644d71b00aa56003f1b842e6f6fa861a77ab757211143011fb07a89566c"
+    },
+    {
+      "file": "_next/static/media/red.2nma54lwo8nhx.svg",
+      "sha256": "9b2bdeea42f0da941fe65654ecbd4bd96c7377bcd2d8b7faef628affdfc58f89"
+    },
+    {
+      "file": "_not-found/__next._full.txt",
+      "sha256": "8bdc1c88936383ee729de4b2b4d171c6f99e255aa899ad7e2aef600ac0218b50"
+    },
+    {
+      "file": "_not-found/__next._not-found.__PAGE__.txt",
+      "sha256": "7bde02aeb0faca5fd886cee173fb50c4c6c02cf9f658321055aefb1efb128480"
+    },
+    {
+      "file": "_not-found/__next._tree.txt",
+      "sha256": "a63d4d03ef9bd6df6a170c0e4b5988621984eac8d58743495c3a71f052ed366f"
+    },
+    {
+      "file": "_not-found.html",
+      "sha256": "75f11963507263f99a2c87925f683dbbdd1e07bd6ed0d6baa94bdb96d21d4ce5"
+    },
+    {
+      "file": "_not-found.txt",
+      "sha256": "8bdc1c88936383ee729de4b2b4d171c6f99e255aa899ad7e2aef600ac0218b50"
+    },
+    {
+      "file": "index.html",
+      "sha256": "9962f72f99d7388729ed80a4994e35aae917aff8d1788a465d56c2e3b834284b"
+    },
+    {
+      "file": "index.txt",
+      "sha256": "8275a27947b22880fb91e299f1826f971d4bbfb722ed768a2bc22cbee3b4af4c"
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/1csqc9k5zk0-r.css",
+      "text": ".imported-module__1H2nvW__imported{background-image:url(../media/blue.3pwtvbarjo92x.svg);width:4px;height:4px;margin-left:13px}\n.direct{background-image:url(../media/red.2nma54lwo8nhx.svg);width:4px;height:4px}.composed{padding:2rem}\n"
+    }
+  ]
+}

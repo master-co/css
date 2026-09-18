@@ -1,0 +1,19 @@
+{
+  "patch": ".ai/audits/bug-hunt/repros/next-module-inline-loader-candidate.patch",
+  "files": [
+    "packages/next/src/index.ts",
+    "packages/next/src/prepare-module-graph.ts",
+    "packages/next/src/prepare-module.ts",
+    "packages/next/src/static-publication.ts",
+    "packages/next/src/stylesheet-delivery.ts",
+    "packages/next/src/stylesheet-loader.ts",
+    "packages/next/src/stylesheet-map-loader.ts",
+    "packages/next/src/stylesheet-source-loader.ts",
+    "packages/next/src/webpack-css-loader.ts",
+    "packages/next/src/webpack-stylesheets.ts"
+  ],
+  "applyCheck": 0,
+  "stderr": "",
+  "promoted": false,
+  "initialHarnessError": "Patch-header parsing used x[4:] instead of x[6:], leaving b/ in filename; ValueError before patch write. Corrected; not a product failure."
+}

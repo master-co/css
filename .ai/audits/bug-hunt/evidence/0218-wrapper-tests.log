@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-tpk5chtq/packages/next
+
+ ❯ tests/bug-hunt-output-source-maps.test.ts (6 tests | 1 failed) 4470ms
+   × Next injected package entry retains pure CSS authoring lines in its callback map 1814ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-output-source-maps.test.ts > Next injected package entry retains pure CSS authoring lines in its callback map
+AssertionError: expected -1 to be greater than or equal to 0
+ ❯ origin tests/bug-hunt-output-source-maps.test.ts:24:60
+     22| function origin(result: Awaited<ReturnType<typeof compile>>, token: st…
+     23|   expect(result.sourceMap).toBeDefined()
+     24|   const offset = result.code.indexOf(token);expect(offset).toBeGreater…
+       |                                                            ^
+     25|   const lines = result.code.slice(0, offset).split('\n')
+     26|   return new SourceMap(result.sourceMap).findEntry(lines.length - 1, l…
+ ❯ tests/bug-hunt-output-source-maps.test.ts:33:12
+ ❯ fixture tests/bug-hunt-output-source-maps.test.ts:13:99
+ ❯ tests/bug-hunt-output-source-maps.test.ts:30:3
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 1 passed (2)
+      Tests  1 failed | 7 passed (8)
+   Start at  03:39:25
+   Duration  9.93s (tests 95%, transform 3%, import 2%)
+

@@ -1,0 +1,50 @@
+[
+  {
+    "file": "0240-preserved-postcss-added-nested-themed-empty-composes-maps.json",
+    "exit": 1,
+    "pass": 2,
+    "fail": 1
+  },
+  {
+    "file": "0240-preserved-postcss-child-global-resource-maps.json",
+    "exit": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  {
+    "file": "0240-preserved-postcss-global-context-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0240-preserved-postcss-imported-keyframe-maps.json",
+    "exit": 1,
+    "pass": 1,
+    "fail": 1
+  },
+  {
+    "file": "0240-preserved-postcss-local-generated-composes-maps.json",
+    "exit": 0,
+    "pass": 1,
+    "fail": 0
+  },
+  {
+    "file": "0240-preserved-postcss-themed-comment-composes-maps.json",
+    "exit": 1,
+    "pass": 2,
+    "fail": 1
+  },
+  {
+    "file": "0240-preserved-postcss-themed-merged-composes-maps.json",
+    "exit": 1,
+    "pass": 2,
+    "fail": 1
+  },
+  {
+    "file": "0240-preserved-postcss-themed-spelling-composes-maps.json",
+    "exit": 0,
+    "pass": 3,
+    "fail": 0
+  }
+]

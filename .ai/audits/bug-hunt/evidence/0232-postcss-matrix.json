@@ -1,0 +1,656 @@
+{
+  "summary": {
+    "builds": 11,
+    "successfulBuilds": 11,
+    "observations": 22,
+    "passed": 12,
+    "failed": 10
+  },
+  "classification": "All10 failures belong to unchanged0231 graph candidate across child,inline child,entry,generated compose andPostCSS-generated Module export. PureNext controls10PASS andcandidate local-compose control2PASS. No browser orharnesserrors. SameBH0004/BH0051scope; no rootpromotion ornewfindingID.",
+  "rows": [
+    {
+      "evidence": "0232-baseline-postcss-candidate.json",
+      "scenario": "postcss-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "1px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "1px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        }
+      ],
+      "postcssEvents": []
+    },
+    {
+      "evidence": "0232-baseline-postcss-inline-candidate.json",
+      "scenario": "postcss-inline-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "3px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "3px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        }
+      ],
+      "postcssEvents": []
+    },
+    {
+      "evidence": "0232-baseline-postcss-inline-pure.json",
+      "scenario": "postcss-inline-composes",
+      "pure": true,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".other_shared__f3TK2",
+              "declarations": "border-top: 7px solid red;"
+            },
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86);"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".other_shared__f3TK2",
+              "declarations": "border-top: 7px solid red;"
+            },
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86);"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-RRQuzK/app/other.module.css",
+          "before": "3px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-RRQuzK/app/other.module.css",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-RRQuzK/app/other.module.css",
+          "before": "3px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-RRQuzK/app/other.module.css",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-baseline-postcss-pure.json",
+      "scenario": "postcss-composes",
+      "pure": true,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".other_shared__f3TK2",
+              "declarations": "border-top: 7px solid red;"
+            },
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86);"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y other_shared__f3TK2",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".other_shared__f3TK2",
+              "declarations": "border-top: 7px solid red;"
+            },
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86);"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-qfoeek/app/other.module.css",
+          "before": "1px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-qfoeek/app/other.module.css",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-qfoeek/app/other.module.css",
+          "before": "1px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-qfoeek/app/other.module.css",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-expanded-postcss-generated-candidate.json",
+      "scenario": "postcss-generated-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "32px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "32px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        }
+      ],
+      "postcssEvents": []
+    },
+    {
+      "evidence": "0232-expanded-postcss-generated-pure.json",
+      "scenario": "postcss-generated-composes",
+      "pure": true,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "48px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "48px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "padding",
+          "before": "2rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "padding",
+          "before": "3rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "padding",
+          "before": "2rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-Ck5r3t/app/card.module.css",
+          "property": "padding",
+          "before": "3rem",
+          "after": "3rem"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-expanded-postcss-local-generated-candidate.json",
+      "scenario": "postcss-local-generated-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "48px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "48px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "padding: 3rem; color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "padding",
+          "before": "2rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "padding",
+          "before": "3rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "padding",
+          "before": "2rem",
+          "after": "3rem"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-5To23Q/app/card.module.css",
+          "property": "padding",
+          "before": "3rem",
+          "after": "3rem"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-expanded-postcss-root-candidate.json",
+      "scenario": "postcss-root-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "1px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "1px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        }
+      ],
+      "postcssEvents": []
+    },
+    {
+      "evidence": "0232-expanded-postcss-root-pure.json",
+      "scenario": "postcss-root-composes",
+      "pure": true,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-4JnEYR/app/card.module.css",
+          "property": "border-top",
+          "before": "1px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-4JnEYR/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-4JnEYR/app/card.module.css",
+          "property": "border-top",
+          "before": "1px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-4JnEYR/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-exports-candidate.json",
+      "scenario": "postcss-export-composes",
+      "pure": false,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "",
+          "color": "rgb(0, 0, 0)",
+          "border": "0px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "",
+          "color": "rgb(0, 0, 0)",
+          "border": "0px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [],
+          "pass": false
+        }
+      ],
+      "postcssEvents": [
+        {
+          "event": "Once",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-0IR9hK/app/card.module.css"
+        },
+        {
+          "event": "Once",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-0IR9hK/app/card.module.css"
+        }
+      ]
+    },
+    {
+      "evidence": "0232-exports-pure.json",
+      "scenario": "postcss-export-composes",
+      "pure": true,
+      "buildExit": 0,
+      "observations": [
+        {
+          "browser": "chromium",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        },
+        {
+          "browser": "webkit",
+          "id": "probe",
+          "phase": "initial",
+          "classes": "card_direct__vAL_y",
+          "color": "rgb(18, 52, 86)",
+          "border": "7px",
+          "margin": "0px",
+          "padding": "0px",
+          "origin": "",
+          "matchingRules": [
+            {
+              "selector": ".card_direct__vAL_y",
+              "declarations": "color: rgb(18, 52, 86); border-top: 7px solid red;"
+            }
+          ],
+          "pass": true
+        }
+      ],
+      "postcssEvents": [
+        {
+          "event": "Once",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css"
+        },
+        {
+          "event": "rename",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css",
+          "before": ".original",
+          "after": ".direct"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        },
+        {
+          "event": "Once",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css"
+        },
+        {
+          "event": "rename",
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css",
+          "before": ".original",
+          "after": ".direct"
+        },
+        {
+          "file": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/bug-hunt-module-edge-yer87f/app/card.module.css",
+          "property": "border-top",
+          "before": "7px solid red",
+          "after": "7px solid red"
+        }
+      ]
+    }
+  ]
+}

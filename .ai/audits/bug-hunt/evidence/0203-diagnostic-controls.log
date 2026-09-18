@@ -1,0 +1,31 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:2:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/language-server
+
+ ❯ tests/bug-hunt-manifest-diagnostic-contract.test.ts (3 tests | 1 failed) 894ms
+   ❯ invalid-manifest (3)
+     × preserves the real compiler diagnostic when manifest loading fails 295ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-manifest-diagnostic-contract.test.ts > invalid-manifest > preserves the real compiler diagnostic when manifest loading fails
+AssertionError: expected MasterCSSError: @compose only accepts unq… { …(4) } to be an instance of MasterCSSError
+ ❯ tests/bug-hunt-manifest-diagnostic-contract.test.ts:13:21
+     11|       await context.server.onDidOpen({ document })
+     12|       const error = context.rootWorkspace?.manifestErrors?.[0]
+     13|       expect(error).toBeInstanceOf(MasterCSSError)
+       |                     ^
+     14|       if (!(error instanceof MasterCSSError)) throw new Error('Expecte…
+     15|       const original = error.diagnostics?.[0]
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  23:31:14
+   Duration  1.38s (tests 67%, transform 22%, import 11%)
+

@@ -1,0 +1,60 @@
+{
+  "scenario": "encoded-composes",
+  "bundler": "webpack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./other%20module.module.css\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "file": "other module.module.css",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (webpack)\n✓ Running next.config.mjs took 87ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.\n<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.\n✓ Compiled successfully in 2.6s\n  Running TypeScript ...\n  Finished TypeScript in 1ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 63ms\n  Finalizing page optimization ...\n  Collecting build traces ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "classes": "card_direct__vAL_y other_module_shared__zT4LZ",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/css/3b44fa3cd5dc981f.css",
+      "text": "@import url(\"/_next/static/css/master/5716f83ecd4b4ab1de4c79dd4966a9522082ac596080a2329c5cecb61b02e7b4/css/159225c352565c2b56f61e9c646793693df36ea472e1b1a4a300bfbd84340a5f-entry.css\");"
+    },
+    {
+      "file": "_next/static/css/master/5716f83ecd4b4ab1de4c79dd4966a9522082ac596080a2329c5cecb61b02e7b4/css/159225c352565c2b56f61e9c646793693df36ea472e1b1a4a300bfbd84340a5f-611b33bc1d2eb74cfc0d346e66b8a62abe6b44b1828b2d2403fcc8af0ad1cb1f.css",
+      "text": ".other_module_shared__zT4LZ{border-top:7px solid red}"
+    },
+    {
+      "file": "_next/static/css/master/5716f83ecd4b4ab1de4c79dd4966a9522082ac596080a2329c5cecb61b02e7b4/css/159225c352565c2b56f61e9c646793693df36ea472e1b1a4a300bfbd84340a5f-entry.css",
+      "text": "@import \"./159225c352565c2b56f61e9c646793693df36ea472e1b1a4a300bfbd84340a5f-611b33bc1d2eb74cfc0d346e66b8a62abe6b44b1828b2d2403fcc8af0ad1cb1f.css\";.card_direct__vAL_y{color:#123456}"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [
+    {
+      "browser": "firefox",
+      "error": "browserType.launch: Failed to launch the browser process.\nBrowser logs:\n\n<launching> /Users/aron/Library/Caches/ms-playwright/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/playwright_firefoxdev_profile-oQiMOP -juggler-pipe -silent\n<launched> pid=2770\n[pid=2770][err] *** You are running in headless mode.\n[pid=2770][err] Could not find profile folder.\n[pid=2770] <process did exit: exitCode=1, signal=null>\n[pid=2770] starting temporary directories cleanup\nCall log:\n\u001b[2m  - <launching> /Users/aron/Library/Caches/ms-playwright/firefox-1543/firefox/Nightly.app/Contents/MacOS/firefox -no-remote -headless -profile /var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/playwright_firefoxdev_profile-oQiMOP -juggler-pipe -silent\u001b[22m\n\u001b[2m  - <launched> pid=2770\u001b[22m\n\u001b[2m  - [pid=2770][err] *** You are running in headless mode.\u001b[22m\n\u001b[2m  - [pid=2770][err] Could not find profile folder.\u001b[22m\n\u001b[2m  - [pid=2770] <process did exit: exitCode=1, signal=null>\u001b[22m\n\u001b[2m  - [pid=2770] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=2770] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=2770] <kill>\u001b[22m\n\u001b[2m  - [pid=2770] <skipped force kill spawnedProcess.killed=false processClosed=true>\u001b[22m\n\u001b[2m  - [pid=2770] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=2770] <gracefully close end>\u001b[22m\n\n    at /Users/aron/master/css/.ai/audits/bug-hunt/repros/next-module-edge-host.mjs:88:40"
+    }
+  ]
+}

@@ -1,0 +1,53 @@
+{
+  "scenario": "raw-percent-composes",
+  "bundler": "turbopack",
+  "pure": false,
+  "packageDir": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next",
+  "input": {
+    "a": ".direct{composes:shared from \"./literal%20name.module.css\";color:#123456}",
+    "b": ".shared{border-top:7px solid red}",
+    "file": "literal%20name.module.css",
+    "valid": true
+  },
+  "build": {
+    "code": 0,
+    "signal": null,
+    "timedOut": false,
+    "exported": true,
+    "log": "▲ Next.js 16.3.4 (Turbopack)\n✓ Running next.config.mjs took 81ms\n- Experiments (use with caution):\n  · cpus: 1\n\n  Creating an optimized production build ...\n✓ Compiled successfully in 1349ms\n  Running TypeScript ...\n  Finished TypeScript in 2ms ...\n  Collecting page data using 1 worker ...\n  Generating static pages using 1 worker (0/3) ...\n✓ Generating static pages using 1 worker (3/3) in 45ms\n  Finalizing page optimization ...\n\nRoute (app)\n┌ ○ /\n└ ○ /_not-found\n\n\n○  (Static)  prerendered as static content\n\n"
+  },
+  "observations": [
+    {
+      "browser": "chromium",
+      "classes": "card-module-css-module__gfuIxq__direct card_direct__vAL_y literal_20name_shared__8MzXT",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    },
+    {
+      "browser": "webkit",
+      "classes": "card-module-css-module__gfuIxq__direct card_direct__vAL_y literal_20name_shared__8MzXT",
+      "color": "rgb(18, 52, 86)",
+      "border": "7px",
+      "margin": "0px",
+      "padding": "0px",
+      "origin": "",
+      "pass": true
+    }
+  ],
+  "stylesheets": [
+    {
+      "file": "_next/static/chunks/2n2eyadzmtpfi.css",
+      "text": ".literal_20name_shared__8MzXT{border-top:7px solid red}\n.card_direct__vAL_y{color:#123456}\n.card-module-css-module__gfuIxq__direct{}\n"
+    }
+  ],
+  "errors": [],
+  "browserFailures": [],
+  "requestedBrowsers": [
+    "chromium",
+    "webkit"
+  ]
+}

@@ -1,0 +1,37 @@
+[
+  {
+    "label": "Managed default Webpack",
+    "evidence": "0219-webpack-observations.json",
+    "passed": 6,
+    "failed": 6,
+    "checks": 12
+  },
+  {
+    "label": "Pure default Webpack",
+    "evidence": "0219-pure-webpack-observations.json",
+    "passed": 6,
+    "failed": 6,
+    "checks": 12
+  },
+  {
+    "label": "Managed Lightning CSS Webpack",
+    "evidence": "0219-lightning-webpack-observations.json",
+    "passed": 9,
+    "failed": 3,
+    "checks": 12
+  },
+  {
+    "label": "Pure Turbopack",
+    "evidence": "0219-pure-turbopack-observations.json",
+    "passed": 12,
+    "failed": 0,
+    "checks": 12
+  },
+  {
+    "label": "Managed Turbopack",
+    "evidence": "0219-managed-turbopack-observations.json",
+    "passed": 12,
+    "failed": 0,
+    "checks": 12
+  }
+]

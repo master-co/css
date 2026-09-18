@@ -1,0 +1,221 @@
+{
+  "scope": "Public Rust-backed inspection/lowering/render APIs and actual Next PostCSS input observations; no semantic replacement or global-closure fix",
+  "expectPreservedEmpty": true,
+  "bindingOverride": "/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0240-rust-preserved-source/mastercss.node",
+  "rows": [
+    {
+      "name": "empty",
+      "source": ".shared{}",
+      "inspection": {
+        "hasMasterEntryDirective": false,
+        "hasMasterCSSImport": false,
+        "hasMasterEntry": false,
+        "directives": []
+      },
+      "lowered": ".shared{}",
+      "original": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [],
+        "comments": []
+      },
+      "compiled": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [],
+        "comments": []
+      },
+      "routed": "original"
+    },
+    {
+      "name": "nested",
+      "source": "@media screen{.shared{}}",
+      "inspection": {
+        "hasMasterEntryDirective": false,
+        "hasMasterCSSImport": false,
+        "hasMasterEntry": false,
+        "directives": []
+      },
+      "lowered": "@media screen{.shared{}}",
+      "original": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [],
+        "comments": []
+      },
+      "compiled": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [],
+        "comments": []
+      },
+      "routed": "original"
+    },
+    {
+      "name": "themedEmpty",
+      "source": "@theme{--color-unused:red}.shared{}",
+      "inspection": {
+        "hasMasterEntryDirective": false,
+        "hasMasterCSSImport": false,
+        "hasMasterEntry": false,
+        "directives": [
+          {
+            "name": "theme",
+            "range": {
+              "start": 0,
+              "end": 26
+            },
+            "preludeRange": {
+              "start": 6,
+              "end": 6
+            },
+            "hasBlock": true,
+            "quotedStrings": 0
+          }
+        ]
+      },
+      "lowered": ".shared{}",
+      "original": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [
+          {
+            "property": "--color-unused",
+            "value": "red"
+          }
+        ],
+        "comments": []
+      },
+      "compiled": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [],
+        "comments": []
+      },
+      "routed": "lowered"
+    },
+    {
+      "name": "spellings",
+      "source": "/* before */.shared{color:rgb(255, 0, 0);margin:0px 0px 0px 0px}",
+      "inspection": {
+        "hasMasterEntryDirective": false,
+        "hasMasterCSSImport": false,
+        "hasMasterEntry": false,
+        "directives": []
+      },
+      "lowered": "/* before */.shared{color:rgb(255, 0, 0);margin:0px 0px 0px 0px}",
+      "original": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [
+          {
+            "property": "color",
+            "value": "rgb(255, 0, 0)"
+          },
+          {
+            "property": "margin",
+            "value": "0px 0px 0px 0px"
+          }
+        ],
+        "comments": [
+          "before"
+        ]
+      },
+      "compiled": {
+        "rules": [
+          ".shared"
+        ],
+        "declarations": [
+          {
+            "property": "color",
+            "value": "rgb(255, 0, 0)"
+          },
+          {
+            "property": "margin",
+            "value": "0px 0px 0px 0px"
+          }
+        ],
+        "comments": [
+          "before"
+        ]
+      },
+      "routed": "original"
+    },
+    {
+      "name": "merged",
+      "source": ".shared{color:red}.sibling{color:red}",
+      "inspection": {
+        "hasMasterEntryDirective": false,
+        "hasMasterCSSImport": false,
+        "hasMasterEntry": false,
+        "directives": []
+      },
+      "lowered": ".shared{color:red}.sibling{color:red}",
+      "original": {
+        "rules": [
+          ".shared",
+          ".sibling"
+        ],
+        "declarations": [
+          {
+            "property": "color",
+            "value": "red"
+          },
+          {
+            "property": "color",
+            "value": "red"
+          }
+        ],
+        "comments": []
+      },
+      "compiled": {
+        "rules": [
+          ".shared",
+          ".sibling"
+        ],
+        "declarations": [
+          {
+            "property": "color",
+            "value": "red"
+          },
+          {
+            "property": "color",
+            "value": "red"
+          }
+        ],
+        "comments": []
+      },
+      "routed": "original"
+    },
+    {
+      "name": "late-global-reference",
+      "source": "@theme{--color-audit:#111111;--color-late:#abcdef}.direct{color:var(--color-audit)}",
+      "preflight": ".direct{color:var(--color-audit)}\n\n@layer theme{:root{--color-audit:#111}}",
+      "processed": ".direct{color:var(--color-audit);background-color:var(--color-late)}\n\n@layer theme{:root{--color-audit:#123456}}",
+      "onceCalls": 1,
+      "emptyManifest": {
+        "css": ".direct{color:var(--color-audit);background-color:var(--color-late)}\n\n@layer theme{:root{--color-audit:#123456}}",
+        "generated": ""
+      },
+      "fullManifest": {
+        "css": ".direct{color:var(--color-audit);background-color:var(--color-late)}\n\n@layer theme{:root{--color-audit:#123456}}\n\n@layer theme{:root{--color-audit:#111;--color-late:#abcdef}}",
+        "generated": "@layer theme{:root{--color-audit:#111;--color-late:#abcdef}}"
+      },
+      "processedExistingValues": [
+        "#123456"
+      ],
+      "regeneratedExistingValues": [
+        "#123456",
+        "#111"
+      ],
+      "limitation": "Empty manifest drops the new reference; blindly restoring the whole manifest emits pre-PostCSS values again. This stage inspection is not a host fix and does not authorize rerunning arbitrary plugins."
+    }
+  ]
+}

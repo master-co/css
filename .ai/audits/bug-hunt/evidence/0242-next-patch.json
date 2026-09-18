@@ -1,0 +1,26 @@
+{
+  "patch": "/Users/aron/master/css/.ai/audits/bug-hunt/repros/next-source-preservation-opt-in-candidate.patch",
+  "files": [
+    "packages/next/src/index.ts",
+    "packages/next/src/prepare-entry-graph.ts",
+    "packages/next/src/prepare-global-module.ts",
+    "packages/next/src/prepare-module-graph.ts",
+    "packages/next/src/prepare-module.ts",
+    "packages/next/src/prepare-postcss.ts",
+    "packages/next/src/static-publication.ts",
+    "packages/next/src/stylesheet-delivery.ts",
+    "packages/next/src/stylesheet-input-loader.ts",
+    "packages/next/src/stylesheet-loader.ts",
+    "packages/next/src/stylesheet-map-loader.ts",
+    "packages/next/src/stylesheet-source-loader.ts",
+    "packages/next/src/webpack-css-loader.ts",
+    "packages/next/src/webpack-postcss-loader.ts",
+    "packages/next/src/webpack-stylesheets.ts"
+  ],
+  "sha256": "5e3539ef0f1b7dc9a457111f876c7699c9f6ddd1754a4db20ae5631d03fbe92c",
+  "applyCheck": {
+    "exit": 0,
+    "stderr": ""
+  },
+  "requires": "0242 owned compiler API; not standalone compatible with root compiler"
+}

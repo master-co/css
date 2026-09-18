@@ -1,0 +1,22 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 8ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1004ms
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 54ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"fragment-composes","bundler":"turbopack","pure":true,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","classes":"card-module__TTbBKW__direct other-module__couz4W__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","pass":true},{"browser":"webkit","classes":"card-module__TTbBKW__direct other-module__couz4W__shared","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","pass":true}]}

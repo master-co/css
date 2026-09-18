@@ -1,0 +1,43 @@
+{
+  "scope": "Owned candidate preparation controls; native resolver is a deterministic fake here, actual Next/browsers tested separately. No ICSS-cycle, missing-export, query/path, Sass/options or fullhost parity claim.",
+  "checks": [
+    {
+      "name": "ordinary global CSS preserves input bytes before Rust compilation",
+      "pass": true
+    },
+    {
+      "name": "Webpack child policy: child.module.css",
+      "pass": true
+    },
+    {
+      "name": "Webpack child policy: child.css",
+      "pass": true
+    },
+    {
+      "name": "Turbopack child policy: child.module.css",
+      "pass": true
+    },
+    {
+      "name": "Turbopack child policy: child.css",
+      "pass": true
+    },
+    {
+      "name": "ICSS values and exports resolve while dependency CSS follows authored imports",
+      "pass": true
+    },
+    {
+      "name": "one publication reuses captured child sources; a new session observes edits",
+      "pass": true
+    },
+    {
+      "name": "ordinary CSS import cycles reuse the prepared entry instead of duplicating it",
+      "pass": true
+    },
+    {
+      "name": "configured native naming receives the imported file and its own directory",
+      "pass": true
+    }
+  ],
+  "passed": 9,
+  "failed": 0
+}

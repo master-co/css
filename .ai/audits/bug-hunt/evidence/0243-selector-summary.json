@@ -1,0 +1,25 @@
+{
+  "counts": {
+    "False": {
+      "compiler": {
+        "pass": 6,
+        "fail": 4
+      },
+      "nextOptimizer": {
+        "pass": 6,
+        "fail": 4
+      }
+    },
+    "True": {
+      "compiler": {
+        "pass": 10,
+        "fail": 0
+      },
+      "nextOptimizer": {
+        "pass": 6,
+        "fail": 4
+      }
+    }
+  },
+  "interpretation": "Both default compiler rule mapping and native Next optimizer independently lose per-selector origins. Explicit preservation fixes input maps but does not fix downstream native optimization. No CSS output or dependency modification made."
+}

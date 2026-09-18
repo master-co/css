@@ -1,0 +1,1 @@
+{"rows":[{"scenario":"configured","checks":{},"errors":0}],"cleaned":true,"harnessError":"AssertionError [ERR_ASSERTION]: configured: nested input never rereads poisoned original\n\n0 !== 1\n\n    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-native-postcss-transport.mjs:144:12"}

@@ -1,0 +1,18 @@
+{
+  "source-hashes-final": {
+    "count": 659,
+    "mismatches": []
+  },
+  "artifacts-final": {
+    "count": 493,
+    "mismatches": []
+  },
+  "candidate-source": {
+    "count": 49,
+    "mismatches": []
+  },
+  "candidate-dist": {
+    "count": 54,
+    "mismatches": []
+  }
+}

@@ -1,0 +1,75 @@
+{
+  "onceCalls": 2,
+  "lateVisits": [
+    2
+  ],
+  "observations": [
+    {
+      "browser": "chromium",
+      "case": "without-context",
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": false,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "chromium",
+      "case": "with-context",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "chromium",
+      "case": "second-whole-pass",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": true,
+      "singleUserPass": false
+    },
+    {
+      "browser": "webkit",
+      "case": "without-context",
+      "computed": {
+        "color": "rgb(17, 17, 17)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": false,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "webkit",
+      "case": "with-context",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(171, 205, 239)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": false,
+      "singleUserPass": true
+    },
+    {
+      "browser": "webkit",
+      "case": "second-whole-pass",
+      "computed": {
+        "color": "rgb(18, 52, 86)",
+        "background": "rgb(254, 220, 186)"
+      },
+      "preservesExistingEdit": true,
+      "processesNewGlobal": true,
+      "singleUserPass": false
+    }
+  ],
+  "errors": []
+}

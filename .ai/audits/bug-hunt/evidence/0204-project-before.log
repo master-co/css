@@ -1,0 +1,106 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - import "../../shared/vitest.config" without a file extension (vitest.config.ts:3:20). Add the file extension
+  - import "./vitest-ci-config" without a file extension (../../shared/vitest.config.ts:2:58). Add the file extension
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.0.0 /Users/aron/master/css/packages/compiler
+
+ ❯ tests/bug-hunt-legacy-project-graphs.test.ts (13 tests | 12 failed) 39ms
+   × Node project retains imported definitions: unqualified, compose=false 8ms
+   × Node project retains imported definitions:  layer, compose=false 3ms
+   × Node project retains imported definitions:  layer, compose=true 2ms
+   × Node project retains imported definitions:  layer(cards), compose=false 2ms
+   × Node project retains imported definitions:  layer(cards), compose=true 1ms
+   × Node project retains imported definitions:  supports(display:grid), compose=false 2ms
+   × Node project retains imported definitions:  supports(display:grid), compose=true 2ms
+   × Node project retains imported definitions:  print, compose=false 2ms
+   × Node project retains imported definitions:  print, compose=true 2ms
+   × Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=false 2ms
+   × Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=true 2ms
+   × Node project merges prior entries while resolving child-owned references and policies 7ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 12 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions: unqualified, compose=false
+AssertionError: expected '.card {\n  padding: 3rem;\n}\n\n.afte…' to match /padding:\s*2rem/
+
+- Expected:
+/padding:\s*2rem/
+
++ Received:
+".card {
+  padding: 3rem;
+}
+
+.after {
+  margin: 1px;
+}"
+
+ ❯ tests/bug-hunt-legacy-project-graphs.test.ts:18:28
+     16|         const result = compileProjectManifest([entry], { root, baseMan…
+     17|         expect(result.manifest.utilities?.some(utility => utility.name…
+     18|         expect(result.css).toMatch(/padding:\s*2rem/)
+       |                            ^
+     19|         expect(result.css).toMatch(/padding:\s*3rem/)
+     20|         expect(result.css).not.toMatch(/@utilities|@compose/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards), compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards), compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  supports(display:grid), compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  supports(display:grid), compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  print, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  print, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=false
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project retains imported definitions:  layer(cards) supports(display:grid) print, compose=true
+Unknown Error: Printer error
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/12]⎯
+
+ FAIL  tests/bug-hunt-legacy-project-graphs.test.ts > Node project merges prior entries while resolving child-owned references and policies
+AssertionError: expected [] to include 'paint'
+ ❯ tests/bug-hunt-legacy-project-graphs.test.ts:43:46
+     41|     expect(result.css).toMatch(/color:\s*(?:red|#f00)/)
+     42|     expect(result.css).toContain('@layer cards')
+     43|     expect(result.extractionPolicy.safelist).toContain('paint')
+       |                                              ^
+     44|     expect(result.extractionPolicy.include).toContain('./index.html')
+     45|     expect(result.dependencies).toEqual(expect.arrayContaining([first,…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/12]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  12 failed | 1 passed (13)
+   Start at  23:40:28
+   Duration  176ms (transform 50%, tests 37%, import 12%, worker 2%)
+

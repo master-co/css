@@ -1,0 +1,6 @@
+{
+  "source": ".ai/audits/bug-hunt/tmp/0242-static-export-failed-next",
+  "destination": ".ai/audits/bug-hunt/tmp/master-next-copy-3z8i_q4c/packages/next/e2e/static-export/.next",
+  "workingCacheBackup": ".ai/audits/bug-hunt/tmp/0243-static-export-working-next",
+  "publication": "unchanged, exact entry exists from preceding build"
+}

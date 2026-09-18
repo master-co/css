@@ -1,0 +1,61 @@
+{
+  "scope": "Owned candidate dispatcher controls; actual exported map controls when evidence is supplied. No full host delivery claim.",
+  "checks": [
+    {
+      "name": "ordinary CSS is outside the owned entry pitch",
+      "pass": true
+    },
+    {
+      "name": "complete assets and configured publicPath: /base/_next/",
+      "pass": true
+    },
+    {
+      "name": "complete assets and configured publicPath: https://cdn.example.invalid/_next/",
+      "pass": true
+    },
+    {
+      "name": "enabled maps retain authored source bytes before host processing",
+      "pass": true
+    },
+    {
+      "name": "changed immutable resource rejects publication",
+      "pass": true
+    },
+    {
+      "name": "missing resource is observed as a dependency before rejection",
+      "pass": true
+    },
+    {
+      "name": "missing metadata fails rather than returning incomplete CSS",
+      "pass": true
+    },
+    {
+      "name": "invalid metadata version rejects",
+      "pass": true
+    },
+    {
+      "name": "invalid map byte boundary rejects",
+      "pass": true
+    },
+    {
+      "name": "ordinary loader preserves options, map and text conversion",
+      "pass": true
+    },
+    {
+      "name": "ordinary loader preserves options, map and raw bytes",
+      "pass": true
+    },
+    {
+      "name": "actual exported map resolves authored .direct",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: {\"expected\":\"/app/globals.css\",\"position\":{\"generatedLine\":0,\"generatedColumn\":401,\"originalSource\":\"webpack://_N_E/a7e4e10dc8f47e11e6740752943500277ca8d2583b6162d3826c1e051c644f27-entry.css\",\"originalLine\":4,\"originalColumn\":0}}"
+    },
+    {
+      "name": "actual exported map resolves authored .nested",
+      "pass": false,
+      "error": "AssertionError [ERR_ASSERTION]: {\"expected\":\"/app/nested/child.css\",\"position\":{\"generatedLine\":0,\"generatedColumn\":0,\"originalSource\":\"webpack://_N_E/a7e4e10dc8f47e11e6740752943500277ca8d2583b6162d3826c1e051c644f27-6af5f37a6fc7cedb38ca545aeb28e1289b7503b9196136ade859cbcc64897585.css\",\"originalLine\":0,\"originalColumn\":0}}"
+    }
+  ],
+  "passed": 11,
+  "failed": 2
+}
