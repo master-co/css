@@ -11,11 +11,11 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 849,
+    "records": 887,
     "byKind": {
       "bin": 3,
       "cli-command": 3,
-      "export": 667,
+      "export": 705,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
@@ -1164,6 +1164,50 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSCompiledStylesheet",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSCompiledStylesheet"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSCompiledStylesheetGraph",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSCompiledStylesheetGraph"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MasterCSSCompileManifestOptions",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -1278,6 +1322,28 @@
       "package": "@master/css-binding",
       "subpath": "./compiler",
       "name": "MasterCSSCompilerRenderBindingSessionOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSCompileStylesheetGraphRequest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSCompileStylesheetGraphRequest"
     },
     {
       "kind": "export",
@@ -1560,6 +1626,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSPrepareStylesheetBundleRequest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSPrepareStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MasterCSSProjectEntryGraph",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -1604,6 +1692,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSRenderStylesheetBundleRequest",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSRenderStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./compiler#MasterCSSResolvedImportGraph",
       "package": "@master/css-binding",
       "subpath": "./compiler",
@@ -1630,6 +1740,50 @@
       "package": "@master/css-binding",
       "subpath": "./compiler",
       "name": "MasterCSSStandaloneDirectiveAnalysis"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSStylesheetAsset",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSStylesheetAsset"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./compiler#MasterCSSStylesheetBundle",
+      "package": "@master/css-binding",
+      "subpath": "./compiler",
+      "name": "MasterCSSStylesheetBundle"
     },
     {
       "kind": "export",
@@ -3919,10 +4073,64 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSCompileManifestFileDeliveryOptions",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSCompileManifestFileDeliveryOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-compiler:./node#MasterCSSCompileManifestFileOptions",
       "package": "@master/css-compiler",
       "subpath": "./node",
       "name": "MasterCSSCompileManifestFileOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSCompileManifestFileResult",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSCompileManifestFileResult"
     },
     {
       "kind": "export",
@@ -4058,6 +4266,168 @@
       "package": "@master/css-compiler",
       "subpath": "./node",
       "name": "MasterCSSCompilerInspection"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSCompileStylesheetsRequest",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSCompileStylesheetsRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSCompileStylesheetsResult",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSCompileStylesheetsResult"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSPrepareStylesheetBundleRequest",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSPrepareStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSRenderStylesheetBundleRequest",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSRenderStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSStylesheetAsset",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSStylesheetAsset"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./node#MasterCSSStylesheetBundle",
+      "package": "@master/css-compiler",
+      "subpath": "./node",
+      "name": "MasterCSSStylesheetBundle"
     },
     {
       "kind": "export",
@@ -4891,10 +5261,91 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSPreparedStylesheet",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSPreparedStylesheet"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSRenderedStylesheetCompileOptions",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSRenderedStylesheetCompileOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-compiler:./stylesheet#MasterCSSSassCompiler",
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
       "name": "MasterCSSSassCompiler"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetAsyncResolutionOptions",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetAsyncResolutionOptions"
     },
     {
       "kind": "export",
@@ -5053,6 +5504,33 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetDeliveryOptions",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetDeliveryOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetDependencyOptions",
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
@@ -5107,10 +5585,91 @@
       "lifecycle": "compiler-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetImportResolver",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetImportResolver"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetImportSource",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetImportSource"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetKind",
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
       "name": "MasterCSSStylesheetKind"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetPreparationOptions",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetPreparationOptions"
     },
     {
       "kind": "export",
@@ -5165,6 +5724,33 @@
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
       "name": "MasterCSSStylesheetResolutionOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#MasterCSSStylesheetResourceAsset",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "MasterCSSStylesheetResourceAsset"
     },
     {
       "kind": "export",
@@ -5246,6 +5832,33 @@
       "package": "@master/css-compiler",
       "subpath": "./stylesheet",
       "name": "MasterCSSStylesheetTransformResult"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:./stylesheet#prepareStylesheet",
+      "package": "@master/css-compiler",
+      "subpath": "./stylesheet",
+      "name": "prepareStylesheet"
     },
     {
       "kind": "export",
@@ -5597,6 +6210,168 @@
       "package": "@master/css-compiler",
       "subpath": ".",
       "name": "MasterCSSCompilerOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSCompileStylesheetsRequest",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSCompileStylesheetsRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSCompileStylesheetsResult",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSCompileStylesheetsResult"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSPrepareStylesheetBundleRequest",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSPrepareStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSRenderStylesheetBundleRequest",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSRenderStylesheetBundleRequest"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSStylesheetAsset",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSStylesheetAsset"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-compiler",
+      "responsibility": "compiler, project, stylesheet, and inspection orchestration",
+      "consumers": [
+        "@master/css-astro",
+        "@master/css-cli",
+        "@master/css-language-server",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "compiler-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-compiler:.#MasterCSSStylesheetBundle",
+      "package": "@master/css-compiler",
+      "subpath": ".",
+      "name": "MasterCSSStylesheetBundle"
     },
     {
       "kind": "export",
@@ -8113,6 +8888,88 @@
       "package": "@master/css-schema",
       "subpath": "./css-directives",
       "name": "CSSDirectiveVariantDefinitions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-schema",
+      "responsibility": "serializable contracts and codecs",
+      "consumers": [
+        "@master/create-css",
+        "@master/css",
+        "@master/css-astro",
+        "@master/css-binding",
+        "@master/css-binding-wasm-compiler",
+        "@master/css-binding-wasm-engine",
+        "@master/css-binding-wasm-tooling",
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-internal",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-svelte",
+        "@master/css-tooling",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/eslint-plugin-css",
+        "internal",
+        "master-css-angular-example",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "value",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-schema:./css-directives#CSSNativeOutput",
+      "package": "@master/css-schema",
+      "subpath": "./css-directives",
+      "name": "CSSNativeOutput"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-schema",
+      "responsibility": "serializable contracts and codecs",
+      "consumers": [
+        "@master/create-css",
+        "@master/css",
+        "@master/css-astro",
+        "@master/css-binding",
+        "@master/css-binding-wasm-compiler",
+        "@master/css-binding-wasm-engine",
+        "@master/css-binding-wasm-tooling",
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-internal",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-nuxt",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-svelte",
+        "@master/css-tooling",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/eslint-plugin-css",
+        "internal",
+        "master-css-angular-example",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "value",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-schema:./css-directives#CSSOutputMapping",
+      "package": "@master/css-schema",
+      "subpath": "./css-directives",
+      "name": "CSSOutputMapping"
     },
     {
       "kind": "export",
@@ -13146,6 +14003,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13173,6 +14031,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13200,6 +14059,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13227,6 +14087,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13254,6 +14115,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13281,6 +14143,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -13308,6 +14171,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./language/node#createLanguageSessionSync",
+      "package": "@master/css-tooling",
+      "subpath": "./language/node",
+      "name": "createLanguageSessionSync"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -13335,6 +14227,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -13362,6 +14255,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./language/node#MasterCSSLanguageSession",
+      "package": "@master/css-tooling",
+      "subpath": "./language/node",
+      "name": "MasterCSSLanguageSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13389,6 +14311,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13416,6 +14339,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13443,6 +14367,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13470,6 +14395,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13497,6 +14423,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13524,6 +14451,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./language#createLanguageSession",
+      "package": "@master/css-tooling",
+      "subpath": "./language",
+      "name": "createLanguageSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13551,6 +14507,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13578,6 +14535,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13605,6 +14563,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13632,6 +14591,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13659,6 +14619,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13686,6 +14647,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13713,6 +14675,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13740,6 +14703,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13767,6 +14731,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13794,6 +14759,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13821,6 +14787,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13848,6 +14815,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13875,6 +14843,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13902,6 +14871,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13929,6 +14899,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13956,6 +14927,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -13983,6 +14955,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14010,6 +14983,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14037,6 +15011,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14064,6 +15039,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14091,6 +15067,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14118,6 +15095,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14145,6 +15123,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14172,6 +15151,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14199,6 +15179,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14226,6 +15207,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14253,6 +15235,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14280,6 +15263,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14307,6 +15291,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./language#MasterCSSLanguageSession",
+      "package": "@master/css-tooling",
+      "subpath": "./language",
+      "name": "MasterCSSLanguageSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14334,6 +15347,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14361,6 +15375,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14388,6 +15403,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14415,6 +15431,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14442,6 +15459,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14469,6 +15487,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14496,6 +15515,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14523,6 +15543,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14550,6 +15571,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14577,6 +15599,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14604,6 +15627,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14631,6 +15655,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14658,6 +15683,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14685,6 +15711,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14712,6 +15739,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -14739,6 +15767,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14766,6 +15795,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14793,6 +15823,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14820,6 +15851,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14847,6 +15879,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14874,6 +15907,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14901,6 +15935,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14928,6 +15963,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14955,6 +15991,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14982,6 +16019,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -15009,6 +16047,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15036,6 +16075,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15063,6 +16103,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15090,6 +16131,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15117,6 +16159,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15144,6 +16187,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15171,6 +16215,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15198,6 +16243,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15225,6 +16271,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15252,6 +16299,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15279,6 +16327,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15306,6 +16355,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15333,6 +16383,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15360,6 +16411,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15387,6 +16439,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15414,6 +16467,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15441,6 +16495,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15468,6 +16523,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15495,6 +16551,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15522,6 +16579,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15549,6 +16607,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15576,6 +16635,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15603,6 +16663,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15630,6 +16691,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15657,6 +16719,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15684,6 +16747,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15711,6 +16775,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15738,6 +16803,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15765,6 +16831,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15792,6 +16859,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15819,6 +16887,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15846,6 +16915,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15873,6 +16943,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15900,6 +16971,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15927,6 +16999,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15954,6 +17027,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15981,6 +17055,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16008,6 +17083,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16035,6 +17111,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16062,6 +17139,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16089,6 +17167,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16116,6 +17195,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16143,6 +17223,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16170,6 +17251,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16197,6 +17279,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16224,6 +17307,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16251,6 +17335,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16278,6 +17363,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16305,6 +17391,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16332,6 +17419,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16359,6 +17447,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16386,6 +17475,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16413,6 +17503,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16440,6 +17531,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16467,6 +17559,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16494,6 +17587,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16521,6 +17615,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16548,6 +17643,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16575,6 +17671,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16602,6 +17699,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16629,6 +17727,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16656,6 +17755,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./scanner/node#MasterCSSScannerSourceResult",
+      "package": "@master/css-tooling",
+      "subpath": "./scanner/node",
+      "name": "MasterCSSScannerSourceResult"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16683,6 +17811,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16710,6 +17839,35 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./source#MasterCSSDecodedHTMLAttribute",
+      "package": "@master/css-tooling",
+      "subpath": "./source",
+      "name": "MasterCSSDecodedHTMLAttribute"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16737,6 +17895,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16764,6 +17923,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16791,6 +17951,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16818,6 +17979,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16845,6 +18007,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -16872,6 +18035,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16899,6 +18063,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16926,6 +18091,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16953,6 +18119,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16980,6 +18147,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17007,6 +18175,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17034,6 +18203,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17061,6 +18231,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17088,6 +18259,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17115,6 +18287,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17142,6 +18315,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17169,6 +18343,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -19640,6 +20815,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -21788,6 +22964,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -21823,6 +23000,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -21858,6 +23036,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -21893,6 +23072,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -21928,6 +23108,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -21963,6 +23144,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -21998,6 +23180,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -22033,6 +23216,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -22068,6 +23252,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -22103,6 +23288,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -22138,6 +23324,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -22173,6 +23360,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",
@@ -22208,6 +23396,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "universal",
@@ -22243,6 +23432,7 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
+        "internal",
         "site"
       ],
       "platform": "node",

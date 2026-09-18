@@ -74,6 +74,9 @@
           "MasterCSSCompileDefaultPresetResult",
           "MasterCSSCompileManifestOptions",
           "MasterCSSCompileManifestResult",
+          "MasterCSSCompileStylesheetGraphRequest",
+          "MasterCSSCompiledStylesheet",
+          "MasterCSSCompiledStylesheetGraph",
           "MasterCSSCompilerBindingSession",
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerRenderBindingSession",
@@ -90,10 +93,14 @@
           "MasterCSSLowerDirectivesRequest",
           "MasterCSSLowerDirectivesResult",
           "MasterCSSNativeBindingLoadOptions",
+          "MasterCSSPrepareStylesheetBundleRequest",
           "MasterCSSProjectEntryGraph",
           "MasterCSSProjectManifest",
+          "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSResolvedImportGraph",
           "MasterCSSStandaloneDirectiveAnalysis",
+          "MasterCSSStylesheetAsset",
+          "MasterCSSStylesheetBundle",
           "MasterCSSWasmBindingLoadOptions",
           "createCompilerBindingSession",
           "createCompilerRenderBindingSession"
@@ -176,7 +183,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "6b7267128dce22ea"
+      "surface": "71dd29a971415fc5"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -325,21 +332,35 @@
           "MasterCSSCompileManifestResult",
           "MasterCSSCompileOptions",
           "MasterCSSCompileResult",
+          "MasterCSSCompileStylesheetsRequest",
+          "MasterCSSCompileStylesheetsResult",
           "MasterCSSCompiler",
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerOptions",
+          "MasterCSSPrepareStylesheetBundleRequest",
+          "MasterCSSRenderStylesheetBundleRequest",
+          "MasterCSSStylesheetAsset",
+          "MasterCSSStylesheetBundle",
           "compileCSS",
           "compileManifest",
           "createCompiler",
           "inspectCSS"
         ],
         "./node": [
+          "MasterCSSCompileManifestFileDeliveryOptions",
           "MasterCSSCompileManifestFileOptions",
+          "MasterCSSCompileManifestFileResult",
           "MasterCSSCompileManifestOptions",
           "MasterCSSCompileManifestResult",
           "MasterCSSCompileOptions",
           "MasterCSSCompileResult",
+          "MasterCSSCompileStylesheetsRequest",
+          "MasterCSSCompileStylesheetsResult",
           "MasterCSSCompilerInspection",
+          "MasterCSSPrepareStylesheetBundleRequest",
+          "MasterCSSRenderStylesheetBundleRequest",
+          "MasterCSSStylesheetAsset",
+          "MasterCSSStylesheetBundle",
           "MasterCSSStylesheetDependencyOptions",
           "MasterCSSStylesheetHostOptions",
           "MasterCSSStylesheetResolution",
@@ -373,17 +394,25 @@
         ],
         "./stylesheet": [
           "MasterCSSCompiledStylesheet",
+          "MasterCSSPreparedStylesheet",
+          "MasterCSSRenderedStylesheetCompileOptions",
           "MasterCSSSassCompiler",
+          "MasterCSSStylesheetAsyncResolutionOptions",
           "MasterCSSStylesheetCollection",
           "MasterCSSStylesheetCollectionSnapshot",
           "MasterCSSStylesheetCompileOptions",
           "MasterCSSStylesheetComposition",
           "MasterCSSStylesheetCompositionOptions",
+          "MasterCSSStylesheetDeliveryOptions",
           "MasterCSSStylesheetDependencyOptions",
           "MasterCSSStylesheetHostOptions",
+          "MasterCSSStylesheetImportResolver",
+          "MasterCSSStylesheetImportSource",
           "MasterCSSStylesheetKind",
+          "MasterCSSStylesheetPreparationOptions",
           "MasterCSSStylesheetResolution",
           "MasterCSSStylesheetResolutionOptions",
+          "MasterCSSStylesheetResourceAsset",
           "MasterCSSStylesheetSourceSnapshot",
           "MasterCSSStylesheetTransformOptions",
           "MasterCSSStylesheetTransformResult",
@@ -393,6 +422,7 @@
           "compileStylesheet",
           "composeStylesheetHost",
           "createStylesheetCollection",
+          "prepareStylesheet",
           "resolveStylesheet",
           "transformStylesheet"
         ],
@@ -420,7 +450,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "b0b4668861b0c300"
+      "surface": "f1fbee6c4195960b"
     },
     "@master/create-css": {
       "directory": "create",
@@ -860,6 +890,8 @@
           "CSSDirectiveVariableDefinition",
           "CSSDirectiveVariableValue",
           "CSSDirectiveVariantDefinitions",
+          "CSSNativeOutput",
+          "CSSOutputMapping",
           "createCSSDirectiveSourceReference"
         ],
         "./css-syntax": [
@@ -912,7 +944,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "2d023af5840dfd9e"
+      "surface": "f06c33f4d21cd1d5"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1019,6 +1051,7 @@
           "analyzeClassListSync"
         ],
         "./source": [
+          "MasterCSSDecodedHTMLAttribute",
           "MasterCSSExtractedSource",
           "MasterCSSSourceExtraction",
           "MasterCSSSourceExtractionInput",
@@ -1033,6 +1066,7 @@
           "MasterCSSScanner",
           "MasterCSSScannerConfiguration",
           "MasterCSSScannerOptions",
+          "MasterCSSScannerSourceResult",
           "createScanner",
           "defaultScannerOptions"
         ],
@@ -1133,6 +1167,7 @@
           "MasterCSSLanguageCompletionIndex",
           "MasterCSSLanguageCompletionKind",
           "MasterCSSLanguageInspection",
+          "MasterCSSLanguageSession",
           "MasterCSSLanguageVariable",
           "QUERY_COMPARISON_OPERATORS",
           "QUERY_LOGICAL_OPERATORS",
@@ -1148,18 +1183,21 @@
           "SemanticTokenType",
           "VALUE_TRIGGER_CHARACTERS",
           "analyzeDocument",
+          "createLanguageSession",
           "formatDirectives",
           "getMasterCSSSemanticTokenScopeKeys",
           "inspectClassName",
           "matchesLanguageServiceNativeDeclaration"
         ],
         "./language/node": [
+          "MasterCSSLanguageSession",
           "analyzeDocumentSync",
+          "createLanguageSessionSync",
           "formatDirectivesSync",
           "inspectClassNameSync"
         ]
       },
-      "surface": "d678240073a5382e"
+      "surface": "5940ae6e257d7b32"
     },
     "@master/css-vite": {
       "directory": "vite",
