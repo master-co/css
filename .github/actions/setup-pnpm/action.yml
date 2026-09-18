@@ -25,18 +25,18 @@ inputs:
 runs:
   using: composite
   steps:
+    # No version pin: the action reads packageManager from the root package.json,
+    # so CI installs with the same pnpm that wrote the lockfile.
     - uses: pnpm/action-setup@v6
-      with:
-        version: 11.9.0
     - uses: actions/setup-node@v6
       with:
         node-version: ${{ inputs.node-version }}
         cache: ${{ inputs.install == 'true' && 'pnpm' || '' }}
     - if: ${{ inputs.turbo-cache == 'true' }}
-      uses: actions/cache@v6
+      uses: actions/cache/restore@v6
       with:
         path: .turbo/cache
-        key: ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-${{ github.sha }}
+        key: ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
         restore-keys: |
           ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
           ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-

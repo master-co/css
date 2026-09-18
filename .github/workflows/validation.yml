@@ -218,6 +218,17 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-build-${{ github.ref_name }}-${{ github.run_id }}
 
   rust_quality:
     name: rust-quality
@@ -358,6 +369,17 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-e2e-${{ github.ref_name }}-${{ github.run_id }}
 
   compat_windows:
     name: compat-windows
@@ -401,3 +423,14 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
+      # Pull requests restore the cache but never write it, so one shared entry
+      # per scope is refreshed by pushes instead of every run adding a new one.
+      - name: Prune and save Turbo cache
+        if: ${{ always() && github.event_name != 'pull_request' }}
+        shell: bash
+        run: find .turbo/cache -type f -mtime +7 -delete || true
+      - if: ${{ always() && github.event_name != 'pull_request' }}
+        uses: actions/cache/save@v6
+        with:
+          path: .turbo/cache
+          key: ${{ runner.os }}-turbo-compat-${{ github.ref_name }}-${{ github.run_id }}
