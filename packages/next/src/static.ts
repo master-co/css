@@ -83,7 +83,11 @@ function toCSSImportPath(fromFile: string, toFile: string) {
 export async function transformStaticStyleSource(statePath: string, resourcePath: string, source: string) {
   const state = readStaticState(statePath)
   const resolution = resolveStylesheetSync(resourcePath, source, {
-    projectDir: state.projectDir
+    projectDir: state.projectDir,
+    // Classify on the import graph. Flattening refuses shapes this loader then
+    // compiles happily through the delivery path, and misses local directives
+    // an imported file declares.
+    preserveImports: true
   })
   if (!resolution || (resolution.kind !== 'entry' && resolution.kind !== 'master-package-entry')) return source
   if (resolution.kind === 'master-package-entry') {

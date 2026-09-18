@@ -29,9 +29,9 @@ function toCSSImportPath(fromFile: string, toFile?: string) {
   return importPath
 }
 
-function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string, preserveImports?: boolean) {
+function shouldAddStyleDependencies(resourcePath: string, source: string, projectDir?: string) {
   try {
-    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports })
+    const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true })
     return Boolean(resolution && resolution.kind !== 'plain')
   } catch {
     return true
@@ -51,7 +51,7 @@ export default function masterCSSStylesheetLoader(this: LoaderContext, source: s
     if (!existsSync(file) && this.addMissingDependency) this.addMissingDependency(file)
     else this.addDependency?.(file)
   }
-  const initialDependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext, options.preserveImports)
+  const initialDependencies = shouldAddStyleDependencies(this.resourcePath, source, this.rootContext)
     ? collectStylesheetDependenciesSync(this.resourcePath, source, {
       projectDir: this.rootContext
     })

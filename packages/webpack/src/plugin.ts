@@ -373,7 +373,7 @@ export class MasterCSSWebpackPlugin {
         try {
           resolution = resolveStylesheetSync(modulePath, source, {
             projectDir: this.cwd,
-            preserveImports: this.usesStylesheetDelivery
+            preserveImports: true
           })
         } catch (error) {
           this.stylesheetDependencyFallbacks.set(

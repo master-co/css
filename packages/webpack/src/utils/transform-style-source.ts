@@ -55,7 +55,7 @@ export async function transformStyleSource(
       resolveImport: () => undefined,
       onDependency: options.onDependency
     })
-    : resolveStylesheetSync(resourcePath, source, { projectDir })
+    : resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true })
   if (!resolution) {
     return { code: source, dependencies }
   }

@@ -67,7 +67,9 @@ async function transformStyleSource(resourcePath: string, source: string, projec
   // Webpack has already run the user's Sass pipeline. Keep its prepared CSS
   // and original filename. Raw Turbopack inputs are prepared before classification.
   const loadSass = () => ({ async compileStringAsync(css: string) { return { css } } })
-  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, ...context })
+  // Classify on the import graph; the entry branch below compiles through the
+  // delivery path, which accepts import shapes flattening has to refuse.
+  const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true, ...context })
   if (!resolution) return { code: source, dependencies, sourceMap }
   if (resolution.kind === 'entry' || resolution.kind === 'master-package-entry') {
     const preparedGraph = await prepareNextEntryGraph(loaderContext ?? { resourcePath }, projectDir ?? dirname(resourcePath), options, onDependency, source, sourceMap)
