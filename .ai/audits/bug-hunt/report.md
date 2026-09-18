@@ -1,6 +1,6 @@
 # Master CSS 調查交付
 
-- 0262：BH-0053結案。兩個0243尾隨反例在交付版本重測後歸類為Master以外：per-selector maps方面，`preserveNativeSource`讓compiler階段從6P/4F補到**10P/0F**，但同一payload交給目前安裝Next的`CssMinimizerPlugin.optimizeAsset`後兩種設定都退回6P/4F，殘餘損失在Next的minimizer；持久快取方面，純Next＋最小寫檔loader（完全不載入Master）與Master交付版本同樣在修改source後`Module not found`解析不到剛發布的stylesheet，屬Turbopack持久快取行為。缺陷陳述本身已由0260四組Turbopack Sass對照驗證通過，故改標已修復；native declaration granularity與完整Sass option／host邊界移到PKG-next覆蓋列追蹤。63historical／62fixed／1unresolved（僅剩BH-0004）。[證據](evidence/0262-final-checks.json)；[批次](batches/0262-selector-maps-and-cache-boundaries.md)；[前次](progress-history-0262-selector-maps.md)。
+- 0263：BH-0004低層`direct` flatten+compile的20項失敗化約為單一根因：Master definition directive被包在native at-rule裡就無法處理；`imports.rs`的flatten以文字包裹qualifier，必然把child的directive一起包進去，所以凡帶qualifier的import都踩到，無qualifier的2格通過。交付診斷修正`90eea4fd8`：container at-rule內的directive改丟既有`@X must be top-level`（`CSS_DIRECTIVE_ERROR`附來源範圍），取代無來源的`CSS_PRINT_ERROR: Printer error`，native與wasm一致；新增4項Rust測試與directives contract文件說明。cargo fmt／clippy／361tests、compiler 57files/428tests、28套件build、101/107 tasks PASS；既有失敗serial下與baseline逐項相同。BH-0004仍未解——真正修法是flatten時把child definitions留在wrapper外，屬完整graph遷移。63historical／62fixed／1unresolved。[證據](evidence/0263-final-checks.json)；[批次](batches/0263-bh-0004-contained-directives.md)；[前次](progress-history-0263-contained-directives.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。
 
@@ -28,13 +28,9 @@
 - 根目錄4項既有檢查失敗：API census、公開 API golden、runtime size baseline、migration歷史契約提取。未改 golden、snapshot 或 evidence 基準。
 - [新增檔案清單與限制](changes.md)。23個 package/crate測試檔與帳本內重現材料；部分回歸測試刻意失敗以保存 bug 證據。
 
-## BH-0004 · P1 · 展開 CSS import 丟失條件與 layer
+## BH-0004 · P1 · 展開 CSS import 丟失條件與 layer（部分修正）
 
-[crates/mastercss-compiler/src/imports.rs:201](/Users/aron/master/css/crates/mastercss-compiler/src/imports.rs:201)。本機 import 帶 media/supports/layer；應保留條件與層級，實際直接拼入內容，造成錯誤套用與 cascade。
-
-修正方向：展開後包回條件與 layer，保留順序。 [重現與證據](batches/0005-project-graph.md)。
-
-0180已修正imported Sass原始maps遺失，48個dev/build精確位置控制、完整441tests及600browser通過；插值／無map回呼保留誠實的精度限制。BH-0004其他graph／host要求仍未完成。[驗證](batches/0180-imported-sass-source-maps.md)。
+`preserveNativeSource`已於0258隨compiler API交付，不再是owned候選。0263在交付後重新量測qualified矩陣的60個觀察：`prepared-native`、`prepared-wasm`、`rendered-node`各12 PASS／0 FAIL，低層`direct-native`與`direct-wasm`各2 PASS／10 FAIL，失敗全部落在帶qualifier的格。根因化約為單一件事——Master definition directive被包在native at-rule裡就無法處理——而`imports.rs`展開qualified import時是文字包裹，必然把被匯入stylesheet的directive一起包進`@supports`／`@media`／`@layer`。0263交付的診斷修正把原本無來源範圍的`Printer error`改為既有的`@X must be top-level`，native與Wasm一致，但沒有修flatten本身。仍待：展開時把child definitions留在wrapper外、`external-import-order`的39項外部import，以及完整public／host graph遷移。[根因與診斷](batches/0263-bh-0004-contained-directives.md)。
 
 ## BH-0006 · P1 · SSR CSS 未安全嵌入 HTML
 
