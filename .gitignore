@@ -78,6 +78,10 @@ yarn-error.log
 testem.log
 /typings
 
+# Agent worktrees. Project-level .claude settings stay trackable; only the
+# tool's scratch worktrees are ignored.
+/.claude/worktrees/
+
 # System Files
 .DS_Store
 Thumbs.db
