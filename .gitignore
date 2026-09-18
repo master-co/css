@@ -23,18 +23,19 @@
 # monorepo
 **/*.vscode-test
 **/*.output
-**/*dist
-**/*dist-test
-**/*node_modules
-**/*.turbo
+**/dist/
+**/dist-test/
+**/node_modules/
+**/.turbo/
 **/.tsbuild/
-**/*out
-**/*tmp
+**/out/
+**/tmp/
+**/.tmp/
 **/*test.html
 **/*.test.html
 **/*tsconfig.tsbuildinfo
 **/*.virtual
-**/*coverage
+**/coverage/
 **/*.next
 
 # Only exists if Bazel was run
