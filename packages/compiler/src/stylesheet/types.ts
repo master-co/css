@@ -43,6 +43,11 @@ export interface CompileStylesheetOptions extends CompileCSSOptions, StylesheetS
   loadSass?: (projectDir?: string) => SassModule
 }
 
+export interface CompileRenderedStylesheetOptions extends CompileStylesheetOptions {
+  /** Globals already present outside this render; emit only additional resources. */
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
+}
+
 export interface CompileRenderedStylesheetResult extends CompileCSSResult {
   /** Present with delivery options; publish every returned stylesheet at its href. */
   entry?: string

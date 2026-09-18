@@ -21,6 +21,8 @@ export interface MasterCSSCompileOptions {
   readonly classes?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
+  /** Keep untouched native source for host transforms; incompatible with class pruning. */
+  readonly preserveNativeSource?: boolean
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
 

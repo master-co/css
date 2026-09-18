@@ -1,17 +1,18 @@
 import { compileDeliveredSource } from './delivery'
 import { renderCompiledManifestCSS } from './render'
 import { mapStylesheetError } from './source-context'
-import type { CompileRenderedStylesheetResult, CompileStylesheetOptions } from './types'
+import type { CompileRenderedStylesheetResult, CompileRenderedStylesheetOptions } from './types'
 
 /** Render generated globals once while keeping native stylesheet boundaries. */
-export async function compileRenderedDelivery(id: string, source: string, options: CompileStylesheetOptions): Promise<CompileRenderedStylesheetResult> {
+export async function compileRenderedDelivery(id: string, source: string, options: CompileRenderedStylesheetOptions): Promise<CompileRenderedStylesheetResult> {
   try {
     const result = (await compileDeliveredSource(id, source, { ...options, transformNativeStylesheets: true }, options.classes))!
     const entry = result.stylesheets.find(asset => asset.id === result.entry)!
     const generated = renderCompiledManifestCSS({
       manifest: result.manifest,
       nativeCSS: result.stylesheets.map(asset => asset.css),
-      classNames: options.classes
+      classNames: options.classes,
+      emittedGlobals: options.emittedGlobals
     })
     const css = [entry.css, generated.generatedCSS].filter(Boolean).join('\n\n')
     const renderedCSS = { ...generated, css, nativeCSS: entry.css }

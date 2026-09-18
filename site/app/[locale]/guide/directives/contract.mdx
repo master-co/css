@@ -85,6 +85,37 @@ mappings and reference context. Existing file, project, integration and CLI outp
 paths have not yet adopted this delivery model; its guarantees do not extend to
 those paths. Without resource mappings, the host must preserve original URL bases.
 
+
+### Preparing native CSS for another transformer
+
+Compiler hosts can opt into `preserveNativeSource: true` when another transformer
+needs the untouched native portions of a stylesheet. Master definitions are still
+consumed and native `@compose` rules are still lowered, while unrelated comments,
+empty rules, value spelling, and rule boundaries are retained. The option defaults
+to `false`, preserving the compiler's normal native CSS normalization.
+
+Source preservation cannot be combined with a native class-pruning list, including
+an empty list. `preserveNativeCSS: false` still suppresses native output. The option
+does not prevent subsequent host transforms from optimizing the result or rewriting
+its source map, and it does not discover new Master definitions or generated-global
+references introduced by a later transform.
+
+
+### Continuing resource rendering after host transforms
+
+`compileRenderedStylesheet()` and `compileBrowserStylesheet()` accept an optional
+`emittedGlobals` resource-count snapshot when another output already supplies
+generated variables or keyframes. Positive counts suppress duplicate emission;
+zero counts do not. New references still emit their transitive resource closure.
+The returned snapshot includes the external context and resources required by this
+render, without changing the input snapshot. Omitting the option preserves normal
+standalone rendering.
+
+This context prevents a later render from replacing an already processed variable
+with its original manifest value. It does not run host plugins on newly generated
+CSS. Hosts remain responsible for processing that new CSS and publishing its
+resources while preserving plugin ordering and source ownership.
+
 ---
 
 ## Reference context \{#reference-context\}

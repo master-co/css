@@ -17,6 +17,10 @@ export interface MasterCSSBrowserStylesheetCompileOptions {
   readonly classNames?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
+  /** Keep untouched native source for host transforms; incompatible with class pruning. */
+  readonly preserveNativeSource?: boolean
+  /** Globals already present outside this render; emit only additional resources. */
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
   readonly binding?: Readonly<{
     input?: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
   }>
@@ -43,6 +47,8 @@ export async function compileBrowserStylesheet(
     classNames,
     from,
     preserveNativeCSS,
+    preserveNativeSource,
+    emittedGlobals,
     binding,
     signal,
     onDiagnostic
@@ -58,6 +64,7 @@ export async function compileBrowserStylesheet(
       baseManifest,
       ...(from ? { from } : {}),
       ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
+      ...(preserveNativeSource === undefined ? {} : { preserveNativeSource }),
       ...(onDiagnostic ? { onDiagnostic } : {})
     })
   } finally {
@@ -65,7 +72,7 @@ export async function compileBrowserStylesheet(
   }
   signal?.throwIfAborted()
   const bindingSession = await createCompilerRenderBindingSession(
-    { manifest: result.manifest },
+    { manifest: result.manifest, emittedGlobals },
     { binding: 'wasm', wasm: binding }
   )
   const renderSession: StylesheetRenderSession = {

@@ -112,7 +112,8 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
       nativeStylesheets,
       baseManifest: options.baseManifest,
       resolutionManifest: reference.manifest,
-      options: { preserveNativeCSS: options.preserveNativeCSS ?? true, ...(classes ? { classes: [...classes] } : {}) }
+      options: { preserveNativeCSS: options.preserveNativeCSS ?? true,
+        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(classes ? { classes: [...classes] } : {}) }
     })
     const directives = result.directives as unknown as CompileCSSResult
     directives.extractionPolicy = mergeCSSDirectiveExtractionPolicy(directives.extractionPolicy)

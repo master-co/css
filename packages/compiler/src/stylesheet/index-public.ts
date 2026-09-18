@@ -14,6 +14,7 @@ export {
   type MasterCSSSassCompiler,
   type MasterCSSStylesheetCollectionSnapshot,
   type MasterCSSStylesheetCompileOptions,
+  type MasterCSSRenderedStylesheetCompileOptions,
   type MasterCSSStylesheetComposition,
   type MasterCSSStylesheetCompositionOptions,
   type MasterCSSStylesheetDependencyOptions,

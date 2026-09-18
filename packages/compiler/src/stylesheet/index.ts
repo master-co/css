@@ -63,6 +63,7 @@ import type { StylesheetPreparationOptions } from './types'
 import type {
   SassModule,
   CompileStylesheetOptions,
+  CompileRenderedStylesheetOptions,
   CompileRenderedStylesheetResult,
   TransformLocalStylesheetResult,
   TransformLocalStylesheetOptions,
@@ -82,6 +83,7 @@ import type {
 export type {
   SassModule,
   CompileStylesheetOptions,
+  CompileRenderedStylesheetOptions,
   CompileRenderedStylesheetResult,
   TransformLocalStylesheetResult,
   TransformLocalStylesheetOptions,
@@ -367,7 +369,7 @@ async function compileStylesheetResult(id: string, source: string, options: Comp
 export async function compileRenderedStylesheet(
   id: string,
   source: string,
-  options: CompileStylesheetOptions
+  options: CompileRenderedStylesheetOptions
 ): Promise<CompileRenderedStylesheetResult> {
   if (options.delivery) {
     const prepared = await prepareStylesheetSource(id, source, options)
@@ -390,7 +392,8 @@ export async function compileRenderedStylesheet(
     manifest: finalizedResult.manifest,
     // Lowering emits composed native rules separately from parsed native CSS.
     nativeCSS: finalizedResult.css,
-    classNames: compileOptions.classes
+    classNames: compileOptions.classes,
+    emittedGlobals: options.emittedGlobals
   })
   return {
     ...result,

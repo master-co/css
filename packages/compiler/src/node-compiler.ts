@@ -228,6 +228,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
       {
         from: options.from || 'master.css',
         preserveNativeCSS: options.preserveNativeCSS !== false,
+        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
         ...(options.classes ? { classes: options.classes } : {})
       }
     )
@@ -543,7 +544,8 @@ export function compileCSSManifestGraph(
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
-    options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false, ...(options.classes ? { classes: options.classes } : {}) },
+    options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
+        ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(options.classes ? { classes: options.classes } : {}) },
     inlineImports: true
   }))
   const directives = reviveBindingCompileResult(compiled.directives as CompileCSSResult)

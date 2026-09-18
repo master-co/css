@@ -45,6 +45,11 @@ export interface MasterCSSStylesheetCompileOptions extends MasterCSSCompileOptio
   readonly signal?: AbortSignal
 }
 
+export interface MasterCSSRenderedStylesheetCompileOptions extends MasterCSSStylesheetCompileOptions {
+  /** Globals already present outside this render; emit only additional resources. */
+  readonly emittedGlobals?: MasterCSSEmittedGlobals
+}
+
 export interface MasterCSSCompiledStylesheet extends MasterCSSCompileResult {
   readonly entry?: string
   /** Delivery assets, including the entry. Each map describes its final CSS. */
@@ -307,7 +312,7 @@ export async function compileStylesheet(
 export async function compileRenderedStylesheet(
   id: string,
   source: string,
-  options: MasterCSSStylesheetCompileOptions
+  options: MasterCSSRenderedStylesheetCompileOptions
 ): Promise<MasterCSSCompiledStylesheet> {
   const compileOptions = abortableOptions(options)
   const result = await compileRenderedStylesheetInternal(id, source, {
