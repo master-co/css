@@ -204,23 +204,6 @@ export function isMasterCSSPackageStyleFile(id: string, projectDir?: string) {
   }
 }
 
-export function compileCSSFile(file: string, options: CompileCSSFileOptions = {}): CompileCSSResult {
-  const { root, ...compileOptions } = options
-  const absoluteFile = isAbsolute(file) ? file : resolve(root || '', file)
-  const graph = resolveCSSImportGraph(absoluteFile, {
-    projectDir: root
-  })
-  const result = compileCSS(graph.source, {
-    ...compileOptions,
-    from: absoluteFile
-  })
-  return {
-    ...result,
-    dependencies: graph.dependencies,
-    ...(graph.references?.length ? { references: graph.references } : {})
-  }
-}
-
 export function compileCSS(source: string, options: CompileCSSOptions = {}): CompileCSSResult {
   const result = reviveBindingCompileResult(callCompilerBinding<CompileCSSResult>(() => (
     nativeCompiler().compileCSSDirectives(
