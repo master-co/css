@@ -1,0 +1,66 @@
+
+ RUN  v4.1.11 /Users/aron/master/css/packages/nuxt
+
+ ❯ tests/progressive.test.ts (1 test | 1 failed) 7747ms
+   × matches generated CSS snapshot 19ms
+ ❯ tests/pre-render.test.ts (3 tests | 1 failed) 6815ms
+   × matches generated CSS 20ms
+ ❯ tests/static.test.ts (1 test | 1 failed) 6248ms
+   × should contain stylesheet link and CSS with specific class 10ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/pre-render.test.ts > matches generated CSS
+AssertionError: expected '@import "./master-css-438efbe0355aa13…' to contain '.box'
+
+Expected: ".box"
+Received: "@import "./master-css-438efbe0355aa13d7cf2-1.css";"
+
+ ❯ tests/pre-render.test.ts:35:15
+     33|   expect(html).not.toContain('--color-host:')
+     34|   const css = await $fetch(href) as string
+     35|   expect(css).toContain('.box')
+       |               ^
+     36|   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
+     37|   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/progressive.test.ts > matches generated CSS snapshot
+AssertionError: expected '@import "./master-css-801532c4e09f315…' to contain '.box'
+
+Expected: ".box"
+Received: "@import "./master-css-801532c4e09f31591be3-1.css";"
+
+ ❯ tests/progressive.test.ts:30:15
+     28|   expect(html).not.toContain('--color-host:')
+     29|   const css = await $fetch(href) as string
+     30|   expect(css).toContain('.box')
+       |               ^
+     31|   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
+     32|   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/static.test.ts > should contain stylesheet link and CSS with specific class
+AssertionError: expected '@import "./master-css-8333ef41b0dde35…' to contain '.box'
+
+Expected: ".box"
+Received: "@import "./master-css-8333ef41b0dde35452bd-1.css";"
+
+ ❯ tests/static.test.ts:23:15
+     21|   const css = await $fetch(href) as string
+     22|   expect(typeof css).toBe('string')
+     23|   expect(css).toContain('.box')
+       |               ^
+     24|   expect(css).toMatch(/\.box\s*{[^}]*display:\s*flex/)
+     25|   expect(css).toMatch(/\.box\s*{[^}]*font-size:\s*1em/)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 3 passed (6)
+      Tests  3 failed | 7 passed (10)
+   Start at  14:06:47
+   Duration  44.16s (transform 49ms, setup 0ms, import 263ms, tests 43.45s, environment 0ms)
+
