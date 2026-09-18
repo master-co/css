@@ -11,7 +11,7 @@ function files(directory: string): string[] {
 
 for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) {
   for (const failure of ['config-sync', 'config-async', 'factory', 'environment-init'] as const) {
-    test(`failed ${failure} releases unstarted recovery material (${mode})`, async () => {
+    test(`failed ${failure} bounds recovery material to one run (${mode})`, async () => {
       const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-build-config-lifetime-'))), cacheDir = join(root, '.vite')
       const error = new Error(`intentional ${failure}`)
       const failing: Plugin = {
@@ -19,13 +19,19 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
         configResolved: failure === 'config-sync' ? () => { throw error } : failure === 'config-async' ? async () => { await Promise.resolve();throw error } : undefined,
         applyToEnvironment: failure === 'environment-init' ? async () => { throw error } : undefined
       }
+      const failed = () => expect(build({ root, cacheDir, configFile: false, logLevel: 'silent',
+        plugins: [masterCSS({ mode, runtime: false }), failing], build: { watch: {},
+          ...(failure === 'factory' ? { createEnvironment() { throw error } } : {})
+        }
+      })).rejects.toThrow(error.message)
       try {
-        await expect(build({ root, cacheDir, configFile: false, logLevel: 'silent',
-          plugins: [masterCSS({ mode, runtime: false }), failing], build: { watch: {},
-            ...(failure === 'factory' ? { createEnvironment() { throw error } } : {})
-          }
-        })).rejects.toThrow(error.message)
-        expect(files(cacheDir)).toEqual([])
+        // Configuration allocates before the host can say whether the build
+        // will start, and no hook runs after it fails there, so the material
+        // outlives the run. The next run reclaims it rather than accumulating.
+        await failed()
+        expect(files(cacheDir)).toHaveLength(1)
+        await failed()
+        expect(files(cacheDir)).toHaveLength(1)
       } finally { rmSync(root, { recursive: true, force: true }) }
     })
   }
@@ -62,7 +68,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
 }
 
 for (const shared of [true, false]) for (const failure of ['factory', 'init'] as const) {
-  test(`configuration releases unstarted environments when a peer ${failure} fails (shared=${shared})`, async () => {
+  test(`configuration bounds recovery material when a peer ${failure} fails (shared=${shared})`, async () => {
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-build-peer-failure-'))), cacheDir = join(root, '.vite')
     const error = new Error(`intentional peer ${failure}`)
     const createEnvironment = (name: string, config: ResolvedConfig) => {
@@ -71,14 +77,17 @@ for (const shared of [true, false]) for (const failure of ['factory', 'init'] as
       if (name === 'ssr' && failure === 'init') environment.init = async () => { throw error }
       return environment
     }
+    const failed = () => expect(createBuilder({ root, cacheDir, configFile: false, logLevel: 'silent',
+      plugins: [masterCSS({ mode: 'static', runtime: false })],
+      builder: { sharedConfigBuild: shared },
+      environments: { client: { build: { createEnvironment } }, ssr: { consumer: 'server', build: { createEnvironment } } },
+      build: { watch: {}, createEnvironment }
+    })).rejects.toThrow(error.message)
     try {
-      await expect(createBuilder({ root, cacheDir, configFile: false, logLevel: 'silent',
-        plugins: [masterCSS({ mode: 'static', runtime: false })],
-        builder: { sharedConfigBuild: shared },
-        environments: { client: { build: { createEnvironment } }, ssr: { consumer: 'server', build: { createEnvironment } } },
-        build: { watch: {}, createEnvironment }
-      })).rejects.toThrow(error.message)
-      expect(files(cacheDir)).toEqual([])
+      await failed()
+      expect(files(cacheDir)).toHaveLength(1)
+      await failed()
+      expect(files(cacheDir)).toHaveLength(1)
     } finally { rmSync(root, { recursive: true, force: true }) }
   })
 }

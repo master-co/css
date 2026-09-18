@@ -15,13 +15,18 @@ function fixture() {
   return { root, cacheDir, close() { rmSync(root, { recursive: true, force: true }) } }
 }
 
-test('a configuration error does not allocate build recovery files', async () => {
+test('a configuration error leaves recovery files for the next run to reclaim', async () => {
   const f = fixture()
+  const failed = () => expect(build({ root: f.root, cacheDir: f.cacheDir, configFile: false, logLevel: 'silent', build: { watch: {} },
+    plugins: [masterCSS({ mode: 'static', runtime: false }), { name: 'config-failure', configResolved() { throw new Error('intentional config error') } }]
+  })).rejects.toThrow('intentional config error')
   try {
-    await expect(build({ root: f.root, cacheDir: f.cacheDir, configFile: false, logLevel: 'silent', build: { watch: {} },
-      plugins: [masterCSS({ mode: 'static', runtime: false }), { name: 'config-failure', configResolved() { throw new Error('intentional config error') } }]
-    })).rejects.toThrow('intentional config error')
-    expect(files(f.cacheDir)).toEqual([])
+    // No hook runs after the failure, so configuration's material outlives the
+    // run; allocating again reclaims it instead of leaving a second copy.
+    await failed()
+    expect(files(f.cacheDir)).toHaveLength(1)
+    await failed()
+    expect(files(f.cacheDir)).toHaveLength(1)
   } finally { f.close() }
 })
 
