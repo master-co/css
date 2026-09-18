@@ -53,6 +53,19 @@ thiserror = "2.0.20"
 wasm-bindgen = "0.2.128"
 wasm-bindgen-cli-support = "0.2.128"
 
+[profile.dev]
+# Keep file and line numbers in panic backtraces, but drop the type and variable
+# DWARF that accounts for roughly three quarters of every dependency object file.
+debug = "line-tables-only"
+
+# "*" matches dependencies only, never workspace members.
+[profile.dev.package."*"]
+debug = false
+
+# Build scripts and proc macros inherit the profile's debug level unless set here.
+[profile.dev.build-override]
+debug = false
+
 [profile.release]
 lto = "thin"
 codegen-units = 1
