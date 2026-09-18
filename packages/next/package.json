@@ -11,7 +11,7 @@
     "e2e": "vitest run tests/*-e2e.test.ts --no-file-parallelism",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Next.js integration for Master CSS",

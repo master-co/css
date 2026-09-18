@@ -14,7 +14,7 @@
     "build:ui:import-variables": "vite build --mode import-variables",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "author": "Aoyue Design LLC.",
   "license": "MIT",

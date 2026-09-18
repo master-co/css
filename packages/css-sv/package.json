@@ -8,7 +8,7 @@
     "build": "tsdown",
     "dev": "tsdown --watch",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Svelte CLI add-on for Master CSS",

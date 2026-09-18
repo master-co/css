@@ -6,8 +6,9 @@
   },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "build:artifacts": "cargo xtask build-native",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "cargo xtask build-native && vitest",
+    "test": "vitest run",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint"
   },

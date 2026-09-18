@@ -3,18 +3,37 @@
   "globalDependencies": [
     "pnpm-lock.yaml",
     "pnpm-workspace.yaml",
-    "tsconfig.json",
-    "Cargo.lock",
-    "Cargo.toml",
-    "rust-toolchain.toml",
-    "crates/**"
+    "tsconfig.json"
   ],
   "tasks": {
-    "build": {
+    "build:artifacts": {
       "dependsOn": [
-        "^build"
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_ROOT$/crates/**",
+        "$TURBO_ROOT$/Cargo.toml",
+        "$TURBO_ROOT$/Cargo.lock",
+        "$TURBO_ROOT$/rust-toolchain.toml"
+      ],
+      "outputs": [
+        "artifacts/**"
+      ]
+    },
+    "build": {
+      "dependsOn": [
+        "^build",
+        "^build:artifacts"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!tests/**",
+        "!e2e/**",
+        "!**/*.md",
+        "$TURBO_ROOT$/shared/tsdown-package.config.ts"
+      ],
       "outputs": [
         "dist/**",
         "out/**",
@@ -30,25 +49,53 @@
     "test": {
       "dependsOn": [
         "build",
-        "^build"
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "$TURBO_ROOT$/shared/vitest.config.ts",
+        "$TURBO_ROOT$/shared/vitest-ci-config.ts"
+      ],
       "outputs": []
     },
     "lint": {
-      "dependsOn": [
-        "build",
-        "^build"
-      ],
+      "dependsOn": [],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md",
+        "$TURBO_ROOT$/eslint.config.js",
+        "$TURBO_ROOT$/.gitignore"
+      ],
       "outputs": []
     },
     "type-check": {
       "dependsOn": [
-        "^build",
         "^type-check"
       ],
       "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md"
+      ],
+      "outputs": [
+        ".tsbuild/**"
+      ]
+    },
+    "@master/css-webpack#type-check": {
+      "dependsOn": [
+        "build",
+        "^type-check"
+      ],
+      "outputLogs": "new-only",
+      "inputs": [
+        "$TURBO_DEFAULT$",
+        "!**/*.md"
+      ],
       "outputs": [
         ".tsbuild/**"
       ]
@@ -56,7 +103,9 @@
     "e2e": {
       "dependsOn": [
         "build",
-        "^build"
+        "^build",
+        "build:artifacts",
+        "^build:artifacts"
       ],
       "outputLogs": "new-only",
       "cache": false

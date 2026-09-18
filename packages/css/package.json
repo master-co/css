@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "cargo xtask build-native && vitest",
+    "test": "vitest run",
     "bench": "vitest bench",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint"

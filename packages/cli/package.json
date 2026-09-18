@@ -5,7 +5,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "cargo xtask build-native && vitest"
+    "test": "vitest run"
   },
   "type": "module",
   "engines": {

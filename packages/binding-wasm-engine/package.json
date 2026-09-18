@@ -6,8 +6,9 @@
   },
   "scripts": {
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
+    "build:artifacts": "cargo xtask build-wasm",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
-    "test": "cargo xtask build-wasm && vitest",
+    "test": "vitest run",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint"
   },
@@ -25,7 +26,10 @@
     },
     "./wasm": "./artifacts/mastercss_binding_wasm_engine_bg.wasm"
   },
-  "files": ["dist", "artifacts"],
+  "files": [
+    "dist",
+    "artifacts"
+  ],
   "publishConfig": {
     "access": "public",
     "provenance": true

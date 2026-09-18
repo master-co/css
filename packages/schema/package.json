@@ -9,7 +9,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Public Master CSS schema and wire-format contracts.",

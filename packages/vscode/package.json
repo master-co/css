@@ -5,7 +5,7 @@
     "build": "tsdown && pnpm generate",
     "generate": "node --import tsx generate",
     "dev": "tsdown --watch",
-    "test": "cargo xtask build-native && vitest",
+    "test": "vitest run",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
     "vscode:package": "node scripts/package-targets.js package",

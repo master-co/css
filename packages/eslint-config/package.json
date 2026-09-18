@@ -8,7 +8,7 @@
     "build": "tsdown --config ../../shared/tsdown-package.config.ts",
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "vitest",
+    "test": "vitest run",
     "lint": "eslint src *.js"
   },
   "keywords": [

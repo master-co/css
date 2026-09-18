@@ -9,7 +9,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "cargo xtask build-native && cargo xtask build-wasm tooling && vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Rust-backed extraction, scanning, linting, language, validation, and diagnostics sessions for Master CSS",

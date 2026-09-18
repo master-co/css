@@ -9,7 +9,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "lint": "eslint",
     "type-check": "tsc -b tsconfig.typecheck.json",
-    "test": "cargo xtask build-native && cargo xtask build-wasm compiler && vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Compile Master CSS stylesheet directives",

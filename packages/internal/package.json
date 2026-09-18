@@ -10,7 +10,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Private Master CSS integration kernel, virtual module protocols, and official host helpers.",

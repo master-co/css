@@ -9,7 +9,7 @@
     "dev": "tsdown --config ../../shared/tsdown-package.config.ts --watch",
     "type-check": "tsc -b tsconfig.typecheck.json",
     "lint": "eslint",
-    "test": "vitest"
+    "test": "vitest run"
   },
   "license": "MIT",
   "description": "Vite plugin for Master CSS",
