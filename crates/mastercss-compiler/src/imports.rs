@@ -75,6 +75,55 @@ pub(crate) fn imported_css_wrappers(
     Ok((prefix, suffix))
 }
 
+/// Definition directives an imported stylesheet may declare at its top level.
+const IMPORTED_DEFINITION_DIRECTIVES: [&str; 6] = [
+    "settings",
+    "theme",
+    "custom-variant",
+    "defaults",
+    "components",
+    "utilities",
+];
+
+/// A qualifier wraps the imported rules in `@layer`/`@media`/`@supports`, but the
+/// imported stylesheet's definitions are global declarations, not conditional
+/// ones, and a directive contained in a native at-rule cannot be lowered. Split
+/// them out so they stay beside the wrapper instead of inside it.
+fn split_imported_definitions(source: MappedSource) -> (Option<MappedSource>, MappedSource) {
+    let (_, blocks) = mastercss_lexer::extract_top_level_at_rule_blocks(
+        &source.text,
+        &IMPORTED_DEFINITION_DIRECTIVES,
+    );
+    if blocks.is_empty() {
+        return (None, source);
+    }
+    let mut definitions = MappedSource::default();
+    let mut body = MappedSource::default();
+    let mut byte_index = 0;
+    for block in &blocks {
+        let (Some(start), Some(end)) = (
+            utf16_to_byte_offset(&source.text, block.start),
+            utf16_to_byte_offset(&source.text, block.end),
+        ) else {
+            continue;
+        };
+        if start < byte_index {
+            continue;
+        }
+        body.push(source.slice(byte_index, start));
+        if !definitions.text.is_empty() {
+            definitions.push_unmapped("\n");
+        }
+        definitions.push(source.slice(start, end));
+        byte_index = end;
+    }
+    if definitions.text.is_empty() {
+        return (None, source);
+    }
+    body.push(source.slice(byte_index, source.text.len()));
+    (Some(definitions), body)
+}
+
 pub(crate) fn default_filename() -> String {
     "master.css".into()
 }
@@ -304,9 +353,18 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
                 references,
             )?;
             let (prefix, suffix) = imported_css_wrappers(&import.statement, &source.text, id)?;
-            output.push_unmapped(&prefix);
-            output.push(source);
-            output.push_unmapped(&suffix);
+            if prefix.is_empty() {
+                output.push(source);
+            } else {
+                let (definitions, body) = split_imported_definitions(source);
+                if let Some(definitions) = definitions {
+                    output.push(definitions);
+                    output.push_unmapped("\n");
+                }
+                output.push_unmapped(&prefix);
+                output.push(body);
+                output.push_unmapped(&suffix);
+            }
         } else {
             let statement = &source_without_references[start..end];
             let trim_start = statement.len() - statement.trim_start().len();

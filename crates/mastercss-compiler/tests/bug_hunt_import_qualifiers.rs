@@ -126,3 +126,82 @@ fn bh_0004_unresolved_nested_import_is_an_explicit_limit_not_invalid_nested_css(
             .contains("resolve its nested imports first")
     );
 }
+
+/// An import qualifier wraps the imported rules, but the imported stylesheet's
+/// definitions are global declarations. Keeping them inside the wrapper both
+/// misrepresents them and leaves a directive the lowering cannot handle.
+struct DefiningChild(&'static str);
+impl CssImportProvider for DefiningChild {
+    type Error = String;
+    fn load(&self, id: &str) -> Result<String, String> {
+        match id {
+            "entry" => Ok("@import './child.css' layer(cards) supports(display:grid) screen;\n.after{margin:1px}".into()),
+            "child" => Ok(self.0.into()),
+            _ => Err("missing".into()),
+        }
+    }
+    fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+        Ok((specifier == "./child.css").then(|| "child".into()))
+    }
+}
+
+#[test]
+fn bh_0004_qualified_import_keeps_imported_definitions_top_level() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &DefiningChild("@utilities{paint{padding:2rem}}\n.card{padding:3rem}"),
+    )
+    .unwrap();
+    assert_eq!(
+        result.source,
+        "@utilities{paint{padding:2rem}}\n@supports (display: grid){@media screen{@layer cards{\n.card{padding:3rem}}}}\n.after{margin:1px}"
+    );
+}
+
+#[test]
+fn bh_0004_qualified_import_hoists_every_definition_family() {
+    let result = resolve_css_import_graph(
+        "entry",
+        &DefiningChild(
+            "@theme{--color-card:red}\n.card{padding:3rem}\n@components{note{padding:1rem}}",
+        ),
+    )
+    .unwrap();
+    assert!(
+        result
+            .source
+            .starts_with("@theme{--color-card:red}\n@components{note{padding:1rem}}\n@supports"),
+        "{}",
+        result.source
+    );
+    assert!(
+        result
+            .source
+            .contains("@layer cards{\n.card{padding:3rem}\n}"),
+        "{}",
+        result.source
+    );
+}
+
+#[test]
+fn bh_0004_unqualified_import_leaves_definitions_where_they_were() {
+    struct Plain;
+    impl CssImportProvider for Plain {
+        type Error = String;
+        fn load(&self, id: &str) -> Result<String, String> {
+            match id {
+                "entry" => Ok("@import './child.css';\n.after{margin:1px}".into()),
+                "child" => Ok("@utilities{paint{padding:2rem}}\n.card{padding:3rem}".into()),
+                _ => Err("missing".into()),
+            }
+        }
+        fn resolve(&self, specifier: &str, _: &str) -> Result<Option<String>, String> {
+            Ok((specifier == "./child.css").then(|| "child".into()))
+        }
+    }
+    let result = resolve_css_import_graph("entry", &Plain).unwrap();
+    assert_eq!(
+        result.source,
+        "@utilities{paint{padding:2rem}}\n.card{padding:3rem}\n.after{margin:1px}"
+    );
+}
