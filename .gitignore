@@ -2,6 +2,8 @@
 
 .parcel-cache
 .pnpm-store
+# Retired bug-hunt audit records; kept locally, history preserved in git.
+/.ai/audits/
 .wrangler/
 /internal
 .env.local

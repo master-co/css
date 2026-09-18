@@ -1,7 +1,0 @@
-A native generated= "@layer theme{:root{--color-late:#abcdef}}" emitted= {"variables":{"color-late":1},"animations":{}}
-B pass 0 generated= "@layer theme{:root{--x:1}}" emitted= {"variables":{"x":1},"animations":{"late":1}}
-B pass 1 generated= "" emitted= {"variables":{"x":1},"animations":{"late":2}}
-B pass 2 generated= "" emitted= {"variables":{"x":1},"animations":{"late":3}}
-C pass 0 generated= "@layer theme{:root{--x:1}}" emitted= {"variables":{"x":1},"animations":{"late":1}}
-C pass 1 generated= "" emitted= {"variables":{"x":1},"animations":{"late":2}}
-C pass 2 generated= "" emitted= {"variables":{"x":1},"animations":{"late":3}}

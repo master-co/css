@@ -1,9 +1,0 @@
-
- RUN  v5.0.0 /Users/aron/master/css/benchmarks
-
-
- Test Files  3 passed (3)
-      Tests  12 passed (12)
-   Start at  06:34:46
-   Duration  150ms (transform 54%, import 32%, tests 10%, worker 4%)
-

@@ -1,5 +1,0 @@
-{"source":"@master entry;@utilities{paint{padding:2rem!important}low{padding:1rem!important}}@layer{.a{@compose paint;}.b{@compose low;}}","css":"@layer {\n  .a{padding:2rem !important}\n\n  .b{padding:1rem !important}\n}\n"}
-{"browser":"chromium","actual":"16px","expected":"16px","pass":true}
-{"browser":"firefox","actual":"16px","expected":"16px","pass":true}
-{"browser":"webkit","actual":"16px","expected":"16px","pass":true}
-{"observations":3,"failures":0}

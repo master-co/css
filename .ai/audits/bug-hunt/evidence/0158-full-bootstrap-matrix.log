@@ -1,6 +1,0 @@
-{"mode": "pure-full", "request": "runtime", "pid": 82185, "exitCode": -15, "terminatedAfterObservedLeak": true}
-{"mode": "pure-full", "request": "css-runtime", "pid": 82201, "exitCode": -15, "terminatedAfterObservedLeak": true}
-{"mode": "runtime", "request": "runtime", "pid": 82243, "exitCode": -15, "terminatedAfterObservedLeak": true}
-{"mode": "runtime", "request": "css-runtime", "pid": 82281, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"mode": "progressive", "request": "runtime", "pid": 82282, "exitCode": -15, "terminatedAfterObservedLeak": true}
-{"mode": "progressive", "request": "css-runtime", "pid": 82290, "exitCode": -15, "terminatedAfterObservedLeak": true}

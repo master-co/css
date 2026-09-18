@@ -1,3 +1,0 @@
-# 0179 交接歷史
-
-- 0179完成BH-0037診斷契約：compiler／extraction改為30個實際公開操作指標，保留首次／重複完整compose一致性，另量generated-only／native-only，移除未觀察的內部分解宣告並明列限制。101tests／types／smoke通過；8variants／240samples、104階段區間與24CSS產物大小／hash核對完成，8份最終CSS與修前一致。獨立真實呼叫及故意不一致控制通過；4份原始報告24variants經build-path讀取，104摘要欄位與來源限制一致。387來源、151排除檔及5產物／3CLI檔不變。47historical／45fixed／2unresolved：BH-0004／0029；65checked／10blocked。Rust內部分解、完整benchmark矩陣／long-session／history、原graph／host要求、4root gates／4原候選、native shutdown／WebKit namespace與0038身分暫停仍未完成。下一批0180接imported Sass原始maps；所有程序終止，HEADe0f13cd44，本批未commit/push，目標active。[0179](batches/0179-diagnostic-phases.md)／[核對](evidence/0179-final-checks.json)；0178交接逐字見[歷史](progress-history-0179.md)。

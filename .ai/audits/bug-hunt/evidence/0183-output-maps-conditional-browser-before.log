@@ -1,8 +1,0 @@
-{"css":{"nested":"@media (width>=1px){.card{padding:2rem}}","outer":"@media (width >= 1px) {\n  .card {\n    @compose paint;\n  }\n}"}}
-{"browser":"chromium","kind":"nested","padding":"32px","expected":"32px","pass":true}
-{"browser":"chromium","kind":"outer","padding":"0px","expected":"32px","pass":false}
-{"browser":"firefox","kind":"nested","padding":"32px","expected":"32px","pass":true}
-{"browser":"firefox","kind":"outer","padding":"0px","expected":"32px","pass":false}
-{"browser":"webkit","kind":"nested","padding":"32px","expected":"32px","pass":true}
-{"browser":"webkit","kind":"outer","padding":"0px","expected":"32px","pass":false}
-{"observations":6,"failures":3}

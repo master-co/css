@@ -1,3 +1,0 @@
-{"condition":"layer(shared)","result":"legacy limitation remains","message":"Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first"}
-{"condition":"layer","result":"legacy limitation remains","message":"Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first"}
-{"condition":"supports(display:grid) print","result":"legacy limitation remains","message":"Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first"}

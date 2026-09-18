@@ -1,9 +1,0 @@
-{
-  "packages/vscode/package.json": "fc9cc6c7d8a8e96fc9c3a4e1ad4b65b449359c40ba5b732cfe1b64ca2f5ef5c8",
-  "packages/vscode/tsdown.config.ts": "ae297feb086714558191a01bd450d3cf8f0078412220d141f4b16e4e5bf4738f",
-  "packages/vscode/src/extension.min.ts": "4877a8c02b05d1490112419011a415dd5b3fee300cc594e01b0078fd39ea9d4a",
-  "packages/vscode/scripts/package-target-core.js": "ec26bc92b9f2e0d8600c62adf40cd951471415dc4d49db36f5a6f772bdce3ae3",
-  "packages/language-server/src/core.ts": "0ff1a88ba3ac7621cc21554ad654cd372294f34b532120caaad9f3ad30c0a4e1",
-  "packages/language-service/src/features/render-semantic-tokens.ts": "331d633fb593bdc48e0fb3afe6639fcb114afc187a84863df35d0c48135194e5",
-  "packages/language-service/tests/render-css-semantic-tokens.test.ts": "5c455a4b1cdf295f03324ef7fa714b8e17a7d06d13346624f9bdc200c31ea417"
-}

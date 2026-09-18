@@ -1,6 +1,0 @@
-{
-  "pid": 74534,
-  "session": 88538,
-  "reason": "Both mode HTTP observations recorded, both temporary directories removed and no listening sockets; inspector report shows one referenced active native async handle, no JS handles/requests/workers. Terminate this owned diagnostic process after preserving evidence; not a normal exit or an observation-timeout restart.",
-  "signal": "SIGTERM"
-}

@@ -1,8 +1,0 @@
-fmt exit=0
-warning: method `text` is never used
-  --> crates/mastercss-compiler/src/source_index.rs:45:19
-warning: `mastercss-compiler` (lib test) generated 1 warning
-test source_index::tests::checkpoints_cover_multibyte_boundaries ... ok
-test source_index::tests::matches_scanning_conversions ... ok
-test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 26 filtered out; finished in 0.54s
-test exit=0

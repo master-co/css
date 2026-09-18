@@ -1,3 +1,0 @@
-{"browser":"chromium","version":"153.0.8010.12","cases":24,"safeHTMLAndIdenticalCSSValue":true}
-{"browser":"firefox","version":"155.0","cases":24,"safeHTMLAndIdenticalCSSValue":true}
-{"browser":"webkit","version":"26.6","cases":24,"safeHTMLAndIdenticalCSSValue":true}

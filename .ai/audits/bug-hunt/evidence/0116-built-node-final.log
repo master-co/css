@@ -1,2 +1,0 @@
-{"entrypoint":"dist/node.js compileManifestFileSync","prefix":"./","result":"PASS","dependencies":2,"css":".example {\n  color: red;\n}"}
-{"entrypoint":"dist/node.js compileManifestFileSync","prefix":"","result":"PASS","dependencies":2,"css":".example {\n  color: red;\n}"}

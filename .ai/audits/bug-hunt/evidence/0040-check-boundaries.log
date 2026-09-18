@@ -1,2 +1,0 @@
-$ node scripts/check-rust-core-boundaries.mjs
-Rust core boundaries verified.

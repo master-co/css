@@ -1,5 +1,0 @@
-{
-  "packages/vite/src/plugins/scanner.ts": "ce565e73be71ac88f8a4ae88f070f372881fa7193655a37a3b6f174b4eec1877",
-  "packages/vite/src/plugins/style-entry-hmr.ts": "aa8ca96242d7b010419ac1ce028a0573a159a040c2db00c06df9e31392ca03b8",
-  "packages/vite/src/utils/scanner-context.ts": "cfd3fbf185b8ab12743f1df64717bd7b5269d1b87a20aaf2bb216d2a811d183c"
-}

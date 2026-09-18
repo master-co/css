@@ -1,9 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-src/generate.ts(8,46): error TS2724: '"@master/css-compiler/stylesheet"' has no exported member named 'MasterCSSStylesheetDeliveryOptions'. Did you mean 'MasterCSSStylesheetDependencyOptions'?
-src/generate.ts(159,20): error TS7006: Parameter 'file' implicitly has an 'any' type.
-src/generate.ts(160,18): error TS7006: Parameter 'file' implicitly has an 'any' type.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/cli
-

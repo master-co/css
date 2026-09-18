@@ -1,7 +1,0 @@
-../packages/webpack/dist/plugin.d.ts(69,25): error TS2307: Cannot find module '@master/css-tooling/scanner/options' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(70,21): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(73,31): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(74,30): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(75,32): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(76,34): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.
-../packages/webpack/dist/plugin.d.ts(77,35): error TS2307: Cannot find module '@master/css-tooling/scanner/core' or its corresponding type declarations.

@@ -1,2 +1,0 @@
-{"control":"pure Vite ICSS inside imported layer","modules":{"rootToken":"root","child":"_child_16eov_1"},"css":"@layer guard{\n._child_16eov_1{color:red}:export{childToken:child}}","result":"PASS"}
-{"control":"pure Vite public import with base prefix","error":"Error: [postcss] ENOENT: no such file or directory, open '/base/external.css'","result":"PASS"}

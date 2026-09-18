@@ -1,6 +1,0 @@
-packages/internal lint$ eslint
-packages/internal lint: Done
-packages/next lint$ eslint
-packages/webpack lint$ eslint
-packages/webpack lint: Done
-packages/next lint: Done

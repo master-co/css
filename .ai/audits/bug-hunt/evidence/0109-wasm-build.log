@@ -1,8 +1,0 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
-     Running `target/debug/xtask build-wasm runtime`
-   Compiling mastercss-lexer v0.0.0 (/Users/aron/master/css/crates/mastercss-lexer)
-   Compiling mastercss-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-engine)
-   Compiling mastercss-render v0.0.0 (/Users/aron/master/css/crates/mastercss-render)
-   Compiling mastercss-binding-wasm-engine v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-engine)
-    Finished `release` profile [optimized] target(s) in 8.55s
-Built /Users/aron/master/css/packages/binding-wasm-engine/artifacts

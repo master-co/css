@@ -1,3 +1,0 @@
-# Preserved 0187 checkpoint
-
-- 0187：Rust graph 已提供每檔 outputMappings，保留長 import URL、資源改寫與 compose 的原始位置；直接入口遷移仍未完成。BH-0058 marker 誤改作者字串已修復；BH-0057 補充修復 preserveNativeCSS:false 丟失條件／匿名 layer。Rust111、compiler316PASS/1個既有 qualified import FAIL；最終 marker15／suppression18／graph126browser PASS。Vite112PASS/6個0183既有啟動缺檔恢復 FAIL；binding17、Site13及lint/types/Clippy/fmt/codegen/parity PASS（Site75warnings）。58historical/54fixed/4unresolved、65checked/10blocked；全scope及0038身分暫停維持。下一步將 graph mappings 帶過 bundle／inline／資產交付，再遷移既有 file/rendered/project；不能以局部 graph 成功宣稱原入口完成。目標active；本次提交0185–0187帳本／重現，產品改動與0188保留工作區，未推送。[提交核對](evidence/0187-commit-validation.json)。[證據](evidence/0187-final-checks.json)；[批次](batches/0187-graph-output-mappings.md)；[前次交接](progress-history-0187-graph-maps.md)。

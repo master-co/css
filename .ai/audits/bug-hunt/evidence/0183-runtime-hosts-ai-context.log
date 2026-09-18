@@ -1,4 +1,0 @@
-$ node scripts/check-ai-context.mjs
-AI context budget failed:
-- .ai/audits/bug-hunt/batches/0183-reference-host-recovery.md: context budget exceeded (166/400 lines, 51135/49152 bytes).
-[ELIFECYCLE] Command failed with exit code 1.

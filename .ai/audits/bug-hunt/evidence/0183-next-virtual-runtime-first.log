@@ -1,3 +1,0 @@
-{"backend":"--webpack","artifact":"packages/next/dist/index.js","sha256":"d24773de884d7bb82cc1b8ca5985f7a335a4d754a14db5035fff1c38af60e4f3"}
-{"browser":"chromium","pass":true,"wasmURL":"http://127.0.0.1:62202/_next/static/media/mastercss_binding_wasm_engine_bg.f2ffee59.wasm","heldMs":1345,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"summary":true,"observations":1,"failures":0}

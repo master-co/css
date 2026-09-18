@@ -1,2 +1,0 @@
-$ node scripts/check-package-artifacts.mjs
-Validated 635 published text artifact(s).

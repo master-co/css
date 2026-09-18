@@ -1,8 +1,0 @@
-file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/static-retention-browser.mjs:23
-      const hydrated = await createEngine({ manifest: compiled.manifest, binding, emittedGlobals: engine.emittedGlobals() })
-                                                                                                         ^
-
-TypeError: engine.emittedGlobals is not a function
-    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/static-retention-browser.mjs:23:106
-
-Node.js v24.20.0

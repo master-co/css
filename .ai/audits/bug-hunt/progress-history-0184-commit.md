@@ -1,5 +1,0 @@
-# 0184 commit checkpoint history
-
-Previous handoff preserved verbatim. Historical no-commit statements describe their original checkpoint.
-
-- 0184 native conditions: ordinary media/supports/container/layer/starting-style now lower compose; graph slots retain native children, source order and anonymous layers. Original selector/class mappings PASS. Rust98PASS/2new direct-order/layer FAIL; compiler305PASS/1new direct-order FAIL. Actual native/Wasm graph and authored controls:72browserPASS; direct15PASS/9FAIL (32px instead of48px). BH-0057 remains partial; next carry structural output ordering and maps through both Node and universal direct compilation. Compiler lint/types,Clippy/fmt/codegen/parityPASS;Site reference13PASS,lint0errors/75warnings.57historical/52fixed/5unresolved;65checked/10blocked. All previous graph/host/options/maps,4gates/4candidates,benchmark/Site and other requirements remain;0038awaits explicitidentityconfirmation. Goalactive;no commit/push. [Checks](evidence/0184-final-checks.json);[batch](batches/0184-native-conditional-compose.md);[prior checkpoint](progress-history-0184-conditionals.md).

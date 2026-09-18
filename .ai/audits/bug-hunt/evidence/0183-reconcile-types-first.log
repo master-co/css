@@ -1,7 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-src/utils/failed-dependency-reconciliation.ts(33,83): error TS2554: Expected 1 arguments, but got 2.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
-

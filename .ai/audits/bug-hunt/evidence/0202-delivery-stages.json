@@ -1,9 +1,0 @@
-{
-  "root": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-package-declarations-77ysh_px",
-  "stages": {
-    "tooling": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-package-declarations-77ysh_px/delivery-tooling",
-    "language-server": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-package-declarations-77ysh_px/delivery-language-server",
-    "mcp": "/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-package-declarations-77ysh_px/delivery-mcp"
-  },
-  "scope": "Complete currentdist copies with candidate declarations substituted;preserveeveryliveJSbyte andexistingprivate-modulepaths;notyetpromoted"
-}

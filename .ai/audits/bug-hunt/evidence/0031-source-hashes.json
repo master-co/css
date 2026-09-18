@@ -1,8 +1,0 @@
-{
-  "packages/create/src/modes.ts": "00335fac72980a6c703e11046e58d91e021c1786d92b863d3b0ed5440f3ffe29",
-  "packages/create/src/core.ts": "b2d6fa902120be1d12678c695b4e3386cb4552c4ff43ae8736824539ec1aec2d",
-  "packages/create/src/constants.ts": "b664e80018cff11defdeed36845a5ee1724befe2580593039975786510241043",
-  "packages/create/src/index.ts": "15a67863dc23ad50f2af8a4fef5adf00345a3ef3d1898e82cafb09094a040fed",
-  "packages/create/src/transforms.ts": "427d4c44eebca479563794537e9ef2175dc34ee678312468b564c8ad883b5851",
-  "packages/create/src/bin/index.ts": "6a1c5a2097357a801c2b4130ca0edaa6e5689e02c0c620aa9a857ae537652e22"
-}

@@ -1,8 +1,0 @@
-    Blocking waiting for file lock on build directory
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.54s
-     Running `target/debug/xtask build-wasm tooling`
-   Compiling mastercss-source v0.0.0 (/Users/aron/master/css/crates/mastercss-source)
-   Compiling mastercss-scanner v0.0.0 (/Users/aron/master/css/crates/mastercss-scanner)
-   Compiling mastercss-binding-wasm-tooling v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-tooling)
-    Finished `release` profile [optimized] target(s) in 5.44s
-Built /Users/aron/master/css/packages/binding-wasm-tooling/artifacts

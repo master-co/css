@@ -1,8 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-tests/plugins/bug-hunt-inline-built-urls.test.ts(49,155): error TS2339: Property 'source' does not exist on type 'OutputAsset | OutputChunk'.
-  Property 'source' does not exist on type 'OutputChunk'.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
-

@@ -1,3 +1,0 @@
-{"binding":"native","result":"PASS","css":["@import \"/styles/child.css\" layer;",".example{color:red}\n\n.example {\n  color: #00f;\n}"]}
-{"binding":"wasm","result":"PASS","css":["@import \"/styles/child.css\" layer;",".example{color:red}\n\n.example {\n  color: #00f;\n}"]}
-{"binding":"sync","result":"PASS","css":["@import \"/styles/child.css\" layer;",".example{color:red}\n\n.example {\n  color: #00f;\n}"]}

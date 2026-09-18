@@ -1,3 +1,0 @@
-# Prior checkpoint preserved verbatim
-
-- 0189：公開 compileRenderedStylesheet 已使用 delivery 選項，回傳含入口的不可變 CSS／資源清單及每檔 sourceMap；保留 classes 裁剪、reference、Sass partial 依賴與原始診斷。compiler326全PASS；built Node delivery126browserPASS（含原10組external import的60對照），Vite77／Next17PASS。低階展平原39失敗／qualified20失敗仍未修復；完整hosts／maps／gates／benchmarks及0038身分暫停維持。58historical/54fixed/4unresolved、65checked/10blocked；目標active；本次授權提交0188–0189已完成查核，產品及0190未完成工作保留，未推送。[提交核對](evidence/0189-commit-validation.json)。[證據](evidence/0189-final-checks.json)；[批次](batches/0189-rendered-asset-delivery.md)；[前次交接](progress-history-0189-delivery.md)。

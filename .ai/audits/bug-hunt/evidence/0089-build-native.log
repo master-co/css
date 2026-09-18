@@ -1,7 +1,0 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.24s
-     Running `target/debug/xtask build-native`
-   Compiling mastercss-language v0.0.0 (/Users/aron/master/css/crates/mastercss-language)
-   Compiling mastercss-binding-native v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-native)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 25.42s
-Built /Users/aron/master/css/packages/binding/artifacts/mastercss.node
-Built /Users/aron/master/css/packages/binding/artifacts/mcss

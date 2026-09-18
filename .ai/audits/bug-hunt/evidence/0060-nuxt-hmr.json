@@ -1,6 +1,0 @@
-{
-  "records": [],
-  "errors": [
-    "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n+ actual - expected\n\n+ 'rgb(0, 0, 0)'\n- 'rgb(18, 52, 86)'\n       ^\n"
-  ]
-}

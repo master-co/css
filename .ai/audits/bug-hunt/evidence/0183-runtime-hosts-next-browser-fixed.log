@@ -1,5 +1,0 @@
-{"artifact":"packages/next/dist/index.js","sha256":"a9bc3141933cf161242058135239a6c0993bb3dbfe7a9ef168465fad34b844ea"}
-{"browser":"chromium","pass":true,"wasmURL":"http://127.0.0.1:59729/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1574,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"browser":"firefox","pass":true,"wasmURL":"http://127.0.0.1:59752/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1535,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"browser":"webkit","pass":true,"wasmURL":"http://127.0.0.1:59770/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1542,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"summary":true,"observations":3,"failures":0}

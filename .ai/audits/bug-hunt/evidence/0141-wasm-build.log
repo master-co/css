@@ -1,6 +1,0 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
-     Running `target/debug/xtask build-wasm compiler`
-   Compiling mastercss-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-compiler)
-   Compiling mastercss-binding-wasm-compiler v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-compiler)
-    Finished `release` profile [optimized] target(s) in 16.13s
-Built /Users/aron/master/css/packages/binding-wasm-compiler/artifacts

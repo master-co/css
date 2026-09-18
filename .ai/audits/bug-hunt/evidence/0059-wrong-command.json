@@ -1,9 +1,0 @@
-{
-  "vscode": "1.136.1",
-  "records": [
-    {
-      "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(commands.includes('vscode.executeDocumentSemanticTokensProvider'))\n",
-      "stack": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert(commands.includes('vscode.executeDocumentSemanticTokensProvider'))\n\n\tat Object.run (/Users/aron/master/css/.ai/audits/bug-hunt/repros/vscode-settings-host.cjs:26:5)"
-    }
-  ]
-}

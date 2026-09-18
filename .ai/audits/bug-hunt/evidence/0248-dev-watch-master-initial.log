@@ -1,2 +1,0 @@
-{"scenario":"postcss-late-resource-dev-watch","pure":false,"steps":[{"browser":"chromium","step":"initial","pass":true},{"browser":"chromium","step":"svg-bytes-updated","pass":true,"urlChanged":true},{"browser":"chromium","step":"theme-value-updated","pass":true},{"browser":"chromium","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0

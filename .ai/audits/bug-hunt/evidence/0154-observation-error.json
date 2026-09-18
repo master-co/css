@@ -1,6 +1,0 @@
-{
-  "action": "Read lastlineofeachbrowserlog whilecollector73838wasrunning",
-  "error": "IndexError:list indexoutofrange",
-  "cause": "standalone-control.loghadbeencreatedbutwasstillempty;observerassumedatleastoneline",
-  "impact": "Read-onlyobserverfailure;browsercollectorwasnotrestarted;previousfourmatrixsummarieswerePASS;rawtestlogsunchanged"
-}

@@ -1,9 +1,0 @@
-{
-  "crates/mastercss-language/src/document.rs": "72bf0d2f2116dd9c4013c5ff47bb826155c2df36824e2b741434e561d516767d",
-  "crates/mastercss-language/src/positions.rs": "fa623f4923623788795433839ff61420b9478d8bdf350caaf599b705f173475f",
-  "crates/mastercss-language/src/session.rs": "a70f81580466de1e12e00e6a4e13281e4008b69a2f8e56f57acbe3eafd5b88a2",
-  "crates/mastercss-language/tests/bug_hunt_unicode.rs": "c5e0e6db829fda9d3227cd0fef70aee0a153cb2fbe397f0740cfe4434236b9a6",
-  "crates/mastercss-language/tests/bug_hunt_semantic_offsets.rs": "170badd59679e8a7275e75d19a182d91f00351982ec26c187444174aa29e1b73",
-  "packages/tooling/tests/language/bug-hunt-host-offsets.test.ts": "6f3074139fa32f4c5e3df17f964a1648f8018c5a6a3af2b12895dce8bba34b1f",
-  "packages/nuxt/src/module.ts": "6bf3f4407e3e11e72d1db6100d6093d1fc4e68533e28ba1b710c8261c212578b"
-}

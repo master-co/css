@@ -1,3 +1,0 @@
-{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-lledprre/benchmarks", "command": ["node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/css-specificity-controls.mjs"]}
-{"rows":[{"selector":"*","expected":0,"actual":1},{"selector":":is(#probe)","expected":100,"actual":110},{"selector":":not(.absent)","expected":10,"actual":20},{"selector":":has(>span)","expected":1,"actual":11},{"selector":":where(#probe)","expected":0,"actual":0},{"selector":"#probe","expected":100,"actual":100},{"selector":".probe","expected":10,"actual":10},{"selector":"p","expected":1,"actual":1}],"browserControlsPassed":4}
-{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-lledprre"}

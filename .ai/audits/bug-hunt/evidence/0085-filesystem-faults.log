@@ -1,4 +1,0 @@
-{"scenario":"normal","responseError":false,"afterAttempt":["@compose block inline;","@compose block inline;"],"validation":"observations/controls PASS"}
-{"scenario":"stale-second","responseError":true,"afterAttempt":["@compose block   inline;","@compose flex;"],"validation":"observations/controls PASS"}
-{"scenario":"unwritable-first","responseError":true,"afterAttempt":["@compose block   inline;","@compose block   inline;"],"validation":"observations/controls PASS"}
-{"scenario":"unwritable-second","responseError":true,"afterAttempt":["@compose block inline;","@compose block   inline;"],"validation":"observations/controls PASS"}

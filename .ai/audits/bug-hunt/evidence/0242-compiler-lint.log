@@ -1,9 +1,0 @@
-
-Oops! Something went wrong! :(
-
-ESLint: 10.10.0
-
-Error: ENOENT: no such file or directory, open '/Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/.gitignore'
-    at Object.readFileSync (node:fs:484:20)
-    at includeIgnoreFile (file:///Users/aron/master/css/node_modules/.pnpm/@eslint+compat@2.1.1_eslint@10.10.0_jiti@2.7.0_supports-color@5.5.0_/node_modules/@eslint/compat/dist/esm/index.js:558:24)
-    at file:///Users/aron/master/css/.ai/audits/bug-hunt/tmp/0242-source-preservation-api/eslint.config.js:40:3

@@ -1,7 +1,0 @@
-PASS  plain nested  -> utilities=[] css="@layer cards {\n  .card {\n    padding: 2rem;\n  }\n}\n\n.after {\n  margin: 1px;\n}"
-PASS  utilities at top  -> utilities=["paint"] css=".card {\n  padding: 2rem;\n}"
-FAIL  utilities in layer  -> CSS_DIRECTIVE_ERROR: @utilities must be top-level
-FAIL  utilities in media  -> CSS_DIRECTIVE_ERROR: @utilities must be top-level
-FAIL  utilities in supports  -> CSS_DIRECTIVE_ERROR: @utilities must be top-level
-PASS  layer only, no utilities  -> utilities=[] css="@layer cards {\n  .card {\n    padding: 3rem;\n  }\n}\n\n.after {\n  margin: 1px;\n}"
-FAIL  full flatten shape  -> CSS_DIRECTIVE_ERROR: @utilities must be top-level

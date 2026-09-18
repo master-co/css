@@ -1,3 +1,0 @@
-   Compiling xtask v0.0.0 (/Users/aron/master/css/crates/xtask)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.61s
-     Running `target/debug/xtask codegen`

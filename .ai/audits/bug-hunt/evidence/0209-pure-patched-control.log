@@ -1,1 +1,0 @@
-{"patched":true,"control":true,"pureWebpack":true,"controlledInterleaving":true,"triggered":false,"events":[{"event":"compilation","errors":[]},{"event":"watch-registration","containsChild":true}],"missingChildReported":false,"result":"PASS"}

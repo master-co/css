@@ -1,3 +1,0 @@
-# 0178 交接歷史
-
-- 0178完成BH-0040：必要文件／CSS資源必須成功完整回應且符合MIME；404／403／500／206、錯誤或缺失MIME、本文截斷及逾時均拒絕整份報告，等待已啟動工作結束後彙整URL錯誤，不跳過失敗資源輸出偏低總量。成功結果保留status／Content-Type／redirect URL與量測限制。15個修前測試11FAIL，最終98tests／types／smoke通過；21HTTP控制（5接受／16拒絕）、24三瀏覽器樣式控制與原始8公開頁面45資產核對通過。382來源、151排除檔及5項產物／3CLI built檔核對完成。47historical／44fixed／3unresolved，65checked／10blocked；BH-0004／0029／0037、完整graph／host／Sass maps／virtual／watch／base／SSR／lifecycle／Nuxt／Webpack、4root gates／4原候選／native shutdown／WebKit namespace限制與批次0038身分暫停仍未完成。下一批0179驗證BH-0037 compiler／extraction診斷階段與未採樣指標；本批程序已結束，HEADbdd9f25b8，未commit/push，目標active。[0178](batches/0178-docs-css-resources.md)／[核對](evidence/0178-final-checks.json)；0177交接逐字見[歷史](progress-history-0178.md)。

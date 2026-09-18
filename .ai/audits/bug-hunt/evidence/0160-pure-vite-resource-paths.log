@@ -1,6 +1,0 @@
-{"name":"pixel.svg","status":200,"mime":"image/svg+xml","exactBytes":true,"body":"<svg xmlns=\"http://www.w3.org/2000/svg\"><title>pure</title></svg>"}
-{"name":"pixel space.svg","status":200,"mime":"image/svg+xml","exactBytes":true,"body":"<svg xmlns=\"http://www.w3.org/2000/svg\"><title>pure</title></svg>"}
-{"name":"pixel#part.svg","status":200,"mime":"text/html","exactBytes":false,"body":"<!doctype html>\n<script type=\"module\" src=\"/@vite/client\"></script>\n<title>fallback</title>"}
-{"name":"pixel?query.svg","status":200,"mime":"text/html","exactBytes":false,"body":"<!doctype html>\n<script type=\"module\" src=\"/@vite/client\"></script>\n<title>fallback</title>"}
-{"name":"pixel%value.svg","status":200,"mime":"image/svg+xml","exactBytes":true,"body":"<svg xmlns=\"http://www.w3.org/2000/svg\"><title>pure</title></svg>"}
-{"observations":5,"exactResourceResponses":3,"note":"Process exit only reports probe completion; individual resource outcomes are recorded above."}

@@ -1,7 +1,0 @@
-{
-  "root": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-n62ygbfc",
-  "package": "/private/var/folders/_b/768dhtz56ns54x1r867j67280000gn/T/master-next-copy-n62ygbfc/packages/next",
-  "scope": "Owned disposable package; no shared build or promotion",
-  "buildExitCode": 0,
-  "buildLog": "/Users/aron/master/css/.ai/audits/bug-hunt/evidence/0217-next-prior-copy-build.log"
-}

@@ -1,9 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-src/plugins/inline-stylesheet.ts(20,39): error TS2345: Argument of type '{ type: "asset"; name: string; }' is not assignable to parameter of type 'EmittedFile'.
-  Property 'source' is missing in type '{ type: "asset"; name: string; }' but required in type 'EmittedAsset'.
-src/plugins/inline-stylesheet.ts(37,16): error TS2339: Property 'setAssetSource' does not exist on type 'PluginContext'.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
-

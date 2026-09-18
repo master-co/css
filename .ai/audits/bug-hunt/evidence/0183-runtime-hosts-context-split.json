@@ -1,7 +1,0 @@
-{
-  "reason": "Final AI context check found current batch51135bytes above49152byte limit; historical reconciliation sections moved verbatim, original heading anchors retained as links",
-  "archive": ".ai/audits/bug-hunt/batches/0183-reference-reconciliation-history.md",
-  "verbatimContentSha256": "fd9810837a292bad960e164e11122c0ebe6c8a4602485d86a6193d6ee442e2e0",
-  "batchAfterBytes": 45112,
-  "productEffect": false
-}

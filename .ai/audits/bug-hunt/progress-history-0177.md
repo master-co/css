@@ -1,3 +1,0 @@
-# Preserved 0176 handoff
-
-- 0176完成BH-0041：改觀察真正完成的非空scanner呼叫，以正規化來源路徑去重，輸出scanned-sources清單；保留plugin factory物件身分，修復environment hook遺失計時。四fixture修前全部失敗、修後全部通過，CSS與未加觀察器建置逐位元相同；12個真實scanner邊界控制、22tests／types／smoke通過。完整build八變體100samples與startup八變體304samples均核對summary／CSS／壓縮大小／來源清單，現行宣告指標均有採樣；未排程的重複project import指標已移除，未補零。374來源、151排除檔案及5項產物與3個CLI built檔核對完成。47historical／42fixed／5unresolved，65checked／10blocked；BH-0004／0029／0037／0039／0040及全部graph／host／Sass maps／virtual／watch／base／SSR／lifecycle／Nuxt／Webpack、4root gates／4原候選／host shutdown限制與批次0038身分暫停仍未完成。下一批0177驗證BH-0039 specificity計量；本批程序已結束，HEADbdd9f25b8，未commit/push，目標active。[0176](batches/0176-benchmark-vite-observation.md)／[核對](evidence/0176-final-checks.json)；0175交接逐字见[歷史](progress-history-0176.md)。

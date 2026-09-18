@@ -1,3 +1,0 @@
-{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-hg72zpkl/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/startup-vite-diagnostic.mjs"]}
-{"fixtureId":"dashboard","status":0,"completedDiagnostic":true,"cssBytes":6102,"markers":[{"marker":"text-center","present":true}],"probes":33,"samples":53}
-{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-hg72zpkl"}

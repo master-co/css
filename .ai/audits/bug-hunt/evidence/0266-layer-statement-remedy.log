@@ -1,3 +1,0 @@
-{"id":"different-layers","authored":"blue","expandedNow":"red","expandedWithStatement":"blue","remedyWorks":true}
-{"id":"same-layer","authored":"blue","expandedNow":"red","expandedWithStatement":"red","remedyWorks":false}
-{"id":"external-last","authored":"blue","expandedNow":"red","expandedWithStatement":"n/a","remedyWorks":"n/a"}

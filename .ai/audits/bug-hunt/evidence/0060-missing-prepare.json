@@ -1,7 +1,0 @@
-{
-  "records": [],
-  "errors": [
-    "TypeError: Failed to fetch dynamically imported module: http://127.0.0.1:59618/_nuxt/@fs/Users/aron/master/css/node_modules/.pnpm/nuxt@4.5.2_@azure+identity@4.13.2_supports-color@10.2.2__@babel+plugin-syntax-jsx@7.29._c3e8266c2e3e241ef3dff2a883a9bcd2/node_modules/nuxt/dist/app/entry.js?v=3baca766",
-    "TimeoutError: page.waitForFunction: Timeout 30000ms exceeded."
-  ]
-}

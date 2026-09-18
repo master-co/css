@@ -1,1 +1,0 @@
-index.ts(1,56): error TS2322: Type '"invalid"' is not assignable to type '"static" | "runtime" | "pre-render" | "progressive" | undefined'.

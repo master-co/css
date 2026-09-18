@@ -1,8 +1,0 @@
-{
-  "packages/language-server/src/settings.ts": "5dc87ce4282d5f45dd6e2f008a4ca41ab18ac33f031050ed8371adb3d9495d17",
-  "packages/language-server/src/core.ts": "0ff1a88ba3ac7621cc21554ad654cd372294f34b532120caaad9f3ad30c0a4e1",
-  "packages/language-server/src/diagnostics.ts": "700d8a1e444781403106f5d5fe65506e0a7956bb105261d0819295d30d1255c8",
-  "packages/language-server/src/index.ts": "9f9e2dcc3afa2df5388a2fc6d64f6c5d8302ea3b300782711288f42e3ce4f34e",
-  "packages/language-server/src/server.ts": "d1c394e12f93ac3cfef51c74ce5b765cc9bd0752bb41d721de89b64ee0e39cf7",
-  "packages/language-server/src/utils/create-document.ts": "f2f4dacc78bd5e9e091f6c81d3a9341d3be9daa2363f33f225b9f90d1e7e864a"
-}

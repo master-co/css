@@ -1,8 +1,0 @@
-{
-  "binding/lint": 0,
-  "binding/type-check": 0,
-  "binding-wasm-compiler/lint": 0,
-  "binding-wasm-compiler/type-check": 0,
-  "compiler/lint": 0,
-  "compiler/type-check": 0
-}

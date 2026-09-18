@@ -1,7 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-../compiler/tests/bug-hunt-import-conditions.test.ts(45,51): error TS2741: Property 'baseManifest' is missing in type '{ preserveNativeCSS: true; classes: string[]; }' but required in type 'MasterCSSCompileManifestFileOptions'.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/cli
-

@@ -1,2 +1,0 @@
-{"binding":"native","nativeScanners":2,"nativeValidators":2,"initial":"PASS","configReset":"PASS","newSourceAfterReset":"PASS"}
-{"binding":"wasm","nativeScanners":0,"nativeValidators":0,"initial":"PASS","configReset":"PASS","newSourceAfterReset":"PASS"}

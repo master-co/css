@@ -1,9 +1,0 @@
-{
-  "benchmarks/package.json": "dc24d79b77c1a0caee366457ae8fee8f5492245522bdf97123bb3c505305734a",
-  "benchmarks/shared/compiler-diagnostics.ts": "ec11edc4c6e464b6b0d3137170fbf2679feb942ec8ac50fd439780aae528036c",
-  "benchmarks/compiler-diagnostics/compiler-diagnostics.bench.ts": "153e3c09c20fd30463dc7825d44b06fee1558bdc1472dcb1d82f481f3595e360",
-  "benchmarks/compiler-diagnostics/run-diagnostic.ts": "9aca2ee481997c32124d7b6fbeaeb7549d8572bcf8eeca28367a14cad7977f01",
-  "benchmarks/shared/static-build.ts": "bbcbd12f418133ae0570ddf2500ee49fa4a1e1c44c67b3be00aaa7b0cbe635d4",
-  "benchmarks/shared/runner.ts": "0052fe4ec210a3c8721f25ebd66c092243a082285aa4ea01ff0f8e0484a54883",
-  "benchmarks/fixtures/static.ts": "ebe40d5c6a96021b2c1a40c8bfce39f7138a620a997b0e776d1fefe2364d4724"
-}

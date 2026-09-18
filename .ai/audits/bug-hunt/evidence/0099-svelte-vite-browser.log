@@ -1,3 +1,0 @@
-{"browser":"chromium","actualSvelteViteStaticBuild":"PASS","conditionalElse":"PASS","emptyEach":"PASS","awaitPendingThenCatch":"PASS"}
-{"browser":"firefox","actualSvelteViteStaticBuild":"PASS","conditionalElse":"PASS","emptyEach":"PASS","awaitPendingThenCatch":"PASS"}
-{"browser":"webkit","actualSvelteViteStaticBuild":"PASS","conditionalElse":"PASS","emptyEach":"PASS","awaitPendingThenCatch":"PASS"}

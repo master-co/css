@@ -1,8 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-tests/bug-hunt-rendered-delivery.test.ts(105,19): error TS2339: Property 'generatedLine' does not exist on type 'SourceMapping | {}'.
-  Property 'generatedLine' does not exist on type '{}'.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/compiler
-

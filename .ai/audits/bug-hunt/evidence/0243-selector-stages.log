@@ -1,8 +1,0 @@
-file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-selector-map-stages.mjs:11
-nextRequire('next/dist/compiled/webpack/webpack').init()
-                                                  ^
-
-TypeError: nextRequire(...).init is not a function
-    at file:///Users/aron/master/css/.ai/audits/bug-hunt/repros/next-selector-map-stages.mjs:11:51
-
-Node.js v24.20.0

@@ -1,4 +1,0 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
-     Running `target/debug/xtask build-wasm runtime`
-    Finished `release` profile [optimized] target(s) in 0.08s
-Built /Users/aron/master/css/packages/binding-wasm-engine/artifacts

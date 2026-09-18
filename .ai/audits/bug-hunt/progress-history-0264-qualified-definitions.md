@@ -1,7 +1,0 @@
-# 0264 Previous checkpoint archive
-
-以下0263交接與受影響列逐字保留。
-
-- 0263：BH-0004低層`direct` flatten+compile的20項失敗化約為單一根因：Master definition directive被包在native at-rule裡就無法處理；`imports.rs`的flatten以文字包裹qualifier，必然把child的directive一起包進去，所以凡帶qualifier的import都踩到，無qualifier的2格通過。交付診斷修正`90eea4fd8`：container at-rule內的directive改丟既有`@X must be top-level`（`CSS_DIRECTIVE_ERROR`附來源範圍），取代無來源的`CSS_PRINT_ERROR: Printer error`，native與wasm一致；新增4項Rust測試與directives contract文件說明。cargo fmt／clippy／361tests、compiler 57files/428tests、28套件build、101/107 tasks PASS；既有失敗serial下與baseline逐項相同。BH-0004仍未解——真正修法是flatten時把child definitions留在wrapper外，屬完整graph遷移。63historical／62fixed／1unresolved。[證據](evidence/0263-final-checks.json)；[批次](batches/0263-bh-0004-contained-directives.md)；[前次](progress-history-0263-contained-directives.md)。
-
-| BH-0004 | P1 | 已確認／部分修正 | CSS import 展開丟失檔案邊界，條件、cascade及managed定義失真 | source-preservation選項已於0258交付（`preserveNativeSource`，不再是owned候選）。0263重新量測qualified矩陣60觀察：prepared-native／prepared-wasm／rendered-node各12/0 PASS，direct-native／direct-wasm各2P/10F，失敗全在帶qualifier的格；根因化約為「definition directive被native at-rule包住就無法處理」，源自`imports.rs`文字包裹qualifier時一併包進child的directive。0263交付診斷修正`90eea4fd8`（改丟`@X must be top-level`）但未修flatten。仍待：flatten時hoist child definitions、`external-import-order` 39項外部import、完整public／host graph遷移。[0263](batches/0263-bh-0004-contained-directives.md)；[0242](batches/0242-source-preservation-api.md) |

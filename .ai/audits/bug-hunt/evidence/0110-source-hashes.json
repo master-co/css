@@ -1,9 +1,0 @@
-{
-  "crates/mastercss-engine/src/lib.rs": "dcc4670f4965f1ddd3af1bdd8db2eb1256b8814bc99a5a1a01c2e6e1a24bae9f",
-  "crates/mastercss-engine/src/session.rs": "dfba209236fd71730ce6c6460c35ad2874b76e0fba83c7ce5f4e3b7a81ae829a",
-  "crates/mastercss-engine/src/stylesheet_animation.rs": "a0ba7cc06b7ad741745a80378141221121a6337587b59409a2ef27eb837ca08d",
-  "crates/mastercss-engine/src/stylesheet_resources.rs": "d32f9e56788f61ce532673ac492d30abe039b4ca3a0f371019b239cf721e33ef",
-  "crates/mastercss-render/tests/bug_hunt_variable_syntax.rs": "b9c670ca42abb086a1f261ffee6ef7823678ba13e56f3df3fe2f4672719a59ba",
-  "crates/mastercss-render/tests/bug_hunt_variable_syntax.json": "5c6b28dfd10ed406cedbcc4aed5b55cf12328b1378652431efba484aba3abc86",
-  ".ai/audits/bug-hunt/repros/stylesheet-variable-browser.mjs": "b01125dc19825a5bffd912701e37157adf8949ac1d9b564ee44c0fab9465a127"
-}

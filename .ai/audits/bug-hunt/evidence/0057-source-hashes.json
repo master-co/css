@@ -1,8 +1,0 @@
-{
-  "packages/vite/package.json": "ed2fb7ab195b4be6ce1f9dd3b19ba11d4eac4de9469300ef6088db8b0f5b0158",
-  "packages/vite/tests/dev-hmr.test.ts": "180bd9412caa14438b2b64a94552405ce94b5b0168f4d3e6f90327169dcd1a4f",
-  "packages/vite/src/core.ts": "1fc390336fb2cccfb5f2fb5cafda41c5400fbf410d41985c2a29b795fb6c6a67",
-  "packages/vite/src/plugins/style-entry-hmr.ts": "aa8ca96242d7b010419ac1ce028a0573a159a040c2db00c06df9e31392ca03b8",
-  "packages/vite/src/plugins/runtime-preload.ts": "ac479cc7d1fb58fbfec539cf744d9cde796ea01fc57abe03cb7c758d455dddd3",
-  "packages/vite/src/plugins/inject-runtime.ts": "1f141ba558ae5c954675a3aed6e9584f553addedad85b221b0673e6abe2129d7"
-}

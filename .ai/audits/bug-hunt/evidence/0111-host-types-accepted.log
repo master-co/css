@@ -1,8 +1,0 @@
-packages/css type-check$ tsc -b tsconfig.typecheck.json
-packages/css type-check: Done
-packages/compiler type-check$ tsc -b tsconfig.typecheck.json
-packages/runtime type-check$ tsc -b tsconfig.typecheck.json
-packages/runtime type-check: Done
-packages/compiler type-check: Done
-packages/server type-check$ tsc -b tsconfig.typecheck.json
-packages/server type-check: Done

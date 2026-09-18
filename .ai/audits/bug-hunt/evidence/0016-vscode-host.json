@@ -1,7 +1,0 @@
-{
-  "vscode": "1.135.0",
-  "active": true,
-  "first": "```css\n@layer theme {\n  :root {\n    --color-red-60: oklch(60.94% .2501 29.2);\n    --color-red-50: oklch(62.82% .25 28.6)\n  }\n  @media (prefers-color-scheme:light) {\n    :root {\n      --color-red: var(--color-red-60)\n    }\n  }\n  @media (prefers-color-scheme:dark) {\n    :root {\n      --color-red: var(--color-red-50)\n    }\n  }\n}\n@layer utilities {\n  .fg\\:red {\n    color: var(--color-red)\n  }\n}\n```",
-  "updated": "```css\n@layer utilities {\n  .block {\n    display: block\n  }\n}\n```",
-  "documentVersion": 2
-}

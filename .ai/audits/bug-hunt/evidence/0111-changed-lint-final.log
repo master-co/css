@@ -1,4 +1,0 @@
-packages/compiler lint$ eslint
-packages/runtime lint$ eslint
-packages/compiler lint: Done
-packages/runtime lint: Done

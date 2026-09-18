@@ -1,6 +1,0 @@
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
-     Running `target/debug/xtask build-wasm tooling`
-   Compiling mastercss-language v0.0.0 (/Users/aron/master/css/crates/mastercss-language)
-   Compiling mastercss-binding-wasm-tooling v0.0.0 (/Users/aron/master/css/crates/mastercss-binding-wasm-tooling)
-    Finished `release` profile [optimized] target(s) in 10.45s
-Built /Users/aron/master/css/packages/binding-wasm-tooling/artifacts

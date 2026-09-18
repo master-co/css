@@ -1,5 +1,0 @@
-{
-  "pid": 79993,
-  "session": 24712,
-  "reason": "Trace complete; server closed,scanner and renderer dispose recorded; referenced native async handle remains. Explicit diagnostic cleanup."
-}

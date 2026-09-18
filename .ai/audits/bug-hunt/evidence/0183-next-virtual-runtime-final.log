@@ -1,5 +1,0 @@
-{"backend":"--webpack","artifact":"packages/next/dist/index.js","sha256":"d24773de884d7bb82cc1b8ca5985f7a335a4d754a14db5035fff1c38af60e4f3"}
-{"browser":"chromium","pass":true,"wasmURL":"http://127.0.0.1:62890/_next/static/media/mastercss_binding_wasm_engine_bg.f2ffee59.wasm","heldMs":1431,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"browser":"firefox","pass":true,"wasmURL":"http://127.0.0.1:62902/_next/static/media/mastercss_binding_wasm_engine_bg.f2ffee59.wasm","heldMs":1669,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"browser":"webkit","pass":true,"wasmURL":"http://127.0.0.1:62932/_next/static/media/mastercss_binding_wasm_engine_bg.f2ffee59.wasm","heldMs":1256,"state":{"marker":"retained","padding":"144px","styles":[["@layer components {\n  .card { padding: 9rem; }\n}"]]},"errors":[],"diagnostics":[]}
-{"summary":true,"observations":3,"failures":0}

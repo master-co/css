@@ -1,7 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-tests/bug-hunt-active-graph.test.ts(7,34): error TS6307: File '/Users/aron/master/css/packages/webpack/tests/bug-hunt-watch-trace.ts' is not listed within the file list of project '/Users/aron/master/css/packages/webpack/tsconfig.typecheck.json'. Projects must list all files or use an 'include' pattern.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/webpack
-

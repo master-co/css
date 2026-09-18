@@ -1,5 +1,0 @@
-{"artifact":"packages/next/dist/index.js","sha256":"dbddb51bf42618364231b653c5e8b31005a3b95f84c0b428103692d71f75e6ad"}
-{"browser":"chromium","pass":false,"wasmURL":"http://127.0.0.1:59612/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1568,"state":{"marker":"retained","padding":"0px","styles":[[]]},"errors":[],"diagnostics":[],"failure":"page.waitForFunction: Timeout 4000ms exceeded."}
-{"browser":"firefox","pass":false,"wasmURL":"http://127.0.0.1:59634/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1564,"state":{"marker":"retained","padding":"0px","styles":[[]]},"errors":[],"diagnostics":[],"failure":"page.waitForFunction: Timeout 4000ms exceeded."}
-{"browser":"webkit","pass":false,"wasmURL":"http://127.0.0.1:59653/_next/static/media/mastercss_binding_wasm_engine_bg.2etllduz6ohae.wasm","heldMs":1584,"state":{"marker":"retained","padding":"0px","styles":[[]]},"errors":[],"diagnostics":[],"failure":"page.waitForFunction: Timeout 4000ms exceeded."}
-{"summary":true,"observations":3,"failures":3}

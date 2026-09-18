@@ -1,8 +1,0 @@
-{
-  "benchmarks/shared/build-diagnostics.ts": "2797fa688630e6e24387467882d237b96e3de9786a09a4a1315e73079c13505a",
-  "benchmarks/build-diagnostics/build-diagnostics.bench.ts": "04caaa2c1e6094cf4586d5e61a8d6ee352327f8a9ec419fe91de944b6420a7cc",
-  "benchmarks/build-diagnostics/run-diagnostic.ts": "9904963ad32b278032ace67f8e3509079d0c777880940805a16ff80aacd1c4a2",
-  "benchmarks/shared/static-build.ts": "bbcbd12f418133ae0570ddf2500ee49fa4a1e1c44c67b3be00aaa7b0cbe635d4",
-  "benchmarks/shared/runner.ts": "0052fe4ec210a3c8721f25ebd66c092243a082285aa4ea01ff0f8e0484a54883",
-  "benchmarks/shared/report.ts": "5ae3dc0ac1f055ca86a163513dc481898fcd597003aadb5f48e52a8b533573ef"
-}

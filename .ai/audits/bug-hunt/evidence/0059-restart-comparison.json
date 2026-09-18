@@ -1,8 +1,0 @@
-{
-  "manualRestartUnhandledESLintErrors": 0,
-  "settingRestartUnhandledESLintErrors": 1,
-  "sameHostWithoutESLint": true,
-  "hostExit": 0,
-  "source": "packages/vscode/src/extension.min.ts:423",
-  "nativeControlSource": "packages/vscode/src/extension.min.ts:388"
-}

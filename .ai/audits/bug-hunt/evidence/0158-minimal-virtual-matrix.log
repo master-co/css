@@ -1,8 +1,0 @@
-{"dependency": "0", "hot": "0", "optimizer": "on", "pid": 82568, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"dependency": "0", "hot": "0", "optimizer": "off", "pid": 82569, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"dependency": "0", "hot": "1", "optimizer": "on", "pid": 82570, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"dependency": "0", "hot": "1", "optimizer": "off", "pid": 82571, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"dependency": "1", "hot": "0", "optimizer": "on", "pid": 82572, "exitCode": 13, "terminatedAfterObservedLeak": false}
-{"dependency": "1", "hot": "0", "optimizer": "off", "pid": 82573, "exitCode": 0, "terminatedAfterObservedLeak": false}
-{"dependency": "1", "hot": "1", "optimizer": "on", "pid": 82574, "exitCode": 13, "terminatedAfterObservedLeak": false}
-{"dependency": "1", "hot": "1", "optimizer": "off", "pid": 82583, "exitCode": 0, "terminatedAfterObservedLeak": false}

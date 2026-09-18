@@ -1,7 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-src/utils/scoped-plugins.ts(69,63): error TS2698: Spread types may only be created from object types.
-[ELIFECYCLE] Command failed with exit code 2.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
-

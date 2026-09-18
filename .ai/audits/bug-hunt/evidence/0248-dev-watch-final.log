@@ -1,8 +1,0 @@
-{"scenario":"postcss-late-resource-dev-watch","pure":true,"steps":[{"browser":"chromium","step":"initial","pass":true},{"browser":"chromium","step":"svg-bytes-updated","pass":true,"urlChanged":true},{"browser":"chromium","step":"theme-value-updated","pass":true},{"browser":"chromium","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0
-{"scenario":"postcss-late-resource-dev-watch","pure":true,"steps":[{"browser":"webkit","step":"initial","pass":true},{"browser":"webkit","step":"svg-bytes-updated","pass":true,"urlChanged":true},{"browser":"webkit","step":"theme-value-updated","pass":true},{"browser":"webkit","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0
-{"scenario":"postcss-late-resource-dev-watch","pure":false,"steps":[{"browser":"chromium","step":"initial","pass":true},{"browser":"chromium","step":"svg-bytes-updated","pass":true,"urlChanged":true},{"browser":"chromium","step":"theme-value-updated","pass":true},{"browser":"chromium","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0
-{"scenario":"postcss-late-resource-dev-watch","pure":false,"steps":[{"browser":"webkit","step":"initial","pass":true},{"browser":"webkit","step":"svg-bytes-updated","pass":true,"urlChanged":true},{"browser":"webkit","step":"theme-value-updated","pass":true},{"browser":"webkit","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0

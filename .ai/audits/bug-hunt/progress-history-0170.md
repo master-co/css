@@ -1,3 +1,0 @@
-# Handoff before0170
-
-- 0169修復BH-0032：三個benchmark頁面產生器交付binary Wasm，三個HTTP server提供application/wasm；lifecycle／delivery新增raw/gzip/brotli指標，靜態模式為0。5tests、benchmarks types、report-smoke、36個三瀏覽器交付控制及6個progressive公開狀態控制PASS。原始lifecycle4／delivery16／progressive4變體報表完成；interaction／mutation／invalidation仍因舊runtime.progressive欄位誤判fallback而失敗，屬BH-0033。下一批0170修正BH-0033公開snapshot讀取、hydration／retention與原始報表guard，再續BH-0034等問題。47historical／36fixed／11unresolved、65checked／10blocked、4root gates／4原候選與host shutdown限制保留；BH-0004完整graph／Sass maps／virtual／watch／base／SSR／lifecycle及Nuxt/Webpack仍未完成；0038仍無身分確認。上輪ac24c0f96提交是有效進展，本輪未commit/push，目標active。既有snapshot及其他工作未改。[0169](batches/0169-benchmark-wasm-delivery.md)／[核對](evidence/0169-final-checks.json)；0168交接逐字见[歷史](progress-history-0169.md)。

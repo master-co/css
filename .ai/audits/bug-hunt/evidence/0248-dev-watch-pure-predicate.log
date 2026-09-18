@@ -1,4 +1,0 @@
-{"scenario":"postcss-late-resource-dev-watch","pure":true,"steps":[{"browser":"chromium","step":"initial","pass":false},{"browser":"chromium","step":"svg-bytes-updated","pass":false,"urlChanged":true},{"browser":"chromium","step":"theme-value-updated","pass":false},{"browser":"chromium","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0
-{"scenario":"postcss-late-resource-dev-watch","pure":true,"steps":[{"browser":"webkit","step":"initial","pass":false},{"browser":"webkit","step":"svg-bytes-updated","pass":false,"urlChanged":true},{"browser":"webkit","step":"theme-value-updated","pass":false},{"browser":"webkit","step":"theme-value-round-trip","pass":true}],"errors":[]}
-exit=0

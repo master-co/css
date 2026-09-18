@@ -1,8 +1,0 @@
-{
-  "unrelated_new_paths": [
-    "site/reference/editorial.ts",
-    "site/reference/syntax.ts",
-    "site/reference/types.ts"
-  ],
-  "reason": "Not created by audit commands; preserve and exclude from conclusions. First observed after binding staging."
-}

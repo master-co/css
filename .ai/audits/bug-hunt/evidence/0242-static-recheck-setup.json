@@ -1,5 +1,0 @@
-{
-  "archivedCache": ".ai/audits/bug-hunt/tmp/0242-static-export-failed-next",
-  "publishedEntryExists": true,
-  "reason": "Initial e2e reports missing stylesheet although the exact entry exists after build; preserve failed cache and test cold restart without deleting published assets."
-}

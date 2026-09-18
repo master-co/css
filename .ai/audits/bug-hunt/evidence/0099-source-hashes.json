@@ -1,5 +1,0 @@
-{
-  "packages/tooling/src/source/adapters/svelte.ts": "dfadf9015e2101ac23883258629346989ad06ec5f7f4bbd85b31457b03702ba6",
-  "packages/tooling/tests/source/bug-hunt-svelte-branches.test.ts": "8a689bb7dffdbeacd7aada3d5444324506ac243a31b28db37999ee0780036835",
-  ".ai/audits/bug-hunt/repros/svelte-branches-vite.mjs": "43912f25534ea5eeccb5a6d9fe9f718e8bfcb8103af51ed64edb4cb3bf1e5e77"
-}

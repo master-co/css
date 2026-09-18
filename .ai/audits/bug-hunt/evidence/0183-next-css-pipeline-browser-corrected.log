@@ -1,5 +1,0 @@
-{"artifact":"packages/next/dist/index.js","sha256":"65e57a3fce651f80a3bd82a3cc3285483d06988a75889e7e50fa15d7fcd79e81"}
-{"browser":"chromium","pass":true,"state":{"marker":"retained","manifest":"1","className":"card_card__zJjUJ","margin":"80px","padding":"64px"},"errors":[]}
-{"browser":"firefox","pass":true,"state":{"marker":"retained","manifest":"1","className":"card_card__zJjUJ","margin":"80px","padding":"64px"},"errors":[]}
-{"browser":"webkit","pass":true,"state":{"marker":"retained","manifest":"1","className":"card_card__zJjUJ","margin":"80px","padding":"64px"},"errors":[]}
-{"summary":true,"observations":3,"failures":0,"cssSupportDisabled":false}

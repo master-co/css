@@ -1,7 +1,0 @@
-{"browser":"chromium","accept":false,"before":0.9954160093440428,"after":0.634040211892699,"result":"PASS"}
-{"browser":"firefox","accept":false,"before":0.70007401007179,"after":0.7354267856542456,"result":"PASS"}
-{"browser":"webkit","accept":false,"before":0.6321979239120897,"after":0.7106214315236891,"result":"PASS"}
-{"browser":"chromium","accept":true,"before":0.29978746401023193,"after":0.29978746401023193,"result":"PASS"}
-{"browser":"firefox","accept":true,"before":0.4348002390265261,"after":0.4348002390265261,"result":"PASS"}
-{"browser":"webkit","accept":true,"before":0.1517275010953909,"after":0.1517275010953909,"result":"PASS"}
-{"observations":6,"failures":0}

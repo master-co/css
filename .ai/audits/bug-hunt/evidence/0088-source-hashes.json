@@ -1,8 +1,0 @@
-{
-  "examples/angular/server.ts": "a27c3391cd118d2e6fa1228e4ff1e2bf95c88746ccae471c9190b1422d5798f9",
-  "examples/angular/angular.json": "a5d289ab81f3fcfe049d23f8644af2a3d5eea18f7e2951c9d2fe1690c21b96fe",
-  "examples/eslint/index.css": "ca6fc76f177ea97a81b109b5df01c850bee2894dca8d4a802b8487dce0fff61b",
-  "examples/webpack/src/index.html": "bef7f20e8c42afe2231dc4d998609174e6c3edd9603bca4ff2ede9d8dabe7237",
-  "packages/nuxt/src/module.ts": "6bf3f4407e3e11e72d1db6100d6093d1fc4e68533e28ba1b710c8261c212578b",
-  "packages/nuxt/tests/bug-hunt-theme.test.ts": "972b54e8c97715f854dd1d61b394cfaa43f58405ed23d58b73c43ba85d1f46fe"
-}

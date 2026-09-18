@@ -1,8 +1,0 @@
-$ tsc -b tsconfig.typecheck.json
-src/utils/module-sources.ts(5,59): error TS2339: Property 'prepare' does not exist on type 'HostPlugin'.
-src/utils/module-sources.ts(20,17): error TS2883: The inferred type of 'createModuleSourceProjection' cannot be named without a reference to 'Plugin' from '.pnpm/postcss@8.5.28/node_modules/postcss/lib/postcss'. This is likely not portable. A type annotation is necessary.
-[ELIFECYCLE] Command failed with exit code 1.
-Error: ERR_PNPM_RECURSIVE_RUN_FIRST_FAIL
-
-  × "pnpm recursive run" failed in /Users/aron/master/css/packages/vite
-

@@ -1,7 +1,0 @@
-{"cwd": "/Users/aron/master/css/tmp/master-css-bh-isolated-5msonufe/benchmarks", "command": ["node", "/Users/aron/master/css/scripts/with-typescript-tooling-compat.mjs", "env", "BH_EXPECT=missing", "node", "--import", "tsx", "/Users/aron/master/css/.ai/audits/bug-hunt/repros/benchmark-wasm-delivery.mjs"]}
-{"engine":"chromium","browser":"153.0.8010.12","page":"delivery-master-runtime","expected":"missing","actual":{"ready":false,"rules":0,"cssBytes":0,"probe":"start","hidden":false},"responses":[{"status":404}],"errors":[],"pass":true}
-{"engine":"chromium","browser":"153.0.8010.12","page":"interaction-master-runtime","expected":"missing","actual":{"ready":false,"rules":0,"cssBytes":0,"probe":null,"hidden":false},"responses":[{"status":404}],"errors":[],"pass":true}
-{"engine":"chromium","browser":"153.0.8010.12","page":"delivery-master-progressive","expected":"missing","actual":{"ready":false,"rules":0,"cssBytes":0,"probe":"center","hidden":false},"responses":[{"status":404}],"errors":[],"pass":true}
-{"engine":"chromium","browser":"153.0.8010.12","page":"interaction-master-progressive","expected":"missing","actual":{"ready":false,"rules":0,"cssBytes":0,"probe":null,"hidden":false},"responses":[{"status":404}],"errors":[],"pass":true}
-{"sizes":{"raw":929757,"gzip":286205,"brotli":218273},"sha256":"4b8ea61c6e5e34fe620efa1435278a34adb3620ec800c097d1f7b8a5abbe3318","pass":true}
-{"exit_code": 0, "cleanup": "/Users/aron/master/css/tmp/master-css-bh-isolated-5msonufe"}
