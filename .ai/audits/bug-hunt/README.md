@@ -266,9 +266,10 @@
 - [0253 Compiler manifest merge](batches/0253-compiler-manifest-merge.md)：manifest合併key索引；theme／components回歸基準FAIL→PASS，套件PASS。
 - [0254 Ledger archive](batches/0254-ledger-archive-manifest-residual.md)：帳本頭部歸檔；manifest殘餘分類為常數成本。
 - [0255 Turbopack PostCSS characterization](batches/0255-next-turbopack-postcss-characterization.md)：Turbopack契約差異分類；BH-0063 Module動畫失效已確認，未修復。
+- [0256 Turbopack Module animation candidate](batches/0256-next-turbopack-module-animation.md)：BH-0063 owned候選修復雙bundler雙瀏覽器PASS；promote範圍為整套候選，未交付。
 
 ## 目前交接點
 
-- 0255：Turbopack實際host對照7個PostCSS情境：首輪嚴格檔名比對是confound（Turbopack側檔名為`card.module.css.module.css`），寬鬆比對後確認user PostCSS作用在Turbopack側模組、combined-root與late resource契約不存在；無plugin的`module-animation`證實Turbopack Module引用preset animation時名稱被作用域化且無`@keyframes`，新增BH-0063（P1未修復）。63historical／58fixed／5unresolved。[證據](evidence/0255-final-checks.json)；[批次](batches/0255-next-turbopack-postcss-characterization.md)；[前次](progress-history-0255-next-turbopack-postcss.md)。
+- 0256：在owned副本完成BH-0063候選修復：`nextGeneratedGlobalAnimations`從Master generatedCSS取出preset keyframes名稱，Turbopack無host PostCSS分支以`globalAnimations`建立module graph，`:local(fade)`還原為global `fade`且`@keyframes fade`交付；`module-animation` Turbopack baseline FAIL→fixed／recheck PASS，Webpack對照全PASS（Chromium／WebKit）。剩餘generated／imported-keyframe與global-context FAIL歸類為Turbopack combined-root PostCSS契約差異，不新增finding。promote等於交付0232–0256整套13檔約800行候選，使用者決定先不promote；BH-0063改為owned候選修復，63historical／58fixed／5unresolved不變。[證據](evidence/0256-final-checks.json)；[批次](batches/0256-next-turbopack-module-animation.md)；[前次](progress-history-0256-next-turbopack-animation.md)。
 
 - 較早的交接、提交核對與歸檔指標已逐字保存於 [歷史紀錄（0254整理）](progress-history-0254-ledger-heads.md)；目前狀態以本檔最新批次與原批次為準。

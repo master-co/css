@@ -1,0 +1,22 @@
+▲ Next.js 16.3.4 (Turbopack)
+✓ Running next.config.mjs took 74ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 1396ms
+  Running TypeScript ...
+  Finished TypeScript in 6ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 44ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"module-animation","bundler":"turbopack","pure":false,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card-module-css-module__xUdsuW__direct card_direct__vAL_y","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"fade","animationFrames":[{"offset":0,"easing":"linear","composite":"auto","opacity":"0","computedOffset":0},{"offset":1,"easing":"linear","composite":"auto","opacity":"1","computedOffset":1}],"matchingRules":[{"selector":".card_direct__vAL_y","declarations":"color: rgb(18, 52, 86); border-top: 7px solid red; animation: 1s linear 0s infinite normal none running fade;"},{"selector":".card-module-css-module__xUdsuW__direct","declarations":""}],"pass":true},{"browser":"webkit","id":"probe","phase":"initial","classes":"card-module-css-module__xUdsuW__direct card_direct__vAL_y","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"fade","animationFrames":[{"composite":"auto","easing":"linear","offset":0,"computedOffset":0,"opacity":"0"},{"composite":"auto","easing":"linear","offset":1,"computedOffset":1,"opacity":"1"}],"matchingRules":[{"selector":".card_direct__vAL_y","declarations":"color: rgb(18, 52, 86); border-top: 7px solid red; animation: 1s linear infinite fade;"},{"selector":".card-module-css-module__xUdsuW__direct","declarations":""}],"pass":true}]}

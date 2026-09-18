@@ -1,0 +1,29 @@
+▲ Next.js 16.3.4 (webpack)
+✓ Running next.config.mjs took 77ms
+- Experiments (use with caution):
+  · cpus: 1
+
+  Creating an optimized production build ...
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+<w> [webpack.cache.PackFileCacheStrategy/webpack.FileSystemInfo] Parsing of /Users/aron/master/css/packages/tooling/dist/source/adapters/optional-peer.js for build dependencies failed at 'import(specifier)'.
+<w> Build dependencies behind this expression are ignored and might cause incorrect cache invalidation.
+✓ Compiled successfully in 3.4s
+  Running TypeScript ...
+  Finished TypeScript in 1ms ...
+  Collecting page data using 1 worker ...
+  Generating static pages using 1 worker (0/3) ...
+✓ Generating static pages using 1 worker (3/3) in 59ms
+  Finalizing page optimization ...
+  Collecting build traces ...
+
+Route (app)
+┌ ○ /
+└ ○ /_not-found
+
+
+○  (Static)  prerendered as static content
+
+{"scenario":"module-animation","bundler":"webpack","pure":false,"build":{"code":0,"signal":null,"timedOut":false,"exported":true},"observations":[{"browser":"chromium","id":"probe","phase":"initial","classes":"card_direct__vAL_y","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"fade","animationFrames":[{"offset":0,"easing":"linear","composite":"auto","opacity":"0","computedOffset":0},{"offset":1,"easing":"linear","composite":"auto","opacity":"1","computedOffset":1}],"matchingRules":[],"pass":false},{"browser":"webkit","id":"probe","phase":"initial","classes":"card_direct__vAL_y","color":"rgb(18, 52, 86)","border":"7px","margin":"0px","padding":"0px","origin":"","background":"none","animation":"fade","animationFrames":[{"composite":"auto","easing":"linear","offset":0,"computedOffset":0,"opacity":"0"},{"composite":"auto","easing":"linear","offset":1,"computedOffset":1,"opacity":"1"}],"matchingRules":[],"pass":false}]}
