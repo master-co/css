@@ -134,7 +134,9 @@ function resolvePackageRoot(packageName: string, fromFile: string, projectDir?: 
   try {
     packageEntryFile = resolver.resolve(packageName)
   } catch {
-    packageEntryFile = require.resolve(packageName)
+    // Node resolves this package at runtime; the ignore comment keeps bundlers from
+    // treating the dynamic specifier as a build-time dependency.
+    packageEntryFile = require.resolve(/* webpackIgnore: true */ packageName)
   }
   return findPackageRoot(packageEntryFile, packageName)
 }
