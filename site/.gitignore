@@ -3,6 +3,7 @@
 .categories
 .pages.json
 .generated
+.master
 
 # dependencies
 /node_modules
