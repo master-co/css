@@ -79,4 +79,4 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block. `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`. If directive syntax, semantics, lowering, or extraction changes, update `site/app/[locale]/guide/directives/content.mdx`.
+Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block. `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`. If directive syntax, semantics, lowering, or extraction changes, update `site/app/[locale]/guide/directives/contract.mdx`.

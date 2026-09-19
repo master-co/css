@@ -21,7 +21,7 @@ Use this when explaining, testing, or changing generated CSS.
 ## Escalate When
 
 - Engine semantics are involved: read `.ai/data-flows.md`, `.ai/testing-policy.md`, and `packages/css/AI.md`.
-- Compiler/directive lowering is involved: read `packages/compiler/AI.md` and update `site/app/[locale]/guide/directives/content.mdx` if user-facing directive behavior changes.
+- Compiler/directive lowering is involved: read `packages/compiler/AI.md` and update `site/app/[locale]/guide/directives/contract.mdx` if user-facing directive behavior changes.
 - Static extraction, runtime hydration, language, or ESLint behavior sees the output: read those package `AI.md` files.
 
 ## Required Explanation
