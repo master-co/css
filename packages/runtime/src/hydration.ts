@@ -64,7 +64,10 @@ function resolveExternalHydrationManifestURL(root: Document | ShadowRoot, source
 
 async function importHydrationManifest(url: string): Promise<MasterCSSHydrationManifest> {
   try {
-    const value: unknown = (await import(/* @vite-ignore */ url, { with: { type: 'json' } })).default
+    // The manifest URL is only known at runtime, and the JSON module import is deliberate:
+    // it stays within script-src so strict CSP without connect-src still hydrates. The ignore
+    // comments keep bundlers from trying to resolve the specifier at build time.
+    const value: unknown = (await import(/* @vite-ignore */ /* webpackIgnore: true */ url, { with: { type: 'json' } })).default
     const hydrationManifest = validateHydrationManifest(value)
     if (hydrationManifest) return hydrationManifest
     throw invalidHydrationManifest(`Invalid Master CSS hydration manifest loaded from ${url}.`)
