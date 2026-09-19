@@ -4,6 +4,10 @@ import Body from '~/internal/layouts/body'
 
 export const dynamic = 'force-static'
 export const revalidate = false
+// `[locale]` matches every single-segment request, so an unknown top-level path such as
+// /sw.js resolves to this page. The default is unsupported with `output: export`, and it
+// leaves those requests answering 500 rather than serving the 404 page.
+export const dynamicParams = false
 
 export async function generateStaticParams() {
   return i18n.locales.map((locale: any) => ({ locale }))
