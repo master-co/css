@@ -84,6 +84,17 @@ export interface MasterCSSEngineTransition {
   mutations: MasterCSSEngineMutation[]
 }
 
+export interface MasterCSSEngineExecutionState {
+  classes: {
+    className: string
+    references: {
+      layer: import('@master/css-schema/manifest').MasterCSSManifestUtilityLayerName
+      key: string
+    }[]
+  }[]
+  resources: MasterCSSEngineResources
+}
+
 export interface MasterCSSEngineSnapshot {
   version: 1
   rules: import('@master/css-schema/hydration-manifest').MasterCSSHydrationRule[]

@@ -1,3 +1,4 @@
+import { analyzeDocument } from '../document-analysis'
 import type { MasterCSSLanguageService } from '../core'
 import {
   SEMANTIC_TOKEN_MODIFIERS,
@@ -8,18 +9,6 @@ import type { TextDocument } from 'vscode-languageserver-textdocument'
 import type { SemanticTokens } from 'vscode-languageserver-protocol'
 
 const CSS_LANGUAGE_IDS = new Set(['css', 'scss'])
-
-function analyzeDocument(service: MasterCSSLanguageService, document: TextDocument) {
-  return service.session.analyzeDocument({
-    source: document.getText(),
-    languageId: document.languageId,
-    settings: {
-      classAttributes: service.settings.classAttributes,
-      classFunctions: service.settings.classFunctions,
-      classDeclarations: service.settings.classDeclarations
-    }
-  })
-}
 
 function encodeSemanticTokens(document: TextDocument, tokens: readonly SemanticTokenItem[]): number[] {
   const data: number[] = []

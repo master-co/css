@@ -36,6 +36,9 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::new(),
             theme_variable_names: Vec::new(),
+            theme_text: None,
+            theme_dirty: false,
+            theme_batch_depth: 0,
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
             native_declaration_support: HashMap::new(),
@@ -43,6 +46,7 @@ impl EngineSession {
         };
         session.initialize_variable_resources();
         session.initialize_animation_resources();
+        session.sync_theme_text();
         Ok(session)
     }
 
@@ -71,17 +75,18 @@ impl EngineSession {
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
-        self.ensure_active()?;
-        let mut mutations = Vec::new();
-        for class_name in class_names {
-            let class_name = class_name.as_ref();
-            if class_name.is_empty() || self.class_rules.contains_key(class_name) {
-                continue;
+        self.with_theme_batch(|session| {
+            let mut mutations = Vec::new();
+            for class_name in class_names {
+                let class_name = class_name.as_ref();
+                if class_name.is_empty() || session.class_rules.contains_key(class_name) {
+                    continue;
+                }
+                let generated = session.generate_class_rules_with_mode(class_name, mode);
+                session.insert_generated_class_rules(class_name, generated, &mut mutations);
             }
-            let generated = self.generate_class_rules_with_mode(class_name, mode);
-            self.insert_generated_class_rules(class_name, generated, &mut mutations);
-        }
-        Ok(EngineTransitionIr::new(mutations))
+            Ok(EngineTransitionIr::new(mutations))
+        })
     }
 
     pub(crate) fn insert_generated_class_rules(
@@ -102,7 +107,7 @@ impl EngineSession {
                 class_rule_keys.push(reference);
                 continue;
             }
-            self.register_rule_variables(&rule.ir.variable_names, mutations);
+            self.register_rule_variables(&rule.ir.variable_names);
             let layer_rules = &mut self.layers[layer_index(layer)];
             let index = layer_rules
                 .binary_search_by(|existing| compare_stored_rules(existing, &rule))
@@ -135,44 +140,46 @@ impl EngineSession {
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
     {
-        self.ensure_active()?;
-        let mut mutations = Vec::new();
-        for class_name in class_names {
-            let class_name = class_name.as_ref();
-            let Some(keys) = self.class_rules.remove(class_name) else {
-                continue;
-            };
-            for (layer, key) in keys.into_iter().rev() {
-                let reference = (layer, key.clone());
-                let should_remove = match self.rule_counts.get_mut(&reference) {
-                    Some(count) if *count > 1 => {
-                        *count -= 1;
-                        false
+        self.with_theme_batch(|session| {
+            let mut mutations = Vec::new();
+            for class_name in class_names {
+                let class_name = class_name.as_ref();
+                let Some(keys) = session.class_rules.remove(class_name) else {
+                    continue;
+                };
+                for (layer, key) in keys.into_iter().rev() {
+                    let reference = (layer, key.clone());
+                    let should_remove = match session.rule_counts.get_mut(&reference) {
+                        Some(count) if *count > 1 => {
+                            *count -= 1;
+                            false
+                        }
+                        Some(_) => true,
+                        None => false,
+                    };
+                    if !should_remove {
+                        continue;
                     }
-                    Some(_) => true,
-                    None => false,
-                };
-                if !should_remove {
-                    continue;
+                    session.rule_counts.remove(&reference);
+                    let rules = &mut session.layers[layer_index(layer)];
+                    let Some(index) = rules.iter().position(|rule| rule.ir.key == key) else {
+                        continue;
+                    };
+                    let rule = rules.remove(index);
+                    mutations.push(RuleMutationIr::Delete {
+                        target: RuleTarget::from(layer),
+                        index: index as u32,
+                        key,
+                    });
+                    session.unregister_rule_variables(&rule.ir.variable_names);
+                    session.unregister_rule_animations(&rule.ir.animation_names, &mut mutations);
                 }
-                self.rule_counts.remove(&reference);
-                let rules = &mut self.layers[layer_index(layer)];
-                let Some(index) = rules.iter().position(|rule| rule.ir.key == key) else {
-                    continue;
-                };
-                let rule = rules.remove(index);
-                mutations.push(RuleMutationIr::Delete {
-                    target: RuleTarget::from(layer),
-                    index: index as u32,
-                    key,
-                });
-                self.unregister_rule_variables(&rule.ir.variable_names, &mut mutations);
-                self.unregister_rule_animations(&rule.ir.animation_names, &mut mutations);
+                session
+                    .class_order
+                    .retain(|connected_class_name| connected_class_name != class_name);
             }
-            self.class_order
-                .retain(|connected_class_name| connected_class_name != class_name);
-        }
-        Ok(EngineTransitionIr::new(mutations))
+            Ok(EngineTransitionIr::new(mutations))
+        })
     }
 
     pub fn native_declaration_candidates<I, S>(
@@ -222,44 +229,46 @@ impl EngineSession {
         &mut self,
         native_css: &str,
     ) -> Result<EngineTransitionIr, EngineError> {
-        self.ensure_active()?;
-        let mut mutations = Vec::new();
-        let (native_animation_names, animation_declarations, stylesheet_variables) =
-            stylesheet_resource_syntax(native_css);
-        for name in &native_animation_names {
-            let count = self.emitted_globals.animation_count(name);
-            self.emitted_globals
-                .animations
-                .insert(name.clone(), count.saturating_add(1));
-            if let Some(index) = self
-                .animation_names
-                .iter()
-                .position(|animation_name| animation_name == name)
-            {
-                self.animation_names.remove(index);
-                mutations.push(RuleMutationIr::Delete {
-                    target: RuleTarget::Keyframes,
-                    index: index as u32,
-                    key: name.clone(),
-                });
+        self.with_theme_batch(|session| {
+            let mut mutations = Vec::new();
+            let (native_animation_names, animation_declarations, stylesheet_variables) =
+                stylesheet_resource_syntax(native_css);
+            for name in &native_animation_names {
+                let count = session.emitted_globals.animation_count(name);
+                session
+                    .emitted_globals
+                    .animations
+                    .insert(name.clone(), count.saturating_add(1));
+                if let Some(index) = session
+                    .animation_names
+                    .iter()
+                    .position(|animation_name| animation_name == name)
+                {
+                    session.animation_names.remove(index);
+                    mutations.push(RuleMutationIr::Delete {
+                        target: RuleTarget::Keyframes,
+                        index: index as u32,
+                        key: name.clone(),
+                    });
+                }
             }
-        }
 
-        let variable_names = stylesheet_variables
-            .into_iter()
-            .filter(|name| self.compiled.compiled_variables.contains_key(name))
-            .collect::<Vec<_>>();
-        for variable_name in &variable_names {
-            self.register_variable(variable_name, &mut mutations, &mut HashSet::new());
-        }
-
-        let animation_names =
-            collect_stylesheet_animation_names(&animation_declarations, &self.compiled)
+            let variable_names = stylesheet_variables
                 .into_iter()
-                .filter(|name| !native_animation_names.contains(name))
+                .filter(|name| session.compiled.compiled_variables.contains_key(name))
                 .collect::<Vec<_>>();
-        self.register_rule_animations(&animation_names, &mut mutations);
-        Ok(EngineTransitionIr::new(mutations))
+            for variable_name in &variable_names {
+                session.register_variable(variable_name, &mut HashSet::new());
+            }
+
+            let animation_names =
+                collect_stylesheet_animation_names(&animation_declarations, &session.compiled)
+                    .into_iter()
+                    .filter(|name| !native_animation_names.contains(name))
+                    .collect::<Vec<_>>();
+            session.register_rule_animations(&animation_names, &mut mutations);
+            Ok(EngineTransitionIr::new(mutations))
+        })
     }
 
     pub fn emitted_globals_snapshot(&self) -> Result<EmittedGlobals, EngineError> {
@@ -324,69 +333,55 @@ impl EngineSession {
         compiled: ManifestProjection,
         emitted_globals: EmittedGlobals,
     ) -> Result<EngineTransitionIr, EngineError> {
-        let connected_classes = self.class_order.clone();
-        let mut mutations = Vec::new();
-        for layer in UTILITY_LAYERS.into_iter().rev() {
-            let rules = &mut self.layers[layer_index(layer)];
-            for index in (0..rules.len()).rev() {
-                let rule = rules.remove(index);
-                mutations.push(RuleMutationIr::Delete {
-                    target: layer.into(),
-                    index: index as u32,
-                    key: rule.ir.key,
-                });
+        self.with_theme_batch(|session| {
+            let connected_classes = session.class_order.clone();
+            let mut mutations = Vec::new();
+            for layer in UTILITY_LAYERS.into_iter().rev() {
+                let rules = &mut session.layers[layer_index(layer)];
+                for index in (0..rules.len()).rev() {
+                    let rule = rules.remove(index);
+                    mutations.push(RuleMutationIr::Delete {
+                        target: layer.into(),
+                        index: index as u32,
+                        key: rule.ir.key,
+                    });
+                }
             }
-        }
-        for index in (0..self.animation_names.len()).rev() {
-            let name = self.animation_names[index].clone();
-            mutations.push(RuleMutationIr::Delete {
-                target: RuleTarget::Keyframes,
-                index: index as u32,
-                key: name,
-            });
-        }
-        let previous_theme_text = self.theme_rule_text();
-        self.variable_counts.clear();
-        self.theme_variable_names.clear();
-        self.animation_counts.clear();
-        self.animation_names.clear();
-        if previous_theme_text.is_some() {
-            mutations.push(RuleMutationIr::Delete {
-                target: RuleTarget::Theme,
-                index: 0,
-                key: "theme:root".into(),
-            });
-        }
-        self.compiled = compiled;
-        self.manifest = manifest;
-        self.emitted_globals = emitted_globals;
-        self.class_rules.clear();
-        self.class_order.clear();
-        self.rule_counts.clear();
-        self.initialize_variable_resources();
-        self.initialize_animation_resources();
-        if let Some(text) = self.theme_rule_text() {
-            mutations.push(RuleMutationIr::Insert {
-                target: RuleTarget::Theme,
-                index: 0,
-                key: "theme:root".into(),
-                text,
-                rule: None,
-            });
-        }
-        for (index, name) in self.animation_names.iter().enumerate() {
-            if let Some(text) = self.keyframe_text(name) {
-                mutations.push(RuleMutationIr::Insert {
+            for index in (0..session.animation_names.len()).rev() {
+                let name = session.animation_names[index].clone();
+                mutations.push(RuleMutationIr::Delete {
                     target: RuleTarget::Keyframes,
                     index: index as u32,
-                    key: name.clone(),
-                    text,
-                    rule: None,
+                    key: name,
                 });
             }
-        }
-        mutations.extend(self.ensure_class_rules(connected_classes)?.mutations);
-        Ok(EngineTransitionIr::new(mutations))
+            session.theme_dirty = true;
+            session.variable_counts.clear();
+            session.theme_variable_names.clear();
+            session.animation_counts.clear();
+            session.animation_names.clear();
+            session.compiled = compiled;
+            session.manifest = manifest;
+            session.emitted_globals = emitted_globals;
+            session.class_rules.clear();
+            session.class_order.clear();
+            session.rule_counts.clear();
+            session.initialize_variable_resources();
+            session.initialize_animation_resources();
+            for (index, name) in session.animation_names.iter().enumerate() {
+                if let Some(text) = session.keyframe_text(name) {
+                    mutations.push(RuleMutationIr::Insert {
+                        target: RuleTarget::Keyframes,
+                        index: index as u32,
+                        key: name.clone(),
+                        text,
+                        rule: None,
+                    });
+                }
+            }
+            mutations.extend(session.ensure_class_rules(connected_classes)?.mutations);
+            Ok(EngineTransitionIr::new(mutations))
+        })
     }
 
     pub fn snapshot(&self) -> Result<EngineSnapshotIr, EngineError> {
@@ -440,6 +435,7 @@ impl EngineSession {
         for (class_name, generated) in cached_classes {
             subset.insert_generated_class_rules(&class_name, generated, &mut mutations);
         }
+        subset.sync_theme_text();
         subset.snapshot()
     }
 
@@ -763,6 +759,8 @@ impl EngineSession {
         self.animation_counts.clear();
         self.animation_names.clear();
         self.native_declaration_support.clear();
+        self.theme_text = None;
+        self.theme_dirty = false;
         self.disposed = true;
     }
 
@@ -777,6 +775,9 @@ impl EngineSession {
             emitted_globals,
             variable_counts: HashMap::new(),
             theme_variable_names: Vec::new(),
+            theme_text: None,
+            theme_dirty: false,
+            theme_batch_depth: 0,
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
             native_declaration_support: self.native_declaration_support.clone(),
@@ -784,6 +785,7 @@ impl EngineSession {
         };
         session.initialize_variable_resources();
         session.initialize_animation_resources();
+        session.sync_theme_text();
         session
     }
 

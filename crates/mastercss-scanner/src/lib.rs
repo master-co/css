@@ -51,6 +51,12 @@ pub struct ScannerStateIr {
 }
 
 #[derive(Debug)]
+struct CachedSource {
+    content: String,
+    candidates: Vec<String>,
+}
+
+#[derive(Debug)]
 pub struct ScannerSession {
     manifest_json: String,
     engine: EngineSession,
@@ -64,7 +70,7 @@ pub struct ScannerSession {
     native_index: HashSet<String>,
     used_native_classes: Vec<String>,
     used_native_index: HashSet<String>,
-    source_contents: HashMap<String, String>,
+    source_contents: HashMap<String, CachedSource>,
 }
 
 impl ScannerSession {
@@ -87,6 +93,9 @@ impl ScannerSession {
     }
 
     pub fn scan(&mut self, source: &str, content: &str) -> Result<ScannerUpdateIr, EngineError> {
+        if self.cached_source_candidates(source, content).is_some() {
+            return Ok(ScannerUpdateIr::unchanged(true));
+        }
         let candidates = extract_source_candidates(source, content);
         self.scan_candidates(source, content, candidates, &[], &[], &HashSet::new())
     }
@@ -111,20 +120,111 @@ impl ScannerSession {
         native_support: &[bool],
         invalid_generated_classes: &HashSet<String>,
     ) -> Result<ScannerUpdateIr, EngineError> {
+        let support_candidates = filter_blocklisted_candidates(&extracted_candidates, blocklist);
+        self.commit_candidates(
+            source,
+            content,
+            extracted_candidates,
+            blocklist,
+            &support_candidates,
+            native_support,
+            invalid_generated_classes,
+        )
+    }
+
+    /// Candidates that still require host validation, in commit order.
+    pub fn pending_candidates(
+        &self,
+        candidates: &[String],
+        blocklist: &[CssDirectiveBlocklistEntry],
+    ) -> Vec<String> {
+        let mut seen = HashSet::new();
+        candidates
+            .iter()
+            .filter(|candidate| {
+                !self.latent_index.contains(*candidate)
+                    && !is_css_class_blocklisted(candidate, blocklist)
+                    && seen.insert(candidate.as_str())
+            })
+            .cloned()
+            .collect()
+    }
+
+    pub fn cached_source_candidates(&self, source: &str, content: &str) -> Option<&[String]> {
+        if source.is_empty() || content.is_empty() {
+            return None;
+        }
+        self.source_contents
+            .get(source)
+            .filter(|cached| cached.content == content)
+            .map(|cached| cached.candidates.as_slice())
+    }
+
+    /// Commit support resolved for `pending_candidates`, rather than the full input.
+    pub fn scan_pending_candidates(
+        &mut self,
+        source: &str,
+        content: &str,
+        extracted_candidates: Vec<String>,
+        blocklist: &[CssDirectiveBlocklistEntry],
+        native_support: &[bool],
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<ScannerUpdateIr, EngineError> {
+        let support_candidates = self.pending_candidates(&extracted_candidates, blocklist);
+        self.commit_candidates(
+            source,
+            content,
+            extracted_candidates,
+            blocklist,
+            &support_candidates,
+            native_support,
+            invalid_generated_classes,
+        )
+    }
+
+    #[allow(clippy::too_many_arguments)]
+    fn commit_candidates(
+        &mut self,
+        source: &str,
+        content: &str,
+        extracted_candidates: Vec<String>,
+        blocklist: &[CssDirectiveBlocklistEntry],
+        support_candidates: &[String],
+        native_support: &[bool],
+        invalid_generated_classes: &HashSet<String>,
+    ) -> Result<ScannerUpdateIr, EngineError> {
         if content.is_empty() {
             return Ok(ScannerUpdateIr::unchanged(false));
         }
-        if !source.is_empty()
-            && self
-                .source_contents
-                .get(source)
-                .is_some_and(|previous| previous == content)
-        {
+        if self.cached_source_candidates(source, content).is_some() {
             return Ok(ScannerUpdateIr::unchanged(true));
         }
         if !source.is_empty() {
-            self.source_contents
-                .insert(source.to_owned(), content.to_owned());
+            self.source_contents.insert(
+                source.to_owned(),
+                CachedSource {
+                    content: content.to_owned(),
+                    candidates: extracted_candidates.clone(),
+                },
+            );
+        }
+
+        // Resolve slices before insertion changes native candidate counts. The
+        // query and commit must use the same ordered validation input.
+        let mut native_support_by_class = HashMap::new();
+        let mut native_support_offset = 0_usize;
+        for candidate in support_candidates {
+            let count = self
+                .engine
+                .native_declaration_candidates([candidate])?
+                .len();
+            let end = native_support_offset
+                .saturating_add(count)
+                .min(native_support.len());
+            native_support_by_class
+                .entry(candidate.clone())
+                .or_insert(native_support_offset..end);
+            native_support_offset = end;
         }
 
         let candidates = self.collect_candidates(extracted_candidates);
@@ -136,7 +236,6 @@ impl ScannerSession {
         let mut invalid_classes = Vec::new();
         let mut used_native_classes = Vec::new();
         let mut mutations = Vec::new();
-        let mut native_support_offset: usize = 0;
         for candidate in &candidates {
             if is_css_class_blocklisted(candidate, blocklist) {
                 continue;
@@ -150,16 +249,10 @@ impl ScannerSession {
             if self.valid_index.contains(candidate) || self.invalid_index.contains(candidate) {
                 continue;
             }
-            let native_candidate_count = self
-                .engine
-                .native_declaration_candidates([candidate])?
-                .len();
-            let native_support_end = native_support_offset
-                .saturating_add(native_candidate_count)
-                .min(native_support.len());
-            let candidate_native_support =
-                &native_support[native_support_offset..native_support_end];
-            native_support_offset = native_support_end;
+            let candidate_native_support = native_support_by_class
+                .get(candidate)
+                .map(|range| &native_support[range.clone()])
+                .unwrap_or_default();
             if invalid_generated_classes.contains(candidate) {
                 self.invalid_index.insert(candidate.clone());
                 self.invalid_classes.push(candidate.clone());

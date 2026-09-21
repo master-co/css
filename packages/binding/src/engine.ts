@@ -19,6 +19,7 @@ export {
   MASTER_CSS_ENGINE_TRANSITION_VERSION,
   type MasterCSSEngineAnimationResource,
   type MasterCSSEngineDeleteMutation,
+  type MasterCSSEngineExecutionState,
   type MasterCSSEngineInspection,
   type MasterCSSEngineInsertMutation,
   type MasterCSSEngineMutation,
@@ -75,6 +76,7 @@ export function createNativeEngineSession(
       registerEmittedGlobals: (emittedGlobals) =>
         parse(session.registerEmittedGlobals(JSON.stringify(emittedGlobals))),
       refresh: (manifest) => parse(session.refresh(serializeMasterCSSManifest(manifest))),
+      executionState: (classNames) => parse(session.executionState([...classNames])),
       inspect: (className) => parse(session.inspect(className)),
       snapshot: () => parse(session.snapshot()),
       dispose,

@@ -114,6 +114,12 @@ impl WasmEngineSession {
         serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
     }
 
+    #[wasm_bindgen(js_name = executionState)]
+    pub fn execution_state(&self, class_names: Vec<String>) -> Result<JsValue, JsValue> {
+        let state = self.inner.execution_state(class_names).map_err(js_error)?;
+        serde_wasm_bindgen::to_value(&state).map_err(serialization_error)
+    }
+
     pub fn snapshot(&self) -> Result<JsValue, JsValue> {
         let snapshot = self.inner.snapshot().map_err(js_error)?;
         serde_wasm_bindgen::to_value(&snapshot).map_err(serialization_error)

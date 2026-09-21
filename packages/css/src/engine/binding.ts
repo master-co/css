@@ -4,7 +4,7 @@ import {
 import type { MasterCSSBinding, MasterCSSResolvedBinding } from '@master/css-binding'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
+import type { MasterCSSManifest, MasterCSSManifestUtilityLayerName } from '@master/css-schema/manifest'
 
 export type MasterCSSRuleTarget =
   | 'theme'
@@ -59,6 +59,17 @@ export interface MasterCSSEngineResources {
   readonly animations: readonly MasterCSSEngineAnimationResource[]
 }
 
+export interface MasterCSSEngineExecutionState {
+  readonly classes: readonly {
+    readonly className: string
+    readonly references: readonly {
+      readonly layer: MasterCSSManifestUtilityLayerName
+      readonly key: string
+    }[]
+  }[]
+  readonly resources: MasterCSSEngineResources
+}
+
 export interface MasterCSSEngineSnapshot {
   readonly version: 1
   readonly rules: readonly MasterCSSHydrationRule[]
@@ -98,6 +109,7 @@ export interface MasterCSSEngine extends Disposable {
    */
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
+  executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
   dispose(): void
@@ -108,6 +120,7 @@ export interface BindingEngineSession {
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
+  executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
   dispose(): void

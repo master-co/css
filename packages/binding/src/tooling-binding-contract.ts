@@ -67,7 +67,15 @@ export interface MasterCSSValidatorBindingSession extends MasterCSSToolingBindin
   ): MasterCSSValidatorBatch
 }
 
+export interface MasterCSSLanguagePreparedDocument {
+  readonly id: number
+  readonly nativeCandidates: readonly MasterCSSNativeDeclarationCandidate[]
+}
+
 export interface MasterCSSLanguageBindingSession extends MasterCSSToolingBindingSession {
+  prepareDocument(request: MasterCSSLanguageDocumentRequest): MasterCSSLanguagePreparedDocument
+  finishDocument(id: number, nativeSupport: readonly boolean[]): MasterCSSLanguageDocument
+  cancelDocument(id: number): void
   analyzeDocument(request: MasterCSSLanguageDocumentRequest): MasterCSSLanguageDocument
   formatDirectives(request: MasterCSSLanguageFormatRequest): MasterCSSLanguageFormatEdits
   nativeDeclarationCandidates(
@@ -131,6 +139,7 @@ export interface MasterCSSLintBindingSession extends MasterCSSToolingBindingSess
 
 export interface MasterCSSScannerBindingSession extends MasterCSSToolingBindingSession {
   scan(source: string, content: string): MasterCSSScannerUpdate
+  cachedSourceCandidates(source: string, content: string): readonly string[] | null
   extractCandidates(source: string, content: string): readonly string[]
   nativeDeclarationCandidates(
     candidates: readonly string[]

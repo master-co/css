@@ -1,6 +1,7 @@
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
+  MasterCSSEngineExecutionState,
   MasterCSSEngineInspection,
   MasterCSSEngineSnapshot,
   MasterCSSEngineTransition,
@@ -50,6 +51,7 @@ export interface MasterCSSEngineBindingSession extends Disposable {
   deleteClassRules(classNames: readonly string[]): MasterCSSEngineTransition
   registerEmittedGlobals(emittedGlobals: MasterCSSEmittedGlobals): MasterCSSEngineTransition
   refresh(manifest: MasterCSSManifest): MasterCSSEngineTransition
+  executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
   inspect(className: string): MasterCSSEngineInspection
   snapshot(): MasterCSSEngineSnapshot
   dispose(): void

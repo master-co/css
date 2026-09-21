@@ -120,6 +120,35 @@ impl NodeLanguageSession {
     }
 
     #[napi]
+    pub fn prepare_document(&mut self, request_json: String) -> Result<String> {
+        self.inner.discard_prepared_document();
+        let request =
+            serde_json::from_str::<mastercss_language::AnalyzeDocumentRequestIr>(&request_json)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+        to_json(
+            &self
+                .inner
+                .prepare_document(&request)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn finish_document(&mut self, id: u32, native_support: Vec<bool>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .finish_document(id, &native_support)
+                .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?,
+        )
+    }
+
+    #[napi]
+    pub fn cancel_document(&mut self, id: u32) {
+        self.inner.cancel_document(id);
+    }
+
+    #[napi]
     pub fn analyze_document(&self, request_json: String) -> Result<String> {
         let request =
             serde_json::from_str::<mastercss_language::AnalyzeDocumentRequestIr>(&request_json)

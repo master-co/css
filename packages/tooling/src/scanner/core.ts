@@ -322,7 +322,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
   private insertSafelist() {
     if (this.options.safelist?.length) {
       this.getBindingSession().ensureClasses([...this.options.safelist])
-      this.syncBindingState()
+      this.bindingState = undefined
       if (this.options.verbose) {
         logger.success(`${this.options.safelist.length} fixed classes inserted ${this.options.safelist.join(', ')}`)
       }
@@ -344,7 +344,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       ? await adapter.extract({ source, content })
       : this.getBindingSession().extractCandidates(source, content)
     const latentClasses = this.getBindingSession().collectCandidates(extractedClasses)
-    this.syncBindingState()
+    this.bindingState = undefined
     return latentClasses
   }
 
@@ -363,21 +363,30 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
     if (!content) {
       return { changed: false, candidates: [] }
     }
+    const time = process.hrtime()
+    const session = this.getBindingSession()
+    const cachedCandidates = session.cachedSourceCandidates(source, content)
+    if (cachedCandidates !== null) {
+      return { changed: false, candidates: cachedCandidates }
+    }
     const adapter = this.resolveSourceAdapter(source)
     const extractedClasses = adapter
       ? await adapter.extract({ source, content })
       : this.getBindingSession().extractCandidates(source, content)
-    const session = this.getBindingSession()
     const blocklist = serializeScannerBlocklist(this.options.blocklist)
     const validationCandidates = session.filterCandidates(extractedClasses, blocklist)
-    const nativeCandidates = session.nativeDeclarationCandidates(validationCandidates)
-    const nativeSupport = resolveNativeSupport(nativeCandidates)
-    const validationBatch = session.generateValidationBatch(validationCandidates, nativeSupport)
-    const invalidGeneratedClasses = session.invalidGeneratedClasses(
-      validationBatch,
-      resolveGeneratedRuleSupport(validationBatch)
-    )
-    const time = process.hrtime()
+    let nativeSupport: boolean[] = []
+    let invalidGeneratedClasses: string[] = []
+    if (validationCandidates.length) {
+      nativeSupport = resolveNativeSupport(session.nativeDeclarationCandidates(validationCandidates))
+      const validationBatch = session.generateValidationBatch(validationCandidates, nativeSupport)
+      invalidGeneratedClasses = session.invalidGeneratedClasses(
+        validationBatch,
+        resolveGeneratedRuleSupport(validationBatch)
+      )
+    }
+    // A new source changes cachedSources even when it contributes no new class.
+    this.bindingState = undefined
     const update = session.scanCandidates(
       source,
       content,
@@ -386,7 +395,6 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       nativeSupport,
       invalidGeneratedClasses
     )
-    this.syncBindingState()
     const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
     if (changedClasses.length) {
       if (this.options.verbose) {
@@ -436,7 +444,7 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
 
   registerNativeClasses(classNames: string[]) {
     const changed = this.getBindingSession().registerNativeClasses(classNames)
-    this.syncBindingState()
+    this.bindingState = undefined
     if (changed) this.emit('change')
     return changed
   }

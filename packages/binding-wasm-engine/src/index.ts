@@ -18,6 +18,7 @@ interface GeneratedEngineSession {
   ensureClassRulesWithNativeSupport(classNames: string[], supported: Uint8Array): MasterCSSWasmEngineTransition
   refresh(manifestJSON: string): MasterCSSWasmEngineTransition
   snapshot(): MasterCSSWasmEngineSnapshot
+  executionState(classNames: string[]): MasterCSSWasmEngineExecutionState
   inspect(className: string): MasterCSSWasmEngineInspection
   dispose(): void
 }
@@ -62,6 +63,11 @@ export interface MasterCSSWasmEngineSnapshot {
   readonly rules: readonly unknown[]
   readonly resources: unknown
   readonly text: string
+}
+
+export interface MasterCSSWasmEngineExecutionState {
+  readonly classes: readonly unknown[]
+  readonly resources: unknown
 }
 
 export interface MasterCSSWasmEngineInspection {
@@ -202,6 +208,10 @@ export async function createWasmEngineSession(
     snapshot() {
       assertActive()
       return session.snapshot()
+    },
+    executionState(classNames: string[]) {
+      assertActive()
+      return session.executionState(classNames)
     },
     inspect(className: string) {
       assertActive()

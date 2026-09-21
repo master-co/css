@@ -40,6 +40,10 @@ interface MasterCSSWasmEngineProviderSession {
     readonly resources: unknown
     readonly text: string
   }
+  executionState(classNames: string[]): {
+    readonly classes: readonly unknown[]
+    readonly resources: unknown
+  }
   inspect(className: string): {
     readonly version: number
     readonly className: string

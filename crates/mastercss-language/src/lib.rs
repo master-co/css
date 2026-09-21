@@ -5,8 +5,8 @@ use mastercss_engine::{
     EngineError, EngineSession, UtilityMatcherType,
 };
 use mastercss_lexer::{
-    CssDirectiveRange, byte_to_utf16_offset, collect_class_list_token_ranges,
-    find_css_directive_ranges, utf16_len, utf16_to_byte_offset,
+    CssDirectiveRange, collect_class_list_token_ranges, find_css_directive_ranges, utf16_len,
+    utf16_to_byte_offset,
 };
 use mastercss_schema::{
     GeneratedRuleIr, LANGUAGE_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
@@ -398,9 +398,15 @@ pub struct LanguageSession {
     manifest_json: String,
     native_support_by_class: HashMap<String, bool>,
     variable_names: HashSet<String>,
+    prepared_document: Option<analysis::PreparedDocument>,
+    next_document_id: u32,
 }
 
+mod analysis;
 mod color;
+mod document_index;
+pub use analysis::PreparedDocumentIr;
+use document_index::DocumentIndex;
 mod document;
 mod formatting;
 mod positions;

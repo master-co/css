@@ -2,6 +2,7 @@ import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
 import type {
   MasterCSSBindingInfo,
+  MasterCSSEngineExecutionState,
   MasterCSSEngineInspection,
   MasterCSSEngineSnapshot,
   MasterCSSEngineTransition,
@@ -25,6 +26,7 @@ export interface MasterCSSEngineWasmProviderContract {
     deleteClassRules(classNames: string[]): MasterCSSEngineTransition
     registerEmittedGlobals(emittedGlobalsJSON: string): MasterCSSEngineTransition
     refresh(manifestJSON: string): MasterCSSEngineTransition
+    executionState(classNames: readonly string[]): MasterCSSEngineExecutionState
     inspect(className: string): MasterCSSEngineInspection
     snapshot(): MasterCSSEngineSnapshot
     dispose(): void
@@ -92,6 +94,7 @@ export async function createWasmEngineBindingSession(
     registerEmittedGlobals: (emittedGlobals) =>
       session.registerEmittedGlobals(JSON.stringify(emittedGlobals)) as MasterCSSEngineTransition,
     refresh: (manifest) => session.refresh(serializeMasterCSSManifest(manifest)) as MasterCSSEngineTransition,
+    executionState: (classNames) => session.executionState([...classNames]) as MasterCSSEngineExecutionState,
     inspect: (className) => session.inspect(className) as MasterCSSEngineInspection,
     snapshot: () => session.snapshot() as MasterCSSEngineSnapshot
   }

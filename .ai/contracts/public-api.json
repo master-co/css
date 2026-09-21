@@ -498,6 +498,7 @@
           "MasterCSSEngineBinding",
           "MasterCSSEngineBindingOptions",
           "MasterCSSEngineDeleteMutation",
+          "MasterCSSEngineExecutionState",
           "MasterCSSEngineInsertMutation",
           "MasterCSSEngineInspection",
           "MasterCSSEngineMutation",
@@ -531,7 +532,7 @@
         ],
         "./client": []
       },
-      "surface": "c2329ebf6a1c55dc"
+      "surface": "d63451756bc2efde"
     },
     "@master/css-svelte-addon": {
       "directory": "css-sv",

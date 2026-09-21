@@ -98,6 +98,15 @@ export function loadNativeToolingBinding(
         const session = new nativeBinding.LanguageSession(serializeMasterCSSManifest(manifest))
         const dispose = disposable(session)
         return {
+          prepareDocument: (input) => parse(session.prepareDocument(request(input))),
+          finishDocument: (id, support) => {
+            try {
+              return parse(session.finishDocument(id, [...support]))
+            } finally {
+              session.cancelDocument(id)
+            }
+          },
+          cancelDocument: (id) => session.cancelDocument(id),
           analyzeDocument: (input) => parse(session.analyzeDocument(request(input))),
           formatDirectives: (input) => parse(session.formatDirectives(request(input))),
           nativeDeclarationCandidates: (classNames) =>
@@ -176,6 +185,7 @@ export function loadNativeToolingBinding(
         const dispose = disposable(session)
         return {
           scan: (source, content) => parse(session.scan(source, content)),
+          cachedSourceCandidates: (source, content) => parse(session.cachedSourceCandidates(source, content)),
           extractCandidates: (source, content) => session.extractCandidates(source, content),
           nativeDeclarationCandidates: (candidates) =>
             parse(session.nativeDeclarationCandidates([...candidates])),

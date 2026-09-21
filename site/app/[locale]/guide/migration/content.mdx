@@ -92,3 +92,34 @@ Review the migration as code and as UI.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between utilities, theme tokens, and component classes.
 - [Code linting](/guide/code-linting) for validating Master CSS classes in source code.
 - [Language Service](/guide/language-service) for editor highlighting and completion.
+
+## Custom engine and binding migration
+
+Binding ABI 7 adds `executionState(classNames)` to `MasterCSSEngine` and its binding session. Upgrade the native artifact and all Wasm providers together; the loaders reject ABI 6 artifacts. Manifest v1, hydration v1, document analysis v2 and transition v1 retain their data shapes.
+
+If your custom engine forwards operations to an official engine, forward the new method too. This complete wrapper illustrates the required surface:
+
+```ts
+import type { MasterCSSEngine } from '@master/css'
+
+function wrapEngine(inner: MasterCSSEngine): MasterCSSEngine {
+  return {
+    binding: inner.binding,
+    ensureClassRules: names => inner.ensureClassRules(names),
+    deleteClassRules: names => inner.deleteClassRules(names),
+    registerEmittedGlobals: globals => inner.registerEmittedGlobals(globals),
+    refresh: manifest => inner.refresh(manifest),
+    executionState: names => inner.executionState(names),
+    inspect: name => inner.inspect(name),
+    snapshot: () => inner.snapshot(),
+    dispose: () => inner.dispose(),
+    [Symbol.dispose]: () => inner.dispose()
+  }
+}
+```
+
+An independent implementation must read its stored class-to-rule references and resource counts, return an immutable result, and return empty references for classes that have not been ensured. Reimplementing this method through repeated `inspect()` calls or a full `snapshot()` recreates the overhead this API removes. See [engine state for custom hosts](/guide/rendering-modes#engine-state-for-custom-hosts) for the result contract.
+
+Tooling binding implementers must also provide the session-scoped document prepare/finish/cancel flow and scanner content-cache query. Scanner validation now uses the pending, blocklist-filtered candidates returned by its session; commit must consume native support in that same order. Reset the scanner after changing its manifest or extraction settings.
+
+Transition consumers should replay the returned operations without depending on intermediate theme updates: each outermost batch now emits at most one theme delete and one theme insert, placed before utility and keyframe operations. Final CSS, cascade order and resource reference counts remain unchanged.

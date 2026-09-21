@@ -33,6 +33,7 @@ export interface BindingScannerState {
 
 export interface BindingScannerSession {
   readonly binding: 'native' | 'wasm'
+  cachedSourceCandidates(source: string, content: string): readonly string[] | null
   extractCandidates(source: string, content: string): string[]
   collectCandidates(candidates: string[]): string[]
   filterCandidates(candidates: string[], blocklist: BindingScannerBlocklist[]): string[]
@@ -72,6 +73,7 @@ function bindScannerSession(
 ): BindingScannerSession {
   return {
     binding,
+    cachedSourceCandidates: (source, content) => session.cachedSourceCandidates(source, content),
     extractCandidates: (source, content) => [...session.extractCandidates(source, content)],
     scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses) {
       return session.scanCandidates(

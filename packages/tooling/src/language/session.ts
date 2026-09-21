@@ -19,6 +19,9 @@ import type {
 } from './contracts'
 
 interface BindingLanguageSession {
+  prepareDocument(request: unknown): { readonly id: number, readonly nativeCandidates: readonly MasterCSSNativeDeclarationCandidate[] }
+  finishDocument(id: number, nativeSupport: boolean[]): unknown
+  cancelDocument(id: number): void
   analyzeDocument(request: unknown): unknown
   formatDirectives(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown
@@ -92,11 +95,17 @@ export function bindLanguageSession(
     binding,
     analyzeDocument(request) {
       assertActive()
-      const initial = validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
-      const classNames = initial.classPositions.map(({ token }) => token)
-      if (!classNames.length) return initial
-      session.classifyClassNames(classNames, collectNativeSupport(classNames))
-      return validate(parse<MasterCSSDocumentAnalysis>(session.analyzeDocument(request)))
+      const prepared = session.prepareDocument(request)
+      try {
+        const support = prepared.nativeCandidates.map((candidate) => {
+          const supported = matchesLanguageServiceNativeDeclaration(candidate)
+          nativeSupportCache.set(candidate.className, supported)
+          return supported
+        })
+        return validate(parse<MasterCSSDocumentAnalysis>(session.finishDocument(prepared.id, support)))
+      } finally {
+        session.cancelDocument(prepared.id)
+      }
     },
     formatDirectives(request) {
       assertActive()

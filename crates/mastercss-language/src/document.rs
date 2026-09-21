@@ -1,7 +1,17 @@
 use super::*;
 
+#[cfg(test)]
 pub(crate) fn collect_document_contexts(
     source: &str,
+    language_id: &str,
+    settings: &LanguageDocumentSettingsIr,
+) -> Vec<ClassListContextIr> {
+    collect_document_contexts_indexed(source, &DocumentIndex::new(source), language_id, settings)
+}
+
+pub(crate) fn collect_document_contexts_indexed(
+    source: &str,
+    positions: &DocumentIndex,
     language_id: &str,
     settings: &LanguageDocumentSettingsIr,
 ) -> Vec<ClassListContextIr> {
@@ -12,21 +22,21 @@ pub(crate) fn collect_document_contexts(
     ) {
         return vec![ClassListContextIr {
             start: 0,
-            end: utf16_len(source),
+            end: positions.utf16_len(),
             unescape: Vec::new(),
         }];
     }
     let mut contexts = Vec::new();
     if matches!(language_id.as_str(), "css" | "scss" | "less") {
-        collect_css_directive_contexts(source, 0, &mut contexts);
+        collect_css_directive_contexts(source, positions, 0..source.len(), &mut contexts);
     } else if matches!(language_id.as_str(), "vue" | "svelte" | "astro") {
-        collect_sfc_style_contexts(source, &mut contexts);
+        collect_sfc_style_contexts(source, positions, &mut contexts);
     }
     if matches!(
         language_id.as_str(),
         "html" | "angular-html" | "vue" | "svelte" | "astro" | "markdown" | "mdx"
     ) {
-        collect_markup_attribute_contexts(source, &mut contexts, settings);
+        collect_markup_attribute_contexts(source, positions, &mut contexts, settings);
     }
     if matches!(
         language_id.as_str(),
@@ -39,14 +49,15 @@ pub(crate) fn collect_document_contexts(
             | "svelte"
             | "astro"
     ) {
-        collect_script_string_contexts(source, &mut contexts, settings);
-        collect_braced_class_bindings(source, &mut contexts);
+        collect_script_string_contexts(source, positions, &mut contexts, settings);
+        collect_braced_class_bindings(source, positions, &mut contexts);
     }
     contexts
 }
 
 pub(crate) fn push_byte_context(
     source: &str,
+    positions: &DocumentIndex,
     contexts: &mut Vec<ClassListContextIr>,
     start: usize,
     end: usize,
@@ -55,10 +66,8 @@ pub(crate) fn push_byte_context(
     if start > end || end > source.len() {
         return;
     }
-    let (Some(start), Some(end)) = (
-        byte_to_utf16_offset(source, start),
-        byte_to_utf16_offset(source, end),
-    ) else {
+    let (Some(start), Some(end)) = (positions.byte_to_utf16(start), positions.byte_to_utf16(end))
+    else {
         return;
     };
     contexts.push(ClassListContextIr {
@@ -70,6 +79,7 @@ pub(crate) fn push_byte_context(
 
 pub(crate) fn collect_markup_attribute_contexts(
     source: &str,
+    positions: &DocumentIndex,
     contexts: &mut Vec<ClassListContextIr>,
     settings: &LanguageDocumentSettingsIr,
 ) {
@@ -140,10 +150,11 @@ pub(crate) fn collect_markup_attribute_contexts(
                 name.as_str(),
                 ":class" | "v-bind:class" | "[class]" | "[classname]" | "[ngclass]"
             ) {
-                collect_nested_string_contexts(source, index + 1, end, contexts);
+                collect_nested_string_contexts(source, positions, index + 1, end, contexts);
             } else {
                 push_byte_context(
                     source,
+                    positions,
                     contexts,
                     index + 1,
                     end,
@@ -157,6 +168,7 @@ pub(crate) fn collect_markup_attribute_contexts(
 
 pub(crate) fn collect_script_string_contexts(
     source: &str,
+    positions: &DocumentIndex,
     contexts: &mut Vec<ClassListContextIr>,
     settings: &LanguageDocumentSettingsIr,
 ) {
@@ -301,6 +313,7 @@ pub(crate) fn collect_script_string_contexts(
         if likely_class && !interpolation && end < bytes.len() {
             push_byte_context(
                 source,
+                positions,
                 contexts,
                 index + 1,
                 end,
@@ -313,6 +326,7 @@ pub(crate) fn collect_script_string_contexts(
 
 pub(crate) fn collect_nested_string_contexts(
     source: &str,
+    positions: &DocumentIndex,
     start: usize,
     end: usize,
     contexts: &mut Vec<ClassListContextIr>,
@@ -343,6 +357,7 @@ pub(crate) fn collect_nested_string_contexts(
                 if segment_start < cursor {
                     push_byte_context(
                         source,
+                        positions,
                         contexts,
                         segment_start,
                         cursor,
@@ -361,7 +376,13 @@ pub(crate) fn collect_nested_string_contexts(
                     expression_end += 1;
                 }
                 let inner_end = expression_end.saturating_sub(1);
-                collect_nested_string_contexts(source, expression_start, inner_end, contexts);
+                collect_nested_string_contexts(
+                    source,
+                    positions,
+                    expression_start,
+                    inner_end,
+                    contexts,
+                );
                 cursor = expression_end;
                 segment_start = cursor;
                 continue;
@@ -370,6 +391,7 @@ pub(crate) fn collect_nested_string_contexts(
                 if segment_start <= cursor {
                     push_byte_context(
                         source,
+                        positions,
                         contexts,
                         segment_start,
                         cursor,
@@ -385,7 +407,11 @@ pub(crate) fn collect_nested_string_contexts(
     }
 }
 
-pub(crate) fn collect_braced_class_bindings(source: &str, contexts: &mut Vec<ClassListContextIr>) {
+pub(crate) fn collect_braced_class_bindings(
+    source: &str,
+    positions: &DocumentIndex,
+    contexts: &mut Vec<ClassListContextIr>,
+) {
     let lower = source.to_ascii_lowercase();
     for name in ["class", "classname", "class:list"] {
         let mut cursor = 0;
@@ -425,7 +451,13 @@ pub(crate) fn collect_braced_class_bindings(source: &str, contexts: &mut Vec<Cla
                 }
                 end += 1;
             }
-            collect_nested_string_contexts(source, expression + 1, end.saturating_sub(1), contexts);
+            collect_nested_string_contexts(
+                source,
+                positions,
+                expression + 1,
+                end.saturating_sub(1),
+                contexts,
+            );
             cursor = end;
         }
     }
@@ -433,19 +465,22 @@ pub(crate) fn collect_braced_class_bindings(source: &str, contexts: &mut Vec<Cla
 
 pub(crate) fn collect_css_directive_contexts(
     source: &str,
-    offset: u32,
+    positions: &DocumentIndex,
+    region: std::ops::Range<usize>,
     contexts: &mut Vec<ClassListContextIr>,
 ) {
-    for directive in find_css_directive_ranges(source) {
+    let offset = positions.byte_to_utf16(region.start).unwrap();
+    for directive in find_css_directive_ranges(&source[region]) {
         if directive.name == "compose" {
             if directive.block_range.is_some() || !directive.quoted_string_ranges.is_empty() {
                 continue;
             }
-            let Some(mut start) = utf16_to_byte_offset(source, directive.prelude_range.start)
+            let Some(mut start) = positions.utf16_to_byte(offset + directive.prelude_range.start)
             else {
                 continue;
             };
-            let Some(mut end) = utf16_to_byte_offset(source, directive.prelude_range.end) else {
+            let Some(mut end) = positions.utf16_to_byte(offset + directive.prelude_range.end)
+            else {
                 continue;
             };
             while start < end && source.as_bytes()[start].is_ascii_whitespace() {
@@ -454,15 +489,15 @@ pub(crate) fn collect_css_directive_contexts(
             while end > start && source.as_bytes()[end - 1].is_ascii_whitespace() {
                 end -= 1;
             }
-            let Some(start) = byte_to_utf16_offset(source, start) else {
+            let Some(start) = positions.byte_to_utf16(start) else {
                 continue;
             };
-            let Some(end) = byte_to_utf16_offset(source, end) else {
+            let Some(end) = positions.byte_to_utf16(end) else {
                 continue;
             };
             contexts.push(ClassListContextIr {
-                start: offset + start,
-                end: offset + end,
+                start,
+                end,
                 unescape: Vec::new(),
             });
         } else if directive.name == "safelist" {
@@ -477,7 +512,11 @@ pub(crate) fn collect_css_directive_contexts(
     }
 }
 
-pub(crate) fn collect_sfc_style_contexts(source: &str, contexts: &mut Vec<ClassListContextIr>) {
+pub(crate) fn collect_sfc_style_contexts(
+    source: &str,
+    positions: &DocumentIndex,
+    contexts: &mut Vec<ClassListContextIr>,
+) {
     let lower = source.to_ascii_lowercase();
     let mut cursor = 0;
     while let Some(relative_open) = lower[cursor..].find("<style") {
@@ -490,10 +529,7 @@ pub(crate) fn collect_sfc_style_contexts(source: &str, contexts: &mut Vec<ClassL
             break;
         };
         let body_end = body_start + relative_close;
-        let Some(offset) = byte_to_utf16_offset(source, body_start) else {
-            break;
-        };
-        collect_css_directive_contexts(&source[body_start..body_end], offset, contexts);
+        collect_css_directive_contexts(source, positions, body_start..body_end, contexts);
         cursor = body_end + "</style>".len();
     }
 }

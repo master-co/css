@@ -11,7 +11,10 @@ interface GeneratedToolingWasmModule {
   extractAstroClasses(source: string, content: string): string[]
   createInspectionReport(input: unknown): unknown
   ToolingLanguageSession: new (manifestJSON: string) => {
-    analyzeDocument(request: unknown): unknown
+    prepareDocument(request: unknown): unknown
+  finishDocument(id: number, nativeSupport: boolean[]): unknown
+  cancelDocument(id: number): void
+  analyzeDocument(request: unknown): unknown
     formatDirectives(request: unknown): unknown
     nativeDeclarationCandidates(classNames: string[]): unknown
     classifyClassNames(classNames: string[], nativeSupport: boolean[]): unknown
@@ -34,6 +37,7 @@ interface GeneratedToolingWasmModule {
   }
   ToolingScannerSession: new (manifestJSON: string) => {
     scan(source: string, content: string): unknown
+    cachedSourceCandidates(source: string, content: string): string[] | null
     extractCandidates(source: string, content: string): string[]
     nativeDeclarationCandidates(candidates: string[]): unknown
     collectCandidates(candidates: string[]): string[]
@@ -160,6 +164,7 @@ export async function createToolingScannerSession(
   const session = new module.ToolingScannerSession(manifestJSON)
   return {
     scan: (source: string, content: string) => session.scan(source, content),
+    cachedSourceCandidates: (source: string, content: string) => session.cachedSourceCandidates(source, content),
     extractCandidates: (source: string, content: string) => session.extractCandidates(source, content),
     nativeDeclarationCandidates: (candidates: string[]) => session.nativeDeclarationCandidates(candidates),
     collectCandidates: (candidates: string[]) => session.collectCandidates(candidates),
@@ -216,6 +221,9 @@ export async function createToolingLanguageSession(
   const module = await initToolingWasm(options)
   const session = new module.ToolingLanguageSession(manifestJSON)
   return {
+    prepareDocument: (request: unknown) => session.prepareDocument(request),
+    finishDocument: (id: number, support: boolean[]) => session.finishDocument(id, support),
+    cancelDocument: (id: number) => session.cancelDocument(id),
     analyzeDocument: (request: unknown) => session.analyzeDocument(request),
     formatDirectives: (request: unknown) => session.formatDirectives(request),
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),

@@ -83,6 +83,16 @@ impl NodeEngineSession {
     }
 
     #[napi]
+    pub fn execution_state(&self, class_names: Vec<String>) -> Result<String> {
+        to_json(
+            &self
+                .inner
+                .execution_state(class_names)
+                .map_err(to_napi_error)?,
+        )
+    }
+
+    #[napi]
     pub fn snapshot(&self) -> Result<String> {
         to_json(&self.inner.snapshot().map_err(to_napi_error)?)
     }

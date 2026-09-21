@@ -6,6 +6,7 @@ import {
   normalizeEngineError,
   type BindingEngineSession,
   type MasterCSSEngine,
+  type MasterCSSEngineExecutionState,
   type MasterCSSEngineInspection,
   type MasterCSSEngineSnapshot,
   type MasterCSSEngineTransition
@@ -44,6 +45,13 @@ export default class BoundEngine implements MasterCSSEngine {
     this.assertActive()
     return this.invoke(() => freezeResult<MasterCSSEngineTransition>(
       this.session.refresh(manifest)
+    ))
+  }
+
+  executionState(classNames: readonly string[]) {
+    this.assertActive()
+    return this.invoke(() => freezeResult<MasterCSSEngineExecutionState>(
+      this.session.executionState(classNames)
     ))
   }
 

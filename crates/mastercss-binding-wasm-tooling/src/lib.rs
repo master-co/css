@@ -163,138 +163,8 @@ pub fn create_inspection_report(input: JsValue) -> Result<JsValue, JsValue> {
         .map_err(|error| JsValue::from_str(&error.to_string()))
 }
 
-#[wasm_bindgen]
-pub struct ToolingLanguageSession {
-    inner: mastercss_language::LanguageSession,
-}
-
-#[wasm_bindgen]
-impl ToolingLanguageSession {
-    #[wasm_bindgen(constructor)]
-    pub fn new(manifest_json: &str) -> Result<ToolingLanguageSession, JsValue> {
-        Ok(Self {
-            inner: mastercss_language::LanguageSession::create(manifest_json)
-                .map_err(|error| JsValue::from_str(&error.to_string()))?,
-        })
-    }
-
-    #[wasm_bindgen(js_name = nativeDeclarationCandidates)]
-    pub fn native_declaration_candidates(
-        &self,
-        class_names: Vec<String>,
-    ) -> Result<JsValue, JsValue> {
-        let candidates = self
-            .inner
-            .native_declaration_candidates(class_names)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        candidates
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = analyzeDocument)]
-    pub fn analyze_document(&self, request: JsValue) -> Result<JsValue, JsValue> {
-        let request =
-            serde_wasm_bindgen::from_value::<mastercss_language::AnalyzeDocumentRequestIr>(request)
-                .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        self.inner
-            .analyze_document(&request)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = formatDirectives)]
-    pub fn format_directives(&self, request: JsValue) -> Result<JsValue, JsValue> {
-        let request =
-            serde_wasm_bindgen::from_value::<mastercss_language::FormatDirectivesRequestIr>(
-                request,
-            )
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        self.inner
-            .format_directives(&request)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = classifyClassNames)]
-    pub fn classify_class_names(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: JsValue,
-    ) -> Result<JsValue, JsValue> {
-        let native_support = serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        let batch = self
-            .inner
-            .classify_class_names(
-                class_names,
-                (!native_support.is_empty()).then_some(native_support.as_slice()),
-            )
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        batch
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = inspectClassName)]
-    pub fn inspect_class_name(
-        &self,
-        class_name: &str,
-        native_support: JsValue,
-        mode: Option<String>,
-    ) -> Result<JsValue, JsValue> {
-        let native_support = serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        let inspection = self
-            .inner
-            .inspect_class_name(
-                class_name,
-                (!native_support.is_empty()).then_some(native_support.as_slice()),
-                mode.as_deref(),
-            )
-            .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        inspection
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = completionIndex)]
-    pub fn completion_index(&self) -> Result<JsValue, JsValue> {
-        self.inner
-            .completion_index()
-            .map_err(|error| JsValue::from_str(&error.to_string()))?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = colorPresentation)]
-    pub fn color_presentation(&self, color_token: &str) -> Result<JsValue, JsValue> {
-        self.inner
-            .color_presentation(color_token)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    #[wasm_bindgen(js_name = colorTokens)]
-    pub fn color_tokens(&self, candidates: JsValue) -> Result<JsValue, JsValue> {
-        let candidates = serde_wasm_bindgen::from_value::<
-            Vec<mastercss_language::LanguageColorCandidateInputIr>,
-        >(candidates)
-        .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        self.inner
-            .color_tokens(&candidates)
-            .map_err(|error| JsValue::from_str(&error.to_string()))?
-            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
-            .map_err(|error| JsValue::from_str(&error.to_string()))
-    }
-
-    pub fn dispose(&mut self) {
-        self.inner.dispose();
-    }
-}
+mod language;
+pub use language::ToolingLanguageSession;
 
 #[wasm_bindgen]
 pub struct ToolingScannerSession {
@@ -637,6 +507,18 @@ impl ToolingScannerSession {
         serde_wasm_bindgen::to_value(&update).map_err(|error| JsValue::from_str(&error.to_string()))
     }
 
+    #[wasm_bindgen(js_name = cachedSourceCandidates)]
+    pub fn cached_source_candidates(
+        &self,
+        source: &str,
+        content: &str,
+    ) -> Result<JsValue, JsValue> {
+        self.inner
+            .cached_source_candidates(source, content)
+            .serialize(&serde_wasm_bindgen::Serializer::json_compatible())
+            .map_err(|error| JsValue::from_str(&error.to_string()))
+    }
+
     #[wasm_bindgen(js_name = extractCandidates)]
     pub fn extract_candidates(&self, source: &str, content: &str) -> Vec<String> {
         mastercss_scanner::extract_source_candidates(source, content)
@@ -670,9 +552,7 @@ impl ToolingScannerSession {
             Vec<mastercss_schema::CssDirectiveBlocklistEntry>,
         >(blocklist)
         .map_err(|error| JsValue::from_str(&error.to_string()))?;
-        Ok(mastercss_scanner::filter_blocklisted_candidates(
-            candidates, &blocklist,
-        ))
+        Ok(self.inner.pending_candidates(&candidates, &blocklist))
     }
 
     #[wasm_bindgen(js_name = invalidGeneratedClasses)]
@@ -713,7 +593,7 @@ impl ToolingScannerSession {
         };
         let update = self
             .inner
-            .scan_candidates(
+            .scan_pending_candidates(
                 source,
                 content,
                 candidates,

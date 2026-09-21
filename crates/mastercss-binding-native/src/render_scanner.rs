@@ -89,6 +89,11 @@ impl NodeScannerSession {
     }
 
     #[napi]
+    pub fn cached_source_candidates(&self, source: String, content: String) -> Result<String> {
+        to_json(&self.inner.cached_source_candidates(&source, &content))
+    }
+
+    #[napi]
     pub fn extract_candidates(&self, source: String, content: String) -> Vec<String> {
         mastercss_scanner::extract_source_candidates(&source, &content)
     }
@@ -118,9 +123,7 @@ impl NodeScannerSession {
             &blocklist_json,
         )
         .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
-        Ok(mastercss_scanner::filter_blocklisted_candidates(
-            candidates, &blocklist,
-        ))
+        Ok(self.inner.pending_candidates(&candidates, &blocklist))
     }
 
     #[napi]
@@ -154,7 +157,7 @@ impl NodeScannerSession {
         to_json(
             &self
                 .inner
-                .scan_candidates(
+                .scan_pending_candidates(
                     &source,
                     &content,
                     candidates,

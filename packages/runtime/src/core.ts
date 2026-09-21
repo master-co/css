@@ -626,21 +626,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
     const transition = this.bindingEngine.ensureClassRules(classNames)
-    this.applyTransition(transition)
-    for (const className of classNames) {
-      const inspection = this.bindingEngine.inspect(className)
-      if (!inspection.valid) {
-        this.classUtilities.delete(className)
-        continue
-      }
-      const rules = inspection.rules
-        .map((ir) => this.getUtilityLayerByName(ir.layer).rules
-          .find((rule): rule is HydratedGeneratedRule =>
-            rule instanceof HydratedGeneratedRule && rule.key === ir.key
-          ))
-        .filter((rule): rule is HydratedGeneratedRule => Boolean(rule))
-      if (rules.length) this.classUtilities.set(className, rules)
-    }
+    this.applyTransition(transition, classNames)
     return transition
   }
 
@@ -649,8 +635,7 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.cancelPendingRemovedClassNames(classNames)
     this.cancelRetainedClassNames(classNames)
     const transition = this.bindingEngine.deleteClassRules(classNames)
-    this.applyTransition(transition)
-    for (const className of classNames) this.classUtilities.delete(className)
+    this.applyTransition(transition, classNames)
     return transition
   }
 
@@ -704,19 +689,9 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     this.clearRetainedClassRules()
     const transition = this.bindingEngine.refresh(manifest)
     this.manifest = manifest
-    this.loadManifestHostData(manifest)
-    this.classUtilities.clear()
+    this.clearClassReferences()
     this.applyTransition(transition)
-    for (const className of this.classCounts.keys()) {
-      const inspection = this.bindingEngine.inspect(className)
-      const rules = inspection.rules
-        .map((ir) => this.getUtilityLayerByName(ir.layer).rules
-          .find((rule): rule is HydratedGeneratedRule =>
-            rule instanceof HydratedGeneratedRule && rule.key === ir.key
-          ))
-        .filter((rule): rule is HydratedGeneratedRule => Boolean(rule))
-      if (rules.length) this.classUtilities.set(className, rules)
-    }
+    this.ensureClassRules([...this.classCounts.keys()])
     if (process.env.NODE_ENV === 'development') debugRuntimeRefreshed(this, manifest)
     return this
   }

@@ -21,6 +21,7 @@ export interface MasterCSSWasmToolingLoadOptions {
 
 interface MasterCSSToolingWasmScannerProviderSession {
   scan(source: string, content: string): unknown
+  cachedSourceCandidates(source: string, content: string): string[] | null
   extractCandidates(source: string, content: string): string[]
   nativeDeclarationCandidates(candidates: string[]): unknown
   collectCandidates(candidates: string[]): string[]
@@ -48,6 +49,9 @@ interface MasterCSSToolingWasmValidatorProviderSession {
 }
 
 interface MasterCSSToolingWasmLanguageProviderSession {
+  prepareDocument(request: unknown): unknown
+  finishDocument(id: number, nativeSupport: boolean[]): unknown
+  cancelDocument(id: number): void
   analyzeDocument(request: unknown): unknown
   formatDirectives(request: unknown): unknown
   nativeDeclarationCandidates(classNames: string[]): unknown

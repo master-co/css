@@ -1,3 +1,4 @@
+import { analyzeDocument, clearDocumentAnalyses } from './document-analysis'
 import {
   type MasterCSSLanguageClassPosition,
   type MasterCSSToolingSession
@@ -40,6 +41,7 @@ export class MasterCSSLanguageService implements Disposable {
   }
 
   dispose() {
+    clearDocumentAnalyses(this)
     this.session.dispose()
   }
 
@@ -123,15 +125,7 @@ export class MasterCSSLanguageService implements Disposable {
   private analyzeDocumentClassPositions(
     document: TextDocument
   ): MasterCSSLanguageClassPosition[] {
-    return [...this.session.analyzeDocument({
-      source: document.getText(),
-      languageId: document.languageId,
-      settings: {
-        classAttributes: this.settings.classAttributes,
-        classFunctions: this.settings.classFunctions,
-        classDeclarations: this.settings.classDeclarations
-      }
-    }).classPositions]
+    return [...analyzeDocument(this, document).classPositions]
   }
 
   isDocumentAccepted(document: TextDocument): boolean {

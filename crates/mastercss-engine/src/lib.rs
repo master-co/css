@@ -453,6 +453,9 @@ pub struct EngineSession {
     emitted_globals: EmittedGlobals,
     variable_counts: HashMap<String, u32>,
     theme_variable_names: Vec<String>,
+    theme_text: Option<String>,
+    theme_dirty: bool,
+    theme_batch_depth: usize,
     animation_counts: HashMap<String, u32>,
     animation_names: Vec<String>,
     native_declaration_support: HashMap<String, HashMap<(String, String), bool>>,
@@ -468,6 +471,7 @@ const UTILITY_LAYERS: [UtilityLayerName; LAYER_COUNT] = [
 
 mod completion;
 mod condition;
+mod execution_state;
 mod generation;
 mod manifest;
 mod render;
@@ -475,6 +479,7 @@ mod resources;
 mod session;
 mod state;
 mod stylesheet_resources;
+mod theme_batch;
 mod utility;
 mod value_syntax;
 

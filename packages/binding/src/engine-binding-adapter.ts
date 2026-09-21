@@ -35,6 +35,7 @@ export function bindEngineBindingSession(
     registerEmittedGlobals: (emittedGlobals) =>
       invoke(() => session.registerEmittedGlobals(emittedGlobals)),
     refresh: (manifest) => invoke(() => session.refresh(manifest)),
+    executionState: (classNames) => invoke(() => session.executionState(classNames)),
     inspect: (className) => invoke(() => session.inspect(className)),
     snapshot: () => invoke(() => session.snapshot()),
     dispose,

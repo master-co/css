@@ -152,6 +152,27 @@ pub struct EngineResourcesIr {
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
+pub struct EngineRuleReferenceIr {
+    pub layer: UtilityLayerName,
+    pub key: String,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineClassExecutionStateIr {
+    pub class_name: String,
+    pub references: Vec<EngineRuleReferenceIr>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct EngineExecutionStateIr {
+    pub classes: Vec<EngineClassExecutionStateIr>,
+    pub resources: EngineResourcesIr,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct EngineInspectionIr {
     pub version: u32,
     pub class_name: String,

@@ -6,6 +6,7 @@ export type {
   MasterCSSEngineBinding,
   MasterCSSEngineBindingOptions,
   MasterCSSEngineDeleteMutation,
+  MasterCSSEngineExecutionState,
   MasterCSSEngineInspection,
   MasterCSSEngineInsertMutation,
   MasterCSSEngineMutation,

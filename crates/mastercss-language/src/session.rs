@@ -10,6 +10,8 @@ impl LanguageSession {
             manifest_json: manifest_json.to_owned(),
             native_support_by_class: HashMap::new(),
             variable_names,
+            prepared_document: None,
+            next_document_id: 0,
         })
     }
 
@@ -22,25 +24,6 @@ impl LanguageSession {
         S: AsRef<str>,
     {
         Ok(self.engine.native_declaration_candidates(class_names)?)
-    }
-
-    pub fn analyze_document(
-        &self,
-        request: &AnalyzeDocumentRequestIr,
-    ) -> Result<LanguageDocumentIr, LanguageError> {
-        let mut contexts =
-            collect_document_contexts(&request.source, &request.language_id, &request.settings);
-        contexts.extend(request.host_ranges.iter().cloned());
-        contexts.sort_by_key(|range| (range.start, range.end));
-        contexts.dedup_by(|left, right| left.start == right.start && left.end == right.end);
-        let class_positions = collect_class_positions(&request.source, &contexts)?;
-        let semantic_tokens = self.semantic_tokens_for_positions(&class_positions, &contexts)?;
-        Ok(LanguageDocumentIr {
-            version: LANGUAGE_BATCH_VERSION,
-            class_positions,
-            semantic_token_data: encode_semantic_tokens(&request.source, &semantic_tokens),
-            semantic_tokens,
-        })
     }
 
     pub fn format_directives(
@@ -258,7 +241,7 @@ impl LanguageSession {
         Ok(())
     }
 
-    fn semantic_tokens_for_positions(
+    pub(crate) fn semantic_tokens_for_positions(
         &self,
         positions: &[ClassPositionIr],
         contexts: &[ClassListContextIr],
@@ -489,6 +472,7 @@ impl LanguageSession {
     }
 
     pub fn dispose(&mut self) {
+        self.prepared_document = None;
         self.engine.dispose();
     }
 }

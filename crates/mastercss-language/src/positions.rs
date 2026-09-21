@@ -6,17 +6,32 @@ pub enum LanguageError {
     Engine(#[from] EngineError),
     #[error("Language input contains a range outside the UTF-16 document boundary.")]
     InvalidRange,
+    #[error("The prepared document is missing or expired.")]
+    InvalidPreparedDocument,
+    #[error("Native support count does not match the prepared document.")]
+    InvalidNativeSupport,
 }
 
 pub fn collect_class_positions(
     source: &str,
     contexts: &[ClassListContextIr],
 ) -> Result<Vec<ClassPositionIr>, LanguageError> {
+    collect_class_positions_indexed(source, contexts, &DocumentIndex::new(source))
+}
+
+pub(crate) fn collect_class_positions_indexed(
+    source: &str,
+    contexts: &[ClassListContextIr],
+    index: &DocumentIndex,
+) -> Result<Vec<ClassPositionIr>, LanguageError> {
     let mut positions = Vec::new();
     for context in contexts {
-        let start =
-            utf16_to_byte_offset(source, context.start).ok_or(LanguageError::InvalidRange)?;
-        let end = utf16_to_byte_offset(source, context.end).ok_or(LanguageError::InvalidRange)?;
+        let start = index
+            .utf16_to_byte(context.start)
+            .ok_or(LanguageError::InvalidRange)?;
+        let end = index
+            .utf16_to_byte(context.end)
+            .ok_or(LanguageError::InvalidRange)?;
         if start > end {
             return Err(LanguageError::InvalidRange);
         }
@@ -37,11 +52,13 @@ pub fn collect_class_positions(
             continue;
         }
         for range in collect_class_list_token_ranges(class_list) {
-            let raw_start = utf16_to_byte_offset(class_list, range.range.start)
+            let raw_start = index
+                .utf16_to_byte(context.start + range.range.start)
                 .ok_or(LanguageError::InvalidRange)?;
-            let raw_end = utf16_to_byte_offset(class_list, range.range.end)
+            let raw_end = index
+                .utf16_to_byte(context.start + range.range.end)
                 .ok_or(LanguageError::InvalidRange)?;
-            let raw = class_list[raw_start..raw_end].to_owned();
+            let raw = source[raw_start..raw_end].to_owned();
             positions.push(ClassPositionIr {
                 range: SourceRange {
                     start: context.start + range.range.start,
@@ -62,6 +79,14 @@ pub fn collect_class_positions(
 }
 
 pub fn encode_semantic_tokens(source: &str, tokens: &[SemanticTokenInputIr]) -> Vec<u32> {
+    encode_semantic_tokens_indexed(&DocumentIndex::new(source), tokens)
+}
+
+pub(crate) fn encode_semantic_tokens_indexed(
+    index: &DocumentIndex,
+    tokens: &[SemanticTokenInputIr],
+) -> Vec<u32> {
+    let mut cursor = index.cursor();
     let mut tokens = tokens
         .iter()
         .filter(|token| token.end > token.start)
@@ -77,10 +102,10 @@ pub fn encode_semantic_tokens(source: &str, tokens: &[SemanticTokenInputIr]) -> 
         if previous_end.is_some_and(|end| token.start < end) {
             continue;
         }
-        let Some((start_line, start_character)) = position_at(source, token.start) else {
+        let Some((start_line, start_character)) = cursor.position(token.start) else {
             continue;
         };
-        let Some((end_line, end_character)) = position_at(source, token.end) else {
+        let Some((end_line, end_character)) = cursor.position(token.end) else {
             continue;
         };
         if start_line != end_line {
@@ -200,38 +225,4 @@ pub(super) fn unescape_offsets(raw: &str, characters: &[String]) -> Vec<u32> {
         token = token.replace(&escaped, character);
     }
     offsets
-}
-
-fn position_at(source: &str, offset: u32) -> Option<(u32, u32)> {
-    if offset > utf16_len(source) {
-        return None;
-    }
-    let mut line = 0;
-    let mut character = 0;
-    let mut utf16_offset = 0;
-    let mut chars = source.chars().peekable();
-    while let Some(value) = chars.next() {
-        if utf16_offset == offset {
-            return Some((line, character));
-        }
-        let length = value.len_utf16() as u32;
-        if utf16_offset + length > offset {
-            return None;
-        }
-        utf16_offset += length;
-        if value == '\r' {
-            if chars.peek() == Some(&'\n') {
-                chars.next();
-                utf16_offset += 1;
-            }
-            line += 1;
-            character = 0;
-        } else if value == '\n' {
-            line += 1;
-            character = 0;
-        } else {
-            character += length;
-        }
-    }
-    (utf16_offset == offset).then_some((line, character))
 }

@@ -479,3 +479,40 @@ These CSS-first directives are manifest inputs. The compiler lowers tokens, mana
 ## Comparisons
 This section provides a detailed comparison of different rendering modes. Each mode is evaluated based on various criteria such as application scenarios, performance, and generated source.
 <Comparisons />
+
+## Engine state for custom hosts
+
+The engine returned by `createEngine()` exposes a synchronous `executionState(classNames)` query for hosts that track generated rules. Ensure classes first, then request their stored rule references and the current resource state:
+
+```ts
+import { createEngine } from '@master/css'
+import manifest from 'virtual:master-css-manifest'
+
+using engine = await createEngine({ manifest })
+engine.ensureClassRules(['block', 'hidden'])
+const state = engine.executionState(['block', 'missing'])
+// state.classes[0].references: [{ layer: 'utilities', key: 'block' }]
+// state.classes[1].references: []
+// state.resources: current theme, variable and animation state
+```
+
+The result has the following readonly shape:
+
+```ts
+interface MasterCSSEngineExecutionState {
+  readonly classes: readonly {
+    readonly className: string
+    readonly references: readonly {
+      readonly layer: MasterCSSManifestUtilityLayerName
+      readonly key: string
+    }[]
+  }[]
+  readonly resources: MasterCSSEngineResources
+}
+```
+
+Classes follow the requested order, including repeated names. Unknown classes and valid classes that have never been ensured have empty references. The query reads stored references without generating rules or returning utility rule text. `inspect()` remains an independent rule inspection; it does not ensure a class. Use `snapshot()` when you need complete rules and CSS, including hydration data.
+
+A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v1, hydration v1 and transition v1 keep their existing shapes.
+
+Custom engine or binding implementations must add this query when upgrading to [binding ABI 7](/guide/migration#custom-engine-and-binding-migration).

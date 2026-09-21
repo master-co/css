@@ -18,7 +18,7 @@ impl EngineSession {
         }
     }
 
-    pub(crate) fn theme_rule_text(&self) -> Option<String> {
+    pub(crate) fn render_theme_rule_text(&self) -> Option<String> {
         let mut buckets = Vec::<ThemeBucket>::new();
         for name in &self.theme_variable_names {
             let Some(variable) = self.compiled.compiled_variables.get(name) else {
@@ -159,7 +159,7 @@ impl EngineSession {
         for variable_name in static_variables {
             // A static root owns a permanent reference to its dependency graph,
             // including when another stylesheet already supplies the root.
-            self.retain_variable_graph(&variable_name, None, &mut HashSet::new());
+            self.retain_variable_graph(&variable_name, &mut HashSet::new());
         }
     }
 
@@ -187,9 +187,8 @@ impl EngineSession {
                 *count = count.saturating_add(1);
                 self.animation_names.push(name.clone());
             }
-            let mut ignored = Vec::new();
             for variable_name in self.keyframe_variable_names(&name) {
-                self.register_variable(&variable_name, &mut ignored, &mut HashSet::new());
+                self.register_variable(&variable_name, &mut HashSet::new());
             }
         }
     }
@@ -409,7 +408,7 @@ impl EngineSession {
                 });
             }
             for variable_name in self.keyframe_variable_names(name) {
-                self.register_variable(&variable_name, mutations, &mut HashSet::new());
+                self.register_variable(&variable_name, &mut HashSet::new());
             }
         }
     }
@@ -449,37 +448,23 @@ impl EngineSession {
                     key: name.clone(),
                 });
                 for variable_name in self.keyframe_variable_names(name) {
-                    self.unregister_variable(&variable_name, mutations, &mut HashSet::new());
+                    self.unregister_variable(&variable_name, &mut HashSet::new());
                 }
             }
         }
     }
 
-    pub(crate) fn register_rule_variables(
-        &mut self,
-        variable_names: &[String],
-        mutations: &mut Vec<RuleMutationIr>,
-    ) {
+    pub(crate) fn register_rule_variables(&mut self, variable_names: &[String]) {
         for variable_name in variable_names {
-            self.register_variable(variable_name, mutations, &mut HashSet::new());
+            self.register_variable(variable_name, &mut HashSet::new());
         }
     }
 
-    pub(crate) fn register_variable(
-        &mut self,
-        variable_name: &str,
-        mutations: &mut Vec<RuleMutationIr>,
-        visited: &mut HashSet<String>,
-    ) {
-        self.retain_variable_graph(variable_name, Some(mutations), visited);
+    pub(crate) fn register_variable(&mut self, variable_name: &str, visited: &mut HashSet<String>) {
+        self.retain_variable_graph(variable_name, visited);
     }
 
-    fn retain_variable_graph(
-        &mut self,
-        variable_name: &str,
-        mut mutations: Option<&mut Vec<RuleMutationIr>>,
-        visited: &mut HashSet<String>,
-    ) {
+    fn retain_variable_graph(&mut self, variable_name: &str, visited: &mut HashSet<String>) {
         let mut pending = vec![variable_name.to_owned()];
         while let Some(name) = pending.pop() {
             if !visited.insert(name.clone()) {
@@ -497,31 +482,21 @@ impl EngineSession {
             let count = self.variable_counts.entry(name.clone()).or_default();
             *count = count.saturating_add(1);
             if *count == 1 {
-                // Initialization has no live stylesheet to mutate. Avoid building
-                // and discarding the entire growing theme for every static node.
-                let previous = mutations.as_ref().and_then(|_| self.theme_rule_text());
                 self.theme_variable_names.push(name);
-                if let Some(mutations) = mutations.as_deref_mut() {
-                    self.push_theme_rule_change(previous, mutations);
-                }
+                self.theme_dirty = true;
             }
         }
     }
 
-    pub(crate) fn unregister_rule_variables(
-        &mut self,
-        variable_names: &[String],
-        mutations: &mut Vec<RuleMutationIr>,
-    ) {
+    pub(crate) fn unregister_rule_variables(&mut self, variable_names: &[String]) {
         for variable_name in variable_names {
-            self.unregister_variable(variable_name, mutations, &mut HashSet::new());
+            self.unregister_variable(variable_name, &mut HashSet::new());
         }
     }
 
     pub(crate) fn unregister_variable(
         &mut self,
         variable_name: &str,
-        mutations: &mut Vec<RuleMutationIr>,
         visited: &mut HashSet<String>,
     ) {
         let mut pending = vec![variable_name.to_owned()];
@@ -536,7 +511,6 @@ impl EngineSession {
             if variable.inline {
                 continue;
             }
-            let previous = self.theme_rule_text();
             let host_count = self.emitted_globals.variable_count(&name);
             let remove = match self.variable_counts.get_mut(&name) {
                 Some(count) if *count > host_count => {
@@ -554,35 +528,8 @@ impl EngineSession {
                 self.variable_counts.remove(&name);
                 self.theme_variable_names
                     .retain(|variable| variable != &name);
-                self.push_theme_rule_change(previous, mutations);
+                self.theme_dirty = true;
             }
-        }
-    }
-
-    pub(crate) fn push_theme_rule_change(
-        &self,
-        previous: Option<String>,
-        mutations: &mut Vec<RuleMutationIr>,
-    ) {
-        let next = self.theme_rule_text();
-        if previous == next {
-            return;
-        }
-        if previous.is_some() {
-            mutations.push(RuleMutationIr::Delete {
-                target: RuleTarget::Theme,
-                index: 0,
-                key: "theme:root".into(),
-            });
-        }
-        if let Some(text) = next {
-            mutations.push(RuleMutationIr::Insert {
-                target: RuleTarget::Theme,
-                index: 0,
-                key: "theme:root".into(),
-                text,
-                rule: None,
-            });
         }
     }
 }

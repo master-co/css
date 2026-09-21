@@ -49,6 +49,7 @@ export interface MasterCSSToolingWasmProviderContract {
   ): Promise<MasterCSSLintWasmProviderSession>
   createScannerSession(manifestJSON: string): Promise<Readonly<{
     scan: MasterCSSScannerBindingSession['scan']
+    cachedSourceCandidates: MasterCSSScannerBindingSession['cachedSourceCandidates']
     extractCandidates: MasterCSSScannerBindingSession['extractCandidates']
     nativeDeclarationCandidates: MasterCSSScannerBindingSession['nativeDeclarationCandidates']
     collectCandidates: MasterCSSScannerBindingSession['collectCandidates']
@@ -135,6 +136,9 @@ export async function createWasmToolingBinding(
       )
       const bound: MasterCSSLanguageBindingSession = {
         ...withLifecycle(session),
+        prepareDocument: (request) => session.prepareDocument(request) as ReturnType<MasterCSSLanguageBindingSession['prepareDocument']>,
+        finishDocument: (id, support) => session.finishDocument(id, [...support]) as ReturnType<MasterCSSLanguageBindingSession['finishDocument']>,
+        cancelDocument: (id) => session.cancelDocument(id),
         analyzeDocument: (request) => session.analyzeDocument(request),
         formatDirectives: (request) => session.formatDirectives(request),
         nativeDeclarationCandidates: (classNames) =>
@@ -185,6 +189,7 @@ export async function createWasmToolingBinding(
       const bound: MasterCSSScannerBindingSession = {
         ...withLifecycle(session),
         scan: (source, content) => session.scan(source, content),
+        cachedSourceCandidates: (source, content) => session.cachedSourceCandidates(source, content),
         extractCandidates: (source, content) => session.extractCandidates(source, content),
         nativeDeclarationCandidates: (candidates) =>
           session.nativeDeclarationCandidates([...candidates]),

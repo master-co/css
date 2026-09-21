@@ -44,12 +44,14 @@ export interface NativeEngineSession {
   ensureClassRulesWithNativeSupport(classNames: string[], supported: boolean[]): string
   refresh(manifestJSON: string): string
   snapshot(): string
+  executionState(classNames: string[]): string
   inspect(className: string): string
   dispose(): void
 }
 
 export interface NativeScannerSession {
   scan(source: string, content: string): string
+  cachedSourceCandidates(source: string, content: string): string
   extractCandidates(source: string, content: string): string[]
   nativeDeclarationCandidates(candidates: string[]): string
   collectCandidates(candidates: string[]): string[]
@@ -109,6 +111,9 @@ export interface NativeLintSession {
 }
 
 export interface NativeLanguageSession {
+  prepareDocument(requestJSON: string): string
+  finishDocument(id: number, nativeSupport: boolean[]): string
+  cancelDocument(id: number): void
   analyzeDocument(requestJSON: string): string
   formatDirectives(requestJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string

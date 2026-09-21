@@ -20,6 +20,7 @@ export default class HydratedGeneratedRule {
   readonly text: string
   readonly valid = true
   readonly fixedClass?: string
+  readonly nodeCount: number
   readonly nodes?: HydratedGeneratedRuleNode[]
   readonly variableNames?: Set<string>
   readonly animationNames?: Set<string>
@@ -29,6 +30,7 @@ export default class HydratedGeneratedRule {
     public readonly ir: MasterCSSHydrationRule,
     public readonly layer: RuntimeLayer
   ) {
+    this.nodeCount = ir.nodes?.length || 1
     this.name = ir.className
     this.key = ir.key
     this.layerName = ir.layer
