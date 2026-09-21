@@ -21,6 +21,7 @@ pub struct RenderSession {
     engine: EngineSession,
     classes: Vec<String>,
     class_index: HashSet<String>,
+    has_stylesheet_resources: bool,
 }
 
 impl RenderSession {
@@ -35,6 +36,7 @@ impl RenderSession {
             )?,
             classes: Vec::new(),
             class_index: HashSet::new(),
+            has_stylesheet_resources: false,
         })
     }
 
@@ -81,6 +83,7 @@ impl RenderSession {
 
     pub fn ensure_stylesheet_resources(&mut self, native_css: &str) -> Result<(), EngineError> {
         self.engine.ensure_stylesheet_resources(native_css)?;
+        self.has_stylesheet_resources = true;
         Ok(())
     }
 
@@ -89,7 +92,7 @@ impl RenderSession {
     }
 
     pub fn snapshot(&self) -> Result<ServerRenderIr, EngineError> {
-        let snapshot = self.engine.snapshot()?;
+        let snapshot = self.hydratable_snapshot(self.engine.snapshot()?)?;
         let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes: self.classes.clone(),
@@ -111,13 +114,29 @@ impl RenderSession {
                 classes.push(class_name.to_owned());
             }
         }
-        let snapshot = self.engine.snapshot_for_classes(&classes)?;
+        let snapshot = self.hydratable_snapshot(self.engine.snapshot_for_classes(&classes)?)?;
         let hydration_manifest = HydrationManifest::from_snapshot(&snapshot);
         Ok(ServerRenderIr {
             classes,
             snapshot,
             hydration_manifest,
         })
+    }
+
+    fn hydratable_snapshot(
+        &self,
+        snapshot: EngineSnapshotIr,
+    ) -> Result<EngineSnapshotIr, EngineError> {
+        // Compiler-owned native CSS may retain resources absent from class rules.
+        // That output cannot be replayed solely from a runtime hydration manifest.
+        if self.has_stylesheet_resources {
+            return Ok(snapshot);
+        }
+        // The hydration manifest exposes sorted rules, not the original class insertion
+        // order. Replay their classes so resource discovery has the same order on both
+        // sides, including shared transitive dependencies and warmed renderer sessions.
+        self.engine
+            .snapshot_for_classes(snapshot.rules.iter().map(|rule| &rule.class_name))
     }
 
     pub fn dispose(&mut self) {

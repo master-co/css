@@ -512,6 +512,8 @@ Use `@compose` inside a style rule to lower an unquoted Master CSS class list in
 }
 ```
 
+Selector aliases preserve attribute values and escaped identifiers in the surrounding rule. For example, `[data-state=":first"]:first { @compose block; }` becomes `[data-state=\:first]:first-child { display: block; }`. Existing `::before` stays unchanged, while `:before` expands to `::before`; aliases inside `:is()` expand normally.
+
 `@compose` accepts only unquoted class lists:
 
 ```css

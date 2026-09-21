@@ -273,6 +273,8 @@ You can prefix a comparison with `w` for `width` or `h` for `height`. If no feat
     </Class2CSS>
 </details>
 
+Numeric sizes can include decimals. Unitless `@w>=600.5` and `@container(600.5)` use `root-size` to convert the value to `rem`; with the default root size of `16`, both use `37.53125rem`. Raw queries such as `@media(width>=37.5rem)` preserve their explicit unit.
+
 (x) Put the feature name before the operator. Feature names after or between operators are not supported yet.
 {/* eslint-disable @master/css/no-invalid-classes -- intentional unsupported query examples */}
 ```html

@@ -198,7 +198,7 @@ pub(crate) fn tokenize_condition(token: &str) -> Vec<String> {
     let mut current = String::new();
     let mut characters = token.chars().peekable();
     while let Some(character) = characters.next() {
-        if character.is_ascii_alphanumeric() || matches!(character, '-' | ':' | '%' | '|') {
+        if character.is_ascii_alphanumeric() || matches!(character, '-' | '.' | ':' | '%' | '|') {
             current.push(character);
             continue;
         }

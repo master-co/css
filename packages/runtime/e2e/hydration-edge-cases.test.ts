@@ -1,5 +1,6 @@
 import { test, expect, type Page } from '@playwright/test'
-import { createEngineSync } from '@master/css/node'
+import { renderClassNamesSync } from '@master/css/node'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
@@ -13,24 +14,8 @@ import init, { getRuntimeLoaderURL } from './init'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function renderHydration(...classNames: string[]) {
-  const engine = createEngineSync({ manifest: defaultManifest })
-  try {
-    engine.ensureClassRules(classNames)
-    const snapshot = engine.snapshot()
-    return {
-      text: snapshot.text,
-      hydrationManifest: {
-        version: 1 as const,
-        rules: snapshot.rules,
-        resourceOrder: [
-          ...snapshot.resources.variables.map(({ name }) => name),
-          ...snapshot.resources.animations.map(({ name }) => name)
-        ]
-      }
-    }
-  } finally {
-    engine.dispose()
-  }
+  const rendered = renderClassNamesSync(classNames, { manifest: defaultManifest, supportsNativeDeclaration })
+  return { text: rendered.cssText, hydrationManifest: rendered.hydrationManifest }
 }
 
 async function startCSSRuntimeAsync(
@@ -651,7 +636,7 @@ test('progressive hydration matches bucketed theme variables', async ({ page }) 
   expect(result.text).toContain('--color-blue-60')
 })
 
-test('progressive hydration matches theme variable buckets by key', async ({ page }) => {
+test('progressive hydration rejects reordered theme variable buckets', async ({ page }) => {
   const consoleWarnings: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'warning') consoleWarnings.push(message.text())
@@ -681,8 +666,8 @@ test('progressive hydration matches theme variable buckets by key', async ({ pag
     text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
 
-  expect(consoleWarnings.filter((message) => message.includes('hydration manifest'))).toEqual([])
-  expect(result.progressive).toBe(true)
+  expect(consoleWarnings.filter((message) => message.includes('hydration manifest'))).toHaveLength(1)
+  expect(result.progressive).toBe(false)
   expect(result.counts).toEqual({
     'color-primary': 1
   })

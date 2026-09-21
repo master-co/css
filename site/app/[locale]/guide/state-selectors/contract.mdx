@@ -410,7 +410,7 @@ Use `data-*` attributes for component state that is not covered by native attrib
 ```
 
 ### `[<attr>=<value>]` \{#attrvalue\}
-Match an exact attribute value.
+Match an exact attribute value. Pseudo aliases only expand at actual pseudo selectors: `[data-state=":first"]:first` keeps the attribute value `:first` and expands the final `:first` to `:first-child`. Escaped identifier characters also remain literal.
 ```html
 <!-- @MARK [type=checkbox] -->
 <input class="b:blue[type=checkbox]" type="checkbox" />

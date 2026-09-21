@@ -1,5 +1,6 @@
 import { Page } from '@playwright/test'
-import { createEngineSync } from '@master/css/node'
+import { renderClassNamesSync } from '@master/css/node'
+import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
@@ -190,21 +191,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     }
     return [...classNames]
   })
-  const engine = createEngineSync({ manifest })
-  try {
-    engine.ensureClassRules(classNames)
-    const snapshot = engine.snapshot()
-    return {
-      version: 1 as const,
-      rules: snapshot.rules,
-      resourceOrder: [
-        ...snapshot.resources.variables.map(({ name }) => name),
-        ...snapshot.resources.animations.map(({ name }) => name)
-      ]
-    }
-  } finally {
-    engine.dispose()
-  }
+  return renderClassNamesSync(classNames, { manifest, supportsNativeDeclaration }).hydrationManifest
 }
 
 export async function getRuntimeLoaderURL() {

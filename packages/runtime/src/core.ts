@@ -1,6 +1,7 @@
 import {
   createEngine,
   type MasterCSSEngine,
+  type MasterCSSEngineSnapshot,
   type MasterCSSEngineTransition
 } from '@master/css'
 import type { MasterCSSEmittedGlobals } from '@master/css-schema/emitted-globals'
@@ -291,54 +292,29 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     return undefined
   }
 
-  private matchesEngineSnapshotText(snapshotText: string) {
+  private matchesEngineSnapshotText(snapshot: MasterCSSEngineSnapshot) {
     const sheet = this.getStyleSheet()
     if (!sheet) return false
     const expectedStyle = this.getOwnerDocument().createElement('style')
     expectedStyle.media = 'not all'
-    expectedStyle.textContent = snapshotText
+    expectedStyle.textContent = snapshot.text
     this.container.append(expectedStyle)
     try {
       const expectedRules = expectedStyle.sheet?.cssRules
       if (!expectedRules) return false
-      const actualRules = [...sheet.cssRules]
-      for (const expected of expectedRules) {
-        if (isLayerBlockRule(expected)) {
-          const actual = actualRules.find((rule) => isLayerBlockRule(rule) && rule.name === expected.name)
-          if (!actual || !isLayerBlockRule(actual)) return false
-          const actualTexts = [...actual.cssRules].map(({ cssText }) => cssText)
-          for (const { cssText } of expected.cssRules) {
-            const index = actualTexts.indexOf(cssText)
-            if (index === -1) return false
-            actualTexts.splice(index, 1)
-          }
-        } else if (!actualRules.some(({ cssText }) => cssText === expected.cssText)) {
-          return false
-        }
+      for (const layer of expectedRules) {
+        if (!isLayerBlockRule(layer) || layer.name === 'theme') continue
+        const nodeCount = snapshot.rules
+          .filter(rule => rule.layer === layer.name)
+          .reduce((count, rule) => count + (rule.nodes?.length || 1), 0)
+        if (layer.cssRules.length !== nodeCount) return false
       }
-      return true
+      const actualRules = [...sheet.cssRules]
+      return actualRules.length === expectedRules.length
+        && actualRules.every((rule, index) => rule.cssText === expectedRules[index].cssText)
     } finally {
       expectedStyle.remove()
     }
-  }
-
-  private getHydrationClassNames(manifest: MasterCSSHydrationManifest) {
-    const resourceOrder = new Map(manifest.resourceOrder.map((name, index) => [name, index]))
-    const classResources = new Map<string, string[]>()
-    for (const rule of manifest.rules) {
-      const resources = classResources.get(rule.className) || []
-      for (const name of [...(rule.variableNames || []), ...(rule.animationNames || [])]) {
-        if (!resources.includes(name)) resources.push(name)
-      }
-      classResources.set(rule.className, resources)
-    }
-    return [...classResources.keys()].sort((left, right) => {
-      const getRank = (className: string) => Math.min(
-        ...(classResources.get(className) || []).map((name) => resourceOrder.get(name) ?? Number.MAX_SAFE_INTEGER),
-        Number.MAX_SAFE_INTEGER
-      )
-      return getRank(left) - getRank(right)
-    })
   }
 
   private hydrate(nativeLayerRules: CSSRuleList): HydrateResult | undefined {
@@ -350,13 +326,17 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
     if (!manifest.rules.length) {
       return this.failHydration(`Hydration manifest has no generated rules for ${MASTER_CSS_RUNTIME_STYLE_SELECTOR}.`)
     }
-    const classNames = this.getHydrationClassNames(manifest)
+    const classNames = [...new Set(manifest.rules.map(rule => rule.className))]
     this.bindingEngine.ensureClassRules(classNames)
     const snapshot = this.bindingEngine.snapshot()
     if (JSON.stringify(snapshot.rules) !== JSON.stringify(manifest.rules)) {
       return this.failHydration('Generated rules do not match the hydration manifest.', classNames)
     }
-    if (!this.matchesEngineSnapshotText(snapshot.text)) {
+    const resourceOrder = [...snapshot.resources.variables, ...snapshot.resources.animations].map(resource => resource.name)
+    if (JSON.stringify(resourceOrder) !== JSON.stringify(manifest.resourceOrder)) {
+      return this.failHydration('Generated resources do not match the hydration manifest.', classNames)
+    }
+    if (!this.matchesEngineSnapshotText(snapshot)) {
       return this.failHydration(`${MASTER_CSS_RUNTIME_STYLE_SELECTOR} does not match the Rust engine snapshot.`, classNames)
     }
     if (nativeLayerRules.length !== this.style?.sheet?.cssRules.length) {
@@ -684,10 +664,10 @@ export class MasterCSSRuntime extends RuntimeHost implements Disposable {
   }
 
   refresh(manifest: MasterCSSManifest = this.manifest) {
+    const transition = this.bindingEngine.refresh(manifest)
     this.clearPendingAddedClassNames()
     this.clearPendingRemovedClassNames()
     this.clearRetainedClassRules()
-    const transition = this.bindingEngine.refresh(manifest)
     this.manifest = manifest
     this.clearClassReferences()
     this.applyTransition(transition)

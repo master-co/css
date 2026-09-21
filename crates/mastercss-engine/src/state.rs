@@ -244,25 +244,7 @@ pub(crate) fn selector_token_to_template(
     if let Some(nodes) = manifest.selectors.get(selector_token) {
         return Some(suffix_to_template(&generate_selector_nodes(nodes)));
     }
-    let mut selector = selector_token.to_owned();
-    selector = replace_legacy_pseudo_elements(&selector);
-    for (alias, replacement) in [
-        (":first", ":first-child"),
-        (":last", ":last-child"),
-        (":even", ":nth-child(2n)"),
-        (":odd", ":nth-child(odd)"),
-        (":only", ":only-child"),
-        (":rtl", ":dir(rtl)"),
-        (":ltr", ":dir(ltr)"),
-        ("::scrollbar-thumb", "::-webkit-scrollbar-thumb"),
-        ("::scrollbar-track", "::-webkit-scrollbar-track"),
-        ("::scrollbar", "::-webkit-scrollbar"),
-        ("::slider-thumb", "::-webkit-slider-thumb"),
-        ("::slider-runnable-track", "::-webkit-slider-runnable-track"),
-        ("::resizer", "::-webkit-resizer"),
-    ] {
-        selector = replace_selector_alias(&selector, alias, replacement);
-    }
+    let mut selector = normalize_selector_aliases(selector_token);
     selector = replace_selector_underscores(&selector);
     if let Some((before, context, after)) = split_top_level_of_selector(&selector) {
         let suffix = format!("{before}{after}");
@@ -363,129 +345,98 @@ pub(crate) fn resolve_style_selector_aliases(
     selector: &str,
     manifest: &ManifestProjection,
 ) -> String {
-    let mut tokens = manifest
-        .selectors
-        .keys()
-        .filter(|token| token.starts_with(':'))
-        .cloned()
-        .collect::<Vec<_>>();
-    tokens.sort_by(|left, right| right.len().cmp(&left.len()).then_with(|| left.cmp(right)));
-    let mut output = String::with_capacity(selector.len());
-    let mut index = 0;
-    let mut quote = None;
-    let mut attribute_depth = 0_u32;
-    while index < selector.len() {
-        let character = selector[index..].chars().next().unwrap_or_default();
-        if let Some(current_quote) = quote {
-            output.push(character);
-            index += character.len_utf8();
-            if character == '\\' {
-                if let Some(escaped) = selector[index..].chars().next() {
-                    output.push(escaped);
-                    index += escaped.len_utf8();
-                }
-            } else if character == current_quote {
-                quote = None;
-            }
-            continue;
-        }
-        if matches!(character, '\'' | '"') {
-            quote = Some(character);
-            output.push(character);
-            index += character.len_utf8();
-            continue;
-        }
-        if character == '[' {
-            attribute_depth += 1;
-        } else if character == ']' {
-            attribute_depth = attribute_depth.saturating_sub(1);
-        }
-        if attribute_depth == 0
-            && let Some(token) = tokens.iter().find(|token| {
-                if !selector[index..].starts_with(token.as_str()) {
-                    return false;
-                }
-                selector[index + token.len()..]
-                    .chars()
-                    .next()
-                    .is_none_or(|next| {
-                        next == '(' || (!next.is_ascii_alphanumeric() && !matches!(next, '-' | '_'))
-                    })
-            })
-            && let Some(nodes) = manifest.selectors.get(token)
-        {
-            output.push_str(&generate_selector_nodes(nodes));
-            index += token.len();
-            continue;
-        }
-        output.push(character);
-        index += character.len_utf8();
-    }
-    output = replace_legacy_pseudo_elements(&output);
-    for (alias, replacement) in [
-        (":first", ":first-child"),
-        (":last", ":last-child"),
-        (":even", ":nth-child(2n)"),
-        (":odd", ":nth-child(odd)"),
-        (":only", ":only-child"),
-        (":rtl", ":dir(rtl)"),
-        (":ltr", ":dir(ltr)"),
-        ("::scrollbar-thumb", "::-webkit-scrollbar-thumb"),
-        ("::scrollbar-track", "::-webkit-scrollbar-track"),
-        ("::scrollbar", "::-webkit-scrollbar"),
-        ("::slider-thumb", "::-webkit-slider-thumb"),
-        ("::slider-runnable-track", "::-webkit-slider-runnable-track"),
-        ("::resizer", "::-webkit-resizer"),
-    ] {
-        output = replace_selector_alias(&output, alias, replacement);
-    }
-    output
+    let output = rewrite_pseudo_selectors(selector, |token| {
+        manifest
+            .selectors
+            .get(token)
+            .map(|nodes| generate_selector_nodes(nodes))
+    });
+    normalize_selector_aliases(&output)
 }
 
-pub(crate) fn replace_legacy_pseudo_elements(source: &str) -> String {
-    let mut output = source.to_owned();
-    for pseudo_element in ["first-letter", "first-line", "before", "after"] {
-        let alias = format!(":{pseudo_element}");
-        let replacement = format!("::{pseudo_element}");
-        let mut normalized = String::with_capacity(output.len() + 1);
-        let mut rest = output.as_str();
-        while let Some(index) = rest.find(&alias) {
-            normalized.push_str(&rest[..index]);
-            let before = rest[..index].chars().next_back();
-            let after = &rest[index + alias.len()..];
-            if before != Some(':')
-                && after.chars().next().is_none_or(|character| {
-                    !character.is_ascii_alphanumeric() && character != '-' && character != '_'
-                })
-            {
-                normalized.push_str(&replacement);
-            } else {
-                normalized.push_str(&alias);
-            }
-            rest = after;
-        }
-        normalized.push_str(rest);
-        output = normalized;
-    }
-    output
+fn normalize_selector_aliases(source: &str) -> String {
+    rewrite_pseudo_selectors(source, |token| {
+        let replacement = match token {
+            ":first-letter" => "::first-letter",
+            ":first-line" => "::first-line",
+            ":before" => "::before",
+            ":after" => "::after",
+            ":first" => ":first-child",
+            ":last" => ":last-child",
+            ":even" => ":nth-child(2n)",
+            ":odd" => ":nth-child(odd)",
+            ":only" => ":only-child",
+            ":rtl" => ":dir(rtl)",
+            ":ltr" => ":dir(ltr)",
+            "::scrollbar-thumb" => "::-webkit-scrollbar-thumb",
+            "::scrollbar-track" => "::-webkit-scrollbar-track",
+            "::scrollbar" => "::-webkit-scrollbar",
+            "::slider-thumb" => "::-webkit-slider-thumb",
+            "::slider-runnable-track" => "::-webkit-slider-runnable-track",
+            "::resizer" => "::-webkit-resizer",
+            _ => return None,
+        };
+        Some(replacement.to_owned())
+    })
 }
 
-pub(crate) fn replace_selector_alias(source: &str, alias: &str, replacement: &str) -> String {
+fn rewrite_pseudo_selectors(source: &str, resolve: impl Fn(&str) -> Option<String>) -> String {
+    use mastercss_lexer::{CssSyntaxKind, tokenize_css_syntax};
+
+    let tokens = tokenize_css_syntax(source);
     let mut output = String::with_capacity(source.len());
-    let mut rest = source;
-    while let Some(index) = rest.find(alias) {
-        output.push_str(&rest[..index]);
-        let after = &rest[index + alias.len()..];
-        if after.chars().next().is_none_or(|character| {
-            !character.is_ascii_alphanumeric() && character != '-' && character != '_'
-        }) {
-            output.push_str(replacement);
-        } else {
-            output.push_str(alias);
+    let mut copied = 0;
+    let mut index = 0;
+    while index < tokens.len() {
+        let token = &tokens[index];
+        if matches!(token.kind, CssSyntaxKind::Delim('[')) {
+            index = token.close.map_or(tokens.len(), |close| close + 1);
+            continue;
         }
-        rest = after;
+        if !matches!(token.kind, CssSyntaxKind::Delim(':')) {
+            index += 1;
+            continue;
+        }
+        let start = token.bytes.start;
+        let mut end = token.bytes.end;
+        index += 1;
+        while let Some(next) = tokens.get(index)
+            && next.bytes.start == end
+            && matches!(next.kind, CssSyntaxKind::Delim(':'))
+        {
+            end = next.bytes.end;
+            index += 1;
+        }
+        let Some(name) = tokens.get(index).filter(|name| name.bytes.start == end) else {
+            continue;
+        };
+        end = match name.kind {
+            CssSyntaxKind::Ident(_) => name.bytes.end,
+            CssSyntaxKind::Function(_) => name.bytes.end - 1,
+            _ => continue,
+        };
+        let full_function = if matches!(name.kind, CssSyntaxKind::Function(_)) {
+            name.close.and_then(|close| {
+                let end = tokens[close].bytes.end;
+                resolve(&source[start..end]).map(|replacement| (close + 1, end, replacement))
+            })
+        } else {
+            None
+        };
+        let replacement = if let Some((next, function_end, replacement)) = full_function {
+            index = next;
+            end = function_end;
+            replacement
+        } else if let Some(replacement) = resolve(&source[start..end]) {
+            replacement
+        } else {
+            continue;
+        };
+        output.push_str(&source[copied..start]);
+        output.push_str(&replacement);
+        copied = end;
     }
-    output.push_str(rest);
+    output.push_str(&source[copied..]);
     output
 }
 
