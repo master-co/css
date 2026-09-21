@@ -4,7 +4,7 @@ const port = 3000
 
 export default defineConfig({
   testDir: '.',
-  testMatch: 'inline-theme.spec.ts',
+  testMatch: ['inline-theme.spec.ts', 'not-found.spec.ts'],
   fullyParallel: false,
   forbidOnly: true,
   retries: process.env.CI ? 1 : 0,

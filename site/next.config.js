@@ -1,6 +1,7 @@
 import redirects from './redirects.js'
 import withCommonNextConfig from 'internal/common/with-next-config.js'
 import withMasterCSS from '@master/css-next'
+import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
 import { readPublicEnv } from './utils/public-env.js'
 import { shouldUseCloudflareImageLoader } from './utils/cloudflare-image-loader.js'
 
@@ -14,7 +15,6 @@ const nextConfig = withMasterCSS(await withCommonNextConfig({
   redirects
 }))
 
-nextConfig.output = 'export'
 nextConfig.staticPageGenerationTimeout = 180
 nextConfig.turbopack ??= {}
 nextConfig.turbopack.resolveAlias = {
@@ -51,4 +51,9 @@ nextConfig.env = {
 delete nextConfig.redirects
 delete nextConfig.rewrites
 
-export default nextConfig
+export default (phase) => ({
+  ...nextConfig,
+  // Next's export-mode dev server throws for unknown params before honoring
+  // dynamicParams = false. Keep export validation and output enabled for builds.
+  output: phase === PHASE_DEVELOPMENT_SERVER ? undefined : 'export'
+})
