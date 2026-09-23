@@ -1,8 +1,698 @@
+import { DemoPrimitives, DemoAnnotations } from './components/DemoFoundations'
+import { Demo, DemoLabel } from '~/site/components/demo'
 
----
+A shared visual language for explaining CSS. Quiet surfaces, precise annotations, and real browser behavior give every example a clear purpose.
+
+<DemoIndex label="Design system sections" groups={[
+  { title: '01 · Visual foundations', links: [
+    { href: '#foundations', label: 'Foundations' },
+    { href: '#demo-canvas', label: 'Demo canvas' },
+    { href: '#primitives', label: 'Primitives' },
+    { href: '#demo-item', label: 'Demo item' },
+    { href: '#demo-text', label: 'Demo text' },
+    { href: '#demo-media', label: 'Demo media' },
+    { href: '#demo-swatch', label: 'Demo swatch' },
+    { href: '#assets', label: 'Assets' },
+    { href: '#annotations', label: 'Annotations' },
+    { href: '#interaction', label: 'Interaction' },
+  ] },
+  { title: '02 · Documentation', links: [
+    { href: '#document-index', label: 'Indexes' },
+    { href: '#document-steps', label: 'Steps & installation' },
+    { href: '#document-values', label: 'Values & comparisons' },
+    { href: '#tool-contracts', label: 'Tool contracts' },
+    { href: '#tooling-documentation', label: 'Editor tooling' },
+    { href: '#agent-documentation', label: 'Agent prompts' },
+    { href: '#package-apis', label: 'Package APIs' },
+    { href: '#stylesheet-examples', label: 'Stylesheets' },
+    { href: '#benchmark-charts', label: 'Charts' },
+    { href: '#code', label: 'Code' },
+  ] },
+  { title: '03 · Working recipes', links: [
+    { href: '#project-style-recipes', label: 'Project styles' },
+    { href: '#platform-behavior', label: 'Platform behavior' },
+    { href: '#typography-motion-recipes', label: 'Typography & motion' },
+    { href: '#color-elevation-recipes', label: 'Color & elevation' },
+    { href: '#foundation-recipes', label: 'Layout foundations' },
+    { href: '#recipes', label: 'Utility scenarios' },
+  ] },
+  { title: '04 · Build a demo', links: [
+    { href: '#authoring', label: 'Interfaces & layout contracts' },
+    { href: '#minimal-compositions', label: 'Minimal compositions' },
+    { href: '#viewport-presets', label: 'Viewport widths' },
+    { href: '#keep-examples-portable', label: 'Portable examples' },
+  ] },
+]} />
+
+## Foundations \{#foundations\}
+The canvas establishes context. Blue identifies the subject; violet identifies a comparison; neutral surfaces support the example without competing with it. All roles adapt to light and dark themes.
+
+<DemoFoundations />
+
+Use the preset spacing, radius and typography scales. Demo-specific roles live in the site theme: `demo-canvas`, `demo-surface`, `demo-line`, `demo-grid`, `demo-text`, `demo-muted`, `demo-blue`, `demo-violet`, `demo-amber`, and `demo-neutral`.
+
+## Demo canvas \{#demo-canvas\}
+
+`Demo` uses the site's neutral fine diagonal stripe by default, matching the established Guide canvas. The shell supplies a border and responsive breathing room, while the example supplies its own layout and geometry. A title, description, controls, and caption appear only when the lesson needs them; controls remain outside the demonstrated layout.
+
+<Demo><div className="flex flex-wrap gap:sm"><DemoItem className="p:md">01</DemoItem><DemoItem className="p:md">02</DemoItem><DemoItem className="p:md">03</DemoItem></div></Demo>
+
+```tsx
+<Demo>
+  <div className="flex gap:sm">
+    <DemoItem className="p:md">01</DemoItem>
+    <DemoItem className="p:md">02</DemoItem>
+  </div>
+</Demo>
+```
+
+Use `padding="none"` for an iframe or a scene with its own spacing. `background="plain"`, `"grid"`, `"dots"`, and `"checkerboard"` are opt-in when a lesson needs an unpatterned surface, geometry grid, or transparency cue. Do not put labels or toolbar controls inside a measured flex, grid, or float scene. The live [clear reference](/reference/clear#clearing-left-floats) demonstrates an isolated iframe with a caption; the [spacing guide](/guide/spacing) retains its original pink inner stripe where that pattern explains padding and gap.
+
+## Primitives \{#primitives\}
+Compose small, predictable pieces. An item supplies its appearance; the example supplies its layout and dimensions.
+
+<DemoPrimitives />
+
+### Demo item \{#demo-item\}
+
+`DemoItem` starts as a neutral raised surface with a crisp border. Set `tone="blue"` to identify the subject or `tone="violet"` for a comparison. The optional `soft`, `solid`, `outline`, and `ghost` variants change paint only. The item has no implied width, height, padding, layout, position, or interactive behavior; the lesson supplies those explicitly.
+
+```tsx
+<Demo>
+  <div className="flex gap:sm">
+    <DemoItem className="p:md">Context</DemoItem>
+    <DemoItem tone="blue" className="p:md">Subject</DemoItem>
+  </div>
+</Demo>
+```
+
+The [order reference](/reference/order) marks the reordered item in blue. The [column span reference](/reference/column-span) uses the same explicit subject tone, while the [spacing guide](/guide/spacing) keeps its original object and pink inner stripe. `DemoItem` renders a noninteractive `div`; use a native button or link when a specimen performs an action.
+
+### Demo text \{#demo-text\}
+
+`DemoText` renders a native paragraph. Its default `body` role inherits the surrounding font size and keeps the existing margin reset and 1.65 line height, so text-flow lessons retain their geometry. Opt into `variant="lead"` for prominent specimen copy or `variant="caption"` for a short note; these roles supply type treatment without becoming extra layout items.
+
+```tsx
+<DemoText variant="lead">A clear specimen heading.</DemoText>
+<DemoText>Explanatory copy inherits its container size.</DemoText>
+<DemoText variant="caption">Condition: narrow viewport.</DemoText>
+```
+
+Utilities on `className` can override these paint and typography defaults when the text property itself is under test. The [float reference](/reference/float) uses default body text beside an actual floated image. The [typography guide](/guide/typography) retains its original `DemoP` comparison for the lesson on the text scale.
+
+### Demo media \{#demo-media\}
+
+`DemoMedia` renders a refined SVG specimen when no source is supplied. Its quiet contour artwork follows `currentColor` so a complete utility such as `fg:demo-violet` can mark a comparison. With `src` and required `alt`, it renders the supplied image instead. Both forms have a fine visual edge that takes no layout space.
+
+```tsx
+<DemoMedia className="w:full r:sm" aria-label="Sun above two mountain ridges" />
+<DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} />
+```
+
+The caller sets width, height, crop, float and spacing. The [float reference](/reference/float) demonstrates a real floated image; the [introduction guide](/guide/introduction) retains its original architectural photograph where content, rather than a placeholder, is the point.
+
+### Demo swatch \{#demo-swatch\}
+
+`DemoSwatch` is a static inventory tile for semantic color roles. Its restrained frame keeps pale canvas and surface colors visible next to saturated subject and comparison colors. `label` is required; optional `value` names the token or value in a compact monospace line. An explicit utility class or `style` supplies the actual color.
+
+```tsx
+<DemoSwatch label="Subject" value="demo-blue" className="bg:demo-blue" />
+```
+
+The color patch is decorative when it has no children, while the visible label carries the meaning. This tile has no copy action or focus stop. The [colors guide](/guide/colors#default-color-palette) retains its original interactive palette for browsing and copying fixed color steps.
+
+<Demo title="Badge sizes"><div className="flex flex-wrap items-center gap:md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
+
+<Demo title="Badge treatments"><div className="flex flex-wrap items-center gap:md"><DemoBadge>Draft</DemoBadge><DemoBadge tone="blue" variant="solid">Selected</DemoBadge><DemoBadge tone="violet" variant="outline">Comparison</DemoBadge><DemoBadge tone="amber" variant="ghost">Note</DemoBadge></div></Demo>
+
+`DemoBadge` labels a state or category. It renders a native span with four sizes
+(`xs`, `sm`, `md`, `lg`), the shared tones and the same paint variants as `DemoItem`.
+The default is a neutral, soft, medium badge. Its font-relative padding is explicit;
+keep badges outside measured layouts unless their dimensions are part of the lesson.
+Use a native button when the label performs an action.
+
+```tsx
+<DemoBadge tone="blue" size="sm">Selected layer</DemoBadge>
+```
+
+```tsx
+<Demo title="Alignment" background="grid">
+  <div className="flex items-center gap:sm">
+    <DemoItem className="p:md">01</DemoItem>
+    <DemoItem tone="violet" className="p:md">02</DemoItem>
+  </div>
+</Demo>
+```
+
+## Downloadable assets \{#assets\}
+
+`DemoAsset` pairs original artwork with a named surface and a native download link. Use it for logos, icons or exported diagrams; it is a presentation frame, not a measured CSS layout. Intrinsic image dimensions reserve the aspect ratio. The preview constrains images to the available width and a 6rem height without cropping.
+
+<DemoAsset title="Master CSS mark" description="Transparent is the default surface." src="/images/logo.svg" alt="Master CSS gold mark" width={104} height={56} />
+
+```tsx
+<DemoAsset
+  title="Master CSS mark"
+  description="Original SVG artwork."
+  src="/images/logo.svg"
+  alt="Master CSS gold mark"
+  width={104}
+  height={56}
+/>
+```
+
+Use `surface="light"` or `surface="dark"` to keep the preview background fixed across page themes. `surface="transparent"` uses a checkerboard. The footer stays outside the artwork and exposes the file format (`SVG` by default). Use same-origin URLs for native downloads and a descriptive title for each accessible download name. See the [Brand page](/brand#download-assets) for the light, dark and transparent variants together.
+
+## Annotations \{#annotations\}
+Name the subject, reveal a boundary, or expose an axis. Keep annotations outside the layout being demonstrated. Use color with labels, never as the only explanation.
+
+<DemoAnnotations />
+
+`DemoMeasure` observes its content boundary and updates as the container changes. `DemoAxes` and `DemoLegend` describe the relationship without inserting items into the measured flex or grid parent.
+
+## Interaction \{#interaction\}
+Add controls when they help explain a change. Static specimens have no toolbar. Playback-controlled specimens start paused; bounded scroll areas remain keyboard accessible.
+
+<DemoInteractions />
+
+## Document indexes \{#document-index\}
+
+`DocumentationIndex` organizes a large catalog by section, category or letter. It powers the [Guide](/guide) and [Reference](/reference) entrances. Use complete descriptions for learning paths, and compact link lists for named API or utility lookups. Both views contain the same destinations.
+
+<DocumentationIndexGallery />
+
+Provide a stable `id`, title, description, icon and `groups` for each section. Groups with multiple categories receive native anchor shortcuts; give each group its own stable `id` so shared URLs survive reordering. `showDescriptions` enables complete, wrapping summaries. The default uses compact links. `related` supplies a cross-link to the other catalog.
+
+```tsx
+<DocumentationIndex
+  name="guide"
+  sections={[{
+    id: 'learn', title: 'Learn',
+    description: 'Start with a working example.', Icon: IconBook,
+    groups: [{ entries: [{
+      id: 'intro', title: 'Introduction', category: 'Guide',
+      description: 'Write your first classes.',
+      url: '/guide/introduction',
+    }] }],
+  }]}
+  showDescriptions
+  related={{ href: '/reference', title: 'Reference',
+    description: 'Look up a utility.', Icon: IconBook }}
+/>
+```
+
+The catalog establishes its own container and column layout; place it in the reading column, outside measured demos. Category and A–Z controls are native buttons with pressed states. Letter and category shortcuts are real fragment links, including direct-entry URLs. Render one catalog per document so alphabetical anchors remain unique. The complete category view is included in server-rendered HTML; A–Z switching requires JavaScript.
+
+## Document steps \{#document-steps\}
+
+Use `DocumentSteps` for a setup sequence with authored headings and code. Each `DocumentStep` gets a decorative two-digit number through `DocumentStepNumber`. Keep the action in the heading and its expected result in the prose. Reading order stays in the document.
+
+<div data-steps-gallery="">
+<DocumentSteps>
+  <DocumentStep>
+    ### <DocumentStepNumber />Create an entry
+    This default step spans the reading column. Longer explanations, native lists and full-width examples can stay together.
+  </DocumentStep>
+  <DocumentStep columns>
+    <DocumentStepText>
+      ### <DocumentStepNumber />Connect the stylesheet
+      The column variant pairs instructions with code when its own container has room. Narrow columns stack with an explicit gap.
+    </DocumentStepText>
+    <DocumentStepBody>
+      ```css name=src/style.css
+      @import "@master/css";
+      ```
+    </DocumentStepBody>
+  </DocumentStep>
+</DocumentSteps>
+</div>
+
+```jsx
+<DocumentSteps>
+  <DocumentStep columns>
+    <DocumentStepText>
+      <h3><DocumentStepNumber />Connect the stylesheet</h3>
+      <p>Import the entry in your app.</p>
+    </DocumentStepText>
+    <DocumentStepBody>{code}</DocumentStepBody>
+  </DocumentStep>
+</DocumentSteps>
+```
+
+The components are server rendered. Supply native headings at the appropriate level and preserve their stable IDs. Numbering is decorative, not a replacement for headings or a progress indicator. The 44rem container threshold controls the optional two-column layout; all code retains its own horizontal scroll. Place measured demos outside the step layout.
+
+Use the same sequence pattern across installations:
+
+- [Quick start](/guide/installation), [Vite](/guide/installation/vite), [CLI](/guide/installation/cli) and [VS Code](/guide/installation/vscode) pair each action with its result.
+- [Webpack](/guide/installation/webpack), [Rspack](/guide/installation/rspack) and [Rsbuild](/guide/installation/rsbuild) keep full configuration files readable.
+- [Astro](/guide/installation/astro) and [SvelteKit](/guide/installation/svelte) connect layouts with server hooks.
+- [Express](/guide/installation/express), [PHP](/guide/installation/php) and [Rails](/guide/installation/rails) connect independently built assets with complete server templates.
+- [Laravel](/guide/installation/laravel), [WordPress](/guide/installation/wordpress) and [Shopify](/guide/installation/shopify) preserve the host's asset helpers and layout hooks.
+- [ASP.NET Core](/guide/installation/aspnet-core) and [Blazor](/guide/installation/blazor) make asset-build, host-build and publication order explicit.
+
+Place a complete template before its appearance preview. `DemoConfiguredExample`
+uses literal source to keep displayed classes and rendered samples aligned; a
+preview does not run the host framework. Keep setup constraints in the lesson.
+
+### Installation mode navigation
+
+`InstallationModeTabs` reuses the site’s navigation treatment for sibling setup guides. Pass translated labels, canonical destinations and any existing alias routes. One matching link receives `aria-current="page"`; aliases affect selection without changing the destination. These are ordinary links with native keyboard behavior, not an in-page tab panel. See [Blazor runtime rendering](/guide/installation/blazor/runtime-rendering) for an alias that selects the canonical runtime guide.
+
+<InstallationModeTabs items={[
+  { href: '/guide/installation/blazor', aliases: ['/guide/installation/blazor/runtime-rendering'], label: 'Runtime Rendering' },
+  { href: '/guide/installation/blazor/static-rendering', label: 'Static Rendering' },
+]} />
+
+```jsx
+<InstallationModeTabs items={[
+  { href: '/guide/installation/blazor', aliases: ['/guide/installation/blazor/runtime-rendering'], label: 'Runtime Rendering' },
+  { href: '/guide/installation/blazor/static-rendering', label: 'Static Rendering' },
+]} />
+```
+
+## Document values \{#document-values\}
+
+Use `DocumentValueList` for reference facts that need a stable anchor and readable
+values. It keeps a compact key/value arrangement when the content column has room,
+then stacks each entry on narrow screens. Long values wrap without hiding content.
+
+<DocumentValueList rows={[
+  { id: 'catalog-duration-fast', title: 'fast', identifier: '--duration-fast', values: [{ label: 'Default', value: '.15s' }] },
+  { id: 'catalog-surface-raised', title: 'raised', identifier: '--color-surface-raised', values: [{ label: 'light', value: 'var(--color-white)' }, { label: 'dark', value: 'var(--color-gray-90)' }] },
+  { id: 'catalog-easing-smooth', title: 'smooth', identifier: '--easing-smooth', values: [{ label: 'Default', value: 'cubic-bezier(.4, 0, .2, 1)' }] }
+]} />
+
+```jsx
+<DocumentValueList rows={[
+  { id: 'duration-fast', title: 'fast', identifier: '--duration-fast',
+    values: [{ label: 'Default', value: '.15s' }] }
+]} />
+<DocumentKeyList keys={['animation-duration:', 'transition-duration:']} />
+```
+
+Each row uses a real heading and an ordinary anchor link. IDs must be unique within
+the page; `headingLevel={4}` supports an entry nested below an existing third-level
+heading. Values remain selectable text. Use `DemoTokenTable` for token roles with
+visual specimens, and the existing code renderer for complete source examples.
+Both document components are static and live outside measured demo layouts.
+
+### Namespace consumers
+
+Use `DocumentNamespaceTable` to map a namespace to its complete public consumers.
+Large rows show six keys initially; the native disclosure reveals the rest by
+mouse, touch, Enter or Space. All keys remain in the HTML and portable Markdown.
+This server component requires no client state and stays outside teaching geometry.
+
+<NamespaceRecipes />
+
+```jsx
+<DocumentNamespaceTable rows={[
+  { namespace: 'font-family', consumers: ['font:', 'font-family:'] }
+]} />
+<DocumentKeyList keys={consumerKeys} previewCount={6} />
+```
+
+`DocumentKeyList` shows every key by default. Set `previewCount` when a long lookup
+list would interrupt reading; keep essential instructions outside the disclosure.
+See the complete [namespace registry](/reference/rules/modes#default-namespace-sources).
+
+### File structure
+Use `DocumentFileTree` for a static directory structure. Native nested lists preserve the hierarchy; monochrome icons are decorative. Entries can have a short description and nested children.
+
+<PackageTree name="monorepo" />
+
+```tsx
+<DocumentFileTree title="Stylesheet package" entries={[
+  { name: 'package.json' },
+  { name: 'master.css', description: 'Public CSS source' },
+  { name: 'assets', children: [], description: 'Optional assets' }
+]} />
+```
+
+<DocumentFileTree title="Stylesheet package" entries={[
+  { name: 'package.json' },
+  { name: 'master.css', description: 'Public CSS source' },
+  { name: 'assets', children: [], description: 'Optional assets' }
+]} />
+
+The optional `caption` belongs below the hierarchy. Keep descriptions short; they wrap below filenames in the reading column. Empty `children` marks an empty folder. This is a read-only list, so entries have no tab stops, expansion state or tree-widget keyboard behavior.
+
+Use the same entry data when exporting a plain-text tree. See [Monorepo](/guide/monorepo#one-project-one-workspace) and [Authoring Packages](/guide/authoring-packages#create-a-package) for complete examples.
+
+### Discovery waterfall
+
+`DemoWaterfall` shows illustrative request order with a text description and labeled resource rows. It has no time axis, FCP marker or animated playback. Keep measured results in the benchmark components.
+
+<ResourceWaterfall />
+
+```tsx
+<DemoWaterfall
+  title="A dependency discovered later"
+  description="The second request becomes known after the first resource loads."
+  rows={[
+    { label: 'Entry', start: 0, end: 40, tone: 'violet' },
+    { label: 'Dependency', start: 50, end: 90, tone: 'blue' }
+  ]}
+/>
+```
+
+<DemoWaterfall title="A dependency discovered later" description="The second request becomes known after the first resource loads." rows={[{ label: 'Entry', start: 0, end: 40, tone: 'violet' }, { label: 'Dependency', start: 50, end: 90, tone: 'blue' }]} caption="A compact two-resource diagram." />
+
+Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/preload-critical-resources#preload-runtime-engine).
+
+### Before and after CSS
+
+`DemoStyleComparison` places identical, trusted HTML in two isolated browser documents. One uses native browser defaults; the other receives the supplied CSS. This makes the change in layout visible without flashing content or changing the surrounding page.
+
+<FirstPaintComparison />
+
+```tsx
+<DemoStyleComparison
+  html='<p class="message">Saved to your workspace.</p>'
+  css='.message { padding: 1rem; font: 500 1rem/1.5 system-ui; }'
+  height={160}
+/>
+```
+
+<DemoStyleComparison html={'<p class="message">Saved to your workspace.</p>'} css=".message { padding: 1rem; font: 500 1rem/1.5 system-ui; }" height={160} />
+
+The previews use the same fixed height, with native scrolling when needed. The comparison grid owns layout outside each iframe; the unstyled document receives no demo reset or object styles. Pass site-authored markup only. See [first-paint styling](/guide/flash-of-unstyled-content).
+
+### Document flow
+
+`DocumentFlow` presents a short ordered process using real text and native list semantics. Numbered stages share the reading column on wide screens and stack when space is limited. It is a static explanation; the layout does not imply timings or an active step.
+
+<DeliveryFlow name="runtime" />
+
+```tsx
+<DocumentFlow
+  title="Publish a document"
+  steps={[
+    { title: 'Write', description: 'Prepare the source content.' },
+    { title: 'Publish', description: 'Deliver the reviewed output.' }
+  ]}
+/>
+```
+
+<DocumentFlow title="Publish a document" steps={[{ title: 'Write', description: 'Prepare the source content.' }, { title: 'Publish', description: 'Deliver the reviewed output.' }]} />
+
+Use two to four concise stages. An optional caption explains shared constraints below the stages. The component owns its grid, spacing and border; keep it outside any layout being measured. No controls, focus stops or animation are added.
+
+`DeliveryFlow` supplies shared, exportable recipes for [runtime and hydration](/guide/rendering-modes#runtime-rendering), [source scanning](/guide/scanning-latent-classes), [native pruning](/guide/native-css-pruning) and [route styles](/guide/route-level-styles). Their ordered text is included in search and Markdown.
+
+### Document choices
+
+Use `DocumentChoices` for a small set of related destinations inside a reading
+column. Every link has a title, a short description and an optional decorative
+icon. Rows have generous click targets, a visible keyboard outline and native
+list semantics. Keep the whole row as one link; do not nest controls inside it.
+
+<DocumentChoices label="Example guide choices" entries={[
+  { title: 'Theme Tokens', description: 'Name the values shared across a product.', href: '/guide/theme' },
+  { title: 'Cascade Layers', description: 'Understand which declarations take priority.', href: '/guide/cascade-layers' }
+]} />
+
+```tsx
+<DocumentChoices label="Related guides" entries={[
+  { title: 'Theme Tokens', description: 'Shared product values.', href: '/guide/theme' }
+]} />
+```
+
+`MigrationGuides` adds the existing brand artwork and reads the same seven entries
+used by search and Markdown exports. See the [migration overview](/guide/migration#frameworks).
+Use `DocumentationIndex` for large catalogs that need categories and alphabetical
+navigation. These navigation components sit outside teaching layouts.
+
+<MigrationGuides />
+
+### Reading comparisons
+
+Wrap a two-column Markdown table in `DocumentComparison` when readers need to
+compare prose or class syntax within the document column. Both columns stay
+visible on narrow screens; long syntax wraps. Use lists for decisions that need
+several paragraphs, and code blocks for source that must preserve its formatting.
+This static wrapper keeps native table headers and does not add demo geometry.
+
+<DocumentComparison>
+
+| Existing CSS | Master CSS |
+| --- | --- |
+| `border-radius: .75rem` | `r:.75rem` preserves the same length. |
+| `width: var(--progress)` | `w:var(--progress)` reads the same runtime property. |
+| `@media (width >= 72rem)` | Define `--breakpoint-dashboard: 72rem`, then use `@dashboard`. |
+
+</DocumentComparison>
+
+```mdx
+<DocumentComparison>
+
+| Existing CSS | Master CSS |
+| --- | --- |
+| `border-radius: .75rem` | `r:.75rem` |
+
+</DocumentComparison>
+```
+
+See [migration utility mappings](/guide/migration/tailwindcss#translate-utilities)
+and [rendering choices](/guide/migration/v1#install-the-current-setup).
+
+### Syntax mappings
+
+Use `DocumentCodeTable` for short syntax tokens paired with their native CSS.
+Row headers keep each token intact; CSS wraps at natural spaces. Keep long generated
+rules in code blocks. The table is a static reading aid, outside demo geometry.
+
+<CodeTableRecipes />
+
+```jsx
+<DocumentCodeTable label="Token" rows={[
+  { syntax: '@component', css: '@layer components' },
+  { syntax: '@reduce-motion', css: '@media (prefers-reduced-motion: reduce)' }
+]} />
+```
+
+The default first-column label is “Syntax”. The [conditions reference](/reference/rules/conditions#common-condition-variants)
+uses this pattern for both named variants and arbitrary queries. Portable Markdown
+retains the original two-column table and every value.
+
+
+## Tool contracts \{#tool-contracts\}
+
+Use `DocumentParameters` for API inputs whose identifiers, types, and explanations need the full reading width. Required and optional states use text; neither is a validation control. Nested paths retain their full names and state when their parent is needed.
+
+<div data-tool-contract-gallery>
+<DocumentParameters label="Required and optional parameters" parameters={[
+  { name: 'className', type: 'string', requirement: 'Required', description: 'One complete class, including any selector or condition suffix.' },
+  { name: 'mode', type: 'string', requirement: 'Optional', description: 'Use the active manifest’s default behavior when omitted.' }
+]} />
+
+<DocumentParameters label="Nested parameters" parameters={[
+  { name: 'range.start.character', type: 'integer', requirement: 'Required when parent is provided', description: 'Zero-based UTF-16 code-unit offset. Keep the full path visible so readers can build the correct request object.' }
+]} />
+
+<DocumentDisclosure title="Complete input schema">
+```json
+{
+  "type": "object",
+  "properties": { "className": { "type": "string", "minLength": 1 } },
+  "required": ["className"]
+}
+```
+</DocumentDisclosure>
+
+<DocumentDisclosure title="Expanded supporting detail" open>
+Native disclosure keeps supporting content in the document and lets readers use the keyboard to open or close it. Essential instructions belong outside the disclosure.
+</DocumentDisclosure>
+</div>
+
+```tsx
+<DocumentParameters label="Parameters" parameters={[
+  { name: 'className', type: 'string', requirement: 'Required', description: 'One complete class.' }
+]} />
+<DocumentDisclosure title="Complete input schema">
+  <Code lang="json">{schema}</Code>
+</DocumentDisclosure>
+```
+
+Place both components in document flow, outside the layout being demonstrated. Use a plain sentence for an empty parameter list. Long code can scroll inside a disclosure; parameter descriptions wrap naturally. Keep the full contract in portable Markdown and search even when the page initially collapses it.
+
+Used by [class inspection](/reference/tools/mcp/mastercss_inspect_class), [directive formatting](/reference/tools/mcp/mastercss_preview_directive_format), and [CLI generation](/reference/tools/cli/generate).
+
+## Tooling documentation \{#tooling-documentation\}
+Use a readable option list for long identifiers, and a labeled source/result pair when explaining a tool. These static examples are checked against the actual lint and language-service output with the default preset.
+
+<div data-tooling-gallery>
+  <ToolingOptions name="languageSettings" />
+  <ToolingOptions name="completions" />
+  <ToolingExample name="sort" />
+  <ToolingExample name="invalid" />
+  <ToolingExample name="hover" />
+</div>
+
+`DocumentOptions` keeps each identifier above its optional default and description. It uses native definition-list semantics; long names and values wrap without shrinking the prose into a narrow table cell. For prose authored directly in MDX, compose `DocumentOptionList` and `DocumentOptionEntry`; the paragraphs, links and inline code remain part of the portable document.
+
+```mdx
+<DocumentOptionList label="Component interfaces">
+  <DocumentOptionEntry name="DemoSurface">
+
+    **Interface:** Native div props.
+
+    A bordered surface with no implicit layout or padding.
+
+  </DocumentOptionEntry>
+</DocumentOptionList>
+```
+
+Keep these document lists outside measured specimens. Each entry owns one term and its description; use ordinary paragraphs for separate interface details and layout constraints.
+
+```tsx
+<DocumentOptions label="Feature settings" options={[
+  {
+    name: 'masterCSS.suggestSyntax',
+    defaultValue: 'true',
+    description: 'Offer contextual completion items.'
+  }
+]} />
+```
+
+`DocumentCodeExample` reuses the shared syntax highlighter. Source-only examples may show an error or warning; paired examples can use different source and result languages. Each block has a keyboard-accessible copy button and clipboard feedback. It remains readable when copying is unavailable.
+
+```tsx
+<DocumentCodeExample
+  title="A stable class order"
+  language="mcss"
+  source="p:md flex"
+  result="flex p:md"
+  sourceLabel="Before sorting"
+  resultLabel="After sorting"
+/>
+```
+
+Use complete, verified strings. Code keeps its whitespace and may scroll inside its block; the option descriptions remain fluid. Neither component belongs inside a measured CSS lesson's flex or grid geometry. Keep the full text in the content export adapter.
+
+See [Code Linting](/guide/code-linting#linting-rules) for sorting, canonical forms, conflicts and diagnostic variants, and [Language Service](/guide/language-service#editor-features) for completion, hover and formatter output.
+
+## Agent documentation \{#agent-documentation\}
+Prompts are prose that readers copy into another tool. `DocumentPrompt` preserves the exact text, wraps long lines, and keeps the copy action visible without presenting an editable field or a simulated chat.
+
+<div data-agent-gallery>
+  <AgentPrompt name="feature" />
+  <AgentPrompt name="setup" />
+  <AgentWorkflow />
+  <AgentFixExample />
+  <AgentStyleExample code={false} />
+</div>
+
+```tsx
+<DocumentPrompt
+  title="Review a component"
+  text="Review this component's classes and keyboard behavior."
+/>
+```
+
+Use a short title describing the task. Keep paragraphs and lists in the text itself so clipboard and portable exports preserve the full instructions. Short tasks and longer setup prompts use the same layout; both wrap within the reading column. The server renders the text and only the copy button needs client state.
+
+Combine prompts with `DocumentOptions` for tool names, `DocumentFlow` for an ordered workflow, and `DocumentCodeExample` for verified before/after content. A workflow diagram does not execute a tool or imply that approval has been given. Keep prompts outside any measured demo geometry, and use ordinary code blocks when whitespace-sensitive source needs horizontal scrolling.
+
+See [AI Coding](/guide/ai-coding#give-the-agent-useful-context) for context, review, and project-rule recipes, and [MCP Server](/guide/mcp-server#safe-write-previews) for the actual preview/apply process. The button specimen reuses the guide's configuration, HTML, and generated CSS.
+
+## Package APIs \{#package-apis\}
+
+`DocumentAPIIndex` keeps import paths and export names together with their purpose. It is a server-rendered navigation list: identifiers wrap at path separators and word boundaries without changing copied text, and each destination is a normal keyboard-accessible link. Use the compact variant for a list of symbols inside `DocumentDisclosure`.
+
+<div data-package-gallery="">
+<DocumentAPIIndex label="Example import paths" entries={[
+  { name: '@master/css', href: '/reference/packages/css', description: 'Engine sessions and class rendering.' },
+  { name: '@master/css-compiler/stylesheet/browser', href: '/reference/packages/css-compiler', description: 'Browser compilation from supplied source and a base manifest.' }
+]} />
+
+<DocumentDisclosure title="Example exports" open>
+<DocumentAPIIndex compact label="Example exports" entries={[
+  { name: 'MasterCSSCompileManifestFileDeliveryOptions', href: '/reference/packages/css-compiler', description: 'Interface' },
+  { name: 'createEngine', href: '/reference/packages/css', description: 'Function' }
+]} />
+</DocumentDisclosure>
+
+<DocumentDeclaration label="Short declaration">{'export declare function createEngine(\n  options: MasterCSSEngineOptions\n): Promise<MasterCSSEngine>;'}</DocumentDeclaration>
+
+<DocumentDeclaration label="Options declaration">{'export interface MasterCSSCompileOptions {\n  readonly classes?: readonly string[];\n  readonly from?: string;\n  readonly preserveNativeCSS?: boolean;\n  readonly preserveNativeSource?: boolean;\n  readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void;\n}'}</DocumentDeclaration>
+
+<PackageDeclarationExample identifier="@master/css-compiler/diagnostics#MasterCSSInspectionReport" />
+</div>
+
+`DocumentDeclaration` reuses server syntax highlighting and the shared keyboard copy control. Declarations above 40 lines use a native disclosure; their full text stays in the document and portable exports. Long code lines scroll inside the code block. The component does not compile or execute TypeScript. Copy controls become available after client initialization; reading and native disclosures work before it.
+
+```tsx
+<DocumentAPIIndex label="Import paths" entries={[
+  { name: '@master/css', href: '/reference/packages/css',
+    description: 'Engine sessions and class rendering.' }
+]} />
+<DocumentDeclaration label="Engine factory">{declaration}</DocumentDeclaration>
+```
+
+Keep these reading components outside demo geometry. Package pages derive declarations from TypeScript emission and retain public overloads, types, stable anchors and constructor restrictions. See [Compiler](/reference/packages/css-compiler), [Runtime](/reference/packages/css-runtime) and [Tooling](/reference/packages/css-tooling) for complete examples.
+
+## Stylesheet examples \{#stylesheet-examples\}
+Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The server compiles the literal source with the current preset and displays the complete result, including required variables and keyframes. The pair reuses `DocumentCodeExample`, including keyboard copy, visible focus and clipboard feedback. It does not execute a visual effect in the page.
+
+<div data-stylesheet-gallery>
+<StylesheetExample
+  title="A token used by a native rule"
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg:brand;\n}"}
+/>
+
+<StylesheetExample
+  title="An inline token"
+  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg:brand;\n}"}
+/>
+
+<StylesheetExample
+  title="A resource without a matching class"
+  source={"@theme static {\n  --color-brand: #4f46e5;\n\n  @keyframes fade-in {\n    to { opacity: 1; }\n  }\n}"}
+/>
+
+<DocumentOptions label="Example settings" options={[
+  { name: 'root-size', defaultValue: '16', description: <>Divisor for numeric lengths converted to <code>rem</code>. It does not change the browser’s root font size.</> },
+  { name: 'scope', description: <>An optional root selector. See <a href="/reference/directives/settings">Project settings</a> for the defaults.</> }
+]} />
+</div>
+
+```tsx
+<StylesheetExample
+  title="An inline color token"
+  source={`@theme inline { --color-brand: #4f46e5; }
+.card { @compose bg:brand; }`}
+/>
+```
+
+The component accepts a title and standalone CSS source. Use a fixture-backed example for imports, references or assets that need multiple files. Keep the compiler on the server, retain every source and result line in portable Markdown, and allow code to scroll within its own block. A build error must surface during documentation checks.
+
+The default, inline and static examples above share one presentation. `DocumentOptions` also accepts inline code and links in its description; its name and optional default stay separate. Both components belong outside measured demo layouts.
+
+See [Theme and variants](/reference/directives/theme), [Managed definitions](/reference/directives/definitions), [Rule-local composition](/reference/directives/compose) and [Conditional blocks](/reference/directives/variant) for working uses.
 
 ## Benchmark charts
-These examples use fake design-system sample data. They are not benchmark results.
+Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. The examples below use **illustrative data**, not measured results. See [Benchmarks](/guide/benchmarks) for real fixtures, sources, and limits.
+
+`BenchmarkChartGroup` pairs a metric heading with its unit and context. `BenchmarkMetrics` renders a responsive definition list. `BenchmarkDataTable` uses native disclosure and a named, keyboard-focusable scroll region, so long tables retain complete rows and columns. `BenchmarkSource` places a recorded date beside its source link. `BenchmarkFigure`, `BenchmarkDelta`, and `BenchmarkSampleSummary` provide captions, contextual deltas, and sample statistics.
+
+Keep series labels visible, include units and sample counts, and distinguish zero from missing data. Labels wrap; values use tabular numerals. A zero value has no colored fill. Stacked rows normalize to their own totals, so their lengths do not compare absolute payload size. Put important findings and limitations in the document body as well as the chart caption.
+
+```tsx
+import { BenchmarkChartGroup, BenchmarkDataTable, BenchmarkSource } from '~/site/components/benchmarks'
+
+<BenchmarkChartGroup title="Style recalculation" detail="Median · 3 samples" unit="ms"
+  items={[{ id: 'fixture-a', label: 'Fixture A', value: 12.5, color: 'blue' }]} />
+<BenchmarkDataTable title="All recorded measurements">
+  <table>
+    <thead><tr><th scope="col">Fixture</th><th scope="col">Median</th></tr></thead>
+    <tbody><tr><th scope="row">Fixture A</th><td>12.5 ms</td></tr></tbody>
+  </table>
+</BenchmarkDataTable>
+<BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/guide/benchmarks#data-sources" />
+```
+
+Charts and summaries render on the server and do not animate or change measurements. The table adds a small keyboard handler for consistent arrow-key scrolling, including mobile WebKit; disclosure remains native. Use nonnegative finite values with one unit per chart; use delta labels for signed changes. A `max` smaller than an item clips the visual scale and should be avoided. Tables may scroll horizontally inside their own region, never the document.
 
 <BenchmarkChartsDemo />
 
@@ -11,7 +701,7 @@ These examples use fake design-system sample data. They are not benchmark result
 ## Code
 ### Block code
 ```html
-<h1 className="block font:6xl tracking:.2em text-center">
+<h1 class="block font:6xl tracking:.2em text-center">
   Hello, world!
 </h1>
 ```
@@ -51,4 +741,658 @@ const foo = 'bar'
 
 ---
 
-<div className="demo gap:xl px:xl py:xl px:2xl@sm py:2xl@sm"><span className="badge badge-primary badge-xs">S</span><span className="badge badge-primary badge-sm">S</span><span className="badge badge-md badge-primary">S</span><span className="badge badge-lg badge-primary">S</span><span className="badge badge-primary badge-xl">S</span></div>
+## Project style recipes \{#project-style-recipes\}
+
+Use `DemoConfiguredExample` when a preview needs project tokens or managed classes.
+The same configuration and literal HTML supply the live iframe, visible code and
+complete generated CSS. Each preview owns its stylesheet and cannot change the
+surrounding document's theme, component classes or cascade.
+
+<ProjectStyleRecipes />
+
+```jsx
+<ProjectStyleExample name="tokens" />
+<ProjectStyleExample name="modes" />
+<ProjectStyleExample name="components" />
+<ProjectStyleExample name="layers" />
+```
+
+For a new lesson, supply its actual configuration and complete HTML:
+
+```jsx
+<DemoConfiguredExample name="project-spacing" title="A project spacing token"
+  source="@theme { --spacing-card: 1.5rem; }"
+  html={'<article class="p:card">Collection details</article>'}
+  caption="p:card references --spacing-card." />
+```
+
+`theme` adds a real document-class switch; define `mode-trigger: class` in the
+configuration when teaching that behavior. The default has no controls. `code={false}`
+is for a gallery specimen whose usage link leads to the complete source. These are
+server components; only the existing iframe controls hydrate. Use trusted site-authored
+HTML with literal classes. Content-sized previews suit ordinary document flow; use
+`DemoViewport` directly for bounded scrolling, fixed positioning or viewport geometry.
+
+`shadow` places the HTML and generated utility rules inside a real open shadow root.
+Foundation variables inherit from the iframe document. This variant previews styling;
+it does not load a framework or test runtime lifecycle. Keep that distinction in the
+caption and document runtime setup in the linked lesson.
+
+<DemoConfiguredExample name="shadow-root-gallery" title="A shadow-root specimen"
+  source="" html={'<button type="button" class="px:md py:sm r:sm bg:blue fg:white">Hello Lit</button>'}
+  caption="Generated utility CSS in an open shadow root; no framework runs in this preview."
+  shadow />
+
+```jsx
+<DemoConfiguredExample name="shadow-button" title="Shadow-root styling"
+  source="" html={'<button class="px:md py:sm bg:blue fg:white">Hello</button>'}
+  caption="Generated CSS inside a shadow root." shadow />
+```
+
+Used by [Lit installation](/guide/installation/lit). The same default preview also
+supports the rendered markup in [React](/guide/installation/react) and
+[Vue](/guide/installation/vuejs).
+
+For formal rules that need code without a live preview, `ConfiguredExample` accepts
+the same `source` and literal `html` (or its existing `classes` shorthand). It uses
+the same native-property support as the preview and includes complete generated CSS.
+
+## Platform behavior \{#platform-behavior\}
+
+Use `DemoFeatureSupport` beside a native CSS example to report the current
+browser's syntax support. It never changes the specimen's styles. Keep a usable
+fallback in the example; a positive result is not a visual conformance guarantee.
+
+<DemoFeatureSupport condition="(field-sizing: content)" />
+<DemoFeatureSupport condition="selector(:has(:checked))" />
+
+```jsx
+<DemoFeatureSupport condition="(field-sizing: content)" />
+<ProjectStyleExample name="nativeField" />
+```
+
+The field and checkbox recipes above are used in [Compatibility](/guide/compatibility#native-declarations).
+The status starts with a neutral checking label during server rendering, then
+reports the browser's actual `CSS.supports()` result. Supported and unsupported
+states retain the same layout and textual explanation.
+
+`DemoViewTransition` provides two isolated interactive examples. The default is
+view selection; the article variant demonstrates matching snapshot names and
+focus restoration. Both use the existing iframe component and shared controls.
+
+<DemoViewTransition />
+<DemoViewTransition example="articles" />
+
+```jsx
+<DemoViewTransition />
+<DemoViewTransition example="articles" />
+```
+
+Each preview owns a document and a bounded scroll area. It cannot capture the
+documentation page's root snapshot. The scene uses unique element names, skips
+animations for reduced motion and retains an immediate update when the API is
+unavailable. These are scenario recipes, not application navigation components.
+See [View Transitions](/guide/view-transitions) for framework-neutral markup,
+generated CSS and platform constraints.
+
+## Typography and motion recipes \{#typography-motion-recipes\}
+
+<TypeMotionRecipes />
+
+Use `FoundationTypography` for a complete reading hierarchy and
+`FoundationTypeComparison` to compare raw size with a full text treatment. Both keep
+all content visible and preserve the same font resources. Computed size, leading
+and tracking are reported outside the measured text.
+
+```jsx
+<FoundationTypography />
+<FoundationTypeComparison />
+<FoundationMotion />
+<FoundationTransition />
+<FoundationDialog />
+```
+
+`FoundationMotion` starts paused and retains finite native timelines for replay.
+Its authored media conditions still apply: reduced motion shows the final content
+without an animation. `FoundationTransition` uses a native checkbox with explicit
+endpoints and removes both duration and delay under reduced motion.
+`FoundationDialog` opens a real modal inside a bounded iframe; its entrance runs
+once, and closing remains immediate. Keep focus, names and descriptions in the HTML.
+
+---
+
+## Color and elevation recipes \{#color-elevation-recipes\}
+
+<PaintRecipes />
+
+`DemoThemeComparison` renders the same trusted HTML in two independent preview documents.
+Both use real mode variables. Content sizing keeps normal-flow content visible; use
+`DemoViewport` directly for viewport-dependent or scroll-boundary lessons.
+
+```jsx
+<DemoThemeComparison
+  name="surface-card"
+  title="A shared surface"
+  html='<article class="p:md surface:raised text:body">Notes</article>'
+/>
+```
+
+`DemoPalette` reads fixed preset colors and copies CSS variable references. Pass
+`families={['blue', 'violet']}` for a focused set. `DemoCopyButton` accepts `value`,
+`label`, native button attributes and children; its status confirms successful writes
+or explains when the browser declines clipboard access.
+
+```jsx
+<DemoCopyButton value="var(--color-blue-60)" label="Copy blue token">
+  Copy token
+</DemoCopyButton>
+```
+
+`DemoTokenTable` groups each token with its utilities, leaving a readable column for
+its role or value. Rows may include a decorative preview. Keep inventory tables outside
+the measured scene and derive their values from preset data.
+
+<DemoTokenTable rows={[{ token: '--shadow-sm', utilities: ['shadow:sm'], description: 'A small raised surface.' }]} />
+
+```jsx
+<DemoTokenTable rows={[
+  { token: '--shadow-sm', utilities: ['shadow:sm'],
+    description: 'A small raised surface.' }
+]} />
+```
+
+The palette does not choose foreground/background pairs. In color tables, direct
+variable previews are inventories; practical recipes use complete literal utilities.
+Shadow examples supply enough canvas space for paint and preserve the focus outline.
+
+---
+
+## Foundation recipes \{#foundation-recipes\}
+
+Use practical compositions when teaching layout decisions. These shared specimens appear in the Guide; their links identify the owning lesson. Native links and checkboxes remain usable inside page previews.
+
+<FoundationRecipes />
+
+```tsx
+<FoundationBreakpoint />
+<FoundationContainerGrid />
+<FoundationMedia />
+<FoundationSizing />
+<FoundationAxes />
+<FoundationShrink />
+<FoundationRadius />
+<FoundationShapes />
+```
+
+`DemoContainer` adjusts a real wrapper while the page viewport stays fixed. Children explicitly provide their query boundary and responsive descendants. Its native range supports keyboard and touch; Fit restores the available width. Widths larger than the canvas stay reachable through horizontal scrolling inside the demo.
+
+```tsx
+<Demo title="Container query" padding="none">
+  <DemoContainer title="Card">
+    <section className="container">
+      <article className="grid-cols:1 grid-cols:2@container(md)">
+        <div>Media</div><div>Content</div>
+      </article>
+    </section>
+  </DemoContainer>
+</Demo>
+```
+
+A query container introduces inline-size containment. Place it outside the responsive subject and let the parent establish its available width. Measurement and controls stay outside that layout. A wrapper capped by max-width can remain narrower than the adjustable region; label which boundary is being measured.
+
+`DemoPageViewport` reuses the viewport controls for a trusted, same-origin site example page. It adjusts the actual iframe viewport, synchronizes the theme and keeps long page content scrollable. Use this for viewport breakpoints; use `DemoContainer` for component size queries. Do not use a transformed canvas to simulate either condition.
+
+```tsx
+<DemoPageViewport
+  src="/examples/layout-system"
+  title="Workspace layout"
+  height={540}
+/>
+```
+
+The complete workspace and gallery recipes teach [layout structure](/guide/layout-system) and [responsive design](/guide/responsive-design). Their reduced HTML shows the same column counts, spans and thresholds as the preview.
+
+---
+
+## Recipes \{#recipes\}
+Choose a category, then expand a recipe to try the same scene used in Reference. Each
+entry links to its complete explanation and framework-neutral source. Native disclosure
+controls support keyboard navigation and keep the catalog compact; the complete
+specimens remain in the server-rendered page.
+
+Each scene supplies the environment its property needs: a formatting context for
+floats, a real viewport for fixed positioning, or overflow for scrolling.
+
+<DemoRecipes />
+
+`DemoCatalog` groups named recipes into native disclosures. Each entry supplies its
+preview and a link to the complete lesson. `DemoIndex` provides the same categorized
+link treatment for page sections. Both render on the server and need no custom
+keyboard handlers.
+
+```tsx
+import DemoCatalog from '~/site/components/demo/DemoCatalog'
+
+<DemoCatalog groups={[{
+  id: 'recipe-flow', title: 'Document flow', entries: [{
+    id: 'clear-right', title: 'Clear the right boundary', label: 'clear',
+    href: '/reference/clear#clearing-right-floats',
+    children: <DemoExample page="clear" section="clearing-right-floats" />,
+  }],
+}]} />
+```
+
+Keep group IDs unique within the page. The disclosure controls sit outside the
+preview; they never become flex items, grid cells or part of the demonstrated text
+flow. Collapsed recipes retain their source in the page, while native lazy iframe
+loading defers offscreen previews. This pattern is for browsing many independent
+examples; keep the primary example in an individual lesson directly visible.
+
+## Authoring \{#authoring\}
+Import site primitives from `~/site/components/demo`. They are also available in MDX. Static primitives render on the server; measurements, playback and viewport controls add only the client behavior they need. In TSX, import `DemoThemeComparison`, `DemoPalette`, `DemoTokenTable` and foundation recipes directly from their matching files under `site/components/demo/`; these server helpers are registered separately from the client-compatible barrel.
+
+<DocumentOptionList label="Demo component interfaces">
+
+<DocumentOptionEntry name="Demo">
+
+**Interface:** `title`, `description`, `caption`, `controls`, `background`, `padding`
+
+`className` and `style` apply to the canvas. `frameClassName` styles the outer frame.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoSurface">
+
+**Interface:** Native div props
+
+A bordered surface; no implicit layout or padding.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoItem">
+
+**Interface:** `tone`, `variant`, native div props
+
+Paint only. Add geometry and layout explicitly.
+The default tone is neutral; blue and violet are explicit teaching roles.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoComparison">
+
+**Interface:** Native div props
+
+Responsive comparison columns; each child is one specimen.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoText, DemoMedia, DemoSwatch">
+
+**Interface:** Text accepts `variant="body" | "lead" | "caption"` plus native paragraph props; media accepts SVG props or `src` and `alt`; swatches require `label` and accept optional `value`
+
+Reusable text, SVG artwork and labeled color samples.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoLabel, DemoLegend">
+
+**Interface:** Text; legend `items` with `label` and `tone`
+
+Annotations accompany the subject instead of joining its layout.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoMeasure">
+
+**Interface:** `label`, `children`
+
+Measures its wrapper; place it outside the demonstrated parent.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoAxes">
+
+**Interface:** `inline`, `block`, `children`
+
+Labels physical directions around the example.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoControls">
+
+**Interface:** `label`, `children`
+
+A labeled fieldset for native controls.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoScrollArea">
+
+**Interface:** Native div props
+
+Focusable region with bounded overflow.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoMotion">
+
+**Interface:** `children`
+
+Explicit play, pause and replay using browser animations.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoViewport">
+
+**Interface:** `title`, `document` or `src`, `responsive`, `widthPresets`, `theme`, `print`, `motion`, `initialTheme`, `inspect`, `height`, `maxWidth`, `sizing`
+
+An isolated iframe; width controls resize the actual viewport.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoThemeComparison">
+
+**Interface:** `name`, `title`, `html`, `css`, `caption`, `height`, `print`
+
+Compiles one trusted specimen into two independently themed, content-sized documents.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoPalette">
+
+**Interface:** Optional `families`
+
+Fixed preset color inventory with native clipboard actions.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoCopyButton">
+
+**Interface:** `value`, `label`, native button props
+
+Reports the actual clipboard result and retains keyboard focus.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoTokenTable">
+
+**Interface:** `rows`, optional `descriptionTitle`
+
+Two-column document inventory; long tokens scroll inside the table.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoContainer">
+
+**Interface:** `title`, `children`, `maxWidth`
+
+A measured wrapper with keyboard-accessible width controls; children own containment.
+
+</DocumentOptionEntry>
+
+<DocumentOptionEntry name="DemoPageViewport">
+
+**Interface:** `src`, `title`, `height`
+
+A trusted site example page in a real, scrollable viewport.
+
+</DocumentOptionEntry>
+
+</DocumentOptionList>
+
+### Choose the smallest useful frame
+`background` accepts `stripes` (default), `grid`, `dots`, `plain`, or `checkerboard`. `padding` accepts `lg` (default), `md`, `sm`, or `none`. Use `none` for an embedded viewport, a full-bleed scene, or a composition with its own padding.
+
+### Minimal compositions \{#minimal-compositions\}
+Every specimen below is available directly in MDX. The surrounding example owns geometry; these small compositions show where annotations and controls belong.
+
+```tsx
+<DemoSurface className="p:md">
+  <DemoLabel>Layer</DemoLabel>
+  <DemoText>Form follows function.</DemoText>
+</DemoSurface>
+
+<DemoComparison>
+  <DemoItem tone="neutral" className="p:md">Before</DemoItem>
+  <DemoItem tone="violet" variant="outline" className="p:md">After</DemoItem>
+</DemoComparison>
+
+<DemoMedia className="w:full" />
+<DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
+<DemoSwatch label="Subject" className="bg:demo-blue" />
+
+<DemoAxes inline="Main axis" block="Cross axis">
+  <DemoMeasure label="Container">
+    <div className="flex gap:sm">{/* measured layout */}</div>
+  </DemoMeasure>
+</DemoAxes>
+<DemoLegend items={[{ tone: 'blue', label: 'Subject' }]} />
+
+<DemoControls label="Alignment">
+  <button type="button" className="demo-button">Start</button>
+</DemoControls>
+<DemoScrollArea aria-label="Layers" className="h:40x">
+  {/* overflowing content */}
+</DemoScrollArea>
+<DemoMotion>
+  <DemoItem className="size:16x animation:rotate|2s|linear|infinite" />
+</DemoMotion>
+<DemoViewport title="Responsive layout" document={htmlDocument} responsive />
+```
+
+`DemoComparison` arranges direct children in responsive columns; use a native stacking parent when comparing vertically. `DemoScrollArea` intentionally establishes overflow. `DemoViewport` receives a complete HTML document with its own CSS, and supports native events, theme inspection and print preview. Its width control spans 240–1600px by default, so the preset `lg` breakpoint at 1280px is reachable. Set `maxWidth` for a wider threshold when needed. Pass only trusted, site-authored documents; the iframe isolates layout and is not a security boundary. Set `initialTheme="light"` or `"dark"` to pin a specimen’s initial mode; omit it to follow the surrounding page. Controls become available after the preview is ready. Use the Reference recipes for compiled utility examples.
+
+### Named viewport widths \{#viewport-presets\}
+
+Use `widthPresets` with `responsive` to expose meaningful boundaries alongside the range control. The first preset sets the initial iframe width; Fit returns to the available canvas width. Derive breakpoint values from the project’s active theme. Every preset changes the actual viewport, including when it is wider than the phone displaying it.
+
+<SyntaxViewportGallery />
+
+```tsx
+<DemoViewport
+  title="A breakpoint comparison"
+  document={htmlDocument}
+  responsive
+  widthPresets={[
+    { label: 'Below the boundary', width: breakpoint - 1 },
+    { label: 'Above the boundary', width: breakpoint + 1 },
+  ]}
+/>
+```
+
+Keep preset widths inside the range (240px through `maxWidth`) and use distinct, descriptive labels. Wide frames scroll inside the canvas; do not scale the specimen or rewrite the subject’s styles to imitate a media query. [Syntax Tutorial](/guide/syntax-tutorial#conditions) uses the preset `sm` boundary for padding and conditional hover behavior.
+
+### Keep behavior honest
+Do not put layout, containment, transforms or clipping on a subject merely to center its label. Those properties can change the behavior being taught. Place controls outside the scene, and use an iframe for viewport-dependent examples.
+
+### Size the canvas to the lesson
+Use `sizing="content"` for normal-flow comparisons that stack on small screens. The frame follows its document’s natural height as images load or text wraps, so the reader can see every specimen without a second vertical scroll area.
+
+Keep the default `sizing="viewport"` for fixed positioning, scrolling, viewport units and height-based conditions. In this mode, `height` defines the real viewport. Content sizing must not be used when the example’s height depends on the iframe’s own height.
+
+```tsx
+<DemoViewport title="Image fitting" document={comparisonDocument} sizing="content" />
+<DemoViewport title="Sticky navigation" document={scrollingDocument} height={300} />
+```
+
+### Make positioning and paint boundaries explicit
+Give a positioning example its containing block in the displayed HTML. Keep labels outside the tested layout; a label inserted into a flex row or text flow changes the lesson. Dashed outlines mark original slots and parent boundaries without adding border dimensions.
+
+Stacking examples need actual overlapping positioned boxes. Show both the child and its parent context when teaching z-index. For isolation, put the comparison backdrop outside the tested element so readers can see which pixels are excluded from blending.
+
+A clipping example should distinguish a scroll container from a clipping boundary. The viewport’s trusted specimen controls support `data-scroll-container="element-id"` with `data-scroll-edge="start"` or `"end"`; they call the element’s native `scrollTo()` method. Keep these controls outside the clipped element. Use ordinary DOM event listeners in standalone examples.
+
+### Expose real scroll geometry
+Keep a scrollport’s dimensions, overflow, track direction and snap candidates in the displayed HTML. The scroll recipes decorate that exact structure; they do not supply a missing track or scroll height through shared styles. Keep destination controls and position readings outside the scrollport.
+
+Use nested outer and inner scroll areas to compare chaining. A native position readout makes the result visible even when the platform hides its scrollbars. `data-scroll-readout="element-id"` reports actual offsets; `data-scroll-offset="target-id"` with `data-scrollport="container-id"` and `data-scroll-axis="x"` or `"y"` reports the target’s inset from the scrollport edge.
+
+A destination control with `data-scroll-to="target-id"` uses native `scrollIntoView()` with the target’s computed snap alignment. It preserves the surrounding document’s scroll position, including in browsers that ignore the nearest-container option. To demonstrate snap stops, use `data-scroll-by="container-id"` with `data-scroll-distance="600"`: a relative request can stop at an intermediate snap point, while direct endpoint navigation can pass it. Relative snap-stop requests are immediate so their destinations are easy to compare. Smooth-scroll recipes follow the system’s reduced-motion preference.
+
+### Measure flex sizing outside the layout
+Flex recipes use the complete displayed HTML for parents, items, bases, gaps and constraints. Decorative outlines add no padding, minimum size or flex behavior. Keep axis labels and measurements outside the tested container so they cannot become extra flex items.
+
+In a trusted iframe specimen, `data-size-readout="element-id"` reports the actual border-box size to one decimal place. A resize observer follows each measured element, including intrinsic sizes that change after a font loads. `data-layout-axis="container-id"` describes the computed main axis as inline or block, with reversal when applicable. The responsive iframe changes real media-query conditions.
+
+Distinguish a starting basis from the final size. Grow factors distribute positive free space; shrink factors are weighted by the inner flex basis. Put a padded label inside a measured item when the lesson needs a simple outer-size ratio. For direction and order examples, native buttons with `tabindex="0"` expose the source focus sequence without a custom keyboard handler or positive tab indices.
+
+### Distinguish alignment from distribution
+Alignment recipes use the same layout paint as flex sizing examples. Author complete parents, tracks, items, gaps and automatic-size constraints in the displayed HTML. The shared paint adds outlines and tone without supplying any of those prerequisites. Name each comparison and keep its labels and readings outside the tested container.
+
+Use `data-alignment-axis="container-id"` with `data-axis-kind="main"`, `"cross"` or `"both"` to describe the relevant logical axes from the computed layout. In Grid, main maps to inline and cross maps to block; in Flexbox they follow the current flex direction. `data-style-readout="element-id"` with `data-style-property="property-name"` reports the native computed value, including the resolved grid columns.
+
+`data-position-readout="item-id"` with `data-position-origin="container-id"` reports the item’s border-box offset from the container’s inner top-left corner. These are physical visible offsets, not a grid-area origin or unscrolled content coordinates. Negative values make unsafe alignment and actual scrolling visible. Pair offsets with dimensions, and explain which element or track is being aligned.
+
+Demonstrate stretching with an automatic-sized item and an explicitly sized sibling. For safe alignment, compare content that fits with actual overflowing content; make the scrollport focusable and give it an accessible name. Preserve the native overflow so readers can inspect which edges remain reachable.
+
+### Expose grid tracks and placement
+The Grid recipes render the complete authored parent and children. Define explicit tracks, implicit sizing, flow, gaps and item placement in that HTML. The shared frame adds paint and external readings; it must not create tracks, supply missing items or establish Grid on an incomplete parent.
+
+Use `data-style-readout` for `grid-template-columns`, `grid-template-rows` and `grid-auto-flow`, alongside the existing size and position readouts. The browser reports resolved track sizes, including implicit tracks. These readings do not distinguish explicit from implicit tracks on their own: explain that boundary in the example and name the relevant items. Line numbers count boundaries, so three explicit tracks have four lines.
+
+Add `data-round-pixels` to a style readout when fractional pixel values would overwhelm the annotation. It rounds displayed pixel lengths to one decimal place and retains the full computed value in the output’s title. The measured layout is unchanged. When the canvas already contains its property readings, use an empty `inspect` list to omit duplicate toolbar values.
+
+For dense packing, use spans that leave a real hole and later items small enough to fill it. Show source-order focus with native controls. For fractional tracks, make the available space definite when the lesson requires measured proportions. Keep track minimums separate from the content’s overflow treatment, and describe any deliberate clipping. Named-area examples must author both the area map and the track sizes; resizing changes actual iframe media queries.
+
+### Show constraints and content
+Sizing recipes render the complete displayed HTML, including the containing block, preferred dimensions, minimums, maximums and actual content. Measure the parent separately from the blue subject so a percentage has a visible reference. Give viewport-height examples a bounded iframe; a frame that grows with its content cannot demonstrate its own height units reliably. Enable viewport width controls for fluid wrappers even when there is no breakpoint.
+
+Use real words for intrinsic sizing and actual media with known source dimensions for ratio and fitting examples. Keep the same content and overflow policy in a comparison. A scrollable overflow value can remove an automatic Flex minimum; use non-scrollable clipping when the lesson needs to isolate the effect of a zero minimum. A maximum does not imply growth or clipping, and matching bounds do not guarantee a square.
+
+Spacing recipes keep labels and readings outside the tested layout. The neutral child exposes the content box inside blue padding; an outline marks the parent without adding a border. Compare content dimensions and physical insets using the existing size and position readouts. Author flow-root, Grid or Flex explicitly when required, and retain normal margin collapse when that is the lesson. Show inline/block behavior with a real writing-mode or direction change. Reserve space before external readings when a fixed-height specimen deliberately exposes visible overflow; keep that space outside the measured box.
+
+### Preserve type, glyphs and inheritance
+Typography recipes render the authored text, nesting, inline boxes and complete tables. Keep font size, weight, line height, spacing and alignment in the displayed HTML. Shared specimen paint adds a subtle outline and tone without changing those properties. Comparison names and computed readings sit outside the text context; they do not become extra line content or inherit the tested tracking.
+
+Use the same words and reading width when comparing treatments. A computed line height is not a glyph height, and a family list is only a requested stack. For numeric features, measure actual glyph runs with `data-size-readout` and verify that the selected font supports the requested alternate. Use a proportional face for tabular-digit comparisons; a monospace default would hide the change.
+
+`data-font-status="Family name"` reports the matching `FontFaceSet` entry as loaded, loading or unavailable. It does not infer success from `font-family`, claim that every character uses that face, or substitute a local font for a hosted resource. Whole-document specimens retain their stylesheet links and apply their authored body classes to the actual iframe body.
+
+For optional platform properties, `data-empty-value="Not exposed"` supplies a clear label when the computed value is empty. An empty `inspect` list suppresses property inspection and does not create a toolbar on its own.
+
+Let ordinary text previews grow with their content. Enable a real viewport control for fluid type formulas, even without a media query. Keep reset examples nested and baseline examples inline; a block placeholder cannot demonstrate `vertical-align`. Platform-specific rendering hints need visible support limitations, not a simulated pixel effect.
+
+### Preserve text flow and reading paths
+Text-flow recipes use the same type surfaces and external readings. Keep `lang`, `dir`, exact whitespace, nested writing contexts and complete overflow prerequisites in the displayed HTML. Never replace CJK or RTL content with an English placeholder, or insert visible annotation text into a whitespace-sensitive specimen.
+
+Compare identical text and constraints. Use a genuine min-content box to demonstrate intrinsic wrapping differences, and an authored, named scroll region for intentional overflow. Native range geometry belongs in validation; it must not override line breaks or substitute synthetic text.
+
+A truncation example needs a complete visible reading path when the hidden information matters. Use native disclosure controls with a descriptive summary, keep essential instructions visible, and verify keyboard focus and expansion. A tooltip alone is insufficient.
+
+Use `data-style-pseudo="::first-letter"` with a style readout when the taught property applies to a pseudo-element. The same measurement component reads that native computed style. Do not infer a rendering-quality or performance improvement from an accepted hint.
+
+### Isolate glyph paint
+Use the authored-text recipe with `appearance: 'plain'` for decoration, fill, shadow and stroke. It keeps the neutral surface and external labels while leaving the subject’s background and outline untouched. Read the actual longhands alongside optional box measurements; a paint change does not imply a new font size or layout box.
+
+```ts
+typeSpecimens(section, {
+  appearance: 'plain',
+  properties: ['text-decoration-line', 'text-decoration-style'],
+  measure: true,
+  caption: 'Compare the same words and font with two line styles.',
+})
+```
+
+Keep a real line when demonstrating its style, thickness or offset. Use longhands to preserve the other parts of a shorthand. Preserve parent and inline-child structure when explaining decoration propagation; a child’s `none` value cannot erase its ancestor’s line.
+
+Transparent text needs an authored visible paint source, such as a clipped gradient or a nonzero outline. Supply a solid fallback for print when backgrounds may be omitted. A plain specimen does not supply those prerequisites. Interactive subjects retain the shared keyboard focus ring.
+
+### Preserve lists and generated content
+Render the complete authored list, article and descendants. The plain text surface must not invent a counter name, reset value, marker, item or pseudo-element. Keep reading labels outside the authored article or list and report the property on the element that owns it. Native counter prefixes may remain unresolved `counter()` expressions in computed styles; inspect their rendered text instead of replacing them with scripted numbers.
+
+Keep marker type, position and image distinct. Use identical content and constraints to compare inside and outside wrapping; supply explicit padding for hanging markers. Image examples need a valid asset or native gradient and a type fallback. A full `list-style` shorthand resets omitted parts, so independent conditions need longhands.
+
+Keep essential link names and instructions in HTML. A generated indicator supplements the native anchor and can enter its accessible name. Test the actual pseudo-element and preserve keyboard focus. For platform-dependent syntax, show the browser’s real support branch and label an authored fallback clearly.
+
+```tsx
+<DemoExample page="counter-set" section="set-a-counter-on-one-item" />
+<DemoExample page="list-style-position" section="place-markers-inside-the-content-box" />
+```
+
+### Preserve background paint prerequisites
+Author the image source, box dimensions, position, size, repeat behavior and backing color in the visible HTML. The plain specimen adds no image, border, padding, clipping or blend mode to the subject. Keep labels and computed readings outside its painted area.
+
+Use the same image and geometry when comparing one longhand. Separate the positioning area (`background-origin`) from the painting boundary (`background-clip`). Computed percentages and fit keywords are not measurements of rendered image pixels; pair them with a known source ratio and visible edges.
+
+For attachment, provide real overflowing content and a fixed-height iframe viewport. Test inner-panel and document scrolling independently; do not substitute transformed layers. Keep foreground text readable on its own opaque surface and describe platform-dependent fixed-background behavior in the exported prose.
+
+The recipes link to complete authored examples; copy their HTML and any accompanying theme declarations. Use the guarded text-fill pattern for gradient lettering so unsupported browsers and print retain a solid foreground.
+
+### Separate edge paint from layout
+Supply border width, style and color explicitly. Compare the same box dimensions and state the box-sizing model: borders occupy layout space, while outlines and shadows do not. Use writing-mode comparisons when teaching logical edges. A transparent border keeps its used width; a `none` or `hidden` style does not on an ordinary box.
+
+The plain specimen adds no border, outline, radius or shadow to the subject. Keep the live readings and labels outside it. Radius does not clip descendant content on its own; show the separate overflow rule when clipping is part of the example.
+
+Use native focusable controls for outline conditions. Keep a visible keyboard focus treatment, enough space for outward rings, and a real destination for skip links. Distinguish the full outline shorthand from independent longhands, and report native keyword widths as browser-computed values.
+
+Compile authored theme declarations with their examples. The shadow recipe enables the preview's theme control explicitly, so users can compare actual token values in both modes. Raw paint values remain literal unless the author supplies a theme-dependent token or condition.
+
+### Preserve source and fragment geometry
+
+Table specimens need adjacent semantic cells and explicit cell borders. Computed spacing alone does not prove a gap: collapsed tables ignore it. Keep captions and annotations outside the measured seams.
+
+For border images, use a loadable source with known dimensions and visible corner/edge patterns. Author its regular border, slices, image width and repeat behavior. Distinguish source coordinates from destination paint; native width and outset numbers are multipliers. Reserve actual layout space when outward paint needs room.
+
+Inline-fragment specimens keep one real inline element inside an explicitly sized container. Supply its text, line height, padding and decoration. Let native wrapping create the fragments, and compare standard/prefixed support without replacing the text with separate boxes.
+
+### Preserve media size and paint context
+
+Give image specimens a loadable source with known natural dimensions and an explicit content box. Keep fitting and positioning independent from annotations. A source with a visibly round feature makes stretching distinguishable from cropping.
+
+SVG specimens need real paths, a viewBox, viewport dimensions and explicit paint prerequisites. A computed stroke width does not report its final thickness after the viewBox transform. Keep non-scaling effects on the painted shape. Native controls provide state and accessible names for decorative icons; theme comparisons keep geometry constant.
+
+### Preserve paint context and interaction
+
+Filter examples need visible source detail and reserved room for paint outside the layout box. Use transparent artwork to distinguish an alpha-following drop shadow from a rectangular box shadow. Backdrop examples must include the actual background content and foreground panel, with explicit translucency and readable text.
+
+Keep clipping and masking geometry in the authored HTML. Clip boundaries change pointer hit testing; masks on CSS boxes leave it unchanged. Place annotations and essential controls outside effects that could hide them. A fading scroll region needs real overflow, a native accessible name, keyboard focus and a description that stays readable.
+
+Author blending groups and their complete backdrops explicitly. Use isolation only where the example calls for a bounded group. Whole-element opacity also fades descendants without disabling them; compare it with color alpha when only a surface should fade. Test native control behavior and restore appropriate paint in print.
+
+### Preserve native shape wrapping
+
+Shape specimens need a real float, explicit dimensions and adjacent inline content. Keep labels and measurements outside that formatting context. Author the painted shape separately: shape-outside changes wrapping without clipping or resizing the artwork. Name the reference box when margins could otherwise shift the shape’s coordinates.
+
+Shape-margin expands the wrap contour within the float’s margin box. Reserve ordinary margins when a larger contour needs room. For image thresholds, use a loaded source with known alpha values and preserve its painted appearance across comparisons. Gradients and transparent same-origin images make threshold behavior visible without substituting positioned text.
+
+### Preserve transform geometry and hints
+
+Keep the original layout slot and pivot guides outside the transformed element. Use actual native controls for hover, focus and pressed states. Report client bounds separately from layout dimensions: getBoundingClientRect includes transforms, and SVG strokes can paint beyond its reported rectangle.
+
+SVG examples need explicit viewBox, source coordinates and reference-box differences. For 3D scenes, author the perspective, transformed parent and translated child together. Do not add opacity, filters, isolation or clipping to that parent merely for decoration; grouping effects can flatten its descendants. Compare actual depth geometry as well as computed properties.
+
+Will-change specimens expose the declared hint and its lifetime. Keep their controls visible, prepare the hint before the demonstrated change when appropriate, and release it afterward. A computed hint does not establish a performance gain. Timed interactions use the motion preference; their native states remain inspectable without interpolation.
+
+### Preserve native transition timelines
+
+Use a visible native control and author both CSS endpoints. The moving or fading subject owns its transition longhands; these properties are not inherited. Keep the trigger separate when movement could make hover unstable, and place the duration, delay and easing readings outside the subject.
+
+For comparisons, keep distance and endpoints explicit. Use actual CSS transitions, including their waiting interval and state-specific easing. Gate both duration and delay for reduced motion, retain an immediate print state, and let native transitions finish when preferences change. Playback controls should pause only demos that explicitly opt into them.
+
+### Preserve native animation phases
+
+Keep the ordinary value, starting keyframe and ending keyframe distinct when teaching fill. Declare duration, delay and count explicitly; use the same path when comparing timing or direction. Preserve complete SVGs and leave status text stationary.
+
+Playback controls operate on the browser’s actual CSS Animation objects. Retain finished one-shot timelines for replay, pause by default, and treat manual Play as an explicit motion preview. CSS play-state examples own their native checkbox and focus selectors instead; the toolbar must not override the property being taught. Their running rules require both screen media and the motion preference.
+
+A timeline readout reports elapsed timeline time and native progress; a property readout still reports the authored CSS value. Keyframe-level easing may override the element’s easing for an interval. Neither readout is a performance measurement.
+
+### Preserve native input and accessibility
+
+Keep complete native controls, their options, labels and descriptions in the displayed HTML. Appearance, accent, caret and cursor change presentation; they do not supply activation or disabled behavior. Use an actual checkbox, disclosure or form action to make the result observable. Independent comparison specimens scope IDs together with their `for`, ARIA and local-link references so names and descriptions remain connected.
+
+Pointer hit testing and keyboard access are separate. Preserve real overlay geometry and inherited child rules, and test both pointer input and keyboard activation. Observe native resize handles and text-selection gestures without setting dimensions or selections to manufacture the expected result.
+
+Use touch input to test `touch-action`; mouse dragging cannot reproduce gesture arbitration. Keep named scroll regions and keyboard access, and describe the platform limits of resize and vendor drag behavior. A native drag readout only observes `dragstart` and `dragend`; it never makes an element draggable or cancels its events. Every example that depends on a vendor property needs an explicit support note and a portable alternative where available.
+
+### Keep examples portable \{#keep-examples-portable\}
+`DemoExample` connects a utility page and section to its authored HTML and CSS snippets. The displayed structure should own every prerequisite needed to reproduce the behavior; shared recipes provide paint, annotations and controls. The Rust renderer compiles the actual utility classes. Keep the complete teaching explanation and framework-neutral example alongside the demo so Markdown and search exports remain useful. Wrap long HTML class attributes between complete utilities, keeping the taught property readable in the document column; never split an individual class across lines.
+
+```tsx
+<DemoExample
+  page="clear"
+  section="clearing-both-left-and-right-floats"
+/>
+```
+
+---

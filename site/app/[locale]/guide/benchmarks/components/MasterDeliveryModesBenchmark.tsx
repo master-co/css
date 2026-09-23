@@ -1,3 +1,4 @@
+import * as React from 'react'
 import snapshot from '~/site/../benchmarks/master-delivery-modes/snapshot.json'
 import {
   BenchmarkBars,

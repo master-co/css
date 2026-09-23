@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 import InlineCode from '~/internal/components/InlineCode'
 import Translate from '~/internal/components/Translate'
-import { getVariableNamespacePublicKeys } from '~/site/utils/manifest-utilities'
+import { filterNamespaceKeys } from '~/site/utils/manifest-utilities'
 
 export interface NamespaceUtilityGroup {
   label: string
@@ -31,8 +31,7 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
           <thead>
             <tr>
               <th><Translate>Group</Translate></th>
-              <th><Translate>Utility keys</Translate></th>
-              {hasDescriptions && <th><Translate>Description</Translate></th>}
+              <th className="min-w:12rem"><Translate>{hasDescriptions ? 'Utility keys and purpose' : 'Utility keys'}</Translate></th>
             </tr>
           </thead>
           <tbody>
@@ -40,8 +39,10 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
               groups.map((group) => (
                 <tr key={group.label}>
                   <th className="white-space:nowrap"><Translate>{group.label}</Translate></th>
-                  <td>{renderKeys(group.keys)}</td>
-                  {hasDescriptions && <td><Translate>{group.description}</Translate></td>}
+                  <td>
+                    <div>{renderKeys(group.keys)}</div>
+                    {group.description && <div className="mt:xs"><Translate>{group.description}</Translate></div>}
+                  </td>
                 </tr>
               ))
             }
@@ -52,18 +53,10 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
   )
 }
 
-function filterNamespaceKeys(group: NamespaceUtilityGroup) {
-  const namespaces = group.namespaces || (group.namespace ? [group.namespace] : [])
-  if (!namespaces.length) return group.keys
-
-  const namespaceKeys = new Set(namespaces.flatMap((namespace) => getVariableNamespacePublicKeys(namespace)))
-  return group.keys.filter((key) => namespaceKeys.has(key))
-}
-
 function renderKeys(keys: string[]) {
   return keys.map((key, index) => (
     <span key={key}>
-      <InlineCode>{key}</InlineCode>
+      <InlineCode className="white-space:nowrap">{key}</InlineCode>
       {index !== keys.length - 1 && ', '}
     </span>
   ))

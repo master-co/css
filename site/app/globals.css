@@ -4,4 +4,7 @@
 @import '../styles/btn.css';
 @import '../styles/reference.css';
 @import '../styles/documentation-index.css';
+@import '../styles/documentation-values.css';
+@import '../styles/demo.css';
+@import '../styles/benchmarks.css';
 @import '../../internal/styles/documentation-search.css';

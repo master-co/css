@@ -1,4 +1,5 @@
 @layer components {
+  .reference-document :is(h1, h2, h3) { overflow-wrap: anywhere; }
   .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }
   .reference-document pre { max-width: 100%; overflow-x: auto; }
   .reference-document code { overflow-wrap: anywhere; }
@@ -14,3 +15,6 @@
     .reference-syntax-row :is(code, pre) { white-space: pre-wrap; overflow-wrap: anywhere; }
   }
 }
+
+/* Identifier titles keep the entire tool name readable in the narrow article column. */
+.reference-document .reference-tool-title { font-size: clamp(var(--font-size-md), 5vw, var(--font-size-2xl)); }

@@ -1,18 +1,7 @@
-import syntaxes from '../syntaxes'
 import SyntaxTable from 'internal/components/SyntaxTable'
 import SyntaxTr from '~/site/components/SyntaxTr'
-import SyntaxPreview from './SyntaxPreview'
+import syntaxes from '../syntaxes'
 
-export default () => {
-  const previewSyntax = 'animation-play-state:running'
-  return (
-    <>
-      <SyntaxTable>
-        {syntaxes.map((syntax) =>
-          <SyntaxTr value={syntax} key={syntax} previewSyntax={previewSyntax}></SyntaxTr>)
-        }
-      </SyntaxTable>
-      <SyntaxPreview className={previewSyntax} />
-    </>
-  )
+export default function Overview() {
+  return <SyntaxTable>{syntaxes.map(syntax => <SyntaxTr key={String(syntax)} value={syntax} />)}</SyntaxTable>
 }

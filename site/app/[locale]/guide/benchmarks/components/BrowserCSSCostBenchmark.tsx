@@ -1,3 +1,4 @@
+import * as React from 'react'
 import snapshot from '~/site/../benchmarks/browser-css-cost/snapshot.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'
 import ExpandContent from 'internal/components/ExpandContent'

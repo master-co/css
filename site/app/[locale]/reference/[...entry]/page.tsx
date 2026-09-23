@@ -24,7 +24,8 @@ export default async function Page(props: { params: Promise<{ locale: string; en
   const { entry } = await props.params
   const doc = catalog.documents.find(doc => doc.id === entry.join('/'))
   if (!doc) notFound()
-  return <Layout {...props} metadata={{ title: doc.title, description: doc.description, category: doc.category, pathname: doc.url, sourcePath: doc.source }} dictionaries={dictionaries} toc={doc.headings.filter(heading => doc.kind !== 'tokens' || heading.depth === 2).map(heading => ({ ...heading, level: heading.depth }))} pageCategories={[]}>
-    <ReferenceMarkdown>{doc.markdown}</ReferenceMarkdown>
+  const introHeadingId = doc.kind === 'directive' ? doc.headings[0]?.id : undefined
+  return <Layout {...props} h1ClassName={doc.id.startsWith('tools/mcp/') ? 'reference-tool-title' : undefined} metadata={{ title: doc.title, description: doc.description, category: doc.category, pathname: doc.url, sourcePath: doc.source }} dictionaries={dictionaries} toc={doc.headings.filter(heading => heading.id !== introHeadingId && (!['tokens', 'package'].includes(doc.kind) || heading.depth === 2)).map(heading => ({ ...heading, level: heading.depth }))} pageCategories={[]}>
+    <ReferenceMarkdown compactValues={doc.kind === 'tokens'} introHeadingId={introHeadingId}>{doc.markdown}</ReferenceMarkdown>
   </Layout>
 }

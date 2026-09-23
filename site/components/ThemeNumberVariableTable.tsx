@@ -29,7 +29,7 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
               <th><Translate>Value</Translate></th>
               <th>{referenceUnit.toUpperCase()}</th>
               {hasSpacingRepresentation && <th><Translate>Representation</Translate></th>}
-              {hasDescriptions && <th><Translate>Description</Translate></th>}
+              {hasDescriptions && <th className="min-w:12rem"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
@@ -53,8 +53,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
   return (
-    <div className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px bg:stripe-pink v:middle" style={{ gap: value }}>
-      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em surface:raised"></div>)}
+    <div className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px demo-pattern v:middle" style={{ gap: value }}>
+      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em demo-item"></div>)}
     </div>
   )
 }

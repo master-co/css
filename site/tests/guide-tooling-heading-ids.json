@@ -1,0 +1,126 @@
+{
+  "code-linting": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "install-the-recommended-config",
+      "title": "Install the recommended config",
+      "depth": 2
+    },
+    {
+      "id": "linting-rules",
+      "title": "Linting rules",
+      "depth": 2
+    },
+    {
+      "id": "sort-classes",
+      "title": "Sort classes",
+      "depth": 3
+    },
+    {
+      "id": "no-invalid-classes",
+      "title": "No invalid classes",
+      "depth": 3
+    },
+    {
+      "id": "prefer-canonical-classes",
+      "title": "Prefer canonical classes",
+      "depth": 3
+    },
+    {
+      "id": "no-conflicting-classes",
+      "title": "No conflicting classes",
+      "depth": 3
+    },
+    {
+      "id": "supported-sources",
+      "title": "Supported sources",
+      "depth": 2
+    },
+    {
+      "id": "team-policy",
+      "title": "Team policy",
+      "depth": 2
+    },
+    {
+      "id": "setup-links",
+      "title": "Setup links",
+      "depth": 2
+    }
+  ],
+  "language-service": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "editor-features",
+      "title": "Editor features",
+      "depth": 2
+    },
+    {
+      "id": "syntax-suggestions",
+      "title": "Syntax suggestions",
+      "depth": 3
+    },
+    {
+      "id": "hover-inspection",
+      "title": "Hover inspection",
+      "depth": 3
+    },
+    {
+      "id": "syntax-highlighting",
+      "title": "Syntax highlighting",
+      "depth": 3
+    },
+    {
+      "id": "color-tools",
+      "title": "Color tools",
+      "depth": 3
+    },
+    {
+      "id": "directive-formatting",
+      "title": "Directive formatting",
+      "depth": 3
+    },
+    {
+      "id": "diagnostics",
+      "title": "Diagnostics",
+      "depth": 3
+    },
+    {
+      "id": "supported-class-sources",
+      "title": "Supported class sources",
+      "depth": 2
+    },
+    {
+      "id": "workspace-aware-manifests",
+      "title": "Workspace-aware manifests",
+      "depth": 2
+    },
+    {
+      "id": "highlighting-modes",
+      "title": "Highlighting modes",
+      "depth": 2
+    },
+    {
+      "id": "settings",
+      "title": "Settings",
+      "depth": 2
+    },
+    {
+      "id": "troubleshooting",
+      "title": "Troubleshooting",
+      "depth": 2
+    },
+    {
+      "id": "setup-links",
+      "title": "Setup links",
+      "depth": 2
+    }
+  ]
+}

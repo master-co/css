@@ -1,0 +1,56 @@
+{
+  "monorepo": [
+    {
+      "id": "foreword",
+      "title": "Foreword",
+      "depth": 2
+    },
+    {
+      "id": "one-project-one-workspace",
+      "title": "One project, one workspace",
+      "depth": 2
+    },
+    {
+      "id": "share-the-project-manifest-source",
+      "title": "Share the project manifest source",
+      "depth": 3
+    }
+  ],
+  "authoring-packages": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "create-a-package",
+      "title": "Create a package",
+      "depth": 2
+    },
+    {
+      "id": "write-mastercss",
+      "title": "Write master.css",
+      "depth": 2
+    },
+    {
+      "id": "use-the-package",
+      "title": "Use the package",
+      "depth": 2
+    },
+    {
+      "id": "keep-app-policy-in-the-app",
+      "title": "Keep app policy in the app",
+      "depth": 2
+    },
+    {
+      "id": "version-vocabulary",
+      "title": "Version vocabulary",
+      "depth": 2
+    },
+    {
+      "id": "validate-with-an-example",
+      "title": "Validate with an example",
+      "depth": 2
+    }
+  ]
+}

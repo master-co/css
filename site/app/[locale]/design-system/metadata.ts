@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'Design System',
-  description: 'The Master CSS design system provides a set of guidelines and examples',
+  description: 'Reusable demo components, documentation patterns and real CSS scenarios for the Master CSS site.',
   category: 'Overview',
   fileURL: import.meta.url
 })

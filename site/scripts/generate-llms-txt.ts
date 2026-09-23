@@ -1,9 +1,19 @@
+import { benchmarkContent } from '../utils/benchmark-content'
+import { introductionContent } from '../utils/introduction-content'
+import { brandContent } from '../utils/brand-content'
+import { installationGuideContent, installationGuideSlugs } from '../utils/installation-content'
 import { readFile, writeFile, readdir } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
 import { resolvePublicEnv } from '../utils/public-env.js'
 import { generateReference, renderDocumentMarkdown } from '../reference/build'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
+import { foundationGuideContent, foundationGuideSlugs } from '../utils/foundation-content'
+import { projectStyleGuideContent, projectStyleGuideSlugs } from '../utils/project-style-content'
+import { migrationGuideContent, migrationGuideSlugs } from '../utils/migration-content'
+import { deliveryGuideContent, deliveryGuideSlugs } from '../utils/delivery-content'
+import { agentGuideContent, agentGuideSlugs } from '../utils/agent-content'
+import { toolingGuideContent, toolingGuideSlugs } from '../utils/tooling-content'
 
 const DEFAULT_LOCALE = 'en'
 const SITE_URL = resolvePublicEnv().NEXT_PUBLIC_URL
@@ -178,6 +188,21 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
     ])
     const segments = normalizeRoutePath(rel).split('/')
     const lastSegment = segments[segments.length - 1] ?? ''
+    const installationSlug = segments.slice(2).join('/')
+    const installation = segments[0] === 'guide' && segments[1] === 'installation' && installationGuideSlugs.includes(installationSlug as typeof installationGuideSlugs[number])
+    const foundation = segments[0] === 'guide' && segments.length === 2
+      && foundationGuideSlugs.includes(lastSegment as typeof foundationGuideSlugs[number])
+    const projectStyle = segments[0] === 'guide' && segments.length === 2
+      && projectStyleGuideSlugs.includes(lastSegment as typeof projectStyleGuideSlugs[number])
+    const agent = segments[0] === 'guide' && segments.length === 2
+      && agentGuideSlugs.includes(lastSegment as typeof agentGuideSlugs[number])
+    const tooling = segments[0] === 'guide' && segments.length === 2
+      && toolingGuideSlugs.includes(lastSegment as typeof toolingGuideSlugs[number])
+    const delivery = segments[0] === 'guide' && segments.length === 2
+      && deliveryGuideSlugs.includes(lastSegment as typeof deliveryGuideSlugs[number])
+    const migrationSlug = segments.length === 2 ? '' : lastSegment
+    const migration = segments[0] === 'guide' && segments[1] === 'migration' && segments.length <= 3
+      && migrationGuideSlugs.includes(migrationSlug as typeof migrationGuideSlugs[number])
     pages.push({
       file,
       section: topSection(rel),
@@ -186,7 +211,17 @@ export async function loadPages(localeRoot: string): Promise<Page[]> {
       description: metadata.description,
       body: normalizeRoutePath(rel) === 'guide/syntax-tutorial'
         ? (await syntaxTutorialContent(path.resolve(localeRoot, '../..'))).markdown
-        : cleanMdx(rawBody)
+        : normalizeRoutePath(rel) === 'guide/benchmarks' ? (await benchmarkContent(path.resolve(localeRoot, '../..'))).markdown
+        : normalizeRoutePath(rel) === 'guide/introduction' ? (await introductionContent(path.resolve(localeRoot, '../..'))).markdown
+        : normalizeRoutePath(rel) === 'brand' ? (await brandContent(path.resolve(localeRoot, '../..'))).markdown
+        : installation ? (await installationGuideContent(path.resolve(localeRoot, '../..'), installationSlug)).markdown
+        : agent ? (await agentGuideContent(path.resolve(localeRoot, '../..'), lastSegment)).markdown
+        : tooling ? (await toolingGuideContent(path.resolve(localeRoot, '../..'), lastSegment)).markdown
+        : delivery ? (await deliveryGuideContent(path.resolve(localeRoot, '../..'), lastSegment)).markdown
+          : foundation ? (await foundationGuideContent(path.resolve(localeRoot, '../..'), lastSegment)).markdown
+          : projectStyle ? (await projectStyleGuideContent(path.resolve(localeRoot, '../..'), lastSegment)).markdown
+            : migration ? (await migrationGuideContent(path.resolve(localeRoot, '../..'), migrationSlug)).markdown
+              : cleanMdx(rawBody)
     })
   }
   return pages

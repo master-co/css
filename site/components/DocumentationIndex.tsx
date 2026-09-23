@@ -23,7 +23,7 @@ export interface DocumentationIndexSection {
   description: string
   Icon: typeof IconBook
   legacyIds?: string[]
-  groups: { title?: string; entries: DocumentationIndexEntry[] }[]
+  groups: { id?: string; title?: string; entries: DocumentationIndexEntry[] }[]
 }
 
 interface SectionLink {
@@ -43,7 +43,8 @@ export default function DocumentationIndex({ name, sections, related, showDescri
   const tw = useLocale() === 'tw'
   const entries = sections.flatMap(section => section.groups.flatMap(group => group.entries))
   const letters = Map.groupBy([...entries].sort((a, b) => a.title.localeCompare(b.title)), entry => /^[a-z]/i.test(entry.title) ? entry.title[0].toUpperCase() : '#')
-  const sectionIds = sections.flatMap(section => [section.id, ...(section.legacyIds ?? [])]).join(',')
+  const groupId = (section: DocumentationIndexSection, index: number) => section.groups[index].id ?? `${section.id}-group-${index + 1}`
+  const sectionIds = sections.flatMap(section => [section.id, ...(section.legacyIds ?? []), ...section.groups.map((_, index) => groupId(section, index))]).join(',')
 
   useEffect(() => {
     function syncView() {
@@ -68,8 +69,8 @@ export default function DocumentationIndex({ name, sections, related, showDescri
     <div className="doc-index-toolbar">
       <span>{tw ? (name === 'guide' ? '教學索引' : '所有條目') : (name === 'guide' ? 'Browse guides' : 'All entries')} <span className="doc-index-count">{entries.length}</span></span>
       <div className="doc-index-view" role="group" aria-label={tw ? '索引顯示方式' : 'Index view'}>
-        <button aria-pressed={!alphabetical} aria-controls={`${name}-category-index`} onClick={() => setAlphabetical(false)}>{tw ? '依分類' : 'By category'}</button>
-        <button aria-pressed={alphabetical} aria-controls={`${name}-alphabetical-index`} onClick={() => setAlphabetical(true)}>A–Z</button>
+        <button type="button" aria-pressed={!alphabetical} aria-controls={`${name}-category-index`} onClick={() => setAlphabetical(false)}>{tw ? '依分類' : 'By category'}</button>
+        <button type="button" aria-pressed={alphabetical} aria-controls={`${name}-alphabetical-index`} onClick={() => setAlphabetical(true)}>A–Z</button>
       </div>
     </div>
 
@@ -80,10 +81,13 @@ export default function DocumentationIndex({ name, sections, related, showDescri
           <h2 id={section.id}>{section.title} <span className="doc-index-count">{section.groups.reduce((total, group) => total + group.entries.length, 0)}</span></h2>
           <p>{section.description}</p>
         </header>
+        {section.groups.length > 1 && <nav className="doc-index-groups" aria-label={tw ? `${section.title}分類` : `${section.title} categories`}>
+          {section.groups.map((group, index) => <a key={groupId(section, index)} href={`#${groupId(section, index)}`}>{group.title}</a>)}
+        </nav>}
         {section.groups.length === 1
           ? <EntryLinks entries={section.groups[0].entries} columns showDescriptions={showDescriptions} />
-          : <div className="doc-index-categories">{section.groups.map(group => <section key={group.title} className="doc-index-category">
-            <h3>{group.title} <span className="doc-index-count">{group.entries.length}</span></h3>
+          : <div className="doc-index-categories">{section.groups.map((group, index) => <section key={groupId(section, index)} className="doc-index-category" aria-labelledby={groupId(section, index)}>
+            <h3 id={groupId(section, index)}>{group.title} <span className="doc-index-count">{group.entries.length}</span></h3>
             <EntryLinks entries={group.entries} />
           </section>)}</div>}
       </section>)}

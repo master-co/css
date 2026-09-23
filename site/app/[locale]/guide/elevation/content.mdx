@@ -4,7 +4,7 @@ import { ShadowNamespaceTable } from './components/ShadowNamespace'
 ## Overview [sr-only]
 Elevation describes the relationship between surfaces. In CSS, that relationship is usually rendered with [box-shadow](https://developer.mozilla.org/en-US/docs/Web/CSS/box-shadow), but the design decision is broader than the property: a surface can be grounded on the canvas, raised as a reusable card, detached as an overlay, or placed above the workflow as a modal.
 
-Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset scale is mode-aware, so the same class resolves to a light shadow recipe in light mode and a stronger dark-mode recipe in dark mode.
+Master CSS maps elevation to the `shadow` namespace. Use `shadow:*` tokens for repeated product surfaces instead of copying raw multi-part shadow values into markup. The preset scale is mode-aware: light and dark modes keep each level's offsets and blur values, while changing the outline and shadow colors.
 
 <ShadowScaleDemo />
 
@@ -15,7 +15,7 @@ Start with the surface relationship, then choose the lowest token that makes tha
 
 <ShadowTokenTable />
 
-The role of each token should stay stable across modes. Light and dark recipes can use different opacity, offset, and blur values, but `shadow:sm` should still mean a standard raised surface in both modes.
+The role of each token should stay stable across modes. Custom light and dark recipes can vary geometry as well as color, but `shadow:sm` should still mean a standard raised surface in both modes.
 
 ---
 

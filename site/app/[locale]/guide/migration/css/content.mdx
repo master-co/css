@@ -94,7 +94,8 @@ pointer-events: none;
 import styles from './Button.module.css'
 
 export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
-  return <button className={styles.button} {...props} />
+  const { className, ...buttonProps } = props
+  return <button className={[styles.button, className].filter(Boolean).join(' ')} type="button" {...buttonProps} />
 }
 ```
 

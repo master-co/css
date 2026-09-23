@@ -1,3 +1,4 @@
+import * as React from 'react'
 import snapshot from '~/site/../benchmarks/browser-lifecycle/snapshot.json'
 import evidence from '~/site/../benchmarks/browser-lifecycle/long-session-evidence.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'

@@ -1,3 +1,26 @@
+import { verifyTanstackInstallationExamples } from '../tests/tanstack-installation-examples'
+import { verifyRouterInstallationExamples } from '../tests/router-installation-examples'
+import { verifyNuxtInstallationExamples } from '../tests/nuxt-installation-examples'
+import { verifyNextInstallationExamples } from '../tests/next-installation-examples'
+import { verifyAngularInstallationExamples } from '../tests/angular-installation-examples'
+import { verifyStorybookInstallationExamples } from '../tests/storybook-installation-examples'
+import { verifyDotnetInstallationExamples } from '../tests/dotnet-installation-examples'
+import { verifyThemeInstallationExamples } from '../tests/theme-installation-examples'
+import { verifyServerInstallationExamples } from '../tests/server-installation-examples'
+import { verifyIslandsInstallationExamples } from '../tests/islands-installation-examples'
+import { verifyBundlerInstallationExamples } from '../tests/bundler-installation-examples'
+import { verifyFrameworkInstallationExamples } from '../tests/framework-installation-examples'
+import { verifyInstallationExamples } from '../tests/installation-examples'
+import { stylesheetExamples } from '../tests/stylesheet-examples'
+import { stylesheetExampleCSS } from '../reference/stylesheet-example'
+import { verifyDirectiveExamples } from '../tests/directive-examples'
+import { verifyToolContractExamples } from '../tests/tool-contract-examples'
+import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
+import { verifyAgentStylingExample, verifyAgentMCPExamples } from '../tests/agent-examples-checks'
+import { verifyLintExamples, verifyLanguageExamples } from '../tests/tooling-examples-checks'
+import { authoringSource } from '../utils/authoring-examples'
+import { verifyMonorepoExamples, verifyPackageAuthoringExamples } from '../tests/package-authoring-examples'
+import { verifyDeliveryExamples } from '../tests/delivery-examples-checks'
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -9,6 +32,7 @@ import { createToolingSessionSync } from '@master/css-tooling/node'
 import { validateCSS } from '@master/css-tooling/css'
 import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
 import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
+import { configuredExampleCSS } from '../reference/configured-example'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
@@ -132,6 +156,10 @@ test('docs example classes are valid default preset classes or locally defined c
 
   for (const file of files) {
     const content = await readFile(file, 'utf8')
+    for (const example of stylesheetExamples(content)) {
+      const css = await stylesheetExampleCSS(example.source)
+      assert.deepEqual(validateCSS(css), [], `${file}: ${example.title}`)
+    }
     for (const eachCandidate of extractExampleCandidates(file, content)) {
       const result = validate(eachCandidate.candidate)
       if (result.matched && result.errors.length === 0) continue
@@ -427,7 +455,7 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
     }))
   }
 
-  const unfenced = blankRanges(content, fencedRanges)
+  const unfenced = blankRanges(content, [...fencedRanges, ...stylesheetExamples(content).map(example => example.range)])
   candidates.push(...extractCandidatesFromSnippet({
     content,
     file,
@@ -437,6 +465,11 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
     text: unfenced
   }))
 
+  // This page displays its literal package CSS through a registered source component.
+  if (relativeSitePath(file) === 'app/[locale]/guide/authoring-packages/content.mdx'
+    && content.includes('<PackageAuthoringExample part="source"')) {
+    for (const candidate of candidates) candidate.context += '\n' + authoringSource
+  }
   return candidates
 }
 
@@ -654,13 +687,22 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
   if (candidate.includes('`') || candidate.includes('…') || /[<>]/.test(candidate)) return true
   if (candidate === 'light' || candidate === 'dark') return true
   if (/:\$[A-Za-z_][\w-]*(?=[:@!]|$)/.test(candidate)) return true
+  if (isMigrationVendorClass(eachCandidate)) return true
   if (isExpectedDiagnostic(candidate, eachCandidate.file)) return true
   if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
   if (isLocallyDefinedClass(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedVariant(candidate, eachCandidate.context)) return true
+  if (usesLocallyDefinedBreakpoint(candidate, eachCandidate.context)) return true
   if (usesLocallyDefinedToken(candidate, eachCandidate.context)) return true
   if (usesSiteThemeRoleToken(candidate)) return true
   return false
+}
+
+/** These literal classes belong to the retained Bootstrap 5.3 markup, not Master CSS. */
+function isMigrationVendorClass(example: ExampleCandidate): boolean {
+  return relativeSitePath(example.file) === 'app/[locale]/guide/migration/bootstrap/content.mdx'
+    && example.kind === 'fenced:html:class'
+    && ['py-5', 'row', 'g-4', 'col-md-4'].includes(example.candidate)
 }
 
 function isExpectedDiagnostic(candidate: string, file: string): boolean {
@@ -704,6 +746,21 @@ function usesLocallyDefinedToken(candidate: string, context: string): boolean {
   if (!localTokens.size) return false
   const candidateTokens = collectCandidateTokenNames(candidate)
   return candidateTokens.some((eachToken) => localTokens.has(eachToken))
+}
+
+function usesLocallyDefinedBreakpoint(candidate: string, context: string): boolean {
+  const variants = candidate.match(/@[a-z][\w-]*/g) ?? []
+  if (!variants.length) return false
+  const declarations: string[] = []
+  for (const variant of variants) {
+    const declaration = context.match(new RegExp(`--breakpoint-${escapeRegExp(variant.slice(1))}\\s*:\\s*([^;{}]+);`))?.[0]
+    if (!declaration) return false
+    declarations.push(declaration)
+  }
+  try {
+    configuredExampleCSS(`@theme { ${declarations.join(' ')} }`, [candidate])
+    return true
+  } catch { return false }
 }
 
 const siteThemeRoleTokenNames = new Set([
@@ -801,3 +858,114 @@ function formatFileLine(file: string, line: number): string {
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
 }
+
+test('migration TypeScript examples parse and preserve native button and progress props', async () => {
+  const { migrationFences, migrationSlugs, compileMigrationExample, renderMigrationExample } = await import('../tests/migration-examples')
+  for (const slug of migrationSlugs) {
+    const examples = migrationFences(slug).filter(example => ['tsx', 'ts', 'jsx', 'js'].includes(example.language))
+    for (const example of examples) {
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(diagnostic => diagnostic.messageText), [], `${slug}: ${example.text}`)
+      if (example.text.includes('export function Button')) {
+        const html = renderMigrationExample(example.text, 'Button', { children: 'Save changes', className: 'caller-class', type: 'submit', disabled: true })
+        assert.match(html, /type="submit"/)
+        assert.match(html, /disabled=""/)
+        assert.match(html, /class="[^\"]+ caller-class"/)
+        assert.match(html, />Save changes<\/button>/)
+        assert.doesNotMatch(html, /(?:tone|size)=/)
+        assert.match(renderMigrationExample(example.text, 'Button', { children: 'Preview' }), /type="button"/)
+      }
+      if (example.text.includes('export function Progress')) {
+        for (const [value, expected] of [[75, 75], [150, 100], [-1, 0], [NaN, 0]]) {
+          const html = renderMigrationExample(example.text, 'Progress', { value })
+          assert.match(html, /role="progressbar" aria-label="Upload progress"/)
+          assert.ok(html.includes(`aria-valuenow="${expected}"`))
+          assert.ok(html.includes(`--progress:${expected}%`))
+          assert.ok(html.includes('w:var(--progress)'))
+        }
+      }
+    }
+  }
+})
+
+
+test('vendor migration snippets parse and the documented engine wrapper forwards current state', async () => {
+  const { migrationFences, vendorMigrationSlugs, compileMigrationExample } = await import('../tests/migration-examples')
+  for (const slug of vendorMigrationSlugs) {
+    for (const example of migrationFences(slug).filter(f => ['ts', 'tsx', 'js', 'jsx'].includes(f.language))) {
+      assert.deepEqual(compileMigrationExample(example.text).diagnostics?.map(d => d.messageText), [], `${slug || 'overview'}: ${example.text}`)
+    }
+  }
+  const source = migrationFences('').find(f => f.text.includes('function wrapEngine'))!.text
+  const { createEngineSync } = await import('@master/css/node')
+  const inner = createEngineSync({ manifest: defaultManifest })
+  const exports: { wrapEngine?: (engine: typeof inner) => typeof inner } = {}
+  // Only the checked, repository-authored wrapper fence is evaluated.
+  new Function('exports', compileMigrationExample(`${source}\nexport { wrapEngine }`).outputText)(exports)
+  const wrapper = exports.wrapEngine!(inner)
+  try {
+    assert.equal(wrapper.binding, inner.binding)
+    assert.deepEqual(wrapper.executionState(['block']).classes[0].references, [])
+    wrapper.ensureClassRules(['block'])
+    assert.deepEqual(wrapper.executionState(['block']), inner.executionState(['block']))
+    assert.ok(wrapper.executionState(['block']).classes[0].references.length)
+    wrapper.deleteClassRules(['block'])
+    assert.deepEqual(wrapper.executionState(['block']).classes[0].references, [])
+    assert.deepEqual(wrapper.snapshot(), inner.snapshot())
+  } finally { wrapper[Symbol.dispose]() }
+  assert.throws(() => inner.executionState([]), /disposed/)
+})
+
+
+test('Bootstrap class allowance is limited to its documented vendor vocabulary', () => {
+  const example = { file: path.join(appRoot, 'guide/migration/bootstrap/content.mdx'), kind: 'fenced:html:class', context: '', line: 1, candidate: 'col-md-4' }
+  assert.equal(isMigrationVendorClass(example), true)
+  assert.equal(isMigrationVendorClass({ ...example, candidate: 'col-md-broken' }), false)
+  assert.equal(isMigrationVendorClass({ ...example, kind: 'fenced:css:compose' }), false)
+  assert.equal(isMigrationVendorClass({ ...example, file: path.join(appRoot, 'guide/theme/content.mdx') }), false)
+})
+
+test('delivery examples preserve actual pruning, route compilation and published hydration assets', verifyDeliveryExamples)
+
+
+test('authoring package exports compile through the build resolver and local reference', verifyPackageAuthoringExamples)
+test('monorepo entries share vocabulary and preserve independent token overrides', verifyMonorepoExamples)
+
+
+test('lint guide examples match native diagnostics, options and fixes', verifyLintExamples)
+test('language service guide examples match actual completion, hover and formatter output', verifyLanguageExamples)
+
+test('agent styling example compiles its shared vocabulary and runtime variables', verifyAgentStylingExample)
+test('agent MCP examples match stdio discovery, preview and apply behavior', verifyAgentMCPExamples)
+
+test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
+test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
+
+test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
+
+test('installation examples apply actual Vite setup and build the documented CLI stylesheet', verifyInstallationExamples)
+
+test('React, Vue and Lit installation examples build with their framework plugins and authored components', verifyFrameworkInstallationExamples)
+
+test('Webpack, Rspack and Rsbuild installation files produce linked HTML and utility CSS', verifyBundlerInstallationExamples)
+
+test('Astro and SvelteKit installation examples build, including the documented static CLI fallback', async () => {
+    await verifyIslandsInstallationExamples()
+})
+
+test('server installation examples build separate assets and render their host templates', verifyServerInstallationExamples)
+
+test('theme installation examples build real assets and preserve host enqueue and manifest contracts', verifyThemeInstallationExamples)
+
+test('.NET installation examples build Razor-source utilities and preserve separate host assets', verifyDotnetInstallationExamples)
+
+test('Storybook preview source builds through inherited Vite configuration and the authored viteFinal hook', verifyStorybookInstallationExamples)
+
+test('Angular application builds the authored CDN and static CLI integrations', verifyAngularInstallationExamples)
+
+test('Next.js installation builds the authored configs, layouts and pages in every mode', verifyNextInstallationExamples)
+
+test('Nuxt installation builds the authored config, stylesheet and component in every mode', verifyNuxtInstallationExamples)
+
+test('React Router examples compile with Vite and the explicit public SSR adapter', verifyRouterInstallationExamples)
+
+test('TanStack Start builds the authored Vite, root and route sources in both modes', verifyTanstackInstallationExamples)

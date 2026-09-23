@@ -10,9 +10,9 @@ import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceExample, SyntaxRow } from './types'
 import { tokenValuesMarkdown } from './TokenValues'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
-import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
-import preset from '../utils/preset-manifest'
-import { configuredExampleCSS, configuredExampleHTML } from './configured-example'
+import { variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
+import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses, configuredMarkupMarkdown } from './configured-example'
+import { stylesheetExampleMarkdown } from './stylesheet-example'
 
 export function syntaxMarkdown(rows: SyntaxRow[]) {
   return rows.map(row => `### \`${row.syntax}\` {#${row.id}}\n\n\`\`\`css\n${row.declarations}\n\`\`\``).join('\n\n')
@@ -25,13 +25,23 @@ export function portableMarkdown(markdown: string) {
 /** Resolve authored literals only. Never execute MDX expressions to extract documents. */
 function literal(node: any, variables: Record<string, unknown>): unknown {
   if (node.type === 'Literal') return node.value
+  if (node.type === 'ObjectExpression') return Object.fromEntries(node.properties.map((property: any) => {
+    if (property.type !== 'Property' || property.computed || property.method || property.kind !== 'init') throw new Error('Only literal document properties are supported')
+    return [property.key.name ?? property.key.value, literal(property.value, variables)]
+  }))
   if (node.type === 'ArrayExpression') return node.elements.map((item: any) => literal(item, variables))
   if (node.type === 'Identifier' && node.name in variables) return variables[node.name]
   if (node.type === 'TemplateLiteral' && !node.expressions.length) return node.quasis[0].value.cooked
   throw new Error(`Unsupported document expression: ${node.type}`)
 }
 
-export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], stack: string[] = []) {
+export interface MdxContentOptions {
+  /** Reference Overview renders syntax rows; Guide Overview may be a local MDX include. */
+  overview?: 'syntax' | 'include'
+  component?: (name: string, attributes: Record<string, unknown>, file: string) => string | undefined
+}
+
+export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], stack: string[] = [], options: MdxContentOptions = {}) {
   if (stack.includes(file)) throw new Error(`Recursive document include: ${file}`)
   const expressions: Record<string, string> = {}
   const source = (await readFile(file, 'utf8')).split(/(```[\s\S]*?```)/g).map(part => part.startsWith('```') ? part : part.replace(/\{?<Demo\b[\s\S]*?<\/Demo>\}?/g, '').replace(/(<(?:Code|Class2CSS)\b[^>]*>)([\s\S]*?)(<\/(?:Code|Class2CSS)>)/g, (_, start, expression, end) => { const key = `MCSS_EXPRESSION_${Object.keys(expressions).length}`; expressions[key] = expression; return `${start}\n${key}\n${end}` })).join('')
@@ -77,22 +87,34 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
     if (node.type === 'mdxjsEsm') return ''
     if (node.type === 'code') return `\`\`\`${node.lang ?? ''}${node.meta ? ` ${node.meta}` : ''}\n${node.value}\n\`\`\``
     if (node.type === 'inlineCode') return raw(node)
-    if (node.type === 'heading') return raw(node).replace(/\\([{}])/g, '$1')
     if (node.type === 'mdxJsxFlowElement' || node.type === 'mdxJsxTextElement') {
       const name = node.name ?? ''
       const attrs: Record<string, any> = Object.fromEntries((node.attributes ?? []).filter((a: any) => a.name).map((a: any) => [a.name, a.value]))
       const inner = (node.children ?? []).map(raw).join('\n')
-      if (name === 'Overview') return syntaxMarkdown(rows)
+      const adapted = options.component?.(name, attrs, file)
+      if (adapted !== undefined) return adapted
+      if (name === 'Overview' && options.overview !== 'include') return syntaxMarkdown(rows)
+      if (name === 'StylesheetExample') {
+        const source = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value)
+        if (typeof attrs.title !== 'string' || typeof source !== 'string') throw new Error('StylesheetExample requires a literal title and source')
+        return stylesheetExampleMarkdown(attrs.title, source)
+      }
       if (name === 'TokenValues') return tokenValuesMarkdown(attrs.namespace, await expression(attrs.keys.value) as string[])
+      if (name === 'DemoConfiguredExample') {
+        const configuration = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value) as string
+        const html = typeof attrs.html === 'string' ? attrs.html : await expression(attrs.html.value) as string
+        return `${configuredMarkupMarkdown(configuration, html)}${typeof attrs.caption === 'string' ? `\n\n${attrs.caption}` : ''}`
+      }
       if (name === 'ConfiguredExample') {
         const configuration = typeof attrs.source === 'string' ? attrs.source : await expression(attrs.source.value) as string
-        const classes = await expression(attrs.classes.value) as string[]
+        const html = attrs.html !== undefined ? typeof attrs.html === 'string' ? attrs.html : await expression(attrs.html.value) as string : undefined
+        const classes = html !== undefined ? configuredMarkupClasses(html) : await expression(attrs.classes.value) as string[]
         const css = configuredExampleCSS(configuration, classes)
         examples.push({ id: `example-${examples.length + 1}`, title: classes.join(' '), classes, configuration, css })
-        return `\`\`\`css\n${configuration}\n\`\`\`\n\n\`\`\`html\n${configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css\n${css}\n\`\`\``
+        return `${configuration ? `\`\`\`css\n${configuration}\n\`\`\`\n\n` : ''}\`\`\`html\n${html ?? configuredExampleHTML(classes, attrs.element ?? 'div', attrs.label ?? 'Example')}\n\`\`\`\n\n\`\`\`css\n${css}\n\`\`\``
       }
       if (name === 'TextHeirs') return getVariableNamespacePublicKeys('color-text').map(key => `\`${key}:\``).join(', ')
-      if (name === 'VariableNamespaceSources') return [...new Set(flattenMasterCSSManifestVariables(preset.variables).map(variable => variable.namespace).filter(Boolean))].map(namespace => `- \`${namespace}\`: ${getVariableNamespacePublicKeys(namespace!).map(key => `\`${key}:\``).join(', ')}`).join('\n')
+      if (name === 'VariableNamespaceSources') return variableNamespaceSourcesMarkdown()
       if (name === 'LayersDefault') return 'The base stylesheet declares `@layer theme, base, defaults, components, utilities;`. Theme tokens, base rules, defaults, component definitions and utilities are emitted in their corresponding layers. See the examples below for their interactions.'
       if (name === 'StartingStyleExample' || name === 'AnimationDirectionBasicDemo') return '' // Visual demos accompany the adjacent complete code examples.
       if (name === 'Class2CSS') {
@@ -107,7 +129,24 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
         catch { notes.push(`${path.basename(file)}: Code expression requires a text equivalent`); return '' }
       }
       if (name === 'Basic' && typeof attrs.className === 'string') return `\`\`\`html\n<div class="${attrs.className}">…</div>\n\`\`\``
-      if (/^(Demo|DemoPanel|Image|InteractingIndicator|Dropped|Icon\w+)/.test(name)) return ''
+      if (name === 'DemoIndex') {
+        const groups = await expression(attrs.groups.value) as { title: string, links: { href: string, label: string }[] }[]
+        if (!Array.isArray(groups) || groups.some(group => !group || typeof group.title !== 'string' || !Array.isArray(group.links)
+          || group.links.some(link => !link || typeof link.href !== 'string' || typeof link.label !== 'string'))) throw new Error('DemoIndex requires literal group titles and labeled links')
+        return groups.map(group => `**${group.title}**\n\n${group.links.map(link => `- [${link.label}](${link.href})`).join('\n')}`).join('\n\n')
+      }
+      if (/^(Demo|DemoPanel|Image|InteractingIndicator|Dropped|Icon\w+)/.test(name) || name === 'HelloWorld') return ''
+      if (name === 'DocumentChoices') {
+        const entries = await expression(attrs.entries.value) as { title: string, href: string, description: string }[]
+        if (!Array.isArray(entries) || entries.some(entry => !['title', 'href', 'description'].every(key => typeof entry[key as keyof typeof entry] === 'string'))) throw new Error('DocumentChoices requires literal titles, links and descriptions')
+        return entries.map(entry => `- [${entry.title}](${entry.href}) — ${entry.description}`).join('\n')
+      }
+      if (name === 'DocumentOptionEntry') {
+        if (typeof attrs.name !== 'string') throw new Error('DocumentOptionEntry requires a literal name')
+        return `**\`${attrs.name}\`**\n\n${(await Promise.all((node.children ?? []).map(render))).join('\n\n')}`
+      }
+      if (name === 'StepNum' || name === 'DocumentStepNumber') return ''
+      if (['DocumentOptionList', 'DocumentComparison', 'StepSection', 'Step', 'StepL', 'StepR', 'StepEnd', 'CodeTabs', 'Tab', 'DocumentSteps', 'DocumentStep', 'DocumentStepText', 'DocumentStepBody'].includes(name)) return (await Promise.all((node.children ?? []).map(render))).join('\n\n')
       if (/^[A-Z]/.test(name)) {
         const imported = imports[name]
         const siteRoot = file.slice(0, file.indexOf('/app/'))
@@ -115,7 +154,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
           : imported?.startsWith('.') ? path.resolve(path.dirname(file), imported)
             : path.join(path.dirname(file), 'components', `${name}.mdx`)
         if (target.endsWith('.mdx') && await access(target).then(() => true, () => false)) {
-          const result = await extractReferenceMdx(target, rows, [...stack, file])
+          const result = await extractReferenceMdx(target, rows, [...stack, file], options)
           examples.push(...result.examples)
           notes.push(...result.notes)
           return result.markdown
@@ -133,7 +172,7 @@ export async function extractReferenceMdx(file: string, rows: SyntaxRow[] = [], 
       const end = child.position.end.offset - node.position.start.offset
       text = text.slice(0, start) + await render(child) + text.slice(end)
     }
-    return text
+    return node.type === 'heading' ? text.replace(/\\([{}])/g, '$1') : text
   }
   const parts: string[] = []
   for (const child of tree.children) parts.push(await render(child))

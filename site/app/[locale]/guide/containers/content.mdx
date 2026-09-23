@@ -4,7 +4,7 @@ import { ContainerNamespaceTable } from './components/ContainerNamespace'
 Containers define the size scale for reusable layout surfaces. In Master CSS, the container namespace has two related jobs:
 
 * Provide contextual size values such as `max-w:md`, `w:3xl`, `size:lg`, and `flex-basis:sm`.
-* Provide thresholds for `@container(<name>)` queries, so components can respond to the space they actually receive.
+* Provide thresholds for `@container(<size>)` queries, so components can respond to the space they actually receive.
 
 Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use containers for component-level adaptation and shared width caps.
 
@@ -64,7 +64,7 @@ The shorthand is contextual: `md` can mean a container value inside `max-w:md`, 
 ---
 
 ## Create a query container
-Add `container` to the element whose inline size should be observed. Then apply `@container(<size>)` variants to descendants.
+Add `container` to an ancestor whose inline size comes from the surrounding layout. Then apply `@container(<size>)` variants to its descendants. A size query cannot select the element itself as its query container.
 
 ```html
 <section class="container">

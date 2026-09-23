@@ -638,7 +638,7 @@ export default function Play({ shareId }: PlayProps = {}) {
             <iframe
               title={$('Preview')}
               ref={previewIframeRef}
-              className={clsx('demo', { hidden: preview === 'css' })}
+              className={clsx('demo-surface', { hidden: preview === 'css' })}
               style={{ width: '100%', height: '100%', borderRadius: 0, margin: 0, padding: 0, border: 0 }}
               sandbox="allow-popups-to-escape-sandbox allow-scripts allow-popups allow-forms allow-same-origin allow-pointer-lock allow-top-navigation allow-modals"
               srcDoc={previewHTML}

@@ -16,6 +16,7 @@ import { generatePresetCSS } from '../common/generate-preset-css'
 import type { ReferenceCatalog, ReferenceDocument } from './types'
 import { buildToolContracts } from './tool-contracts'
 import { buildPackageContracts } from './package-contracts'
+import { tokenEditorial } from './token-editorial'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
 const fence = (lang: string, value: string) => `\`\`\`${lang}\n${value}\n\`\`\``
@@ -79,28 +80,47 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     const consumers = getVariableNamespacePublicKeys(namespace)
     const text = entries.map(variable => {
       const values = [variable.value === undefined ? '' : `Default: ${String(variable.value)}`, ...Object.entries(variable.modes ?? {}).map(([mode, value]) => `${mode}: ${String(value.value)}`)].filter(Boolean)
-      return `### ${variable.key}\n\n${values.map(value => fence('text', value)).join('\n\n')}`
+      return `### ${variable.key}\n\nCSS variable: \`--${variable.name}\`.\n\n${values.map(value => fence('text', value)).join('\n\n')}`
     }).join('\n\n')
-    const markdown = `## Scope\n\nThese are current preset values, not fixed values for every project. Project theme declarations can override them. Mode-specific values are listed separately.\n\n## Consumers\n\n${consumers.map(key => `\`${key}:\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Values\n\n${text}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).`
-    documents.push({ id: `tokens/${namespace}`, kind: 'tokens', title: namespace, description: `Preset ${namespace} values and their consumers.`, category: 'Tokens & namespaces', url: `/reference/tokens/${namespace}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(entries)), language: 'en', aliases: entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`]), terms: [namespace, ...consumers], rows: [], examples: [], related: ['rules/modes', 'directives/theme'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
+    const context = tokenEditorial[namespace]
+    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Mode-specific entries are labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}:\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
+    const headings = documentHeadings(markdown)
+    const anchors = new Map(headings.filter(heading => heading.depth === 3).map(heading => [heading.title, heading.id]))
+    const identifierAnchors = Object.fromEntries(entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`].map(name => [name, anchors.get(variable.key)!])))
+    documents.push({ id: `tokens/${namespace}`, kind: 'tokens', title: namespace, description: `Preset ${namespace} values and their consumers.`, category: 'Tokens & namespaces', url: `/reference/tokens/${namespace}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(entries)), language: 'en', aliases: entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`]), identifierAnchors, terms: [namespace, ...consumers], rows: [], examples: [], related: ['rules/modes', 'directives/theme'], markdown, headings, extractionNotes: [] })
   }
   for (const [id, title, conditions] of [ ['breakpoints', 'Breakpoints', preset.breakpointConditions], ['containers', 'Containers', preset.containerConditions] ] as const) {
-    const markdown = `## Conditions\n\nThese named conditions come from the current preset. Project settings can override them.\n\n${Object.entries(conditions ?? {}).map(([name, value]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${name})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition.`
+    const usage = id === 'containers'
+      ? 'Append a condition such as `@container(md)` to a class. It measures an eligible ancestor query container; establish that container with `container` or a named container declaration.'
+      : 'Append a condition such as `@md` to a class. It measures the viewport width, independently of a component’s available width.'
+    const markdown = `## Conditions\n\nThese named conditions come from the current preset. Project settings can override them.\n\n${usage} Each example below shows the complete generated CSS for an opacity class at that threshold.\n\n${Object.entries(conditions ?? {}).map(([name]) => `### ${name}\n\n${fence('css', generatePresetCSS([`opacity:1@${id === 'containers' ? `container(${name})` : name}`]))}`).join('\n\n')}\n\nSee [conditions](/reference/rules/conditions) for syntax and composition, or the [${id} guide](/guide/${id}) for working examples.`
     documents.push({ id: `tokens/${id}`, kind: 'tokens', title, description: `Named ${id} conditions in the current preset.`, category: 'Tokens & namespaces', url: `/reference/tokens/${id}`, source: 'packages/preset/src/default-manifest.json', sourceDigest: digest(JSON.stringify(conditions)), language: 'en', aliases: Object.keys(conditions ?? {}).map(key => id === 'containers' ? `@container(${key})` : `@${key}`), terms: [], rows: [], examples: [], related: ['rules/conditions'], markdown, headings: documentHeadings(markdown), extractionNotes: [] })
   }
   // Directive sections are maintained once, in the existing directive source during migration.
   const directive = await fromMdx('directives', 'directive', path.join(root, 'guide/directives/contract.mdx'), 'Directives', 'Stylesheet directives, their scope and effects.', 'Directives & settings')
   const sections = directive.markdown.split(/(?=^## )/m)
   const mapping: Record<string, string> = { 'Entry markers': 'entry', 'Reference context': 'reference', 'Project settings': 'settings', 'Theme and variants': 'theme', 'Managed definitions': 'definitions', 'Source boundaries': 'source', 'Candidate policy': 'candidates', 'Rule-local composition': 'compose', 'Conditional blocks': 'variant', 'Native CSS preservation': 'preserve' }
+  const descriptions: Record<string, string> = {
+    'entry': 'Choose where generated utility CSS is inserted and which package styles are loaded.',
+    'reference': 'Use another stylesheet’s tokens and definitions without importing its native CSS.',
+    'settings': 'Configure unit conversion, modes, selector scope and generated importance.',
+    'theme': 'Declare tokens, mode values, managed keyframes and reusable conditions.',
+    'definitions': 'Define named, enumerated and dynamic classes in the appropriate cascade layer.',
+    'source': 'Include or exclude source files while preserving each stylesheet’s path base.',
+    'candidates': 'Include known class names or reject unwanted scanning candidates.',
+    'compose': 'Turn an unquoted class list into declarations for the current CSS selector.',
+    'variant': 'Apply a Master CSS condition inside a native rule or managed definition.',
+    'preserve': 'Keep a stylesheet’s native class rules when source-based pruning would remove them.'
+}
   for (const section of sections) {
     const title = section.match(/^## (.+)/)?.[1]?.replace(/\s+\{#[\w-]+\}$/, '')
     const id = title && mapping[title]
     if (!id) continue
-    const markdown = `${section}\n\n## Related contracts\n\nSee [declarations](/reference/rules/declarations), [cascade layers](/reference/rules/layers) and [extraction](/reference/rules/extraction).`
+    const markdown = `${section.trim().replace(/\n---$/, '').trim()}\n\n<a id="related-contracts"></a>`
     const headings = documentHeadings(markdown)
     const identifiers = headings.filter(heading => heading.title.startsWith('@')).flatMap(heading => [[heading.title, heading.id], [heading.title.split(' ')[0], heading.id]])
     const identifierAnchors = Object.fromEntries(identifiers.reverse())
-    documents.push({ ...directive, id: `directives/${id}`, url: `/reference/directives/${id}`, title: title!, markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/layers', 'rules/extraction'], guide: id === 'theme' ? '/guide/theme' : ['source', 'candidates'].includes(id) ? '/guide/scanning-latent-classes' : '/guide/global-styles' })
+    documents.push({ ...directive, id: `directives/${id}`, url: `/reference/directives/${id}`, title: title!, description: descriptions[id], markdown, headings, aliases: Object.keys(identifierAnchors), identifierAnchors, related: ['rules/declarations', 'rules/layers', 'rules/extraction'], guide: id === 'theme' ? '/guide/theme' : ['source', 'candidates'].includes(id) ? '/guide/scanning-latent-classes' : '/guide/global-styles' })
   }
   let revision = 'unknown'
   let sourceState: ReferenceCatalog['sourceState'] = 'archive'

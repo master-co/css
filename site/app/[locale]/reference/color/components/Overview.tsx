@@ -1,7 +1,6 @@
 import SyntaxTable from 'internal/components/SyntaxTable'
 import syntaxes from '../syntaxes'
 import SyntaxTr from '~/site/components/SyntaxTr'
-import SyntaxPreview from './SyntaxPreview'
 import Aa from 'internal/components/Aa'
 
 export default () => {

@@ -96,7 +96,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Prefer native `html`, `css`, and `js` blocks.
 - Use `class`, not React `className`, in visible HTML examples.
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
-- Prefer shorthand Master CSS variable references such as `w:$size`, or native CSS references such as `w:var(--size)` when fallback values are needed.
+- Use native CSS references such as `w:var(--size)` for custom properties assigned inline or by JavaScript. The `$name` shorthand resolves a variable registered in the active manifest; it does not resolve an arbitrary runtime-only custom property.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is about that framework integration.
 - Implementation demos may use React, Next.js, and `flushSync`; displayed code does not need to match exactly.

@@ -12,8 +12,8 @@ Avoid assembling the utility from separate `bg:` and color fragments. The [compl
 
 1. Inspect the complete class against the active project manifest with the [class inspection tool](/reference/tools/mcp/mastercss_inspect_class).
 2. Confirm the source file is part of the scan. Ordinary app files use integration or CLI defaults; add `@source` only for an explicit exception.
-3. Check candidate policy when an otherwise valid class is absent. Use a bounded safelist for known classes that cannot appear in source.
-4. For a changing value, keep the class static and pass a CSS variable. For class names created only at runtime, choose the appropriate rendering mode.
+3. Check candidate policy when an otherwise valid class is absent. `@source not` can exclude a file, and `@blocklist` can remove a class. Use `@safelist` for a bounded set of known external classes.
+4. For a changing value, keep the class static and pass a CSS variable. For class names created only at runtime, review [rendering modes](/guide/rendering-modes#comparisons).
 
 See [Extraction](/reference/rules/extraction) for source boundaries and validation, and [runtime values](/reference/rules/extraction#runtime-values) for a complete example.
 

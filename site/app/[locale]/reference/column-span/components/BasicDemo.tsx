@@ -1,17 +1,16 @@
-import Demo from 'internal/components/Demo'
-import DemoPanel from 'internal/components/DemoPanel'
+import { Demo, DemoItem, DemoSurface, DemoText } from '~/site/components/demo'
 import clsx from 'clsx'
 
-export default ({ className }: any) => {
+export default function BasicDemo({ className }: { className?: string }) {
   return (
-    <Demo $py={0}>
-      <DemoPanel>
-        <div className="gap:xl columns:3">
-          <p className="m:0">There are many different types of animals, each with unique characteristics.</p>
-          <p className={clsx(className, 'font:bold text:neutral')}>No matter what type of animal you are interested in, you will find something interesting and informative here.</p>
-          <p className="m:0">Look at some of the most amazing creatures on earth, from spiders to whales!</p>
+    <Demo title="Column flow" caption="Choose all or none in the syntax table to change how the blue block participates in this two-column flow.">
+      <DemoSurface className="p:md font:sm">
+        <div className="gap:md columns:2">
+          <DemoText className="mx:0 mb:sm mt:0">Start with the collection overview and its key details.</DemoText>
+          <DemoItem tone="blue" className={clsx(className, 'my:sm p:sm font:medium')}>Collection notes</DemoItem>
+          <DemoText className="m:0">Continue through each column in reading order, then move to the next section.</DemoText>
         </div>
-      </DemoPanel>
+      </DemoSurface>
     </Demo>
   )
 }

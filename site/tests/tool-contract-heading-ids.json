@@ -1,0 +1,508 @@
+{
+  "tools/mcp/mastercss_workspace_info": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_setup_audit": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_inspect_class": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_trace_class": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_extract_classes": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_inspect_directives": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_render_css": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_scan_project": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_repo_context": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_change_impact": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_test_router": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_package_graph": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_manifest_query": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_css_compare": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_lint_project": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_lint_content": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_suggest_syntax": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_preview_fixes": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_preview_directive_format": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/mcp/mastercss_apply_preview": [
+    {
+      "id": "contract",
+      "title": "Contract",
+      "depth": 2
+    },
+    {
+      "id": "input",
+      "title": "Input",
+      "depth": 2
+    },
+    {
+      "id": "output",
+      "title": "Output",
+      "depth": 2
+    },
+    {
+      "id": "project-context-and-lifecycle",
+      "title": "Project context and lifecycle",
+      "depth": 2
+    }
+  ],
+  "tools/cli/generate": [
+    {
+      "id": "invocation-and-options",
+      "title": "Invocation and options",
+      "depth": 2
+    },
+    {
+      "id": "effects-and-lifecycle",
+      "title": "Effects and lifecycle",
+      "depth": 2
+    },
+    {
+      "id": "output-and-errors",
+      "title": "Output and errors",
+      "depth": 2
+    },
+    {
+      "id": "example",
+      "title": "Example",
+      "depth": 2
+    }
+  ],
+  "tools/cli/lint": [
+    {
+      "id": "invocation-and-options",
+      "title": "Invocation and options",
+      "depth": 2
+    },
+    {
+      "id": "effects-and-lifecycle",
+      "title": "Effects and lifecycle",
+      "depth": 2
+    },
+    {
+      "id": "output-and-errors",
+      "title": "Output and errors",
+      "depth": 2
+    },
+    {
+      "id": "example",
+      "title": "Example",
+      "depth": 2
+    }
+  ],
+  "tools/cli/inspect": [
+    {
+      "id": "invocation-and-options",
+      "title": "Invocation and options",
+      "depth": 2
+    },
+    {
+      "id": "effects-and-lifecycle",
+      "title": "Effects and lifecycle",
+      "depth": 2
+    },
+    {
+      "id": "output-and-errors",
+      "title": "Output and errors",
+      "depth": 2
+    },
+    {
+      "id": "example",
+      "title": "Example",
+      "depth": 2
+    }
+  ]
+}

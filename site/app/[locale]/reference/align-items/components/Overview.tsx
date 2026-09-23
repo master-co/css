@@ -3,7 +3,6 @@ import SyntaxTable from 'internal/components/SyntaxTable'
 import SyntaxTr from '~/site/components/SyntaxTr'
 
 export default () => {
-  const previewSyntax = 'align-items:center'
   return (
     <>
       <SyntaxTable>

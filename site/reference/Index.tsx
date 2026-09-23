@@ -21,7 +21,7 @@ export default function ReferenceIndex({ documents, categoryOrder }: { documents
       title: tw ? section.titleTW : section.title,
       description: tw ? section.descriptionTW : section.description,
       Icon: sectionIcons[section.id as keyof typeof sectionIcons],
-      groups: categories.map(category => ({ title: $(category), entries: entries.filter(doc => doc.category === category) }))
+      groups: categories.map(category => ({ id: `${section.id}-${category.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')}`, title: $(category), entries: entries.filter(doc => doc.category === category) }))
     }
   }).filter(section => section.groups.length)
   return <DocumentationIndex name="reference" sections={sections} related={{

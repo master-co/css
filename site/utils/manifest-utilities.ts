@@ -22,6 +22,14 @@ export function getVariableNamespacePublicKeys(namespace: string) {
   ])
 }
 
+/** Keep curated documentation groups aligned with the public namespace consumers. */
+export function filterNamespaceKeys(group: { keys: string[], namespace?: string, namespaces?: string[] }) {
+  const namespaces = group.namespaces || (group.namespace ? [group.namespace] : [])
+  if (!namespaces.length) return group.keys
+  const keys = new Set(namespaces.flatMap(getVariableNamespacePublicKeys))
+  return group.keys.filter(key => keys.has(key))
+}
+
 export function getNativeValueNamespacePublicKeys(namespace: string) {
   const properties = new Set<string>()
   for (const eachNamespace of builtinNativeValueNamespaces) {

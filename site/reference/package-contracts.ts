@@ -1,13 +1,11 @@
 import { readFile } from 'node:fs/promises'
 import { existsSync } from 'node:fs'
 import path from 'node:path'
-import { createRequire } from 'node:module'
 import { createHash } from 'node:crypto'
 import { documentHeadings } from './headings'
 import type { ReferenceDocument } from './types'
-
-/** Uses the repository's existing compiler-API compatibility dependency at build time. */
-const ts = createRequire(new URL('../../package.json', import.meta.url))('typescript6')
+import { packageEditorial } from './package-editorial'
+import { declarationProgram, publicDeclaration, formatDeclaration, declarationComment, ts } from './package-declarations'
 const hash = (value: string) => createHash('sha256').update(value).digest('hex')
 
 function typeTarget(value: any): string | undefined {
@@ -36,13 +34,22 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
   }
   const config = ts.readConfigFile(path.join(repo, 'site/tsconfig.json'), ts.sys.readFile)
   const options = ts.parseJsonConfigFileContent(config.config, ts.sys, path.join(repo, 'site')).options
-  const program = ts.createProgram(packages.flatMap(pkg => pkg.entries.map(entry => entry.file)), {
+  const program = declarationProgram(packages.flatMap(pkg => pkg.entries.map(entry => entry.file)), {
     ...options, target: ts.ScriptTarget.ESNext, module: ts.ModuleKind.ESNext, moduleResolution: ts.ModuleResolutionKind.Bundler,
     skipLibCheck: true, noEmit: true, allowJs: true
   })
   const checker = program.getTypeChecker()
   return packages.map(pkg => {
-    const body = ['## Public entrypoints', '', 'Import only from the published paths below. Declarations are resolved from the current public entrypoint sources and published type entries. CSS assets are listed separately from JavaScript and TypeScript APIs.', '']
+    const editorial = packageEditorial[pkg.name]
+    if (!editorial) throw new Error(`Missing package guidance: ${pkg.name}`)
+    const body = ['## Public entrypoints', '', editorial.introduction, '', '| Import path | Purpose |', '| --- | --- |']
+    for (const subpath of Object.keys(pkg.manifest.exports)) {
+      const specifier = pkg.name + (subpath === '.' ? '' : subpath.slice(1))
+      const purpose = editorial.entries[subpath]
+      if (!purpose) throw new Error(`Missing entrypoint guidance: ${specifier}`)
+      body.push(`| [\`${specifier}\`](#entry-${hash(specifier).slice(0, 12)}) | ${purpose} |`)
+    }
+    body.push('', 'Declarations show the public surface of each import path. Referenced type names may be local to the package; import only names listed as exports here. Private implementation is omitted, while constructor restrictions remain visible.', '')
     const aliases = [pkg.name]
     const identifierAnchors: Record<string, string> = {}
     const dependencies: string[] = []
@@ -50,15 +57,32 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
       const specifier = pkg.name + (subpath === '.' ? '' : subpath.slice(1))
       aliases.push(specifier)
       identifierAnchors[specifier] = `entry-${hash(specifier).slice(0, 12)}`
-      body.push(`## ${specifier} {#${identifierAnchors[specifier]}}`, '')
+      body.push(`## ${specifier} {#${identifierAnchors[specifier]}}`, '', editorial.entries[subpath], '')
       const entry = pkg.entries.find(entry => entry.subpath === subpath)
-      if (!entry) { body.push('Published asset:', '', '```json', JSON.stringify(value, null, 2), '```', ''); continue }
+      if (!entry) {
+        if (subpath.endsWith('.css') || value && typeof value === 'object' && 'style' in value) body.push('```css', `@import "${specifier}";`, '```', '')
+        else body.push('Published asset mapping:', '', '```json', JSON.stringify(value, null, 2), '```', '')
+        continue
+      }
       const source = program.getSourceFile(entry.file)
       if (!source) throw new Error(`Missing public declaration ${entry.file}`)
       dependencies.push(source.text)
       const symbol = checker.getSymbolAtLocation(source)
       const symbols: any[] = symbol ? checker.getExportsOfModule(symbol) : []
-      if (!symbols.length) body.push('Ambient declarations; load this type entrypoint in the host TypeScript configuration.', '', '```typescript', source.text, '```', '')
+      if (!symbols.length) {
+        const ambient = source.statements.some((node: any) => ts.isModuleDeclaration(node) && ts.isStringLiteral(node.name))
+        body.push(ambient ? 'Ambient module declarations for TypeScript. Include this entry in the host’s type configuration.' : 'This entry has no named or default exports. Loading it runs its host entrypoint.', '')
+        if (ambient) body.push('```typescript', source.text.trim(), '```', '')
+      }
+      if (symbols.length > 8) {
+        body.push('| Export | Kind |', '| --- | --- |')
+        for (const exported of [...symbols].sort((a, b) => a.name.localeCompare(b.name))) {
+          const resolved = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported
+          const kind = resolved.flags & ts.SymbolFlags.Class ? 'Class' : resolved.flags & ts.SymbolFlags.Function ? 'Function' : resolved.flags & ts.SymbolFlags.Interface ? 'Interface' : resolved.flags & ts.SymbolFlags.TypeAlias ? 'Type' : 'Value'
+          body.push(`| [\`${exported.name}\`](#api-${hash(`${specifier}#${exported.name}`).slice(0, 12)}) | ${kind} |`)
+        }
+        body.push('')
+      }
       for (const exported of symbols.sort((a, b) => a.name.localeCompare(b.name))) {
         const qualified = `${specifier}#${exported.name}`
         const anchor = `api-${hash(qualified).slice(0, 12)}`
@@ -66,40 +90,19 @@ export async function buildPackageContracts(repo: string): Promise<ReferenceDocu
         identifierAnchors[qualified] = anchor
         identifierAnchors[exported.name] ??= anchor
         const resolved = exported.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(exported) : exported
-        const comment = ts.displayPartsToString(resolved.getDocumentationComment(checker))
-        const declarations: any[] = resolved.declarations ?? []
-        const declaration = declarations.map(node => {
-          if (ts.isFunctionDeclaration(node)) {
-            const signature = checker.getSignatureFromDeclaration(node)
-            return `${exported.name === 'default' ? 'export default function' : `declare function ${exported.name}`}${checker.signatureToString(signature, undefined, ts.TypeFormatFlags.NoTruncation)};`
-          }
-          if (ts.isVariableDeclaration(node) || ts.isBindingElement(node)) return `declare const ${exported.name}: ${checker.typeToString(checker.getTypeOfSymbolAtLocation(resolved, node), undefined, ts.TypeFormatFlags.NoTruncation)};`
-          if (ts.isClassDeclaration(node)) {
-            const printer = ts.createPrinter()
-            const transformed = ts.transform(node, [(context: any) => {
-              const visit = (child: any): any => {
-                if (ts.isMethodDeclaration(child) || ts.isConstructorDeclaration(child) || ts.isGetAccessorDeclaration(child) || ts.isSetAccessorDeclaration(child)) {
-                  const signature = checker.getSignatureFromDeclaration(child)
-                  const type = ts.isConstructorDeclaration(child) || ts.isSetAccessorDeclaration(child) ? child.type : child.type ?? checker.typeToTypeNode(checker.getReturnTypeOfSignature(signature), undefined, ts.NodeBuilderFlags.NoTruncation)
-                  const clone = { ...child, body: undefined, type }; return ts.visitEachChild(clone, visit, context)
-                }
-                if (ts.isPropertyDeclaration(child)) return { ...child, initializer: undefined, type: child.type ?? checker.typeToTypeNode(checker.getTypeAtLocation(child), undefined, ts.NodeBuilderFlags.NoTruncation) }
-                return ts.visitEachChild(child, visit, context)
-              }; return (root: any) => ts.visitNode(root, visit)
-            }])
-            const text = printer.printNode(ts.EmitHint.Unspecified, transformed.transformed[0], node.getSourceFile())
-            transformed.dispose(); return text
-          }
-          return node.getText()
-        }).join('\n')
+        const shared = exported.name === 'default' && symbols.find(candidate => candidate.name !== 'default'
+          && (candidate.flags & ts.SymbolFlags.Alias ? checker.getAliasedSymbol(candidate) : candidate) === resolved)
+        const comment = shared ? `Default export of [\`${shared.name}\`](#api-${hash(`${specifier}#${shared.name}`).slice(0, 12)}).` : declarationComment(resolved)
+        const declaration = formatDeclaration(shared ? `export { ${shared.name} as default };` : publicDeclaration(resolved, checker)
+          + (exported.name !== resolved.name && resolved.name !== 'default' ? `\nexport { ${resolved.name} as ${exported.name} };` : ''))
         if (!declaration) throw new Error(`Unresolved public declaration ${specifier}#${exported.name}`)
         dependencies.push(declaration)
-        body.push(`### ${exported.name} {#${anchor}}`, '', comment, '', '```typescript', declaration, '```', '')
+        body.push(`### ${exported.name} {#${anchor}}`, '', ...(comment ? [comment, ''] : []), '```typescript declaration', declaration, '```', '')
       }
     }
-    body.push('## Using this contract', '', 'Check the package and subpath before copying a symbol. Node-only entrypoints require Node; browser and integration entrypoints follow their host lifecycle. Type declarations do not by themselves verify a project manifest or generated CSS. Use the language reference and project-aware inspection tools for those checks.', '')
+    body.push('## Using this contract', '', editorial.usage, '')
     const markdown = body.join('\n')
     const id = `packages/${pkg.name.replace('@master/', '')}`
-    return { id, kind: 'package', title: pkg.name, description: pkg.manifest.description, category: 'Package APIs', url: `/reference/${id}`, source: `packages/${path.basename(pkg.directory)}/package.json`, sourceDigest: hash(JSON.stringify(pkg.manifest) + dependencies.join('\n')), language: 'en', aliases: [...new Set(aliases)], identifierAnchors, terms: [], rows: [], examples: [], related: ['rules/declarations', 'tools/mcp/mastercss_inspect_class'], markdown, headings: documentHeadings(markdown), extractionNotes: [] } satisfies ReferenceDocument
+    return { id, kind: 'package', title: pkg.name, description: pkg.manifest.description, category: 'Package APIs', url: `/reference/${id}`, source: `packages/${path.basename(pkg.directory)}/package.json`, sourceDigest: hash(JSON.stringify(pkg.manifest) + JSON.stringify(editorial) + dependencies.join('\n')), language: 'en', aliases: [...new Set(aliases)], identifierAnchors, terms: [], rows: [], examples: [], related: ['rules/declarations', 'tools/mcp/mastercss_inspect_class'], markdown, headings: documentHeadings(markdown), extractionNotes: [] } satisfies ReferenceDocument
   })
 }

@@ -1,0 +1,106 @@
+{
+  "compatibility": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "browser-support",
+      "title": "Browser support",
+      "depth": 2
+    },
+    {
+      "id": "vendor-prefixes",
+      "title": "Vendor prefixes",
+      "depth": 2
+    },
+    {
+      "id": "css-properties",
+      "title": "CSS properties",
+      "depth": 3
+    },
+    {
+      "id": "css-selectors",
+      "title": "CSS selectors",
+      "depth": 3
+    },
+    {
+      "id": "new-css-features",
+      "title": "New CSS features",
+      "depth": 2
+    },
+    {
+      "id": "native-declarations",
+      "title": "Native declarations",
+      "depth": 3
+    },
+    {
+      "id": "master-css-syntax-first",
+      "title": "Master CSS syntax first",
+      "depth": 3
+    },
+    {
+      "id": "arbitrary-properties",
+      "title": "Arbitrary properties",
+      "depth": 3
+    },
+    {
+      "id": "new-selectors",
+      "title": "New selectors",
+      "depth": 3
+    },
+    {
+      "id": "third-party-styles",
+      "title": "Third-party styles",
+      "depth": 2
+    },
+    {
+      "id": "existing-css-workflows",
+      "title": "Existing CSS workflows",
+      "depth": 2
+    },
+    {
+      "id": "checklist",
+      "title": "Checklist",
+      "depth": 2
+    }
+  ],
+  "view-transitions": [
+    {
+      "id": "overview",
+      "title": "Overview",
+      "depth": 2
+    },
+    {
+      "id": "article-list-to-detail",
+      "title": "Article list to detail",
+      "depth": 2
+    },
+    {
+      "id": "naming-snapshots",
+      "title": "Naming snapshots",
+      "depth": 2
+    },
+    {
+      "id": "styling-transition-pseudo-elements",
+      "title": "Styling transition pseudo-elements",
+      "depth": 2
+    },
+    {
+      "id": "cross-document-transitions",
+      "title": "Cross-document transitions",
+      "depth": 2
+    },
+    {
+      "id": "fallbacks",
+      "title": "Fallbacks",
+      "depth": 2
+    },
+    {
+      "id": "reduced-motion",
+      "title": "Reduced motion",
+      "depth": 2
+    }
+  ]
+}

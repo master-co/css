@@ -1,0 +1,1067 @@
+{
+  "/guide/installation": [
+    {
+      "id": "installation",
+      "title": "Installation"
+    },
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "run-and-style",
+      "title": "Run and style"
+    }
+  ],
+  "/guide/installation/integrations": [],
+  "/guide/installation/cli": [
+    {
+      "id": "installation",
+      "title": "Installation"
+    },
+    {
+      "id": "install-master-css",
+      "title": "Install Master CSS"
+    },
+    {
+      "id": "create-your-css-entry",
+      "title": "Create your CSS entry"
+    },
+    {
+      "id": "run-the-build-command",
+      "title": "Run the build command"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/cdn": [
+    {
+      "id": "start-in-one-step",
+      "title": "Start in one step"
+    }
+  ],
+  "/guide/installation/vite": [
+    {
+      "id": "create-a-vite-project",
+      "title": "Create a Vite project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/vite/static-rendering": [
+    {
+      "id": "create-a-vite-project",
+      "title": "Create a Vite project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/vscode": [
+    {
+      "id": "install-the-master-css-extension",
+      "title": "Install the Master CSS extension"
+    },
+    {
+      "id": "enable-suggestions-in-strings",
+      "title": "Enable suggestions in strings"
+    },
+    {
+      "id": "use-a-project-aware-entry",
+      "title": "Use a project-aware entry"
+    },
+    {
+      "id": "install-the-eslint-extension",
+      "title": "Install the ESLint extension"
+    },
+    {
+      "id": "set-up-project-linting",
+      "title": "Set up project linting"
+    },
+    {
+      "id": "enable-sort-on-save",
+      "title": "Enable sort on save"
+    }
+  ],
+  "/guide/installation/react": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/react/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/vuejs": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/vuejs/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/lit": [
+    {
+      "id": "create-a-lit-project",
+      "title": "Create a Lit project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "use-the-runtime-decorator",
+      "title": "Use the runtime decorator"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/webpack": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/webpack/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/rspack": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/rspack/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/rsbuild": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/rsbuild/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/astro": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/astro/runtime-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/astro/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/svelte": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/express": [
+    {
+      "id": "open-your-project",
+      "title": "Open your project"
+    },
+    {
+      "id": "install-master-css",
+      "title": "Install Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-browser-entry",
+      "title": "Create the browser entry"
+    },
+    {
+      "id": "render-with-master-css",
+      "title": "Render with Master CSS"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/express/static-rendering": [
+    {
+      "id": "open-your-project",
+      "title": "Open your project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "serve-the-css",
+      "title": "Serve the CSS"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/php": [
+    {
+      "id": "open-your-project",
+      "title": "Open your project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/php/static-rendering": [
+    {
+      "id": "open-your-project",
+      "title": "Open your project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/rails": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "load-the-assets",
+      "title": "Load the assets"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/rails/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "load-the-stylesheet",
+      "title": "Load the stylesheet"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/laravel": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/wordpress": [
+    {
+      "id": "open-your-theme",
+      "title": "Open your theme"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "enqueue-the-assets",
+      "title": "Enqueue the assets"
+    },
+    {
+      "id": "prevent-unstyled-first-paint",
+      "title": "Prevent unstyled first paint"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/wordpress/static-rendering": [
+    {
+      "id": "open-your-theme",
+      "title": "Open your theme"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "enqueue-the-stylesheet",
+      "title": "Enqueue the stylesheet"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/shopify": [
+    {
+      "id": "open-your-theme",
+      "title": "Open your theme"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "load-the-asset",
+      "title": "Load the asset"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/aspnet-core": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "load-the-assets",
+      "title": "Load the assets"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/aspnet-core/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "load-the-stylesheet",
+      "title": "Load the stylesheet"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/blazor": [
+    {
+      "id": "create-a-blazor-project",
+      "title": "Create a Blazor project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "load-the-built-assets",
+      "title": "Load the built assets"
+    },
+    {
+      "id": "launch-the-app",
+      "title": "Launch the app"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/blazor/runtime-rendering": [
+    {
+      "id": "create-a-blazor-project",
+      "title": "Create a Blazor project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "load-the-built-assets",
+      "title": "Load the built assets"
+    },
+    {
+      "id": "launch-the-app",
+      "title": "Launch the app"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/blazor/static-rendering": [
+    {
+      "id": "create-a-blazor-project",
+      "title": "Create a Blazor project"
+    },
+    {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
+    },
+    {
+      "id": "load-the-built-assets",
+      "title": "Load the built assets"
+    },
+    {
+      "id": "launch-the-app",
+      "title": "Launch the app"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/storybook": [
+    {
+      "id": "storybook-setup",
+      "title": "Storybook setup"
+    }
+  ],
+  "/guide/installation/angular": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/angular/runtime-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-master-css",
+      "title": "Install Master CSS"
+    },
+    {
+      "id": "set-up-css-runtime-engine",
+      "title": "Set up CSS runtime engine"
+    },
+    {
+      "id": "import-the-default-stylesheet",
+      "title": "Import the default stylesheet"
+    },
+    {
+      "id": "prevent-flash-of-unstyled-content",
+      "title": "Prevent flash of unstyled content"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/angular/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "install-master-css-and-others",
+      "title": "Install Master CSS and others"
+    },
+    {
+      "id": "set-up-static-rendering",
+      "title": "Set up static rendering"
+    },
+    {
+      "id": "configure-angular",
+      "title": "Configure Angular"
+    },
+    {
+      "id": "import-stylesheets",
+      "title": "Import stylesheets"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nextjs": [
+    {
+      "id": "create-a-nextjs-project",
+      "title": "Create a Next.js project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nextjs/runtime-rendering": [
+    {
+      "id": "create-a-nextjs-project",
+      "title": "Create a Next.js project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nextjs/static-rendering": [
+    {
+      "id": "create-a-nextjs-project",
+      "title": "Create a Next.js project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nuxtjs": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nuxtjs/runtime-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/nuxtjs/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "launch-server",
+      "title": "Launch server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/react-router": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/react-router/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/tanstack-start": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ],
+  "/guide/installation/tanstack-start/static-rendering": [
+    {
+      "id": "create-a-project",
+      "title": "Create a project"
+    },
+    {
+      "id": "add-master-css",
+      "title": "Add Master CSS"
+    },
+    {
+      "id": "start-dev-server",
+      "title": "Start dev server"
+    },
+    {
+      "id": "start-using-master-css",
+      "title": "Start using Master CSS"
+    }
+  ]
+}

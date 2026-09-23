@@ -1,0 +1,237 @@
+{
+  "directives/entry": [
+    {
+      "id": "entry-markers",
+      "title": "Entry markers",
+      "depth": 2
+    },
+    {
+      "id": "master-entry",
+      "title": "@master entry",
+      "depth": 3
+    },
+    {
+      "id": "import-mastercss",
+      "title": "@import \"@master/css\"",
+      "depth": 3
+    },
+    {
+      "id": "local-file-urls",
+      "title": "Local file URLs",
+      "depth": 3
+    },
+    {
+      "id": "stylesheet-boundaries-and-resource-urls",
+      "title": "Stylesheet boundaries and resource URLs",
+      "depth": 3
+    },
+    {
+      "id": "preparing-native-css-for-another-transformer",
+      "title": "Preparing native CSS for another transformer",
+      "depth": 3
+    },
+    {
+      "id": "continuing-resource-rendering-after-host-transforms",
+      "title": "Continuing resource rendering after host transforms",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/reference": [
+    {
+      "id": "reference-context",
+      "title": "Reference context",
+      "depth": 2
+    },
+    {
+      "id": "reference",
+      "title": "@reference",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/settings": [
+    {
+      "id": "project-settings",
+      "title": "Project settings",
+      "depth": 2
+    },
+    {
+      "id": "settings",
+      "title": "@settings",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/theme": [
+    {
+      "id": "theme-and-variants",
+      "title": "Theme and variants",
+      "depth": 2
+    },
+    {
+      "id": "theme",
+      "title": "@theme",
+      "depth": 3
+    },
+    {
+      "id": "theme-mode",
+      "title": "@theme <mode>",
+      "depth": 3
+    },
+    {
+      "id": "theme-inline",
+      "title": "@theme inline",
+      "depth": 3
+    },
+    {
+      "id": "theme-static",
+      "title": "@theme static",
+      "depth": 3
+    },
+    {
+      "id": "custom-variant",
+      "title": "@custom-variant",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/definitions": [
+    {
+      "id": "managed-definitions",
+      "title": "Managed definitions",
+      "depth": 2
+    },
+    {
+      "id": "defaults",
+      "title": "@defaults",
+      "depth": 3
+    },
+    {
+      "id": "components",
+      "title": "@components",
+      "depth": 3
+    },
+    {
+      "id": "utilities",
+      "title": "@utilities",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/source": [
+    {
+      "id": "source-boundaries",
+      "title": "Source boundaries",
+      "depth": 2
+    },
+    {
+      "id": "source",
+      "title": "@source",
+      "depth": 3
+    },
+    {
+      "id": "source-not",
+      "title": "@source not",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/candidates": [
+    {
+      "id": "candidate-policy",
+      "title": "Candidate policy",
+      "depth": 2
+    },
+    {
+      "id": "safelist",
+      "title": "@safelist",
+      "depth": 3
+    },
+    {
+      "id": "blocklist",
+      "title": "@blocklist",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/compose": [
+    {
+      "id": "rule-local-composition",
+      "title": "Rule-local composition",
+      "depth": 2
+    },
+    {
+      "id": "compose",
+      "title": "@compose",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/variant": [
+    {
+      "id": "conditional-blocks",
+      "title": "Conditional blocks",
+      "depth": 2
+    },
+    {
+      "id": "variant",
+      "title": "@variant",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ],
+  "directives/preserve": [
+    {
+      "id": "native-css-preservation",
+      "title": "Native CSS preservation",
+      "depth": 2
+    },
+    {
+      "id": "preserve-native",
+      "title": "@preserve native",
+      "depth": 3
+    },
+    {
+      "id": "related-contracts",
+      "title": "Related contracts",
+      "depth": 2
+    }
+  ]
+}

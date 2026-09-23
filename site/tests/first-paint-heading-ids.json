@@ -1,0 +1,46 @@
+{
+  "preload-critical-resources": [
+    {
+      "id": "preload-runtime-engine",
+      "title": "Preload runtime engine",
+      "depth": 2
+    },
+    {
+      "id": "preload-runtime-project-manifests",
+      "title": "Preload runtime project manifests",
+      "depth": 2
+    },
+    {
+      "id": "choose-the-right-manifest-json",
+      "title": "Choose the right manifest JSON",
+      "depth": 3
+    },
+    {
+      "id": "defer-runtime-engine",
+      "title": "Defer runtime engine",
+      "depth": 2
+    },
+    {
+      "id": "do-not-preload-page-hydration-manifests",
+      "title": "Do not preload page hydration manifests",
+      "depth": 2
+    },
+    {
+      "id": "benefits",
+      "title": "Benefits",
+      "depth": 2
+    }
+  ],
+  "flash-of-unstyled-content": [
+    {
+      "id": "prevent-premature-rendering",
+      "title": "Prevent premature rendering",
+      "depth": 3
+    },
+    {
+      "id": "benefits",
+      "title": "Benefits",
+      "depth": 2
+    }
+  ]
+}

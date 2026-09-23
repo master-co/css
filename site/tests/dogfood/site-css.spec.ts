@@ -125,19 +125,17 @@ test('site semantic classes preserve cross-layer and variable alias behavior', a
   expect(highlightedColors.actual).toBe(highlightedColors.expected)
 
   await page.goto('/en/design-system')
-  const demo = page.locator('.demo').first()
+  const demo = page.locator('.demo-canvas[data-background="grid"]').first()
   await demo.waitFor()
   expect(await demo.evaluate((element) => getComputedStyle(element).backgroundImage))
     .toContain('linear-gradient')
 
-  const hydration = await readHydrationManifest(page, '/en/reference/cursor')
   await page.goto('/en/reference/cursor')
-  const stripe = page.locator('[class~="bg:stripe"]').first()
-  await stripe.waitFor()
-  const stripeRule = hydration.rules.find((rule) => rule.className === 'bg:stripe')
-  expect(stripeRule?.text).toBe('.bg\\:stripe{background:var(--stripe)}')
-  expect(await stripe.evaluate((element) => getComputedStyle(element).backgroundImage))
-    .toContain('linear-gradient')
+  const cursorDemo = page.locator('[data-demo-case]').first()
+  await cursorDemo.scrollIntoViewIfNeeded()
+  const cursor = cursorDemo.frameLocator('iframe').locator('summary')
+  await expect(cursor).toBeVisible()
+  await expect(cursor).toHaveCSS('cursor', 'pointer')
 
   await expectNoHorizontalOverflow(page)
   expect(failures).toEqual([])
@@ -219,21 +217,6 @@ async function expectNoHorizontalOverflow(page: Page) {
     scrollWidth: document.documentElement.scrollWidth
   }))
   expect(overflow.scrollWidth).toBeLessThanOrEqual(overflow.clientWidth + 1)
-}
-
-async function readHydrationManifest(page: Page, route: string) {
-  const htmlResponse = await page.request.get(route)
-  expect(htmlResponse.ok()).toBe(true)
-  const html = await htmlResponse.text()
-  const source = html.match(
-    /\bdata-master-css-hydration-manifest=(["'])(.*?)\1/i
-  )?.[2]
-  expect(source).toBeTruthy()
-  const response = await page.request.get(source!)
-  expect(response.ok()).toBe(true)
-  return response.json() as Promise<{
-    rules: Array<{ className: string, text: string }>
-  }>
 }
 
 async function readCssom(page: Page) {

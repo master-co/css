@@ -1,8 +1,11 @@
 import {
   BenchmarkBars,
+  BenchmarkChartGroup,
+  BenchmarkDataTable,
+  BenchmarkSource,
   BenchmarkDelta,
   BenchmarkFigure,
-  BenchmarkMetricTable,
+  BenchmarkMetrics,
   BenchmarkSampleSummary,
   BenchmarkStackedBars,
   type BenchmarkBarItem,
@@ -13,31 +16,31 @@ import {
 const outputItems: BenchmarkBarItem[] = [
   {
     id: 'master-static',
-    label: 'Master CSS static',
+    label: 'Fixture A',
     value: 18.4,
     detail: 'baseline',
-    color: 'yellow'
+    color: 'blue'
   },
   {
     id: 'master-progressive',
-    label: 'Master CSS progressive',
+    label: 'Fixture B',
     value: 21.8,
     detail: '+18%',
-    color: 'green'
+    color: 'violet'
   },
   {
     id: 'tailwind-vite',
-    label: 'Tailwind CSS Vite',
+    label: 'Fixture C',
     value: 34.2,
     detail: '1.9x',
     color: 'cyan'
   },
   {
     id: 'tailwind-cli',
-    label: 'Tailwind CSS CLI',
+    label: 'Fixture D',
     value: 38.6,
     detail: '2.1x',
-    color: 'blue'
+    color: 'neutral'
   }
 ]
 
@@ -46,8 +49,8 @@ const payloadItems: BenchmarkStackedBarItem[] = [
     id: 'runtime',
     label: 'Runtime',
     segments: [
-      { id: 'css', label: 'CSS', value: 8.6, color: 'yellow' },
-      { id: 'runtime-js', label: 'Runtime JS', value: 14.2, color: 'blue' },
+      { id: 'css', label: 'CSS', value: 8.6, color: 'blue' },
+      { id: 'runtime-js', label: 'Runtime JS', value: 14.2, color: 'violet' },
       { id: 'manifest', label: 'Manifest', value: 5.4, color: 'cyan' }
     ],
     detail: 'first visit'
@@ -56,8 +59,8 @@ const payloadItems: BenchmarkStackedBarItem[] = [
     id: 'static',
     label: 'Static',
     segments: [
-      { id: 'css', label: 'CSS', value: 18.4, color: 'yellow' },
-      { id: 'runtime-js', label: 'Runtime JS', value: 0, color: 'blue' },
+      { id: 'css', label: 'CSS', value: 18.4, color: 'blue' },
+      { id: 'runtime-js', label: 'Runtime JS', value: 0, color: 'violet' },
       { id: 'manifest', label: 'Manifest', value: 0, color: 'cyan' }
     ],
     detail: 'cached CSS'
@@ -66,8 +69,8 @@ const payloadItems: BenchmarkStackedBarItem[] = [
     id: 'progressive',
     label: 'Progressive',
     segments: [
-      { id: 'css', label: 'CSS', value: 6.1, color: 'yellow' },
-      { id: 'runtime-js', label: 'Runtime JS', value: 14.2, color: 'blue' },
+      { id: 'css', label: 'CSS', value: 6.1, color: 'blue' },
+      { id: 'runtime-js', label: 'Runtime JS', value: 14.2, color: 'violet' },
       { id: 'manifest', label: 'Hydration', value: 1.9, color: 'green' }
     ],
     detail: 'HTML response'
@@ -84,26 +87,41 @@ const metrics: BenchmarkMetric[] = [
 
 export default function BenchmarkChartsDemo() {
   return (
-    <div className="grid gap:xl">
+    <div className="benchmark-gallery" data-benchmark-gallery="true">
       <BenchmarkFigure
         title="Ranking bars"
-        description="Sample data for comparing one metric across adapters."
+        description="Sample data for comparing one metric across fixtures. Bar lengths share a common zero and maximum."
         caption="Fake design-system sample data. Not a benchmark result.">
         <BenchmarkBars items={outputItems} unit="kB" />
       </BenchmarkFigure>
 
       <BenchmarkFigure
         title="Stacked payload bars"
-        description="Sample data for CSS, runtime, and manifest payload breakdowns."
+        description="Each row fills its own width to show composition. Compare the printed totals to compare payload size."
         caption="Fake design-system sample data. Totals are intentionally illustrative.">
         <BenchmarkStackedBars items={payloadItems} unit="kB" />
       </BenchmarkFigure>
 
       <BenchmarkFigure
-        title="Metric table"
+        title="Metric summary"
         description="Sample data for dense benchmark summaries.">
-        <BenchmarkMetricTable metrics={metrics} />
+        <BenchmarkMetrics metrics={metrics} />
       </BenchmarkFigure>
+
+      <BenchmarkFigure title="Readable labels and zero values" description="Labels wrap in the available column. A zero value has no colored fill.">
+        <BenchmarkChartGroup title="Local trace" detail="Illustrative values" items={[
+          { id: 'long-label', label: 'A deliberately long scenario name that remains readable on a narrow screen', value: 12.5, detail: '3 samples', color: 'blue' },
+          { id: 'no-work', label: 'No recorded work', value: 0, detail: '3 samples', color: 'violet' },
+        ]} />
+      </BenchmarkFigure>
+
+      <BenchmarkDataTable title="Illustrative measurements by fixture">
+        <table>
+          <thead><tr><th scope="col">Fixture</th><th scope="col">Raw CSS</th><th scope="col">Brotli CSS</th><th scope="col">Build median</th><th scope="col">Samples</th><th scope="col">Environment</th></tr></thead>
+          <tbody>{outputItems.map(item => <tr key={item.id}><th scope="row">{item.label}</th><td>100 kB</td><td>{item.value} kB</td><td>148 ms</td><td>10</td><td>Illustrative local fixture</td></tr>)}</tbody>
+        </table>
+      </BenchmarkDataTable>
+      <BenchmarkSource generatedAt="2026-07-01T00:00:00Z" href="/guide/benchmarks" label="See real benchmark sources (this date is illustrative)" />
 
       <BenchmarkFigure
         title="Delta labels"

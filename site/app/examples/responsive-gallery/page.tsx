@@ -13,48 +13,35 @@ import mountain11 from '~/site/public/images/mountain11.jpg'
 import mountain12 from '~/site/public/images/mountain12.jpg'
 
 const mountains = [
-  mountain2,
-  mountain3,
-  mountain4,
-  mountain5,
-  mountain6,
-  mountain7,
-  mountain8,
-  mountain9,
-  mountain10,
-  mountain11,
-  mountain12,
-]
+  [mountain2, 'Snowy pyramid peak above the clouds'],
+  [mountain3, 'Snow-covered ridges beneath a starry sky'],
+  [mountain4, 'Moon above a forested mountain range at dusk'],
+  [mountain5, 'Rocky towers above a green alpine valley'],
+  [mountain6, 'Jagged rock spires beneath heavy clouds'],
+  [mountain7, 'Monochrome snow-covered peaks'],
+  [mountain8, 'Green volcanic slopes wrapped in clouds'],
+  [mountain9, 'Snowy summit beneath a pink sky'],
+  [mountain10, 'Mountain range reflected across a lake'],
+  [mountain11, 'Dark ridges fading into low cloud'],
+  [mountain12, 'Grassy alpine ridge beneath a broad sky'],
+] as const
 
 export const dynamic = 'force-static'
 export const revalidate = false
 
-export default async function Page(props: any) {
-  return (
-    <>
-      <div className="grid-cols:2 gap:0.938rem p:10x grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
-        <Image
-          className="grid-col-span:2 grid-row-span:2 full aspect-ratio:2/1 r:5px object-cover"
-          src={mountain1.src}
-          blurDataURL={mountain1.blurDataURL}
-          placeholder='blur'
-          width="600"
-          height="300"
-          alt="mountain"
-        />
-        {mountains.map((mountain) => (
-          <Image
-            key={mountain.src}
-            className="h:auto w:full aspect-ratio:2/1 r:5px object-cover"
-            src={mountain.src}
-            blurDataURL={mountain.blurDataURL}
-            placeholder='blur'
-            width="300"
-            height="150"
-            alt="mountain"
-          />
-        ))}
-      </div>
-    </>
-  )
+export default function Page() {
+  return <main className="min-h:100dvh p:md bg:demo-canvas text:body">
+    <header className="flex items-baseline justify-between gap:md mb:md">
+      <h1 className="m:0 text:sm font:semibold">Field notes</h1>
+      <span className="demo-label">12 images / landscape</span>
+    </header>
+    <div data-gallery className="grid-cols:2 gap:md grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
+      <Image className="grid-col-span:2 grid-row-span:2 full min-h:0 r:sm object-cover"
+        src={mountain1} placeholder="blur" sizes="(min-width:1024px) 40vw, (min-width:834px) 50vw, (min-width:600px) 66vw, 100vw"
+        alt="Snowy peaks emerging from a sea of clouds" />
+      {mountains.map(([mountain, alt]) => <Image key={mountain.src}
+        className="h:auto w:full aspect-ratio:2/1 r:sm object-cover"
+        src={mountain} placeholder="blur" sizes="(min-width:1024px) 20vw, (min-width:834px) 25vw, (min-width:600px) 33vw, 50vw" alt={alt} />)}
+    </div>
+  </main>
 }
