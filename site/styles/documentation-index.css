@@ -4,34 +4,34 @@
   .doc-index a { text-decoration: none; }
   .doc-index :is(a, button):focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; border-radius: var(--radius-sm); }
   .doc-index-sections { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--color-line-subtle); border-left: 1px solid var(--color-line-subtle); }
-  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: var(--spacing-md); padding: var(--spacing-lg); border-right: 1px solid var(--color-line-subtle); border-bottom: 1px solid var(--color-line-subtle); color: var(--color-text-body); }
+  .doc-index-section-link { display: flex; flex-wrap: wrap; align-content: start; gap: .9rem; padding: 1.25rem; border-right: 1px solid var(--color-line-subtle); border-bottom: 1px solid var(--color-line-subtle); color: var(--color-text-body); }
   .doc-index-section-link:hover { background: var(--color-surface-raised); }
-  .doc-index-section-icon { display: flex; align-items: center; color: var(--color-text-muted); }
+  .doc-index-section-icon { display: grid; place-items: center; width: 2.25rem; height: 2.25rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); background: var(--color-surface-muted); color: var(--color-text-muted); }
   .doc-index-section-link > svg { margin-left: auto; color: var(--color-text-subtle); order: 1; }
   .doc-index-section-copy { display: flex; flex-direction: column; gap: var(--spacing-xs); width: 100%; order: 2; }
-  .doc-index-section-title { color: var(--color-text-strong); font-size: .875rem; line-height: 1.5; font-weight: 500; }
-  .doc-index-section-description { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
+  .doc-index-section-title { color: var(--color-text-strong); font-size: .9375rem; line-height: 1.5; font-weight: 600; letter-spacing: -.01em; }
+  .doc-index-section-description { color: var(--color-text-muted); font-size: .8125rem; line-height: 1.55; }
   .doc-index-section-link:hover .doc-index-section-icon, .doc-index-section-link:hover > svg { color: var(--color-accent); }
-  .doc-index-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-block: var(--spacing-2xl) var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-line-subtle); font-size: .8125rem; color: var(--color-text-muted); }
+  .doc-index-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-md); margin-block: var(--spacing-2xl) var(--spacing-lg); padding-bottom: var(--spacing-md); border-bottom: 1px solid var(--color-line-subtle); font-size: .8125rem; font-weight: 600; color: var(--color-text-body); }
   .doc-index-count { display: inline-flex; align-items: center; justify-content: center; margin-left: var(--spacing-xs); font-size: .6875rem; font-weight: 400; line-height: 1.5; color: var(--color-text-muted); font-variant-numeric: tabular-nums; }
   .doc-index-view { display: flex; gap: .125rem; padding: .1875rem; border: 1px solid var(--color-line-subtle); border-radius: var(--radius-md); background: var(--color-surface-muted); }
-  .doc-index-view button { padding: .375rem .75rem; border-radius: var(--radius-sm); font-size: .75rem; line-height: 1.5; }
+  .doc-index-view button { min-height: 2.25rem; padding: .375rem .75rem; border-radius: var(--radius-sm); font-size: .75rem; line-height: 1.5; }
   .doc-index-view button[aria-pressed="true"] { background: var(--color-surface-raised); color: var(--color-text-strong); box-shadow: 0 1px 3px #0001; }
   .doc-index-section + .doc-index-section { margin-top: var(--spacing-2xl); padding-top: var(--spacing-xl); border-top: 1px solid var(--color-line-subtle); }
   .doc-index-heading { margin-bottom: var(--spacing-lg); }
-  .doc-index-heading h2 { display: flex; align-items: center; font-size: 1.25rem; font-weight: 500; line-height: 1.5; letter-spacing: -.015em; color: var(--color-text-strong); }
+  .doc-index-heading h2 { display: flex; align-items: center; font-size: 1.375rem; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; color: var(--color-text-strong); }
   .doc-index-heading p { margin-top: var(--spacing-xs); font-size: .8125rem; line-height: 1.6; color: var(--color-text-muted); }
   .doc-index-groups { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); margin-bottom: var(--spacing-lg); }
-  .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-line-subtle); border-radius: var(--radius-sm); font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: var(--leading-md); }
+  .doc-index-groups a { display: inline-flex; align-items: center; padding: var(--spacing-xs) var(--spacing-sm); border: 1px solid var(--color-line-base); border-radius: var(--radius-sm); background: var(--color-surface-raised); font-size: var(--font-size-xs); color: var(--color-text-body); line-height: var(--leading-md); }
   .doc-index-groups a:hover { color: var(--color-text-strong); background: var(--color-surface-raised); border-color: var(--color-line-base); }
   .doc-index-categories { columns: 3; column-gap: var(--spacing-xl); }
   .doc-index-category { break-inside: avoid; margin-bottom: var(--spacing-xl); }
-  .doc-index-category h3 { display: flex; align-items: baseline; gap: var(--spacing-xs); width: 100%; margin-bottom: var(--spacing-sm); font-size: .75rem; line-height: 1.5; font-weight: 500; color: var(--color-text-strong); }
+  .doc-index-category h3 { display: flex; align-items: baseline; gap: var(--spacing-xs); width: 100%; margin-bottom: var(--spacing-sm); font-size: .8125rem; line-height: 1.5; font-weight: 600; color: var(--color-text-strong); }
   .doc-index-category h3 .doc-index-count { margin-left: auto; }
   .doc-index-links { list-style: none; padding: 0; }
   .doc-index-links li { break-inside: avoid; padding: 0; margin: 0; }
   .doc-index-category .doc-index-links { border-left: 1px solid var(--color-line-muted); }
-  .doc-index-links a { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-xs); min-height: 2.125rem; padding: .375rem .625rem; font-size: .8125rem; line-height: 1.5; color: var(--color-text-muted); border-radius: var(--radius-sm); }
+  .doc-index-links a { display: flex; justify-content: space-between; align-items: center; gap: var(--spacing-xs); min-height: 2.5rem; padding: .375rem .625rem; font-size: .8125rem; line-height: 1.5; color: var(--color-text-body); border-radius: var(--radius-sm); }
   .doc-index-links a:hover { background: var(--color-surface-raised); color: var(--color-text-strong); }
   .doc-index-links a > span { min-width: 0; }
   .doc-index-entry-title { overflow-wrap: anywhere; }
@@ -43,7 +43,7 @@
   .doc-index-guides .doc-index-section-link:last-child:nth-child(odd) .doc-index-section-copy { order: 0; flex: 1; width: auto; }
   .doc-index .doc-index-links-descriptions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); columns: auto; gap: 0; border-top: 1px solid var(--color-line-subtle); border-left: 1px solid var(--color-line-subtle); }
   .doc-index-links-descriptions li { max-width: none; }
-  .doc-index-links-descriptions a { height: 100%; align-items: flex-start; padding: var(--spacing-md); border-radius: 0; border-right: 1px solid var(--color-line-subtle); border-bottom: 1px solid var(--color-line-subtle); }
+  .doc-index-links-descriptions a { height: 100%; align-items: flex-start; padding: 1.125rem; border-radius: 0; border-right: 1px solid var(--color-line-subtle); border-bottom: 1px solid var(--color-line-subtle); }
   .doc-index-links-descriptions a > svg { margin-top: .25rem; }
   .doc-index-links-descriptions .doc-index-entry-title { color: var(--color-text-strong); font-size: .875rem; }
   .doc-index-entry-description { display: block; margin-top: var(--spacing-xs); color: var(--color-text-muted); font-size: .8125rem; line-height: 1.6; }
@@ -60,7 +60,7 @@
   }
   @container (width < 30rem) {
     .doc-index-sections { grid-template-columns: minmax(0, 1fr); }
-    .doc-index-section-link { flex-wrap: nowrap; gap: var(--spacing-md); padding: var(--spacing-md); }
+    .doc-index-section-link { flex-wrap: nowrap; gap: var(--spacing-md); padding: 1.25rem; }
     .doc-index-section-copy { flex: 1; width: auto; order: 0; gap: var(--spacing-2xs); }
     .doc-index-section-icon { align-self: flex-start; padding-top: .125rem; }
     .doc-index-section-link > svg { flex-shrink: 0; align-self: center; }

@@ -18,7 +18,11 @@ export default function DemoMeasure({ children, label = 'Bounds' }: { children: 
   }, [])
   return (
     <div className="demo-measure">
-      <div className="demo-measure-line"><span>{label}{size && ` · ${size.width} × ${size.height} px`}</span></div>
+      <div className="demo-measure-header">
+        <span>{label}</span>
+        <output aria-label={`${label} dimensions`}>{size ? `${size.width} × ${size.height} px` : 'Measuring…'}</output>
+      </div>
+      <div className="demo-measure-ruler" aria-hidden="true" />
       <div ref={ref}>{children}</div>
     </div>
   )

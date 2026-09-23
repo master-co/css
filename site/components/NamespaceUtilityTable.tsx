@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import InlineCode from '~/internal/components/InlineCode'
 import Translate from '~/internal/components/Translate'
 import { filterNamespaceKeys } from '~/site/utils/manifest-utilities'
@@ -16,6 +16,7 @@ interface NamespaceUtilityTableProps {
 }
 
 export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps) {
+  const captionId = useId()
   const groups = props.groups
     .map((group) => ({
       ...group,
@@ -26,23 +27,24 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
 
   return (
     <figure>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- The table's narrow overflow region must be focusable for native keyboard scrolling. */}
+      <div className="doc-table doc-utility-table" data-has-descriptions={hasDescriptions || undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
+          <caption id={captionId} className="sr-only"><Translate>Utility groups table</Translate></caption>
           <thead>
             <tr>
-              <th><Translate>Group</Translate></th>
-              <th className="min-w:12rem"><Translate>{hasDescriptions ? 'Utility keys and purpose' : 'Utility keys'}</Translate></th>
+              <th scope="col"><Translate>Group</Translate></th>
+              <th scope="col"><Translate>Utility keys</Translate></th>
+              {hasDescriptions && <th scope="col"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
             {
               groups.map((group) => (
                 <tr key={group.label}>
-                  <th className="white-space:nowrap"><Translate>{group.label}</Translate></th>
-                  <td>
-                    <div>{renderKeys(group.keys)}</div>
-                    {group.description && <div className="mt:xs"><Translate>{group.description}</Translate></div>}
-                  </td>
+                  <th scope="row"><Translate>{group.label}</Translate></th>
+                  <td>{renderKeys(group.keys)}</td>
+                  {hasDescriptions && <td><Translate>{group.description}</Translate></td>}
                 </tr>
               ))
             }
@@ -56,7 +58,7 @@ export default function NamespaceUtilityTable(props: NamespaceUtilityTableProps)
 function renderKeys(keys: string[]) {
   return keys.map((key, index) => (
     <span key={key}>
-      <InlineCode className="white-space:nowrap">{key}</InlineCode>
+      <InlineCode>{key}</InlineCode>
       {index !== keys.length - 1 && ', '}
     </span>
   ))

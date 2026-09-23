@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useId, type ReactNode } from 'react'
 import clsx from 'clsx'
 import Translate from '~/internal/components/Translate'
 import type { BenchmarkStackedBarItem } from './types'
@@ -12,11 +12,14 @@ interface BenchmarkStackedBarsProps {
 }
 
 export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
+  const labelPrefix = useId()
   const { items, unit, valueFormatter, className } = props
 
   return (
-    <div className={clsx('grid gap:lg', className)}>
-      {items.map((item) => {
+    <div className={clsx('grid gap:lg benchmark-bars benchmark-stacks', className)}>
+      {items.map((item, index) => {
+        const labelId = `${labelPrefix}-label-${index}`
+        const valueId = `${labelPrefix}-value-${index}`
         const total = item.total ?? item.segments.reduce((sum, segment) => sum + segment.value, 0)
         const totalLabel = valueFormatter ? valueFormatter(total) : formatMetricValue(total, unit)
 
@@ -25,14 +28,14 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
             <div className="flex items-baseline justify-between gap:sm">
               <div className="flex items-center gap:xs min-w:0">
                 {item.icon}
-                <span className="overflow:hidden min-w:0 font-weight:460 font:sm text-ellipsis white-space:nowrap text:strong"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-w:0 font-weight:460 font:sm text:strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
               <div className="flex items-baseline gap:xs white-space:nowrap">
-                <strong className="font-weight:460 font:sm text:strong">{totalLabel}</strong>
+                <strong id={valueId} className="font-weight:460 font:sm text:strong">{totalLabel}</strong>
                 {item.detail && <span className="font:xs text:muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
-            <div className="flex overflow:hidden h:12px r:xs bg:surface-muted" role="img" aria-label={`${item.label}: ${totalLabel}`}>
+            <div className="flex overflow:hidden h:12px r:xs bg:surface-muted" role="img" aria-labelledby={`${labelId} ${valueId}`}>
               {item.segments.map((segment, index) => {
                 const percent = clampPercent(segment.value, total)
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
@@ -41,10 +44,10 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                 return (
                   <div
                     key={segment.id}
-                    className={clsx(colorClasses.background, percent <= 0 && 'opacity:.45')}
+                    className={colorClasses.background}
                     title={`${segment.label}: ${segment.valueLabel ?? formatMetricValue(segment.value, unit)}`}
                     style={{
-                      flexBasis: percent > 0 ? `${percent}%` : '1px',
+                      flexBasis: `${percent}%`,
                       flexGrow: 0,
                       flexShrink: 0
                     }} />

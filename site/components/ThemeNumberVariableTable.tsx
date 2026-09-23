@@ -1,3 +1,4 @@
+import { useId } from 'react'
 import InlineCode from '~/internal/components/InlineCode'
 import Translate from '~/internal/components/Translate'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
@@ -13,6 +14,7 @@ const formatRem = (value: number) => `${Number(value.toFixed(4))}rem`
 const formatPx = (value: number) => `${Number(value.toFixed(4))}px`
 
 export default function ThemeNumberVariableTable(props: ThemeNumberVariableTableProps) {
+  const captionId = useId()
   const { namespace, variablePrefix = namespace, descriptions, representation } = props
   const entries = getThemeNumericVariableEntries(namespace)
   const hasDescriptions = descriptions && entries.some(({ key }) => descriptions[key])
@@ -21,22 +23,24 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
   return (
     <figure>
-      <div className="doc-table">
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Numeric tables scroll within the document column and need native keyboard access. */}
+      <div className="doc-table doc-number-variable-table" data-representation={hasSpacingRepresentation ? 'spacing' : undefined} role="region" aria-labelledby={captionId} tabIndex={0}>
         <table>
+          <caption id={captionId} className="sr-only"><Translate>Numeric theme variables</Translate></caption>
           <thead>
             <tr>
-              <th><Translate>Token</Translate></th>
-              <th><Translate>Value</Translate></th>
-              <th>{referenceUnit.toUpperCase()}</th>
-              {hasSpacingRepresentation && <th><Translate>Representation</Translate></th>}
-              {hasDescriptions && <th className="min-w:12rem"><Translate>Description</Translate></th>}
+              <th scope="col"><Translate>Token</Translate></th>
+              <th scope="col"><Translate>Value</Translate></th>
+              <th scope="col">{referenceUnit.toUpperCase()}</th>
+              {hasSpacingRepresentation && <th scope="col"><Translate>Representation</Translate></th>}
+              {hasDescriptions && <th scope="col" className="min-w:12rem"><Translate>Description</Translate></th>}
             </tr>
           </thead>
           <tbody>
             {
               entries.map((entry, index) => (
                 <tr key={entry.key}>
-                  <th><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
+                  <th scope="row"><InlineCode>{`--${variablePrefix}-${entry.key}`}</InlineCode></th>
                   <td><InlineCode>{entry.value}</InlineCode></td>
                   <td>{referenceUnit === 'px' ? formatPx(entry.px) : formatRem(entry.rem)}</td>
                   {hasSpacingRepresentation && <td>{renderSpacingRepresentation(entry.value, index, entries.length)}</td>}
@@ -53,8 +57,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
   return (
-    <div className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px demo-pattern v:middle" style={{ gap: value }}>
-      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em demo-item"></div>)}
+    <div aria-hidden="true" className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px bg:stripe-pink v:middle" style={{ gap: value }}>
+      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em surface:raised"></div>)}
     </div>
   )
 }

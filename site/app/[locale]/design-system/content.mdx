@@ -1,5 +1,7 @@
 import { DemoPrimitives, DemoAnnotations } from './components/DemoFoundations'
 import { Demo, DemoLabel } from '~/site/components/demo'
+import NamespaceUtilityTable from '~/site/components/NamespaceUtilityTable'
+import ThemeNumberVariableTable from '~/site/components/ThemeNumberVariableTable'
 
 A shared visual language for explaining CSS. Quiet surfaces, precise annotations, and real browser behavior give every example a clear purpose.
 
@@ -8,18 +10,30 @@ A shared visual language for explaining CSS. Quiet surfaces, precise annotations
     { href: '#foundations', label: 'Foundations' },
     { href: '#demo-canvas', label: 'Demo canvas' },
     { href: '#primitives', label: 'Primitives' },
+    { href: '#demo-surface', label: 'Demo surface' },
     { href: '#demo-item', label: 'Demo item' },
     { href: '#demo-text', label: 'Demo text' },
     { href: '#demo-media', label: 'Demo media' },
     { href: '#demo-swatch', label: 'Demo swatch' },
+    { href: '#demo-comparison', label: 'Demo comparison' },
     { href: '#assets', label: 'Assets' },
     { href: '#annotations', label: 'Annotations' },
+    { href: '#demo-label', label: 'Demo label' },
+    { href: '#demo-legend', label: 'Demo legend' },
+    { href: '#demo-measure', label: 'Demo measure' },
+    { href: '#demo-axes', label: 'Demo axes' },
     { href: '#interaction', label: 'Interaction' },
+    { href: '#demo-controls', label: 'Demo controls' },
+    { href: '#demo-scroll-area', label: 'Demo scroll area' },
+    { href: '#demo-viewport', label: 'Demo viewport' },
+    { href: '#demo-motion', label: 'Demo motion' },
   ] },
   { title: '02 · Documentation', links: [
     { href: '#document-index', label: 'Indexes' },
     { href: '#document-steps', label: 'Steps & installation' },
     { href: '#document-values', label: 'Values & comparisons' },
+    { href: '#utility-namespace-table', label: 'Utility tables' },
+    { href: '#numeric-token-table', label: 'Numeric token tables' },
     { href: '#tool-contracts', label: 'Tool contracts' },
     { href: '#tooling-documentation', label: 'Editor tooling' },
     { href: '#agent-documentation', label: 'Agent prompts' },
@@ -73,6 +87,17 @@ Compose small, predictable pieces. An item supplies its appearance; the example 
 
 <DemoPrimitives />
 
+### Demo surface \{#demo-surface\}
+
+`DemoSurface` keeps content legible on the striped canvas with a fine border, a compact radius and the site's raised surface color. It adds no padding, dimensions, layout, clipping or shadow by default. Use `elevation="raised"` only when the lesson needs to show a floating layer; it adds the preset's small shadow without changing the content box.
+
+```tsx
+<DemoSurface className="p:md">A quiet content surface.</DemoSurface>
+<DemoSurface elevation="raised" className="p:md">A floating layer.</DemoSurface>
+```
+
+The [column span reference](/reference/column-span) keeps columns and padding inside the default surface; the [float reference](/reference/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.
+
 ### Demo item \{#demo-item\}
 
 `DemoItem` starts as a neutral raised surface with a crisp border. Set `tone="blue"` to identify the subject or `tone="violet"` for a comparison. The optional `soft`, `solid`, `outline`, and `ghost` variants change paint only. The item has no implied width, height, padding, layout, position, or interactive behavior; the lesson supplies those explicitly.
@@ -120,6 +145,21 @@ The caller sets width, height, crop, float and spacing. The [float reference](/r
 ```
 
 The color patch is decorative when it has no children, while the visible label carries the meaning. This tile has no copy action or focus stop. The [colors guide](/guide/colors#default-color-palette) retains its original interactive palette for browsing and copying fixed color steps.
+
+### Demo comparison \{#demo-comparison\}
+
+`DemoComparison` arranges direct children in responsive columns. The adopted layout gives each specimen a 17rem reading minimum and uses the site's large spacing step between columns. The specimens stack when there is not enough room for both; the wrapper adds no frame, padding, labels or paint. Give each child its own dimensions and utilities so the comparison shows the actual property under discussion.
+
+```tsx
+<Demo>
+  <DemoComparison>
+    <DemoSurface className="p:md">Before</DemoSurface>
+    <DemoSurface elevation="raised" className="p:md">After</DemoSurface>
+  </DemoComparison>
+</Demo>
+```
+
+The “Content specimens” and “Comparison” examples above use this layout. The [elevation guide](/guide/elevation) retains its original spacious comparison grid, while the [comparison review](/design-system/review/comparison) shows that grid beside the previous and adopted shared treatments. Place comparison labels outside any measured flex, grid or float scene.
 
 <Demo title="Badge sizes"><div className="flex flex-wrap items-center gap:md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
 
@@ -170,10 +210,118 @@ Name the subject, reveal a boundary, or expose an axis. Keep annotations outside
 
 `DemoMeasure` observes its content boundary and updates as the container changes. `DemoAxes` and `DemoLegend` describe the relationship without inserting items into the measured flex or grid parent.
 
+### Demo label \{#demo-label\}
+
+`DemoLabel` identifies a class, object or condition with a compact monospace line. The adopted treatment is a little larger and clearer than the earlier shared label, with tabular numerals and wrapping for long utilities. It adds no background, border or spacing; the scene sets the distance to its subject.
+
+```tsx
+<div>
+  <DemoLabel>shadow:sm</DemoLabel>
+  <DemoSurface className="mt:xs p:md">Standard surface</DemoSurface>
+</div>
+```
+
+Keep a label outside the measured flex or grid parent unless it is part of the layout lesson. The [elevation guide](/guide/elevation) retains its original labels, and the [label review](/design-system/review/label) shows those beside the previous and adopted shared styles.
+
+### Demo legend \{#demo-legend\}
+
+`DemoLegend` is a separate key for recurring color roles. Each item pairs a short name with a small bordered swatch, and the list wraps as space narrows. Its compact monospace text follows the shared label scale; the swatches are decorative, so the names carry the meaning. Place the legend in the demo caption or beside its description, outside the measured layout.
+
+```tsx
+<Demo caption={<DemoLegend items={[
+  { tone: 'blue', label: 'Subject border' },
+  { tone: 'violet', label: 'Comparison border' },
+]} />}>
+  {/* The lesson's two border specimens live here. */}
+</Demo>
+```
+
+Include only roles visible in the scene. The [border color reference](/reference/border-color#set-border-color) labels its blue and violet specimens directly; the [legend review](/design-system/review/legend) compares that teaching pattern with the previous and adopted shared keys.
+
+### Demo measure \{#demo-measure\}
+
+`DemoMeasure` observes the rendered content boundary and displays its width and height in pixels. The adopted annotation separates the name from the numeric readout, with a fine ruler spanning the observed wrapper. It updates when the available width or the content height changes; a requested CSS width can differ from the measured width inside a narrow column.
+
+```tsx
+<DemoMeasure label="Content bounds">
+  <DemoSurface className="p:md">Measured content</DemoSurface>
+</DemoMeasure>
+```
+
+Place the measurement wrapper outside the flex, grid or float parent being taught, so it does not become an extra layout item. The [width reference](/reference/width#set-a-fixed-or-fluid-width) reports the actual browser geometry for its examples. The [measure review](/design-system/review/measure) tests live width and height changes beside the original [Guide layout ruler](/guide/layout-system).
+
+### Demo axes \{#demo-axes\}
+
+`DemoAxes` puts a labeled horizontal rule and vertical rule around one example. Its default main-axis arrow points right and its cross-axis arrow points down, matching a left-to-right row in horizontal writing. The rules are decorative; the text supplies the axis names. The adopted treatment gives the labels a clear monospace scale and keeps both rules outside the example's flex layout.
+
+```tsx
+<DemoAxes aria-label="Row layout: main axis rightward, cross axis downward">
+  <div className="flex gap:sm">{/* layout items */}</div>
+</DemoAxes>
+```
+
+Use this frame only when those physical directions match the specimen; reverse and vertical examples need annotations that follow their actual directions. The [flex direction reference](/reference/flex-direction#lay-out-items-in-a-row) shows the real row behavior, and the [axes review](/design-system/review/axes) compares the original Guide labels with the previous and adopted frame.
+
 ## Interaction \{#interaction\}
 Add controls when they help explain a change. Static specimens have no toolbar. Playback-controlled specimens start paused; bounded scroll areas remain keyboard accessible.
 
 <DemoInteractions />
+
+### Demo controls \{#demo-controls\}
+
+`DemoControls` is a fieldset with an accessible group name. Its plain default leaves mixed sliders, action buttons and print controls ungrouped. For a small set of exclusive choices, use `variant="segmented"`: the selected native button has a separate surface and keeps `aria-pressed`, while a visible focus outline supports keyboard use. Both appearances stay outside the layout being demonstrated.
+
+```tsx
+<DemoControls label="Cross-axis alignment" variant="segmented">
+  <button type="button" className="demo-button" aria-pressed={alignment === 'items-start'}>Start</button>
+  <button type="button" className="demo-button" aria-pressed={alignment === 'items-center'}>Center</button>
+  <button type="button" className="demo-button" aria-pressed={alignment === 'items-end'}>End</button>
+</DemoControls>
+```
+
+The [controls review](/design-system/review/controls) compares both shared appearances with the original [Syntax Tutorial viewport switch](/guide/syntax-tutorial#conditions), which retains its own controls.
+
+### Demo scroll area \{#demo-scroll-area\}
+
+`DemoScrollArea` establishes native overflow and a keyboard focus stop. Its adopted fine border, compact radius and quiet surface make the scroll boundary visible against the diagonal canvas. The component caps its height at 16rem; set an explicit width or smaller height for the lesson. It does not add a child or change how content is laid out inside the scrollport.
+
+```tsx
+<DemoScrollArea role="region" aria-label="Layer collection" className="h:40x">
+  {/* Overflowing content */}
+</DemoScrollArea>
+```
+
+Give a named region when the collection needs a landmark, and keep the focus outline visible. The [overflow reference](/reference/overflow#create-a-scroll-container) uses real utility classes on its scrollports; the [scroll area review](/design-system/review/scroll) compares the original Guide pattern, previous shared component and adopted boundary.
+
+### Demo viewport \{#demo-viewport\}
+
+`DemoViewport` hosts a complete site-authored document in a real iframe. The adopted treatment gives that viewport a fine edge and a quiet control deck, while preserving its actual width, height and content. A named preset, range slider or Fit changes the iframe width; `theme`, `motion` and `print` add only the controls needed by a lesson.
+
+```tsx
+<DemoViewport
+  title="Responsive specimen"
+  document={html}
+  responsive
+  widthPresets={[{ label: 'Below sm', width: 833 }, { label: 'At sm', width: 835 }]}
+  height={180}
+/>
+```
+
+Derive breakpoint widths from the active preset; the numbers above illustrate the current `sm` boundary. A wide preset remains wide inside a narrow phone and scrolls within the stage. The [padding reference](/reference/padding#apply-conditionally) responds to its iframe viewport, and the [viewport review](/design-system/review/viewport) shows the original Guide control, previous shared chrome and adopted frame.
+
+### Demo motion \{#demo-motion\}
+
+`DemoMotion` wraps an authored animation in a framed stage and places native Play/Pause and Replay buttons in a separate deck. It starts paused and uses the browser animation timeline: Pause preserves the current frame; Replay returns to the start before playing. The component also pauses when the operating system motion preference changes. Keep the movement, duration and easing in the specimen’s actual class or CSS.
+
+```tsx
+<DemoMotion>
+  <div className="grid place-items:center h:40x">
+    <DemoItem className="size:16x animation:rotate|2s|linear|infinite">↗</DemoItem>
+  </div>
+</DemoMotion>
+```
+
+The stage adds no layout padding or dimensions, so set those in the example. The [animation play-state reference](/reference/animation-play-state#run-an-animation) uses its own real checkbox and CSS condition; the [motion review](/design-system/review/motion) compares the original Guide token scene with the previous and adopted shared playback treatment.
 
 ## Document indexes \{#document-index\}
 
@@ -201,7 +349,7 @@ Provide a stable `id`, title, description, icon and `groups` for each section. G
 />
 ```
 
-The catalog establishes its own container and column layout; place it in the reading column, outside measured demos. Category and A–Z controls are native buttons with pressed states. Letter and category shortcuts are real fragment links, including direct-entry URLs. Render one catalog per document so alphabetical anchors remain unique. The complete category view is included in server-rendered HTML; A–Z switching requires JavaScript.
+The catalog keeps the established card grid, with restrained icon boxes, clearer heading hierarchy and full mobile touch targets. It establishes its own container and column layout; place it in the reading column, outside measured demos. Category and A–Z controls are native buttons with pressed states. Letter and category shortcuts are real fragment links, including direct-entry URLs. Published catalogs omit `idPrefix` to retain their existing anchors; set distinct prefixes only when showing several catalogs on one review page. The complete category view is included in server-rendered HTML; A–Z switching requires JavaScript. The [index review](/design-system/review/index) compares the original, previous and adopted treatments.
 
 ## Document steps \{#document-steps\}
 
@@ -239,7 +387,7 @@ Use `DocumentSteps` for a setup sequence with authored headings and code. Each `
 </DocumentSteps>
 ```
 
-The components are server rendered. Supply native headings at the appropriate level and preserve their stable IDs. Numbering is decorative, not a replacement for headings or a progress indicator. The 44rem container threshold controls the optional two-column layout; all code retains its own horizontal scroll. Place measured demos outside the step layout.
+The components are server rendered. Supply native headings at the appropriate level and preserve their stable IDs. Numbering is decorative, not a replacement for headings or a progress indicator. The fine numbered rail inherits the original Guide’s sequence cue. The 36rem container threshold controls the optional two-column layout; narrower columns stack in reading order, and code retains its own horizontal scroll. Place measured demos outside the step layout. The [steps review](/design-system/review/steps) compares the original Guide, previous shared style and adopted treatment.
 
 Use the same sequence pattern across installations:
 
@@ -315,6 +463,36 @@ This server component requires no client state and stays outside teaching geomet
 `DocumentKeyList` shows every key by default. Set `previewCount` when a long lookup
 list would interrupt reading; keep essential instructions outside the disclosure.
 See the complete [namespace registry](/reference/rules/modes#default-namespace-sources).
+
+### Utility namespace table \{#utility-namespace-table\}
+
+`NamespaceUtilityTable` connects a token namespace to the utility keys that accept it. When groups have descriptions, the table keeps the original Guide's separate Group, Utility keys and Description columns. The refined shared style uses quiet separators and a consistent reading rhythm. On narrow screens the table scrolls inside its own keyboard-focusable region; the page width stays fixed.
+
+<NamespaceUtilityTable groups={[
+  { label: 'Surfaces', keys: ['surface'], description: 'Panels, cards and overlays.' },
+  { label: 'Line roles', keys: ['b', 'border-color', 'outline-color', 'stroke'], description: 'Borders, outlines and SVG strokes.' }
+]} />
+
+```tsx
+<NamespaceUtilityTable groups={[
+  { label: 'Surfaces', namespace: 'color-surface',
+    keys: ['surface'], description: 'Panels, cards and overlays.' }
+]} />
+```
+
+Provide reader-facing group names and source keys from the manifest; `namespace` or `namespaces` filters unsupported keys. With no descriptions the table uses two columns. The table is a document aid, outside the measured layout of a demo. See its actual uses in [Colors](/guide/colors#namespaces-for-color), [Spacing](/guide/spacing#namespace-for-spacing) and [Typography](/guide/typography), and the [original/current/adopted review](/design-system/review/utility-table).
+
+### Numeric token table \{#numeric-token-table\}
+
+`ThemeNumberVariableTable` reads numeric tokens and their units from the preset. The `spacing` representation uses the original Guide's pink diagonal field and raised objects to expose each actual gap. Its table has stable token and value columns, quiet row separators, and a keyboard-focusable scroll region on narrow screens.
+
+<ThemeNumberVariableTable namespace="spacing" representation="spacing" />
+
+```tsx
+<ThemeNumberVariableTable namespace="spacing" representation="spacing" />
+```
+
+The `representation` prop is optional. [Breakpoints](/guide/breakpoints) and [Containers](/guide/containers) use the same data-driven table with descriptions, without the spacing specimen. Keep the native token value and reference unit visible in text, and place this inventory outside a measured layout demo. The [numeric table review](/design-system/review/numeric-table) compares the original pink field with the previous neutral treatment and the adopted shared style.
 
 ### File structure
 Use `DocumentFileTree` for a static directory structure. Native nested lists preserve the hierarchy; monochrome icons are decorative. Entries can have a short description and nested children.
@@ -535,9 +713,9 @@ Use a readable option list for long identifiers, and a labeled source/result pai
 <DocumentOptionList label="Component interfaces">
   <DocumentOptionEntry name="DemoSurface">
 
-    **Interface:** Native div props.
+    **Interface:** `elevation`, native div props.
 
-    A bordered surface with no implicit layout or padding.
+    A bordered surface with no implicit layout or padding. Elevation is opt-in.
 
   </DocumentOptionEntry>
 </DocumentOptionList>
@@ -674,7 +852,7 @@ See [Theme and variants](/reference/directives/theme), [Managed definitions](/re
 ## Benchmark charts
 Use `BenchmarkBars` for values on a shared scale and `BenchmarkStackedBars` for composition within each row. The examples below use **illustrative data**, not measured results. See [Benchmarks](/guide/benchmarks) for real fixtures, sources, and limits.
 
-`BenchmarkChartGroup` pairs a metric heading with its unit and context. `BenchmarkMetrics` renders a responsive definition list. `BenchmarkDataTable` uses native disclosure and a named, keyboard-focusable scroll region, so long tables retain complete rows and columns. `BenchmarkSource` places a recorded date beside its source link. `BenchmarkFigure`, `BenchmarkDelta`, and `BenchmarkSampleSummary` provide captions, contextual deltas, and sample statistics.
+`BenchmarkChartGroup` pairs a clearer metric heading with its unit and sample context, while leaving the established bars intact. The [chart group review](/design-system/review/chart-group) compares the original Guide chart, previous wrapper and adopted treatment. `BenchmarkMetrics` renders a refined definition list for short summaries, with tabular values and a detail line that stacks in narrow columns; its [metrics review](/design-system/review/metrics) keeps the original Guide table visible. `BenchmarkDataTable` uses a refined native disclosure and a named, keyboard-focusable scroll region, so long tables retain complete rows and columns; its [data table review](/design-system/review/data-table) preserves the Guide's original Expand control. `BenchmarkSource` marks a committed snapshot beside its recorded date; the [source review](/design-system/review/source) compares it with the full Guide source table. `BenchmarkFigure`, `BenchmarkDelta`, and `BenchmarkSampleSummary` provide captions, contextual deltas, and sample statistics.
 
 Keep series labels visible, include units and sample counts, and distinguish zero from missing data. Labels wrap; values use tabular numerals. A zero value has no colored fill. Stacked rows normalize to their own totals, so their lengths do not compare absolute payload size. Put important findings and limitations in the document body as well as the chart caption.
 
@@ -1003,9 +1181,9 @@ Import site primitives from `~/site/components/demo`. They are also available in
 
 <DocumentOptionEntry name="DemoSurface">
 
-**Interface:** Native div props
+**Interface:** `elevation="none" | "raised"`, native div props
 
-A bordered surface; no implicit layout or padding.
+A bordered surface with a compact radius; no implicit layout, padding, clipping or shadow. The raised option adds paint-only depth.
 
 </DocumentOptionEntry>
 
@@ -1046,7 +1224,7 @@ Annotations accompany the subject instead of joining its layout.
 
 **Interface:** `label`, `children`
 
-Measures its wrapper; place it outside the demonstrated parent.
+Measures its content wrapper with `ResizeObserver`; the separate readout updates with width and height. Place it outside the demonstrated parent.
 
 </DocumentOptionEntry>
 
@@ -1054,13 +1232,13 @@ Measures its wrapper; place it outside the demonstrated parent.
 
 **Interface:** `inline`, `block`, `children`
 
-Labels physical directions around the example.
+Labels a rightward horizontal axis and downward vertical axis around the example. Use custom labels only when those physical directions still match the scene.
 
 </DocumentOptionEntry>
 
 <DocumentOptionEntry name="DemoControls">
 
-**Interface:** `label`, `children`
+**Interface:** `label`, `variant="plain" | "segmented"`, `children`
 
 A labeled fieldset for native controls.
 
@@ -1161,7 +1339,7 @@ Every specimen below is available directly in MDX. The surrounding example owns 
 <DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
 <DemoSwatch label="Subject" className="bg:demo-blue" />
 
-<DemoAxes inline="Main axis" block="Cross axis">
+<DemoAxes>
   <DemoMeasure label="Container">
     <div className="flex gap:sm">{/* measured layout */}</div>
   </DemoMeasure>

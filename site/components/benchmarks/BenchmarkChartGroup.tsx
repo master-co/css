@@ -1,5 +1,6 @@
 import BenchmarkBars from './BenchmarkBars'
 import type { BenchmarkBarItem } from './types'
+import Translate from '~/internal/components/Translate'
 
 export default function BenchmarkChartGroup({ title, detail = 'Median', items, unit = 'ms' }: {
   title: string
@@ -9,7 +10,10 @@ export default function BenchmarkChartGroup({ title, detail = 'Median', items, u
 }) {
   return (
     <div className="benchmark-group">
-      <div className="benchmark-group-heading"><h4>{title}</h4><span>{detail}</span></div>
+      <div className="benchmark-group-heading">
+        <div><span className="benchmark-group-kicker"><Translate>Metric</Translate></span><h4><Translate>{title}</Translate></h4></div>
+        <span><Translate>{detail}</Translate> · {unit}</span>
+      </div>
       <BenchmarkBars items={items} unit={unit} />
     </div>
   )

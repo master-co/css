@@ -1,4 +1,4 @@
-import type { HTMLAttributes, ReactElement, SVGAttributes } from 'react'
+import type { HTMLAttributes, ReactElement, ReactNode, SVGAttributes } from 'react'
 import Image, { type ImageProps as NextImageProps } from 'next/image'
 import clsx from 'clsx'
 
@@ -9,8 +9,10 @@ interface ItemProps extends DivProps {
   variant?: 'soft' | 'solid' | 'outline' | 'ghost'
 }
 
-export function DemoSurface({ className, ...props }: DivProps) {
-  return <div {...props} className={clsx('demo-surface', className)} />
+export function DemoSurface({ elevation = 'none', className, ...props }: DivProps & {
+  elevation?: 'none' | 'raised'
+}) {
+  return <div {...props} data-elevation={elevation} className={clsx('demo-surface', className)} />
 }
 
 /** Paint only: layout, dimensions, padding and positioning stay with the example. */
@@ -86,14 +88,14 @@ export function DemoSwatch({ label, value, className, children, ...props }: DivP
   )
 }
 
-export function DemoAxes({ inline = 'Main axis', block = 'Cross axis', children, className, ...props }: DivProps & {
-  inline?: string, block?: string
+export function DemoAxes({ inline = <><strong>Main</strong> axis</>, block = <><strong>Cross</strong> axis</>, children, className, ...props }: DivProps & {
+  inline?: ReactNode, block?: ReactNode
 }) {
   return (
     <div {...props} className={clsx('demo-axes', className)}>
-      <div className="demo-axis-inline"><span>{inline}</span><span aria-hidden="true">→</span></div>
-      <div className="demo-axis-block"><span>{block}</span><span aria-hidden="true">↓</span></div>
-      <div>{children}</div>
+      <div className="demo-axis-inline"><span>{inline}</span><span className="demo-axis-inline-rule" aria-hidden="true" /></div>
+      <div className="demo-axis-block"><span>{block}</span><span className="demo-axis-block-rule" aria-hidden="true" /></div>
+      <div className="demo-axis-content">{children}</div>
     </div>
   )
 }
@@ -102,8 +104,11 @@ export function DemoScrollArea({ className, tabIndex = 0, ...props }: DivProps) 
   return <div {...props} tabIndex={tabIndex} className={clsx('demo-scroll-area', className)} />
 }
 
-export function DemoControls({ label = 'Demo controls', className, children, ...props }: HTMLAttributes<HTMLFieldSetElement> & { label?: string }) {
-  return <fieldset {...props} className={clsx('demo-controls', className)}><legend className="sr-only">{label}</legend>{children}</fieldset>
+export function DemoControls({ label = 'Demo controls', variant = 'plain', className, children, ...props }: HTMLAttributes<HTMLFieldSetElement> & {
+  label?: string
+  variant?: 'plain' | 'segmented'
+}) {
+  return <fieldset {...props} data-variant={variant} className={clsx('demo-controls', className)}><legend className="sr-only">{label}</legend>{children}</fieldset>
 }
 
 export function DemoPanel({ className, ...props }: DivProps) {

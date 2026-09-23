@@ -56,6 +56,29 @@
   .doc-namespace-table .doc-key-list { margin: 0; }
   .doc-namespace-table .doc-key-list code { white-space: normal; overflow-wrap: anywhere; }
   .doc-namespace-table .doc-key-more { margin-block: var(--spacing-xs) 0; }
+  .doc-utility-table { border-block: 1px solid var(--color-line-base); }
+  .doc-utility-table:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
+  .doc-utility-table table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+  .doc-utility-table[data-has-descriptions] table { min-width: 35rem; }
+  .doc-utility-table :is(thead, tbody, tr, th, td) { contain: none; }
+  .doc-utility-table :is(th, td) { padding: .8rem .9rem; vertical-align: top; border-block-end: 1px solid var(--color-line-subtle); font-size: .8125rem; line-height: 1.55; }
+  .doc-utility-table thead th { padding-block: .7rem; color: var(--color-text-muted); font: 600 .6875rem/1.4 var(--font-family-mono); letter-spacing: .045em; text-transform: uppercase; }
+  .doc-utility-table :is(thead th, tbody th):first-child { width: 25%; padding-inline-start: .45rem; }
+  .doc-utility-table[data-has-descriptions] :is(thead th, tbody td):nth-child(2) { width: 37%; }
+  .doc-utility-table tbody th { color: var(--color-text-strong); font-weight: 600; white-space: normal; }
+  .doc-utility-table tbody td:last-child:not(:nth-child(2)) { color: var(--color-text-muted); }
+  .doc-utility-table code { white-space: normal; overflow-wrap: anywhere; }
+  .doc-number-variable-table:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: 3px; }
+  .doc-number-variable-table[data-representation="spacing"] { border-block: 1px solid var(--color-line-base); }
+  .doc-number-variable-table[data-representation="spacing"] table { width: 100%; min-width: 39rem; border-collapse: collapse; table-layout: fixed; }
+  .doc-number-variable-table[data-representation="spacing"] :is(thead, tbody, tr, th, td) { contain: none; }
+  .doc-number-variable-table[data-representation="spacing"] :is(th, td) { padding: .75rem .85rem; vertical-align: middle; border-block-end: 1px solid var(--color-line-subtle); font-size: .8125rem; line-height: 1.5; }
+  .doc-number-variable-table[data-representation="spacing"] thead th { padding-block: .7rem; color: var(--color-text-muted); font: 600 .6875rem/1.4 var(--font-family-mono); letter-spacing: .045em; text-transform: uppercase; }
+  .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody th):first-child { width: 31%; padding-inline-start: .45rem; }
+  .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody td):nth-child(2) { width: 15%; }
+  .doc-number-variable-table[data-representation="spacing"] :is(thead th, tbody td):nth-child(3) { width: 13%; }
+  .doc-number-variable-table[data-representation="spacing"] tbody th { color: var(--color-text-strong); font-weight: 500; }
+  .doc-number-variable-table[data-representation="spacing"] code { white-space: normal; overflow-wrap: anywhere; }
   .doc-code-table :is(th, td) { contain: none; vertical-align: top; }
   .doc-code-table tbody th { width: 1%; font-weight: var(--font-weight-regular); }
   .doc-code-table tbody th code { white-space: nowrap; }
@@ -185,23 +208,24 @@
 
 @layer components {
   .doc-steps { container-type: inline-size; counter-reset: document-step; margin-block: var(--spacing-xl); }
-  .doc-step { position: relative; min-width: 0; padding-block: var(--spacing-lg); counter-increment: document-step; border-block-start: 1px solid var(--color-line-base); }
-  .doc-step:last-child { border-block-end: 1px solid var(--color-line-base); }
+  .doc-step { position: relative; min-width: 0; margin-inline-start: .75rem; padding: .35rem 0 2rem 2rem; counter-increment: document-step; border-inline-start: 1px solid var(--color-line-base); }
+  .doc-step:last-child { padding-bottom: .35rem; }
   .doc-step:has(> .doc-step-text) { display: grid; gap: var(--spacing-md) var(--spacing-xl); }
   .doc-step-text, .doc-step-body { min-width: 0; }
-  .doc-step :is(h2, h3, h4) { position: relative; margin: 0 0 var(--spacing-sm); font-size: var(--font-size-sm); font-weight: var(--font-weight-medium); line-height: var(--leading-lg); }
-  .doc-step :is(h2, h3, h4):has(.doc-step-number) { padding-inline-start: calc(1.5rem + var(--spacing-sm)); }
-  .doc-step-number { position: absolute; inset-inline-start: 0; top: 0; display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--color-line-base); border-radius: var(--radius-xs); background: var(--color-surface-raised); color: var(--color-text-muted); font-family: var(--font-family-mono); font-size: var(--font-size-xs); line-height: 1; }
+  .doc-step :is(h2, h3, h4) { position: relative; margin: 0 0 .4rem; font-size: .9375rem; font-weight: 600; line-height: 1.5; }
+  .doc-step :is(h2, h3, h4):has(.doc-step-number) { padding-inline-start: 0; }
+  .doc-step-number { position: absolute; inset-inline-start: -2.75rem; top: 0; display: inline-grid; place-items: center; width: 1.5rem; height: 1.5rem; border: 1px solid var(--color-line-base); border-radius: var(--radius-xs); background: var(--color-surface-base); color: var(--color-text-body); font-family: var(--font-family-mono); font-size: var(--font-size-xs); font-weight: 550; line-height: 1; }
   .doc-step-number::before { content: counter(document-step, decimal-leading-zero); }
-  .doc-step p { margin-block: var(--spacing-sm); font-size: var(--font-size-sm); line-height: var(--leading-lg); }
+  .doc-step p { margin-block: .4rem; font-size: var(--font-size-sm); line-height: var(--leading-lg); }
   .doc-step p > code { display: inline-block; max-inline-size: 100%; vertical-align: baseline; overflow-wrap: anywhere; }
   .doc-step-text > :last-child, .doc-step-body > :last-child, .doc-step > :last-child { margin-bottom: 0; }
+  .doc-step-body { align-self: start; }
   .doc-step-body > :first-child { margin-top: 0; }
   /* The reused code tabs carry a utility-layer outer margin; step gap owns it here. */
   .doc-step-body > .codeTabs:first-child { margin-top: 0 !important; }
   .doc-step .code, .doc-step .codeTabs { margin-inline: 0; }
   .doc-step .codeTabs .code { margin-block: 0; }
-  @container (min-width: 44rem) {
+  @container (min-width: 36rem) {
     .doc-step[data-columns] { grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); }
   }
 }

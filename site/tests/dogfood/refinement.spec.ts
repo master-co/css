@@ -173,7 +173,7 @@ for (const route of [...flowPages.map(page => `reference/${page}`), 'guide/spaci
     const failures: string[] = []
     page.on('pageerror', error => failures.push(error.message))
     await page.goto(`/en/${route}`)
-    const demos = page.locator('.site-demo')
+    const demos = page.locator(route.startsWith('guide/') ? 'article .demo' : '.site-demo')
     expect(await demos.count()).toBeGreaterThan(0)
     for (const [index, demo] of (await demos.all()).entries()) {
       await demo.scrollIntoViewIfNeeded()

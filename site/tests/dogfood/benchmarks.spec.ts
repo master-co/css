@@ -6,7 +6,11 @@ const headings = JSON.parse(readFileSync(new URL('../final-page-heading-ids.json
 function errorsFor(page: Page) {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  page.on('console', event => { if (event.type() === 'error') errors.push(event.text()) })
+  page.on('console', event => {
+    // The browser test harness attempts script injection into the intentionally scriptless syntax-tutorial iframe.
+    const sandboxNotice = /^Blocked script execution in 'about:(?:srcdoc|blank)' because the document's frame is sandboxed and the 'allow-scripts' permission is not set\.$/
+    if (event.type() === 'error' && !sandboxNotice.test(event.text())) errors.push(event.text())
+  })
   return errors
 }
 async function capture(page: Page, path: string) {
@@ -16,66 +20,31 @@ async function capture(page: Page, path: string) {
   await page.screenshot({ path, fullPage: true, scale: 'css', caret: 'initial', style: 'nav.app-wrapper,nextjs-portal{visibility:hidden}' })
 }
 
-test('benchmark values, scales, sources and complete data remain readable and operable', async ({ page }, info) => {
+test('original Guide charts and source data remain readable and operable', async ({ page }, info) => {
   const errors = errorsFor(page)
   await page.goto('/en/guide/benchmarks')
   for (const id of headings['/guide/benchmarks']) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
-  await expect(page.locator('.benchmark-source time')).toHaveCount(8)
-  const max = Math.max(...snapshot.pages.map(entry => entry.css.total.brotliBytes))
-  for (const entry of snapshot.pages) {
-    const meter = page.locator('[data-page-css-size]').getByRole('meter', { name: entry.name, exact: true })
-    await expect(meter).toHaveCount(1)
-    await expect(meter).toHaveAttribute('aria-valuenow', String(entry.css.total.brotliBytes))
-    await expect(meter).toHaveAttribute('aria-valuetext', `${(entry.css.total.brotliBytes / 1000).toFixed(1)} kB`)
-    const fraction = await meter.evaluate(element => element.firstElementChild!.getBoundingClientRect().width / element.getBoundingClientRect().width)
-    expect(fraction).toBeCloseTo(entry.css.total.brotliBytes / max, 2)
+  const sizeChart = page.locator('figure').filter({ has: page.locator('figcaption').filter({ hasText: 'total size' }) })
+  await expect(sizeChart.getByRole('button', { name: 'Raw' })).toHaveClass(/active/)
+  await expect(sizeChart.locator('svg rect')).toHaveCount(snapshot.pages.length * 2)
+  await sizeChart.getByRole('button', { name: 'Brotli' }).click()
+  await expect(sizeChart.getByRole('button', { name: 'Brotli' })).toHaveClass(/active/)
+  await expect(sizeChart.locator('svg rect')).toHaveCount(snapshot.pages.length * 2)
+  const sourceLinks = page.locator('a[href*="benchmarks/"]')
+  const uniqueSources = await sourceLinks.evaluateAll(links => [...new Set(links.map(link => (link as HTMLAnchorElement).href))])
+  expect(uniqueSources).toHaveLength(8)
+  await expect(page.getByRole('button', { name: 'Expand', exact: true })).toHaveCount(8)
+  const firstExpand = page.getByRole('button', { name: 'Expand', exact: true }).first()
+  await firstExpand.focus()
+  await firstExpand.press('Enter')
+  await expect(page.getByRole('button', { name: 'Collapse', exact: true })).toHaveCount(1)
+  await expect(page.getByRole('button', { name: 'Collapse', exact: true }).locator('xpath=../preceding-sibling::div[1]//tbody/tr')).toHaveCount(16)
+  await page.getByRole('button', { name: 'Collapse', exact: true }).press('Enter')
+  for (const meter of await page.getByRole('meter').all()) {
+    await expect(meter).toHaveAccessibleName(/\S/)
+    await expect(meter).not.toHaveAccessibleName(/\[object Object\]/)
   }
-  const names = await page.getByRole('meter').evaluateAll(elements => elements.map(element => element.getAttribute('aria-label')))
-  expect(names.every(name => name && !name.includes('[object Object]'))).toBe(true)
   await capture(page, info.outputPath('benchmarks.png'))
-  const raw = page.locator('summary').filter({ hasText: 'Compare uncompressed CSS' })
-  await raw.focus(); await raw.press('Enter')
-  await expect(page.locator('[data-page-css-size]').getByRole('meter', { name: 'Master CSS', exact: true })).toHaveCount(2)
-  const disclosures = page.locator('details.benchmark-data').filter({ has: page.locator('.benchmark-table-scroll') })
-  const rowCounts: number[] = []
-  for (const disclosure of await disclosures.all()) {
-    const summary = disclosure.locator('summary')
-    await summary.focus(); await summary.press('Enter')
-    const region = disclosure.getByRole('region')
-    await expect(region).toBeVisible()
-    await expect(region).toHaveAccessibleName(/\w/)
-    await expect(region).toHaveAccessibleDescription('Use arrow keys to scroll the table.')
-    rowCounts.push(await region.locator('tbody tr').count())
-    if (rowCounts.length === 1) await disclosure.screenshot({ path: info.outputPath('page-css-data.png'), caret: 'initial' })
-    await region.scrollIntoViewIfNeeded()
-    await region.focus()
-    await expect(region).toBeFocused()
-    const size = await region.evaluate(element => ({ width: element.clientWidth, scroll: element.scrollWidth }))
-    if (size.scroll > size.width + 1) {
-      await region.press('ArrowRight')
-      await expect.poll(() => region.evaluate(element => element.scrollLeft)).toBeGreaterThan(0)
-      await region.press('ArrowLeft')
-      await expect.poll(() => region.evaluate(element => element.scrollLeft)).toBe(0)
-    }
-    if (await region.evaluate(element => element.scrollHeight > element.clientHeight + 1)) {
-      await region.press('ArrowDown')
-      await expect.poll(() => region.evaluate(element => element.scrollTop)).toBeGreaterThan(0)
-    }
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
-    await summary.press('Enter')
-  }
-  expect(rowCounts).toEqual([snapshot.pages.length + snapshot.pages.find(entry => entry.name === 'Master CSS')!.assets.length, 16, 16, 16, 4, 14, 16, 54, 4])
-  const sources = page.locator('details.benchmark-data').filter({ has: page.locator('a[href*="benchmarks/"]') })
-  await expect(sources).toHaveCount(8)
-  for (const [index, disclosure] of (await sources.all()).entries()) {
-    const summary = disclosure.locator('summary')
-    await summary.focus(); await summary.press('Enter')
-    await expect(disclosure.locator('a[href*="benchmarks/"]')).toBeVisible()
-    await expect(disclosure.locator('code').first()).toBeVisible()
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
-    if (index === 0 || index === 7) await disclosure.screenshot({ path: info.outputPath(`source-${index}.png`), caret: 'initial' })
-    await summary.press('Enter')
-  }
   expect(errors).toEqual([])
 })
 
@@ -86,7 +55,7 @@ test('chart catalog shows full labels, exact zero, and native table controls', a
   await gallery.scrollIntoViewIfNeeded()
   const zero = gallery.getByRole('meter', { name: 'No recorded work' })
   await expect(zero).toHaveAttribute('aria-valuenow', '0')
-  expect(await zero.locator('.benchmark-fill').evaluate(element => element.getBoundingClientRect().width)).toBe(0)
+  expect(await zero.locator('div').first().evaluate(element => element.getBoundingClientRect().width)).toBe(0)
   const label = gallery.getByText('A deliberately long scenario name that remains readable on a narrow screen', { exact: true })
   await expect(label).toBeVisible()
   expect(await label.evaluate(element => element.scrollWidth <= element.clientWidth + 1)).toBe(true)

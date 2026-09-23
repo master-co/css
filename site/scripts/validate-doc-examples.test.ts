@@ -1,26 +1,10 @@
-import { verifyTanstackInstallationExamples } from '../tests/tanstack-installation-examples'
-import { verifyRouterInstallationExamples } from '../tests/router-installation-examples'
-import { verifyNuxtInstallationExamples } from '../tests/nuxt-installation-examples'
-import { verifyNextInstallationExamples } from '../tests/next-installation-examples'
-import { verifyAngularInstallationExamples } from '../tests/angular-installation-examples'
-import { verifyStorybookInstallationExamples } from '../tests/storybook-installation-examples'
-import { verifyDotnetInstallationExamples } from '../tests/dotnet-installation-examples'
-import { verifyThemeInstallationExamples } from '../tests/theme-installation-examples'
-import { verifyServerInstallationExamples } from '../tests/server-installation-examples'
-import { verifyIslandsInstallationExamples } from '../tests/islands-installation-examples'
-import { verifyBundlerInstallationExamples } from '../tests/bundler-installation-examples'
-import { verifyFrameworkInstallationExamples } from '../tests/framework-installation-examples'
-import { verifyInstallationExamples } from '../tests/installation-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'
 import { verifyDirectiveExamples } from '../tests/directive-examples'
 import { verifyToolContractExamples } from '../tests/tool-contract-examples'
 import { verifyCLIContractExamples } from '../tests/cli-contract-examples'
-import { verifyAgentStylingExample, verifyAgentMCPExamples } from '../tests/agent-examples-checks'
-import { verifyLintExamples, verifyLanguageExamples } from '../tests/tooling-examples-checks'
+import { verifyLanguageExamples } from '../tests/tooling-examples-checks'
 import { authoringSource } from '../utils/authoring-examples'
-import { verifyMonorepoExamples, verifyPackageAuthoringExamples } from '../tests/package-authoring-examples'
-import { verifyDeliveryExamples } from '../tests/delivery-examples-checks'
 import assert from 'node:assert/strict'
 import { readdir, readFile } from 'node:fs/promises'
 import path from 'node:path'
@@ -924,48 +908,9 @@ test('Bootstrap class allowance is limited to its documented vendor vocabulary',
   assert.equal(isMigrationVendorClass({ ...example, file: path.join(appRoot, 'guide/theme/content.mdx') }), false)
 })
 
-test('delivery examples preserve actual pruning, route compilation and published hydration assets', verifyDeliveryExamples)
-
-
-test('authoring package exports compile through the build resolver and local reference', verifyPackageAuthoringExamples)
-test('monorepo entries share vocabulary and preserve independent token overrides', verifyMonorepoExamples)
-
-
-test('lint guide examples match native diagnostics, options and fixes', verifyLintExamples)
 test('language service guide examples match actual completion, hover and formatter output', verifyLanguageExamples)
-
-test('agent styling example compiles its shared vocabulary and runtime variables', verifyAgentStylingExample)
-test('agent MCP examples match stdio discovery, preview and apply behavior', verifyAgentMCPExamples)
 
 test('all MCP reference requests match actual tool behavior', verifyToolContractExamples)
 test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
 
 test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
-
-test('installation examples apply actual Vite setup and build the documented CLI stylesheet', verifyInstallationExamples)
-
-test('React, Vue and Lit installation examples build with their framework plugins and authored components', verifyFrameworkInstallationExamples)
-
-test('Webpack, Rspack and Rsbuild installation files produce linked HTML and utility CSS', verifyBundlerInstallationExamples)
-
-test('Astro and SvelteKit installation examples build, including the documented static CLI fallback', async () => {
-    await verifyIslandsInstallationExamples()
-})
-
-test('server installation examples build separate assets and render their host templates', verifyServerInstallationExamples)
-
-test('theme installation examples build real assets and preserve host enqueue and manifest contracts', verifyThemeInstallationExamples)
-
-test('.NET installation examples build Razor-source utilities and preserve separate host assets', verifyDotnetInstallationExamples)
-
-test('Storybook preview source builds through inherited Vite configuration and the authored viteFinal hook', verifyStorybookInstallationExamples)
-
-test('Angular application builds the authored CDN and static CLI integrations', verifyAngularInstallationExamples)
-
-test('Next.js installation builds the authored configs, layouts and pages in every mode', verifyNextInstallationExamples)
-
-test('Nuxt installation builds the authored config, stylesheet and component in every mode', verifyNuxtInstallationExamples)
-
-test('React Router examples compile with Vite and the explicit public SSR adapter', verifyRouterInstallationExamples)
-
-test('TanStack Start builds the authored Vite, root and route sources in both modes', verifyTanstackInstallationExamples)

@@ -33,11 +33,13 @@ interface SectionLink {
   href: string
 }
 
-export default function DocumentationIndex({ name, sections, related, showDescriptions = false }: {
+export default function DocumentationIndex({ name, sections, related, showDescriptions = false, idPrefix }: {
   name: 'guide' | 'reference'
   sections: DocumentationIndexSection[]
   related: SectionLink
   showDescriptions?: boolean
+  /** Scope anchor IDs when multiple catalogs are shown in one review. Omit on published indexes. */
+  idPrefix?: string
 }) {
   const [alphabetical, setAlphabetical] = useState(false)
   const tw = useLocale() === 'tw'
@@ -45,16 +47,19 @@ export default function DocumentationIndex({ name, sections, related, showDescri
   const letters = Map.groupBy([...entries].sort((a, b) => a.title.localeCompare(b.title)), entry => /^[a-z]/i.test(entry.title) ? entry.title[0].toUpperCase() : '#')
   const groupId = (section: DocumentationIndexSection, index: number) => section.groups[index].id ?? `${section.id}-group-${index + 1}`
   const sectionIds = sections.flatMap(section => [section.id, ...(section.legacyIds ?? []), ...section.groups.map((_, index) => groupId(section, index))]).join(',')
+  const panelId = (part: 'category' | 'alphabetical') => `${idPrefix ?? name}-${part}-index`
+  const letterId = (letter: string) => `${idPrefix ? `${idPrefix}-` : ''}index-${letter === '#' ? 'symbols' : letter.toLowerCase()}`
+  const letterHashPrefix = `#${idPrefix ? `${idPrefix}-` : ''}index-`
 
   useEffect(() => {
     function syncView() {
-      if (/^#index-(symbols|[a-z])$/.test(location.hash)) setAlphabetical(true)
+      if (location.hash.startsWith(letterHashPrefix) && /^(symbols|[a-z])$/.test(location.hash.slice(letterHashPrefix.length))) setAlphabetical(true)
       else if (sectionIds.split(',').includes(location.hash.slice(1))) setAlphabetical(false)
     }
     syncView()
     window.addEventListener('hashchange', syncView)
     return () => window.removeEventListener('hashchange', syncView)
-  }, [sectionIds])
+  }, [letterHashPrefix, sectionIds])
   useEffect(() => {
     const target = document.getElementById(location.hash.slice(1))
     if (target && !target.closest('[hidden]')) target.scrollIntoView({ block: 'start' })
@@ -69,12 +74,12 @@ export default function DocumentationIndex({ name, sections, related, showDescri
     <div className="doc-index-toolbar">
       <span>{tw ? (name === 'guide' ? '教學索引' : '所有條目') : (name === 'guide' ? 'Browse guides' : 'All entries')} <span className="doc-index-count">{entries.length}</span></span>
       <div className="doc-index-view" role="group" aria-label={tw ? '索引顯示方式' : 'Index view'}>
-        <button type="button" aria-pressed={!alphabetical} aria-controls={`${name}-category-index`} onClick={() => setAlphabetical(false)}>{tw ? '依分類' : 'By category'}</button>
-        <button type="button" aria-pressed={alphabetical} aria-controls={`${name}-alphabetical-index`} onClick={() => setAlphabetical(true)}>A–Z</button>
+        <button type="button" aria-pressed={!alphabetical} aria-controls={panelId('category')} onClick={() => setAlphabetical(false)}>{tw ? '依分類' : 'By category'}</button>
+        <button type="button" aria-pressed={alphabetical} aria-controls={panelId('alphabetical')} onClick={() => setAlphabetical(true)}>A–Z</button>
       </div>
     </div>
 
-    <div id={`${name}-category-index`} hidden={alphabetical}>
+    <div id={panelId('category')} hidden={alphabetical}>
       {sections.map(section => <section key={section.id} className="doc-index-section" aria-labelledby={section.id}>
         <header className="doc-index-heading">
           {section.legacyIds?.map(id => <span key={id} id={id} />)}
@@ -93,12 +98,12 @@ export default function DocumentationIndex({ name, sections, related, showDescri
       </section>)}
     </div>
 
-    <div id={`${name}-alphabetical-index`} hidden={!alphabetical}>
+    <div id={panelId('alphabetical')} hidden={!alphabetical}>
       <nav className="doc-index-letters" aria-label={tw ? '依字母跳轉' : 'Jump to a letter'}>
-        {[...letters.keys()].map(letter => <a key={letter} href={`#index-${letter === '#' ? 'symbols' : letter.toLowerCase()}`}>{letter}</a>)}
+        {[...letters.keys()].map(letter => <a key={letter} href={`#${letterId(letter)}`}>{letter}</a>)}
       </nav>
       {[...letters].map(([letter, documents]) => <section key={letter} className="doc-index-letter-group">
-        <h2 id={`index-${letter === '#' ? 'symbols' : letter.toLowerCase()}`}>{letter}</h2>
+        <h2 id={letterId(letter)}>{letter}</h2>
         <EntryLinks entries={documents} columns showCategory />
       </section>)}
     </div>

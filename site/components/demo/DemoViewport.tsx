@@ -234,7 +234,7 @@ export default function DemoViewport({ title, document: source, src, responsive 
   const animate = (action: PlaybackAction) => playback.current?.act(action)
 
   return (
-    <div>
+    <div className="demo-viewport-frame">
       <div className="demo-viewport-shell">
         <iframe ref={ref} title={title} srcDoc={source} src={src} loading="lazy" data-ready={ready} data-sizing={sizing}
           className="demo-viewport" style={{ width: width ? `${width}px` : '100%', height: sizing === 'content' ? contentHeight ?? height : height }} onLoad={load} />

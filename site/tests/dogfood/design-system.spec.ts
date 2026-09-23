@@ -1,13 +1,21 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
 
 const headings = JSON.parse(readFileSync(new URL('../final-page-heading-ids.json', import.meta.url), 'utf8')) as Record<string, string[]>
 const screenshot = { caret: 'initial' as const, scale: 'css' as const, style: 'nav.app-wrapper,nextjs-portal{visibility:hidden}' }
-
-test('categorized catalog preserves anchors, keyboard access and every real recipe', async ({ page }, info) => {
+function errorsFor(page: Page) {
   const errors: string[] = []
   page.on('pageerror', error => errors.push(error.message))
-  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
+  page.on('console', message => {
+    // The browser test harness attempts script injection into the intentionally scriptless syntax-tutorial iframe.
+    const sandboxNotice = /^Blocked script execution in 'about:(?:srcdoc|blank)' because the document's frame is sandboxed and the 'allow-scripts' permission is not set\.$/
+    if (message.type() === 'error' && !sandboxNotice.test(message.text())) errors.push(message.text())
+  })
+  return errors
+}
+
+test('categorized catalog preserves anchors, keyboard access and every real recipe', async ({ page }, info) => {
+  const errors = errorsFor(page)
   await page.goto('/en/design-system')
   for (const id of headings['/design-system']) await expect(page.locator(`[id="${id}"]`)).toHaveCount(1)
   const navigation = page.getByRole('navigation', { name: 'Design system sections', exact: true })
@@ -45,7 +53,7 @@ test('categorized catalog preserves anchors, keyboard access and every real reci
       await expect(entry.getByRole('link', { name: 'Read the example and source' })).toHaveAttribute('href', `/reference/${demoCase}`)
       await expect(frame).toHaveAttribute('title', /\w/)
       expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
-      await entry.screenshot({ path: info.outputPath(`recipe-${index}-${recipeIndex}.png`), ...screenshot })
+      if (recipeIndex === 0) await entry.screenshot({ path: info.outputPath(`recipe-${index}.png`), ...screenshot })
       await summary.focus()
       await summary.press('Enter')
       await expect(entry).not.toHaveAttribute('open')
@@ -58,23 +66,24 @@ test('categorized catalog preserves anchors, keyboard access and every real reci
 })
 
 test('component gallery loads every visible preview and preserves document geometry', async ({ page }, info) => {
-  const errors: string[] = []
-  page.on('pageerror', error => errors.push(error.message))
-  page.on('console', message => { if (message.type() === 'error') errors.push(message.text()) })
+  const errors = errorsFor(page)
   await page.goto('/en/design-system')
   await page.evaluate(() => document.fonts.ready)
   for (const artwork of await page.locator('.prose img:visible').all()) {
     await artwork.scrollIntoViewIfNeeded()
     await expect.poll(() => artwork.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true)
   }
-  const previews = page.locator('iframe:visible')
+  const previews = page.locator('.site-demo iframe:visible')
   expect(await previews.count()).toBeGreaterThan(20)
-  for (const [index, frame] of (await previews.all()).entries()) {
+  const visiblePreviews = await previews.all()
+  for (const [index, frame] of visiblePreviews.entries()) {
     await frame.scrollIntoViewIfNeeded()
     await expect(frame).toHaveAttribute('data-ready', 'true')
     await expect(frame).toHaveAttribute('title', /\w/)
     const demo = frame.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " site-demo ")][1]')
-    await demo.screenshot({ path: info.outputPath(`component-${index}.png`), ...screenshot })
+    if (index === 0 || index === visiblePreviews.length - 1) {
+      await demo.screenshot({ path: info.outputPath(`component-${index}.png`), ...screenshot })
+    }
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true)
   }
   // A native definition list is queried by its authored label across engines.

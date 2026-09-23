@@ -44,6 +44,12 @@ export function DemoPrimitives() {
           {(['blue', 'violet', 'neutral', 'amber'] as const).map(tone => <DemoItem key={tone} tone={tone} className="p:md text-center"><DemoLabel>{tone}</DemoLabel></DemoItem>)}
         </div>
       </Demo>
+      <Demo title="Surfaces" caption="The default gives content a quiet boundary. Add elevation only when the example explains a raised layer.">
+        <div className="demo-specimen-grid">
+          <DemoSurface className="p:md"><DemoLabel>DEFAULT</DemoLabel><DemoText className="mt:sm">A stable reading surface.</DemoText></DemoSurface>
+          <DemoSurface elevation="raised" className="p:md"><DemoLabel>RAISED</DemoLabel><DemoText className="mt:sm">A layer above its backdrop.</DemoText></DemoSurface>
+        </div>
+      </Demo>
       <Demo title="Content specimens">
         <DemoComparison>
           <DemoSurface className="p:md"><DemoLabel>TEXT</DemoLabel><DemoText variant="lead" className="mt:sm">Form follows function.</DemoText><DemoText variant="caption" className="mt:xs">Use meaningful content to make layout decisions visible.</DemoText></DemoSurface>
