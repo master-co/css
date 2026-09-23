@@ -1,6 +1,7 @@
 'use client'
 
 import { createContext, useContext, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
+import { IconCopy } from '@tabler/icons-react'
 
 const CopyFeedback = createContext<((message: string) => void) | null>(null)
 
@@ -17,10 +18,11 @@ export function DemoCopyGroup({ children }: { children: ReactNode }) {
 interface Props extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick' | 'value'> {
   value: string
   label: string
+  icon?: ReactNode
 }
 
 /** The visible status describes the actual clipboard result, including denial. */
-export default function DemoCopyButton({ value, label, children, className, ...props }: Props) {
+export default function DemoCopyButton({ value, label, icon = <IconCopy size={15} stroke={1.6} aria-hidden="true" />, children, className, ...props }: Props) {
   const notify = useContext(CopyFeedback)
   const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
@@ -36,7 +38,7 @@ export default function DemoCopyButton({ value, label, children, className, ...p
     } finally { setBusy(false) }
   }
   return <span className="demo-copy">
-    <button {...props} type="button" aria-label={label} className={className ?? 'demo-button'} aria-busy={busy} onClick={copy}>{children}</button>
+    <button {...props} type="button" aria-label={label} className={className ?? 'demo-button demo-copy-button'} aria-busy={busy} onClick={copy}>{icon}{children}</button>
     {!notify && <span className="demo-copy-status" role="status">{status}</span>}
   </span>
 }

@@ -167,9 +167,10 @@ The “Content specimens” and “Comparison” examples above use this layout.
 
 `DemoBadge` labels a state or category. It renders a native span with four sizes
 (`xs`, `sm`, `md`, `lg`), the shared tones and the same paint variants as `DemoItem`.
-The default is a neutral, soft, medium badge. Its font-relative padding is explicit;
+The default is a neutral, soft, medium badge. Its compact radius, tabular monospace text and font-relative padding are explicit;
 keep badges outside measured layouts unless their dimensions are part of the lesson.
 Use a native button when the label performs an action.
+The [badge review](/design-system/review/badge) compares the Guide label, earlier badge and adopted treatment.
 
 ```tsx
 <DemoBadge tone="blue" size="sm">Selected layer</DemoBadge>
@@ -186,7 +187,7 @@ Use a native button when the label performs an action.
 
 ## Downloadable assets \{#assets\}
 
-`DemoAsset` pairs original artwork with a named surface and a native download link. Use it for logos, icons or exported diagrams; it is a presentation frame, not a measured CSS layout. Intrinsic image dimensions reserve the aspect ratio. The preview constrains images to the available width and a 6rem height without cropping.
+`DemoAsset` pairs original artwork with a named surface and a native download link. Use it for logos, icons or exported diagrams; it is a presentation frame, not a measured CSS layout. Intrinsic image dimensions reserve the aspect ratio. The preview constrains images to the available width and a 6rem height without cropping. The image remains transparent over the chosen preview surface in either page theme.
 
 <DemoAsset title="Master CSS mark" description="Transparent is the default surface." src="/images/logo.svg" alt="Master CSS gold mark" width={104} height={56} />
 
@@ -201,7 +202,7 @@ Use a native button when the label performs an action.
 />
 ```
 
-Use `surface="light"` or `surface="dark"` to keep the preview background fixed across page themes. `surface="transparent"` uses a checkerboard. The footer stays outside the artwork and exposes the file format (`SVG` by default). Use same-origin URLs for native downloads and a descriptive title for each accessible download name. See the [Brand page](/brand#download-assets) for the light, dark and transparent variants together.
+Use `surface="light"` or `surface="dark"` to keep the preview background fixed across page themes. `surface="transparent"` uses a checkerboard. The footer stays outside the artwork and exposes the file format (`SVG` by default). Use same-origin URLs for native downloads and a descriptive title for each accessible download name. See the [Brand page](/brand#download-assets) for the light, dark and transparent variants together, and the [asset review](/design-system/review/asset) for original, previous and adopted treatments.
 
 ## Annotations \{#annotations\}
 Name the subject, reveal a boundary, or expose an axis. Keep annotations outside the layout being demonstrated. Use color with labels, never as the only explanation.
@@ -537,6 +538,7 @@ Use the same entry data when exporting a plain-text tree. See [Monorepo](/guide/
 <DemoWaterfall title="A dependency discovered later" description="The second request becomes known after the first resource loads." rows={[{ label: 'Entry', start: 0, end: 40, tone: 'violet' }, { label: 'Dependency', start: 50, end: 90, tone: 'blue' }]} caption="A compact two-resource diagram." />
 
 Positions range from 0 to 100 and describe drawing geometry only. Use a description that explains the dependency in words; decorative bars are hidden from assistive technology. Rows stack their labels above the tracks in narrow containers. See [critical resources](/guide/preload-critical-resources#preload-runtime-engine).
+The [waterfall review](/design-system/review/waterfall) compares that Guide timeline, the earlier shared diagram and the adopted treatment.
 
 ### Before and after CSS
 
@@ -980,6 +982,7 @@ the same native-property support as the preview and includes complete generated 
 Use `DemoFeatureSupport` beside a native CSS example to report the current
 browser's syntax support. It never changes the specimen's styles. Keep a usable
 fallback in the example; a positive result is not a visual conformance guarantee.
+The [support label review](/design-system/review/feature-support) compares the Guide's original guidance with the previous and adopted live labels.
 
 <DemoFeatureSupport condition="(field-sizing: content)" />
 <DemoFeatureSupport condition="selector(:has(:checked))" />
@@ -1057,14 +1060,18 @@ Both use real mode variables. Content sizing keeps normal-flow content visible; 
 
 `DemoPalette` reads fixed preset colors and copies CSS variable references. Pass
 `families={['blue', 'violet']}` for a focused set. `DemoCopyButton` accepts `value`,
-`label`, native button attributes and children; its status confirms successful writes
+`label`, an optional `icon`, native button attributes and children. Text controls use a copy icon by default; color chips pass `icon={null}`. Its status confirms successful writes
 or explains when the browser declines clipboard access.
+
+The [palette review](/design-system/review/palette) compares the original Guide palette, the earlier shared gallery and the adopted token gallery. The Guide's existing copyable palette remains in place.
 
 ```jsx
 <DemoCopyButton value="var(--color-blue-60)" label="Copy blue token">
   Copy token
 </DemoCopyButton>
 ```
+
+The [copy control review](/design-system/review/copy) compares the Guide swatch, earlier button and adopted treatment.
 
 `DemoTokenTable` groups each token with its utilities, leaving a readable column for
 its role or value. Rows may include a decorative preview. Keep inventory tables outside
@@ -1102,7 +1109,7 @@ Use practical compositions when teaching layout decisions. These shared specimen
 <FoundationShapes />
 ```
 
-`DemoContainer` adjusts a real wrapper while the page viewport stays fixed. Children explicitly provide their query boundary and responsive descendants. Its native range supports keyboard and touch; Fit restores the available width. Widths larger than the canvas stay reachable through horizontal scrolling inside the demo.
+`DemoContainer` adjusts a real wrapper while the page viewport stays fixed. Children explicitly provide their query boundary and responsive descendants. Its framed specimen bed keeps the width control and live measurement outside that query layout. The native range supports keyboard and touch; Fit restores the available width. Widths larger than the canvas stay reachable through horizontal scrolling inside the demo. The [container review](/design-system/review/container) compares the original Guide resize zone, earlier control and adopted frame.
 
 ```tsx
 <Demo title="Container query" padding="none">
@@ -1147,6 +1154,7 @@ floats, a real viewport for fixed positioning, or overflow for scrolling.
 preview and a link to the complete lesson. `DemoIndex` provides the same categorized
 link treatment for page sections. Both render on the server and need no custom
 keyboard handlers.
+The [catalog review](/design-system/review/catalog) shows the original Guide index, earlier shared disclosure, adopted version and a real Reference scene.
 
 ```tsx
 import DemoCatalog from '~/site/components/demo/DemoCatalog'

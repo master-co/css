@@ -17,7 +17,7 @@ export default function DemoPalette({ families }: { families?: string[] }) {
         <h3 className="demo-palette-title">{family}</h3>
         <div className="demo-palette-row">
           {colors.sort((a, b) => a.step - b.step).map(({ name, step, value }) => <div key={name}>
-            <DemoCopyButton value={`var(--${name})`} label={`Copy ${name}`} className="demo-palette-chip" style={{ backgroundColor: value }} title={`${name}: ${value}`} />
+            <DemoCopyButton value={`var(--${name})`} label={`Copy ${name}`} icon={null} className="demo-palette-chip" style={{ backgroundColor: value }} title={`${name}: ${value}`} />
             <span className="demo-label">{step}</span>
           </div>)}
         </div>
