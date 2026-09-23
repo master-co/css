@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'animation-timing-function',
-  description: 'Setting speed curve of the animation.',
+  description: 'Controlling progress between animation keyframes.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=animation-timing-function',

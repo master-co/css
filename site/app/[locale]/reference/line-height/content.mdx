@@ -2,17 +2,24 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Line height contributes to the line box; it is not the visible height of the glyphs.
+
+<DemoExample page="line-height" section="basic-usage" />
+
 <BasicUsage />
-You can also use [`text:<size>`](/reference/text-size) to set a text size with a golden ratio line height.
+
+[`text:*`](/reference/text-size) combines size with size-dependent leading and tracking. Its treatment uses formulas rather than a fixed golden ratio.
 
 ### Set line height with font size \{#set-line-height-with-font-size\}
-Use `leading:*` with `font:*` when the type size and line height need to be tuned independently.
+Choose the size and leading independently. At the default 16px root size, `font:md leading:lg` produces 16px type with a 28.8px line height.
+
+<DemoExample page="line-height" section="set-line-height-with-font-size" />
+
 ```html
-<!-- @MARK font:md --><!-- @MARK leading:lg -->
-<p class="font:md leading:lg">
-  Comfortable paragraph text for longer reading.
-</p>
+<!-- 16px type · 1.8 line-height multiplier -->
+<p id="target" class="max-w:24ch m:0 font:md leading:lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
@@ -23,21 +30,44 @@ Use `leading:*` with `font:*` when the type size and line height need to be tune
 </details>
 
 ### Tighten display text \{#tighten-display-text\}
-Use `leading:1` or another compact value for large headings where default paragraph leading would create too much vertical space.
+Compact leading can bring the lines of a large heading together. `leading:1` makes the line height equal to its font size; check accents and actual wrapping before using it.
+
+<DemoExample page="line-height" section="tighten-display-text" />
+
 ```html
-<!-- @MARK font:5xl --><!-- @MARK leading:1 -->
-<h1 class="font:5xl leading:1">Launch faster</h1>
+<!-- Two explicit lines · 40px each -->
+<h2 id="target" class="m:0 font:5xl font:medium leading:1">Make room<br>for ideas.</h2>
 ```
 
 ### Use explicit values \{#use-explicit-values\}
-Use `leading:*` with a unitless number, length, or token depending on the typographic need.
+A unitless value is inherited as a multiplier, so it adapts to the child’s font size. A length is inherited as that length. Both parents below start at 16px; the child is 24px.
+
+<DemoExample page="line-height" section="use-explicit-values" />
+
 ```html
-<!-- @MARK leading:1.35 -->
-<p class="leading:1.35">Measured line height</p>
+<!-- Unitless · 1.5 -->
+<div id="context" class="font:md leading:1.5">
+  <p class="m:0">Parent at 16px</p>
+  <p id="target" class="m:0 font:2xl">Child at 24px<br>Second line</p>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="leading:sm leading:lg@print leading:md@sm">...</div>
+<!-- Fixed length · 24px -->
+<div id="context" class="font:md leading:24px">
+  <p class="m:0">Parent at 16px</p>
+  <p id="target" class="m:0 font:2xl">Child at 24px<br>Second line</p>
+</div>
+```
+
+The child’s line height is 36px in the first example and 24px in the second.
+
+### Apply conditionally \{#apply-conditionally\}
+The paragraph uses compact leading below `sm`, regular leading at `sm`, and relaxed leading in print. Resize the viewport or open Print preview to inspect each real condition.
+
+<DemoExample page="line-height" section="apply-conditionally" />
+
+```html
+<!-- Responsive reading rhythm -->
+<p id="target" class="max-w:24ch m:0 font:md leading:sm leading:lg@print leading:md@screen&sm">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```

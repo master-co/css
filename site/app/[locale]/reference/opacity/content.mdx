@@ -3,33 +3,88 @@
 
 ## Examples \{#examples\}
 ### Fade an entire element \{#fade-an-entire-element\}
-Use `opacity:*` to change the opacity of the whole element, including its text, background, border, and children.
+Opacity fades the element as a group, including its text and background. Both native disclosures remain keyboard operable; focus one and press Enter or Space.
+
+<DemoExample page="opacity" section="fade-an-entire-element" />
+
 ```html
-<!-- @MARK opacity:.5 -->
-<button class="opacity:.5">
-  Preview
-</button>
+<!-- Opaque · complete group -->
+<details class="w:240px max-w:100%">
+  <summary id="target"
+    class="p:md r:sm font:md bg:blue-60 fg:white
+           opacity:1 cursor:pointer">
+    Preview details
+  </summary>
+  <p class="mb:0 mt:sm font:sm text:body">
+    The layer is ready for review.
+  </p>
+</details>
 ```
 
+```html
+<!-- Half opacity · same interaction -->
+<details class="w:240px max-w:100%">
+  <summary id="target"
+    class="p:md r:sm font:md bg:blue-60 fg:white
+           opacity:.5 cursor:pointer">
+    Preview details
+  </summary>
+  <p class="mb:0 mt:sm font:sm text:body">
+    The layer is ready for review.
+  </p>
+</details>
+```
+
+<details>
+  <summary>Generated CSS</summary>
   <Class2CSS>
     {['opacity:.5']}
   </Class2CSS>
+</details>
 
-Opacity changes appearance; it does not disable a button or change its interaction behavior.
+Reduced opacity does not disable a control, remove its accessible name or take it out of layout. The revealed paragraph is a sibling of the faded summary, so it retains full opacity.
 
 ### Prefer color alpha for surfaces \{#prefer-color-alpha-for-surfaces\}
-When only a color should be translucent, use the color alpha suffix instead of reducing the whole element opacity.
+Compare whole-element opacity with alpha on just the background. Both begin with the same blue surface and foreground colors.
+
+<DemoExample page="opacity" section="prefer-color-alpha-for-surfaces" />
+
 ```html
-<!-- @MARK bg:blue-60/.12 --><!-- @MARK fg:blue-60 -->
-<span class="bg:blue-60/.12 fg:blue-60">Status</span>
+<!-- Group opacity · text also fades -->
+<div id="target"
+  class="w:240px max-w:100% p:md r:sm font:md
+         bg:blue-5 fg:black opacity:.5">
+  Ready for review
+</div>
 ```
 
-This keeps text and child content fully opaque.
+```html
+<!-- Background alpha · text stays opaque -->
+<div id="target"
+  class="w:240px max-w:100% p:md r:sm font:md
+         bg:blue-5/.5 fg:black">
+  Ready for review
+</div>
+```
+
+The second background is translucent, but its foreground stays at the authored color. Color alpha is useful when only a surface should reveal what is behind it.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover the label or focus its checkbox to reduce opacity. Space still toggles the native checkbox. Print restores full opacity.
+
+<DemoExample page="opacity" section="apply-conditionally" />
+
 ```html
-<div class="opacity:1 opacity:.72:hover opacity:1@print">...</div>
+<!-- Hover or focus · native checkbox remains active -->
+<label id="target"
+  class="inline-flex items-center gap:xs p:md
+         b:1px|solid|base r:sm font:md
+         bg:surface-base text:body opacity:1
+         opacity:.72:focus-within@screen
+         opacity:1@print opacity:.72:hover@screen">
+  <input type="checkbox" name="preview" class="size:16px" />
+  <span>Show preview</span>
+</label>
 ```
 
-Use opacity transitions with care for content that must remain readable.
+The checkbox and label fade together. Do not use a faded appearance as the only indication of an unavailable action; use the control’s actual disabled state when it should be unavailable.

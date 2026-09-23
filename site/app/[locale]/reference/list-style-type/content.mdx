@@ -1,14 +1,19 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- native list longhands preserve the other marker properties */}
 
 ## Examples \{#examples\}
 ### Use decimal markers \{#use-decimal-markers\}
-Use `list-style:decimal` for ordered instructions that need numeric markers.
+Use an ordered list for a meaningful sequence and `list-style:decimal` for decimal markers. This shorthand also resets position to outside and image to none.
+
+<DemoExample page="list-style-type" section="use-decimal-markers" />
+
 ```html
-<!-- @MARK list-style:decimal -->
-<ol class="list-style:decimal">
-  <li>Install dependencies</li>
-  <li>Run the build</li>
+<!-- Ordered steps · decimal -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg list-style:decimal">
+  <li class="mb:2xs">Install dependencies</li>
+  <li class="mb:2xs">Run the production build</li>
+  <li class="mb:2xs">Review the output</li>
 </ol>
 ```
 
@@ -20,26 +25,60 @@ Use `list-style:decimal` for ordered instructions that need numeric markers.
 </details>
 
 ### Use disc markers \{#use-disc-markers\}
-Use `list-style:disc` for unordered lists with default disc markers.
+Use an unordered list when item order is not significant. The disc shorthand provides ordinary bullets and resets the other list-style parts.
+
+<DemoExample page="list-style-type" section="use-disc-markers" />
+
 ```html
-<!-- @MARK list-style:disc -->
-<ul class="list-style:disc">
-  <li>Fast</li>
-  <li>Typed</li>
+<!-- Unordered features · disc -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg list-style:disc">
+  <li class="mb:2xs">Consistent spacing</li>
+  <li class="mb:2xs">Readable type at every size</li>
+  <li class="mb:2xs">Visible keyboard focus</li>
 </ul>
 ```
 
 ### Use a native list style type \{#use-a-native-list-style-type\}
-Use `list-style-type:*` when the marker type is not covered by an alias.
+Set `list-style-type` independently for native marker styles. Square suits this unordered feature list; lower-roman labels the ordered steps.
+
+<DemoExample page="list-style-type" section="use-a-native-list-style-type" />
+
 ```html
-<!-- @MARK list-style-type:square -->
-<ul class="list-style-type:square">
-  <li>Square marker</li>
+<!-- Unordered · square -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside list-style-type:square">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<ul class="list-style:disc:hover list-style:disc@print list-style:decimal@sm">...</ul>
+<!-- Ordered · lower-roman -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|outside list-style-type:lower-roman">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
 ```
+
+The longhand leaves position and image unchanged. An available image marker takes precedence over the type.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize past `sm` to replace decimal markers with lower-roman on screen. Position stays outside and the list remains ordered. Print uses decimal.
+
+<DemoExample page="list-style-type" section="apply-conditionally" />
+
+```html
+<!-- Real viewport · type only -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|outside list-style-type:decimal@print
+    list-style-type:lower-roman@screen&sm">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
+```
+
+{/* eslint-enable @master/css/prefer-canonical-classes */}

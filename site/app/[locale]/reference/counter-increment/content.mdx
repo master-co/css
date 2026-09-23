@@ -3,66 +3,67 @@
 
 ## Basic usage \{#basic-usage\}
 ### Number sections \{#number-sections\}
-Use `counter-increment` to advance a named counter on each matching element. The counter is usually created with [`counter-reset`](/reference/counter-reset) and displayed with [`content`](/reference/content).
-<Demo $py={0}>
-  <DemoPanel>
-    <article className="flex flex-col gap:10x counter-reset:section">
-      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-        <span className="font-weight:560 font:lg text:neutral">Overview</span>
-        <p className="my:md ml:42x font:sm text:gray">Introduce the document structure and goals.</p>
-      </div>
-      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-        <span className="font-weight:560 font:lg text:neutral">Installation</span>
-        <p className="my:md ml:42x font:sm text:gray">Add the package and wire it into the build.</p>
-      </div>
-      <div className="counter-increment:section inline-flex::before items-center::before justify-center::before size:32px::before mr:md::before r:full::before font:semibold::before font:sm::before bg:blue-60::before fg:white::before content:counter(section)::before">
-        <span className="font-weight:560 font:lg text:neutral">Configuration</span>
-        <p className="my:md ml:42x font:sm text:gray">Customize counters, selectors, and content output.</p>
-      </div>
-    </article>
-  </DemoPanel>
-</Demo>
+Increment a named counter on each heading. The article creates `section` at zero; each heading adds one before its `::before` content reads the value. The visible sequence is 1, 2, 3.
+
+<DemoExample page="counter-increment" section="number-sections" />
+
 ```html
-<!-- @MARK counter-reset:section -->
+<!-- Initial 0 · increment 1 -->
 <article class="counter-reset:section">
-  <!-- @MARK counter-increment:section -->
-  <!-- @MARK content:counter(section)::before -->
-  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Overview</h2>
-  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Installation</h2>
-  <h2 class="counter-increment:section inline-flex::before r:full::before content:counter(section)::before">Configuration</h2>
+  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Overview</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Installation</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Configuration</h2>
 </article>
 ```
 
+Keep the counter name consistent across reset, increment and content. The generated prefix belongs to the heading; the label and computed readout are outside the authored article.
+
 ### Count backward \{#count-backward\}
-Pass a negative integer to decrease a counter. Here the first generated value is `10` because the counter starts at `11` and decrements before it is displayed.
-<Demo $py={0}>
-  <DemoPanel>
-    <ol className="grid gap:xl m:0 p:0 list-style:none counter-reset:step|11">
-      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-        <span>Prepare release notes</span>
-      </li>
-      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-        <span>Run validation</span>
-      </li>
-      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step|-1 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before bg:gray-90@dark">
-        <span>Publish the build</span>
-      </li>
-    </ol>
-  </DemoPanel>
-</Demo>
+Use a negative step to count down. Starting `step` at 11 and subtracting one on each item produces 10, 9, 8.
+
+<DemoExample page="counter-increment" section="count-backward" />
+
 ```html
-<!-- @MARK counter-reset:step|11 -->
-<ol class="list-style:none counter-reset:step|11">
-  <!-- @MARK counter-increment:step|-1 -->
-  <!-- @MARK content:counter(step)::before -->
-  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Prepare release notes</li>
-  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Run validation</li>
-  <li class="counter-increment:step|-1 inline-flex::before r:full::before content:counter(step)::before">Publish the build</li>
+<!-- Initial 11 · increment −1 -->
+<ol role="list" reversed start="10" class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|11">
+  <li id="target" class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Prepare release notes</li>
+  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Run validation</li>
+  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Publish the build</li>
 </ol>
 ```
 
+The ordered list also declares `reversed` and `start="10"` so its HTML order agrees with the visual countdown. Use native list numbering when custom CSS counters are unnecessary.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to increase the step from one to two on screen. The same three headings then show 2, 4, 6. Print retains the ordinary 1, 2, 3 sequence.
+
+<DemoExample page="counter-increment" section="apply-conditionally" />
+
 ```html
-<div class="counter-increment:section:hover counter-increment:section@dark counter-increment:section@print counter-increment:section@sm">…</div>
+<!-- Real viewport · increment 1 or 2 -->
+<article class="counter-reset:section">
+  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before counter-increment:section@print
+    counter-increment:section|2@screen&sm">Overview</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before counter-increment:section@print
+    counter-increment:section|2@screen&sm">Installation</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before counter-increment:section@print
+    counter-increment:section|2@screen&sm">Configuration</h2>
+</article>
 ```
+
+Changing an increment recomputes the following values in that counter’s scope. It does not change the underlying heading text.

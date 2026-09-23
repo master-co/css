@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'isolation',
-  description: 'Controlling whether an element should create a new stacking context.',
+  description: 'Create a local stacking context for layered and blended content.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=isolation',

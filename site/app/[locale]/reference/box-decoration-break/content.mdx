@@ -3,12 +3,20 @@
 
 ## Examples \{#examples\}
 ### Slice \{#slice\}
-Use `box-decoration-break:slice` when inline fragments should share one continuous background, border, shadow, and decoration.
+A wrapped inline element is painted as one box, then sliced across its line fragments. Interior breaks do not repeat the inline-start and inline-end borders or padding.
+
+<DemoExample page="box-decoration-break" section="slice" />
+
 ```html
-<!-- @MARK box-decoration-break:slice -->
-<span class="bg:blue-60/.12 box-decoration-break:slice">
-  Wrapped inline text
-</span>
+<!-- Slice · one continuous decoration -->
+<div class="w:220px max-w:100% font:lg leading:2.2">
+  <span id="target"
+    class="px:xs py:3xs b:1px|solid|blue r:sm
+         bg:blue-10 fg:blue-80
+         box-decoration-break:slice">
+    Clear thinking needs room to take shape.
+  </span>
+</div>
 ```
 
 <details>
@@ -18,25 +26,80 @@ Use `box-decoration-break:slice` when inline fragments should share one continuo
   </Class2CSS>
 </details>
 
+The text remains one native inline element. The explicit 220px container forces real wrapping; no line breaks or separate spans simulate the fragments.
+
 ### Clone \{#clone\}
-Use `box-decoration-break:clone` when each wrapped line should get its own background, border, shadow, and decoration.
+Clone paints each inline fragment independently. Compare the same text and width: every line receives its own border, corner curves and inline padding.
+
+<DemoExample page="box-decoration-break" section="clone" />
+
 ```html
-<!-- @MARK box-decoration-break:clone -->
-<span class="px:3xs bg:blue-60/.12 box-decoration-break:clone">
-  Wrapped inline text
-</span>
+<!-- Slice · shared decoration -->
+<div class="w:220px max-w:100% font:lg leading:2.2">
+  <span id="target"
+    class="px:xs py:3xs b:1px|solid|blue r:sm
+         bg:blue-10 fg:blue-80
+         box-decoration-break:slice">
+    Clear thinking needs room to take shape.
+  </span>
+</div>
 ```
+
+```html
+<!-- Clone · each fragment decorated -->
+<div class="w:220px max-w:100% font:lg leading:2.2">
+  <span id="target"
+    class="px:xs py:3xs b:1px|solid|blue r:sm
+         bg:blue-10 fg:blue-80
+         box-decoration-break:clone">
+    Clear thinking needs room to take shape.
+  </span>
+</div>
+```
+
+Repeated padding may also change where the text wraps. Keep enough line height so neighboring fragments remain readable.
 
 ### Use on inline content \{#use-on-inline-content\}
-This property is most visible when inline content wraps across multiple lines.
+A real inline link can wrap while keeping a continuous accessible name. Focus the highlighted phrase, then press Enter to reach the note below.
+
+<DemoExample page="box-decoration-break" section="use-on-inline-content" />
+
 ```html
-<span class="bg:blue-5 box-decoration-break:clone">
-  A highlighted phrase that can wrap
-</span>
+<!-- Wrapped link · one accessible name -->
+<div class="w:220px max-w:100% font:lg leading:2.2">
+  <a id="target" href="#notes"
+    class="px:xs py:3xs b:1px|solid|blue r:sm
+         bg:blue-10 fg:blue-80
+         box-decoration-break:clone">
+    Read the full selection notes and source details.
+  </a>
+  <p id="notes" tabindex="-1"
+    class="mb:0 mt:lg font:sm text:body">
+    Selection notes and source details.
+  </p>
+</div>
 ```
 
+The utility controls decoration, not semantics. The link retains its native href, focus indicator and destination. The generated utility includes the WebKit-prefixed declaration for engines that require it.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to switch from slice to clone. Print uses slice. The container width and line wrapping respond naturally to the viewport.
+
+<DemoExample page="box-decoration-break" section="apply-conditionally" />
+
 ```html
-<span class="box-decoration-break:clone:hover box-decoration-break:slice@print box-decoration-break:slice@sm">...</span>
+<!-- Slice → clone at sm -->
+<div class="w:full max-w:360px font:lg leading:2.2">
+  <span id="target"
+    class="px:xs py:3xs b:1px|solid|blue r:sm
+         bg:blue-10 fg:blue-80
+         box-decoration-break:slice
+         box-decoration-break:slice@print
+         box-decoration-break:clone@screen&sm">
+    Clear thinking needs room to take shape.
+    Keep each line connected to the same idea.
+  </span>
+</div>
 ```
+
+Fragmentation support varies across layout contexts and engines. These examples demonstrate wrapped inline content; the readout shows the standard and WebKit property values.

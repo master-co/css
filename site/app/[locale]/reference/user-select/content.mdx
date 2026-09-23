@@ -1,39 +1,69 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`user-select` controls ordinary user text selection. It does not prevent copying, protect confidential text or disable a control’s native action.
 
 ## Examples \{#examples\}
 ### Disable selection on controls \{#disable-selection-on-controls\}
-Use `user-select:none` for controls where accidental text selection makes the interaction feel broken.
+Use `user-select:none` on a control label when dragging across it should not start a text selection. The checkbox still toggles normally.
+
+<DemoExample page="user-select" section="disable-selection-on-controls" />
+
 ```html
-<!-- @MARK user-select:none -->
-<button class="user-select:none">
-  Drag handle
-</button>
+<label id="target"
+
+class="inline-flex items-center gap:sm p:md
+       b:1px|solid|base r:sm user-select:none">
+  <input type="checkbox"> Snap objects to the grid
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['user-select:none']}
-  </Class2CSS>
+  <Class2CSS>{['user-select:none']}</Class2CSS>
 </details>
 
-### Select all text in one click \{#select-all-text-in-one-click\}
-Use `user-select:all` for short values that users commonly copy whole, such as tokens or command snippets.
+Click or press Space on the checkbox to change its state. Keep selectable text in reading content; selection policy and activation behavior are separate.
+
+### Select a whole value \{#select-all-text-in-one-click\}
+Use `user-select:all` for a short value that should be selected atomically. Try selecting only one word: the browser expands a selection within this element to the whole value.
+
+<DemoExample page="user-select" section="select-all-text-in-one-click" />
+
 ```html
-<!-- @MARK user-select:all -->
-<code class="user-select:all">pnpm install @master/css</code>
+<code id="target"
+  class="block p:sm b:1px|solid|base r:sm font:mono
+         user-select:all">pnpm install @master/css</code>
 ```
+
+The initiating gesture varies by browser and input device. This property defines the selection boundary; it does not guarantee that a single tap or click always creates a selection.
 
 ### Preserve normal reading selection \{#preserve-normal-reading-selection\}
-Use `user-select:text` for article content, code examples, and any text users may need to copy partially.
+An explicit `user-select:text` restores partial text selection within this otherwise nonselectable region.
+
+<DemoExample page="user-select" section="preserve-normal-reading-selection" />
+
 ```html
-<!-- @MARK user-select:text -->
-<p class="user-select:text">Select part of this sentence.</p>
+<div class="p:md b:1px|solid|base r:sm user-select:none">
+  <p class="font:xs text:muted">Panel label · selection disabled</p>
+  <p id="target" class="mb:0 user-select:text">Select only a few words from this sentence.</p>
+</div>
 ```
 
+Drag across a few words or use the platform’s text-selection gesture. The paragraph can be partially selected without selecting the surrounding label.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use a checkbox to protect the paragraph from ordinary text selection. The selector targets a separate paragraph, so the trigger stays stable while you select.
+
+<DemoExample page="user-select" section="apply-conditionally" />
+
 ```html
-<div class="user-select:none:hover user-select:auto@print user-select:text@sm">...</div>
+<div class="user-select:none:has(>label>input:checked)>p">
+  <label class="flex items-center gap:sm mb:md">
+    <input type="checkbox"> Protect text from selection
+  </label>
+  <p id="target" class="mb:0 user-select:text">Select only a few words from this sentence.</p>
+</div>
 ```
+
+The readout follows the actual computed property. Clear an existing selection before comparing new gestures; changing selection policy is not a request to erase selection or clipboard data.

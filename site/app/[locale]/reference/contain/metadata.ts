@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'contain',
-  description: 'Providing performance benefits by limiting calculations of layout.',
+  description: 'Define boundaries for layout, style and painting.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=contain',

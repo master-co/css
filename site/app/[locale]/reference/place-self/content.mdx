@@ -3,34 +3,55 @@
 
 ## Examples \{#examples\}
 ### Align one item on both axes \{#align-one-item-on-both-axes\}
-Use `place-self:*` as shorthand for `align-self` and `justify-self`.
+`place-self:end` sets both `align-self:end` and `justify-self:end`. The blue item moves to the bottom-right of its own area while the violet sibling follows the parent’s start alignment. The second example uses `end|start`: block-end first, then inline-start.
+
+<DemoExample page="place-self" section="align-one-item-on-both-axes" />
+
 ```html
-<!-- @MARK grid --><!-- @MARK place-self:end -->
-<div class="grid h:48x">
-  <button class="place-self:end">Save</button>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
+  <div id="target" class="place-self:end h:12x w:20x p:sm">Target</div>
+  <div id="peer" class="h:12x w:20x p:sm">Start</div>
+</div>
+```
+
+```html
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
+  <div id="target" class="place-self:end|start h:12x w:20x p:sm">Target</div>
+  <div id="peer" class="h:12x w:20x p:sm">Start</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'place-self:end', 'h:48x']}
+    {['grid', 'place-items:start', 'place-self:end', 'place-self:end|start']}
   </Class2CSS>
 </details>
 
+These directions refer to the grid container’s writing mode. The examples use horizontal left-to-right writing.
+
 ### Center one item \{#center-one-item\}
-Use `place-self:center` when one grid item should sit in the middle of its grid area.
+`place-self:center` centers the blue 96 × 64px item in both dimensions of its grid area. The second item keeps the same size and follows the parent’s start alignment, making the local override visible.
+
+<DemoExample page="place-self" section="center-one-item" />
+
 ```html
-<!-- @MARK place-self:center -->
-<div class="place-self:center">...</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
+  <div id="target" class="place-self:center h:16x w:24x p:sm">Centered</div>
+  <div id="peer" class="h:16x w:24x p:sm">Start</div>
+</div>
 ```
 
-Use [place-items](/reference/place-items) when every child should share the same two-axis alignment.
+Use [place-items](/reference/place-items) when every child should follow the same two-axis default. For flex items, the `justify-self` half has no effect.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="place-self:auto place-self:auto@print place-self:center@sm">...</div>
-```
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. `place-self:auto` follows the parent’s end alignment on both axes. From `sm`, the blue item centers in its own area; the violet item stays at the bottom-right of its area.
 
-The effect depends on the parent layout mode and available space in the item area.
+<DemoExample page="place-self" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:end gap:md w:70x max-w:full">
+  <div id="target" class="place-self:auto h:12x w:20x p:sm place-self:center@sm">Target</div>
+  <div id="peer" class="h:12x w:20x p:sm">End</div>
+</div>
+```

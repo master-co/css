@@ -1,15 +1,20 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-indent values */}
 
 ## Examples \{#examples\}
 ### Indent the first line \{#indent-the-first-line\}
-Use `text-indent:*` to offset the first formatted line of a block of text.
+`text-indent:2em` offsets only the first formatted line. At this example’s 16px font size, that is 32px; later lines keep the original starting edge.
+
+<DemoExample page="text-indent" section="indent-the-first-line" />
+
 ```html
-<!-- @MARK text-indent:2em -->
-<p class="text-indent:2em">
-  The first line is indented while the rest of the paragraph follows the normal inline flow.
-</p>
+<!-- text-indent:0 -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-indent:0">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+```html
+<!-- text-indent:2em -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-indent:2em">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
@@ -20,28 +25,33 @@ Use `text-indent:*` to offset the first formatted line of a block of text.
 </details>
 
 ### Use spacing values \{#use-spacing-values\}
-Use a spacing or sizing value when the indent should align with the rest of the interface rhythm.
+Use a shared spacing value when the indent should follow the interface scale. Here `text-indent:md` resolves to the preset’s 1rem spacing token.
+
+<DemoExample page="text-indent" section="use-spacing-values" />
+
 ```html
-<!-- @MARK text-indent:6x -->
-<p class="text-indent:6x">
-  This paragraph uses an indent tied to the shared scale.
-</p>
+<!-- text-indent:md -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-indent:md">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Reset at a breakpoint \{#reset-at-a-breakpoint\}
-Set the indent back to `0` when a layout changes or when print output should be more compact.
+Reset the first-line indent when the viewport reaches `sm`. The paragraph keeps a fixed reading measure so only the indentation changes.
+
+<DemoExample page="text-indent" section="reset-at-a-breakpoint" />
+
 ```html
-<!-- @MARK text-indent:6x --><!-- @MARK text-indent:0@print -->
-<p class="text-indent:6x text-indent:0@print">
-  ...
-</p>
+<!-- 32px indent · reset at sm -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-indent:2em text-indent:0@sm">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+This example adds a 1rem indent at `sm` on screen and restores zero indentation in print. Resize the preview or open its print preview.
+
+<DemoExample page="text-indent" section="apply-conditionally" />
+
 ```html
-<div class="text-indent:0 text-indent:0@print text-indent:4x@sm">...</div>
+<!-- Screen indent · print reset -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-indent:0 text-indent:0@print text-indent:md@screen&sm">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
-Use margin or padding when the whole block should move; `text-indent` only affects the first formatted line.
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+Margin moves the block and padding insets all its lines. Neither is equivalent to a first-line indent.

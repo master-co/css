@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'place-items',
-  description: 'Setting align-items and justify-items at the same time.',
+  description: 'Set the default block-axis and inline-axis alignment inside grid areas.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=place-items',

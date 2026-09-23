@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'height',
-  description: 'Setting an element’s height.',
+  description: 'Set physical height with definite, percentage or content-based values.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=height',

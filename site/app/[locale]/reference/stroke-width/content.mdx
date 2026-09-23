@@ -3,32 +3,83 @@
 
 ## Examples \{#examples\}
 ### Set SVG stroke width \{#set-svg-stroke-width\}
-Use `stroke:*` with a size value to set `stroke-width`.
+A numeric `stroke:*` value sets stroke width in SVG user coordinates. In this 96 × 96 viewport with a 24 × 24 viewBox, one unit spans four screen pixels.
+
+<DemoExample page="stroke-width" section="set-svg-stroke-width" />
+
 ```html
-<!-- @MARK stroke:2 -->
-<svg class="stroke:2" viewBox="0 0 16 16" aria-hidden="true">
-  <path d="M2 8h12" />
+<!-- Width 1 · 4px painted line -->
+<svg id="target" role="img"
+  aria-label="Horizontal line with width one"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:none stroke:blue-60 stroke:1">
+  <path d="M4 12h16" />
+</svg>
+```
+
+```html
+<!-- Width 2 · 8px painted line -->
+<svg id="target" role="img"
+  aria-label="Horizontal line with width two"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:none stroke:blue-60 stroke:2">
+  <path d="M4 12h16" />
 </svg>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['stroke:2']}
+    {['stroke:1', 'stroke:2']}
   </Class2CSS>
 </details>
 
+The readout may serialize the width with `px`, but the SVG viewBox transform still scales its paint. A value of `2` is not a spacing token or 2rem. The SVG element itself stays 96 × 96.
+
 ### Pair width with stroke color \{#pair-width-with-stroke-color\}
-Use [stroke](/reference/stroke) for paint and `stroke:*` size values for thickness.
+A width needs a visible stroke paint. Compare a 1.5-unit current-color stroke with the same shape using `vector-effect:non-scaling-stroke`.
+
+<DemoExample page="stroke-width" section="pair-width-with-stroke-color" />
+
 ```html
-<!-- @MARK stroke:current --><!-- @MARK stroke:1.5 -->
-<svg class="stroke:current stroke:1.5" aria-hidden="true"></svg>
+<!-- Normal · 6px after viewBox scaling -->
+<svg id="target" role="img"
+  aria-label="Scaling horizontal stroke"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fg:blue-60 fill:none stroke:current
+         stroke-linecap:round stroke:1.5">
+  <path d="M4 12h16" />
+</svg>
 ```
 
-Very thick strokes may need adjusted SVG viewBox or line caps to avoid clipping.
+```html
+<!-- Non-scaling · 1.5px on screen -->
+<svg id="target" role="img"
+  aria-label="Non-scaling horizontal stroke"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fg:blue-60 fill:none stroke:current
+         stroke-linecap:round stroke:1.5">
+  <path class="vector-effect:non-scaling-stroke"
+    d="M4 12h16" />
+</svg>
+```
+
+The vector effect belongs on the painted path and keeps its stroke from growing with the transform. Leave room around paths for thick strokes and round caps; the SVG viewport can clip paint at its edges.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the preview to `sm` to double the stroke from one to two user units. Print returns to one unit.
+
+<DemoExample page="stroke-width" section="apply-conditionally" />
+
 ```html
-<svg class="stroke:1 stroke:1@print stroke:2@sm">...</svg>
+<!-- Width 1 → 2 at sm -->
+<svg id="target" role="img"
+  aria-label="Responsive horizontal stroke"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:none stroke:blue-60 stroke:1
+         stroke:1@print stroke:2@screen&sm">
+  <path d="M4 12h16" />
+</svg>
 ```
+
+The native viewport condition changes the inherited width. Its 24 × 24 viewBox and 96 × 96 layout box remain unchanged.

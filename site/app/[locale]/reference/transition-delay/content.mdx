@@ -3,33 +3,116 @@
 
 ## Examples \{#examples\}
 ### Delay a transition \{#delay-a-transition\}
-Use `transition-delay:*` to wait before a transition starts. This is useful for staggered affordances and hover details that should not flash immediately.
+Toggle each layer to compare an immediate start with a 300ms wait. Both movements then take 800ms, making the waiting interval distinct from the duration.
+
+<DemoExample page="transition-delay" section="delay-a-transition" />
+
 ```html
-<!-- @MARK transition-delay:75ms -->
-<span class="opacity:0 transition:opacity|150ms|ease-out transition-delay:75ms opacity:1:hover">
-  More details
-</span>
+<!-- No delay · begin immediately -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-delay:0ms
+             transition-property:transform
+             transition-timing-function:linear
+             transition:none@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+```html
+<!-- 300ms delay · wait, then move -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition:none@print
+             transition-delay:slow@screen&motion
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition-delay:75ms']}
+    {['transition-delay:slow']}
   </Class2CSS>
 </details>
 
+The visible checkbox remains usable while its layer waits. A positive delay waits; a negative delay starts partway through the transition. Motion-gated duration and delay both return to zero for reduced motion.
+
 ### Stagger sibling elements \{#stagger-sibling-elements\}
-Apply different delays to related elements while keeping the same duration and easing.
+One checkbox changes both siblings. Each child owns its transition; the violet child waits 300ms while the blue child starts immediately.
+
+<DemoExample page="transition-delay" section="stagger-sibling-elements" />
+
 ```html
-<!-- @MARK transition-delay:150ms -->
-<div class="transition-duration:200ms transition-property:opacity">
-  <span class="opacity:1 transition-delay:0ms">Step one</span>
-  <span class="opacity:1 transition-delay:150ms">Step two</span>
-</div>
+<!-- One native trigger · two independent timelines -->
+<label class="block w:280px max-w:100% font:sm
+              transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move both layers"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move both layers
+  <span aria-hidden="true"
+    class="block mt:md p:xs outline:1px|dashed|muted">
+    <span id="first"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             transition:none@print
+             transition:transform|slowest|linear@screen&motion">
+      First · no delay
+    </span>
+    <span id="target"
+      class="grid place-items:center h:48px w:128px mt:sm
+             b:1px|solid|violet-60 r:sm bg:violet-10
+             fg:violet-80 transform:none
+             transition:none@print
+             transition:transform|slowest|linear@screen&motion
+             transition-delay:slow@screen&motion">
+      Second · 300ms
+    </span>
+  </span>
+</label>
 ```
 
+Transition properties are not inherited. Defining duration on the parent would not provide a transition for these children. The shared selector changes their transforms together; each child’s own delay sets its start time.
+
 ### Use duration tokens \{#use-duration-tokens\}
-Define `duration-*` tokens when the same delay appears across several interactions.
+Define a named duration when a delay is shared across related interactions. This local short token delays the visible layer by 80ms.
+
+<DemoExample page="transition-delay" section="use-duration-tokens" />
 
 ```css name=index.css
 @theme {
@@ -38,20 +121,94 @@ Define `duration-*` tokens when the same delay appears across several interactio
 ```
 
 ```html
-<button class="transition:opacity|fast|smooth transition-delay:short">...</button>
+<!-- Local duration token · 80ms delay -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|slower|smooth@screen&motion
+             transition-delay:short@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+The custom token belongs to this example’s theme. Duration and easing tokens resolve in their respective positions; the readout reports the browser’s resolved 80ms delay.
 
 ### Reset delay at breakpoints \{#reset-delay-at-breakpoints\}
-Remove a delay when the same UI becomes dense or task-focused at a larger viewport.
+Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remove that wait, then toggle the checkbox again.
+
+<DemoExample page="transition-delay" section="reset-delay-at-breakpoints" />
+
 ```html
-<!-- @MARK transition-delay:0ms@sm -->
-<div class="transition-delay:100ms transition-delay:0ms@sm">
-  Immediate on desktop
-</div>
+<!-- 300ms → no delay at sm -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|slowest|linear@screen&motion
+             transition-delay:slow@screen&motion
+             transition-delay:0ms@screen&sm">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
+Only the delay changes at the breakpoint. The motion-gated 800ms duration and 96px endpoint remain the same. Choose responsive delays from actual interaction needs, not screen size alone.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Delay only the outward change. Check the box to wait 300ms before moving; uncheck it to return without that delay.
+
+<DemoExample page="transition-delay" section="apply-conditionally" />
+
 ```html
-<div class="transition-delay:75ms:hover transition-delay:0ms@print transition-delay:0ms@sm">...</div>
+<!-- Checked · wait outward, return immediately -->
+<label
+  class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen
+         transition-delay:slow:has(input:checked)>span>span@screen&motion">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-delay:0ms transition:none@print
+             transition:transform|slowest|linear@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+The checked-state rule selects the delay for the new state. Wait for the outward move to finish before comparing the full return. Reduced motion removes duration and delay; print uses no transition.

@@ -3,44 +3,68 @@
 
 ## Examples \{#examples\}
 ### Cap width and height together \{#cap-width-and-height-together\}
-Use `max:*` when both `max-width` and `max-height` should use the same value.
-```html
-<!-- @MARK max:24x -->
-<img class="max:24x object-contain" src="..." alt="" />
-```
+`max:*` sets matching maximum width and height. The 320 × 200px source scales to 96 × 60px under `max:24x`, preserving its intrinsic ratio. Equal limits do not force a square.
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['max:24x']}
-  </Class2CSS>
-</details>
+<DemoExample page="max-size" section="cap-width-and-height-together" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block size:auto max:24x" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
+```
 
 ### Keep square media bounded \{#keep-square-media-bounded\}
-Use `max:*` with `size:*` or `full` when media should fill available space but stay within a maximum box.
+`full` prefers 100% width and height of this definite 240 × 200px parent. `max:40x` caps both axes at 160px, making a square box. `object-cover` crops the rectangular source inside it.
+
+<DemoExample page="max-size" section="keep-square-media-bounded" />
+
 ```html
-<!-- @MARK full --><!-- @MARK max:40x -->
-<img class="full max:40x object-cover" src="..." alt="" />
+<div id="layout" class="h:50x w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block full max:40x object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
 
+Both parent dimensions are definite here. Without a height reference, a percentage height does not guarantee the same square result.
+
 ### Cap one logical axis \{#cap-one-logical-axis\}
-Use `max-size-x:*` for `max-inline-size` and `max-size-y:*` for `max-block-size`.
+`max-size-x:*` limits inline-size and `max-size-y:*` limits block-size. A preferred 200px square becomes 120 × 64px with horizontal writing, then 64 × 120px with vertical writing.
+
+<DemoExample page="max-size" section="cap-one-logical-axis" />
+
 ```html
-<!-- @MARK max-size-x:7xl --><!-- @MARK max-size-y:80dvh -->
-<main class="max-size-x:7xl max-size-y:80dvh">...</main>
+<!-- Horizontal writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="size:50x max-size-x:30x max-size-y:16x p:sm writing-mode:horizontal-tb">Bounded</div>
+</div>
+```
+
+```html
+<!-- Vertical writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="size:50x max-size-x:30x max-size-y:16x p:sm writing-mode:vertical-rl">Bounded</div>
+</div>
 ```
 
 ### Use one-axis caps for layout \{#use-one-axis-caps-for-layout\}
-Most page layout constraints only need one axis. Use [max-width](/reference/max-width) for wrappers and [max-height](/reference/max-height) for scroll regions.
+Use a single-axis maximum when the box should remain rectangular. Here a preferred 240 × 120px panel keeps its 120px height while `max-w:40x` caps only its width at 160px.
+
+<DemoExample page="max-size" section="use-one-axis-caps-for-layout" />
+
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:5xl -->
-<main class="w:full max-w:5xl">...</main>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:30x w:60x max-w:40x p:sm">Width cap only</div>
+</div>
 ```
+
+Use [max-width](/reference/max-width) for wrapper widths and [max-height](/reference/max-height) for vertical limits. Paired maximums are useful only when both bounds are intended.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="max:16x max:100%@print max:24x@sm">...</div>
-```
+Resize past `sm` to increase both caps from 64px to 96px. The image prefers 160px on each axis, so the maximum determines its visible square size.
 
-Use `max:*` for paired limits; use one-axis max utilities when the element is intentionally rectangular.
+<DemoExample page="max-size" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block size:40x max:16x object-cover max:24x@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
+```

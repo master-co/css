@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'list-style-position',
-  description: 'Setting the position of the list item marker.',
+  description: 'Place markers inside or outside the list item’s content box.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=list-style-position',

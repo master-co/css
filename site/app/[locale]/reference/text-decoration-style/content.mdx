@@ -1,15 +1,33 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-decoration-style syntax */}
+{/* eslint-disable @master/css/prefer-canonical-classes -- These examples spell out the native decoration longhands to distinguish them from the resetting shorthand. */}
 
 ## Examples \{#examples\}
 ### Use a wavy decoration \{#use-a-wavy-decoration\}
-Use `text-decoration-style:wavy` for spelling, grammar, or annotation styles where a straight underline would be ambiguous.
+`text-decoration-style:wavy` changes an existing line’s pattern. Compare solid and wavy underlines with the same words, color and thickness.
+
+<DemoExample page="text-decoration-style" section="use-a-wavy-decoration" />
+
 ```html
-<!-- @MARK text-decoration-style:wavy -->
-<span class="underline text-decoration-style:wavy">
-  Needs review
-</span>
+<!-- Line style · solid -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-style:solid
+         text-decoration-thickness:2px"
+>
+  Design together
+</p>
+```
+
+```html
+<!-- Line style · wavy -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-style:wavy
+         text-decoration-thickness:2px"
+>
+  Design together
+</p>
 ```
 
 <details>
@@ -19,27 +37,81 @@ Use `text-decoration-style:wavy` for spelling, grammar, or annotation styles whe
   </Class2CSS>
 </details>
 
+If the decoration conveys an error or review state, supply a visible text explanation as well.
+
 ### Use dashed or dotted lines \{#use-dashed-or-dotted-lines\}
-Use dashed and dotted decoration styles for secondary links or subtle annotations.
+The style longhand changes the pattern without removing the underline. Compare dashed, dotted and double lines at the same thickness.
+
+<DemoExample page="text-decoration-style" section="use-dashed-or-dotted-lines" />
+
 ```html
-<!-- @MARK text-decoration-style:dashed -->
-<a class="underline text-decoration-style:dashed">
-  Optional details
-</a>
+<!-- Line style · dashed -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-style:dashed
+         text-decoration-thickness:2px"
+>
+  Design together
+</p>
 ```
+
+```html
+<!-- Line style · dotted -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-style:dotted
+         text-decoration-thickness:2px"
+>
+  Design together
+</p>
+```
+
+```html
+<!-- Line style · double -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-style:double
+         text-decoration-thickness:2px"
+>
+  Design together
+</p>
+```
+
+Do not use different patterns as the only distinction between meaningful states.
 
 ### Return to solid lines \{#return-to-solid-lines\}
-Use `text-decoration-style:solid` when a state should remove a more decorative style.
+Hover or focus to replace a wavy underline with a solid one. Keep `underline` in the base state so there is an actual line to restyle.
+
+<DemoExample page="text-decoration-style" section="return-to-solid-lines" />
+
 ```html
-<!-- @MARK text-decoration-style:solid -->
-<a class="text-decoration-style:wavy text-decoration-style:solid:hover">
-  Hover
-</a>
+<!-- Wavy · solid on hover or focus -->
+<button id="target" type="button"
+  class="font:2xl leading:xl underline text-decoration-style:wavy
+         text-decoration-thickness:2px text-decoration-style:solid:hover
+         text-decoration-style:solid:focus-visible"
+>
+  Design together
+</button>
 ```
 
+Use the style longhand here. `text-decoration:solid` is a shorthand that also resets the line to none.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the actual viewport to change a solid underline to dashed at `sm` on screen. Print uses solid, with the line and thickness preserved.
+
+<DemoExample page="text-decoration-style" section="apply-conditionally" />
+
 ```html
-<a class="text-decoration-style:wavy:hover text-decoration-style:solid@print text-decoration-style:dashed@sm">...</a>
+<!-- Real breakpoint · same underline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-style:solid text-decoration-thickness:2px
+         text-decoration-style:solid@print
+         text-decoration-style:dashed@screen&sm"
+>
+  Design together
+</p>
 ```
+
 {/* eslint-enable @master/css/prefer-canonical-classes */}

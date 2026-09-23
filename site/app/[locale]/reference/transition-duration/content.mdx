@@ -3,41 +3,218 @@
 
 ## Examples \{#examples\}
 ### Set transition speed \{#set-transition-speed\}
-Use `transition-duration:*` to control how long a property takes to move from one value to another.
+Toggle each layer to compare the same 96px movement over 150ms and 500ms. The distance and linear easing remain identical.
+
+<DemoExample page="transition-duration" section="set-transition-speed" />
+
 ```html
-<!-- @MARK transition-duration:150ms -->
-<button class="bg:blue-60 transition-duration:150ms transition-property:background-color bg:blue-70:hover">
-  Quick change
-</button>
+<!-- Fast · 150ms -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:fast@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+```html
+<!-- Slower · 500ms -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slower@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition-duration:150ms']}
+    {['transition-duration:fast', 'transition-duration:slower']}
   </Class2CSS>
 </details>
 
+Duration controls the interpolation interval after any delay. Use a duration token or an explicit nonnegative CSS time such as `150ms` or `.5s`. The initial duration is zero.
+
 ### Match duration to distance \{#match-duration-to-distance\}
-Short hover feedback usually feels best under a few hundred milliseconds. Larger position or panel changes can use a longer duration.
+Compare a 48px move over 300ms with a 96px move over 600ms. Linear timing gives both examples the same average travel rate.
+
+<DemoExample page="transition-duration" section="match-duration-to-distance" />
+
 ```html
-<!-- @MARK transition-duration:300ms -->
-<aside class="transform:translateX(0) transition-duration:300ms transition-property:transform">
-  Panel
-</aside>
+<!-- 48px / 300ms · 160px per second -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(48px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move short distance"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move short distance
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slow@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+```html
+<!-- 96px / 600ms · 160px per second -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move long distance"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move long distance
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:600ms@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+This measured comparison illustrates distance divided by time. Product timing still depends on the interaction; an easing curve changes the instantaneous speed even when the average rate is unchanged.
 
 ### Remove motion for static contexts \{#remove-motion-for-static-contexts\}
-Use `transition-duration:0ms` when a state should update immediately, such as print output or a compact fallback.
+Toggle both specimens. One uses 500ms and the other uses zero, so the same endpoint can be reached through interpolation or an immediate update.
+
+<DemoExample page="transition-duration" section="remove-motion-for-static-contexts" />
+
 ```html
-<!-- @MARK transition-duration:0ms@print -->
-<button class="transition-duration:150ms transition-duration:0ms@print">
-  Print without motion
-</button>
+<!-- 500ms · native transition -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slower@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="transition-duration:150ms:hover transition-duration:0ms@print transition-duration:300ms@sm">...</div>
+<!-- 0ms · immediate update -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-duration:0ms
+             transition-property:transform
+             transition-timing-function:linear">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+A zero duration removes interpolation. Reset a positive delay too when the whole update must be immediate. These examples have no delay; reduced motion and print use zero duration.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize before toggling the layer. Its duration changes from 150ms to 500ms at `sm`, while the 96px distance and linear timing stay fixed.
+
+<DemoExample page="transition-duration" section="apply-conditionally" />
+
+```html
+<!-- 150ms → 500ms at sm -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:fast@screen&motion
+             transition-duration:slower@screen&motion&sm">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+The readout follows the actual viewport rule. Reduced motion and print use zero duration; changing screen width does not replace the authored endpoint.

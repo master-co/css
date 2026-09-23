@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'inset',
-  description: 'Setting distance between an element and the parent element.',
+  description: 'Set top, right, bottom, and left offsets for positioned elements.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=inset',

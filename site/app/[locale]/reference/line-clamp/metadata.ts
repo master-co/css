@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'line-clamp',
-  description: 'Limiting the contents of a container to the specified number of lines.',
+  description: 'Limit visible text lines and provide a complete reading path.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=line-clamp',

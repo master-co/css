@@ -11,6 +11,7 @@ const syntaxes = [
   'animation-timing-function:ease',
   'animation-timing-function:ease-in',
   'animation-timing-function:ease-out',
+  'animation-timing-function:ease-in-out',
   'animation-timing-function:linear',
   'animation-timing-function:step-start',
   'animation-timing-function:step-end',

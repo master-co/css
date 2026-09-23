@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'background-clip',
-  description: 'Controlling how clip the background.',
+  description: 'Choosing the background painting area.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=background-clip',

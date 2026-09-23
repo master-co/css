@@ -3,12 +3,20 @@
 
 ## Examples \{#examples\}
 ### Force a snap stop \{#force-a-snap-stop\}
-Use `snap-always` on an important snap item when fast scrolling should not skip over it.
+`snap-always` prevents a directional scroll from passing over the item’s snap position. This track marks every card as a stop. Use Advance to send the same relative scroll request used in the following examples.
+
+<DemoExample page="scroll-snap-stop" section="force-a-snap-stop" />
+
 ```html
-<!-- @MARK snap-always -->
-<section class="snap-always snap-start">
-  Required step
-</section>
+<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 6</article>
+</div>
 ```
 
 <details>
@@ -18,25 +26,63 @@ Use `snap-always` on an important snap item when fast scrolling should not skip 
   </Class2CSS>
 </details>
 
+The preview’s Advance control uses a single, immediate native relative scroll request:
+
+```js
+document.querySelector('#scrollport').scrollBy({ left: 600, behavior: 'instant' })
+```
+
+`scroll-snap-stop` does not restrict navigation that specifies only an endpoint, such as a fragment link or dragging the scrollbar to a new position.
+
+(i) This comparison uses immediate scrolling. Safari has a [known issue](https://bugs.webkit.org/show_bug.cgi?id=293227) with snapping during scripted smooth scrolling. Use native gestures when checking momentum on your target device.
+
 ### Keep normal scroll momentum \{#keep-normal-scroll-momentum\}
-Use `snap-normal` for ordinary items where the browser can skip a snap point during fast scrolling.
+`snap-normal` allows a directional scroll to pass over a snap point. Advance uses the same distance as the always example, so the browser can settle on a later card. Near the track’s end, the available scroll range limits the destination.
+
+<DemoExample page="scroll-snap-stop" section="keep-normal-scroll-momentum" />
+
 ```html
-<!-- @MARK snap-normal -->
-<section class="snap-normal snap-start">
-  Optional step
-</section>
+<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 6</article>
+</div>
 ```
 
 ### Use sparingly \{#use-sparingly\}
-Reserve `always` for onboarding steps, paged experiences, or essential panels. Too many forced stops can make scroll feel heavy.
+Apply `snap-always` only where an intermediate stop helps orientation. Here Panel 2 is the deliberate stop, while the other cards allow pass-through. Snapping cannot guarantee that content is read and should not enforce a required workflow.
+
+<DemoExample page="scroll-snap-stop" section="use-sparingly" />
+
 ```html
-<section class="snap-always snap-start">
-  Confirm details
-</section>
+<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 6</article>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to apply the change only when its condition matches. The track permits passing snap positions by default and requires intermediate stops from `sm`. Reset after resizing, then use Advance again.
+
+<DemoExample page="scroll-snap-stop" section="apply-conditionally" />
+
 ```html
-<section class="snap-normal snap-normal@print snap-always@sm">...</section>
+<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 6</article>
+</div>
 ```

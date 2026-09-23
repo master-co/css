@@ -1,10 +1,14 @@
 import TokenValues from '~/site/reference/TokenValues'
 
 ## Quick answer \{#quick-answer\}
-Use `p:md` for padding on every side. The value comes from the active spacing namespace.
+Use `p:md` for padding on every side. Its value comes from the active spacing namespace. This borderless button has a 32px-wide, 20px-high content span; the default 16px padding makes its border box 64 × 52px.
+
+<DemoExample page="padding" section="quick-answer" />
 
 ```html
-<button class="p:md">Save</button>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <button id="target" class="p:md b:0" type="button"><span id="item-3" class="block w:8x leading:20px">Save</span></button>
+</div>
 ```
 
 <Class2CSS>{['p:md']}</Class2CSS>
@@ -22,65 +26,91 @@ Project theme declarations can override these values. See the complete [spacing 
 
 ## Examples \{#examples\}
 ### Combine values and logical sides \{#multiple-values\}
-Separate shorthand values with `|`. Use `pxs:*` when only the inline-start side needs padding.
+Separate shorthand values with `|`: two values mean top/bottom, then left/right. Logical `pxs:*` means inline-start. The same start padding moves from left to right when text direction becomes RTL.
+
+<DemoExample page="padding" section="multiple-values" />
 
 ```html
-<div class="p:md|lg">Two spacing values</div>
-<div class="pxs:md">Inline-start padding</div>
+<!-- Two physical values -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit p:md|lg"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
 ```
 
-<Class2CSS>{['p:md|lg', 'pxs:md']}</Class2CSS>
+```html
+<!-- Inline start · LTR -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit pxs:md"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
+```
+
+```html
+<!-- Inline start · RTL -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit pxs:md direction:rtl"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
+```
+
+Logical sides follow both writing mode and direction. Physical four-side shorthand keeps its top/right/bottom/left interpretation.
 
 ### Add padding on every side \{#add-padding-on-every-side\}
-Use `p:*` to create space inside an element on all four sides. Padding is part of the element box, so backgrounds and borders include the padded area.
+`p:md` adds 16px between content and each edge of the box. The neutral content is 160 × 48px, so the blue box is 192 × 80px with no border. Its background also paints the padded area.
+
+<DemoExample page="padding" section="add-padding-on-every-side" />
+
 ```html
-<!-- @MARK p:md -->
-<section class="p:md b:1px|solid|gray-20 bg:white">
-  Content with breathing room.
-</section>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit p:md"><div id="item-3" class="grid place-items:center h:12x w:40x">Content</div></div>
+</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['p:md']}
-  </Class2CSS>
-</details>
+With border-box sizing and an explicit width, padding uses space inside that width. Here the width is intrinsic, so the content and padding determine the final size together.
 
 ### Set one side \{#set-one-side\}
-Use `pt:*`, `pr:*`, `pb:*`, and `pl:*` when only one physical side needs spacing.
+Use `pt:*`, `pr:*`, `pb:*` and `pl:*` for physical sides. This box uses 24px top, 16px right, 32px bottom and 12px left padding around 120 × 48px content. The result is 148 × 104px.
+
+<DemoExample page="padding" section="set-one-side" />
+
 ```html
-<!-- @MARK pt:lg --><!-- @MARK pr:md --><!-- @MARK pb:xl --><!-- @MARK pl:md -->
-<article class="px:md pb:xl pt:lg">
-  ...
-</article>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit pb:xl pl:sm pr:md pt:lg"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
 ```
 
-Physical sides are useful for fixed component anatomy. For bidirectional layouts, check whether the design needs logical CSS properties before relying on left and right.
+Physical sides stay physical in every writing mode. Prefer logical properties when the intended edge should follow the reader’s direction.
 
 <a id="set-horizontal-or-vertical-padding"></a>
 
 ### Set inline or block padding \{#set-inline-or-block-padding\}
-Use `px:*` for inline padding and `py:*` for block padding. This is the common pattern for buttons, cards, fields, and page gutters.
+`px:*` sets inline padding and `py:*` sets block padding. With `px:md py:sm`, horizontal writing gets 16px left/right and 12px top/bottom. Vertical writing swaps those physical directions while preserving the same logical values.
+
+<DemoExample page="padding" section="set-inline-or-block-padding" />
+
 ```html
-<!-- @MARK px:md --><!-- @MARK py:sm -->
-<button class="px:md py:sm r:md">
-  Save changes
-</button>
+<!-- Horizontal writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit px:md py:sm"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
 ```
 
-Use `p:0` to override component-level padding at a breakpoint or state.
 ```html
-<!-- @MARK p:0@sm -->
-<section class="p:md p:0@sm">
-  ...
-</section>
+<!-- Vertical writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit px:md py:sm writing-mode:vertical-rl"><div id="item-3" class="grid place-items:center h:12x w:30x">Content</div></div>
+</div>
 ```
+
+Use `p:0` to remove padding at a breakpoint or state. The next example keeps the content fixed so this reset can be measured directly.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to apply `p:0`. The same 160 × 48px content remains; removing the 16px padding changes the border box from 192 × 80px to 160 × 48px.
+
+<DemoExample page="padding" section="apply-conditionally" />
+
 ```html
-<div class="p:sm:hover p:lg@dark p:0@print p:md@sm">...</div>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:fit p:md p:0@sm"><div id="item-3" class="grid place-items:center h:12x w:40x">Content</div></div>
+</div>
 ```
 
-Use spacing tokens for repeated component rhythm. Use raw values only when the padding is a measured local detail.
+Use shared spacing tokens for repeated rhythm. Raw values are appropriate for a measured local detail, such as the fixed content dimensions used in this specimen.

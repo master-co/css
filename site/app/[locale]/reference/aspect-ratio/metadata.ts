@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'aspect-ratio',
-  description: 'Setting the ratio for the box.',
+  description: 'Derive an automatic dimension from a preferred proportion.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=aspect-ratio',

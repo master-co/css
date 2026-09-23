@@ -3,12 +3,19 @@
 
 ## Examples \{#examples\}
 ### Underline text \{#underline-text\}
-Use `text-decoration-line:underline` when the line property should be controlled explicitly.
+`text-decoration-line:underline` adds a line while leaving the specified color, style and thickness intact. Here the dedicated longhand keeps the blue wavy treatment.
+
+<DemoExample page="text-decoration-line" section="underline-text" />
+
 ```html
-<!-- @MARK text-decoration-line:underline -->
-<a class="text-decoration-line:underline">
-  Underlined
-</a>
+<!-- Underline · independent longhands -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl decoration-wavy
+         text-decoration-line:underline text-decoration-thickness:2px
+         text-decoration:blue-50"
+>
+  Design together
+</p>
 ```
 
 <details>
@@ -19,22 +26,69 @@ Use `text-decoration-line:underline` when the line property should be controlled
 </details>
 
 ### Combine line values \{#combine-line-values\}
-Separate multiple line values with `|` so they become space-separated CSS values.
+Separate line values with `|` to emit a space-separated CSS value. Both decorations are painted on the same text run.
+
+<DemoExample page="text-decoration-line" section="combine-line-values" />
+
 ```html
-<!-- @MARK text-decoration-line:underline|overline -->
-<span class="text-decoration-line:underline|overline">
-  Marked
-</span>
+<!-- Underline + overline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl
+         text-decoration-line:underline|overline
+         text-decoration-thickness:2px text-decoration:blue-50"
+>
+  Design together
+</p>
 ```
 
 ### Use shorthand aliases for common cases \{#use-shorthand-aliases-for-common-cases\}
-The shorter `underline`, `line-through`, and `overline` aliases are useful when only the line matters.
+Use the shorter aliases when resetting the full decoration is appropriate. They emit the `text-decoration` shorthand, not just its line property.
+
+<DemoExample page="text-decoration-line" section="use-shorthand-aliases-for-common-cases" />
+
 ```html
-<span class="line-through">Removed</span>
+<!-- underline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline"
+>
+  Design together
+</p>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<span class="text-decoration-line:underline:hover text-decoration:none@print text-decoration-line:underline|overline@sm">...</span>
+<!-- line-through -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl line-through"
+>
+  Design together
+</p>
+```
+
+```html
+<!-- overline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl overline"
+>
+  Design together
+</p>
+```
+
+A strike-through is a visual treatment. Use semantic `<s>` or `<del>` when the text is outdated or represents a document deletion.
+
+### Apply conditionally \{#apply-conditionally\}
+Hover or focus to add an overline to the existing underline. The line longhand leaves the blue color and 2px thickness unchanged. Print keeps one underline.
+
+<DemoExample page="text-decoration-line" section="apply-conditionally" />
+
+```html
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:2xl leading:xl text-decoration-line:underline
+         text-decoration-thickness:2px text-decoration:blue-50
+         text-decoration-line:underline@print
+         text-decoration-line:underline|overline:hover@screen
+         text-decoration-line:underline|overline:focus-visible@screen"
+>
+  Design together
+</button>
 ```

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'max-width',
-  description: 'Setting the maximum width of an element.',
+  description: 'Limit physical width without forcing an element to grow.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=max-width',

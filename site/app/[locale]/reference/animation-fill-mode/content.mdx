@@ -1,43 +1,193 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Keep the final keyframe \{#keep-the-final-keyframe\}
-Use `animation-fill-mode:forwards` when the element should keep the values from the final keyframe after the animation completes.
+Compare no fill with forwards fill after a one-second movement. The ordinary position is 0px; the keyframes run from 24px to 96px.
+
+<DemoExample page="animation-fill-mode" section="keep-the-final-keyframe" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-fill-mode:forwards -->
-<div class="animation-duration:300ms animation-fill-mode:forwards animation-name:fade">
-  Remains visible
+<!-- None · returns to base -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:none
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- Forwards · retains end -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-fill-mode:forwards']}
-  </Class2CSS>
+  <Class2CSS>{['animation-fill-mode:forwards']}</Class2CSS>
 </details>
 
+Forwards retains the value where the final iteration ends. Direction and a fractional iteration count can change that value; it is not always the 100% keyframe.
+
 ### Apply both before and after states \{#apply-both-before-and-after-states\}
-Use `animation-fill-mode:both` when the element should use the first keyframe during a positive delay and keep the final keyframe after completion.
+Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe during that delay; both also retains the 96px ending keyframe after completion.
+
+<DemoExample page="animation-fill-mode" section="apply-both-before-and-after-states" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-fill-mode:both -->
-<div class="animation-delay:120ms animation-duration:300ms animation-fill-mode:both animation-name:fade">
-  Delayed entrance
+<!-- Backwards · starting state only -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:backwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
+
+```html
+<!-- Both · starting and ending states -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:both
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+The starting keyframe depends on direction. For reverse and alternate-reverse, backwards fill uses the end of the keyframe list during the delay.
 
 ### Reset fill behavior \{#reset-fill-behavior\}
-Use `animation-fill-mode:none` when the element should return to its ordinary styles before and after animation.
+Use none to return to ordinary styling during the 600ms delay and after the one-second active interval.
+
+<DemoExample page="animation-fill-mode" section="reset-fill-behavior" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-fill-mode:none -->
-<div class="animation-fill-mode:none">
-  Uses base styles outside the animation
+<!-- None · base before and after -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:none
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
+The marker waits at 0px, jumps to its 24px starting keyframe when active, moves to 96px, then returns to 0px. Fill mode does not edit the underlying transform.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="animation-fill-mode:both:hover animation-fill-mode:none@print animation-fill-mode:none@sm">...</div>
+Resize before replaying. Below `sm`, both retains the starting and ending states; at `sm`, none leaves ordinary styling outside the active interval.
+
+<DemoExample page="animation-fill-mode" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
 ```
+
+```html
+<!-- Both → none at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:both
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-fill-mode:none@sm">→</span>
+  </div>
+</div>
+```
+
+Changing fill mode can update an already-finished animation’s visible result. Print removes the animation completely rather than retaining a motion snapshot.

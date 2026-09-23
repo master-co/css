@@ -3,7 +3,7 @@ const syntaxes = [
   'border-image-repeat:repeat',
   'border-image-repeat:round',
   'border-image-repeat:space',
-  ['border-image-repeat:`vertical`|`horizontal`'],
+  ['border-image-repeat:`horizontal`|`vertical`'],
 ]
 
 export default syntaxes

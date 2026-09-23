@@ -5,7 +5,7 @@ const metadata = define({
   description: 'Setting the width of the stroke to be applied to the SVG shape.',
   category: 'Media & SVG',
   type: 'entity',
-  canIUseLink: 'https://caniuse.com/?search=background',
+  canIUseLink: 'https://caniuse.com/?search=svg',
   mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-width',
   fileURL: import.meta.url
 })

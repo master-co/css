@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'list-style-type',
-  description: 'Setting the style of the list item marker.',
+  description: 'Choose native marker types without changing list semantics.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=list-style-type',

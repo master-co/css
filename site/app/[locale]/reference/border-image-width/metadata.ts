@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'border-image-width',
-  description: 'Setting the width of an element border image.',
+  description: 'Setting the painted width of a border image.',
   category: 'Borders & Outlines',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=border-image-width',

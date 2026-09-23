@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-align',
-  description: 'Setting the text alignment of an element.',
+  description: 'Align inline content to physical or logical edges within a text block.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-align',

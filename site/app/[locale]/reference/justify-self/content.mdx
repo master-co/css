@@ -3,34 +3,50 @@
 
 ## Examples \{#examples\}
 ### Align one grid item inline \{#align-one-grid-item-inline\}
-Use `justify-self:*` to override inline-axis alignment for a single grid item.
+Use `justify-self:end` to move the blue item to its grid area’s inline end. The parent sets `justify-items:start`, so the violet sibling stays at the start of its own area. Both items keep an 80px width.
+
+<DemoExample page="justify-self" section="align-one-grid-item-inline" />
+
 ```html
-<!-- @MARK grid --><!-- @MARK justify-self:end -->
-<div class="grid">
-  <button class="justify-self:end">Save</button>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
+  <div id="target" class="justify-self:end h:16x w:20x p:sm">Self end</div>
+  <div id="peer" class="h:16x w:20x p:sm">Start</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'justify-self:end']}
+    {['grid', 'justify-items:start', 'justify-self:end']}
   </Class2CSS>
 </details>
 
+This changes the item’s position inside its area, not its grid placement or the positions of the tracks.
+
 ### Center an item inside its area \{#center-an-item-inside-its-area\}
-Use `justify-self:center` when the grid area is wider than the item.
+`justify-self:center` centers the image horizontally within the first column in this horizontal writing mode. Its explicit 80px width leaves space on both sides; the parent still aligns the second item to its area’s start.
+
+<DemoExample page="justify-self" section="center-an-item-inside-its-area" />
+
 ```html
-<!-- @MARK justify-self:center -->
-<img class="justify-self:center" src="..." alt="" />
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
+  <img id="target" class="justify-self:center h:16x w:20x object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
+  <div id="peer" class="h:16x w:20x p:sm">Start</div>
+</div>
 ```
 
-Use [justify-items](/reference/justify-items) when every child should share the same inline alignment.
+Use [justify-items](/reference/justify-items) to give every grid item the same inline-axis default. Use [align-self](/reference/align-self) for the block axis.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. `justify-self:auto` follows the parent’s start alignment. From `sm`, the blue item overrides it with end alignment, while the second item stays at the start of its column.
+
+<DemoExample page="justify-self" section="apply-conditionally" />
+
 ```html
-<div class="justify-self:stretch justify-self:stretch@print justify-self:end@sm">...</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
+  <div id="target" class="justify-self:auto h:16x w:20x p:sm justify-self:end@sm">Target</div>
+  <div id="peer" class="h:16x w:20x p:sm">Start</div>
+</div>
 ```
 
-For cross-axis item overrides, use [align-self](/reference/align-self).
+`justify-self` has no effect on flex items; their main-axis free space is shared by the flex line.

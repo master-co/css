@@ -1,9 +1,9 @@
 const syntaxes = [
-  'text-decoration:dashed',
-  'text-decoration:dotted',
-  'text-decoration:double',
-  'text-decoration:solid',
-  'text-decoration:wavy',
+  'text-decoration-style:dashed',
+  'text-decoration-style:dotted',
+  'text-decoration-style:double',
+  'text-decoration-style:solid',
+  'text-decoration-style:wavy',
   ['text-decoration-style:`style`'],
 ]
 

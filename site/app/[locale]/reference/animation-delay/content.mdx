@@ -1,42 +1,157 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Delay animation start \{#delay-animation-start\}
-Use `animation-delay:*` to wait before the first animation cycle begins.
+Compare no delay with a 600ms wait before the same one-second movement. Press Replay to start both timelines together.
+
+<DemoExample page="animation-delay" section="delay-animation-start" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-delay:120ms -->
-<div class="animation-delay:120ms animation-duration:300ms animation-name:fade">
-  Staggered item
+<!-- No delay -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:0ms animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- 600ms delay -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-delay:120ms']}
-  </Class2CSS>
+  <Class2CSS>{['animation-delay:600ms']}</Class2CSS>
 </details>
 
+A positive delay postpones the first cycle, not every repetition. Without backwards fill, the delayed marker stays at its ordinary position (0px) until its first keyframe (24px) applies.
+
 ### Offset looping animations \{#offset-looping-animations\}
-Negative delays start an animation partway through its cycle. This is useful for spinner segments that should not all begin at the same frame.
+Use a negative delay to begin partway through an animation. Both hands have a two-second cycle; the second starts 500ms ahead.
+
+<DemoExample page="animation-delay" section="offset-looping-animations" />
+
 ```html
-<!-- @MARK animation-delay:-120ms -->
-<svg class="animation-delay:-120ms animation-duration:1s animation-name:fade">
-  ...
-</svg>
+<!-- No offset -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-delay:0ms
+           animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">No offset</span>
+</div>
 ```
+
+```html
+<!-- 500ms ahead -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-delay:-500ms
+           animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">500ms ahead</span>
+</div>
+```
+
+The negative delay changes the starting phase, not the duration. After 500ms, the first hand reaches the second hand’s original quarter-turn position.
 
 ### Stagger a list \{#stagger-a-list\}
-Apply increasing delays to siblings when each item should enter after the previous one.
+Give each decorative child its own animation and delay. The 200ms offsets overlap these 800ms entrances instead of waiting for each preceding entrance to finish.
+
+<DemoExample page="animation-delay" section="stagger-a-list" />
+
 ```html
-<li class="animation-delay:0ms animation-name:fade">One</li>
-<li class="animation-delay:80ms animation-name:fade">Two</li>
-<li class="animation-delay:160ms animation-name:fade">Three</li>
+<!-- Three independent entrance timelines -->
+<ul class="grid gap:sm m:0 p:sm list-style:none">
+  <li class="flex items-center gap:sm font:sm">
+    <span aria-hidden="true"
+      class="inline-block h:32px w:64px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             animation:fade|slowest|linear|both
+             animation-delay:0ms animation:none@print
+             animation-play-state:paused@reduce-motion"></span>
+    <span>Item 1 · 0ms</span>
+  </li>
+  <li class="flex items-center gap:sm font:sm">
+    <span aria-hidden="true"
+      class="inline-block h:32px w:64px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             animation:fade|slowest|linear|both
+             animation-delay:200ms animation:none@print
+             animation-play-state:paused@reduce-motion"></span>
+    <span>Item 2 · 200ms</span>
+  </li>
+  <li class="flex items-center gap:sm font:sm">
+    <span id="target" aria-hidden="true"
+      class="inline-block h:32px w:64px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             animation:fade|slowest|linear|both
+             animation-delay:400ms animation:none@print
+             animation-play-state:paused@reduce-motion"></span>
+    <span>Item 3 · 400ms</span>
+  </li>
+</ul>
 ```
 
+Animation properties are not inherited. Backwards fill, included in both, keeps each waiting marker at the fade keyframe’s transparent start; the item labels remain visible.
+
 ### Use duration tokens \{#use-duration-tokens\}
-Define `duration-*` tokens when the same delay appears across several animation patterns. This example assumes your project defines a `fade` keyframe.
+Define a duration token for a shared waiting interval. This example resolves `stagger` to 120ms and uses the preset fade keyframes.
+
+<DemoExample page="animation-delay" section="use-duration-tokens" />
 
 ```css name=index.css
 @theme {
@@ -45,11 +160,55 @@ Define `duration-*` tokens when the same delay appears across several animation 
 ```
 
 ```html
-<li class="animation:fade|fast|smooth animation-delay:stagger">...</li>
+<!-- 120ms delayed marker -->
+<div class="flex items-center gap:md p:sm">
+  <span id="target" aria-hidden="true"
+    class="block h:40px w:64px b:1px|solid|blue-60 r:sm
+           bg:blue-10 opacity:1 animation-duration:1s
+           animation-fill-mode:both animation-name:fade
+           animation-timing-function:smooth
+           animation:none@print
+           animation-play-state:paused@reduce-motion
+           animation-delay:stagger"></span>
+  <span class="font:sm">120ms delayed marker</span>
+</div>
 ```
 
+The duration and delay can use the same namespace independently. This delay is 120ms; the animation still takes one second after it begins.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="animation-delay:120ms:hover animation-delay:0ms@print animation-delay:0ms@sm">...</div>
+Resize before replaying. The marker waits 600ms below `sm` and starts immediately at `sm`; its one-second movement stays the same.
+
+<DemoExample page="animation-delay" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
 ```
+
+```html
+<!-- 600ms → no delay at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:600ms animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-delay:0ms@sm">→</span>
+  </div>
+</div>
+```
+
+Changing a delay while an animation already exists can move its current phase. Replay compares the newly selected value from time zero.

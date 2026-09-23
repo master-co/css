@@ -1,42 +1,112 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Run an animation \{#run-an-animation\}
-Use `animation-play-state:running` to ensure an animation is active when another state may pause it.
+Check Run indicator to set the child SVG’s play state to running. Uncheck it to pause at the current position.
+
+<DemoExample page="animation-play-state" section="run-an-animation" />
+
 ```html
-<!-- @MARK animation-play-state:running -->
-<div class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-play-state:running">
-  Running
+<!-- Native checkbox · run and pause -->
+<div
+  class="animation-play-state:running:has(input:checked)>svg@screen&motion">
+  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue
+           animation:rotate|2s|linear|infinite
+           animation-play-state:paused
+           animation:none@print">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-play-state:running']}
-  </Class2CSS>
+  <Class2CSS>{['animation-play-state:running']}</Class2CSS>
 </details>
 
-### Pause animation \{#pause-animation\}
-Use `animation-play-state:paused` when an animation should stop without resetting its current frame.
-```html
-<!-- @MARK animation-play-state:paused -->
-<button class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-play-state:paused:hover">
-  Pause on hover
-</button>
-```
+The checkbox is a real keyboard control. This example starts paused and permits running only on screen when the user has not requested reduced motion.
 
-### Pause nonessential motion \{#pause-nonessential-motion\}
-Pause decoration when the user is interacting with the control or when the motion would compete with a more important state.
+### Pause animation \{#pause-animation\}
+Start the indicator with the checkbox, then hover the stationary panel to pause its child. Move away to resume from the same frame.
+
+<DemoExample page="animation-play-state" section="pause-animation" />
+
 ```html
-<div class="animation-play-state:running animation-play-state:paused:focus-within">
-  Interactive panel
+<!-- Run, then hover the stable panel -->
+<div
+  class="animation-play-state:running:has(input:checked)>div>svg@screen&motion
+         animation-play-state:paused:has(input:checked)>div:hover>svg@screen&motion">
+  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <div class="p:sm b:1px|dashed|muted r:sm">
+    <p class="mb:sm font:sm">Hover this panel to pause</p>
+    <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+      fill="none" stroke="currentColor" stroke-width="2"
+      class="text:blue
+             animation:rotate|2s|linear|infinite
+             animation-play-state:paused
+             animation:none@print">
+      <circle cx="24" cy="24" r="17" opacity=".25" />
+      <path d="M24 8v16h12 M19 13l5-5 5 5" />
+    </svg>
+  </div>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The panel keeps a stable hit area while the SVG rotates. The checkbox also pauses the animation on touch devices and with the keyboard; hover is an additional affordance.
+
+### Pause nonessential motion \{#pause-nonessential-motion\}
+Start the indicator, then focus the Project name field. The editor’s focus-within state pauses the decorative child while you type.
+
+<DemoExample page="animation-play-state" section="pause-nonessential-motion" />
+
 ```html
-<div class="animation-play-state:paused:hover animation-play-state:paused@print animation-play-state:running@sm">...</div>
+<!-- Pause while editing -->
+<div
+  class="animation-play-state:paused:has(input:checked)>div:focus-within>svg@screen&motion
+         animation-play-state:running:has(input:checked)>div>svg@screen&motion">
+  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <div class="p:sm b:1px|solid|muted r:sm">
+    <label class="block mb:sm font:sm">Project name <input type="text" value="Canvas" class="max-w:100% p:xs b:1px|solid|muted r:sm outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible"></label>
+    <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+      fill="none" stroke="currentColor" stroke-width="2"
+      class="text:blue
+             animation:rotate|2s|linear|infinite
+             animation-play-state:paused
+             animation:none@print">
+      <circle cx="24" cy="24" r="17" opacity=".25" />
+      <path d="M24 8v16h12 M19 13l5-5 5 5" />
+    </svg>
+  </div>
+</div>
 ```
+
+Play state is not inherited. The parent selector explicitly reaches the animated SVG, and the text field remains stationary and editable.
+
+### Apply conditionally \{#apply-conditionally\}
+Check Run indicator and resize the viewport. The child stays paused below `sm` and can run at `sm` when motion is allowed.
+
+<DemoExample page="animation-play-state" section="apply-conditionally" />
+
+```html
+<!-- Run only at sm -->
+<div
+  class="animation-play-state:running:has(input:checked)>svg@screen&motion&sm">
+  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue
+           animation:rotate|2s|linear|infinite
+           animation-play-state:paused
+           animation:none@print">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+</div>
+```
+
+Shrinking the viewport or unchecking the control pauses the current timeline. Reduced motion keeps it paused, while print removes the animation.

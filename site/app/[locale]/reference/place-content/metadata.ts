@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'place-content',
-  description: 'Setting align-content and justify-content at the same time.',
+  description: 'Set block/inline grid-track distribution or flex cross/main-axis distribution together.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=place-content',

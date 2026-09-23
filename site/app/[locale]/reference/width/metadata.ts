@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'width',
-  description: 'Setting an element’s width.',
+  description: 'Set physical width with fixed, proportional or intrinsic values.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=width',

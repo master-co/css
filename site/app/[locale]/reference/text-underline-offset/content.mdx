@@ -1,42 +1,102 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document text-underline-offset syntax */}
+{/* eslint-disable @master/css/prefer-canonical-classes -- Explicit longhands retain decoration lines; the shorthand resets them. Raw underline offsets require the native property. */}
 
 ## Examples \{#examples\}
 ### Move underline away from text \{#move-underline-away-from-text\}
-Use `text-underline-offset:*` to control the distance between text and its underline.
+`text-underline-offset` moves underline paint relative to its reference position. Compare 2px and 6px offsets on the same text and line thickness.
+
+<DemoExample page="text-underline-offset" section="move-underline-away-from-text" />
+
 ```html
-<!-- @MARK text-underline-offset:4px -->
-<a class="underline text-underline-offset:4px">
-  Read more
-</a>
+<!-- Underline offset · 2px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:2px text-underline-offset:2px"
+>
+  Typography
+</p>
+```
+
+```html
+<!-- Underline offset · 6px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:2px text-underline-offset:6px"
+>
+  Typography
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-underline-offset:4px']}
+    {['text-underline-offset:6px']}
   </Class2CSS>
 </details>
 
+Offset does not add margin, padding or line height. It affects underlines, not overlines or strike-throughs.
+
 ### Pair with decoration thickness \{#pair-with-decoration-thickness\}
-Larger underline offsets often need a matching decoration thickness so the underline still feels intentional.
+Choose the line weight and offset independently. This pair uses the same 4px offset with a 1px or 3px underline.
+
+<DemoExample page="text-underline-offset" section="pair-with-decoration-thickness" />
+
 ```html
-<!-- @MARK text-underline-offset:2px -->
-<a class="underline text-decoration-thickness:2px text-underline-offset:2px">
-  Active section
-</a>
+<!-- 4px offset · 1px thickness -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:1px text-underline:3xs"
+>
+  Typography
+</p>
 ```
+
+```html
+<!-- 4px offset · 3px thickness -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:3px text-underline:3xs"
+>
+  Typography
+</p>
+```
+
+`text-underline:3xs` uses the preset’s 0.25rem spacing token. At the default 16px root size that is 4px.
 
 ### Reset in compact contexts \{#reset-in-compact-contexts\}
-Use `text-underline-offset:0` for dense table or navigation labels when extra offset takes too much space.
+Resize past `sm` to reset this underline’s offset from 6px to zero. The line box stays the same size; only the underline position changes.
+
+<DemoExample page="text-underline-offset" section="reset-in-compact-contexts" />
+
 ```html
-<a class="text-underline-offset:4px text-underline-offset:0@sm">Compact link</a>
+<!-- 6px offset · zero at sm -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:2px text-underline-offset:6px
+         text-underline-offset:0@sm"
+>
+  Typography
+</p>
 ```
 
+Zero is not `auto`. With the default underline position, zero starts at the alphabetic baseline and can meet the glyphs; use `auto` when the browser should choose the position.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus to move the underline from 2px to 6px. Print returns to 2px. The visible focus outline remains separate from the decoration.
+
+<DemoExample page="text-underline-offset" section="apply-conditionally" />
+
 ```html
-<a class="text-underline-offset:4px:hover text-underline-offset:0@print text-underline-offset:2px@sm">...</a>
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:2xl leading:xl underline text-decoration-thickness:2px
+         text-underline-offset:2px text-underline-offset:2px@print
+         text-underline-offset:6px:hover@screen
+         text-underline-offset:6px:focus-visible@screen"
+>
+  Typography
+</button>
 ```
+
 {/* eslint-enable @master/css/prefer-canonical-classes */}

@@ -3,7 +3,10 @@
 
 ## Examples \{#examples\}
 ### Include border and padding in size \{#include-border-and-padding-in-size\}
-Use `box-border` when an element's declared width and height should include its padding and border.
+Use `box-border` to include padding and border within the declared width and height. In this example, the outer width stays at `40x` (160px with the default base unit).
+
+<DemoExample page="box-sizing" section="include-border-and-padding-in-size" />
+
 ```html
 <!-- @MARK box-border -->
 <div class="w:40x p:md b:1px|solid|gray-20 box-border">
@@ -19,7 +22,10 @@ Use `box-border` when an element's declared width and height should include its 
 </details>
 
 ### Size the content box only \{#size-the-content-box-only\}
-Use `box-content` when the declared size should apply only to the content area and padding or border can add to the rendered size.
+Use `box-content` when the declared size should describe the content alone. Here, `40x` of content, two 16px paddings and two 1px borders produce an outer width of 194px.
+
+<DemoExample page="box-sizing" section="size-the-content-box-only" />
+
 ```html
 <!-- @MARK box-content -->
 <div class="w:40x p:md b:1px|solid|gray-20 box-content">
@@ -28,15 +34,20 @@ Use `box-content` when the declared size should apply only to the content area a
 ```
 
 ### Prefer consistency inside components \{#prefer-consistency-inside-components\}
-Most UI components should use one sizing model consistently. Switch box sizing only at component boundaries or for compatibility with third-party content.
+Keep one sizing model across the parts of a component so its dimensions remain predictable. `box-sizing` is not inherited automatically; applying it to a parent does not set it on every child.
+
+<DemoExample page="box-sizing" section="prefer-consistency-inside-components" />
+
 ```html
-<div class="box-border">
-  <iframe class="box-content"></iframe>
-</div>
+<div class="w:40x p:md b:1px|solid|gray-20 box-border">Border-box</div>
+<div class="w:40x p:md b:1px|solid|gray-20 box-content">Content-box</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The same width can produce a different outer size when a condition switches its box model. Resize this preview past `sm` to compare `box-border` and `box-content`; the padding and border stay constant. See [conditions](/reference/rules/conditions).
+
+<DemoExample page="box-sizing" section="apply-conditionally" />
+
 ```html
-<div class="box-border box-border@print box-content@sm">...</div>
+<div class="w:40x p:md b:1px|solid|gray-20 box-border box-content@sm">Content</div>
 ```

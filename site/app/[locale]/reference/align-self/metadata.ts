@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'align-self',
-  description: 'Controlling how an individual item is aligned along its cross axis.',
+  description: 'Override cross-axis flex alignment or block-axis grid alignment for one item.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=align-self',

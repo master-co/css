@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'pointer-events',
-  description: 'Setting whether an element reacts to pointer events.',
+  description: 'Controlling pointer hit testing independently of keyboard access.',
   category: 'Interactivity',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=pointer-events',

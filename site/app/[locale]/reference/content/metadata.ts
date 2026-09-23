@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'content',
-  description: 'Replacing an element with a generated value.',
+  description: 'Generate supplementary text and images, including pseudo-element content.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=content',

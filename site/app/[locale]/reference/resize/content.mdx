@@ -1,43 +1,103 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`resize` exposes a browser resize affordance on eligible elements, including scroll containers. Native handles and supported directions depend on the browser and input device.
 
 ## Examples \{#examples\}
 ### Allow both-axis resizing \{#allow-both-axis-resizing\}
-Use `resize:both` on elements that should be manually resizable in both directions, such as textareas or debug panels.
+Use `resize:both` with `overflow:auto` and explicit minimum and maximum dimensions. Drag the native corner handle where the platform provides one.
+
+<DemoExample page="resize" section="allow-both-axis-resizing" />
+
 ```html
-<!-- @MARK resize:both -->
-<textarea class="min-h:12x min-w:20x resize:both">
+<!-- Both axes · constrained control -->
+<label class="grid gap:sm">
   Notes
-</textarea>
+  <textarea id="target" rows="3"
+
+  class="overflow:auto h:96px w:240px min-h:80px
+         min-w:160px max-h:176px max-w:full
+         resize:both">A clear layout leaves room for the next idea.</textarea>
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['resize:both']}
-  </Class2CSS>
+  <Class2CSS>{['resize:both']}</Class2CSS>
 </details>
 
+The size readout follows the actual control box. User resizing is constrained by `min-*` and `max-*`; keyboard editing remains independent of the resize handle.
+
 ### Restrict resizing to one axis \{#restrict-resizing-to-one-axis\}
-Use `resize:vertical` for text inputs that can grow without breaking the surrounding layout.
+Compare `resize:vertical` and `resize:horizontal` on the same initial box. Only the requested dimension can change through the native handle.
+
+<DemoExample page="resize" section="restrict-resizing-to-one-axis" />
+
 ```html
-<!-- @MARK resize:vertical -->
-<textarea class="w:full min-h:10x resize:vertical">
-  Comment
-</textarea>
+<!-- Vertical only -->
+<label class="grid gap:sm">
+  Notes
+  <textarea id="target" rows="3"
+
+  class="overflow:auto h:96px w:240px min-h:80px
+         min-w:160px max-h:176px max-w:full
+         resize:vertical">A clear layout leaves room for the next idea.</textarea>
+</label>
 ```
+
+```html
+<!-- Horizontal only -->
+<label class="grid gap:sm">
+  Notes
+  <textarea id="target" rows="3"
+
+  class="overflow:auto h:96px w:240px min-h:80px
+         min-w:160px max-h:176px max-w:full
+         resize:horizontal">A clear layout leaves room for the next idea.</textarea>
+</label>
+```
+
+Horizontal growth remains bounded by the preview width. On mobile, a browser may omit native handles; the editable textarea still works.
 
 ### Disable native resizing \{#disable-native-resizing\}
-Use `resize:none` when the component already controls its own size or when the surrounding layout cannot absorb manual resizing.
+`resize:none` removes the manual resize affordance. It does not disable editing or scrolling within the control.
+
+<DemoExample page="resize" section="disable-native-resizing" />
+
 ```html
-<!-- @MARK resize:none -->
-<textarea class="resize:none">
-  Fixed size
-</textarea>
+<!-- Fixed box · editable content -->
+<label class="grid gap:sm">
+  Notes
+  <textarea id="target" rows="3"
+
+  class="overflow:auto h:96px w:240px min-h:80px
+         min-w:160px max-h:176px max-w:full
+         resize:none">Line one.
+Line two.
+Line three.
+Line four.
+Line five.
+Line six.</textarea>
+</label>
 ```
 
+Use the scrollbar, touch scrolling or keyboard to reach the text. This control has a fixed starting height rather than JavaScript auto-growth.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Allow vertical resizing at `sm` while keeping it disabled below that breakpoint and in print.
+
+<DemoExample page="resize" section="apply-conditionally" />
+
 ```html
-<textarea class="resize:none resize:none@print resize:vertical@sm">...</textarea>
+<!-- None → vertical at sm -->
+<label class="grid gap:sm">
+  Notes
+  <textarea id="target" rows="3"
+
+  class="overflow:auto h:96px w:240px min-h:80px
+         min-w:160px max-h:176px max-w:full
+         resize:none resize:vertical@screen&sm">A clear layout leaves room for the next idea.</textarea>
+</label>
 ```
+
+After a native resize, changing the `resize` property does not reset the user’s dimensions. Reloading the preview restores the authored initial size.

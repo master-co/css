@@ -1,42 +1,157 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Choose the keyframes to run \{#choose-the-keyframes-to-run\}
-Use `animation-name:*` to select a named keyframes rule while controlling the other animation parts separately.
+Select the preset fade or rotate keyframes while keeping the same duration and linear easing.
+
+<DemoExample page="animation-name" section="choose-the-keyframes-to-run" />
+
 ```html
-<!-- @MARK animation-name:fade -->
-<div class="animation-duration:300ms animation-name:fade animation-timing-function:ease-out">
-  Saved
+<!-- Fade keyframes -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:1s
+           animation-fill-mode:forwards
+           animation-name:fade
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Fade keyframes</span>
+</div>
+```
+
+```html
+<!-- Rotate keyframes -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:1s
+           animation-fill-mode:forwards
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Rotate keyframes</span>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-name:fade']}
-  </Class2CSS>
+  <Class2CSS>{['animation-name:fade']}</Class2CSS>
 </details>
 
+A name must match a keyframes rule. An unknown name has no effect, and the initial duration is zero, so a name alone does not create visible travel.
+
 ### Disable an animation \{#disable-an-animation\}
-Use `animation-name:none` when the element should keep the rest of its animation settings but stop running keyframes in a specific condition.
+Compare the same timing settings with rotate selected and with none. The second indicator remains static.
+
+<DemoExample page="animation-name" section="disable-an-animation" />
+
 ```html
-<!-- @MARK animation-name:none@print -->
-<div class="animation-name:fade animation-name:none@print">
-  No animation in print
+<!-- Rotate selected -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Rotate selected</span>
 </div>
 ```
 
-### Combine with timing longhands \{#combine-with-timing-longhands\}
-The name alone does not define how long the animation runs. Pair it with duration, timing, delay, iteration count, and fill mode as needed.
 ```html
-<span class="animation-duration:200ms animation-fill-mode:both animation-name:fade">
-  Appears once
-</span>
+<!-- None selected -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:none
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">None selected</span>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="animation-name:fade:hover animation-name:none@print animation-name:fade@sm">...</div>
+None removes the animation; it does not pause at the current frame. Other longhand values remain set, but no keyframes run. Both examples also remove animation in print.
+
+### Combine with timing longhands \{#combine-with-timing-longhands\}
+Pair the name with an explicit one-second duration, 300ms delay, linear easing and both fill.
+
+<DemoExample page="animation-name" section="combine-with-timing-longhands" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
 ```
+
+```html
+<!-- Complete timing · one cycle -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-delay:slow animation-duration:1s
+             animation-fill-mode:both
+             animation-iteration-count:1
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+The readout separates the selected name from its timing. For multiple names, other longhand lists match by position: shorter lists repeat and extra values are unused.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize to select no animation below `sm` or rotate at `sm`. Then press Play to inspect the selected timeline.
+
+<DemoExample page="animation-name" section="apply-conditionally" />
+
+```html
+<!-- None → rotate at sm -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:none
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion
+           animation-name:rotate@screen&sm">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">None → rotate at sm</span>
+</div>
+```
+
+The viewport changes the actual animation-name. Removing the name cancels the animation; selecting it again creates a new animation rather than resuming a paused one.

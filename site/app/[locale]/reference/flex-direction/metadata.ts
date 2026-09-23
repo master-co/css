@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'flex-direction',
-  description: 'Setting the direction of flex items.',
+  description: 'Choose the main axis and visual direction of a flex layout.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=flex-direction',

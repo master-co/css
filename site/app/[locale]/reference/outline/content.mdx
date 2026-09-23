@@ -2,37 +2,87 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Set the full outline shorthand \{#set-the-full-outline-shorthand\}
-Use `outline:*` when width, style, and color should be set together.
+Combine width, style and color in one outline shorthand. Compare an explicit 4px blue outline with `outline:solid`, which uses the native `medium` width and current foreground color.
+
+<DemoExample page="outline" section="set-the-full-outline-shorthand" />
+
 ```html
-<!-- @MARK outline:2px|solid|blue-60 -->
-<button class="outline:2px|solid|blue-60">
-  Focused action
+<!-- Full shorthand · explicit components -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:4px|solid|blue
+         outline-offset:3xs font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- Style-only shorthand · other components reset -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:solid
+         outline-offset:3xs font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
 </button>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:2px|solid|blue-60']}
+    {['outline:4px|solid|blue', 'outline:solid']}
   </Class2CSS>
 </details>
 
+The shorthand resets outline width, style and color. It does not reset `outline-offset`. The outline paints around the box without taking layout space.
+
 ### Keep outlines for focus \{#keep-outlines-for-focus\}
-Outlines do not affect layout and are important for keyboard focus. If you customize them, keep a visible focus style.
+Use Tab to focus this button. Its transparent resting outline becomes blue on keyboard focus. The button and neighboring content keep their layout dimensions.
+
+<DemoExample page="outline" section="keep-outlines-for-focus" />
+
 ```html
-<!-- @MARK outline:2px|solid|blue-60 --><!-- @MARK outline-offset:2x -->
-<button class="outline:2px|solid|blue-60 outline-offset:xs:focus">
-  Save
+<!-- Keyboard focus · visible blue ring -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm
+         outline:2px|solid|transparent
+         outline-offset:3xs font:md bg:surface-base
+         text:body box-border
+         outline:blue:focus-visible
+         bg:surface-muted:focus-visible">
+  Save changes
 </button>
 ```
 
-Use [outline-width](/reference/outline-width), [outline-style](/reference/outline-style), [outline-color](/reference/outline-color), and [outline-offset](/reference/outline-offset) for focused changes.
+A custom focus treatment must remain visible. The outline follows the real `:focus-visible` state; a pointer click does not necessarily trigger that state. Use [outline-offset](/reference/outline-offset) to leave space around the edge.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keyboard focus draws a 3px blue outline on screen. Print removes its width. The border and content remain unchanged.
+
+<DemoExample page="outline" section="apply-conditionally" />
+
 ```html
-<div class="outline:0 outline:2px|solid|blue-60:focus outline:0@print">...</div>
+<!-- Keyboard focus on screen · no printed ring -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:0|solid|blue
+         outline-offset:3xs font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible
+         outline:0@print
+         outline:3px|solid|blue:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-Avoid removing focus outlines unless another visible focus indicator replaces them.
+The screen qualification prevents the focus rule from overriding the print reset. Never remove the only visible keyboard focus indicator.

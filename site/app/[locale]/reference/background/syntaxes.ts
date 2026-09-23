@@ -1,5 +1,6 @@
 const syntaxes = [
-  ['bg:`param`,`…`'],
+  ['bg:`image`|`position`/`size`|`repeat`'],
+  ['background:`value`'],
 ]
 
 export default syntaxes

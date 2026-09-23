@@ -1,35 +1,107 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`accent-color` requests a highlight color for native controls. The property is inherited; the platform decides which parts and states use it. It does not recolor every kind of form element.
 
 ## Basic usage \{#basic-usage\}
 ### Set the accent color \{#set-the-accent-color\}
-Use the `accent-color:color` to set a custom accent color of user interface elements or controls.
-<Demo className="gap:10x">
-  <label className="flex">
-    <input type="checkbox" defaultChecked
-      className="inline-block size:16px mr:2xs r:xs vertical-align:middle" />
-    <span className="inline-block font:sm font:black font:white@dark">Default</span>
-  </label>
-  <label className="flex">
-    <input type="checkbox" defaultChecked
-      className="inline-block size:16px mr:2xs r:xs accent-color:red-50 transition:accent-color|.3s vertical-align:middle" />
-    <span className="inline-block font:sm font:black font:white@dark">Customized</span>
-  </label>
-</Demo>
+Compare `accent-color:auto` with `accent-color:blue` on a fieldset. Its checkbox, radio buttons and range input inherit the request; try each control.
+
+<DemoExample page="accent-color" section="set-the-accent-color" />
+
 ```html
-<label>
-  <input type="checkbox" />
-  <span>default color</span>
-</label>
-<label>
-  <!-- @MARK accent-color:red-50 -->
-  <input type="checkbox" class="accent-color:red-50">
-  <span>Customized</span>
-</label>
+<!-- Platform accent -->
+<form>
+  <fieldset id="target"
+    class="grid gap:md min-w:0 m:0 p:0 b:0
+           accent-color:auto">
+    <legend class="sr-only">Platform accent</legend>
+    <label class="flex items-center gap:sm">
+      <input type="checkbox" checked> Snap to grid
+    </label>
+    <div class="flex flex-wrap gap:md">
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="canvas" checked> Canvas
+      </label>
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="layers"> Layers
+      </label>
+    </div>
+    <label class="grid gap:xs w:240px max-w:full">
+      Zoom
+      <input type="range" min="25" max="100" value="65"
+        class="w:full">
+    </label>
+  </fieldset>
+</form>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="accent-color:red-50:hover accent-color:red-50@dark accent-color:red-50@print accent-color:red-50@sm">…</div>
+<!-- Blue accent -->
+<form>
+  <fieldset id="target"
+    class="grid gap:md min-w:0 m:0 p:0 b:0
+           accent-color:blue">
+    <legend class="sr-only">Blue accent</legend>
+    <label class="flex items-center gap:sm">
+      <input type="checkbox" checked> Snap to grid
+    </label>
+    <div class="flex flex-wrap gap:md">
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="canvas" checked> Canvas
+      </label>
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="layers"> Layers
+      </label>
+    </div>
+    <label class="grid gap:xs w:240px max-w:full">
+      Zoom
+      <input type="range" min="25" max="100" value="65"
+        class="w:full">
+    </label>
+  </fieldset>
+</form>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>{['accent-color:auto', 'accent-color:blue']}</Class2CSS>
+</details>
+
+Browsers may adjust the accent or its contrasting foreground for legibility. The computed value describes the requested color, not every pixel of native control paint. Use `auto` to restore the platform choice.
+
+### Apply conditionally \{#apply-conditionally\}
+Change a real control group from blue to violet at `sm`. Resize the viewport and interact with the controls; the same native media query also changes the inherited readout.
+
+<DemoExample page="accent-color" section="apply-conditionally" />
+
+```html
+<!-- Responsive accent -->
+<form>
+  <fieldset id="target"
+
+  class="grid gap:md min-w:0 m:0 p:0 b:0
+         accent-color:blue accent-color:auto@print
+         accent-color:violet@screen&sm">
+    <legend class="sr-only">Responsive accent</legend>
+    <label class="flex items-center gap:sm">
+      <input type="checkbox" checked> Snap to grid
+    </label>
+    <div class="flex flex-wrap gap:md">
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="canvas" checked> Canvas
+      </label>
+      <label class="flex items-center gap:sm">
+        <input type="radio" name="view" value="layers"> Layers
+      </label>
+    </div>
+    <label class="grid gap:xs w:240px max-w:full">
+      Zoom
+      <input type="range" min="25" max="100" value="65"
+        class="w:full">
+    </label>
+  </fieldset>
+</form>
+```
+
+The screen condition keeps print on `auto`. Theme tokens adapt to the current color scheme without replacing the native controls.

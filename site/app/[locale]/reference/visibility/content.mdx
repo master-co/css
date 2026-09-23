@@ -3,7 +3,10 @@
 
 ## Examples \{#examples\}
 ### Hide but preserve layout \{#hide-but-preserve-layout\}
-Use `invisible` when an element should not be painted but should still reserve its layout space.
+Use `invisible` to hide an element while preserving its space. Compare the gap between items 01 and 03: the middle box still participates in layout. Unlike a transparent element, hidden content is also absent from the accessibility tree.
+
+<DemoExample page="visibility" section="hide-but-preserve-layout" />
+
 ```html
 <!-- @MARK invisible -->
 <div class="invisible">
@@ -19,7 +22,10 @@ Use `invisible` when an element should not be painted but should still reserve i
 </details>
 
 ### Make an element visible again \{#make-an-element-visible-again\}
-Use `visible` to override an inherited or conditional hidden state.
+Use `visible` to restore visibility. Widen the preview to `sm` to reveal item 02; the surrounding boxes keep their positions.
+
+<DemoExample page="visibility" section="make-an-element-visible-again" />
+
 ```html
 <!-- @MARK visible -->
 <div class="invisible visible@sm">
@@ -28,7 +34,10 @@ Use `visible` to override an inherited or conditional hidden state.
 ```
 
 ### Collapse table rows \{#collapse-table-rows\}
-Use `visibility:collapse` for table rows or columns that should be hidden using table collapse behavior.
+Use `visibility:collapse` to hide a table row and remove its vertical space while preserving the column sizing calculation. The preview compares the same native table with a visible and a collapsed middle row. Collapse behavior outside tables varies by layout and browser.
+
+<DemoExample page="visibility" section="collapse-table-rows" />
+
 ```html
 <!-- @MARK visibility:collapse -->
 <tr class="visibility:collapse">
@@ -37,7 +46,10 @@ Use `visibility:collapse` for table rows or columns that should be hidden using 
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hide item 02 initially and reveal it at `sm` or in print. The layout space stays reserved throughout. Use the viewport control or Print preview to compare; see [conditions](/reference/rules/conditions).
+
+<DemoExample page="visibility" section="apply-conditionally" />
+
 ```html
-<div class="invisible:hover visible@print visible@sm">...</div>
+<div class="invisible visible@print visible@sm">02 · Target</div>
 ```

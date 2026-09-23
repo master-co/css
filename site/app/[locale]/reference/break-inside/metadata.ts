@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'break-inside',
-  description: 'Controlling how page, column, or region breaks should occur within the specified element.',
+  description: 'Control whether a block can split across columns or pages.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=break-inside',

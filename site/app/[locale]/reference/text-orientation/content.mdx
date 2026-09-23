@@ -3,10 +3,13 @@
 
 ## Examples \{#examples\}
 ### Keep characters upright \{#keep-characters-upright\}
-Use `text-orientation:upright` with vertical writing when each character should remain upright instead of rotating sideways.
+`text-orientation:upright` works inside vertical writing. Keep Latin characters upright as individual units alongside the CJK characters.
+
+<DemoExample page="text-orientation" section="keep-characters-upright" />
+
 ```html
-<!-- @MARK text-orientation:upright -->
-<p class="text-orientation:upright writing-mode:vertical-rl">2026</p>
+<!-- Vertical flow · upright -->
+<p id="target" lang="zh-Hant" class="h:176px m:0 font:md leading:24px text-orientation:upright writing-mode:vertical-rl">設計 ABC</p>
 ```
 
 <details>
@@ -17,21 +20,31 @@ Use `text-orientation:upright` with vertical writing when each character should 
 </details>
 
 ### Use mixed orientation \{#use-mixed-orientation\}
-Use `text-orientation:mixed` to let the browser rotate horizontal scripts while keeping vertical scripts upright.
+`text-orientation:mixed` works inside vertical writing. Let the browser keep normally vertical CJK characters upright while laying Latin characters sideways.
+
+<DemoExample page="text-orientation" section="use-mixed-orientation" />
+
 ```html
-<!-- @MARK text-orientation:mixed -->
-<p class="text-orientation:mixed writing-mode:vertical-rl">Label 2026</p>
+<!-- Vertical flow · mixed -->
+<p id="target" lang="zh-Hant" class="h:176px m:0 font:md leading:24px text-orientation:mixed writing-mode:vertical-rl">設計 ABC</p>
 ```
 
 ### Use sideways orientation \{#use-sideways-orientation\}
-Use `text-orientation:sideways` when text should rotate as a run inside a vertical flow.
+`text-orientation:sideways` works inside vertical writing. Lay the text sideways as a run, including the CJK characters. The containing element still uses vertical flow.
+
+<DemoExample page="text-orientation" section="use-sideways-orientation" />
+
 ```html
-<!-- @MARK text-orientation:sideways -->
-<p class="text-orientation:sideways writing-mode:vertical-rl">Side label</p>
+<!-- Vertical flow · sideways -->
+<p id="target" lang="zh-Hant" class="h:176px m:0 font:md leading:24px text-orientation:sideways writing-mode:vertical-rl">設計 ABC</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus the vertical label to switch from mixed to upright orientation. The writing mode stays vertical in both states.
+
+<DemoExample page="text-orientation" section="apply-conditionally" />
+
 ```html
-<p class="text-orientation:upright:hover text-orientation:mixed@print text-orientation:mixed@sm">...</p>
+<!-- Pointer and keyboard orientation -->
+<button id="target" type="button" tabindex="0" lang="zh-Hant" class="h:200px font:md leading:24px text-orientation:mixed writing-mode:vertical-rl text-orientation:upright:hover text-orientation:upright:focus-visible">設計 ABC</button>
 ```

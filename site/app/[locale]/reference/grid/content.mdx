@@ -3,36 +3,70 @@
 
 ## Examples \{#examples\}
 ### Set the native grid shorthand \{#set-the-native-grid-shorthand\}
-Use `grid:*` when you need the complete CSS `grid` shorthand in one class.
+`grid:*` sets the native CSS `grid` shorthand. It does not set `display:grid`; add the static `grid` utility to establish the container. Compare an explicit two-column template with `grid:none`, which returns the template and implicit-grid settings to their initial values.
+
+<DemoExample page="grid" section="set-the-native-grid-shorthand" />
+
 ```html
-<!-- @MARK grid:none -->
-<div class="grid:none">
-  ...
+<div id="layout" class="grid grid-template:48px|48px/80px|1fr grid-auto-flow:column gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+</div>
+```
+
+```html
+<div id="layout" class="grid grid:none gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid:none']}
+    {['grid', 'grid:none']}
   </Class2CSS>
 </details>
 
-### Define rows, columns, and auto flow together \{#define-rows-columns-and-auto-flow-together\}
-Use pipe separators for spaces inside the shorthand and `/` for the row/column separator.
+With `none`, the three items still participate in Grid. Default row auto-placement creates one column and three content-sized implicit rows. The 16px gap remains: `grid` does not reset `gap`. Use [grid-template](/reference/grid-template) when you only intend to set the explicit template.
+
+### Define tracks and auto flow together \{#define-rows-columns-and-auto-flow-together\}
+Use `|` for spaces and `/` between rows and columns. Before the slash, `auto-flow|56px` creates implicit 56px rows; after the slash, `auto-flow|1fr` creates implicit fractional columns. These two grids have the same two-by-two shape, but items 02 and 03 exchange positions.
+
+<DemoExample page="grid" section="define-rows-columns-and-auto-flow-together" />
+
 ```html
-<!-- @MARK grid:auto-flow|1fr/1fr|1fr -->
-<section class="grid:auto-flow|1fr/1fr|1fr">
-  ...
-</section>
+<div id="layout" class="grid grid:auto-flow|56px/1fr|1fr gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```
 
-The `grid` shorthand resets several grid longhands. For most layouts, prefer focused utilities such as [grid-template-columns](/reference/grid-template-columns), [grid-template-rows](/reference/grid-template-rows), [grid-auto-flow](/reference/grid-auto-flow), and [gap](/reference/gap).
+```html
+<div id="layout" class="grid grid:56px|56px/auto-flow|1fr gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
+```
+
+The shorthand sets the specified track sizes and flow direction and resets the other grid longhands it covers. It does not reset child placement. Prefer individual track or flow utilities when you intend to change just one setting.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="grid:none grid:none@print grid:auto-flow|1fr/1fr|1fr@sm">...</div>
-```
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The same four items form one column initially and two from `sm`. The 48px implicit row size stays unchanged.
 
-Use the static `grid` display utility when the goal is only `display: grid`.
+<DemoExample page="grid" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid grid:auto-flow|48px/1fr gap:md w:70x max-w:full grid:auto-flow|48px/1fr|1fr@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
+```

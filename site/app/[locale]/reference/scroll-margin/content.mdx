@@ -3,39 +3,105 @@
 
 ## Examples \{#examples\}
 ### Offset anchor targets \{#offset-anchor-targets\}
-Use `scroll-mt:*` on the target element so anchor navigation leaves room for fixed headers.
+`scroll-mt:*` expands a target’s scroll-into-view area above its border box. Activate Details: its 64px offset clears the 48px sticky header and leaves a 16px gap. The target’s layout position and size do not change.
+
+<DemoExample page="scroll-margin" section="offset-anchor-targets" />
+
 ```html
-<!-- @MARK scroll-mt:16x -->
-<section id="pricing" class="scroll-mt:3xl">
-  Pricing
-</section>
+<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
+  <header class="sticky top z:1 h:12x">Collection navigation</header>
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs scroll-mt:3xl">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['scroll-mt:16x']}
+    {['scroll-mt:3xl']}
   </Class2CSS>
 </details>
 
+The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.
+
 ### Add horizontal snap margin \{#add-horizontal-snap-margin\}
-Use `scroll-mx:*` on snap items when the item should stop with space on both sides.
+`scroll-mx:*` expands the snap area on both horizontal sides. With start alignment, the left expansion changes where the target stops; it does not center the item or add layout space between cards. Choose Panel 2 to compare the gap at the leading edge.
+
+<DemoExample page="scroll-margin" section="add-horizontal-snap-margin" />
+
 ```html
-<!-- @MARK scroll-mx:4x -->
-<article class="scroll-mx:md snap-start">
-  Slide
-</article>
+<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x scroll-mx:md snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-start">Panel 6</article>
+</div>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['scroll-mx:md']}
+  </Class2CSS>
+</details>
 
 ### Use all-side margin for compact cases \{#use-all-side-margin-for-compact-cases\}
-Use `scroll-m:*` when the same offset should apply on every side of the target.
+`scroll-m:*` expands the target’s scroll area on all four sides. In this vertical example, the top expansion leaves 12px above Details when it is scrolled into view.
+
+<DemoExample page="scroll-margin" section="use-all-side-margin-for-compact-cases" />
+
 ```html
-<!-- @MARK scroll-m:0.625rem -->
-<h2 class="scroll-m:0.625rem">Overview</h2>
+<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs scroll-m:sm">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
 
+The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to apply the change only when its condition matches. Details uses 16px of top scroll margin by default and 32px from `sm`. Resize and activate Details again to compare its resting position.
+
+<DemoExample page="scroll-margin" section="apply-conditionally" />
+
 ```html
-<section class="scroll-mt:3xl scroll-m:0@print scroll-mt:xl@sm">...</section>
+<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs scroll-mt:md scroll-mt:xl@sm">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
+
+The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.

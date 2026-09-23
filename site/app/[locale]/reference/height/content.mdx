@@ -3,53 +3,78 @@
 
 ## Examples \{#examples\}
 ### Set a fixed height \{#set-a-fixed-height\}
-Use `h:*` to set the CSS `height` property. Fixed heights are best for controls, media frames, skeletons, and areas with intentionally bounded content.
+`h:*` sets the physical height. Here `h:12x` makes the border box 48px tall, including its padding. Use a fixed height when the amount of visible content is intentionally bounded.
+
+<DemoExample page="height" section="set-a-fixed-height" />
+
 ```html
-<!-- @MARK h:12x -->
-<div class="h:12x bg:gray-5">
-  ...
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:12x p:sm">48px tall</div>
 </div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['h:12x']}
-  </Class2CSS>
-</details>
+A fixed height does not clip excess content by itself. Use [min-height](/reference/min-height) when the region should grow, or choose an explicit [overflow](/reference/overflow) policy.
 
 ### Fill a parent height \{#fill-a-parent-height\}
-Use `h:full` when the parent has a definite height.
+`h:full` is `height:100%`. In ordinary block flow, it fills a definite parent height. Compare a 160px parent with an automatic-height parent: the latter child follows its content instead of inventing a 160px reference.
+
+<DemoExample page="height" section="fill-a-parent-height" />
+
 ```html
-<!-- @MARK h:64x --><!-- @MARK h:full -->
-<section class="h:3xs">
-  <div class="h:full">...</div>
-</section>
+<!-- Definite parent · 160px -->
+<div id="layout" class="h:40x w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:full p:sm leading:20px">One line</div>
+</div>
 ```
 
-If the parent height is automatic, percentage heights such as `h:full` and `h:50%` may not resolve the way you expect. This is native CSS behavior.
+```html
+<!-- Automatic parent -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:full p:sm leading:20px">One line</div>
+</div>
+```
+
+Percentage heights depend on the containing block and layout mode. A parent’s content-driven height is not a definite percentage reference in this normal-flow example.
 
 ### Use viewport and intrinsic values \{#use-viewport-and-intrinsic-values\}
-Use native CSS units for viewport-sized regions, and keywords when the content should define the block size.
-```html
-<!-- @MARK min-h:100dvh -->
-<main class="min-h:100dvh">...</main>
+Viewport units refer to the actual browsing context. This iframe is 320px tall, so `h:50dvh` produces 160px. The second panel uses `h:fit` and follows two lines of content instead.
 
-<!-- @MARK h:fit -->
-<aside class="h:fit">...</aside>
+<DemoExample page="height" section="use-viewport-and-intrinsic-values" />
+
+```html
+<!-- Half the real viewport -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:50dvh p:sm">50dvh</div>
+</div>
 ```
 
-### Size both axes together \{#size-both-axes-together\}
-For square icons, avatars, and controls, prefer [size](/reference/size) over repeating `w:*` and `h:*`.
 ```html
-<!-- @MARK size:10x -->
-<button class="size:10x round">...</button>
+<!-- Content height -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:fit p:sm leading:20px">First line<br />Second line</div>
+</div>
+```
+
+The iframe keeps a fixed height so its contents cannot change the viewport unit being demonstrated. `dvh` follows dynamic viewport height; `vh` uses the large viewport height on current browsers.
+
+### Size both axes together \{#size-both-axes-together\}
+For a fixed square control, [size](/reference/size) sets width and height together. This native button is 40 × 40px and has the accessible name “Add layer”.
+
+<DemoExample page="height" section="size-both-axes-together" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:10x round p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="h:10x:hover h:full@dark h:auto@print h:14x@sm">...</div>
-```
+Resize past `sm` to change the panel from 48px to 80px high. Its width and content remain the same; the condition changes the actual CSS height.
 
-Use [min-height](/reference/min-height) when content may grow but the region still needs a baseline size.
+<DemoExample page="height" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:12x p:sm h:20x@sm">Responsive height</div>
+</div>
+```

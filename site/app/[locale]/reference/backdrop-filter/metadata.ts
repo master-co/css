@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'backdrop-filter',
-  description: 'Style syntax for applying filter effects to the area behind an target element.',
+  description: 'Style syntax for applying filter effects to the area behind an element.',
   category: 'Effects',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=backdrop-filter',

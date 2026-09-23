@@ -2,9 +2,9 @@ import VariableNamespaceSources from './components/VariableNamespaceSources'
 import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 ## Overview [sr-only] \{#overview\}
-Variables are the bridge between project vocabulary and generated CSS. Master CSS reads `@theme` blocks as manifest input, resolves token names into namespaces, and emits CSS custom properties only when a generated rule needs them.
+Variables are the bridge between project vocabulary and generated CSS. Master CSS reads `@theme` blocks as manifest input, resolves token names into namespaces, and emits regular CSS custom properties when a generated rule needs them. Inline and static declarations follow the distinct rules described below.
 
-Modes are named buckets for alternate variable values. They let the same class string adapt to light, dark, high-contrast, or product-specific themes without duplicating markup.
+Modes are named buckets for alternate variable values. They let the same class string adapt to light, dark, high-contrast, or product-specific themes without duplicating markup. Start with the [working spacing and mode examples](/guide/variables-and-modes) when learning the authoring flow.
 
 ```css name=index.css
 @import '@master/css';
@@ -26,11 +26,9 @@ Modes are named buckets for alternate variable values. They let the same class s
 ```html
 <!-- @MARK bg:surface-card --><!-- @MARK p:card --><!-- @MARK bg:brand -->
 <article class="bg:surface-card p:card">
-  <button class="fg:white bg:brand">Save</button>
+  <button type="button" class="fg:white bg:brand">Save</button>
 </article>
 ```
-
----
 
 ## Variable lifecycle \{#variable-lifecycle\}
 ### Check a custom spacing token \{#custom-spacing-example\}
@@ -38,7 +36,7 @@ Compile the theme together with the class that uses it. This example adds a proj
 
 <ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p:card']} />
 
-`@theme`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then emits only the variables, keyframes, and generated rules that the application uses.
+`@theme`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then generates the required rules and their variable or keyframe dependencies. Static theme resources are an explicit exception to on-demand emission.
 
 ```css name=index.css
 @theme {
@@ -48,17 +46,15 @@ Compile the theme together with the class that uses it. This example adds a proj
 
 ```html
 <!-- @MARK bg:brand -->
-<button class="fg:white bg:brand">Save</button>
+<button type="button" class="fg:white bg:brand">Save</button>
 ```
 
 When `bg:brand` is generated, Master CSS resolves `brand` through the background color namespace and emits a declaration that references `--color-brand`. The variable itself is emitted in the `theme` layer.
 
 Regular CSS custom property behavior still applies. Values inherit through the DOM, cascade by selector, and compute where the browser sees the declaration.
 
----
-
 ## Namespace resolution \{#namespace-resolution\}
-A theme variable name has the shape `<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-divider` belongs to `color-line`, not `color`.
+Write theme custom properties as `--<namespace>-<key>`. Master CSS resolves the namespace by longest prefix, so `color-line-divider` belongs to `color-line`, not `color`.
 
 ```css name=index.css
 @theme {
@@ -82,11 +78,9 @@ The utility decides which namespace it reads. The same key can mean different va
 Full property names do not become token namespaces automatically. A namespace is available only when the preset registers it and a utility or native value namespace references it.
 
 ### Default namespace sources \{#default-namespace-sources\}
-The default theme vocabulary is registry-backed. This table lists the built-in condition namespace and the namespaces currently referenced by default utilities or native value namespaces.
+The following registry-backed table lists condition sources and every namespace consumed by default utilities or native value namespaces. It shows complete public keys, including aliases. These are consumers, not a list of defined token values; see the [token reference](/reference#tokens) for the preset inventory.
 
 <VariableNamespaceSources />
-
----
 
 ## Contextual token lookup \{#contextual-token-lookup\}
 Contextual utilities keep class strings short by searching the namespace they already understand.
@@ -96,7 +90,7 @@ Contextual utilities keep class strings short by searching the namespace they al
 | `p:md` | `spacing-md` |
 | `r:md` | `radius-md` |
 | `max-w:md` | `container-md` |
-| `@md` | `breakpoint-md` |
+| `grid-cols:2@md` | `breakpoint-md` |
 | `text:body` | `color-text-body` |
 
 This is why token keys should be named for their namespace. `md` can work across spacing, radius, container, and breakpoint scales because the utility supplies the missing context.
@@ -110,27 +104,10 @@ Use native CSS `var()` when a token should reference another theme token:
 }
 ```
 
----
-
 ## Inline and static variables \{#inline-and-static-variables\}
 Regular theme variables emit CSS custom properties when generated rules need them. Inline variables behave like utility shorthands: Master CSS resolves the value and writes it directly into generated declarations.
 
-```css name=index.css
-@theme inline {
-  --color-brand: #4f46e5;
-  --spacing-feature: 1.5rem;
-}
-```
-
-```html
-<!-- @MARK bg:brand --><!-- @MARK p:feature -->
-<article class="bg:brand p:feature">...</article>
-```
-
-```css
-.bg\:brand { background-color: #4f46e5; }
-.p\:feature { padding: 1.5rem; }
-```
+<ConfiguredExample source={'@theme inline { --color-brand: #4f46e5; --spacing-feature: 1.5rem; }'} classes={['bg:brand', 'p:feature']} label="Inline token values" />
 
 Inline variables can reference other inline variables. If an inline variable references a regular theme variable, Master CSS keeps the regular `var(--*)` reference and emits that dependency when needed. Inline variables cannot be mode-specific.
 
@@ -147,8 +124,6 @@ Use `@theme static` when a variable or managed keyframes definition should be em
 ```
 
 `inline` and `static` cannot be combined.
-
----
 
 ## Mode buckets \{#mode-buckets\}
 `light` and `dark` are always available. Defining another mode adds it to the theme automatically.
@@ -200,8 +175,6 @@ Define derived tokens inside each mode bucket when they must follow local mode i
 
 This is CSS custom property computed-value behavior, not a Master CSS selector issue.
 
----
-
 ## Mode triggers \{#mode-triggers\}
 `mode-trigger` controls how mode buckets are emitted.
 
@@ -212,11 +185,9 @@ This is CSS custom property computed-value behavior, not a Master CSS selector i
 }
 ```
 
-| Trigger | Output behavior |
-| --- | --- |
-| `media` | Uses `@media (prefers-color-scheme: <mode>)` for light and dark modes. |
-| `class` | Uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`. |
-| `host` | Uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`. |
+- `media` uses `@media (prefers-color-scheme: <mode>)` for light and dark modes.
+- `class` uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`.
+- `host` uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`.
 
 `default-mode` controls which class-triggered or host-triggered mode also attaches to `:root` or `:host`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
 
@@ -238,9 +209,7 @@ For manual theme switches, set `mode-trigger` to `class`:
 </html>
 ```
 
-Custom modes work best with `class` or `host`. Browsers only support `light` and `dark` values for `prefers-color-scheme`, so custom modes cannot work as native media-triggered color schemes.
-
----
+Use `class` or `host` for custom modes. Browsers only support `light` and `dark` values for `prefers-color-scheme`, so custom modes cannot work as native media-triggered color schemes.
 
 ## Project settings \{#project-settings\}
 Settings are not design tokens, but a few of them shape variable and class output.
@@ -255,4 +224,4 @@ Settings are not design tokens, but a few of them shape variable and class outpu
 
 `root-size` controls numeric conversion to root-relative units such as `rem`. `base-unit` controls multiplier units such as `1x`, `2x`, and `4x`. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
 
-For the complete directive syntax, see [Directives](/reference#directives). For authoring shared design vocabulary, see [Theme Tokens](/guide/theme).
+See the [settings directive](/reference/directives/settings) for accepted settings and the [theme directive](/reference/directives/theme) for declaration syntax. Use [Theme tokens](/guide/theme) for the project authoring workflow.

@@ -3,89 +3,42 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set column count \{#set-column-count\}
-Use `mcss columns:value` to set the number of columns when creating a multi-column layout. The column width will automatically adjust to the column count.
-<Demo className="py:0!">
-  <div className="gap:xl columns:1 w:full break-inside:avoid_:where(div) columns:3@sm">
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain4.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pt:md bg:stripe-pink">
-      <Image src="/images/mountain7.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain19.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain14.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pt:md bg:stripe-pink">
-      <Image src="/images/mountain15.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain16.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain17.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pt:md bg:stripe-pink">
-      <Image src="/images/mountain18.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain20.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-  </div>
-</Demo>
+Use `columns:count` to flow content through a chosen number of columns. Reading order continues down one column, then into the next.
+
+<DemoExample page="columns" section="set-column-count" />
+
 ```html
 <!-- @MARK columns:3 -->
 <div class="columns:3">
-  <img class="w:full aspect-ratio:1/1" src="…" />
-  <img class="w:full aspect-ratio:3/2" src="…" />
-  …
+  <p>Start with a short introduction to the collection.</p>
+  <p>Continue with the details readers need to compare each option.</p>
+  <p>Finish with a clear next step.</p>
 </div>
 ```
 
 ### Flexible multi-column layout \{#flexible-multi-column-layout\}
-Use `mcss columns:count|width` to set the minimum width of each column to `width` and the maximum number of columns to `count` columns when creating a flexible multi-column layout.
-<Demo className="py:0!">
-  <div className="gap:xl columns:1 w:full break-inside:avoid_:where(div) columns:4|100px@sm">
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain20.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain14.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain15.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain16.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain18.jpg" width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain17.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pt:xl bg:stripe-pink">
-      <Image src="/images/mountain19.jpg" width={200} height={200} alt="mountain" className="aspect-ratio:1/1 r:sm object-cover" />
-    </div>
-    <div className="pb:xl pt:md bg:stripe-pink">
-      <Image src="/images/mountain7.jpg"width={300} height={200} alt="mountain" className="aspect-ratio:3/2 r:sm object-cover" />
-    </div>
-  </div>
-</Demo>
+Combine a column count with a preferred width, such as `columns:4|100px`. The browser fits up to four columns into the available space. The width is a preference, not a strict minimum: a container narrower than one column can still shrink it.
+
+<DemoExample page="columns" section="flexible-multi-column-layout" />
+
 ```html
 <!-- @MARK columns:4|100px -->
 <div class="columns:4|100px">
-  <img class="w:full aspect-ratio:1/1" src="…" />
-  <img class="w:full aspect-ratio:3/2" src="…" />
-  …
+  <p>Start with a short introduction to the collection.</p>
+  <p>Continue with the details readers need to compare each option.</p>
+  <p>Finish with a clear next step.</p>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use one column for narrow layouts and introduce more columns when there is enough reading width. Resize this preview past `sm` to compare the flow. See [conditions](/reference/rules/conditions).
+
+<DemoExample page="columns" section="apply-conditionally" />
+
 ```html
-<div class="columns:5:hover columns:5@dark columns:5@print columns:5@sm">…</div>
+<div class="columns:1 columns:3@sm">
+  <p>First part of the story.</p>
+  <p>The next part follows in reading order.</p>
+</div>
 ```
 

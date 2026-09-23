@@ -3,39 +3,147 @@
 
 ## Examples \{#examples\}
 ### Blur content behind an element \{#blur-content-behind-an-element\}
-Use `backdrop-filter:blur(...)` to apply a backdrop filter to pixels behind the element.
+The foreground panel filters pixels behind it. Compare the same translucent panel before and after blur; its own text stays sharp.
+
+<DemoExample page="backdrop-filter" section="blur-content-behind-an-element" />
+
 ```html
-<!-- @MARK bg:white/.72 --><!-- @MARK backdrop-filter:blur(12px) -->
-<header class="bg:white/.72 backdrop-filter:blur(12px)">
-  ...
-</header>
+<!-- No filter · sharp backdrop -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base/.64 text:strong
+           backdrop-filter:none">
+    Preview layer
+  </div>
+</div>
+```
+
+```html
+<!-- Blur · softened backdrop -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base/.64 text:strong
+           backdrop-filter:blur(8px)">
+    Preview layer
+  </div>
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['backdrop-filter:blur(12px)']}
+    {['backdrop-filter:blur(8px)']}
   </Class2CSS>
 </details>
 
+The complete example supplies the image, positioned panel and translucent background. The panel’s border box bounds the visible filtered area. The effect stays inside this iframe.
+
 ### Combine with translucent backgrounds \{#combine-with-translucent-backgrounds\}
-Backdrop filters are only visible when the element lets the backdrop show through, usually with an alpha background.
+A translucent background lets the filtered result show through. An opaque background covers it even though the computed filter remains active.
+
+<DemoExample page="backdrop-filter" section="combine-with-translucent-backgrounds" />
+
 ```html
-<!-- @MARK bg:white/.64 --><!-- @MARK backdrop-filter:saturate(1.5) -->
-<div class="bg:white/.64 backdrop-filter:saturate(1.5)">...</div>
+<!-- Translucent · filtered pixels visible -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base/.48 text:strong
+           backdrop-filter:saturate(0)">
+    Preview layer
+  </div>
+</div>
 ```
+
+```html
+<!-- Opaque · filtered pixels covered -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base text:strong
+           backdrop-filter:saturate(0)">
+    Preview layer
+  </div>
+</div>
+```
+
+These panels both remove backdrop saturation. Only their background alpha differs. Keep enough surface contrast for text in each theme; applying opacity to the whole panel would also fade its text.
 
 ### Reset backdrop filters \{#reset-backdrop-filters\}
-Use `backdrop-filter:none` to disable a backdrop filter.
+Use `backdrop-filter:none` to restore the unfiltered backdrop. Open print preview to disable blur on this panel.
+
+<DemoExample page="backdrop-filter" section="reset-backdrop-filters" />
+
 ```html
-<!-- @MARK backdrop-filter:none -->
-<div class="backdrop-filter:none@print">...</div>
+<!-- Blur on screen · none in print -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base/.64 text:strong
+           backdrop-filter:blur(8px)
+           backdrop-filter:none@print">
+    Preview layer
+  </div>
+</div>
 ```
+
+The translucent background remains declared. Removing a backdrop filter does not remove the panel or its background color.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the preview to `sm` to blur the backdrop. Print keeps the original sharp image behind the same panel.
+
+<DemoExample page="backdrop-filter" section="apply-conditionally" />
+
 ```html
-<div class="backdrop-filter:none backdrop-filter:none@print backdrop-filter:blur(12px)@sm">...</div>
+<!-- No filter → blur at sm -->
+<div class="rel h:168px w:240px max-w:100%">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:168px w:240px max-w:100%
+         object-cover" />
+  <div id="target"
+    class="abs inset:md flex items-center
+           justify-center p:sm b:1px|solid|base r:sm
+           font:md bg:surface-base/.64 text:strong
+           backdrop-filter:none
+           backdrop-filter:none@print
+           backdrop-filter:blur(8px)@screen&sm">
+    Preview layer
+  </div>
+</div>
 ```
 
-Backdrop filters can be costly and browser-dependent; verify important surfaces in target browsers.
+The utility emits standard and WebKit-prefixed declarations. Backdrop sampling can vary with browser support and surrounding compositing contexts; verify the actual surface in target browsers. Keep the content readable when the effect is unavailable.

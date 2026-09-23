@@ -3,10 +3,48 @@
 
 ## Examples \{#examples\}
 ### Set the alpha threshold \{#set-the-alpha-threshold\}
-Use `shape-image-threshold:*` with image-based shapes to decide which pixels participate in the shape.
+Image shapes use pixels whose alpha is greater than the threshold. This same-origin SVG has an opaque center and a 30%-opaque outer ring. Compare thresholds of .2 and .5 without changing the displayed image.
+
+<DemoExample page="shape-image-threshold" section="set-the-alpha-threshold" />
+
 ```html
-<!-- @MARK shape-image-threshold:.5 -->
-<img class="float:left shape-image-threshold:.5 shape-outside:url(/mask.png)" src="/images/photo.jpg" alt="Photo">
+<!-- Threshold .2 · includes the outer ring -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <img id="target" src="/demo/mask.svg"
+    width="120" height="120"
+    alt="Opaque blue center with a translucent outer ring"
+    class="float:left outline:1px|solid|muted
+           shape-image-threshold:.2
+           shape-outside:url(/demo/mask.svg)" />
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+```html
+<!-- Threshold .5 · follows the opaque center -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <img id="target" src="/demo/mask.svg"
+    width="120" height="120"
+    alt="Opaque blue center with a translucent outer ring"
+    class="float:left outline:1px|solid|muted
+           shape-image-threshold:.5
+           shape-outside:url(/demo/mask.svg)" />
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
 <details>
@@ -16,21 +54,131 @@ Use `shape-image-threshold:*` with image-based shapes to decide which pixels par
   </Class2CSS>
 </details>
 
+The source is 160 × 160 and renders at 120 × 120. Its 48-unit inner radius becomes 36px; its 76-unit outer radius becomes 57px. Threshold changes the wrap area, not the image’s opacity. Values are clamped to the range 0–1.
+
 ### Use lower thresholds for soft masks \{#use-lower-thresholds-for-soft-masks\}
-Lower thresholds include more semi-transparent pixels in the text wrap shape.
+A continuous alpha gradient makes threshold differences visible along the float’s height. The same gradient paints each square, while its image shape uses opaque black fading to transparent.
+
+<DemoExample page="shape-image-threshold" section="use-lower-thresholds-for-soft-masks" />
+
 ```html
-<!-- @MARK shape-image-threshold:.2 -->
-<img class="shape-image-threshold:.2" src="/images/photo.jpg" alt="">
+<!-- Threshold .2 · includes more of the fade -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <div id="target" role="img"
+    aria-label="Blue fading from opaque to transparent"
+    class="float:left size:120px
+           outline:1px|solid|muted
+           bg:linear-gradient(to|bottom,blue-20,transparent)
+           shape-image-threshold:.2
+           shape-outside:linear-gradient(to|bottom,black,transparent)
+           bg:linear-gradient(to|bottom,blue-80,transparent)@dark"></div>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
+
+```html
+<!-- Threshold .8 · includes only the opaque end -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <div id="target" role="img"
+    aria-label="Blue fading from opaque to transparent"
+    class="float:left size:120px
+           outline:1px|solid|muted
+           bg:linear-gradient(to|bottom,blue-20,transparent)
+           shape-image-threshold:.8
+           shape-outside:linear-gradient(to|bottom,black,transparent)
+           bg:linear-gradient(to|bottom,blue-80,transparent)@dark"></div>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+The lower threshold reserves more of the 120px-tall fade. Once the image shape ends, the paragraph can return to full-width lines even though the float’s rectangular box continues below it. Color brightness does not set the threshold; alpha does. Text can overlap pixels excluded from the shape because the threshold does not clip paint. The gradient uses a lighter blue in light mode and a darker blue in dark mode to keep that text readable.
 
 ### Use with image shapes \{#use-with-image-shapes\}
-This property only matters for shapes that use an image source, such as `shape-outside:url(*)` or gradient-based shapes.
+Threshold applies to image-based shapes, including URLs and gradients. A basic geometric shape instead uses its own coordinates. Compare this SVG’s opaque center with a matching 36px circle.
+
+<DemoExample page="shape-image-threshold" section="use-with-image-shapes" />
+
 ```html
-<img class="float:left shape-image-threshold:.5 shape-outside:url(/mask.png)" src="/images/photo.jpg" alt="">
+<!-- Image shape · threshold selects the center -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <img id="target" src="/demo/mask.svg"
+    width="120" height="120"
+    alt="Opaque blue center with a translucent outer ring"
+    class="float:left outline:1px|solid|muted
+           shape-image-threshold:.5
+           shape-outside:url(/demo/mask.svg)" />
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<img class="shape-image-threshold:.5:hover shape-image-threshold:0@print shape-image-threshold:.2@sm" src="/images/photo.jpg" alt="">
+<!-- Basic circle · threshold has no effect -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <img id="target" src="/demo/mask.svg"
+    width="120" height="120"
+    alt="Opaque blue center with a translucent outer ring"
+    class="float:left outline:1px|solid|muted
+           shape-image-threshold:.8
+           shape-outside:circle(36px)|border-box" />
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
+
+Both examples keep the translucent outer ring visible; shape-outside does not clip image paint. Image-based shapes require a loaded source with CORS approval. This same-origin asset is used by both the displayed image and its shape.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to lower the threshold from .5 to .2, including the translucent ring in the wrap area. Print returns to .5.
+
+<DemoExample page="shape-image-threshold" section="apply-conditionally" />
+
+```html
+<!-- Opaque center → outer ring at sm -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <img id="target" src="/demo/mask.svg"
+    width="120" height="120"
+    alt="Opaque blue center with a translucent outer ring"
+    class="float:left outline:1px|solid|muted
+           shape-image-threshold:.5
+           shape-outside:url(/demo/mask.svg)
+           shape-image-threshold:.5@print
+           shape-image-threshold:.2@screen&sm" />
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+The native query changes the shape extracted from the image. The float dimensions, source paint and paragraph content are preserved.

@@ -3,10 +3,15 @@
 
 ## Examples \{#examples\}
 ### Set left-to-right direction \{#set-left-to-right-direction\}
-Use `direction:ltr` for content that should flow left to right regardless of the surrounding document direction.
+`direction:ltr` sets a local left-to-right base direction. This block resets the inherited RTL direction; its logical start moves to the left.
+
+<DemoExample page="direction" section="set-left-to-right-direction" />
+
 ```html
-<!-- @MARK direction:ltr -->
-<p class="direction:ltr">Invoice #1048</p>
+<!-- RTL parent · LTR paragraph -->
+<section dir="rtl">
+  <p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:ltr">Invoice #1048</p>
+</section>
 ```
 
 <details>
@@ -17,22 +22,40 @@ Use `direction:ltr` for content that should flow left to right regardless of the
 </details>
 
 ### Set right-to-left direction \{#set-right-to-left-direction\}
-Use `direction:rtl` for right-to-left content embedded in a left-to-right page.
+`direction:rtl` sets the base direction of this Arabic paragraph. It changes inline ordering and logical alignment, rather than reversing the source string.
+
+<DemoExample page="direction" section="set-right-to-left-direction" />
+
 ```html
-<!-- @MARK direction:rtl -->
-<p class="direction:rtl">Right-to-left text</p>
+<!-- A local right-to-left paragraph -->
+<p id="target" lang="ar" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:rtl">مرحبًا بكم في مساحة التصميم</p>
 ```
 
+For content whose direction is known, express that meaning with the HTML `dir` attribute.
+
 ### Prefer semantic document direction \{#prefer-semantic-document-direction\}
-Use the `dir` attribute for user content and document-level language direction. Use the utility for localized component exceptions.
+Use HTML `dir` for document and user-content direction. This RTL section contains a complete LTR code block; `display:block` gives the CSS exception its own paragraph context.
+
+<DemoExample page="direction" section="prefer-semantic-document-direction" />
+
 ```html
-<section dir="rtl">
-  <code class="direction:ltr">npm install</code>
+<!-- Semantic RTL content · local code exception -->
+<section dir="rtl" lang="ar">
+  <p class="font:md leading:24px">ثبّت الحزمة لبدء المشروع.</p>
+  <code id="target" lang="en" class="block font:mono font:sm leading:24px text-start direction:ltr">npm install @master/css</code>
 </section>
 ```
 
+For an embedded inline identifier, `<bdi dir="ltr">` can isolate the run. Setting `direction` on an ordinary inline span alone does not establish that isolation.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+This diagnostic comparison switches the same mixed-direction line from LTR to RTL at `sm` on screen. Real content should choose direction by meaning, not viewport width.
+
+<DemoExample page="direction" section="apply-conditionally" />
+
 ```html
-<p class="direction:ltr@print direction:rtl@sm">...</p>
+<!-- Mixed scripts · actual base direction -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:ltr direction:ltr@print direction:rtl@screen&sm">Design · <span lang="ar">مرحبًا</span> · 2026</p>
 ```
+
+Print restores LTR for this comparison. Use semantic `dir` for language-dependent content in production.

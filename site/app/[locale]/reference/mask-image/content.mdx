@@ -3,12 +3,27 @@
 
 ## Examples \{#examples\}
 ### Apply a mask image \{#apply-a-mask-image\}
-Use `mask-image:*` to control the alpha mask for an element.
+An alpha mask multiplies the element’s painted opacity. Compare the original image with a black-to-transparent gradient mask.
+
+<DemoExample page="mask-image" section="apply-a-mask-image" />
+
 ```html
-<!-- @MARK mask-image:linear-gradient(black,transparent) -->
-<div class="mask-image:linear-gradient(black,transparent)">
-  ...
-</div>
+<!-- No mask · complete source -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:150px w:240px max-w:100%
+         mask-image:none object-cover" />
+```
+
+```html
+<!-- Alpha mask · fade toward the bottom -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:150px w:240px max-w:100%
+         mask-image:linear-gradient(black,transparent)
+         mask-mode:alpha object-cover" />
 ```
 
 <details>
@@ -18,19 +33,63 @@ Use `mask-image:*` to control the alpha mask for an element.
   </Class2CSS>
 </details>
 
+In alpha mode, opacity supplies the mask value; black is fully visible because it is opaque. Luminance mode also uses color brightness, so the same black mask would behave differently. A mask changes paint without resizing the element.
+
 ### Fade overflowing media \{#fade-overflowing-media\}
-Gradient masks are useful when media or scroll regions should fade out without changing layout.
+Scroll this real region with touch or a pointer. Keyboard users can focus it and use native scrolling keys where supported, or follow the first and last layer links. The focus outline and description stay outside the mask.
+
+<DemoExample page="mask-image" section="fade-overflowing-media" />
+
 ```html
-<!-- @MARK overflow:hidden --><!-- @MARK mask-image:linear-gradient(black,transparent) -->
-<figure class="overflow:hidden mask-image:linear-gradient(black,transparent)">
-  ...
-</figure>
+<!-- Scrollable list · fixed lower fade -->
+<div class="w:240px max-w:100%">
+  <div class="outline:2px|solid|blue:focus-within
+              outline-offset:3px:focus-within">
+    <div id="target" role="region" tabindex="0"
+      aria-label="Layer list"
+      aria-describedby="scroll-help"
+      class="overflow:auto h:160px bg:surface-base
+             mask-image:linear-gradient(to|bottom,black|60%,transparent)
+             mask-mode:alpha outline:none:focus-visible">
+      <ol class="m:0 pb:3xl pl:lg pr:sm font:sm text:body">
+        <li id="first-layer" class="py:xs">Outline</li>
+        <li class="py:xs">Surface</li>
+        <li class="py:xs">Foreground</li>
+        <li class="py:xs">Accent</li>
+        <li class="py:xs">Annotation</li>
+        <li class="py:xs">Selection</li>
+        <li class="py:xs">Focus</li>
+        <li id="last-layer" class="py:xs">Export</li>
+      </ol>
+    </div>
+  </div>
+  <p id="scroll-help" class="mb:0 mt:sm font:sm text:body">
+    Eight layers. Scroll or follow the links below.
+  </p>
+  <nav aria-label="Layer navigation"
+    class="flex flex-wrap gap:md mt:sm font:sm">
+    <a href="#first-layer">First layer</a>
+    <a href="#last-layer">Last layer</a>
+  </nav>
+</div>
 ```
 
-Masks affect painting and hit testing can still follow the original element box. Keep interactive controls outside heavily masked regions.
+Masking leaves CSS-box hit testing unchanged, including fully transparent areas. Place essential controls outside the mask, and avoid relying on the fading edge to communicate that more content exists. The outer wrapper draws an unmasked focus outline; the links move the real scroll region to its first or last item. The 64px (`3xl`) bottom padding reserves the fading portion so the final item can scroll fully into the opaque area.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to fade the image. Print removes the mask and keeps all of the source visible.
+
+<DemoExample page="mask-image" section="apply-conditionally" />
+
 ```html
-<div class="mask-image:none mask-image:none@print mask-image:linear-gradient(black,transparent)@sm">...</div>
+<!-- No mask → gradient at sm -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:150px w:240px max-w:100%
+         mask-image:none mask-mode:alpha object-cover
+         mask-image:none@print
+         mask-image:linear-gradient(black,transparent)@screen&sm" />
 ```
+
+The actual media condition changes mask paint. The element remains the same size in every state.

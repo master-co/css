@@ -3,54 +3,76 @@
 
 ## Examples \{#examples\}
 ### Add the same gap on both axes \{#add-the-same-gap-on-both-axes\}
-Use `gap:*` on flex and grid containers to set the spacing between children. Unlike margin, gap only affects space between items and does not add space around the outside edge.
+`gap:md` leaves 16px between both rows and columns in this six-item grid. There is no extra gap at the outside edge, and the children have no margins. Track widths share the space left after the two column gaps.
+
+<DemoExample page="gap" section="add-the-same-gap-on-both-axes" />
+
 ```html
-<!-- @MARK grid-cols:3 --><!-- @MARK gap:md -->
-<div class="grid-cols:3 gap:md">
-  <article>...</article>
-  <article>...</article>
-  <article>...</article>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:md w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
 </div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['grid-cols:3', 'gap:md']}
-  </Class2CSS>
-</details>
-
 ### Set row and column gaps separately \{#set-row-and-column-gaps-separately\}
-Use `gap-y:*` for row gaps and `gap-x:*` for column gaps. This is common in card grids where horizontal gutters and vertical rhythm need different values.
+`gap-y:*` sets row-gap; `gap-x:*` sets column-gap. Both grids below use 24px between rows and 12px between columns. The two-value shorthand puts row-gap first.
+
+<DemoExample page="gap" section="set-row-and-column-gaps-separately" />
+
 ```html
-<!-- @MARK gap-x:lg --><!-- @MARK gap-y:xl -->
-<section class="grid-cols:1 gap-x:lg gap-y:xl grid-cols:3@md">
-  ...
-</section>
+<!-- Separate row and column gaps -->
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px w:70x max-w:full gap-x:sm gap-y:lg" role="group" aria-label="Available space">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
+</div>
 ```
 
-You can also set row and column values in one class with `gap:<row>|<column>`.
 ```html
-<!-- @MARK gap:xl|lg -->
-<section class="grid-cols:3 gap:xl|lg">
-  ...
-</section>
+<!-- Two-value shorthand -->
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:lg|sm w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
+</div>
 ```
+
+In horizontal Grid writing, rows stack vertically and columns run horizontally. These physical directions change with writing mode. In Flexbox, which gap separates items or lines also depends on flex-direction.
 
 ### Use gap for component internals \{#use-gap-for-component-internals\}
-Gap is usually easier to maintain than child margins for toolbars, stacks, media objects, and repeated lists.
+Gap works on the actual component layout. This flex row places a 32px avatar beside its label with a 12px gap. `items-center` aligns their centers without adding margin to either child.
+
+<DemoExample page="gap" section="use-gap-for-component-internals" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK items-center --><!-- @MARK gap:sm -->
-<div class="flex items-center gap:sm">
-  <img class="size:8x round" alt="" />
-  <span>Aron</span>
+<div id="layout" class="flex items-center gap:sm w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block flex-shrink:0 size:8x round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+  <span id="peer">Aron · Design systems</span>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="gap:xs:hover gap:lg@dark gap:0@print gap:md@sm">...</div>
-```
+Resize past `sm` to increase the grid’s gaps from 8px to 24px. The container stays 280px wide, so its three flexible columns become narrower as the gaps grow.
 
-For page and component rhythm, prefer shared spacing tokens such as `sm`, `md`, and `lg`.
+<DemoExample page="gap" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:xs w:70x max-w:full gap:lg@sm" role="group" aria-label="Available space">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
+</div>
+```

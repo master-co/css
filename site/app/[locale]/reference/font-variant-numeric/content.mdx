@@ -2,38 +2,73 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Align tabular numbers \{#align-tabular-numbers\}
-Use `tabular-nums` for tables, timers, and dashboards where digits should line up across rows.
+Tabular digits have equal advance widths, which helps align equally formatted values. Geist is proportional by default; this comparison uses identical strings and no padding between digits.
+
+<DemoExample page="font-variant-numeric" section="align-tabular-numbers" />
+
 ```html
-<!-- @MARK tabular-nums -->
-<td class="tabular-nums">12,480.00</td>
+<!-- proportional-nums -->
+<div id="target" class="proportional-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['tabular-nums']}
-  </Class2CSS>
-</details>
+```html
+<!-- tabular-nums -->
+<div id="target" class="tabular-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+```
+
+Decimal points, signs and different digit counts still need an appropriate table or alignment strategy.
 
 ### Show slashed zeroes \{#show-slashed-zeroes\}
-Use `slashed-zero` when zeroes need to be visually distinct from the letter O.
-```html
-<!-- @MARK slashed-zero -->
-<code class="slashed-zero">OID-00042</code>
+`slashed-zero` selects the font’s alternate zero when available. This example loads the site’s JetBrains Mono face, where the dotted default zero changes to a slashed form.
+
+<DemoExample page="font-variant-numeric" section="show-slashed-zeroes" />
+
+```css name=index.css
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 100 800;
+  font-display: swap;
+  src: url('/fonts/JetBrainsMono[wght].ttf') format('truetype');
+}
+@theme {
+  --font-family-code-demo: 'JetBrains Mono', monospace;
+}
 ```
 
-### Reset numeric variants \{#reset-numeric-variants\}
-Use `font-variant-numeric:normal` to remove numeric variant features from a nested element.
 ```html
-<!-- @MARK font-variant-numeric:normal -->
-<span class="tabular-nums">
-  <span class="font-variant-numeric:normal">Normal numbers</span>
-</span>
+<!-- font-variant-numeric:normal -->
+<p id="target" class="m:0 font-variant-numeric:normal font:3xl leading:sm font:code-demo">0O 00 2026</p>
+```
+
+```html
+<!-- slashed-zero -->
+<p id="target" class="m:0 slashed-zero font:3xl leading:sm font:code-demo">0O 00 2026</p>
+```
+
+An unsupported OpenType feature is ignored. The computed property alone does not prove that the glyph changed.
+
+### Reset numeric variants \{#reset-numeric-variants\}
+`font-variant-numeric:normal` resets inherited numeric variants on the child. It does not cancel a separate raw `font-feature-settings` override.
+
+<DemoExample page="font-variant-numeric" section="reset-numeric-variants" />
+
+```html
+<!-- Tabular parent · proportional child -->
+<div id="context" class="tabular-nums font:3xl leading:sm">
+  <p class="m:0"><span id="inherited" class="inline-block">11111</span></p>
+  <p id="target" class="m:0 font-variant-numeric:normal"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></p>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Focus the sample with the keyboard or hover it to enable tabular digits. Read the actual glyph-run widths below.
+
+<DemoExample page="font-variant-numeric" section="apply-conditionally" />
+
 ```html
-<span class="tabular-nums:hover font-variant-numeric:normal@print font-variant-numeric:normal@sm">...</span>
+<!-- A real state change -->
+<div id="target" tabindex="0" role="group" aria-label="Numeric variant sample" class="proportional-nums font:3xl leading:sm tabular-nums:hover tabular-nums:focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```

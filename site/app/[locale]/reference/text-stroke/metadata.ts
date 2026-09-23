@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-stroke',
-  description: 'Setting the width and color of strokes for text characters.',
+  description: 'Set the width and color of an edge around text glyphs.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke',

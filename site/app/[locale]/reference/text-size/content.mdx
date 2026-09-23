@@ -2,34 +2,53 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Body text \{#body-text\}
+
+
+<DemoExample page="text-size" section="body-text" />
+
 <BodyText />
-If you don't want to include line height, use the [`font:<size>`](/reference/font-size).
+
+Use [`font:*`](/reference/font-size) when only the size should change.
 
 ### Headings \{#headings\}
+
+
+<DemoExample page="text-size" section="headings" />
+
 <Headings />
 
 ### Page titles, hero sections \{#page-titles-hero-sections\}
+
+
+<DemoExample page="text-size" section="page-titles-hero-sections" />
+
 <PageTitles />
 
 ### Use a precise size \{#use-a-precise-size\}
-Use `text:*` when the type scale utility should set font size, line height, and letter spacing together.
+An explicit `text:17px` applies the same size-dependent formulas to a measured value outside the named scale. Inspect all three computed properties below.
+
+<DemoExample page="text-size" section="use-a-precise-size" />
+
 ```html
-<!-- @MARK text:16px -->
-<p class="text:md">
-  Body copy
-</p>
+<!-- Explicit 17px combined treatment -->
+<p id="target" class="max-w:28ch m:0 text:17px">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text:16px']}
+    {['text:17px']}
   </Class2CSS>
 </details>
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The title changes from `text:2xl` to `text:4xl` at `sm`, updating size, leading and tracking together. Print preview applies the smaller `text:xl` treatment.
+
+<DemoExample page="text-size" section="apply-conditionally" />
+
 ```html
-<div class="text:xl:hover text:md@print text:5xl@sm">...</div>
+<!-- Responsive combined treatment -->
+<h2 id="target" class="m:0 text:2xl font:regular text:xl@print text:4xl@screen&sm">Space for good ideas.</h2>
 ```

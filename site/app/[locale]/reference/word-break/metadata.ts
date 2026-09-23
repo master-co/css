@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'word-break',
-  description: 'Setting whether words should break.',
+  description: 'Control ordinary word boundaries and character-level line breaking.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=word-break',

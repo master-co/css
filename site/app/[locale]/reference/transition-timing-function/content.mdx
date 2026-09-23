@@ -3,12 +3,86 @@
 
 ## Examples \{#examples\}
 ### Choose an easing curve \{#choose-an-easing-curve\}
-Use `transition-timing-function:*` to control acceleration during a transition. Pair it with a duration so the curve is visible.
+Toggle each layer to compare linear, ease-in and ease-out over the same 800ms and 96px. The endpoints and total duration stay identical.
+
+<DemoExample page="transition-timing-function" section="choose-an-easing-curve" />
+
 ```html
-<!-- @MARK transition-timing-function:ease-out -->
-<button class="transition-duration:180ms transition-property:transform transition-timing-function:ease-out transform:translateY(-2px):hover">
-  Hover
-</button>
+<!-- Linear · constant progress -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition:none@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+```html
+<!-- Ease in · slower at the beginning -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:ease-in
+             transition:none@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+```html
+<!-- Ease out · slower at the end -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:ease-out
+             transition:none@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
 <details>
@@ -18,26 +92,124 @@ Use `transition-timing-function:*` to control acceleration during a transition. 
   </Class2CSS>
 </details>
 
+An easing function maps elapsed progress to the interpolated value. It changes the distribution of movement through time, not the declared duration or destination.
+
 ### Use linear timing for continuous motion \{#use-linear-timing-for-continuous-motion\}
-Use `linear` when the transition represents steady progress instead of physical easing.
+Compare steady movement with four discrete steps. Both travel 96px over one second; steps(4,end) waits until each step boundary before advancing.
+
+<DemoExample page="transition-timing-function" section="use-linear-timing-for-continuous-motion" />
+
 ```html
-<!-- @MARK transition-timing-function:linear -->
-<div class="transition-duration:1s transition-property:opacity transition-timing-function:linear">
-  Syncing
-</div>
+<!-- Linear · continuous progress -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|1s|linear@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+```html
+<!-- Four steps · 24px per step -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|1s|steps(4,end)@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+Linear timing gives constant progress between these numeric endpoints. Steps creates intentional jumps. Use steps() for stepped timing; it is distinct from a continuously interpolated curve.
 
 ### Keep entrance and exit curves intentional \{#keep-entrance-and-exit-curves-intentional\}
-`ease-out` works well for elements entering or becoming more prominent. `ease-in` can work for elements leaving the interface.
+Check to move the layer out with ease-out. After it arrives, uncheck to return with ease-in. Each direction keeps the same duration.
+
+<DemoExample page="transition-timing-function" section="keep-entrance-and-exit-curves-intentional" />
+
 ```html
-<!-- @MARK transition-timing-function:ease-in -->
-<div class="transition-timing-function:ease-out transition-timing-function:ease-in:hover">
-  Dismiss
-</div>
+<!-- Ease out → ease in on return -->
+<label
+  class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen
+         transition-timing-function:ease-out:has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|slowest|ease-in@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
+A transition uses the timing function selected for its new state. The checked rule supplies ease-out for the outward move, and the resting rule supplies ease-in for the return. Reversing an unfinished transition can shorten its return interval.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize before toggling. Below `sm`, the layer uses ease-out; at `sm`, it uses linear timing. Duration and distance remain fixed.
+
+<DemoExample page="transition-timing-function" section="apply-conditionally" />
+
 ```html
-<div class="transition-timing-function:ease-out:hover transition-timing-function:ease-in@print transition-timing-function:linear@sm">...</div>
+<!-- Ease out → linear at sm -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none@print
+             transition:transform|slowest|ease-out@screen&motion
+             transition-timing-function:linear@screen&sm">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+The easing value follows the real iframe viewport. Reduced motion and print remove the interpolation, so a reported curve does not imply visible motion when the duration is zero.

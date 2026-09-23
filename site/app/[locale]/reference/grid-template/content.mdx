@@ -3,23 +3,46 @@
 
 ## Basic usage \{#basic-usage\}
 ### Define rows and columns together \{#define-rows-and-columns-together\}
-Use `grid-template` to set grid rows and columns in one shorthand.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-template:64px|1fr/120px|1fr gap:xs h:180px">
-      <div className="overflow:hidden min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">Nav</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Header</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Main</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-template` sets explicit rows, columns and named areas. Put rows before `/` and columns after it. In the first example, the 224px height gives the second row 144px after the 64px first row and 16px gap.
+
+<DemoExample page="grid-template" section="define-rows-and-columns-together" />
+
 ```html
-<!-- @MARK grid-template:64px|1fr/120px|1fr -->
-<div class="grid grid-template:64px|1fr/120px|1fr">…</div>
+<div id="layout" class="grid grid-template:64px|1fr/96px|1fr gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="grid-template:64px|1fr/120px|1fr:hover grid-template:64px|1fr/120px|1fr@dark grid-template:64px|1fr/120px|1fr@print grid-template:64px|1fr/120px|1fr@sm">…</div>
+<div id="layout" class="grid grid-template:none grid-auto-columns:72px grid-auto-flow:column grid-auto-rows:48px gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+</div>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['grid-template:64px|1fr/96px|1fr']}
+  </Class2CSS>
+</details>
+
+Unlike [grid](/reference/grid), this shorthand leaves `grid-auto-flow`, `grid-auto-rows` and `grid-auto-columns` intact. The second example has no explicit template, yet its authored implicit columns remain 72px wide with column flow. The rows/columns form resets named areas to `none`; it does not establish `display:grid`.
+
+### Apply conditionally \{#apply-conditionally\}
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. Four 48px rows initially fill one column. From `sm`, the same items use a 64px header row plus the remaining height, across two columns. The container height stays 240px.
+
+<DemoExample page="grid-template" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid grid-template:repeat(4,48px)/1fr gap:md h:60x w:70x max-w:full grid-template:64px|1fr/96px|1fr@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```

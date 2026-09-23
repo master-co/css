@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'gap',
-  description: 'Setting the gutters between rows and columns.',
+  description: 'Space Grid and Flex items using actual row and column gaps.',
   category: 'Spacing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=gap',

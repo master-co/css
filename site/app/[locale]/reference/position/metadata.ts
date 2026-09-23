@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'position',
-  description: 'Setting an element is positioned in a document.',
+  description: 'Control how an element participates in flow and responds to offsets.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=position',

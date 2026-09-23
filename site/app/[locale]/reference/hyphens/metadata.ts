@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'hyphens',
-  description: 'Set how to split words to improve the layout of paragraphs.',
+  description: 'Control language-dependent and manual hyphenation opportunities.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=hyphens',

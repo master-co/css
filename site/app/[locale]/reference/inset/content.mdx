@@ -3,45 +3,57 @@
 
 ## Examples \{#examples\}
 ### Pin all sides \{#pin-all-sides\}
-Use `inset:*` on positioned elements to set `top`, `right`, `bottom`, and `left` together.
-<Demo>
-  <div className="bg:stripe-pink">
-    <div className="box rel inset:20px w:180px aspect-ratio:1/1">`inset:20px`</div>
-  </div>
-</Demo>
+`inset:*` sets `top`, `right`, `bottom`, and `left` together. An absolutely positioned box with automatic width and height stretches between those edges.
+
+<DemoExample page="inset" section="pin-all-sides" />
+
 ```html
-<!-- @MARK inset:20px -->
-<div>
-  <div class="rel inset:20px">inset:5x</div>
+<div class="rel h:40x">
+  <!-- @MARK inset:md -->
+  <div class="abs inset:md">Inset on all four sides</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['inset:20px']}
+    {['inset:md']}
   </Class2CSS>
 </details>
 
 ### Pin one side \{#pin-one-side\}
-Use side utilities such as `top:*`, `right:*`, `bottom:*`, and `left:*` when only one edge should move.
+Use individual side utilities to place an object against selected edges. This button keeps its content size and sits one `md` inset from the top and right of its positioned parent.
+
+<DemoExample page="inset" section="pin-one-side" />
+
 ```html
-<!-- @MARK top:0 --><!-- @MARK right:0 -->
-<button class="abs right:0 top:0">
-  Close
-</button>
+<div class="rel h:40x">
+  <!-- @MARK top:md --><!-- @MARK right:md -->
+  <button type="button" class="abs right:md top:md">Close</button>
+</div>
 ```
 
-### Center overlays with inset \{#center-overlays-with-inset\}
-`inset:0` is useful for overlays that should cover their positioned parent.
+### Cover a positioned parent \{#center-overlays-with-inset\}
+Use `abs inset:0` to cover the parent’s positioning area. Leave the overlay’s width and height automatic so the opposing insets can determine its size.
+
+<DemoExample page="inset" section="center-overlays-with-inset" />
+
 ```html
-<div class="rel">
-  <div class="abs inset:0"></div>
+<div class="rel h:40x">
+  <!-- @MARK inset:0 -->
+  <div class="abs inset:0">Overlay</div>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to change the behavior when a state or viewport condition applies. Focus the blue box with Tab to increase all four insets. The responsive class supplies a larger resting inset from `sm` upward.
+
+<DemoExample page="inset" section="apply-conditionally" />
+
 ```html
-<div class="inset:0.625rem:hover inset:0@print inset:20px@sm">...</div>
+<div class="rel h:40x">
+  <div tabindex="0" class="abs inset:sm inset:xl:focus-visible inset:lg@sm">
+    Focus with Tab
+  </div>
+</div>
 ```

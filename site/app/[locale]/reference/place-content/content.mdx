@@ -2,37 +2,55 @@
 <Overview/>
 
 ## Examples \{#examples\}
-### Align grid or wrapped flex content on both axes \{#align-grid-or-wrapped-flex-content-on-both-axes\}
-Use `place-content:*` as shorthand for `align-content` and `justify-content`.
+### Align tracks on both axes \{#align-grid-or-wrapped-flex-content-on-both-axes\}
+`place-content:center` sets both `align-content:center` and `justify-content:center`. These fixed 80px columns and 48px rows form a compact grid inside a larger 280 × 224px container, leaving room to center the track group in both directions.
+
+<DemoExample page="place-content" section="align-grid-or-wrapped-flex-content-on-both-axes" />
+
 ```html
-<!-- @MARK grid --><!-- @MARK place-content:center -->
-<div class="grid place-content:center h:3xs">
-  ...
+<div id="layout" class="grid grid-template-columns:20x|20x grid-template-rows:12x|12x place-content:center gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'place-content:center', 'h:64x']}
+    {['grid', 'place-content:center']}
   </Class2CSS>
 </details>
 
+In Grid, the two components act on the block and inline axes. In a wrapping flex container they act on the cross-axis lines and main-axis items within each line. `align-content` has no effect on a `flex-nowrap` container.
+
 ### Use separate axis values \{#use-separate-axis-values\}
-Pass two values when block and inline distribution should differ.
+The first value sets `align-content`; the second sets `justify-content`. Here `start|space-between` keeps the rows at block-start while spreading the two fixed columns to the inline edges. With horizontal writing, this means top-aligned rows and columns at the left and right.
+
+<DemoExample page="place-content" section="use-separate-axis-values" />
+
 ```html
-<!-- @MARK place-content:start|space-between -->
-<section class="grid place-content:start|space-between">
-  ...
-</section>
+<div id="layout" class="grid grid-template-columns:20x|20x grid-template-rows:12x|12x place-content:start|space-between gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```
 
-Use [place-items](/reference/place-items) for item alignment inside grid areas, not distribution of the tracks as a group.
+Use [place-items](/reference/place-items) for alignment inside each grid area. Fractional or stretched tracks can consume the space that would otherwise be available for content distribution.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="place-content:start place-content:start@print place-content:center@sm">...</div>
-```
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. The fixed track group starts at the top-left, then centers on both axes from `sm`. The container and track sizes stay fixed while the viewport condition changes.
 
-`place-content` is visible only when the container has extra space to distribute.
+<DemoExample page="place-content" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid grid-template-columns:20x|20x grid-template-rows:12x|12x place-content:start gap:md h:56x w:70x max-w:full place-content:center@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
+```

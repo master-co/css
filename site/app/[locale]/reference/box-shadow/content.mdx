@@ -4,58 +4,159 @@
 ---
 
 ## Basic usage \{#basic-usage\}
+
 ### Use shadow tokens \{#use-shadow-tokens\}
-Use `shadow:*` tokens for common elevation levels. Preset shadow tokens are defined separately for light and dark modes, so the class name stays the same while the active theme changes the `box-shadow` value.
+Preset `shadow:*` tokens define common elevation levels. Switch the preview theme: the class stays the same while each token resolves to its mode-specific paint.
+
+<DemoExample page="box-shadow" section="use-shadow-tokens" />
+
 ```html
-<!-- @MARK shadow:md -->
-<article class="shadow:md">
-  ...
+<!-- Small elevation -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body shadow:sm box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
+</article>
+```
+
+```html
+<!-- Large elevation -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body shadow:lg box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
 </article>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow:md']}
+    {['shadow:sm', 'shadow:lg']}
   </Class2CSS>
 </details>
 
+The shadow is visual ink outside the box; it does not add layout size or spacing. Leave enough room for its blur to remain visible.
+
 ### Use raw values \{#use-raw-values\}
-Use raw values when a shadow does not belong in the shared scale. Raw values are literal; they do not automatically adapt between light and dark modes.
+Use literal shadow layers for a specific effect. The first listed layer paints above later layers. These blue shadows retain the same raw color values across themes.
+
+<DemoExample page="box-shadow" section="use-raw-values" />
 
 ```html
-<!-- @MARK shadow:0|1px|2px|black/.12,0|4px|8px|black/.08 -->
-<div class="shadow:0|1px|2px|black/.12,0|4px|8px|black/.08">...</div>
+<!-- Two raw layers · literal color -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body
+         shadow:0|2px|4px|blue-50/.2,0|8px|16px|blue-50/.12
+         box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
+</article>
 ```
+
+Raw values do not automatically acquire a separate dark-mode design. Compare against the actual surface, then promote recurring decisions into a theme token.
 
 ### Use inset shadows \{#use-inset-shadows\}
-Use `shadow:inset|...` when the shadow should render inside the element.
+`inset` paints the shadow inside the border edge. Compare the same 4px vertical offset and 12px blur outside and inside the surface.
+
+<DemoExample page="box-shadow" section="use-inset-shadows" />
+
 ```html
-<!-- @MARK shadow:inset|0|1px|2px|black/.12 -->
-<div class="shadow:inset|0|1px|2px|black/.12">...</div>
+<!-- Outer shadow -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body shadow:0|4px|12px|blue-50/.2
+         box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
+</article>
 ```
+
+```html
+<!-- Inset shadow -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body shadow:inset|0|4px|12px|blue-50/.2
+         box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
+</article>
+```
+
+Neither shadow changes the box’s dimensions. An inset shadow paints over the background and beneath the content.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the button to move from a small to a large shadow token. Print removes the shadow while preserving its border and label.
+
+<DemoExample page="box-shadow" section="apply-conditionally" />
+
 ```html
-<div class="shadow:sm shadow:md:hover shadow:none@print">...</div>
+<!-- Small → large elevation on interaction -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm font:md
+         bg:surface-base text:body shadow:sm
+         box-border bg:surface-muted:focus-visible
+         shadow:none@print shadow:lg:hover@screen
+         shadow:lg:focus-visible@screen">
+  Open library
+</button>
 ```
 
+The independent focus outline remains visible; a shadow alone should not be the only indication of keyboard focus.
+
 ### Customize mode-specific tokens \{#customize-mode-specific-tokens\}
-Override the same preset `shadow-*` key in `@theme light` and `@theme dark` when an elevation decision should adapt across modes.
+Override a shared shadow token separately in light and dark themes. The live preview compiles these exact declarations; use its theme control to compare the resolved layers.
+
+<DemoExample page="box-shadow" section="customize-mode-specific-tokens" />
 
 ```css name=index.css
 @theme light {
-  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .05), 0 2px 4px -2px oklch(0% 0 none / .08), 0 8px 16px -4px oklch(0% 0 none / .10);
+  --shadow-sm: 0 0 0 1px oklch(0% 0 none / .08),
+    0 6px 12px -2px oklch(0% 0 none / .14);
 }
 
 @theme dark {
-  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .06), 0 2px 4px -2px oklch(0% 0 none / .38), 0 8px 16px -4px oklch(0% 0 none / .30);
+  --shadow-sm: 0 0 0 1px oklch(100% 0 none / .16),
+    0 6px 12px -2px oklch(0% 0 none / .5);
 }
 ```
 
 ```html
-<article class="shadow:sm">...</article>
+<!-- Configured small shadow · two theme definitions -->
+<article id="target"
+  class="w:240px max-w:100% p:lg r:md bg:surface-base
+         text:body shadow:sm box-border">
+  <h4 class="m:0 font:lg">
+    Workspace library
+  </h4>
+  <p class="mx:0 mb:0 mt:sm font:sm">
+    Shared assets and components.
+  </p>
+</article>
 ```
 
-Prefer tokens for product surfaces. Use raw values for one-off art direction, then promote repeated values into the shadow scale.
+The subtle edge layer helps separate the surface in dark mode. The shadow still occupies no layout space. Prefer shared tokens when the same elevation decision appears across a product.

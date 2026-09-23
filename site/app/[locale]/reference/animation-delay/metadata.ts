@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'animation-delay',
-  description: 'Setting a time to delay before beginning to perform the animation.',
+  description: 'Setting when an animation starts or which phase it starts from.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=animation-delay',

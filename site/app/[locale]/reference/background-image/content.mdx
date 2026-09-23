@@ -2,37 +2,64 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Add a background image \{#add-a-background-image\}
-Use `bg:url(...)` to set `background-image`.
+`bg:url(...)` changes only `background-image`. Supply a real asset, visible box dimensions and the other longhands needed for its composition.
+
+<DemoExample page="background-image" section="add-a-background-image" />
+
 ```html
-<!-- @MARK bg:url(/hero.jpg) -->
-<section class="bg-center bg-cover bg:url(/hero.jpg)">
-  ...
-</section>
+<!-- Local SVG · centered cover -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         bg:surface-muted bg:url(/demo/landscape.svg)"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/hero.jpg)']}
+    {['bg:url(/demo/landscape.svg)']}
   </Class2CSS>
 </details>
 
+This example uses a local 320 × 200 SVG at `/demo/landscape.svg`. Backgrounds have no native alternative text; use an `<img>` when the image itself carries meaning.
+
 ### Use gradients \{#use-gradients\}
-Use native CSS gradient functions directly in the class.
+Use native gradient functions as background images. Commas inside the function separate color stops; a comma after the function separates background layers.
+
+<DemoExample page="background-image" section="use-gradients" />
+
 ```html
-<!-- @MARK bg:linear-gradient(90deg,red,blue) -->
-<div class="bg:linear-gradient(90deg,red,blue)">
-  ...
-</div>
+<!-- One gradient layer -->
+<div id="target" role="img" aria-label="Blue to violet gradient"
+  class="h:160px w:xs max-w:100%
+         bg:linear-gradient(90deg,blue-50,violet-50)"
+></div>
 ```
 
-Pair image utilities with [background-position](/reference/background-position), [background-size](/reference/background-size), and [background-repeat](/reference/background-repeat) unless you intentionally want the full [background](/reference/background) shorthand.
+```html
+<!-- Transparent gradient over artwork -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         bg:linear-gradient(90deg,transparent,blue-50),url(/demo/landscape.svg)"
+></div>
+```
+
+The first listed image paints on top. The gradient’s transparent edge reveals the artwork beneath it. These background utilities resolve preset palette names inside gradient functions; keep commas and pipe-separated stop positions intact. Pair them with focused [position](/reference/background-position), [size](/reference/background-size) and [repeat](/reference/background-repeat) utilities.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the preview viewport to `sm` to add the image. The frame, surface color and image geometry are present at every width; print removes the decorative image.
+
+<DemoExample page="background-image" section="apply-conditionally" />
+
 ```html
-<div class="background-image:none background-image:none@print bg:url(/hero.jpg)@sm">...</div>
+<!-- Image appears at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-image:none bg:surface-muted background-image:none@print
+         bg:url(/demo/landscape.svg)@screen&sm"
+></div>
 ```
 
-Use local or bundled assets according to the framework integration you are using.
+Keep important information in HTML so it remains available when backgrounds are absent or disabled in print settings.

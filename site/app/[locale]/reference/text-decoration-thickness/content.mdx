@@ -1,42 +1,111 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- These examples spell out the native decoration longhands to distinguish them from the resetting shorthand. */}
 
 ## Examples \{#examples\}
 ### Set decoration thickness \{#set-decoration-thickness\}
-Use `text-decoration-thickness:*` to control underline, overline, or line-through weight.
+`text-decoration-thickness` sets the weight of an existing underline, overline or strike-through. Compare 1px and 3px with the same font and offset.
+
+<DemoExample page="text-decoration-thickness" section="set-decoration-thickness" />
+
 ```html
-<!-- @MARK text-decoration-thickness:2px -->
-<a class="underline text-decoration-thickness:2px">
-  Strong underline
-</a>
+<!-- Thickness · 1px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-thickness:1px
+         text-underline:3xs"
+>
+  Design together
+</p>
+```
+
+```html
+<!-- Thickness · 3px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-color:blue-50 text-decoration-thickness:3px
+         text-underline:3xs"
+>
+  Design together
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-decoration-thickness:2px']}
+    {['text-decoration-thickness:3px']}
   </Class2CSS>
 </details>
 
 ### Use font-provided thickness \{#use-font-provided-thickness\}
-Use `text-decoration:from-font` when the typeface provides an underline thickness that should be respected.
+`text-decoration-thickness:from-font` requests the font’s preferred underline thickness. If that metric is unavailable, the browser falls back to its automatic choice.
+
+<DemoExample page="text-decoration-thickness" section="use-font-provided-thickness" />
+
 ```html
-<!-- @MARK text-decoration:from-font -->
-<a class="underline text-decoration:from-font">
-  Typeface underline
-</a>
+<!-- Thickness · auto -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:auto"
+>
+  Design together
+</p>
 ```
+
+```html
+<!-- Thickness · from-font -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:from-font"
+>
+  Design together
+</p>
+```
+
+The two values may look identical. The readout reports the requested keyword, not a measured stroke thickness. Use the thickness longhand to retain the underline.
 
 ### Pair with underline offset \{#pair-with-underline-offset\}
-Thicker decorations usually need a slightly larger [`text-underline-offset`](/reference/text-underline-offset).
+Offset and thickness control separate parts of the underline. Compare the same 3px line at 2px and 6px offsets; neither changes the text box’s layout height.
+
+<DemoExample page="text-decoration-thickness" section="pair-with-underline-offset" />
+
 ```html
-<a class="underline text-decoration-thickness:2px text-underline:3xs">
-  Balanced underline
-</a>
+<!-- 3px thickness · 2px offset -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:3px text-underline-offset:2px"
+>
+  Design together
+</p>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<a class="text-decoration-thickness:2px:hover text-decoration-thickness:1px@print text-decoration:from-font@sm">...</a>
+<!-- 3px thickness · 6px offset -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+         text-decoration-thickness:3px text-underline-offset:6px"
+>
+  Design together
+</p>
 ```
+
+Inspect the actual font’s descenders and line spacing before selecting an offset.
+
+### Apply conditionally \{#apply-conditionally\}
+Hover or focus to increase the underline from 1px to 3px. Print uses the thinner line. The label keeps its font size and line height.
+
+<DemoExample page="text-decoration-thickness" section="apply-conditionally" />
+
+```html
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:2xl leading:xl underline text-decoration-thickness:1px
+         text-underline:3xs text-decoration-thickness:1px@print
+         text-decoration-thickness:3px:hover@screen
+         text-decoration-thickness:3px:focus-visible@screen"
+>
+  Design together
+</button>
+```
+
+{/* eslint-enable @master/css/prefer-canonical-classes */}

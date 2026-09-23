@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-auto-flow',
-  description: 'Controlling how auto-placed items get inserted in the grid.',
+  description: 'Choose row or column auto-placement and optional dense packing.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-auto-flow',

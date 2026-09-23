@@ -1,64 +1,145 @@
 ## Overview [sr-only] \{#overview\}
-<Overview />
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document border-color syntax */}
+<Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- this reference teaches the dedicated border-color longhand */}
 
 ## Examples \{#examples\}
+
 ### Set border color \{#set-border-color\}
-Use `border-color:*` when only the border color should change.
+A color needs a visible border width and style. Compare identical 2px solid borders; only their color changes.
+
+<DemoExample page="border-color" section="set-border-color" />
+
 ```html
-<!-- @MARK border-color:blue-60 -->
-<div class="b:1px|solid border-color:blue-60">
-  Primary border
+<!-- Primary · blue -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid
+         border-color:blue font:md bg:surface-muted
+         text:body box-border">
+  Preview panel
+</div>
+```
+
+```html
+<!-- Comparison · violet -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid
+         border-color:violet font:md bg:surface-muted
+         text:body box-border">
+  Preview panel
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['border-color:blue-60']}
+    {['border-color:blue']}
   </Class2CSS>
 </details>
 
 ### Use side-specific color utilities \{#use-side-specific-color-utilities\}
-Use side aliases when only one edge should change.
+`bt:transparent` changes only the top edge’s paint. Its 6px border still occupies space, keeping content and outer dimensions aligned with the fully painted box.
+
+<DemoExample page="border-color" section="use-side-specific-color-utilities" />
+
 ```html
-<!-- @MARK bt:transparent -->
-<div class="b:1px|solid|gray-20 bt:transparent">
-  No top border color
+<!-- Four painted edges -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:6px|solid|blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
 </div>
 ```
 
-### Follow the current text color \{#follow-the-current-text-color\}
-Use `border-color:currentColor` when the border should track the foreground color.
 ```html
-<!-- @MARK border-color:currentColor -->
-<button class="b:1px|solid border-color:currentColor fg:blue-60">
+<!-- Transparent top · width preserved -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:6px|solid|blue
+         bt:transparent font:md bg:surface-muted
+         text:body box-border">
+  Preview panel
+</div>
+```
+
+Transparent color differs from `bt:0` or `bt-none`, which remove the used border width.
+
+### Follow the current text color \{#follow-the-current-text-color\}
+`border-color:currentColor` follows the same element’s foreground. Hover or keyboard-focus this button: one foreground change updates both its text and border.
+
+<DemoExample page="border-color" section="follow-the-current-text-color" />
+
+```html
+<!-- Current color · foreground and edge -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:2px|solid border-color:currentColor r:sm
+         font:md bg:surface-base text:blue box-border
+         bg:surface-muted:focus-visible
+         text:violet:hover@screen
+         text:violet:focus-visible@screen">
   Current color
 </button>
 ```
 
+`currentColor` refers to the computed `color` of this element. It does not inherit a parent’s border color.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+At `sm`, the blue border follows the violet foreground through `currentColor`. Print makes the border transparent while preserving its width.
+
+<DemoExample page="border-color" section="apply-conditionally" />
+
 ```html
-<div class="border-color:blue-60:hover border-color:transparent@print border-color:currentColor@sm">...</div>
+<!-- Blue → current color at sm -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:2px|solid border-color:blue r:sm font:md
+         bg:surface-base text:violet box-border
+         bg:surface-muted:focus-visible
+         border-color:transparent@print
+         border-color:currentColor@screen&sm">
+  Preview details
+</button>
 ```
+
+Resize the actual preview viewport. Width and style stay constant across these conditions.
 
 ---
 
 ## Customization \{#customization\}
 ### Customize line colors \{#customize-line-colors\}
-Define a project line color token when separators need a semantic, mode-aware value.
+Define a semantic line token in each theme, then compile the token declarations with their consuming classes. Switch the preview theme to inspect the resulting separator color.
+
+<DemoExample page="border-color" section="customize-line-colors" />
+
 ```css name=index.css
 @theme light {
-  --color-line-divider: --alpha(var(--color-slate-60) / 20%); /* [!code highlight] */
+  --color-line-divider:
+    --alpha(var(--color-slate-60) / 40%);
 }
 
 @theme dark {
-  --color-line-divider: --alpha(var(--color-gray-30) / 20%); /* [!code highlight] */
+  --color-line-divider:
+    --alpha(var(--color-gray-30) / 50%);
 }
 ```
-Apply the token to a border color.
+
 ```html
-<div class="b:1px|solid border-color:divider"></div>
+<!-- Configured divider · mode-aware paint -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid font:md
+         bg:surface-muted text:body box-border
+         border-color:divider">
+  Project divider
+</div>
 ```
+
+The example retains the authored `@theme` declarations. The border keeps its own width and style; only the resolved color changes.
+
 {/* eslint-enable @master/css/prefer-canonical-classes */}

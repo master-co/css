@@ -3,11 +3,49 @@
 
 ## Examples \{#examples\}
 ### Preserve 3D children \{#preserve-3d-children\}
-Use `transform-style:preserve-3d` on the parent when transformed children should keep their 3D position instead of being flattened into the parent plane.
+Both parents rotate 32 degrees around Y and contain a child translated 48px toward the viewer. Compare flattening that child into the parent plane with preserving its depth.
+
+<DemoExample page="transform-style" section="preserve-3d-children" />
+
 ```html
-<!-- @MARK transform-style:preserve-3d -->
-<div class="transform-style:preserve-3d">
-  <div class="transform:translateZ(24px)">Front layer</div>
+<!-- Flat · child flattened into parent -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:flat">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
+</div>
+```
+
+```html
+<!-- Preserve 3D · child keeps its depth -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:preserve-3d">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
 </div>
 ```
 
@@ -18,25 +56,132 @@ Use `transform-style:preserve-3d` on the parent when transformed children should
   </Class2CSS>
 </details>
 
+The outer container supplies perspective. Transform-style controls how descendants participate in the 3D context; it does not add depth by itself. The front child’s translateZ supplies the actual displacement.
+
 ### Flatten nested transforms \{#flatten-nested-transforms\}
-Use `transform-style:flat` when children should render in the same plane as the parent.
+An explicit flat value flattens descendants. Grouping effects can also force flattening even when the computed transform-style still says preserve-3d.
+
+<DemoExample page="transform-style" section="flatten-nested-transforms" />
+
 ```html
-<!-- @MARK transform-style:flat -->
-<div class="transform-style:flat">
-  <div class="transform:rotateY(20deg)">Flattened child</div>
+<!-- Explicit flat · default flattening -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:flat">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
 </div>
 ```
+
+```html
+<!-- Opacity .8 · preserve-3d is flattened -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80 opacity:.8
+           transform:rotateY(32deg)
+           transform-style:preserve-3d">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
+</div>
+```
+
+Opacity below 1 needs a flattened representation of the group. Filters, masks, isolation and some overflow values can have the same consequence. Compare the front layer’s position as well as the computed keyword; a readout alone cannot prove that depth is preserved.
 
 ### Combine with perspective \{#combine-with-perspective\}
-`transform-style:*` does not add perspective by itself. Add perspective through `transform:*` or a component style when depth should be visible.
+Preserving depth and projecting it are separate choices. Compare the same tilted parent and front layer without perspective and with a 400px viewing distance.
+
+<DemoExample page="transform-style" section="combine-with-perspective" />
+
 ```html
-<div class="transform:perspective(800px) transform-style:preserve-3d">
-  3D scene
+<!-- No perspective · parallel projection -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:none">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:preserve-3d">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="transform-style:preserve-3d:hover transform-style:flat@print transform-style:flat@sm">...</div>
+<!-- Perspective 400px · depth affects size -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:preserve-3d">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
+</div>
 ```
+
+The perspective property on the outer container projects its children. A perspective() function instead belongs to that element’s own transform list. Keep every intermediate 3D grouping element configured deliberately; transform-style is not inherited.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen the viewport to `sm` to preserve the child’s depth. Print flattens the child into the parent plane while retaining the authored rotation.
+
+<DemoExample page="transform-style" section="apply-conditionally" />
+
+```html
+<!-- Flat → preserve 3D at sm -->
+<div class="grid place-items:center h:200px w:240px
+         max-w:100% perspective:400px">
+  <div id="target"
+    class="rel h:104px w:144px b:2px|solid|violet-60
+           font:sm bg:violet-10 fg:violet-80
+           transform:rotateY(32deg)
+           transform-style:flat
+           transform-style:flat@print
+           transform-style:preserve-3d@screen&sm">
+    <span class="block p:xs">Parent · 0</span>
+    <div id="front"
+      class="abs left:md top:xl grid place-items:center
+             h:80px w:120px b:2px|solid|blue-60
+             bg:blue-20 fg:blue-80
+             transform:translateZ(48px)">
+      Front · +48px
+    </div>
+  </div>
+</div>
+```
+
+Only the parent’s transform-style changes. The child’s translateZ and the outer perspective remain present in every state, exposing the native flattening difference.

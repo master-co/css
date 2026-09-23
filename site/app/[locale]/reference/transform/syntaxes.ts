@@ -1,4 +1,5 @@
 const syntaxes = [
+  'transform:none',
   ['transform:`function`'],
   ['transform:translate(`x`,`y`)'],
   ['transform:translate3d(`x`,`y`,`z`)'],

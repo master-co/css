@@ -2,44 +2,49 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Choose a step for the role of the text, then check it at the actual reading width.
+
+<DemoExample page="font-size" section="basic-usage" />
+
 <BasicUsage />
 
-Use `font:*` size tokens for project typography steps such as body copy, labels, and headings. The token names come from the font-size theme token scale.
-```html
-<!-- @MARK font:sm --><!-- @MARK font:2xl -->
-<p class="font:sm">Small supporting text</p>
-<h2 class="font:2xl">Section title</h2>
-```
-
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['font:sm', 'font:2xl']}
-  </Class2CSS>
-</details>
-
 ### With line height \{#with-line-height\}
-Set the line height, use the [`leading:<size>`](/reference/line-height) syntax along with the font size.
+Pair `font:*` with [`leading:*`](/reference/line-height) to control size and line height independently. Both paragraphs below use the same 16px type and line width.
+
+<DemoExample page="font-size" section="with-line-height" />
+
 ```html
-<!-- @MARK font:md leading:1.2 -->
-<div class="font:md leading:xs">Sphinx of black quartz, judge my vow.</div>
+<!-- leading:xs -->
+<p id="target" class="max-w:24ch m:0 font:md leading:xs">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
-You can also use the [`text:<size>`](/reference/text-size) syntax to set the line height and font size together.
+
+```html
+<!-- leading:lg -->
+<p id="target" class="max-w:24ch m:0 font:md leading:lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+Use [`text:*`](/reference/text-size) when you want the combined size, leading and tracking treatment.
 
 ### Use an explicit font size \{#use-an-explicit-font-size\}
-Use `font-size:*` when a one-off value should not become a named token.
+A `clamp()` formula can respond to the viewport while keeping a minimum and maximum. Adjust this real viewport: at a 16px root size, the title grows from 20px to 32px between 1000px and 1600px.
+
+<DemoExample page="font-size" section="use-an-explicit-font-size" />
+
 ```html
-<!-- @MARK font-size:clamp(1.25rem,2vw,2rem) -->
-<h1 class="font-size:clamp(1.25rem,2vw,2rem)">
-  Fluid title
-</h1>
+<!-- 20px minimum · 2vw preferred · 32px maximum -->
+<h2 id="target" class="m:0 font-size:clamp(1.25rem,2vw,2rem) font:medium leading:xs">A clearer canvas</h2>
 ```
 
-Prefer named tokens for repeated typography. Use explicit CSS values for local measured cases, demos, or fluid formulas.
+Prefer a named token when a value is reused across the interface.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the viewport to cross the `sm` and `lg` breakpoints. The print rule returns the type to `font:sm`; use Print preview to inspect the actual print layout.
+
+<DemoExample page="font-size" section="apply-conditionally" />
+
 ```html
-<div class="font:sm font:sm@print font:md@sm font:lg@lg">...</div>
+<!-- Responsive supporting text -->
+<p id="target" class="m:0 font:sm leading:md font:sm@print font:md@screen&sm font:lg@screen&lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```

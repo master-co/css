@@ -3,39 +3,85 @@
 
 ## Examples \{#examples\}
 ### Fill text with a color \{#fill-text-with-a-color\}
-Use `text-fill-color:*` to set the WebKit text fill color directly.
+`text-fill-color:blue-50` sets `-webkit-text-fill-color`. Compare the same foreground color with its ordinary fill and a separately specified blue fill.
+
+<DemoExample page="text-fill-color" section="fill-text-with-a-color" />
+
 ```html
-<!-- @MARK text-fill-color:blue-60 -->
-<span class="text-fill-color:blue-60">
-  Filled text
-</span>
+<!-- Fill follows foreground -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         fg:violet-50 text-fill-color:current"
+>
+  Clear type
+</p>
+```
+
+```html
+<!-- Independent blue fill -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         fg:violet-50 text-fill-color:blue-50"
+>
+  Clear type
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-fill-color:blue-60']}
+    {['text-fill-color:blue-50']}
   </Class2CSS>
 </details>
 
+This WebKit-prefixed property is implemented by multiple browser engines. It controls glyph fill independently of `color`; check support in the browsers you target.
+
 ### Make text fill transparent \{#make-text-fill-transparent\}
-Use `text-fill-color:transparent` when the visible text should come from a background clip, stroke, or layered effect.
+Transparent fill reveals this real background gradient clipped to the glyphs. The example supplies both the image and text clipping; transparent fill by itself would hide the text.
+
+<DemoExample page="text-fill-color" section="make-text-fill-transparent" />
+
 ```html
-<!-- @MARK text-fill-color:transparent -->
-<h2 class="background-clip:text text-fill-color:transparent">
-  Gradient title
-</h2>
+<!-- Gradient clipped to glyphs -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         bg-clip-text text-fill-color:current
+         bg:linear-gradient(90deg,blue-50,violet-50)@supports(background-clip:text)@screen
+         text-fill-color:current@print
+         text-fill-color:transparent@supports(background-clip:text)@screen"
+>
+  Clear type
+</p>
 ```
+
+The gradient and transparent fill apply only on screen when the browser supports text clipping. The base fill stays solid otherwise. Open print preview to see the readable solid-color version without the background image.
 
 ### Use the current color \{#use-the-current-color\}
-Use `text-fill-color:currentColor` when the fill should follow `color`.
+`text-fill-color:current` follows the element’s foreground. This child resets an inherited blue fill while the surrounding text keeps it.
+
+<DemoExample page="text-fill-color" section="use-the-current-color" />
+
 ```html
-<!-- @MARK text-fill-color:currentColor -->
-<span class="fg:blue-60 text-fill-color:currentColor">Current color</span>
+<!-- Inherited blue fill · local foreground reset -->
+<div class="font:2xl leading:xl fg:violet-50 text-fill-color:blue-50">
+  Parent <span id="target" class="text-fill-color:current">and child</span>
+</div>
 ```
 
+`color` alone does not override an explicitly inherited text fill. Reset the fill as well when it should follow the new foreground.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus to change the glyph fill independently of the button’s foreground. Print restores `currentColor`, preserving a solid label.
+
+<DemoExample page="text-fill-color" section="apply-conditionally" />
+
 ```html
-<span class="text-fill-color:blue-60:hover text-fill-color:currentColor@print text-fill-color:currentColor@sm">...</span>
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:2xl leading:xl text-fill-color:current
+         text-fill-color:current@print text-fill-color:blue-50:hover@screen
+         text-fill-color:blue-50:focus-visible@screen"
+>
+  Clear type
+</button>
 ```

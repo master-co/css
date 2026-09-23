@@ -3,35 +3,161 @@
 
 ## Examples \{#examples\}
 ### Wrap text around a circle \{#wrap-text-around-a-circle\}
-Use `shape-outside:circle(*)` on a floated element to let inline content wrap around a circular shape.
+Shape-outside changes the area that adjacent inline content avoids around a float. Compare the same 120 × 120 SVG box with ordinary rectangular wrapping and a 48px circular shape.
+
+<DemoExample page="shape-outside" section="wrap-text-around-a-circle" />
+
 ```html
-<!-- @MARK shape-outside:circle(40px) -->
-<img class="float:left shape-margin:md shape-outside:circle(40px)" src="/images/avatar.jpg" alt="Avatar">
+<!-- Normal float · rectangular wrap -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60 shape-none">
+    <circle cx="60" cy="60" r="48" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+```html
+<!-- Circle · text follows the curved boundary -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60
+           shape-outside:circle(48px)|border-box">
+    <circle cx="60" cy="60" r="48" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shape-outside:circle(40px)']}
+    {['shape-outside:circle(48px)|border-box']}
   </Class2CSS>
 </details>
 
+The outline marks the unchanged float box. The authored circle supplies its paint; shape-outside does not clip the artwork. The explicit border-box reference keeps the wrap geometry aligned with the SVG. Labels remain outside the flowing paragraph.
+
 ### Use an inset shape \{#use-an-inset-shape\}
-Use `shape-outside:inset(*)` when text should wrap around a rectangular inset.
+The inset removes 24px from both horizontal sides of the wrap area. The painted rectangle is authored at the same coordinates, so text can use the transparent strip at the right of the float.
+
+<DemoExample page="shape-outside" section="use-an-inset-shape" />
+
 ```html
-<!-- @MARK shape-outside:inset(0|20px) -->
-<img class="float:left shape-outside:inset(0|20px)" src="/images/photo.jpg" alt="Photo">
+<!-- No shape · wraps at the box edge -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue rectangle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60 shape-none">
+    <rect x="24" y="0" width="72" height="120" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
+
+```html
+<!-- Inset · wraps at the painted edge -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue rectangle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60
+           shape-outside:inset(0|24px)|border-box">
+    <rect x="24" y="0" width="72" height="120" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+Text still wraps only on the right of this left float. A smaller shape changes line positions, not the float’s position, dimensions or painted contents.
 
 ### Remove shape wrapping \{#remove-shape-wrapping\}
-Use `shape-none` when a responsive or print context should use the normal float box.
+Open print preview to replace the circular wrap area with the ordinary float margin box. The SVG remains floated and its painted circle stays visible.
+
+<DemoExample page="shape-outside" section="remove-shape-wrapping" />
+
 ```html
-<!-- @MARK shape-none -->
-<img class="float:left shape-outside:circle(40px) shape-none@print" src="/images/avatar.jpg" alt="Avatar">
+<!-- Circular on screen · rectangular in print -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60
+           shape-outside:circle(48px)|border-box
+           shape-none@print">
+    <circle cx="60" cy="60" r="48" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
+`shape-none` resets shape-outside. It does not remove the float or change the image to a block in normal flow.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the real preview viewport to `sm` to wrap around the circle. Print uses the normal float box. The article keeps its explicit reading width so the condition isolates shape behavior.
+
+<DemoExample page="shape-outside" section="apply-conditionally" />
+
 ```html
-<img class="shape-outside:circle(40px):hover shape-none@print shape-outside:inset(0|20px)@sm" src="/images/avatar.jpg" alt="">
+<!-- Rectangle → circle at sm -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left outline:1px|solid|muted
+           fill:blue-60 shape-none shape-none@print
+           shape-outside:circle(48px)|border-box@screen&sm">
+    <circle cx="60" cy="60" r="48" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
+
+The example includes the required float and adjacent inline content. Applying shape-outside to an ordinary non-floated image does not produce this text wrap.

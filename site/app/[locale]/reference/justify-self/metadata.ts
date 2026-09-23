@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'justify-self',
-  description: 'Controlling how an individual item is aligned along its inline axis.',
+  description: 'Override inline-axis alignment for an individual grid item.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=justify-self',

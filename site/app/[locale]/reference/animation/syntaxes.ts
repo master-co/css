@@ -1,4 +1,5 @@
 const syntaxes = [
+  'animation:none',
   'animate:fade',
   'animate:ping',
   'animate:flash',

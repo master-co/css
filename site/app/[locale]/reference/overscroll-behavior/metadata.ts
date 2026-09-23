@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'overscroll-behavior',
-  description: 'Setting what a browser does when reaching the boundary of a scrolling area.',
+  description: 'Control scroll chaining and boundary effects in nested scroll areas.',
   category: 'Interactivity',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=overscroll-behavior',

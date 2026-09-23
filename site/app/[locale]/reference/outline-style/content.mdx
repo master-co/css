@@ -2,35 +2,93 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Set outline style \{#set-outline-style\}
-Use `outline:*` with a style keyword to set `outline-style`.
+Use `outline-solid` or `outline-dashed` to change only `outline-style`. These dedicated style utilities preserve the separately declared width and color.
+
+<DemoExample page="outline-style" section="set-outline-style" />
+
 ```html
-<!-- @MARK outline:solid -->
-<button class="outline:solid outline:2px">
-  ...
+<!-- Solid · dedicated style utility -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- Dashed · same width and color -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-dashed
+         outline-offset:3xs outline:3px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
 </button>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:solid']}
+    {['outline-solid', 'outline:solid']}
   </Class2CSS>
 </details>
 
+`outline:solid` is the full outline shorthand, so it also resets width and color. Use the dedicated style utility or explicit `outline-style:solid` longhand when those values should be preserved.
+
 ### Use dashed focus indicators \{#use-dashed-focus-indicators\}
-Use `outline:dashed` or `outline:dotted` when that style is part of the interaction design.
+Use Tab to focus the real skip link, then Enter to move to its destination. Its dashed outline is a keyboard focus treatment; the visible link remains available without focus.
+
+<DemoExample page="outline-style" section="use-dashed-focus-indicators" />
+
 ```html
-<!-- @MARK outline:dashed -->
-<a class="outline:dashed:focus">Skip to content</a>
+<!-- Native skip link · keyboard destination -->
+<a id="target" href="#destination"
+  class="inline-block outline-dashed
+         outline-offset:3xs outline:3px
+         outline:transparent
+         text-decoration:underline text:blue
+         outline:blue:focus-visible">
+  Skip to content
+</a>
+<section id="destination" tabindex="-1"
+  class="mt:xl p:md bg:surface-muted text:body">
+  <h4 class="m:0 font:lg">
+    Preview content
+  </h4>
+  <p class="mx:0 mb:0 mt:sm">
+    The link moves keyboard focus here.
+  </p>
+</section>
 ```
 
-Avoid `outline:none` unless another visible focus indicator is present.
+Keep a real `href` and an appropriate destination. A decorative anchor with no destination is not a keyboard-operable skip link.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The button has a solid resting outline. Keyboard focus changes only its style to dotted. Print removes the style and therefore the used outline width.
+
+<DemoExample page="outline-style" section="apply-conditionally" />
+
 ```html
-<div class="outline:none outline:solid:focus outline:none@print">...</div>
+<!-- Solid → dotted on keyboard focus -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible
+         outline-none@print
+         outline-dotted:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-Use [outline](/reference/outline) to set width, style, and color together.
+Use [outline](/reference/outline) when all three outline components should change together.

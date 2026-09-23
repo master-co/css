@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-template',
-  description: 'Setting grid columns, grid rows, and grid areas.',
+  description: 'Define explicit rows, columns and areas without resetting implicit grid settings.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-template',

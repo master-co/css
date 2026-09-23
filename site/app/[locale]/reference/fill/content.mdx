@@ -3,34 +3,93 @@
 
 ## Examples \{#examples\}
 ### Set SVG fill color \{#set-svg-fill-color\}
-Use `fill:*` to set the fill paint for SVG shapes.
+Fill paints the interior of an SVG shape. `fill:current` uses its computed foreground color; the explicit stroke keeps the triangle’s outline visible in every comparison.
+
+<DemoExample page="fill" section="set-svg-fill-color" />
+
 ```html
-<!-- @MARK fill:current -->
-<svg class="fill:current" viewBox="0 0 16 16" aria-hidden="true">
-  <path d="M8 2 14 14H2Z" />
+<!-- Current color · solid interior -->
+<svg id="target" role="img" aria-label="Triangle"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fg:blue-60 fill:current stroke:blue-60
+         stroke:1">
+  <path d="M12 4 20 20H4Z" />
+</svg>
+```
+
+```html
+<!-- None · no interior paint -->
+<svg id="target" role="img" aria-label="Triangle"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:none stroke:blue-60 stroke:1">
+  <path d="M12 4 20 20H4Z" />
+</svg>
+```
+
+```html
+<!-- Transparent · zero-alpha interior paint -->
+<svg id="target" role="img" aria-label="Triangle"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:transparent stroke:blue-60
+         stroke:1">
+  <path d="M12 4 20 20H4Z" />
 </svg>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['fill:current']}
+    {['fill:current', 'fill:none', 'fill:transparent']}
   </Class2CSS>
 </details>
 
+The last two shapes look alike here, but `none` means no paint while transparent is a color with zero alpha. Fill and stroke are separate properties. Declaring paint on the SVG lets its child path inherit it.
+
 ### Use theme colors \{#use-theme-colors\}
-Use color tokens when SVG paint should match the design system.
+The named `blue` alias follows the active theme; `blue-60` selects one palette step. Switch the preview theme to compare the actual fill values.
+
+<DemoExample page="fill" section="use-theme-colors" />
+
 ```html
-<!-- @MARK fill:blue-60 -->
-<svg class="fill:blue-60" aria-hidden="true"></svg>
+<!-- Theme alias · follows the mode -->
+<svg id="target" role="img" aria-label="Triangle"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:blue stroke:none">
+  <path d="M12 4 20 20H4Z" />
+</svg>
 ```
 
-Use `fill:transparent` for shapes that should only show their stroke.
+```html
+<!-- Palette step · fixed blue-60 -->
+<svg id="target" role="img" aria-label="Triangle"
+  width="96" height="96" viewBox="0 0 24 24"
+  class="block fill:blue-60 stroke:none">
+  <path d="M12 4 20 20H4Z" />
+</svg>
+```
+
+Use a theme alias when paint should adapt with the interface. Choose a numbered step when that exact palette color is intentional. The same SVG geometry is preserved in both modes.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the native button to change its inherited icon fill. Its visible label remains unchanged, and print restores the current foreground color.
+
+<DemoExample page="fill" section="apply-conditionally" />
+
 ```html
-<svg class="fill:current fill:blue-60:hover fill:current@print">...</svg>
+<!-- Hover or focus · inherited icon fill -->
+<button id="target" type="button"
+  class="inline-flex items-center gap:xs px:md py:sm
+         b:1px|solid|base r:sm font:md
+         bg:surface-base text:body fill:current
+         fill:current@print
+         fill:blue-60:hover@screen
+         fill:blue-60:focus-visible@screen">
+  <svg width="32" height="32" viewBox="0 0 24 24"
+    aria-hidden="true" class="block stroke:none">
+    <path d="M12 3 21 8v8l-9 5-9-5V8Z" />
+  </svg>
+  <span>Save palette</span>
+</button>
 ```
 
-Use [stroke](/reference/stroke) for outline paint.
+The decorative icon is hidden from the accessibility tree because the button already has the name “Save palette”. The button supplies the state; the path inherits its fill through the SVG. Use [stroke](/reference/stroke) for outline paint.

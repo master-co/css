@@ -1,16 +1,34 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- native list longhands preserve the other marker properties */}
 
 ## Examples \{#examples\}
 ### Set type and position together \{#set-type-and-position-together\}
-Use `list-style:*|*` when list marker type and marker position belong together.
+Use the `list-style` shorthand when marker type and position belong together. Compare disc and decimal markers placed inside the same content width.
+
+<DemoExample page="list-style" section="set-type-and-position-together" />
+
 ```html
-<!-- @MARK list-style:disc|inside -->
-<ul class="list-style:disc|inside">
-  <li>Install</li>
-  <li>Configure</li>
+<!-- disc · inside -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|inside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
+
+```html
+<!-- decimal · inside -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|inside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
+```
+
+A shorthand also resets omitted parts, including the image. The semantic `<ul>` and `<ol>` elements describe the list; marker styling alone does not change that meaning.
 
 <details>
   <summary>Generated CSS</summary>
@@ -20,24 +38,53 @@ Use `list-style:*|*` when list marker type and marker position belong together.
 </details>
 
 ### Use an image marker \{#use-an-image-marker\}
-Use `list-style-image:url(*)` when the marker should come from an image asset.
+Supply a real image URL. The image takes precedence over the specified disc type; disc remains the fallback if the image is unavailable.
+
+<DemoExample page="list-style" section="use-an-image-marker" />
+
 ```html
-<!-- @MARK list-style-image:url(/marker.svg) -->
-<ul class="list-style-image:url(/marker.svg)">
-  <li>Custom marker</li>
+<!-- Local SVG · disc fallback -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside list-style-image:url(/demo/marker.svg)">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
+
+This example uses a 12 × 12 SVG. The browser sizes and positions the native marker; use your own asset URL in application code.
 
 ### Split longhands when variants differ \{#split-longhands-when-variants-differ\}
-Use the type, position, and image pages when only one part of the list style changes across states.
+Resize past `sm` to move decimal markers inside while preserving their type. Use the dedicated position longhand for that independent change.
+
+<DemoExample page="list-style" section="split-longhands-when-variants-differ" />
+
 ```html
-<ul class="list-style:decimal list-style:inside@sm">
-  <li>Step</li>
+<!-- Decimal retained · outside to inside -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|outside list-style-position:inside@screen&sm">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
+```
+
+`list-style:inside` is a full shorthand: it would also reset the decimal type to disc. Explicit `list-style-position:inside` changes only position.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize past `sm` to replace the whole marker treatment: disc outside becomes square inside. Print uses disc outside.
+
+<DemoExample page="list-style" section="apply-conditionally" />
+
+```html
+<!-- Whole shorthand · real viewport -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside list-style:disc|outside@print
+    list-style:square|inside@screen&sm">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<ul class="list-style:disc|inside:hover list-style:disc@print list-style:decimal@sm">...</ul>
-```
+{/* eslint-enable @master/css/prefer-canonical-classes */}

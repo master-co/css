@@ -3,35 +3,61 @@
 
 ## Examples \{#examples\}
 ### Change visual order \{#change-visual-order\}
-Use `order:*` to change the visual order of flex or grid items.
+`order:*` sorts flex and auto-placed grid items from the lowest value to the highest. Items with equal values retain source order. The same three items below appear as 03, 01, 02: item 03 keeps the default zero and the other two share an order of 1.
+
+<DemoExample page="order" section="change-visual-order" />
+
 ```html
-<!-- @MARK order:1 --><!-- @MARK order:2 -->
-<div class="flex">
-  <aside class="order:2">Sidebar</aside>
-  <main class="order:1">Content</main>
+<div id="layout" class="flex gap:sm">
+  <div id="target" class="flex:none order:1 h:16x w:20x p:sm">01</div>
+  <div id="peer" class="flex:none order:1 h:16x w:20x p:sm">02</div>
+  <div id="item-3" class="flex:none h:16x w:20x p:sm">03</div>
+</div>
+```
+
+```html
+<div id="layout" class="grid grid-cols:3 gap:sm">
+  <div id="target" class="order:1 h:16x min-w:0 p:sm">01</div>
+  <div id="peer" class="order:1 h:16x min-w:0 p:sm">02</div>
+  <div id="item-3" class="h:16x min-w:0 p:sm">03</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['order:1', 'order:2']}
+    {['order:1']}
   </Class2CSS>
 </details>
 
+Explicit grid placement can determine a cell independently of this auto-placement order.
+
 ### Keep source order meaningful \{#keep-source-order-meaningful\}
-Use order utilities for responsive layout adjustments, not as a replacement for semantic markup.
+CSS order changes the visual arrangement without changing the DOM. Focus Source 1 and press Tab to follow the native keyboard sequence through Source 2 and Source 3. The buttons use `tabindex="0"` to request sequential keyboard focus in source order. No positive tabindex is used to patch the visual order.
+
+<DemoExample page="order" section="keep-source-order-meaningful" />
+
 ```html
-<!-- @MARK order:2 --><!-- @MARK order:0@sm -->
-<aside class="order:2 order:0@sm">...</aside>
+<div id="layout" class="flex gap:sm">
+  <button id="target" type="button" tabindex="0" class="flex:none order:2 h:16x w:20x p:xs">Source 1</button>
+  <button id="peer" type="button" tabindex="0" class="flex:none order:1 h:16x w:20x p:xs">Source 2</button>
+  <button id="item-3" type="button" tabindex="0" class="flex:none h:16x w:20x p:xs">Source 3</button>
+</div>
 ```
 
-(i) `order` changes visual layout only. Screen readers and keyboard navigation still follow source order in many workflows.
+(i) Keep a useful reading and focus order in the source. Reordering a sequential form or workflow visually can make keyboard navigation confusing.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the blue item’s visual position from `sm`. Its default order of 2 places it last. At order 0 it ties with its siblings, so its original first position wins.
+
+<DemoExample page="order" section="apply-conditionally" />
+
 ```html
-<div class="order:2 order:0@print order:0@sm">...</div>
+<div id="layout" class="flex gap:sm">
+  <div id="target" class="flex:none order:2 h:16x w:20x p:sm order:0@sm">01</div>
+  <div id="peer" class="flex:none h:16x w:20x p:sm">02</div>
+  <div id="item-3" class="flex:none h:16x w:20x p:sm">03</div>
+</div>
 ```
 
-Prefer source order whenever it can satisfy the layout.
+Prefer source order whenever it already satisfies the layout.

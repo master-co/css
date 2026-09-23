@@ -3,10 +3,13 @@
 
 ## Examples \{#examples\}
 ### Float elements to the left \{#float-elements-to-the-left\}
-Use `float:left` when inline content should wrap around an element on the left.
+Use `float:left` for an image or callout that text should wrap around. Give the floated object a width and leave space between it and the paragraph.
+
+<DemoExample page="float" section="float-elements-to-the-left" />
+
 ```html
 <!-- @MARK float:left -->
-<img class="float:left mr:md" src="/images/avatar.jpg" alt="Avatar">
+<img class="float:left w:32x mr:md" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```
 
 <details>
@@ -18,22 +21,31 @@ Use `float:left` when inline content should wrap around an element on the left.
 
 ### Float elements to the right \{#float-elements-to-the-right\}
 Use `float:right` to place a pull quote, image, or callout on the right side of a text flow.
+
+<DemoExample page="float" section="float-elements-to-the-right" />
+
 ```html
 <!-- @MARK float:right -->
-<aside class="float:right ml:md">
-  Pull quote
+<aside class="float:right w:32x ml:md">
+  Good tools make room for clear thinking.
 </aside>
 ```
 
 ### Reset floats \{#reset-floats\}
-Use `float:none` when a responsive or print context should return the element to normal flow.
+Use `float:none` to return the object to normal flow. This example removes the float in print; open Print preview to see the paragraph continue after the image.
+
+<DemoExample page="float" section="reset-floats" />
+
 ```html
 <!-- @MARK float:none -->
-<img class="float:left float:none@print" src="/images/avatar.jpg" alt="Avatar">
+<img class="float:left w:32x mr:md float:none@print" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keep the image in normal flow on narrow screens and float it to the right on screens at `sm`. The `screen&sm` condition excludes print, so the image remains in normal flow on printed pages. Resize the preview or open Print preview to compare. Read [conditions](/reference/rules/conditions) for the syntax.
+
+<DemoExample page="float" section="apply-conditionally" />
+
 ```html
-<img class="float:left:hover float:none@print float:right@sm" src="/images/avatar.jpg" alt="">
+<img class="float:none w:32x ml:md float:none@print float:right@screen&sm" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```

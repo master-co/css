@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'min-height',
-  description: 'Setting the minimum height of an element.',
+  description: 'Set a physical height floor that can grow with content.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=min-height',

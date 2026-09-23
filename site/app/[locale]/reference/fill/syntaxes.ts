@@ -1,5 +1,6 @@
 const syntaxes = [
   'fill:current',
+  'fill:none',
   'fill:transparent',
   ['fill:`color`'],
   ['fill:#`hex`'],

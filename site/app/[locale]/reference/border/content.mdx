@@ -1,42 +1,125 @@
 ## Overview [sr-only] \{#overview\}
-<Overview />
+<Overview/>
 
 ## Examples \{#examples\}
+
 ### Set width, style, and color together \{#set-width-style-and-color-together\}
-Use `b:<size>|<style>|<color>` for the native border shorthand.
+Use `b:<size>|<style>|<color>` for the native border shorthand. This panel supplies its own size and padding; the 2px border is part of its 240 × 96 border box.
+
+<DemoExample page="border" section="set-width-style-and-color-together" />
+
 ```html
-<!-- @MARK b:1px|solid|gray-20 -->
-<div class="b:1px|solid|gray-20">
-  ...
+<!-- 2px · solid · blue -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid|blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b:1px|solid|gray-20']}
+    {['b:2px|solid|blue']}
   </Class2CSS>
 </details>
 
+The shorthand resets omitted border width, style and color components. The all-side `border` shorthand also resets border-image; use a focused longhand when the other parts should remain.
+
 ### Set one side or one axis \{#set-one-side-or-one-axis\}
-Use `bt`, `br`, `bb`, and `bl` for one side. Use `bx` and `by` for logical axes.
+`bt`, `br`, `bb` and `bl` address physical edges. `bx` addresses the inline axis; `by` addresses the block axis. Compare the same inline borders in horizontal and vertical writing.
+
+<DemoExample page="border" section="set-one-side-or-one-axis" />
+
 ```html
-<!-- @MARK bt:1px|solid|gray-20 --><!-- @MARK bx:1px|solid|gray-20 -->
-<header class="bb:1px|solid|gray-20">...</header>
-<section class="bx:1px|solid|gray-20">...</section>
+<!-- Physical bottom · horizontal writing -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md bb:3px|solid|blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Bottom edge
+</div>
 ```
+
+```html
+<!-- Inline edges · horizontal writing -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md bx:3px|solid|blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Left and right
+</div>
+```
+
+```html
+<!-- Inline edges · vertical writing -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md bx:3px|solid|blue
+         font:md bg:surface-muted text:body
+         box-border writing-mode:vertical-rl">
+  Top and bottom
+</div>
+```
+
+Logical edges follow writing mode. A physical bottom border stays on the bottom when writing direction changes.
 
 ### Use focused border utilities \{#use-focused-border-utilities\}
-Use [border-width](/reference/border-width), [border-style](/reference/border-style), and [border-color](/reference/border-color) when only one part of the border should change.
+Hover or keyboard-focus each panel. The first changes only width and keeps its dashed blue border. The second sets the full shorthand to `solid`, resetting width to `medium` and color to the foreground.
+
+<DemoExample page="border" section="use-focused-border-utilities" />
+
 ```html
-<!-- @MARK b:1px --><!-- @MARK b-solid -->
-<div class="b-solid b:1px">...</div>
+<!-- Width longhand · preserves style and color -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:2px|dashed|blue r:sm font:md
+         bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible
+         b:6px:hover@screen
+         b:6px:focus-visible@screen">
+  Preview details
+</button>
 ```
+
+```html
+<!-- Full shorthand · resets omitted components -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:2px|dashed|blue r:sm font:md
+         bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible
+         b:solid:hover@screen
+         b:solid:focus-visible@screen">
+  Preview details
+</button>
+```
+
+Use [border-width](/reference/border-width), [border-style](/reference/border-style) and [border-color](/reference/border-color) for independent changes. These content-sized buttons grow when their border width grows.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the button to change its complete border from a subtle solid line to a blue dashed line. Print removes the border width.
+
+<DemoExample page="border" section="apply-conditionally" />
+
 ```html
-<div class="b:1px|solid|gray-20 b:1px|solid|blue-60:hover b:0@print">...</div>
+<!-- Solid → dashed on interaction -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm font:md
+         bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible b:0@print
+         b:2px|dashed|blue:hover@screen
+         b:2px|dashed|blue:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-The border shorthand resets border width, style, and color for the targeted side or axis.
+The focus ring remains visible independently of the border. [Selectors](/reference/rules/selectors) respond to the real control; the print rule uses the browser’s actual print medium.

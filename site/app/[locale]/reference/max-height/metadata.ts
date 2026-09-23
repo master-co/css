@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'max-height',
-  description: 'Setting the maximum height of an element.',
+  description: 'Limit physical height and choose how excess content behaves.',
   category: 'Sizing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=max-height',

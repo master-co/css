@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'transition-delay',
-  description: 'Setting a time to delay before starting transition.',
+  description: 'Setting when a CSS property transition starts.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=transition-delay',

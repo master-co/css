@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-decoration-line',
-  description: 'Setting the kind of decoration that is used on text.',
+  description: 'Choose decorative lines while preserving their other properties.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-decoration-line',

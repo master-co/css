@@ -1,100 +1,135 @@
 ## Overview [sr-only] \{#overview\}
 <Overview />
 
-## Basic usage \{#basic-usage\}
-Use `animate:*` to apply a named animation token from the `animate` namespace. Use the native `animation:*` shorthand when you want to write the keyframe name, duration, easing, fill mode, and other animation parts together.
+Use `animate:*` for a complete animation token, or `animation:*` to supply native shorthand parts. Previews start paused; Play and Replay explicitly opt into motion. Portable snippets pause decorative animation for reduced motion and remove it in print.
 
+## Basic usage \{#basic-usage\}
 ### Ping indicator \{#ping-indicator\}
-Use the `ping` animation to indicate that the shop is open.
-<Demo $py={0}>
-  <div className="app-panel rel">
-    <Image src="/images/vegetable-salad-in-bowls.jpg" width="400" height="250" className="aspect-ratio:400/250 untouchable" alt="vegetable salad in bowls" />
-    <div className="abs bottom:0 w:full p:12x|2.188rem|1.875rem|2.188rem bg:linear-gradient(0deg,white|0%,white/0|100%) text:neutral">
-      <svg className="inline-block overflow:visible size:2x fill:green-40" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-        <circle className="animate:ping transform-origin:center" cx="4" cy="4" r="4" />
-        <circle cx="4" cy="4" r="4" />
-      </svg>
-      <span className="ml:0.625rem font:medium font:xs">Open</span>
-      <div className="mt:0.625rem font:bold font:xl tracking:-.025em">Master Food</div>
-    </div>
-  </div>
-</Demo>
+Use the `ping` token for a repeating ring. Keep the status in visible text so the message remains clear when the decoration is paused.
+
+<DemoExample page="animation" section="ping-indicator" />
+
 ```html
-<svg class="inline-block overflow:visible size:2x fill:green-40" viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg">
-  <!-- @MARK animate:ping -->
-  <circle class="animate:ping transform-origin:center" cx="4" cy="4" r="4" />
-  <circle cx="4" cy="4" r="4" />
-</svg>
+<!-- Ping ring · stable status text -->
+<div class="flex items-center gap:md p:sm">
+  <svg aria-hidden="true" width="40" height="40" viewBox="0 0 40 40"
+    class="text:blue fill:current">
+    <circle id="target" cx="20" cy="20" r="8"
+      class="animate:ping transform-origin:center
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <circle cx="20" cy="20" r="5" />
+  </svg>
+  <span class="font:sm">Open for orders</span>
+</div>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>{['animate:ping']}</Class2CSS>
+</details>
+
+The preset grows the ring to twice its size and fades it out. The inner dot and status text remain still; the SVG has room for the full ring.
 
 ### Rotate indicator \{#rotate-indicator\}
-Use the counterclockwise `rotate` animation to indicate that data is being restored.
-<Demo>
-  <div className="app-float">
-    <svg className="animate:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round" xmlns="http://www.w3.org/2000/svg" >
-      <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-      <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
-      <path d="M18.37 7.16l0 .01"></path>
-      <path d="M13 19.94l0 .01"></path>
-      <path d="M16.84 18.37l0 .01"></path>
-      <path d="M19.37 15.1l0 .01"></path>
-      <path d="M19.94 11l0 .01"></path>
-    </svg>
-    <div className="ml:0.625rem font:medium font:sm text:neutral">Restoring ...</div>
-  </div>
-</Demo>
+Use `animate:rotate` for a steady full turn, and `animation-direction:reverse` to turn counterclockwise.
+
+<DemoExample page="animation" section="rotate-indicator" />
+
 ```html
-<!-- @MARK animate:rotate -->
-<svg class="animate:rotate animation-direction:reverse" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-  <path d="M15 4.55a8 8 0 0 0 -6 14.9m0 -4.45v5h-5"></path>
-  <path d="M18.37 7.16l0 .01"></path>
-  <path d="M13 19.94l0 .01"></path>
-  <path d="M16.84 18.37l0 .01"></path>
-  <path d="M19.37 15.1l0 .01"></path>
-  <path d="M19.94 11l0 .01"></path>
-</svg>
+<!-- Restoring data -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animate:rotate
+           animation-direction:reverse
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Restoring data</span>
+</div>
 ```
+
+The label remains stationary. In the preset, normal rotation goes clockwise; reversing the timeline also reverses its easing.
 
 ---
 
 ## Advanced usage \{#advanced-usage\}
 ### Loading spinner \{#loading-spinner\}
-Use the `fade` animation on SVG paths with regular delays to create a loading spinner.
-<Demo>
-  <div className="app-float">
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      <path className="animate:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
-      <path className="animate:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
-      <path className="animate:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
-      <path className="animate:fade animation-delay:-.5s" d="M18 12l3 0"></path>
-      <path className="animate:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
-      <path className="animate:fade animation-delay:-.25s" d="M12 18l0 3"></path>
-      <path className="animate:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
-      <path className="animate:fade" d="M6 12l-3 0"></path>
-    </svg>
-    <div className="ml:0.625rem font:medium font:sm text:neutral">Loading ...</div>
-  </div>
-</Demo>
+Offset eight SVG strokes through the preset one-second `fade` cycle. Negative delays place them at different points from the first frame.
+
+<DemoExample page="animation" section="loading-spinner" />
+
 ```html
-<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-  <path className="animate:fade animation-delay:-.875s" d="M7.75 7.75l-2.15 -2.15"></path>
-  <path className="animate:fade animation-delay:-.75s" d="M12 6l0 -3"></path>
-  <path className="animate:fade animation-delay:-.625s" d="M16.25 7.75l2.15 -2.15"></path>
-  <path className="animate:fade animation-delay:-.5s" d="M18 12l3 0"></path>
-  <path className="animate:fade animation-delay:-.375s" d="M16.25 16.25l2.15 2.15"></path>
-  <path className="animate:fade animation-delay:-.25s" d="M12 18l0 3"></path>
-  <path className="animate:fade animation-delay:-.125s" d="M7.75 16.25l-2.15 2.15"></path>
-  <path className="animate:fade" d="M6 12l-3 0"></path>
-</svg>
+<!-- Eight segments · one-second cycle -->
+<div class="flex items-center gap:md p:sm">
+  <svg aria-hidden="true" width="48" height="48" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="text:blue">
+    <path id="target" d="M7.75 7.75l-2.15-2.15"
+      class="animate:fade animation-delay:-.875s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M12 6V3"
+      class="animate:fade animation-delay:-.75s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M16.25 7.75l2.15-2.15"
+      class="animate:fade animation-delay:-.625s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M18 12h3"
+      class="animate:fade animation-delay:-.5s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M16.25 16.25l2.15 2.15"
+      class="animate:fade animation-delay:-.375s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M12 18v3"
+      class="animate:fade animation-delay:-.25s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M7.75 16.25l-2.15 2.15"
+      class="animate:fade animation-delay:-.125s
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+    <path d="M6 12H3"
+      class="animate:fade animation-delay:0ms
+             animation:none@print
+             animation-play-state:paused@reduce-motion" />
+  </svg>
+  <span class="font:sm">Loading resources</span>
+</div>
 ```
 
+Each stroke fades from transparent to opaque. A 125ms offset separates adjacent segments, while the visible loading label stays readable with reduced motion or in print.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keep the indicator static below `sm`, then enable `animate:rotate` at that breakpoint. Resize the real viewport before pressing Play.
+
+<DemoExample page="animation" section="apply-conditionally" />
+
 ```html
-<div class="animate:fade:hover animate:fade@dark animate:fade@print animate:fade@sm">…</div>
+<!-- Syncing resources -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation:none
+           animation-iteration-count:infinite
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion
+           animate:rotate@screen&sm">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Syncing resources</span>
+</div>
 ```
+
+The native media query selects the animation. Print removes it; reduced motion pauses decoration until an explicit preview action.
 
 ---
 
@@ -102,5 +137,8 @@ Apply styles based on different states using [selectors](/reference/rules/select
 import AnimationsOverview from '~/site/app/[locale]/guide/motion/components/AnimationsOverview.mdx'
 
 ### Add your animations \{#add-your-animations\}
-Customize managed CSS animations with [`@theme` keyframes](/guide/motion#customize-motion-tokens).
+Define named keyframes inside [`@theme`](/guide/motion#customize-motion-tokens), then reference that name with the native `animation:*` shorthand.
+
+<DemoExample page="animation" section="add-your-animations" />
+
 <AnimationsOverview />

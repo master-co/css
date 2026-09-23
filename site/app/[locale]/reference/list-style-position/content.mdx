@@ -1,42 +1,96 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
+{/* eslint-disable @master/css/prefer-canonical-classes -- native list longhands preserve the other marker properties */}
 
 ## Examples \{#examples\}
 ### Place markers inside the content box \{#place-markers-inside-the-content-box\}
-Use `list-style:inside` when markers should be part of the text block and align with wrapped lines.
+An inside marker occupies the first inline box of each item. Wrapped lines begin at the item’s content edge, underneath the marker’s starting position. Compare the same content and width outside and inside.
+
+<DemoExample page="list-style-position" section="place-markers-inside-the-content-box" />
+
 ```html
-<!-- @MARK list-style:inside -->
-<ul class="list-style:inside">
-  <li>Long item that wraps inside the same text block.</li>
+<!-- Outside · hanging marker -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
+
+```html
+<!-- Inside · marker on first line -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside list-style-position:inside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ul>
+```
+
+`list-style:inside` is a shorthand that also resets type and image. The explicit position longhand preserves those independent choices.
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['list-style:inside']}
+    {['list-style-position:inside']}
   </Class2CSS>
 </details>
 
 ### Keep markers outside \{#keep-markers-outside\}
-Use `list-style:outside` for the default marker placement outside the principal block box.
+An outside marker hangs beside the item’s principal box. Wrapped text aligns with the first text line. Leave enough inline-start padding so the marker stays within the surrounding surface.
+
+<DemoExample page="list-style-position" section="keep-markers-outside" />
+
 ```html
-<!-- @MARK list-style:outside -->
-<ul class="list-style:outside">
-  <li>Marker outside</li>
+<!-- Outside · aligned text lines -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|inside list-style-position:outside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
 
 ### Combine with marker type \{#combine-with-marker-type\}
-You can set position by itself or combine it with type using the `list-style:*|*` shorthand.
+Use a shorthand to set position and type together. These ordered lists keep decimal markers and differ only in their placement.
+
+<DemoExample page="list-style-position" section="combine-with-marker-type" />
+
 ```html
-<ul class="list-style:decimal|inside">
-  <li>Step</li>
-</ul>
+<!-- decimal · outside -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|outside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
+```
+
+```html
+<!-- decimal · inside -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|inside">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to place decimal markers inside. The dedicated position property preserves their type. Print returns them outside.
+
+<DemoExample page="list-style-position" section="apply-conditionally" />
+
 ```html
-<ul class="list-style:inside:hover list-style:outside@print list-style:outside@sm">...</ul>
+<!-- Real viewport · position only -->
+<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:decimal|outside list-style-position:outside@print
+    list-style-position:inside@screen&sm">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ol>
 ```
+
+{/* eslint-enable @master/css/prefer-canonical-classes */}

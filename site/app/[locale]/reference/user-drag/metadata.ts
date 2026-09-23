@@ -2,11 +2,10 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'user-drag',
-  description: 'Controlling whether the user can drag element.',
+  description: 'Controlling native dragging through a vendor CSS property.',
   category: 'Interactivity',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=user-drag',
-  mdnLink: 'https://developer.mozilla.org/en-US/docs/Web/CSS/user-drag',
   fileURL: import.meta.url
 })
 

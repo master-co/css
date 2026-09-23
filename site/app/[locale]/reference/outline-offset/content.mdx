@@ -1,14 +1,37 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document outline-offset values */}
+{/* eslint-disable @master/css/prefer-canonical-classes -- this reference explains x-unit outline offsets explicitly */}
 
 ## Examples \{#examples\}
+
 ### Move an outline away from the element \{#move-an-outline-away-from-the-element\}
-Use `outline-offset:*` to create space between an outline and the element edge.
+A positive `outline-offset` leaves a gap outside the element’s border edge. Compare zero offset with `2x`, which resolves to `0.5rem` (8px at this preview’s root size).
+
+<DemoExample page="outline-offset" section="move-an-outline-away-from-the-element" />
+
 ```html
-<!-- @MARK outline:2px|solid|blue-60 --><!-- @MARK outline-offset:2x -->
-<button class="outline:2px|solid|blue-60 outline-offset:2x">
-  Save
+<!-- Zero offset · at the border edge -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:2px|solid|blue
+         outline-offset:0 font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- 2x offset · 8px gap -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:2px|solid|blue
+         outline-offset:2x font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
 </button>
 ```
 
@@ -19,20 +42,61 @@ Use `outline-offset:*` to create space between an outline and the element edge.
   </Class2CSS>
 </details>
 
+Offset changes paint placement without changing the layout box. Leave room around the control so an outward ring remains visible.
+
 ### Pull an outline inward \{#pull-an-outline-inward\}
-Negative values can pull the outline inside the element edge.
+A negative offset moves the ring inside the border edge. Compare zero with −4px; the buttons retain the same dimensions and padding.
+
+<DemoExample page="outline-offset" section="pull-an-outline-inward" />
+
 ```html
-<!-- @MARK outline-offset:-1px -->
-<button class="outline-offset:-1px">...</button>
+<!-- Zero offset -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:2px|solid|blue
+         outline-offset:0 font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
 ```
 
-Use inward offsets carefully so the focus indicator remains visible.
+```html
+<!-- −4px offset · inside the edge -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:2px|solid|blue
+         outline-offset:-4px font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+Keep the inward ring away from text and icons. Negative offsets do not reserve extra content space.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keyboard focus moves the blue outline outward by `2x`. Print returns the offset to zero; the outline itself remains visible.
+
+<DemoExample page="outline-offset" section="apply-conditionally" />
+
 ```html
-<div class="outline-offset:0 outline-offset:2x:focus outline-offset:0@print">...</div>
+<!-- Zero → 2x on keyboard focus -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline:2px|solid|blue
+         outline-offset:0 font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible
+         outline-offset:0@print
+         outline-offset:2x:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-Offset changes only matter when an outline is visible.
+The gap is independent of outline width and style. The live size reading stays unchanged while the offset changes.
+
 {/* eslint-enable @master/css/prefer-canonical-classes */}

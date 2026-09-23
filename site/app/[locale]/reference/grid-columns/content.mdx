@@ -3,25 +3,42 @@
 
 ## Basic usage \{#basic-usage\}
 ### Create equal columns \{#create-equal-columns\}
-Use `grid-cols` to create an equal-width column grid. It also sets `display:grid`.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid-cols:3 gap:xs">
-      <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg text-center bg:blue-5 b:blue-80@dark bg:blue-95@dark">1</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">2</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">3</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-cols:3` establishes `display:grid` and three equal tracks using `repeat(3,minmax(0,1fr))`. The six items fill across each row. In this 280px container, two 16px gaps are subtracted before the remaining width is divided into thirds.
+
+<DemoExample page="grid-columns" section="create-equal-columns" />
+
 ```html
-<!-- @MARK grid-cols:3 -->
-<div class="grid-cols:3">
-  <div>1</div><div>2</div><div>3</div>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
 </div>
 ```
 
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['grid-cols:3']}
+  </Class2CSS>
+</details>
+
+The zero track minimum allows the columns to stay equal. Long or fixed-width content can still overflow its cell; wrapping, clipping or scrolling is a separate content decision. Use [grid-template-columns](/reference/grid-template-columns) for unequal tracks or content-based sizing.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The same six items use two columns, then three from `sm` and four from `lg`. The container stays 280px wide so the change in track count is easy to compare.
+
+<DemoExample page="grid-columns" section="apply-conditionally" />
+
 ```html
-<div class="grid-cols:3:hover grid-cols:3@dark grid-cols:3@print grid-cols:3@sm">…</div>
+<div id="layout" class="grid-cols:2 grid-auto-rows:48px gap:md w:70x max-w:full grid-cols:3@sm grid-cols:4@lg">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+  <div id="item-5" class="p:sm">05</div>
+  <div id="item-6" class="p:sm">06</div>
+</div>
 ```

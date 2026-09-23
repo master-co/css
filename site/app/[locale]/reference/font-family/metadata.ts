@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'font-family',
-  description: 'Setting the font for an element.',
+  description: 'Select a font stack, preserve inheritance and load custom faces with explicit fallbacks.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=font-family',

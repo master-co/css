@@ -3,12 +3,29 @@
 
 ## Examples \{#examples\}
 ### Hint an upcoming transform \{#hint-an-upcoming-transform\}
-Use `will-change:*` sparingly to tell the browser that a property is likely to change soon.
+This visible native button declares an upcoming transform. Press and hold it, or focus it and hold Space, to apply the actual movement.
+
+<DemoExample page="will-change" section="hint-an-upcoming-transform" />
+
 ```html
-<!-- @MARK will-change:transform -->
-<button class="transition:transform|150ms|ease-out will-change:transform transform:translateY(-2px):hover">
-  Hover
-</button>
+<!-- Transform hint · press to move -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <button id="target" type="button"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:none
+             will-change:transform
+             outline:2px|solid|blue:focus-visible
+             outline-offset:3px:focus-visible
+             transform:none@print
+             transition:transform|fast|ease-out@motion
+             will-change:auto@print
+             transform:translateY(-8px):active@screen">
+      Move preview
+    </button>
+  </div>
+</div>
 ```
 
 <details>
@@ -18,26 +35,88 @@ Use `will-change:*` sparingly to tell the browser that a property is likely to c
   </Class2CSS>
 </details>
 
+The readout shows the declared hint. It does not measure speed or prove layer promotion. Add hints only after measuring a real need; keeping them on many elements can consume resources.
+
 ### Hint opacity changes \{#hint-opacity-changes\}
-Use `will-change:opacity` for elements that fade frequently, such as popovers or temporary overlays.
+Press this visible button to lower its opacity. The hint names opacity; a separate active-state class performs the fade.
+
+<DemoExample page="will-change" section="hint-opacity-changes" />
+
 ```html
-<!-- @MARK will-change:opacity -->
-<div class="opacity:0 transition:opacity|150ms|ease-out will-change:opacity opacity:1:hover">
-  Preview
+<!-- Opacity hint · press to fade -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <button id="target" type="button"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 will-change:opacity
+             outline:2px|solid|blue:focus-visible
+             outline-offset:3px:focus-visible
+             opacity:1@print
+             transition:opacity|fast|ease-out@motion
+             will-change:auto@print
+             opacity:.64:active@screen">
+      Preview overlay
+    </button>
+  </div>
 </div>
 ```
+
+The button remains named and keyboard operable. Will-change does not animate or hide the element. Reduced motion removes the timed fade while preserving the native pressed state.
 
 ### Reset when the hint is no longer useful \{#reset-when-the-hint-is-no-longer-useful\}
-Do not leave `will-change` on large parts of the page by default. Reset it with `will-change:auto` when the element returns to a static state.
+Hover or focus to prepare a transform hint before pressing. Move away and remove focus to return it to auto.
+
+<DemoExample page="will-change" section="reset-when-the-hint-is-no-longer-useful" />
+
 ```html
-<!-- @MARK will-change:auto -->
-<div class="will-change:transform will-change:auto:active">
-  Active only when needed
+<!-- Auto → prepare → press → auto -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <button id="target" type="button"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:none will-change:auto
+             outline:2px|solid|blue:focus-visible
+             outline-offset:3px:focus-visible
+             transform:none@print
+             transition:transform|fast|ease-out@motion
+             will-change:auto@print
+             will-change:transform:hover@screen
+             will-change:transform:focus-visible@screen
+             transform:translateY(-8px):active@screen">
+      Prepare and press
+    </button>
+  </div>
 </div>
 ```
 
+Preparing before the change gives the browser time to act on the hint. Auto releases this explicit request when the interaction ends. Applications with longer scripted sequences should remove their hint after the sequence finishes.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the actual viewport to `sm` to declare an opacity hint. Pressing the native button still controls the fade; changing the hint alone does not change its appearance.
+
+<DemoExample page="will-change" section="apply-conditionally" />
+
 ```html
-<div class="will-change:transform:hover will-change:auto@print will-change:opacity@sm">...</div>
+<!-- Auto → opacity hint at sm -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <button id="target" type="button"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 will-change:auto
+             outline:2px|solid|blue:focus-visible
+             outline-offset:3px:focus-visible
+             opacity:1@print
+             transition:opacity|fast|ease-out@motion
+             will-change:auto@print
+             opacity:.64:active@screen
+             will-change:opacity@screen&sm">
+      Press to preview
+    </button>
+  </div>
+</div>
 ```
+
+Print returns the hint to auto. This viewport rule demonstrates conditional syntax; choose hint lifetimes from actual interaction needs, not screen size alone.

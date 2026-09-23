@@ -2,11 +2,27 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Scroll with the element \{#scroll-with-the-element\}
-Use `bg-scroll` for the normal background attachment behavior.
+`bg-scroll` attaches the background to the element’s box. Scroll inside the panel: its text moves while the artwork stays at the same place in the panel. Scroll the preview page and the whole panel moves together.
+
+<DemoExample page="background-attachment" section="scroll-with-the-element" />
+
 ```html
-<!-- @MARK bg-scroll -->
-<section class="bg-scroll">...</section>
+<!-- Element box · scroll attachment -->
+<body class="min-h:720px">
+  <section id="target" tabindex="0" aria-label="Scrollable background specimen"
+  class="overflow:auto h:220px w:xs max-w:100% p:md b:1px|solid|base
+         bg-repeat-y bg-scroll background-position:50%|0
+         background-size:320px|200px bg:url(/demo/landscape.svg)"
+>
+    <div class="flex flex-col items-start justify-between h:480px">
+      <p class="m:0 p:xs bg:surface-base text:body">Start of content</p>
+      <p class="m:0 p:xs bg:surface-base text:body">End of content</p>
+    </div>
+  </section>
+  <p class="mt:md font:sm text:muted">Scroll this page as well as the inner panel.</p>
+</body>
 ```
 
 <details>
@@ -17,25 +33,74 @@ Use `bg-scroll` for the normal background attachment behavior.
 </details>
 
 ### Fix a background to the viewport \{#fix-a-background-to-the-viewport\}
-Use `bg-fixed` when the background should stay fixed relative to the viewport.
+`bg-fixed` positions the image against the viewport while the element still clips its paint. Scroll the preview page to move the panel across the stationary artwork.
+
+<DemoExample page="background-attachment" section="fix-a-background-to-the-viewport" />
+
 ```html
-<!-- @MARK bg-fixed --><!-- @MARK bg-cover -->
-<section class="bg-cover bg-fixed">...</section>
+<!-- Iframe viewport · fixed attachment -->
+<body class="min-h:720px">
+  <section id="target" tabindex="0" aria-label="Scrollable background specimen"
+  class="overflow:auto h:220px w:xs max-w:100% p:md b:1px|solid|base
+         bg-fixed bg-repeat-y background-position:50%|0
+         background-size:320px|200px bg:url(/demo/landscape.svg)"
+>
+    <div class="flex flex-col items-start justify-between h:480px">
+      <p class="m:0 p:xs bg:surface-base text:body">Start of content</p>
+      <p class="m:0 p:xs bg:surface-base text:body">End of content</p>
+    </div>
+  </section>
+  <p class="mt:md font:sm text:muted">Scroll this page as well as the inner panel.</p>
+</body>
 ```
 
-Fixed backgrounds can behave differently on mobile browsers. Keep the effect decorative and verify it on target devices.
+This preview uses its own real iframe viewport. Fixed backgrounds can behave differently on mobile devices; verify the effect on the browsers and hardware you target. Keep the effect decorative and give text an opaque surface.
 
 ### Attach to scrollable content \{#attach-to-scrollable-content\}
-Use `bg-local` when the background should scroll with the element's contents.
+`bg-local` attaches the image to the element’s scrollable content. Focus the panel and use the arrow keys: the artwork and text move through the panel together.
+
+<DemoExample page="background-attachment" section="attach-to-scrollable-content" />
+
 ```html
-<!-- @MARK bg-local --><!-- @MARK overflow:auto -->
-<div class="overflow:auto bg-local">...</div>
+<!-- Scrollable content · local attachment -->
+<body class="min-h:720px">
+  <section id="target" tabindex="0" aria-label="Scrollable background specimen"
+  class="overflow:auto h:220px w:xs max-w:100% p:md b:1px|solid|base
+         bg-local bg-repeat-y background-position:50%|0
+         background-size:320px|200px bg:url(/demo/landscape.svg)"
+>
+    <div class="flex flex-col items-start justify-between h:480px">
+      <p class="m:0 p:xs bg:surface-base text:body">Start of content</p>
+      <p class="m:0 p:xs bg:surface-base text:body">End of content</p>
+    </div>
+  </section>
+  <p class="mt:md font:sm text:muted">Scroll this page as well as the inner panel.</p>
+</body>
 ```
+
+Compare this with `bg-scroll`, where inner scrolling moves only the content. The explicit 480px content height creates real overflow; the image size stays the same in both examples.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The panel uses local attachment on narrow screens and fixed attachment from `sm`. Resize the actual iframe, then compare inner-panel and preview-page scrolling. Print returns to scroll attachment.
+
+<DemoExample page="background-attachment" section="apply-conditionally" />
+
 ```html
-<div class="bg-scroll bg-scroll@print bg-fixed@lg">...</div>
+<!-- Local → fixed at sm -->
+<body class="min-h:720px">
+  <section id="target" tabindex="0" aria-label="Scrollable background specimen"
+  class="overflow:auto h:220px w:xs max-w:100% p:md b:1px|solid|base
+         bg-local bg-repeat-y background-position:50%|0
+         background-size:320px|200px bg:url(/demo/landscape.svg)
+         bg-scroll@print bg-fixed@screen&sm"
+>
+    <div class="flex flex-col items-start justify-between h:480px">
+      <p class="m:0 p:xs bg:surface-base text:body">Start of content</p>
+      <p class="m:0 p:xs bg:surface-base text:body">End of content</p>
+    </div>
+  </section>
+  <p class="mt:md font:sm text:muted">Scroll this page as well as the inner panel.</p>
+</body>
 ```
 
-Use motion and contrast carefully when fixed backgrounds sit behind text.
+The preview does not simulate attachment with transforms or inline positions. Mobile support may limit how fixed backgrounds paint even when the computed keyword is `fixed`.

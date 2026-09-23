@@ -1,44 +1,161 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document transform-box syntax */}
 
 ## Examples \{#examples\}
 ### Choose the transform reference box \{#choose-the-transform-reference-box\}
-Use `transform-box:*` to choose which box is used for transform calculations. This is most useful for SVG elements whose fill box, stroke box, and view box can differ.
+Each SVG rectangle translates by 50% of a different reference width. Its fill is 64 units wide, its 16-unit stroke expands the width to 80, and the SVG viewBox is 240 units wide.
+
+<DemoExample page="transform-box" section="choose-the-transform-reference-box" />
+
 ```html
-<!-- @MARK transform-box:fill-box -->
-<svg viewBox="0 0 24 24">
-  <path class="transform:scale(.92) transform-box:fill-box transform-origin:center" d="M4 4h16v16H4z" />
+<!-- Fill box · translate 32 units -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Rectangle translated from its dashed source bounds"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <rect x="24" y="60" width="64" height="40"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
+  <rect id="target" x="24" y="60" width="64" height="40"
+    class="fill:blue-20 stroke:blue-60
+           transform:translateX(50%) transform-fill
+           stroke-width:16px" />
+</svg>
+```
+
+```html
+<!-- Stroke box · translate 40 units -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Rectangle translated from its dashed source bounds"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <rect x="24" y="60" width="64" height="40"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
+  <rect id="target" x="24" y="60" width="64" height="40"
+    class="fill:blue-20 stroke:blue-60
+           transform:translateX(50%) transform-stroke
+           stroke-width:16px" />
+</svg>
+```
+
+```html
+<!-- View box · translate 120 units -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Rectangle translated from its dashed source bounds"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <rect x="24" y="60" width="64" height="40"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
+  <rect id="target" x="24" y="60" width="64" height="40"
+    class="fill:blue-20 stroke:blue-60
+           transform:translateX(50%) transform-view
+           stroke-width:16px" />
 </svg>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transform-box:fill-box']}
+    {['transform-fill', 'transform-stroke', 'transform-view']}
   </Class2CSS>
 </details>
 
+The violet dashed rectangle preserves the source coordinates. The class selects the reference box without resizing the underlying SVG geometry. The outer outline marks the SVG viewport.
+
 ### Use the border box for HTML elements \{#use-the-border-box-for-html-elements\}
-For regular HTML elements, `border-box` makes the element border box the transform reference.
+A 50% translation is 80px for this 160px border box. Compare its 108px content box, which excludes the authored border and asymmetric padding.
+
+<DemoExample page="transform-box" section="use-the-border-box-for-html-elements" />
+
 ```html
-<!-- @MARK transform-box:border-box -->
-<div class="transform:rotate(1deg) transform-box:border-box transform-origin:center">
-  Card
+<!-- Border box · translate 80px -->
+<div class="w:3xs max-w:100% py:lg">
+  <div class="h:100px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="h:100px w:160px pb:lg pl:xl pr:sm pt:sm
+             b:4px|solid|blue-60 font:sm bg:blue-10
+             fg:blue-80 transform:translateX(50%)
+             box-border transform-border">
+      Reference box
+    </div>
+  </div>
 </div>
 ```
 
-### Pair with transform origin \{#pair-with-transform-origin\}
-`transform-box:*` changes the box; `transform-origin:*` chooses the point inside that box.
 ```html
-<svg viewBox="0 0 24 24">
-  <circle class="transform:scale(1.1) transform-box:fill-box transform-origin:center" cx="12" cy="12" r="8" />
+<!-- Content box · translate 54px -->
+<div class="w:3xs max-w:100% py:lg">
+  <div class="h:100px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="h:100px w:160px pb:lg pl:xl pr:sm pt:sm
+             b:4px|solid|blue-60 font:sm bg:blue-10
+             fg:blue-80 transform:translateX(50%)
+             box-border transform-content">
+      Reference box
+    </div>
+  </div>
+</div>
+```
+
+Both elements keep the same 160 × 100 layout dimensions. The reference changes percentage transform calculations. For HTML boxes, fill-box resolves to the content box; stroke-box and view-box resolve to the border box.
+
+### Pair with transform origin \{#pair-with-transform-origin\}
+Keep the SVG fill box and 1.5 scale fixed, then compare center and top-left origins. The original 24-unit circle remains visible as a dashed guide.
+
+<DemoExample page="transform-box" section="pair-with-transform-origin" />
+
+```html
+<!-- Fill center · center remains at 72, 80 -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Circle scaled relative to its original dashed outline"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <circle id="target" cx="72" cy="80" r="24"
+    class="fill:blue-20 stroke:blue-60
+           transform:scale(1.5) transform-fill
+           stroke-width:2px transform-origin:center" />
+  <circle aria-hidden="true" cx="72" cy="80" r="24"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4"
+    class="untouchable" />
 </svg>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="transform-box:fill-box:hover transform-box:border-box@print transform-box:border-box@sm">...</div>
+<!-- Fill top left · center moves to 84, 92 -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Circle scaled relative to its original dashed outline"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <circle id="target" cx="72" cy="80" r="24"
+    class="fill:blue-20 stroke:blue-60
+           transform:scale(1.5) transform-fill
+           stroke-width:2px transform-origin:top|left" />
+  <circle aria-hidden="true" cx="72" cy="80" r="24"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4"
+    class="untouchable" />
+</svg>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+
+The reference box defines the coordinate region; transform-origin locates the pivot in that region. A scale around a corner shifts the circle’s center even though its source coordinates remain unchanged.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to switch the SVG from its fill box to its view box. The same 50% translation then uses the full SVG width. Print returns to the fill box.
+
+<DemoExample page="transform-box" section="apply-conditionally" />
+
+```html
+<!-- Fill → view box at sm -->
+<svg width="240" height="160" viewBox="0 0 240 160"
+  role="img" aria-label="Rectangle translated from its dashed source bounds"
+  class="block h:auto max-w:100%
+         outline:1px|solid|muted">
+  <rect x="24" y="60" width="64" height="40"
+    fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
+  <rect id="target" x="24" y="60" width="64" height="40"
+    class="fill:blue-20 stroke:blue-60
+           transform:translateX(50%) transform-fill
+           stroke-width:16px transform-fill@print
+           transform-view@screen&sm" />
+</svg>
+```
+
+This is a native SVG reference-box change. Its effect comes from different reference widths, not from replacing the shape or changing its coordinates.

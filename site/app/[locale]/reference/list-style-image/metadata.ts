@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'list-style-image',
-  description: 'Replacing the list item marker with an image.',
+  description: 'Replace a list marker with an image while retaining a type fallback.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=list-style-image',

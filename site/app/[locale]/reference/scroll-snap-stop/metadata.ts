@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-snap-stop',
-  description: 'Setting whether scroll container is pass over snap positions.',
+  description: 'Control whether a directional scroll can pass over an item’s snap position.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-snap-stop',

@@ -3,33 +3,127 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set the border image width \{#set-the-border-image-width\}
-Use `border-image-width` to control how thick the painted border image is. It can be larger than the fallback `border-width`.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="p:10x b:8px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:16 surface:raised">
-      <div className="font-weight:560 font:lg text:neutral">Image width 16</div>
-      <p className="my:md font:sm text:gray">The painted image uses a wider border image area.</p>
-    </div>
-  </DemoPanel>
-</Demo>
+Image width controls inward paint independently of the regular border. These identical 12px borders compare a multiplier of `1`, a multiplier of `2`, and an explicit `16px` image width.
+
+<DemoExample page="border-image-width" section="set-the-border-image-width" />
+
 ```html
-<!-- @MARK border-image-width:16 -->
-<div class="b:8px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:16">
-  Image width 16
+<!-- Width 1 · 12px paint -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
+
+```html
+<!-- Width 2 · 24px paint -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:2 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+```html
+<!-- Width 16px · explicit length -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:16px font:md
+         bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['border-image-width:2', 'border-image-width:16px']}
+  </Class2CSS>
+</details>
+
+A bare number multiplies the corresponding regular border width. Larger paint can cover the padding area without resizing the 250 × 130 border box.
 
 ### Use automatic width \{#use-automatic-width\}
-Use `auto` to derive the width from the slice value when possible.
+For this intrinsic 96 × 96 source, `auto` uses the natural 24-unit slices as 24px painted widths. Compare it with the explicit 24px result.
+
+<DemoExample page="border-image-width" section="use-automatic-width" />
+
 ```html
-<!-- @MARK border-image-width:auto -->
-<div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) border-image-width:auto">
-  Auto image width
+<!-- Auto · natural 24px slices -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:auto font:md
+         bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="border-image-width:16:hover border-image-width:16@dark border-image-width:16@print border-image-width:16@sm">…</div>
+<!-- 24px · explicit comparison -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:24px font:md
+         bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
+
+When a slice has no applicable natural size, auto falls back to the regular border width. The computed value can still read `auto`; the comparison shows the actual paint.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to double the image width from 12px to 24px. Print returns to the width multiplier `1`.
+
+<DemoExample page="border-image-width" section="apply-conditionally" />
+
+```html
+<!-- Width 1 → 2 at sm -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border
+         border-image-width:1@print
+         border-image-width:2@screen&sm">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+The layout box stays fixed. Its regular border width remains 12px in every state.

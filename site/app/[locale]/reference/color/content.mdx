@@ -1,35 +1,71 @@
-import ConfiguredExample from '~/site/reference/ConfiguredExample'
-
 ## Overview [sr-only] \{#overview\}
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### With opacity \{#with-opacity\}
-Add the suffix `/alpha` to change the opacity of any color.
-<Basic className="fg:blue-60/.15" />
+Append `/alpha` to a color to make its paint translucent. Compare the same blue at full opacity and at 40%; the element itself keeps `opacity:1`.
+
+<DemoExample page="color" section="with-opacity" />
+
+```html
+<!-- Opaque foreground -->
+<p id="target"
+  class="m:0 font:2xl leading:lg text:blue"
+>A shared design language.</p>
+```
+
+```html
+<!-- 40% foreground alpha -->
+<p id="target"
+  class="m:0 font:2xl leading:lg text:blue/.4"
+>A shared design language.</p>
+```
+
+The low-alpha sample intentionally has reduced contrast. Choose sufficient contrast against the final surface for meaningful text. A color’s alpha differs from [element opacity](/reference/opacity), which composites the whole element and its descendants.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus this button to change its foreground. Switch the preview theme to compare the resting color; print restores a solid black label.
+
+<DemoExample page="color" section="apply-conditionally" />
+
 ```html
-<div class="fg:slate-10:hover fg:slate-10@dark fg:slate-10@print fg:slate-10@sm">...</div>
+<!-- Pointer, keyboard and theme -->
+<button id="target" type="button"
+  class="font:md text:body fg:black@print text:violet@screen@dark
+         text:blue:hover@screen text:blue:focus-visible@screen"
+>Preview details</button>
 ```
+
+The foreground does not change the button’s background. Use [selectors](/reference/rules/selectors) for real interaction and [conditions](/reference/rules/conditions) for theme or media changes.
 
 ---
 
 ## Customization \{#customization\}
 ### Use custom text colors \{#use-custom-text-colors\}
-Add a color to the `color-text` namespace, then compile the theme together with the class that consumes it.
+Define a semantic name in `color-text`, then compile the theme with the class that consumes it. This token follows the preset’s light and dark text-blue values.
 
-<ConfiguredExample source={'@theme { --color-text-primary: #000; }'} classes={['text:primary']} />
+<DemoExample page="color" section="use-custom-text-colors" />
 
-The current preset exposes this namespace through <TextHeirs />. These consumers are derived from the public native namespaces, aliases and manifest utilities.
-
-Use `text:primary` for the contextual text color. Use [text fill color](/reference/text-fill-color) when you need the WebKit text fill property.
-
-To request a particular CSS variable explicitly, use a native variable reference:
-
-```html
-<p class="fg:var(--color-blue)">Base blue token</p>
+```css name=index.css
+@theme {
+  --color-text-primary: var(--color-text-blue);
+}
 ```
 
-<Class2CSS>{['fg:var(--color-blue)']}</Class2CSS>
+```html
+<!-- Configured text namespace -->
+<p id="target"
+  class="m:0 font:2xl leading:lg text:primary"
+>A shared design language.</p>
+```
+
+```html
+<!-- Explicit variable reference -->
+<p id="target"
+  class="m:0 font:2xl leading:lg
+         fg:var(--color-text-primary,var(--color-text-blue))"
+>A shared design language.</p>
+```
+
+The current preset exposes this namespace through <TextHeirs />. These consumers are derived from public native namespaces, aliases and manifest utilities. `text:primary` selects the contextual text token; `fg:var(--color-text-primary,var(--color-text-blue))` requests the variable explicitly and supplies a fallback if the custom token is absent. Use [text fill color](/reference/text-fill-color) for the separate WebKit glyph-fill property.

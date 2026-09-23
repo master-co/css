@@ -2,35 +2,74 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Disable tiling \{#disable-tiling\}
-Use `bg-no-repeat` when a background image should render once.
+Compare the same small background tile with repetition enabled and disabled. Neither image size nor position changes.
+
+<DemoExample page="background-repeat" section="disable-tiling" />
+
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg-no-repeat -->
-<section class="bg-no-repeat bg:url(/hero.jpg)">
-  ...
-</section>
+<!-- Repeat · both axes -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-repeat background-position:0|0
+         background-size:80px|50px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- No repeat · one tile -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-no-repeat background-position:0|0
+         background-size:80px|50px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/hero.jpg)', 'bg-no-repeat']}
+    {['bg-repeat', 'bg-no-repeat']}
   </Class2CSS>
 </details>
 
 ### Repeat on one axis \{#repeat-on-one-axis\}
-Use `bg-repeat-x` or `bg-repeat-y` for stripes, dividers, and patterned backgrounds.
+`bg-repeat-x` tiles horizontally; `bg-repeat-y` tiles vertically. The perpendicular axis keeps a single row or column.
+
+<DemoExample page="background-repeat" section="repeat-on-one-axis" />
+
 ```html
-<!-- @MARK bg-repeat-x -->
-<div class="bg-repeat-x">...</div>
+<!-- Repeat horizontally -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-repeat-x background-position:0|0
+         background-size:80px|50px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
-Use `background-repeat:*` for values that do not have a shortcut.
+```html
+<!-- Repeat vertically -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-repeat-y background-position:0|0
+         background-size:80px|50px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+Use the native `background-repeat:*` form for other values, such as `space` or `round`. Repetition is independent of [background size](/reference/background-size).
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to repeat the tile on both axes. Narrow screens and print show it once, with the same explicit size and position.
+
+<DemoExample page="background-repeat" section="apply-conditionally" />
+
 ```html
-<div class="bg-no-repeat bg-no-repeat@print bg-repeat@sm">...</div>
+<!-- One tile → repeat at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-no-repeat background-position:0|0
+         background-size:80px|50px bg:surface-muted
+         bg:url(/demo/landscape.svg) bg-no-repeat@print bg-repeat@screen&sm"
+></div>
 ```
 
-Most photographic backgrounds should use `bg-no-repeat`; repeating is mainly for patterns.
+Set `bg-no-repeat` explicitly for photographic compositions when tiling is not intended.

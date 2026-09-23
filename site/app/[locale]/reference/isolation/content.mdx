@@ -3,12 +3,16 @@
 
 ## Examples \{#examples\}
 ### Create a stacking context \{#create-a-stacking-context\}
-Use `isolate` when a component's blending, z-index, or effects should be contained inside its own stacking context.
+`isolate` creates a stacking context. In this comparison, the blue background belongs to the outer parent. Isolation keeps the inner purple layer from blending with that external background.
+
+<DemoExample page="isolation" section="create-a-stacking-context" />
+
 ```html
-<!-- @MARK isolate -->
-<section class="isolate">
-  <div class="mix-blend-mode:multiply">Blend locally</div>
-</section>
+<div class="p:md bg:blue-20">
+  <section class="isolate">
+    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Blend layer</div>
+  </section>
+</div>
 ```
 
 <details>
@@ -19,24 +23,39 @@ Use `isolate` when a component's blending, z-index, or effects should be contain
 </details>
 
 ### Return to automatic isolation \{#return-to-automatic-isolation\}
-Use `isolation:auto` when a variant should let the browser use normal stacking behavior.
+`isolation:auto` stops explicitly creating a stacking context. Widen the preview to `sm` to let the purple layer blend with the blue background. Other properties, such as a transform or non-default opacity, can still create a stacking context.
+
+<DemoExample page="isolation" section="return-to-automatic-isolation" />
+
 ```html
-<!-- @MARK isolation:auto -->
-<section class="isolate isolation:auto@sm">
-  Normal stacking on larger screens
-</section>
+<div class="p:md bg:blue-20">
+  <section class="isolate isolation:auto@sm">
+    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Blend layer</div>
+  </section>
+</div>
 ```
 
 ### Protect layered components \{#protect-layered-components\}
-Isolation is useful for cards, modals, and previews that use blend modes or negative z-index children.
+Use isolation to keep negative z-index decoration inside its component. The blue background layer stays behind the paragraph and above the card’s own surface.
+
+<DemoExample page="isolation" section="protect-layered-components" />
+
 ```html
-<article class="rel isolate">
-  <div class="abs inset:0 z:-1"></div>
+<article class="rel isolate h:40x p:md">
+  <div class="abs inset:0 z:-1" aria-hidden="true"></div>
+  <p>Foreground content</p>
 </article>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to change the behavior when a state or viewport condition applies. Focus the inner section with Tab to isolate its blending. At `sm`, the section is isolated without focus.
+
+<DemoExample page="isolation" section="apply-conditionally" />
+
 ```html
-<div class="isolate:hover isolation:auto@print isolation:auto@sm">...</div>
+<div class="p:md bg:blue-20">
+  <section tabindex="0" class="isolation:auto isolate:focus-visible isolate@sm">
+    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Focus with Tab</div>
+  </section>
+</div>
 ```

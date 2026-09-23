@@ -1,47 +1,94 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`user-drag:*` emits the vendor `-webkit-user-drag` declaration as well as its unprefixed spelling. This is a nonstandard, platform-dependent feature. Prefer the HTML [`draggable` attribute](https://html.spec.whatwg.org/multipage/dnd.html#the-draggable-attribute) for explicit native drag intent.
+
+{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
 
 ## Examples \{#examples\}
 ### Prevent dragging media \{#prevent-dragging-media\}
-Use `user-drag:none` to prevent images, icons, and decorative media from being dragged out of the interface.
-{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
+In supporting browsers, `user-drag:none` prevents the image from starting a native drag. Compare it with the default image and the standard HTML `draggable="false"` alternative.
+
+<DemoExample page="user-drag" section="prevent-dragging-media" />
+
 ```html
-<!-- @MARK user-drag:none -->
-<img class="user-drag:none" src="/images/product.png" alt="Product preview">
+<!-- CSS · native image drag disabled -->
+<img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+  width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:none">
 ```
-{/* eslint-enable @master/css/no-invalid-classes */}
+
+```html
+<!-- Default image · native drag allowed -->
+<img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+  width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:auto">
+```
+
+```html
+<!-- HTML · explicit false -->
+<img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+  width="240" height="144" class="block h:auto w:240px max-w:full r:sm " draggable="false">
+```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['user-drag:none']}
-  </Class2CSS>
+  <Class2CSS>{['user-drag:none']}</Class2CSS>
 </details>
 
+The artwork is the same loaded image in every specimen. Try dragging with a pointer. Native touch dragging and long-press behavior vary by platform; computed support alone does not prove that a drag starts.
+
 ### Keep draggable elements explicit \{#keep-draggable-elements-explicit\}
-Use `user-drag:element` only when the element is intended to participate in native drag behavior.
-{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
+`user-drag:element` requests a native drag for the whole element in supporting browsers. The second specimen expresses that intent with `draggable="true"`.
+
+<DemoExample page="user-drag" section="keep-draggable-elements-explicit" />
+
 ```html
-<!-- @MARK user-drag:element -->
-<div class="user-drag:element">
-  Draggable asset
+<!-- Vendor CSS request -->
+<div id="target"
+  class="p:md b:1px|solid|base r:sm user-select:none
+         user-drag:element">
+  Canvas asset
 </div>
 ```
-{/* eslint-enable @master/css/no-invalid-classes */}
+
+```html
+<!-- Standard HTML request -->
+<div id="target" draggable="true"
+  class="p:md b:1px|solid|base r:sm user-select:none">
+  Canvas asset
+</div>
+```
+
+Neither declaration creates a drop target or a reordering feature. A complete application also needs data handling and an accessible way to perform its action without dragging.
 
 ### Reset to browser behavior \{#reset-to-browser-behavior\}
-Use `user-drag:auto` when a component variant should restore the default drag behavior.
-{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
+Use `user-drag:auto` to return to the browser’s normal drag rules. Resize from `none` below `sm` to `auto` at the breakpoint.
+
+<DemoExample page="user-drag" section="reset-to-browser-behavior" />
+
 ```html
-<!-- @MARK user-drag:auto -->
-<img class="user-drag:none user-drag:auto@sm" src="/images/file.png" alt="File">
+<img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+  width="240" height="144"
+  class="block h:auto w:240px max-w:full r:sm
+         user-drag:none user-drag:auto@screen&sm">
 ```
-{/* eslint-enable @master/css/no-invalid-classes */}
+
+Automatic behavior depends on the element. Images and links normally have native drag behavior; an ordinary `div` does not become draggable merely because its value is `auto`.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-{/* eslint-disable @master/css/no-invalid-classes -- documented vendor property is not validated by the default runtime CSS validator */}
+Use a stable native checkbox to change the image’s drag policy. When Lock image dragging is checked, the parent selector applies `user-drag:none` to the image.
+
+<DemoExample page="user-drag" section="apply-conditionally" />
+
 ```html
-<div class="user-drag:none:hover user-drag:none@print user-drag:auto@sm">...</div>
+<div class="user-drag:none:has(>label>input:checked)>img">
+  <label class="flex items-center gap:sm mb:md">
+    <input type="checkbox"> Lock image dragging
+  </label>
+  <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+    width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:auto">
+</div>
 ```
+
+The checkbox remains available to keyboard users. Toggle it before starting a drag; the lesson changes an actual CSS property rather than canceling a synthetic drag event.
+
 {/* eslint-enable @master/css/no-invalid-classes */}

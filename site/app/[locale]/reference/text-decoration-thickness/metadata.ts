@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-decoration-thickness',
-  description: 'Setting thickness of the decoration line.',
+  description: 'Set the weight of decorative lines without changing the text size.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-decoration-thickness',

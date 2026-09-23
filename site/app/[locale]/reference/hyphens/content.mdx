@@ -3,12 +3,22 @@
 
 ## Examples \{#examples\}
 ### Allow automatic hyphenation \{#allow-automatic-hyphenation\}
-Use `hyphens:auto` for narrow text columns where long words can otherwise create uneven lines.
+`hyphens:auto` permits dictionary-based hyphenation. Set the content language with `lang`; actual hyphenation depends on the browser’s available language data.
+
+<DemoExample page="hyphens" section="allow-automatic-hyphenation" />
+
 ```html
-<!-- @MARK hyphens:auto -->
-<p lang="en" class="hyphens:auto">
-  Antidisestablishmentarianism can hyphenate when the browser has language data.
-</p>
+<!-- hyphens:none -->
+<div id="scrollport" role="region" aria-label="Automatic hyphenation" tabindex="0" class="overflow:auto w:128px max-w:100%">
+  <p id="target" lang="en" class="w:128px m:0 font:md leading:24px hyphens:none">Antidisestablishmentarianism</p>
+</div>
+```
+
+```html
+<!-- hyphens:auto -->
+<div id="scrollport" role="region" aria-label="Automatic hyphenation" tabindex="0" class="overflow:auto w:128px max-w:100%">
+  <p id="target" lang="en" class="w:128px m:0 font:md leading:24px hyphens:auto">Antidisestablishmentarianism</p>
+</div>
 ```
 
 <details>
@@ -18,22 +28,50 @@ Use `hyphens:auto` for narrow text columns where long words can otherwise create
   </Class2CSS>
 </details>
 
+A browser without a suitable dictionary may leave the word unbroken. The specimen does not insert fake hyphens.
+
 ### Respect manual hyphenation points \{#respect-manual-hyphenation-points\}
-Use `hyphens:manual` when the content includes soft hyphens or explicit hyphenation decisions.
+`hyphens:manual` permits a break at an authored soft hyphen. `&shy;` is invisible when no break is needed and supplies a hyphen when the line breaks there.
+
+<DemoExample page="hyphens" section="respect-manual-hyphenation-points" />
+
 ```html
-<!-- @MARK hyphens:manual -->
-<p class="hyphens:manual">trans&shy;formation</p>
+<!-- Narrow · soft hyphen used -->
+<p id="target" class="w:100px m:0 font:md leading:24px hyphens:manual">trans&shy;formation</p>
+```
+
+```html
+<!-- Wide · soft hyphen hidden -->
+<p id="target" class="w:220px max-w:100% m:0 font:md leading:24px hyphens:manual">trans&shy;formation</p>
 ```
 
 ### Disable hyphenation \{#disable-hyphenation\}
-Use `hyphens:none` for codes, product names, or text where inserted hyphens would change meaning.
+`hyphens:none` suppresses both automatic and soft-hyphen opportunities. Compare the same authored word at the same width; other break opportunities, such as spaces, still work.
+
+<DemoExample page="hyphens" section="disable-hyphenation" />
+
 ```html
-<!-- @MARK hyphens:none -->
-<code class="hyphens:none">MASTERCSS_RUNTIME_TOKEN</code>
+<!-- hyphens:manual -->
+<div id="scrollport" role="region" aria-label="Manual hyphenation comparison" tabindex="0" class="overflow:auto w:100px max-w:100%">
+  <p id="target" class="w:100px m:0 font:md leading:24px hyphens:manual">trans&shy;formation</p>
+</div>
+```
+
+```html
+<!-- hyphens:none -->
+<div id="scrollport" role="region" aria-label="Manual hyphenation comparison" tabindex="0" class="overflow:auto w:100px max-w:100%">
+  <p id="target" class="w:100px m:0 font:md leading:24px hyphens:none">trans&shy;formation</p>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize this fluid column from 80px toward 100px. It starts with an explicit soft-hyphen opportunity. At `sm` on screen, and in print, hyphenation is disabled; the whole word still exceeds the column width and can be scrolled.
+
+<DemoExample page="hyphens" section="apply-conditionally" />
+
 ```html
-<p class="hyphens:auto hyphens:none@print hyphens:none@sm">...</p>
+<!-- Fluid column · native hyphenation reset -->
+<div id="scrollport" role="region" aria-label="Responsive hyphenation" tabindex="0" class="overflow:auto w:clamp(80px,10vw,100px) max-w:100%">
+  <p id="target" class="w:full m:0 font:md leading:24px hyphens:manual hyphens:none@print hyphens:none@screen&sm">trans&shy;formation</p>
+</div>
 ```

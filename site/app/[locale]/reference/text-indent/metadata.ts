@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-indent',
-  description: 'Setting indentation of the first line.',
+  description: 'Offset the first formatted line without moving the rest of the paragraph.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-indent',

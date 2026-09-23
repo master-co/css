@@ -1,44 +1,60 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document content value forms */}
 
 ## Basic usage \{#basic-usage\}
 ### Add indicators for external links \{#add-indicators-for-external-links\}
-The most typical example is using a pseudo-element to add an indicator ` ↗` after external links.
-<Demo $py={0}>
-  <DemoPanel>
-    <p class="my:0">Discover high-quality products at XYZ Corporation. Visit [our website](https://www.example.com) for exclusive deals and unbeatable prices.</p>
-  </DemoPanel>
-</Demo>
+Apply a descendant selector to add a supplementary arrow after links whose `href` begins with `http`. The selector stays on the article; the generated content belongs to each matching link.
+
+<DemoExample page="content" section="add-indicators-for-external-links" />
+
 ```html
-<!-- @MARK content:'\00a0↗'_:where(a[href^='http'])::after -->
-<article class="content:'\00a0↗'_:where(a[href^='http'])::after">
-  …<a target="_blank" href="https://www.example.com">our website</a>…
+<!-- Descendant selector · external link -->
+<article class="font:md leading:lg
+    content:'\00a0↗'_:where(a[href^='http'])::after">
+  <p class="m:0">Read the <a id="target" class="underline text:blue" href="https://www.example.com">project website</a>.</p>
+  <p class="m:0">Return to <a class="underline" href="/en/reference/content">this reference</a>.</p>
 </article>
 ```
 
-### Resolve whitespaces in the value \{#resolve-whitespaces-in-the-value\}
-Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
-```html
-<a class="content:'\00a0↗'::after">…</a>
-```
-Is it not very kind to use `\00a0` in markup?
+The URL-prefix test is not an origin comparison: it also matches absolute links to your own site. Keep link text meaningful without the arrow. Generated content can be announced by assistive technology and should not carry essential instructions.
 
-(o) Predefine your content [theme tokens](/guide/theme) without `\00a0`.
+### Resolve whitespaces in the value \{#resolve-whitespaces-in-the-value\}
+HTML whitespace separates class names. Inside a quoted `content` string, `\00a0` encodes a non-breaking space without splitting the utility.
+
+<DemoExample page="content" section="resolve-whitespaces-in-the-value" />
+
+```html
+<!-- Escaped non-breaking space -->
+<a id="target" class="font:md underline text:blue content:'\00a0↗'::after" href="https://www.example.com">Project website</a>
+```
+
+A theme token can hold a quoted string with ordinary whitespace. Keep its declaration in your stylesheet:
+
 ```css name=index.css
 @theme {
-  --content-external: " ↗"; /* [!code ++] */
+  --content-external: " ↗";
 }
 ```
-Apply your custom content:
+
 ```html
-<!-- @MARK content:var(--content-external)::after -->
-<a class="content:var(--content-external)::after">…</a>
+<!-- Quoted theme value -->
+<a id="target" class="font:md underline text:blue
+    content:external::after" href="https://www.example.com">Project website</a>
 ```
 
+The two strings use different spaces: the escape is non-breaking, while the token contains an ordinary space. The readout shows the browser’s actual `::after` content.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus this link to generate its arrow. The base pseudo-element has `content:none`; the link’s name and destination stay available in every state. Print removes the supplementary arrow.
+
+<DemoExample page="content" section="apply-conditionally" />
+
 ```html
-<div class="content:normal:hover content:normal@dark content:normal@print content:normal@sm">…</div>
+<!-- Pointer and keyboard · same link -->
+<a id="target" class="font:md underline text:blue content:none::after
+    content:none::after@print
+    content:'\00a0↗':hover::after@screen
+    content:'\00a0↗':focus-visible::after@screen" href="https://www.example.com">Project website</a>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+
+The state selector comes before `::after`. Apply conditions to the originating element so pointer and keyboard interaction can actually trigger them.

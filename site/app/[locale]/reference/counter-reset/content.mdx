@@ -3,73 +3,80 @@
 
 ## Basic usage \{#basic-usage\}
 ### Create a section counter \{#create-a-section-counter\}
-Use `counter-reset` to create a named counter and set its initial value. Regular counters default to `0`, so the first `counter-increment:section` produces `1`.
-<Demo $py={0}>
-  <DemoPanel>
-    <article className="grid gap:2xl counter-reset:section">
-      <h2 className="m:0 p:14x r:lg font-weight:560 font:xl bg:blue-5 text:neutral counter-increment:section font:semibold::before font:sm::before fg:blue-60::before content:'Section\00a0'counter(section)'.\00a0'::before bg:blue-95@dark">Setup</h2>
-      <h2 className="m:0 p:14x r:lg font-weight:560 font:xl bg:blue-5 text:neutral counter-increment:section font:semibold::before font:sm::before fg:blue-60::before content:'Section\00a0'counter(section)'.\00a0'::before bg:blue-95@dark">Usage</h2>
-    </article>
-  </DemoPanel>
-</Demo>
+Create `section` with an initial value of zero. The first increment occurs on the first heading, so the displayed values begin at 1.
+
+<DemoExample page="counter-reset" section="create-a-section-counter" />
+
 ```html
-<!-- @MARK counter-reset:section -->
-<article class="counter-reset:section">
-  <!-- @MARK counter-increment:section -->
-  <!-- @MARK content:'Section\00a0'counter(section)'.\00a0'::before -->
-  <h2 class="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before">Setup</h2>
-  <h2 class="counter-increment:section content:'Section\00a0'counter(section)'.\00a0'::before">Usage</h2>
+<!-- Scope · this article -->
+<article id="target" class="counter-reset:section">
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Setup</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Usage</h2>
 </article>
 ```
 
+Resetting a counter creates a new instance at that element. Descendants use that instance; use [counter-set](/reference/counter-set) when you want to update the current value in the flow.
+
 ### Start from another number \{#start-from-another-number\}
-Add an integer after the counter name to choose its initial value.
-<Demo $py={0}>
-  <DemoPanel>
-    <article className="counter-reset:chapter|4">
-      <h2 className="m:0 p:3xl b:1px|solid|base r:lg font-weight:560 font:xl text:neutral counter-increment:chapter font:semibold::before font:sm::before fg:blue-60::before content:'Chapter\00a0'counter(chapter)':\00a0'::before">Advanced topics</h2>
-    </article>
-  </DemoPanel>
-</Demo>
+Specify an integer after the counter name. This article initializes `chapter` to 4, then its headings increment to 5 and 6.
+
+<DemoExample page="counter-reset" section="start-from-another-number" />
+
 ```html
-<!-- @MARK counter-reset:chapter|4 -->
-<article class="counter-reset:chapter|4">
-  <!-- @MARK counter-increment:chapter -->
-  <!-- @MARK content:'Chapter\00a0'counter(chapter)':\00a0'::before -->
-  <h2 class="counter-increment:chapter content:'Chapter\00a0'counter(chapter)':\00a0'::before">Advanced topics</h2>
+<!-- Initial 4 · first heading 5 -->
+<article id="target" class="counter-reset:chapter|4">
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:chapter text:blue::before
+    content:counter(chapter)'.\00a0'::before">Advanced topics</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:chapter text:blue::before
+    content:counter(chapter)'.\00a0'::before">Deployment</h2>
 </article>
 ```
 
 ### Create a reversed counter \{#create-a-reversed-counter\}
-Use `reversed()` when a counter should count down from the number of items. Adjust the step with [`counter-increment`](/reference/counter-increment).
-<Demo $py={0}>
-  <DemoPanel>
-    <ol className="grid-cols:3 gap:xl m:0 p:0 list-style:none counter-reset:reversed(step)">
-      <li className="p:2xl r:lg text-center bg:gray-5 counter-increment:step|-1 block::before mb:xs::before font:2xl::before font:bold::before fg:blue-60::before content:counter(step)::before bg:gray-90@dark">
-        <span className="font:sm">Final review</span>
-      </li>
-      <li className="p:2xl r:lg text-center bg:gray-5 counter-increment:step|-1 block::before mb:xs::before font:2xl::before font:bold::before fg:blue-60::before content:counter(step)::before bg:gray-90@dark">
-        <span className="font:sm">Deploy</span>
-      </li>
-      <li className="p:2xl r:lg text-center bg:gray-5 counter-increment:step|-1 block::before mb:xs::before font:2xl::before font:bold::before fg:blue-60::before content:counter(step)::before bg:gray-90@dark">
-        <span className="font:sm">Monitor</span>
-      </li>
-    </ol>
-  </DemoPanel>
-</Demo>
+Where supported, `reversed(step)` derives an initial value from the elements that decrement that counter. This three-item example counts 3, 2, 1. The base rule explicitly starts at 4, so unsupported browsers show the same countdown using the authored −1 step.
+
+<DemoExample page="counter-reset" section="create-a-reversed-counter" />
+
 ```html
-<!-- @MARK counter-reset:reversed(step) -->
-<ol class="list-style:none counter-reset:reversed(step)">
-  <!-- @MARK counter-increment:step|-1 -->
-  <!-- @MARK content:counter(step)::before -->
-  <li class="counter-increment:step|-1 block::before content:counter(step)::before">Final review</li>
-  <li class="counter-increment:step|-1 block::before content:counter(step)::before">Deploy</li>
-  <li class="counter-increment:step|-1 block::before content:counter(step)::before">Monitor</li>
+<!-- Native support · explicit countdown fallback -->
+<p class="mx:0 mb:2xs mt:0 font:sm hidden@supports(counter-reset:reversed(step))">Explicit fallback · starts at 4</p>
+<p class="hidden mx:0 mb:2xs mt:0 font:sm
+    block@supports(counter-reset:reversed(step))">Native reversed() · item-derived start</p>
+<ol id="target" role="list" reversed class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|4
+    counter-reset:reversed(step)@supports(counter-reset:reversed(step))">
+  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Final review</li>
+  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Deploy</li>
+  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+    content:counter(step)'.\00a0'::before">Monitor</li>
 </ol>
 ```
 
+The visible status and computed reset identify which rule your browser uses. The fallback’s 4 is authored for these three items; it does not automatically track added items. Check support in your target browsers, or use `<ol reversed>` for an ordinary reversed list.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to initialize this chapter counter at 4 on screen. The headings change from 1, 2 to 5, 6. Print resets the initial value to zero.
+
+<DemoExample page="counter-reset" section="apply-conditionally" />
+
 ```html
-<div class="counter-reset:section:hover counter-reset:section@dark counter-reset:section@print counter-reset:section@sm">…</div>
+<!-- Real viewport · initial 0 or 4 -->
+<article id="target" class="counter-reset:chapter counter-reset:chapter@print
+    counter-reset:chapter|4@screen&sm">
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:chapter text:blue::before
+    content:counter(chapter)'.\00a0'::before">Setup</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:chapter text:blue::before
+    content:counter(chapter)'.\00a0'::before">Usage</h2>
+</article>
 ```
+
+The readout reports the article’s initial value, before any heading increments it.

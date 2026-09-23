@@ -1,52 +1,133 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`appearance` controls native widget rendering. It does not replace the element’s value, keyboard behavior or accessible name.
 
 ## Examples \{#examples\}
 ### Remove default styling \{#remove-default-styling\}
-Use `appearance:none` to remove the browser's native control styling before applying your own visual treatment.
-<Demo>
-  <select className="bg:revert appearance:none">
-    <option>Yes</option>
-    <option>No</option>
-  </select>
-</Demo>
+Use `appearance:none` to replace a select’s platform treatment. This example supplies an explicit border, background and decorative chevron while keeping the native select.
+
+<DemoExample page="appearance" section="remove-default-styling" />
+
 ```html
-<!-- @MARK appearance:none -->
-<select class="appearance:none">
-  <option>Yes</option>
-  <option>No</option>
-</select>
+<!-- Custom appearance -->
+<label class="grid gap:sm w:240px max-w:full">
+  Sort assets
+  <span class="rel block">
+    <select id="target"
+
+    class="w:full pr:xl b:1px|solid|base r:sm
+           bg:surface-base appearance:none">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name</option>
+    </select>
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"
+      fill="none" stroke="currentColor" stroke-width="1.5"
+      class="abs right:sm top:50%
+             transform:translateY(-50%) untouchable">
+      <path d="m4 6 4 4 4-4" />
+    </svg>
+  </span>
+</label>
+```
+
+```html
+<!-- Native comparison -->
+<label class="grid gap:sm w:240px max-w:full">
+  Sort assets
+  <span class="rel block">
+    <select id="target" class="w:full appearance:auto">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name</option>
+    </select>
+  </span>
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['appearance:none']}
-  </Class2CSS>
+  <Class2CSS>{['appearance:none']}</Class2CSS>
 </details>
 
-### Restore native appearance \{#restore-native-appearance\}
-Use `appearance:auto` when a variant should return to the platform control instead of the custom one.
-```html
-<!-- @MARK appearance:auto -->
-<select class="appearance:none appearance:auto@sm">
-  <option>Native on larger screens</option>
-</select>
-```
+The custom chevron ignores pointer events so the select receives clicks. The browser still owns the popup; its appearance and opening keys depend on the platform.
 
-### Keep semantics intact \{#keep-semantics-intact\}
-`appearance:none` only changes rendering. Keep using the correct form element and accessible label.
+### Restore native appearance \{#restore-native-appearance\}
+Switch the same select from `appearance:none` to `appearance:auto` at `sm`. This comparison omits a custom chevron so only the native indicator returns.
+
+<DemoExample page="appearance" section="restore-native-appearance" />
+
 ```html
-<label>
-  Sort
-  <select class="appearance:none">
-    <option>Newest</option>
-  </select>
+<!-- Resize to restore native paint -->
+<label class="grid gap:sm w:240px max-w:full">
+  Sort assets
+  <span class="rel block">
+    <select id="target"
+
+    class="w:full appearance:none appearance:auto@print
+           appearance:auto@screen&sm">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name</option>
+    </select>
+  </span>
 </label>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Restoring `appearance:auto` does not remove authored borders, spacing or colors. Clear those separately when a complete return to platform defaults is required.
+
+### Keep semantics intact \{#keep-semantics-intact\}
+Keep a visible label and real options. Use the keyboard or native picker to change the value; styling alone does not create form semantics.
+
+<DemoExample page="appearance" section="keep-semantics-intact" />
+
 ```html
-<select class="appearance:none:hover appearance:auto@print appearance:auto@sm">...</select>
+<!-- Labeled native select -->
+<label class="grid gap:sm w:240px max-w:full">
+  Sort assets
+  <span class="rel block">
+    <select id="target"
+
+    class="w:full pr:xl b:1px|solid|base r:sm
+           bg:surface-base appearance:none">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name</option>
+    </select>
+    <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"
+      fill="none" stroke="currentColor" stroke-width="1.5"
+      class="abs right:sm top:50%
+             transform:translateY(-50%) untouchable">
+      <path d="m4 6 4 4 4-4" />
+    </svg>
+  </span>
+</label>
 ```
+
+The label wraps the select, so its accessible name remains “Sort assets.” A decorative SVG has no separate name or focus stop.
+
+### Apply conditionally \{#apply-conditionally\}
+Remove native appearance only on focused selects with `appearance:none:focus`. Move focus to the adjacent checkbox to restore the platform paint.
+
+<DemoExample page="appearance" section="apply-conditionally" />
+
+```html
+<!-- Focus changes appearance -->
+<label class="grid gap:sm w:240px max-w:full">
+  Sort assets
+  <span class="rel block">
+    <select id="target"
+      class="w:full appearance:auto appearance:none:focus">
+      <option value="newest">Newest first</option>
+      <option value="oldest">Oldest first</option>
+      <option value="name">Name</option>
+    </select>
+  </span>
+</label>
+<label class="flex items-center gap:sm mt:md">
+  <input type="checkbox"> Include archived assets
+</label>
+```
+
+The control remains a select throughout the focus change. Its focus outline stays visible independently of native appearance.

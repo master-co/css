@@ -1,43 +1,200 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Set animation speed \{#set-animation-speed\}
-Use `animation-duration:*` to define how long one cycle of the keyframes takes.
+Compare the same 72px path over 500ms and one second. Duration controls one cycle, independently of delay and repetition.
+
+<DemoExample page="animation-duration" section="set-animation-speed" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-duration:300ms -->
-<div class="animation-duration:300ms animation-fill-mode:both animation-name:fade">
-  Fades in
+<!-- 500ms cycle -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:slower
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- One-second cycle -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-duration:300ms']}
-  </Class2CSS>
+  <Class2CSS>{['animation-duration:slower']}</Class2CSS>
 </details>
 
-### Slow down looping motion \{#slow-down-looping-motion\}
-Looping indicators should often use a steady, readable duration so they do not distract from nearby content.
-```html
-<!-- @MARK animation-duration:1s -->
-<svg class="animation-duration:1s animation-name:rotate animation-timing-function:linear">
-  ...
-</svg>
-```
+Use a duration token or a nonnegative CSS time. At 250ms the first marker is halfway through its cycle; the second is one quarter through.
 
-### Remove animation in static output \{#remove-animation-in-static-output\}
-Use `animation-duration:0ms` when an animation should resolve immediately in print or other static contexts.
+### Slow down looping motion \{#slow-down-looping-motion\}
+Compare one-second and three-second rotations with the same linear timing and infinite count.
+
+<DemoExample page="animation-duration" section="slow-down-looping-motion" />
+
 ```html
-<!-- @MARK animation-duration:0ms@print -->
-<div class="animation-duration:300ms animation-duration:0ms@print">
-  Static print state
+<!-- One-second loop -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:1s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">One-second loop</span>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="animation-duration:300ms:hover animation-duration:0ms@print animation-duration:1s@sm">...</div>
+<!-- Three-second loop -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:3s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Three-second loop</span>
+</div>
 ```
+
+Longer duration lowers the steady angular speed. Keep progress text separate from decoration and provide a way to pause continuous motion.
+
+### Remove animation in static output \{#remove-animation-in-static-output\}
+Compare a one-second animation with zero duration. Both use forwards fill; the zero-duration specimen immediately retains the ending keyframe.
+
+<DemoExample page="animation-duration" section="remove-animation-in-static-output" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- One second · retains end -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- Zero duration · immediate end -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:0ms
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+Zero duration is not the same as animation:none: fill can still apply a keyframe and start/end events can still occur. These snippets remove the animation in print, which restores the ordinary 0px position.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize before replaying to switch from a 500ms cycle to one second at `sm`. The path and linear easing stay fixed.
+
+<DemoExample page="animation-duration" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- 500ms → one second at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:slower
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-duration:1s@sm">→</span>
+  </div>
+</div>
+```
+
+Changing duration can update the phase of an existing animation. Replay makes the selected cycle length easy to compare from its start.

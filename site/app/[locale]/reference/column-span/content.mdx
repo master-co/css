@@ -3,12 +3,18 @@
 
 ## Examples \{#examples\}
 ### Span across all columns \{#span-across-all-columns\}
-Use `column-span:all` for headings, pull quotes, or media that should break out of a multi-column flow.
+Use `column-span:all` for a heading that should cross the columns of a multi-column container. Content after it resumes flowing through columns.
+
+<DemoExample page="column-span" section="span-across-all-columns" />
+
 ```html
-<!-- @MARK column-span:all -->
-<h2 class="column-span:all">
-  Section heading
-</h2>
+<article class="columns:2">
+  <p>Start with the collection overview and its key details.</p>
+  <!-- @MARK column-span:all -->
+  <h2 class="column-span:all">Collection notes</h2>
+  <p>The next section continues through the columns below the heading.</p>
+  <p>Read down each column before moving to the next.</p>
+</article>
 ```
 
 <details>
@@ -20,24 +26,43 @@ Use `column-span:all` for headings, pull quotes, or media that should break out 
 
 ### Does not span multiple columns \{#does-not-span-multiple-columns\}
 Use `column-span:none` to keep an element inside the current column.
+
+<DemoExample page="column-span" section="does-not-span-multiple-columns" />
+
 ```html
-<!-- @MARK column-span:none -->
-<p class="column-span:none">
-  Regular column content
-</p>
+<article class="columns:2">
+  <p>Start with the collection overview and its key details.</p>
+  <!-- @MARK column-span:none -->
+  <h2 class="column-span:none">Collection notes</h2>
+  <p>The heading stays in the same flow as the surrounding text.</p>
+  <p>Read down each column before moving to the next.</p>
+</article>
 ```
 
 ### Use inside multi-column layouts \{#use-inside-multi-column-layouts\}
-Column spanning only matters in a multi-column formatting context.
+Place the spanning block in a multi-column container. This property does not span Grid tracks; use [`grid-column`](/reference/grid-column) for that layout.
+
+<DemoExample page="column-span" section="use-inside-multi-column-layouts" />
+
 ```html
 <article class="columns:3">
-  <h2 class="column-span:all">Report</h2>
-  <p>Column content</p>
+  <p>Start with the collection overview and its key details.</p>
+  <h2 class="column-span:all">Collection notes</h2>
+  <p>The next section continues through the columns below the heading.</p>
+  <p>Read down each column before moving to the next.</p>
 </article>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keep the heading in its column initially, then span the full column set at `sm` or in print. The preview supplies a multi-column parent so the change is visible. See [conditions](/reference/rules/conditions).
+
+<DemoExample page="column-span" section="apply-conditionally" />
+
 ```html
-<h2 class="column-span:none column-span:all@print column-span:all@sm">...</h2>
+<article class="columns:2">
+  <p>Start with the collection overview and its key details.</p>
+  <h2 class="column-span:none column-span:all@print column-span:all@sm">Collection notes</h2>
+  <p>The next section follows the heading in reading order.</p>
+  <p>Read down each column before moving to the next.</p>
+</article>
 ```

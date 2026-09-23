@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-orientation',
-  description: 'Setting orientation of the text characters in a line.',
+  description: 'Control glyph orientation inside vertical writing.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-orientation',

@@ -3,11 +3,14 @@
 
 ## Examples \{#examples\}
 ### Hide overflowing content \{#hide-overflowing-content\}
-Use `overflow:hidden` when content should be clipped to the element box.
+`overflow:hidden` clips content to the padding box, including its rounded corners. It creates a scroll container without showing scrollbars: script, focus, or an anchor can still change the scroll position. Use the buttons below to try native programmatic scrolling.
+
+<DemoExample page="overflow" section="hide-overflowing-content" />
+
 ```html
-<!-- @MARK overflow:hidden --><!-- @MARK r:md -->
-<div class="overflow:hidden r:md">
-  ...
+<!-- @MARK overflow:hidden -->
+<div class="overflow:hidden h:40x w:56x r:md">
+  <div class="h:3xs w:xs">Content larger than its frame</div>
 </div>
 ```
 
@@ -19,43 +22,59 @@ Use `overflow:hidden` when content should be clipped to the element box.
 </details>
 
 ### Create a scroll container \{#create-a-scroll-container\}
-Use `overflow:auto` when scrollbars should appear only if content overflows. Use axis-specific utilities when only one direction should scroll.
+`overflow:auto` makes overflowing content scrollable; scrollbar visibility depends on the platform. Axis-specific utilities are useful when the content only overflows vertically or horizontally. Focus either container and use the arrow keys.
+
+<DemoExample page="overflow" section="create-a-scroll-container" />
+
 ```html
-<!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
-<div class="overflow-y:auto max-h:3xs">
-  ...
+<!-- @MARK overflow-y:auto -->
+<div class="overflow-y:auto h:40x w:56x" tabindex="0" aria-label="Vertical collection">
+  <div class="h:3xs">Tall collection</div>
 </div>
 
 <!-- @MARK overflow-x:auto -->
-<div class="overflow-x:auto">
-  <table>...</table>
+<div class="overflow-x:auto w:56x" tabindex="0" aria-label="Horizontal collection">
+  <div class="h:40x w:xs">Wide collection</div>
 </div>
 ```
 
+(i) `overflow:overlay` is a legacy alias for `overflow:auto`. Prefer `auto` in new interfaces.
+
 ### Clip without scrolling \{#clip-without-scrolling\}
-Use `overflow:clip` when content should be clipped without creating a scroll container.
+`overflow:clip` clips content without creating a scroll container. Unlike `hidden`, it cannot be scrolled programmatically. Compare the same controls and geometry with the hidden example above.
+
+<DemoExample page="overflow" section="clip-without-scrolling" />
+
 ```html
 <!-- @MARK overflow:clip -->
-<figure class="overflow:clip">
-  ...
-</figure>
+<div class="overflow:clip h:40x w:56x r:md">
+  <div class="h:3xs w:xs">Content larger than its frame</div>
+</div>
 ```
 
-Use `overflow:hidden` when you still need scroll-container behavior, clipping for border radius, or compatibility with patterns that depend on hidden overflow.
+(i) `clip` alone does not establish an independent formatting context. Add `flow-root` when the layout also needs that boundary. Both `clip` and `hidden` can respect rounded corners.
 
 ### Truncate a single line \{#truncate-a-single-line\}
-Overflow is often paired with `white-space:nowrap` and `text-overflow:ellipsis` for one-line truncation.
+A single-line ellipsis needs a constrained block, hidden overflow, and text that cannot wrap. Here the block is 224px wide. A flex or grid item may also need `min-w:0` so it can shrink below its content’s minimum width.
+
+<DemoExample page="overflow" section="truncate-a-single-line" />
+
 ```html
-<!-- @MARK min-w:0 --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-overflow:ellipsis -->
-<span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
+<!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
+<div class="overflow:hidden w:56x text-ellipsis white-space:nowrap">
   A very long file name that should not widen the toolbar
-</span>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to change the behavior when a state or viewport condition applies. This frame is clipped on narrow screens, scrollable from `sm`, and visibly overflowing in print. Restrict the width condition to `screen` so it does not override the print rule.
+
+<DemoExample page="overflow" section="apply-conditionally" />
+
 ```html
-<div class="overflow:hidden overflow:visible@print overflow:auto@sm">...</div>
+<div class="overflow:hidden h:40x w:56x overflow@print overflow:auto@screen&sm">
+  <div class="h:3xs w:xs">Content larger than its frame</div>
+</div>
 ```
 
 Use [overscroll-behavior](/reference/overscroll-behavior) when the problem is scroll chaining rather than clipping.

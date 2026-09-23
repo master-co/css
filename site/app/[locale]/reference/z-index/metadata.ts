@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'z-index',
-  description: 'Set the z-order of a positioned element.',
+  description: 'Control the paint order of overlapping elements within a stacking context.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=z-index',

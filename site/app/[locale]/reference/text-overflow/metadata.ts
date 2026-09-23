@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-overflow',
-  description: 'Handling how hidden overflow content.',
+  description: 'Choose the marker for clipped inline text in a constrained box.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-overflow',

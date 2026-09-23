@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'background-attachment',
-  description: 'Setting whether position of background image is fixed when scrolling.',
+  description: 'Attaching a background to the element, scrollable content or viewport.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=background-attachment',

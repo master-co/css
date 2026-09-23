@@ -3,12 +3,18 @@
 
 ## Examples \{#examples\}
 ### Balance short headings \{#balance-short-headings\}
-Use `text-balance` for headings, cards, and callouts where balanced line lengths are more important than fitting as much text as possible on each line.
+Compare ordinary wrapping with `text-balance` at the same width. Balancing redistributes short lines; the exact breaks depend on the available font and browser.
+
+<DemoExample page="text-wrap" section="balance-short-headings" />
+
 ```html
-<!-- @MARK text-balance -->
-<h1 class="text-balance">
-  Build interfaces that stay readable across narrow and wide containers
-</h1>
+<!-- text-wrap -->
+<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap">Good tools make room for clear thinking.</h2>
+```
+
+```html
+<!-- text-balance -->
+<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-balance">Good tools make room for clear thinking.</h2>
 ```
 
 <details>
@@ -19,29 +25,40 @@ Use `text-balance` for headings, cards, and callouts where balanced line lengths
 </details>
 
 ### Prefer pretty wrapping for prose \{#prefer-pretty-wrapping-for-prose\}
-Use `text-pretty` for paragraphs where the browser should avoid awkward last lines when it can.
+`text-pretty` asks the browser to improve line breaking, such as avoiding a very short final line. It is an algorithm choice; it does not guarantee a particular final word count.
+
+<DemoExample page="text-wrap" section="prefer-pretty-wrapping-for-prose" />
+
 ```html
-<!-- @MARK text-pretty -->
-<p class="text-pretty">
-  Master CSS keeps text wrapping decisions in markup while still using native CSS behavior.
-</p>
+<!-- text-wrap -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+```html
+<!-- text-pretty -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-pretty">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Prevent wrapping \{#prevent-wrapping\}
-Use `text-nowrap` when a label, tab, or inline control must stay on one line.
+`text-nowrap` suppresses soft line breaks. This complete example gives the label a block box, a limited width and an ellipsis for hidden overflow.
+
+<DemoExample page="text-wrap" section="prevent-wrapping" />
+
 ```html
-<!-- @MARK text-nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
-<span class="overflow:hidden text-ellipsis text-nowrap">
-  Very long file name
-</span>
+<!-- One line · explicit overflow handling -->
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-ellipsis text-nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
-Only use no-wrap when the container has an overflow strategy. Otherwise the text can force the layout wider than intended.
+Keep the full label available in the surrounding UI when readers need it.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the viewport to switch from normal wrapping to balance at `sm`, then pretty at `lg`. Print uses ordinary wrapping.
+
+<DemoExample page="text-wrap" section="apply-conditionally" />
+
 ```html
-<div class="text-wrap text-wrap@print text-balance@sm text-pretty@lg">...</div>
+<!-- One heading · native viewport conditions -->
+<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap text-wrap@print text-balance@screen&sm text-pretty@screen&lg">Good tools make room for clear thinking.</h2>
 ```
 
-Use [white-space](/reference/white-space) when the requirement is preserving spaces or line breaks.
+Use [white-space](/reference/white-space) to control preserved spaces and explicit line breaks.

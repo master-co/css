@@ -1,143 +1,85 @@
-import { users } from 'internal/data/users'
-import clsx from 'clsx'
-
 ## Overview [sr-only] \{#overview\}
 <Overview/>
 
 ## Examples \{#examples\}
 ### Positioning elements as static \{#positioning-elements-as-static\}
-Use `static` to position an element according to the normal document flow. HTML elements are static by default.
-<Demo className="pb:15x">
-  <code className="box-perspective-pink static p:5x">
-    <div>static parent</div>
-    <code className="box abs bottom:10px left:10px w:fit">abs child</code>
-  </code>
-</Demo>
+`static` keeps an element in normal flow. Insets such as `top:*` and `left:*` have no effect on a static box. Most elements use this position by default.
+
+<DemoExample page="position" section="positioning-elements-as-static" />
+
 ```html
-<!-- @MARK static -->
-<div class="static p:5x">
-  <div>static parent</div>
-  <div class="abs bottom:10px left:10px">abs child</div>
+<div class="w:32x">
+  <!-- @MARK static -->
+  <div class="static left:5x top:5x h:16x">Target</div>
 </div>
+<div class="h:16x w:32x mt:lg">Next in flow</div>
 ```
 
 ### Positioning elements as relative \{#positioning-elements-as-relative\}
-Use `rel` to keep an element in the normal document flow while offsetting it relative to itself with top, right, bottom, and left values.
-<Demo className="pb:15x">
-  <div className="bg:stripe">
-    <code className="box-perspective-pink rel left:20px top:30px inline-block p:5x">
-      <div>relative parent</div>
-    </code>
-  </div>
-</Demo>
+`rel` offsets a box from its normal position while preserving its original space. The following box stays where normal flow placed it, even when the shifted target overlaps that space.
+
+<DemoExample page="position" section="positioning-elements-as-relative" />
+
 ```html
-<!-- @MARK rel -->
-<div class="rel left:20px top:30px p:5x">
-  <div>relative parent</div>
+<div class="w:32x">
+  <!-- @MARK rel -->
+  <div class="rel left:5x top:5x h:16x">Target</div>
 </div>
+<div class="h:16x w:32x mt:lg">Next in flow</div>
 ```
 
 ### Positioning elements as absolute \{#positioning-elements-as-absolute\}
-Use `abs` to remove an element from the normal document flow and position it relative to its closest positioned ancestor.
-<Demo>
-  <code className="box rel p:2xl! bg:stripe">
-    <div>relative parent</div>
-    <code className="box-perspective-pink abs left:0 top:0 w:fit">abs child</code>
-  </code>
-</Demo>
+`abs` removes a box from normal flow. Here, the `rel` parent supplies its containing block, so `top:md` and `right:md` measure from that parent. Other features, including transforms and certain containment values, can also establish a containing block.
+
+<DemoExample page="position" section="positioning-elements-as-absolute" />
+
 ```html
-<!-- @MARK rel -->
-<div class="rel p:2xl">
-  <div>relative parent</div>
+<div class="rel h:40x">
   <!-- @MARK abs -->
-  <div class="abs left:0 top:0">abs child</div>
+  <div class="abs right:md top:md h:16x w:32x">Target</div>
 </div>
 ```
 
 ### Positioning elements as fixed \{#positioning-elements-as-fixed\}
-Use `fixed` to remove an element from the normal document flow and position it relative to the viewport.
-<Demo>
-  <div className="box overflow:auto align-items:initial! justify-content:initial! w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
-    <input className="fixed z:1 w:300px mx:0.625rem p:sm r:5px outline:0 font:sm leading:1 fg:gray-40::placeholder bg:gray-18:focus bg:gray-23" placeholder="Search for chats and messages" type="search" />
-    <ul className="w:full mt:0.625rem pl:0 list-style:none">
-      {users.map((user, index) =>
-        <li className="flex gap:sm cursor:pointer bg:gray-28:hover bg:gray-32:active" key={index}>
-          <div className="rel">
-            <Image src={user.url} width="40" height="40" className="round object-cover" alt="avatar" />
-            {index < 2 && <svg className="abs bottom:1px right:1px size:7px round outline:2px|solid|white bg:green-70 outline:gray-20@dark" />}
-          </div>
-          <div>
-            <div className="flex items-center">
-              <div className="text:sm font:medium capitalize fg:gray-88@dark">{user.name}</div>
-              <div className="ml:xs font:xs fg:gray-44@dark fg:slate-54">{user.time}</div>
-            </div>
-            <p className="m:0 text:13px text-left">{user.message}</p>
-          </div>
-        </li>
-      )}
-    </ul>
-  </div>
-</Demo>
+`fixed` removes a box from normal flow and usually anchors it to the viewport. Scroll this preview: the search field stays at the top while the collection moves underneath. Its containing viewport is the preview iframe.
+
+<DemoExample page="position" section="positioning-elements-as-fixed" />
+
 ```html
-<div>
+<div class="pt:3xl">
   <!-- @MARK fixed -->
-  <input type="search" class="fixed">
-  <ul>
-    <li>
-      <div class="rel">
-        <img src="...">
-      </div>
-      <div>
-        <div class="flex">
-          <div>Aron</div>
-          <div>3:03 a.m</div>
-        </div>
-        <p>Front-end needs a revolution</p>
-      </div>
-    </li>
-    ...
-  </ul>
+  <input type="search" aria-label="Filter assets" placeholder="Filter assets"
+    class="fixed left:md top:md z:1 w:calc(100%-2rem)">
+  <div class="h:160x">Scrollable collection</div>
 </div>
 ```
 
+(i) An ancestor with a transform or a suitable containment value can establish a fixed-position containing block. In that case, the box is attached to that ancestor instead of the viewport.
+
 ### Positioning elements as sticky \{#positioning-elements-as-sticky\}
-Use `sticky` to position an element based on scroll position. It behaves like a relatively positioned element until a given offset is reached, then sticks to that offset.
-<Demo>
-  <div className="box block! overflow:auto w:full max-h:250px p:0.625rem|0! r:10px p:2x|5x_li max-w:340px@sm">
-    <ul className="w:full mt:0.625rem pl:0 list-style:none">
-      {users.map((user, index) =>
-        <li className={clsx(index === 1 ? 'sticky top:0 z:1' : '', 'flex gap:sm bg:gray-30 cursor:pointer bg:gray-28:hover bg:gray-32:active')} key={index}>
-          <div className="rel">
-            <Image src={user.url} width="40" height="40" className="round object-cover" alt="avatar" />
-            {index < 2 && <svg className="abs bottom:1px right:1px size:7px round outline:2px|solid|white bg:green-70 outline:gray-20@dark" />}
-          </div>
-          <div>
-            <div className="flex items-center">
-              <div className="text:sm font:medium capitalize fg:gray-88@dark">{user.name}</div>
-              <div className="ml:xs font:xs fg:gray-44@dark fg:slate-54">{user.time}</div>
-            </div>
-            <p className="m:0 text:13px text-left">{user.message}</p>
-          </div>
-        </li>
-      )}
-    </ul>
-  </div>
-</Demo>
+`sticky` retains its space in flow, then adjusts its position to stay inside the nearest scrollport. Set an inset on the scrolling axis and give the container enough overflow to scroll. The sticky box remains constrained by its containing block.
+
+<DemoExample page="position" section="positioning-elements-as-sticky" />
+
 ```html
-<ul class="overflow:auto">
-  ...
+<div class="overflow:auto h:60x" tabindex="0" aria-label="Scrollable asset list">
+  <div class="h:16x">Scroll down</div>
   <!-- @MARK sticky -->
-  <li class="sticky top:0">
-    <img src="...">
-    <div>Joy</div>
-    ...
-  </li>
-  ...
-</ul>
+  <div class="sticky top z:1">Pinned collection</div>
+  <div class="h:140x">Scrollable collection</div>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to change the behavior when a state or viewport condition applies. Focus the target with Tab, or widen the preview to `sm`, to move it from normal flow to the bottom-right corner.
+
+<DemoExample page="position" section="apply-conditionally" />
+
 ```html
-<div class="rel:hover rel@dark rel@print rel@sm">...</div>
+<div class="rel h:40x">
+  <div tabindex="0"
+    class="static bottom:md right:md h:16x w:32x abs:focus-visible abs@sm">
+    Focus with Tab
+  </div>
+</div>
 ```

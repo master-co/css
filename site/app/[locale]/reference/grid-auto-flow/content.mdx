@@ -3,36 +3,65 @@
 
 ## Basic usage \{#basic-usage\}
 ### Fill by column \{#fill-by-column\}
-Use `grid-auto-flow` to control how auto-placed grid items flow into the grid.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-auto-flow:column grid-template-rows:56px|56px gap:xs">
-      <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg text-center bg:blue-5 b:blue-80@dark bg:blue-95@dark">1</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">2</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">3</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">4</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-auto-flow:column` fills each column before adding another. Compare it with the default row flow using the same two columns, two 56px rows and four items. Column flow puts 01 above 02; row flow puts them side by side.
+
+<DemoExample page="grid-auto-flow" section="fill-by-column" />
+
 ```html
-<!-- @MARK grid-auto-flow:column -->
-<div class="grid grid-auto-flow:column grid-template-rows:56px|56px">
-  <div>1</div>
-  <div>2</div>
-  <div>3</div>
-  <div>4</div>
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
 </div>
 ```
 
-### Fill gaps densely \{#fill-gaps-densely\}
-Use `dense` to let later items fill earlier holes when possible.
 ```html
-<!-- @MARK grid-auto-flow:row|dense -->
-<div class="grid grid-auto-flow:row|dense">…</div>
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:column grid-template-rows:56px|56px gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Define the rows that column flow should fill. After those rows are occupied, additional items can create implicit columns sized by [grid-auto-columns](/reference/grid-auto-columns).
+
+### Fill gaps densely \{#fill-gaps-densely\}
+`grid-auto-flow:row|dense` lets later items fill earlier holes. Items 01 and 02 each span two columns, leaving a one-cell hole after 01. Sparse placement keeps moving forward; dense placement returns to that hole for item 03.
+
+<DemoExample page="grid-auto-flow" section="fill-gaps-densely" />
+
 ```html
-<div class="grid-auto-flow:column:hover grid-auto-flow:column@dark grid-auto-flow:column@print grid-auto-flow:column@sm">…</div>
+<div id="layout" class="grid grid-cols:3 grid-auto-flow:row grid-auto-rows:48px gap:md w:70x max-w:full">
+  <button id="target" class="grid-col-span:2 p:sm" type="button" tabindex="0">01</button>
+  <button id="peer" class="grid-col-span:2 p:sm" type="button" tabindex="0">02</button>
+  <button id="item-3" class="p:sm" type="button" tabindex="0">03</button>
+  <button id="item-4" class="p:sm" type="button" tabindex="0">04</button>
+</div>
+```
+
+```html
+<div id="layout" class="grid grid-cols:3 grid-auto-flow:row|dense grid-auto-rows:48px gap:md w:70x max-w:full">
+  <button id="target" class="grid-col-span:2 p:sm" type="button" tabindex="0">01</button>
+  <button id="peer" class="grid-col-span:2 p:sm" type="button" tabindex="0">02</button>
+  <button id="item-3" class="p:sm" type="button" tabindex="0">03</button>
+  <button id="item-4" class="p:sm" type="button" tabindex="0">04</button>
+</div>
+```
+
+Focus a numbered button, then press Tab. In both grids, sequential focus follows 01 → 02 → 03 → 04 even when 03 appears before 02 visually. Keep source order meaningful and use dense packing for content whose visual rearrangement will not confuse reading or keyboard navigation.
+
+### Apply conditionally \{#apply-conditionally\}
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The grid fills across rows initially and down columns from `sm`. The track sizes, DOM order and item count stay the same.
+
+<DemoExample page="grid-auto-flow" section="apply-conditionally" />
+
+```html
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap:md w:70x max-w:full grid-auto-flow:column@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```

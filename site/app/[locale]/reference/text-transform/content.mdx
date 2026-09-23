@@ -1,85 +1,80 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
 
-<Demo $py={0}>
-  <DemoPanel className="flex flex-col gap:xl">
-    <div className="w:full">
-      <DemoLabel>capitalize</DemoLabel>
-      <DemoP><b className="bg:stripe-pink">H</b>eavy <b className="bg:stripe-pink">B</b>oxes <b className="bg:stripe-pink">P</b>erform <b className="bg:stripe-pink">Q</b>uick <b className="bg:stripe-pink">W</b>altzes <b className="bg:stripe-pink">A</b>nd <b className="bg:stripe-pink">J</b>igs.</DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>lowercase</DemoLabel>
-      <DemoP><b className="bg:stripe-pink">heavy boxes perform quick waltzes and jigs.</b></DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>uppercase</DemoLabel>
-      <DemoP><b className="bg:stripe-pink">HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.</b></DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>uppercase::first-letter</DemoLabel>
-      <DemoP><b className="bg:stripe-pink">H</b>eavy boxes perform quick waltzes and jigs.</DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>text-transform:none</DemoLabel>
-      <DemoP>heavy boxes perform quick waltzes and jigs.</DemoP>
-    </div>
-  </DemoPanel>
-</Demo>
 
 ---
 
 ## Basic usage \{#basic-usage\}
 ### Capitalized text \{#capitalized-text\}
-Convert the first letter of each word to uppercase.
-<Demo $py={0}>
-  <DemoPanel>
-    <DemoP><b className="bg:stripe-pink">H</b>eavy <b className="bg:stripe-pink">B</b>oxes <b className="bg:stripe-pink">P</b>erform <b className="bg:stripe-pink">Q</b>uick <b className="bg:stripe-pink">W</b>altzes <b className="bg:stripe-pink">A</b>nd <b className="bg:stripe-pink">J</b>igs.</DemoP>
-  </DemoPanel>
-</Demo>
+`capitalize` changes the initial letter of each word. It leaves other letters intact, so `CSS` remains uppercase. It does not implement editorial title-case rules.
+
+<DemoExample page="text-transform" section="capitalized-text" />
+
 ```html
-<!-- @MARK capitalize -->
-<p class="capitalize">heavy boxes perform quick waltzes and jigs.</p>
+<!-- text-transform:none -->
+<p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px text-transform:none">clear CSS for every screen</p>
+```
+
+```html
+<!-- capitalize -->
+<p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px capitalize">clear CSS for every screen</p>
 ```
 
 ### Lowercase text \{#lowercase-text\}
-Convert all characters to lowercase.
-<Demo $py={0}>
-  <DemoPanel>
-    <DemoP><b className="bg:stripe-pink">heavy boxes perform quick waltzes and jigs.</b></DemoP>
-  </DemoPanel>
-</Demo>
+`lowercase` changes the displayed casing. The source text remains uppercase, and language-specific mappings use the element’s `lang`.
+
+<DemoExample page="text-transform" section="lowercase-text" />
+
 ```html
-<!-- @MARK lowercase -->
-<p class="lowercase">HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.</p>
+<!-- text-transform:none -->
+<p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px text-transform:none">CLEAR CSS FOR EVERY SCREEN</p>
+```
+
+```html
+<!-- lowercase -->
+<p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px lowercase">CLEAR CSS FOR EVERY SCREEN</p>
 ```
 
 ### Uppercase text \{#uppercase-text\}
-Convert all characters to uppercase.
-<Demo $py={0}>
-  <DemoPanel>
-    <DemoP><b className="bg:stripe-pink">HEAVY BOXES PERFORM QUICK WALTZES AND JIGS.</b></DemoP>
-  </DemoPanel>
-</Demo>
+`uppercase` changes the displayed letters without rewriting the document’s text. Supply the correct language for language-specific casing.
+
+<DemoExample page="text-transform" section="uppercase-text" />
+
 ```html
-<!-- @MARK uppercase -->
-<p class="uppercase">heavy boxes perform quick waltzes and jigs.</p>
+<!-- English uppercase -->
+<p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px uppercase">clear type</p>
 ```
 
-### Sentence \{#sentence\}
-Capitalize the first letter of a sentence.
-<Demo $py={0}>
-  <DemoPanel>
-    <DemoP><b className="bg:stripe-pink">H</b>eavy boxes perform quick waltzes and jigs.</DemoP>
-  </DemoPanel>
-</Demo>
 ```html
-<!-- @MARK uppercase::first-letter -->
-<p class="uppercase::first-letter">heavy boxes perform quick waltzes and jigs.</p>
+<!-- Turkish dotted i -->
+<p id="target" lang="tr" class="w:240px max-w:100% m:0 font:md leading:24px uppercase">istanbul</p>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['uppercase']}
+  </Class2CSS>
+</details>
+
+### Transform the first letter \{#sentence\}
+Apply `uppercase::first-letter` to the first formatted letter of a block. It does not capitalize the first letter of every sentence: the second sentence below still starts with a lowercase letter.
+
+<DemoExample page="text-transform" section="sentence" />
+
+```html
+<!-- One block · two sentences -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px uppercase::first-letter">clear type helps readers. good spacing keeps the rhythm.</p>
+```
+
+Write meaningful casing into the actual content when it is part of the text’s meaning.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="uppercase:hover uppercase@dark uppercase@print uppercase@sm">…</div>
-```
+Hover or focus the button to uppercase its label. Keyboard users receive the same state and a visible focus outline.
 
+<DemoExample page="text-transform" section="apply-conditionally" />
+
+```html
+<!-- Pointer and keyboard states -->
+<button id="target" type="button" tabindex="0" class="font:md text-transform:none uppercase:hover uppercase:focus-visible">Explore the canvas</button>
+```

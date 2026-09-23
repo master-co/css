@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'order',
-  description: 'Changing the order of item in flex or grid container.',
+  description: 'Sort the visual order of flex and auto-placed grid items.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=order',

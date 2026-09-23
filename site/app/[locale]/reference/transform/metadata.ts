@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'transform',
-  description: 'Controlling rotate, scale, skew, or translate an element.',
+  description: 'Rotating, scaling, skewing or translating an element.',
   category: 'Transforms',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=transform',

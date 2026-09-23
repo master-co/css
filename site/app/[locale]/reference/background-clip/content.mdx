@@ -2,37 +2,73 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Clip a background to a box \{#clip-a-background-to-a-box\}
-Use `bg-clip-border`, `bg-clip-padding`, or `bg-clip-content` to control where the background is painted.
+Compare identical boxes with an 8px dashed border and 24px padding. Only the background painting area changes; border, padding and layout size stay the same.
+
+<DemoExample page="background-clip" section="clip-a-background-to-a-box" />
+
 ```html
-<!-- @MARK bg-clip-padding -->
-<section class="b:8px|solid|black/.1 bg-clip-padding">
-  ...
-</section>
+<!-- Border box · paint beneath the border -->
+<div id="target" role="img" aria-label="Blue background clipped to border box"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg:blue-30"
+></div>
+```
+
+```html
+<!-- Padding box · border band stays clear -->
+<div id="target" role="img" aria-label="Blue background clipped to padding box"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-padding bg:blue-30"
+></div>
+```
+
+```html
+<!-- Content box · padding stays clear -->
+<div id="target" role="img" aria-label="Blue background clipped to content box"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-content bg:blue-30"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg-clip-padding']}
+    {['bg-clip-border', 'bg-clip-padding', 'bg-clip-content']}
   </Class2CSS>
 </details>
 
 ### Clip a background to text \{#clip-a-background-to-text\}
-Use `bg-clip-text` with a transparent text fill when a gradient or image should show through the glyphs.
+Clip a real gradient to the glyphs and make the glyph fill transparent only when text clipping is supported. The solid foreground remains the fallback.
+
+<DemoExample page="background-clip" section="clip-a-background-to-text" />
+
 ```html
-<!-- @MARK bg-clip-text --><!-- @MARK text-fill-color:transparent -->
-<h1 class="bg-clip-text bg:linear-gradient(90deg,red,blue) text-fill-color:transparent">
-  Gradient text
-</h1>
+<!-- Supported screen paint · solid print fallback -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:lg
+         bg-clip-text text-fill-color:current
+         bg:linear-gradient(90deg,blue-50,violet-50)@supports(background-clip:text)@screen
+         text-fill-color:current@print
+         text-fill-color:transparent@supports(background-clip:text)@screen"
+>Clear type</p>
 ```
 
-Use this for display text, not body copy, because it can reduce contrast and selection readability.
+Use this treatment sparingly for display text. Open print preview to check the solid label when background printing is disabled. The same guarded glyph-paint pattern is available in [text fill color](/reference/text-fill-color#make-text-fill-transparent).
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to move the painting edge from the border box to the content box. The geometry does not change. Print restores border-box clipping.
+
+<DemoExample page="background-clip" section="apply-conditionally" />
+
 ```html
-<div class="bg-clip-border bg-clip-border@print bg-clip-padding@sm">...</div>
+<!-- Border → content at sm -->
+<div id="target" role="img" aria-label="Responsive background painting area"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg:blue-30 bg-clip-border@print
+         bg-clip-content@screen&sm"
+></div>
 ```
 
-Use [background-origin](/reference/background-origin) when the issue is positioning rather than painting.
+Use [background-origin](/reference/background-origin) to change the image’s positioning area instead of its painting boundary.

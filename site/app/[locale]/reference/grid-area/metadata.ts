@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-area',
-  description: 'Setting a size and location within a grid.',
+  description: 'Place a grid item using four line boundaries or a named area.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-area',

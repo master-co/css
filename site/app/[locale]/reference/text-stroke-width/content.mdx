@@ -3,12 +3,38 @@
 
 ## Examples \{#examples\}
 ### Set text stroke width \{#set-text-stroke-width\}
-Use `text-stroke:*` with a length to control only the stroke width.
+A length such as `text-stroke:2px` controls the stroke width. Compare 0px, 1px and 2px on the same glyphs with the same blue edge color.
+
+<DemoExample page="text-stroke-width" section="set-text-stroke-width" />
+
 ```html
-<!-- @MARK text-stroke:2px -->
-<h2 class="text-stroke:2px text-stroke:blue-60">
-  Thick outline
-</h2>
+<!-- Stroke width · 0 -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:0 text-stroke:blue-50"
+>
+  Outline
+</p>
+```
+
+```html
+<!-- Stroke width · 1px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+>
+  Outline
+</p>
+```
+
+```html
+<!-- Stroke width · 2px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:2px text-stroke:blue-50"
+>
+  Outline
+</p>
 ```
 
 <details>
@@ -18,26 +44,70 @@ Use `text-stroke:*` with a length to control only the stroke width.
   </Class2CSS>
 </details>
 
+A stroke changes the glyph’s paint, not its font size. Heavy strokes can reduce the open spaces inside letters.
+
 ### Use the explicit property name \{#use-the-explicit-property-name\}
-`text-stroke-width:*` is also supported when the property name makes the intent clearer.
+`text-stroke-width:1px` emits the same width declaration as `text-stroke:1px`. The color and solid fill are supplied independently.
+
+<DemoExample page="text-stroke-width" section="use-the-explicit-property-name" />
+
 ```html
-<!-- @MARK text-stroke-width:1px -->
-<h2 class="text-stroke-width:1px text-stroke:blue-60">
-  Thin outline
-</h2>
+<!-- text-stroke:1px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+>
+  Outline
+</p>
 ```
+
+```html
+<!-- text-stroke-width:1px -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke-width:1px text-stroke:blue-50"
+>
+  Outline
+</p>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['text-stroke-width:1px']}
+  </Class2CSS>
+</details>
 
 ### Remove the stroke width \{#remove-the-stroke-width\}
-Use `text-stroke:0` to remove the visible stroke in a condition.
+`text-stroke:0` removes the painted stroke. Open the actual print preview to compare this 1px screen outline with its plain printed fill.
+
+<DemoExample page="text-stroke-width" section="remove-the-stroke-width" />
+
 ```html
-<!-- @MARK text-stroke:0@print -->
-<h2 class="text-stroke:1px text-stroke:0@print">
-  Printed without stroke
-</h2>
+<!-- 1px screen stroke · 0px print stroke -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:blue-50
+         text-stroke:0@print"
+>
+  Outline
+</p>
 ```
 
+The color remains specified but has no visible edge at zero width. A solid fill keeps the text readable.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus to increase the edge from 1px to 2px. Print resets the width to zero; the glyph fill and font size stay unchanged.
+
+<DemoExample page="text-stroke-width" section="apply-conditionally" />
+
 ```html
-<h2 class="text-stroke:2px:hover text-stroke:0@print text-stroke:1px@sm">...</h2>
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:3xl font:semibold leading:1.5 text-fill-color:current
+         text-stroke:1px text-stroke:blue-50 text-stroke:0@print
+         text-stroke:2px:hover@screen text-stroke:2px:focus-visible@screen"
+>
+  Outline
+</button>
 ```

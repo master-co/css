@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'break-after',
-  description: 'Controlling how page, column, or region breaks should occur after an element.',
+  description: 'Control column and page breaks after an element.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=break-after',

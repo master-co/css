@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid',
-  description: 'Setting layout of grid system.',
+  description: 'Set explicit tracks, implicit track sizes and auto flow with the native grid shorthand.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid',

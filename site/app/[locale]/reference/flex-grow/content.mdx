@@ -3,35 +3,48 @@
 
 ## Examples \{#examples\}
 ### Let an item grow \{#let-an-item-grow\}
-Use `flex-grow:1` on a flex item that should absorb remaining free space.
+`flex-grow` divides positive free space between items. These two items start with equal 64px bases; grow factors of 1 and 2 give the second item twice as much additional space. The ratio applies to the added space, not their final widths.
+
+<DemoExample page="flex-grow" section="let-an-item-grow" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK flex-grow:1 -->
-<div class="flex gap:md">
-  <aside class="flex-grow:0 w:24x">...</aside>
-  <main class="flex-grow:1 min-w:0">...</main>
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex-basis:16x flex-grow:1 h:24x min-w:0 p:sm">Grow 1</div>
+  <div id="peer" class="flex-basis:16x flex-grow:2 h:24x min-w:0 p:sm">Grow 2</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'flex-grow:1', 'flex-grow:0', 'min-w:0']}
+    {['flex-grow:1', 'flex-grow:2']}
   </Class2CSS>
 </details>
 
-### Keep an item at its basis \{#keep-an-item-at-its-basis\}
-Use `flex-grow:0` when an item should keep its width or basis and leave free space to siblings.
-```html
-<!-- @MARK flex-grow:0 --><!-- @MARK flex-basis:24x -->
-<aside class="flex-basis:24x flex-grow:0">...</aside>
-```
+Padding is included in each item’s basis here because the site uses border-box sizing. The 16px gap is removed from the available space before it is distributed.
 
-Use the [flex](/reference/flex) shorthand when grow, shrink, and basis should be set together.
+### Leave free space to a sibling \{#keep-an-item-at-its-basis\}
+`flex-grow:0` opts out of positive free space. The blue item stays at its 96px basis while the violet sibling grows. It can still shrink if space becomes tight; use `flex:none` or `flex-shrink:0` when shrinkage must also be disabled.
+
+<DemoExample page="flex-grow" section="keep-an-item-at-its-basis" />
+
+```html
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex-basis:24x flex-grow:0 h:24x min-w:0 p:sm">Grow 0</div>
+  <div id="peer" class="flex-basis:16x flex-grow:1 h:24x min-w:0 p:sm">Main content</div>
+</div>
+```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to enable growth only when its breakpoint matches. Both items start at 80px; below `sm`, unused space remains at the end. Above it, the blue item absorbs that space.
+
+<DemoExample page="flex-grow" section="apply-conditionally" />
+
 ```html
-<div class="flex-grow:0 flex-grow:0@print flex-grow:1@sm">...</div>
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex-basis:20x flex-grow:0 h:24x min-w:0 p:sm flex-grow:1@sm">Target</div>
+  <div id="peer" class="flex-basis:20x flex-grow:0 h:24x min-w:0 p:sm">Peer</div>
+</div>
 ```
 
-The parent must be a flex container for `flex-grow` to affect layout.
+Growth needs a flex parent and positive free space. Use [flex](/reference/flex) when the grow, shrink and basis values should be set together.

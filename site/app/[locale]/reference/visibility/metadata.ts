@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'visibility',
-  description: 'Controlling whether an element is visible.',
+  description: 'Hide an element while preserving its layout space, or collapse a table row.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=visibility',

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-rendering',
-  description: 'Setting what to optimize when rendering text.',
+  description: 'Request a native text-rendering tradeoff without assuming an improvement.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-rendering',

@@ -2,50 +2,71 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Enable a font feature \{#enable-a-font-feature\}
-Use `font-feature-settings:*` to pass OpenType feature tags directly to `font-feature-settings`.
+A quoted four-character tag selects an OpenType feature. Here `tnum` gives each digit the same advance width in Geist. Compare the two equal-length strings; the feature must exist in the selected font.
+
+<DemoExample page="font-feature-settings" section="enable-a-font-feature" />
+
 ```html
-<!-- @MARK font-feature-settings:'tnum' -->
-<span class="font-feature-settings:'tnum'">1234567890</span>
+<!-- Default proportional digits -->
+<div id="target" class="font-feature-settings:normal font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {["font-feature-settings:'tnum'"]}
-  </Class2CSS>
-</details>
+```html
+<!-- Raw feature · 'tnum' -->
+<div id="target" class="font-feature-settings:'tnum' font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+```
 
 ### Reset features \{#reset-features\}
-Use `font-feature-settings:normal` when a nested element should not inherit custom feature settings.
+`font-feature-settings:normal` removes an inherited raw feature request. It does not reset a separate `font-variant-numeric` declaration.
+
+<DemoExample page="font-feature-settings" section="reset-features" />
+
 ```html
-<!-- @MARK font-feature-settings:normal -->
-<span class="font-feature-settings:'tnum'">
-  <span class="font-feature-settings:normal">Reset</span>
-</span>
+<!-- Raw tnum inherited, then reset -->
+<div id="context" class="font-feature-settings:'tnum' font:3xl leading:sm">
+  <p class="m:0"><span id="inherited" class="inline-block">11111</span></p>
+  <p id="target" class="m:0 font-feature-settings:normal"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></p>
+</div>
 ```
 
 ### Prefer semantic numeric utilities \{#prefer-semantic-numeric-utilities\}
-For common numeric features, prefer [`tabular-nums`](/reference/font-variant-numeric) or related numeric utilities because they are easier to read than raw feature tags.
+Use [`tabular-nums`](/reference/font-variant-numeric) for ordinary numeric formatting. Reserve raw feature settings for font-specific capabilities without a higher-level property.
+
+<DemoExample page="font-feature-settings" section="prefer-semantic-numeric-utilities" />
+
 ```html
-<span class="tabular-nums">12:45</span>
+<!-- font-feature-settings:'tnum' -->
+<div id="target" class="font-feature-settings:'tnum' font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+```
+
+```html
+<!-- tabular-nums -->
+<div id="target" class="tabular-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ### Use feature tokens \{#use-feature-tokens\}
-Define `font-feature-*` tokens when a feature combination is shared across several typographic treatments.
+Name a repeated feature setting in `@theme`, then use the token through the same property.
+
+<DemoExample page="font-feature-settings" section="use-feature-tokens" />
 
 ```css name=index.css
 @theme {
-  --font-feature-tabular: "tnum";
+  --font-feature-data: 'tnum';
 }
 ```
-
 ```html
-<span class="font-feature-settings:tabular">1234567890</span>
+<!-- A project token for numeric data -->
+<div id="target" class="font:3xl leading:sm font-feature-settings:data"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the numeric sample. The raw `tnum` feature changes the advance widths while the content stays the same.
+
+<DemoExample page="font-feature-settings" section="apply-conditionally" />
+
 ```html
-<span class="font-feature-settings:'tnum':hover font-feature-settings:normal@print font-feature-settings:normal@sm">...</span>
+<!-- Compare proportional and tabular advances -->
+<div id="target" tabindex="0" role="group" aria-label="Numeric feature sample" class="font-feature-settings:normal font:3xl leading:sm font-feature-settings:'tnum':hover font-feature-settings:'tnum':focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```

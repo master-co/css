@@ -2,14 +2,23 @@
 <Overview/>
 
 ## Examples \{#examples\}
-### Align items on the main axis \{#align-items-on-the-main-axis\}
-Use `justify-*` utilities to distribute flex or grid items along the container main axis. In a default row flexbox, that axis is horizontal.
+### Distribute items or grid tracks \{#align-items-on-the-main-axis\}
+Use `justify-between` to place the first and last flex items at the main-axis edges. In Grid, the same utility distributes the column tracks along the inline axis. These containers are both 280px wide; their fixed 80px items or tracks leave visible space between them.
+
+<DemoExample page="justify-content" section="align-items-on-the-main-axis" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK justify-between -->
-<nav class="flex justify-between">
-  <a href="/">Home</a>
-  <a href="/settings">Settings</a>
-</nav>
+<div id="layout" class="flex justify-between w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:20x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:20x p:sm">02</div>
+</div>
+```
+
+```html
+<div id="layout" class="grid grid-template-columns:20x|20x grid-template-rows:48px justify-between w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+</div>
 ```
 
 <details>
@@ -19,50 +28,105 @@ Use `justify-*` utilities to distribute flex or grid items along the container m
   </Class2CSS>
 </details>
 
+In horizontal writing, a row flexbox and Grid both distribute these boxes horizontally. A column flexbox distributes them vertically instead.
+
 ### Start, center, or end a group \{#start-center-or-end-a-group\}
-Use `justify-start`, `justify-center`, and `justify-end` for the most common positional alignment.
+`justify-start`, `justify-center` and `justify-end` place the whole group while keeping its 16px gap. The first three examples differ only in their alignment. The final example uses `flex-col`, so the same centering acts vertically.
+
+<DemoExample page="justify-content" section="start-center-or-end-a-group" />
+
 ```html
-<!-- @MARK justify-center -->
-<div class="flex justify-center gap:sm">
-  <button>Cancel</button>
-  <button>Save</button>
+<div id="layout" class="flex justify-start gap:md w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
 </div>
 ```
 
-In a column flexbox, the main axis becomes vertical, so `justify-center` centers items vertically instead.
 ```html
-<!-- @MARK flex-col --><!-- @MARK justify-center -->
-<section class="flex flex-col justify-center h:3xs">
-  ...
-</section>
+<div id="layout" class="flex justify-center gap:md w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+</div>
+```
+
+```html
+<div id="layout" class="flex justify-end gap:md w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+</div>
+```
+
+```html
+<div id="layout" class="flex flex-col justify-center gap:md h:56x w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+</div>
 ```
 
 ### Distribute extra space \{#distribute-extra-space\}
-Use `justify-between`, `justify-around`, or `justify-evenly` when the container has extra space to distribute between items.
-```html
-<!-- @MARK justify-evenly -->
-<ul class="flex justify-evenly gap:sm">
-  <li>One</li>
-  <li>Two</li>
-  <li>Three</li>
-</ul>
-```
+Compare `justify-between`, `justify-around` and `justify-evenly` with three fixed 48px items. Between leaves no outer space; around assigns half as much extra space at each outer edge as between items; evenly assigns the same extra space at all four positions.
 
-Use `gap:*` when the distance between items should be fixed. Use `justify-*` when the remaining container space should control placement.
+<DemoExample page="justify-content" section="distribute-extra-space" />
 
-### Use explicit CSS values \{#use-explicit-css-values\}
-Use `justify-content:<value>` when you need a value that does not have a shortcut.
 ```html
-<!-- @MARK justify-content:safe|center -->
-<div class="flex justify-content:safe|center">
-  ...
+<div id="layout" class="flex justify-between gap:md w:70x max-w:full">
+  <div id="target" class="flex:none size:12x p:sm">01</div>
+  <div id="peer" class="flex:none size:12x p:sm">02</div>
+  <div id="item-3" class="flex:none size:12x p:sm">03</div>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="justify-start justify-start@print justify-center@sm justify-between@lg">...</div>
+<div id="layout" class="flex justify-around gap:md w:70x max-w:full">
+  <div id="target" class="flex:none size:12x p:sm">01</div>
+  <div id="peer" class="flex:none size:12x p:sm">02</div>
+  <div id="item-3" class="flex:none size:12x p:sm">03</div>
+</div>
 ```
 
-Use [align-items](/reference/align-items) for the cross axis.
+```html
+<div id="layout" class="flex justify-evenly gap:md w:70x max-w:full">
+  <div id="target" class="flex:none size:12x p:sm">01</div>
+  <div id="peer" class="flex:none size:12x p:sm">02</div>
+  <div id="item-3" class="flex:none size:12x p:sm">03</div>
+</div>
+```
+
+The authored 16px `gap:md` is a minimum gap. Distributed space is added between the items, so with a nonzero gap even `justify-evenly` has larger inner gaps than outer edges. Flexible growth or automatic margins can consume the free space before this alignment runs.
+
+### Keep overflowing content reachable \{#use-explicit-css-values\}
+Pass a native multiword value with pipes: `justify-content:safe|center` centers content when it fits and falls back to the start when it would overflow. Compare a 280px item inside a 240px scrollport with explicit unsafe centering, then a 192px item that fits.
+
+<DemoExample page="justify-content" section="use-explicit-css-values" />
+
+```html
+<div id="layout" class="flex overflow:auto justify-content:safe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Safe centered overflow">
+  <div id="target" class="flex flex:none justify-between h:16x w:70x p:xs"><span>Start</span><span>End</span></div>
+</div>
+```
+
+```html
+<div id="layout" class="flex overflow:auto justify-content:unsafe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Unsafe centered overflow">
+  <div id="target" class="flex flex:none justify-between h:16x w:70x p:xs"><span>Start</span><span>End</span></div>
+</div>
+```
+
+```html
+<div id="layout" class="flex overflow:auto justify-content:safe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Safe centered fitting content">
+  <div id="target" class="flex flex:none justify-between h:16x w:48x p:xs"><span>Start</span><span>End</span></div>
+</div>
+```
+
+Unsafe centering pushes 20px beyond the starting edge in this example; that portion cannot be reached by scrolling. Safe alignment keeps the start visible and allows the remaining overflow to scroll at the end.
+
+### Apply conditionally \{#apply-conditionally\}
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. The same two items start at the leading edge, center from `sm`, and move to opposite edges from `lg`. The 280px container keeps the amount of free space consistent as the iframe crosses each breakpoint.
+
+<DemoExample page="justify-content" section="apply-conditionally" />
+
+```html
+<div id="layout" class="flex justify-start gap:md w:70x max-w:full justify-center@sm justify-between@lg">
+  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+</div>
+```

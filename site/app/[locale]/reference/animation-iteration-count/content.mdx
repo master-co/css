@@ -1,42 +1,167 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Loop animation \{#loop-animation\}
-Use `animation-iteration-count:infinite` when an animation should repeat until the state changes.
+Use infinite to repeat the two-second rotation until its animation is removed or paused.
+
+<DemoExample page="animation-iteration-count" section="loop-animation" />
+
 ```html
-<!-- @MARK animation-iteration-count:infinite -->
-<div class="animation-duration:1s animation-iteration-count:infinite animation-name:rotate animation-timing-function:linear">
-  Loading
+<!-- Continuous indicator -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Continuous indicator</span>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-iteration-count:infinite']}
-  </Class2CSS>
+  <Class2CSS>{['animation-iteration-count:infinite']}</Class2CSS>
 </details>
 
-### Specify N iterations \{#specify-n-iterations\}
-Use a number for one-shot or limited loops. Decimal values are valid when you need an animation to stop partway through a cycle.
+A positive delay applies before the first cycle only. Infinite animation has no natural ending phase for forwards fill; keep a pause control available.
+
+### Specify a number of iterations \{#specify-n-iterations\}
+Compare three complete cycles with two and a half cycles. Both use one-second linear keyframes and forwards fill.
+
+<DemoExample page="animation-iteration-count" section="specify-n-iterations" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-iteration-count:3 -->
-<div class="animation-duration:300ms animation-iteration-count:3 animation-name:fade">
-  Repeats three times
+<!-- Three cycles · ends at 96px -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-iteration-count:3
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
+
+```html
+<!-- 2.5 cycles · ends at 60px -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-iteration-count:2.5
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+The active duration is duration × count, excluding delay and paused time. Fractional counts stop within the last cycle; negative counts are invalid.
 
 ### Pair with fill mode \{#pair-with-fill-mode\}
-When the last iteration should leave the element in its final state, combine the count with `animation-fill-mode:forwards` or `animation-fill-mode:both`.
+Use a finite count with forwards fill. With alternate direction, an even count ends back at the first keyframe.
+
+<DemoExample page="animation-iteration-count" section="pair-with-fill-mode" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<div class="animation-fill-mode:both animation-iteration-count:1 animation-name:fade">
-  Ends at the final keyframe
+<!-- Two alternate cycles · ends at 24px -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:alternate
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-iteration-count:2
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
+The second cycle runs backward. The retained value is therefore 24px, not 96px; fill follows the actual final iteration.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="animation-iteration-count:infinite:hover animation-iteration-count:1@print animation-iteration-count:3@sm">...</div>
+Resize before replaying to run one cycle below `sm` or three cycles at `sm`.
+
+<DemoExample page="animation-iteration-count" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
 ```
+
+```html
+<!-- One → three cycles at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-iteration-count:1
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-iteration-count:3@sm">→</span>
+  </div>
+</div>
+```
+
+Duration remains one second per cycle. Changing the count can extend or shorten an existing animation; Replay restarts the selected sequence.

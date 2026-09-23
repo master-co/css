@@ -1,38 +1,48 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document font-weight syntax */}
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Compare the same phrase at a constant size and line height.
+
+<DemoExample page="font-weight" section="basic-usage" />
+
 <BasicUsage />
 
-Use `font:*` weight shortcuts for common type emphasis.
+### Use explicit weights \{#use-explicit-weights\}
+Use `font-weight:*` for a numeric value between named steps. A variable font can interpolate supported weights; a static family uses its available faces and may synthesize a heavier appearance.
+
+<DemoExample page="font-weight" section="use-explicit-weights" />
+
 ```html
-<!-- @MARK font:regular --><!-- @MARK font:semibold --><!-- @MARK font:heavy -->
-<p class="font:regular">Regular body text</p>
-<strong class="font:semibold">Important label</strong>
-<h1 class="font:heavy">Display heading</h1>
+<!-- font:medium -->
+<p id="target" class="m:0 font:medium font:xl leading:sm">Design with clarity.</p>
+```
+
+```html
+<!-- font-weight:550 -->
+<p id="target" class="m:0 font-weight:550 font:xl leading:sm">Design with clarity.</p>
+```
+
+```html
+<!-- font:semibold -->
+<p id="target" class="m:0 font:semibold font:xl leading:sm">Design with clarity.</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['font:regular', 'font:semibold', 'font:heavy']}
+    {['font-weight:550']}
   </Class2CSS>
 </details>
 
-### Use explicit weights \{#use-explicit-weights\}
-Use `font-weight:*` for numeric or keyword weights that do not have a shortcut.
-```html
-<!-- @MARK font-weight:600 -->
-<span class="font-weight:600">Custom weight</span>
-```
-
-Weight changes only work when the active font family provides that weight or the browser can synthesize it.
-
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover the button or focus it with the keyboard. Both states apply `font:semibold`; the default remains `font:regular`.
+
+<DemoExample page="font-weight" section="apply-conditionally" />
+
 ```html
-<div class="font:regular font:semibold:hover font:regular@print font:bold@sm">...</div>
+<!-- Pointer and keyboard states -->
+<button type="button" id="target" class="font:md font:regular font:semibold:hover font:semibold:focus-visible">Focus or hover to compare</button>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}

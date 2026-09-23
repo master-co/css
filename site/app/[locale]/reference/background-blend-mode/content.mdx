@@ -2,35 +2,70 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Blend background layers \{#blend-background-layers\}
-Use `background-blend-mode:*` when multiple background layers or a background image and color should blend together.
+Compare the same image and blue background color with normal and multiply blending. With normal blending, the opaque image covers the color; multiply combines their colors.
+
+<DemoExample page="background-blend-mode" section="blend-background-layers" />
+
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg:blue-60/.4 --><!-- @MARK background-blend-mode:multiply -->
-<section class="background-blend-mode:multiply bg:blue-60/.4 bg:url(/hero.jpg)">
-  ...
-</section>
+<!-- Normal · opaque image covers color -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:normal bg:blue-30
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- Multiply · image × blue color -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:multiply bg:blue-30
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/hero.jpg)', 'bg:blue-60/.4', 'background-blend-mode:multiply']}
+    {['background-blend-mode:multiply']}
   </Class2CSS>
 </details>
 
+Background layers blend with each other and the element’s background color. They do not blend with content behind the element. Use [mix-blend-mode](/reference/mix-blend-mode) when the whole element should blend with its external backdrop.
+
 ### Restore normal blending \{#restore-normal-blending\}
-Use `background-blend-mode:normal` to remove a blend mode at a breakpoint or state.
+Hover or focus the image to restore normal blending. The image and blue color stay in place; only their compositing changes.
+
+<DemoExample page="background-blend-mode" section="restore-normal-blending" />
+
 ```html
-<!-- @MARK background-blend-mode:normal -->
-<section class="background-blend-mode:normal">...</section>
+<!-- Multiply → normal on interaction -->
+<div id="target" tabindex="0" role="img" aria-label="Compare original image colors"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:multiply bg:blue-30
+         bg:url(/demo/landscape.svg)
+         background-blend-mode:normal:hover@screen
+         background-blend-mode:normal:focus-visible@screen"
+></div>
 ```
 
-For blending the whole element with content behind it, use [mix-blend-mode](/reference/mix-blend-mode).
+The unchanged, fully opaque image reveals its original colors in the normal state.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the actual viewport to `sm` to apply multiply blending. Smaller screens and print restore normal blending.
+
+<DemoExample page="background-blend-mode" section="apply-conditionally" />
+
 ```html
-<div class="background-blend-mode:normal background-blend-mode:normal@print background-blend-mode:multiply@sm">...</div>
+<!-- Normal → multiply at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:normal bg:blue-30
+         bg:url(/demo/landscape.svg) background-blend-mode:normal@print
+         background-blend-mode:multiply@screen&sm"
+></div>
 ```
 
-Check contrast after blending, especially when text sits on top of the background.
+Check foreground contrast after blending. Keep captions outside the painted subject so they do not hide the effect.

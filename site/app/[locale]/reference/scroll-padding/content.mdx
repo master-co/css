@@ -3,41 +3,110 @@
 
 ## Examples \{#examples\}
 ### Pad the scroll container \{#pad-the-scroll-container\}
-Use `scroll-p:*` on the scroll container to keep snapped or anchored content away from the container edges.
+`scroll-p:*` insets the container’s preferred viewing region. Activate Details to leave 12px above it. Scroll padding changes scroll alignment without adding layout padding or moving the content before scrolling.
+
+<DemoExample page="scroll-padding" section="pad-the-scroll-container" />
+
 ```html
-<!-- @MARK scroll-p:0.625rem -->
-<div class="overflow:auto scroll-p:0.625rem">
-  ...
+<div id="scrollport" class="overflow-y:auto h:56x scroll-p:sm" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['scroll-p:0.625rem']}
+    {['scroll-p:sm']}
   </Class2CSS>
 </details>
 
-### Reserve space for fixed headers \{#reserve-space-for-fixed-headers\}
-Use `scroll-pt:*` when vertical scrolling should stop below a sticky or fixed header.
-```html
-<!-- @MARK scroll-pt:16x -->
-<main class="overflow:auto scroll-pt:3xl">
-  ...
-</main>
-```
+The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.
 
-### Pad horizontal snapping \{#pad-horizontal-snapping\}
-Use `scroll-px:*` on horizontal carousels so the first and last item can snap with visual breathing room.
+### Reserve space for fixed headers \{#reserve-space-for-fixed-headers\}
+`scroll-pt:*` keeps scroll-into-view destinations below an obstruction at the top of the scrollport. Here the sticky header is 48px tall and `scroll-pt:3xl` reserves 64px, including a 16px gap.
+
+<DemoExample page="scroll-padding" section="reserve-space-for-fixed-headers" />
+
 ```html
-<!-- @MARK scroll-px:4x -->
-<div class="overflow-x:auto scroll-px:md snap-x">
-  ...
+<div id="scrollport" class="overflow-y:auto h:56x scroll-pt:3xl" tabindex="0" aria-label="Scrollable collection">
+  <header class="sticky top z:1 h:12x">Collection navigation</header>
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['scroll-pt:3xl']}
+  </Class2CSS>
+</details>
+
+### Pad horizontal snapping \{#pad-horizontal-snapping\}
+`scroll-px:*` insets the horizontal snapport. This track also uses ordinary `px:md` to create real space at its first and last edges. Scroll padding alone does not add that layout space. Choose Panel 2 to inspect the 16px alignment inset.
+
+<DemoExample page="scroll-padding" section="pad-horizontal-snapping" />
+
 ```html
-<div class="scroll-p:0.625rem scroll-p:0@print scroll-pt:3xl@sm">...</div>
+<div id="scrollport" class="flex overflow-x:auto gap:md px:md scroll-px:md scroll-snap-type:x|mandatory"
+  tabindex="0" aria-label="Horizontal panels">
+  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-start">Panel 6</article>
+</div>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['scroll-px:md']}
+  </Class2CSS>
+</details>
+
+### Apply conditionally \{#apply-conditionally\}
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to apply the change only when its condition matches. The viewing inset is 12px on all sides by default, with 32px at the top from `sm`. Resize and activate Details again to apply the new viewing region.
+
+<DemoExample page="scroll-padding" section="apply-conditionally" />
+
+```html
+<div id="scrollport" class="overflow-y:auto h:56x scroll-p:sm scroll-pt:xl@sm" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
+```
+
+The destination controls use the browser’s scroll-into-view behavior. The same offset applies to an ordinary fragment link such as `<a href="#details">Details</a>`.

@@ -3,11 +3,33 @@
 
 ## Examples \{#examples\}
 ### Blend an element with its backdrop \{#blend-an-element-with-its-backdrop\}
-Use `mix-blend-mode:*` to set how the entire element blends with content behind it.
+Compare normal paint with multiply across two opaque backdrops. The same blue foreground overlaps a neutral parent background and a violet sibling.
+
+<DemoExample page="mix-blend-mode" section="blend-an-element-with-its-backdrop" />
+
 ```html
-<!-- @MARK mix-blend-mode:multiply -->
-<div class="mix-blend-mode:multiply">
-  ...
+<!-- Normal · one foreground color -->
+<div class="rel isolate h:160px w:240px
+         max-w:100% bg:#e2e8f0">
+  <div aria-hidden="true"
+    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+  <div id="target" role="img"
+    aria-label="Blue foreground across two backdrops"
+    class="abs left:72px top:xl size:96px r:lg
+           bg:#2563eb mix-blend-mode:normal"></div>
+</div>
+```
+
+```html
+<!-- Multiply · combines with both backdrops -->
+<div class="rel isolate h:160px w:240px
+         max-w:100% bg:#e2e8f0">
+  <div aria-hidden="true"
+    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+  <div id="target" role="img"
+    aria-label="Blue foreground across two backdrops"
+    class="abs left:72px top:xl size:96px r:lg
+           bg:#2563eb mix-blend-mode:multiply"></div>
 </div>
 ```
 
@@ -18,19 +40,47 @@ Use `mix-blend-mode:*` to set how the entire element blends with content behind 
   </Class2CSS>
 </details>
 
+The explicit isolated container bounds the blend group. Blending uses the backdrop already painted behind the element, not only its parent’s background. Labels stay outside the blended subject.
+
 ### Restore normal blending \{#restore-normal-blending\}
-Use `mix-blend-mode:normal` to remove a blend mode.
+Open print preview to remove multiply with `mix-blend-mode:normal`. The blue foreground then has the same color over both backdrops.
+
+<DemoExample page="mix-blend-mode" section="restore-normal-blending" />
+
 ```html
-<!-- @MARK mix-blend-mode:normal -->
-<div class="mix-blend-mode:normal">...</div>
+<!-- Multiply on screen · normal in print -->
+<div class="rel isolate h:160px w:240px
+         max-w:100% bg:#e2e8f0">
+  <div aria-hidden="true"
+    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+  <div id="target" role="img"
+    aria-label="Blue foreground across two backdrops"
+    class="abs left:72px top:xl size:96px r:lg
+           bg:#2563eb mix-blend-mode:multiply
+           mix-blend-mode:normal@print"></div>
+</div>
 ```
 
-For blending background layers inside the same element, use [background-blend-mode](/reference/background-blend-mode).
+Normal restores ordinary source-over painting without changing position or dimensions. For layers inside one element’s background, use [background-blend-mode](/reference/background-blend-mode).
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to enable multiply. Print always uses normal blending.
+
+<DemoExample page="mix-blend-mode" section="apply-conditionally" />
+
 ```html
-<div class="mix-blend-mode:normal mix-blend-mode:normal@print mix-blend-mode:multiply@sm">...</div>
+<!-- Normal → multiply at sm -->
+<div class="rel isolate h:160px w:240px
+         max-w:100% bg:#e2e8f0">
+  <div aria-hidden="true"
+    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+  <div id="target" role="img"
+    aria-label="Blue foreground across two backdrops"
+    class="abs left:72px top:xl size:96px r:lg
+           bg:#2563eb mix-blend-mode:normal
+           mix-blend-mode:normal@print
+           mix-blend-mode:multiply@screen&sm"></div>
+</div>
 ```
 
-Blend modes can change contrast unpredictably as the backdrop changes.
+The fixed source colors make comparisons repeatable in both themes. In an interface, changing backdrop colors can alter contrast; keep important text readable independently of the effect.

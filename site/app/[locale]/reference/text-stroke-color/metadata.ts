@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-stroke-color',
-  description: 'Setting the color of the stroke for text characters.',
+  description: 'Color a glyph stroke independently of its width and fill.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke-color',

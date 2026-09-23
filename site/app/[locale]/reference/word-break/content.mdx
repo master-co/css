@@ -3,12 +3,15 @@
 
 ## Examples \{#examples\}
 ### Keep normal word boundaries \{#keep-normal-word-boundaries\}
-Use `word-break:normal` for standard language-aware wrapping.
+`word-break:normal` follows the language’s ordinary break opportunities. An unbroken Latin word can still overflow; scroll this named region to inspect the complete word.
+
+<DemoExample page="word-break" section="keep-normal-word-boundaries" />
+
 ```html
-<!-- @MARK word-break:normal -->
-<p class="word-break:normal">
-  Long words wrap at normal opportunities when the browser can find them.
-</p>
+<!-- Normal boundaries · unbroken word -->
+<div id="scrollport" role="region" aria-label="Normal word boundaries" tabindex="0" class="overflow:auto w:200px max-w:100%">
+  <p id="target" class="w:200px m:0 font:md leading:24px word-break:normal">Inspect the word pneumonoultramicroscopicsilicovolcanoconiosis.</p>
+</div>
 ```
 
 <details>
@@ -19,34 +22,66 @@ Use `word-break:normal` for standard language-aware wrapping.
 </details>
 
 ### Break anywhere inside words \{#break-anywhere-inside-words\}
-Use `word-break:break-all` for narrow columns where unbroken strings would otherwise overflow.
+`word-break:break-all` permits breaks within Latin words, even when an intact word could have moved to the next line. Compare it with emergency wrapping on the same text.
+
+<DemoExample page="word-break" section="break-anywhere-inside-words" />
+
 ```html
-<!-- @MARK word-break:break-all -->
-<p class="word-break:break-all">
-  pneumonoultramicroscopicsilicovolcanoconiosis
-</p>
+<!-- Emergency breaks only -->
+<p id="target" class="wrap-anywhere w:160px max-w:100% m:0 font:md leading:24px word-break:normal">Make room for collaboration</p>
 ```
 
-This can make prose harder to read. Prefer [overflow-wrap](/reference/overflow-wrap) for user-generated URLs, hashes, or identifiers where emergency breaks are enough.
+```html
+<!-- Break all -->
+<p id="target" class="w:160px max-w:100% m:0 font:md leading:24px word-break:break-all">Make room for collaboration</p>
+```
+
+Prefer [overflow-wrap](/reference/overflow-wrap) when ordinary word boundaries should be retained whenever they fit.
 
 ### Keep CJK words together \{#keep-cjk-words-together\}
-Use `word-break:keep-all` when CJK text should avoid breaking between characters.
+`word-break:keep-all` suppresses breaks between CJK letters that normally allow them. The Chinese text below has no spaces; the kept run can overflow its narrow paragraph.
+
+<DemoExample page="word-break" section="keep-cjk-words-together" />
+
 ```html
-<!-- @MARK word-break:keep-all -->
-<p lang="ja" class="word-break:keep-all">CJK text without forced character breaks</p>
+<!-- word-break:normal -->
+<div id="scrollport" role="region" aria-label="Chinese line breaking" tabindex="0" class="overflow:auto w:160px max-w:100%">
+  <p id="target" lang="zh-Hant" class="w:160px m:0 font:md leading:24px word-break:normal">清晰的設計讓每個想法都有空間</p>
+</div>
+```
+
+```html
+<!-- word-break:keep-all -->
+<div id="scrollport" role="region" aria-label="Chinese line breaking" tabindex="0" class="overflow:auto w:160px max-w:100%">
+  <p id="target" lang="zh-Hant" class="w:160px m:0 font:md leading:24px word-break:keep-all">清晰的設計讓每個想法都有空間</p>
+</div>
 ```
 
 ### Use the break-word shortcut \{#use-the-break-word-shortcut\}
-Use `break-word` when you need the static shortcut for `word-break: break-word`.
+`break-word` emits the legacy `word-break:break-word` value. For new code, prefer the explicit combination `word-break:normal wrap-anywhere`.
+
+<DemoExample page="word-break" section="use-the-break-word-shortcut" />
+
 ```html
-<!-- @MARK break-word -->
-<p class="break-word">very-long-unbroken-identifier</p>
+<!-- break-word -->
+<p id="target" class="w:200px max-w:100% m:0 font:md leading:24px break-word">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 ```
+
+```html
+<!-- word-break:normal wrap-anywhere -->
+<p id="target" class="wrap-anywhere w:200px max-w:100% m:0 font:md leading:24px word-break:normal">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+```
+
+The explicit form preserves ordinary word boundaries and uses emergency breaks for the long token.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="word-break:normal word-break:normal@print word-break:break-all@sm">...</div>
-```
+The same unbroken word uses normal boundaries at the base viewport, then breaks within the word at `sm` on screen. Print restores normal boundaries.
 
-Choose the least aggressive breaking rule that prevents overflow.
+<DemoExample page="word-break" section="apply-conditionally" />
+
+```html
+<!-- Real breakpoint · unchanged text -->
+<div id="scrollport" role="region" aria-label="Responsive word breaking" tabindex="0" class="overflow:auto w:200px max-w:100%">
+  <p id="target" class="w:200px m:0 font:md leading:24px word-break:normal word-break:normal@print word-break:break-all@screen&sm">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+</div>
+```

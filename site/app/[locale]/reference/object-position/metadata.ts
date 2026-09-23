@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'object-position',
-  description: 'Setting the alignment of the selected replaced element within the element\'s box.',
+  description: 'Positioning image or video content inside its element box.',
   category: 'Media & SVG',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=object-position',

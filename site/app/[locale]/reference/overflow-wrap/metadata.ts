@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'overflow-wrap',
-  description: 'Controlling how words should break when they overflow their element',
+  description: 'Allow emergency breaks and understand their effect on intrinsic width.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=overflow-wrap',

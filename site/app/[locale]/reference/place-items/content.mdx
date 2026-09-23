@@ -3,34 +3,50 @@
 
 ## Examples \{#examples\}
 ### Align grid items on both axes \{#align-grid-items-on-both-axes\}
-Use `place-items:*` as shorthand for `align-items` and `justify-items`.
+`place-items:center` sets both `align-items:center` and `justify-items:center`. Each label centers within its own column and 160px row. The grid tracks keep their full size; only the items move inside their areas.
+
+<DemoExample page="place-items" section="align-grid-items-on-both-axes" />
+
 ```html
-<!-- @MARK grid --><!-- @MARK place-items:center -->
-<div class="grid place-items:center h:48x">
-  <button>Centered</button>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:center gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">Alpha</div>
+  <div id="peer" class="p:sm">Beta</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid', 'place-items:center', 'h:48x']}
+    {['grid', 'place-items:center']}
   </Class2CSS>
 </details>
 
-### Stretch items \{#stretch-items\}
-Use `place-items:stretch` when children should fill their grid areas in both axes.
+For different values, put block-axis alignment first and inline-axis alignment second, such as `place-items:start|center`.
+
+### Stretch automatic-sized items \{#stretch-items\}
+`place-items:stretch` fills both dimensions of a grid area when the corresponding item sizes are automatic. The blue item has no width or height, so it fills its area. The violet item keeps its explicitly set 80 × 64px size.
+
+<DemoExample page="place-items" section="stretch-items" />
+
 ```html
-<!-- @MARK place-items:stretch -->
-<section class="grid place-items:stretch">...</section>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">Auto size</div>
+  <div id="peer" class="h:16x w:20x p:sm">80 × 64</div>
+</div>
 ```
 
-Use [place-self](/reference/place-self) when only one item needs a different two-axis alignment.
+Minimum and maximum sizes still apply. Use [place-self](/reference/place-self) when just one child needs an override.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. Both automatic-sized labels fill their areas initially, then take intrinsic sizes and center in those same areas from `sm`.
+
+<DemoExample page="place-items" section="apply-conditionally" />
+
 ```html
-<div class="place-items:stretch place-items:stretch@print place-items:center@sm">...</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap:md w:70x max-w:full place-items:center@sm">
+  <div id="target" class="p:sm">Alpha</div>
+  <div id="peer" class="p:sm">Beta</div>
+</div>
 ```
 
-For flexbox, `place-items` has limited use; prefer [align-items](/reference/align-items) and [justify-content](/reference/justify-content).
+For flex items, only the `align-items` half affects alignment. `justify-items` does not distribute a flex line’s free space; use [justify-content](/reference/justify-content) for that.

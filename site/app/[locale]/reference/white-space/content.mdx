@@ -3,12 +3,13 @@
 
 ## Examples \{#examples\}
 ### Keep text on one line \{#keep-text-on-one-line\}
-Use `white-space:nowrap` when inline text should not wrap. Pair it with overflow handling when the container can become narrow.
+`white-space:nowrap` collapses repeated spaces and prevents soft wrapping. A constrained block and hidden overflow make the ellipsis meaningful.
+
+<DemoExample page="white-space" section="keep-text-on-one-line" />
+
 ```html
-<!-- @MARK white-space:nowrap --><!-- @MARK overflow:hidden --><!-- @MARK text-ellipsis -->
-<span class="overflow:hidden text-ellipsis white-space:nowrap">
-  A long single-line label
-</span>
+<!-- A constrained single line -->
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 <details>
@@ -19,26 +20,48 @@ Use `white-space:nowrap` when inline text should not wrap. Pair it with overflow
 </details>
 
 ### Preserve authored line breaks \{#preserve-authored-line-breaks\}
-Use `white-space:pre-line` to preserve line breaks while still collapsing runs of spaces.
+`white-space:pre-line` keeps the authored newline but collapses the repeated spaces. Compare the exact same text with normal whitespace handling.
+
+<DemoExample page="white-space" section="preserve-authored-line-breaks" />
+
 ```html
-<!-- @MARK white-space:pre-line -->
-<p class="white-space:pre-line">
-  First line
-  Second line
-</p>
+<!-- white-space:normal -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px white-space:normal">First    line
+Second    line</p>
+```
+
+```html
+<!-- white-space:pre-line -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px white-space:pre-line">First    line
+Second    line</p>
 ```
 
 ### Preserve spaces and wrapping \{#preserve-spaces-and-wrapping\}
-Use `white-space:pre-wrap` or `break-spaces` when user-authored spacing should remain visible.
+Both values preserve spaces and allow wrapping. With `break-spaces`, preserved spaces consume space at a line’s end and may break after each space; `pre-wrap` can hang trailing spaces.
+
+<DemoExample page="white-space" section="preserve-spaces-and-wrapping" />
+
 ```html
-<!-- @MARK break-spaces -->
-<code class="break-spaces">token    value</code>
+<!-- white-space:pre-wrap -->
+<code id="target" class="block w:8ch max-w:100% m:0 font:md leading:24px white-space:pre-wrap">token        value</code>
 ```
+
+```html
+<!-- break-spaces -->
+<code id="target" class="block w:8ch max-w:100% m:0 font:md leading:24px break-spaces">token        value</code>
+```
+
+The eight spaces in the source are intentional. No decoration is inserted into the text node.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+At the base viewport, normal whitespace collapses the newline. At `sm` the text remains on one line; print preserves the authored spaces and newline.
+
+<DemoExample page="white-space" section="apply-conditionally" />
+
 ```html
-<div class="white-space:normal break-spaces@print white-space:nowrap@sm">...</div>
+<!-- Preserved source · real conditions -->
+<p id="target" tabindex="0" role="region" aria-label="Whitespace preview" class="overflow:auto w:240px max-w:100% m:0 font:md leading:24px white-space:normal break-spaces@print white-space:nowrap@screen&sm">First    line
+Second    line</p>
 ```
 
-Use [text-wrap](/reference/text-wrap) when the problem is line balancing rather than preserving whitespace.
+Use [text-wrap](/reference/text-wrap) for line balancing without changing whitespace preservation.

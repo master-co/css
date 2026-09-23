@@ -3,37 +3,101 @@
 
 ## Examples \{#examples\}
 ### Set a complete decoration \{#set-a-complete-decoration\}
-Use `text-decoration:*|*|*|*` when line, color, style, and thickness should be declared together.
+Declare the line, color, style and thickness together with `text-decoration:underline|blue-50|wavy|2px`. The line belongs to the text; it does not draw a border around the element.
+
+<DemoExample page="text-decoration" section="set-a-complete-decoration" />
+
 ```html
-<!-- @MARK text-decoration:underline|blue-60|wavy|2px -->
-<a class="text-decoration:underline|blue-60|wavy|2px">
-  Decorated link
-</a>
+<!-- Four parts · one shorthand -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl
+         text-decoration:underline|blue-50|wavy|2px"
+>
+  Design together
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-decoration:underline|blue-60|wavy|2px']}
+    {['text-decoration:underline|blue-50|wavy|2px']}
   </Class2CSS>
 </details>
 
+A shorthand resets its omitted parts. Use the dedicated longhands when a state should change only one part of an existing decoration.
+
 ### Use line aliases \{#use-line-aliases\}
-Use `underline`, `line-through`, or `overline` for common line-only decoration.
+`underline`, `line-through` and `overline` set the `text-decoration` shorthand. Compare the same words with each line placement.
+
+<DemoExample page="text-decoration" section="use-line-aliases" />
+
 ```html
-<!-- @MARK underline -->
-<a class="underline">Underlined link</a>
+<!-- underline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline"
+>
+  Design together
+</p>
 ```
+
+```html
+<!-- line-through -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl line-through"
+>
+  Design together
+</p>
+```
+
+```html
+<!-- overline -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl overline"
+>
+  Design together
+</p>
+```
+
+These aliases also reset the shorthand’s color, style and thickness. Use [text-decoration-line](/reference/text-decoration-line) to preserve those parts.
 
 ### Remove decoration \{#remove-decoration\}
-Use `text-decoration:none` when inherited link decoration should be removed deliberately.
+Remove a decoration on the element that draws it. Setting `text-decoration:none` on an inline child cannot erase the line propagated from its parent.
+
+<DemoExample page="text-decoration" section="remove-decoration" />
+
 ```html
-<!-- @MARK text-decoration:none -->
-<a class="text-decoration:none">Plain link</a>
+<!-- Child none · parent still decorated -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl underline"
+>
+  Parent <span id="child" class="text-decoration:none">and child</span>
+</p>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<a class="underline:hover text-decoration:none@print text-decoration:none@sm">...</a>
+<!-- Origin none · line removed -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:2xl leading:xl text-decoration:none"
+>
+  Parent <span id="child" class="text-decoration:none">and child</span>
+</p>
 ```
+
+This is propagation through the formatting tree, not ordinary property inheritance. Preserve another clear cue when removing an underline from a link.
+
+### Apply conditionally \{#apply-conditionally\}
+Hover or focus this button to add an underline. The base state has no decoration; print keeps the plain label.
+
+<DemoExample page="text-decoration" section="apply-conditionally" />
+
+```html
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:2xl leading:xl text-decoration:none text-decoration:none@print
+         underline:hover@screen underline:focus-visible@screen"
+>
+  Design together
+</button>
+```
+
+The screen-qualified states keep pointer or keyboard focus from overriding the print rule.

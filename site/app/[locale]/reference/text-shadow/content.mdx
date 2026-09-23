@@ -3,34 +3,82 @@
 
 ## Examples \{#examples\}
 ### Add a text shadow \{#add-a-text-shadow\}
-Use `text-shadow:*` to apply a shadow to glyphs.
+`text-shadow:0|2px|4px|blue-50/.4` sets the horizontal offset, vertical offset, blur radius and color. Compare the same glyphs with and without the shadow.
+
+<DemoExample page="text-shadow" section="add-a-text-shadow" />
+
 ```html
-<!-- @MARK text-shadow:0|1px|2px|black/.2 -->
-<h1 class="text-shadow:0|1px|2px|black/.2">
-  Readable heading
-</h1>
+<!-- No shadow -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-shadow:none"
+>
+  Clear type
+</p>
+```
+
+```html
+<!-- 0px x · 2px y · 4px blur -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-shadow:0|2px|4px|blue-50/.4"
+>
+  Clear type
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-shadow:0|1px|2px|black/.2']}
+    {['text-shadow:0|2px|4px|blue-50/.4']}
   </Class2CSS>
 </details>
 
+Text shadows follow glyphs rather than the element’s border box. They do not expand its layout dimensions.
+
 ### Use text shadows sparingly \{#use-text-shadows-sparingly\}
-Text shadows can help over images, but they can also blur small text. Prefer solid contrast for body copy and reserve text shadows for display text or media overlays.
+Give overlay text a readable background before adding a shadow. Both examples below include the same dark surface; the shadow only changes the title’s paint.
+
+<DemoExample page="text-shadow" section="use-text-shadows-sparingly" />
+
 ```html
-<!-- @MARK fg:white --><!-- @MARK text-shadow:0|1px|3px|black/.45 -->
-<h2 class="text-shadow:0|1px|3px|black/.45 fg:white">
-  Mountain retreat
-</h2>
+<!-- Dark surface · without shadow -->
+<div class="p:md r:sm bg:slate-80">
+  <h2 id="target"
+    class="m:0 font:3xl leading:1.5 text-shadow:none fg:white"
+  >
+    Open the canvas
+  </h2>
+</div>
 ```
+
+```html
+<!-- Dark surface · with shadow -->
+<div class="p:md r:sm bg:slate-80">
+  <h2 id="target"
+    class="m:0 font:3xl leading:1.5 text-shadow:0|2px|4px|black/.4 fg:white"
+  >
+    Open the canvas
+  </h2>
+</div>
+```
+
+A shadow is not a contrast guarantee. Check the actual background and text size, especially over changing images; keep ordinary body copy clear.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to add a shadow on screen. Print removes the shadow while keeping the same text, foreground and size.
+
+<DemoExample page="text-shadow" section="apply-conditionally" />
+
 ```html
-<div class="text-shadow:none text-shadow:none@print text-shadow:0|1px|2px|black/.2@sm">...</div>
+<!-- Screen shadow · plain print -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-shadow:none text-shadow:none@print
+         text-shadow:0|2px|4px|blue-50/.4@screen&sm"
+>
+  Clear type
+</p>
 ```
 
-Use [box-shadow](/reference/box-shadow) for element shadows.
+Use [box-shadow](/reference/box-shadow) to shadow the element’s box instead of its glyphs.

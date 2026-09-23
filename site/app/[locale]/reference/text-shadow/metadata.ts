@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-shadow',
-  description: 'Adding shadows to text.',
+  description: 'Paint shadows behind glyphs without changing their layout.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-shadow',

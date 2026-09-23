@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'flex-shrink',
-  description: 'Setting how flex items shrink.',
+  description: 'Distribute negative free space while respecting item minimum sizes.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=flex-shrink',

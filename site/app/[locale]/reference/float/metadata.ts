@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'float',
-  description: 'Placing an element on the left or right side of its container.',
+  description: 'Wrap text around an object on the left or right of its container.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=float',

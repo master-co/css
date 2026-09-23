@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-stroke-width',
-  description: 'Setting the width of the stroke for text characters.',
+  description: 'Adjust glyph stroke width while preserving the text size and fill.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=-webkit-text-stroke-width',

@@ -3,29 +3,50 @@
 
 ## Basic usage \{#basic-usage\}
 ### Define explicit rows \{#define-explicit-rows\}
-Use `grid-template-rows` to define the track list for grid rows.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-template-rows:48px|80px|48px gap:xs">
-      <div className="overflow:hidden min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">48px</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">80px</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">48px</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-template-rows` defines explicit row sizes. These three rows are 48px, 80px and 48px tall. With two 16px gaps, the grid’s natural height is 208px; the middle row is visibly taller.
+
+<DemoExample page="grid-template-rows" section="define-explicit-rows" />
+
 ```html
-<!-- @MARK grid-template-rows:48px|80px|48px -->
-<div class="grid grid-template-rows:48px|80px|48px">…</div>
+<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+</div>
 ```
 
-### Use minmax \{#use-minmax\}
+The track list alone does not enable Grid; include `grid` on the parent. More items can create implicit rows, which are sized separately by [grid-auto-rows](/reference/grid-auto-rows).
+
+### Let a row grow with content \{#use-minmax\}
+`minmax(48px,auto)` gives the first row a 48px floor and allows it to grow with content. The second row takes the remaining height with `1fr`. Compare one line with four 20px lines in the same 224px container.
+
+<DemoExample page="grid-template-rows" section="use-minmax" />
+
 ```html
-<!-- @MARK grid-template-rows:minmax(48px,auto)|1fr -->
-<div class="grid grid-template-rows:minmax(48px,auto)|1fr">…</div>
+<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm leading:20px">One line</div>
+  <div id="peer" class="p:sm">Remaining height</div>
+</div>
 ```
+
+```html
+<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:minmax(48px,auto)|1fr gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm leading:20px">Content<br>can grow<br>across<br>four lines.</div>
+  <div id="peer" class="p:sm">Remaining height</div>
+</div>
+```
+
+The short first row stays 48px; the longer one grows to 104px including padding. After the 16px gap, the second row gets 160px or 104px respectively. If content minimums exceed the container’s height, Grid can overflow rather than compress that content indefinitely.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. From `sm`, the outer rows grow from 48px to 80px while the middle row shrinks to 48px. The grid has no fixed height, so its total height changes with the tracks.
+
+<DemoExample page="grid-template-rows" section="apply-conditionally" />
+
 ```html
-<div class="grid-template-rows:48px|80px|48px:hover grid-template-rows:48px|80px|48px@dark grid-template-rows:48px|80px|48px@print grid-template-rows:48px|80px|48px@sm">…</div>
+<div id="layout" class="grid grid-template-columns:1fr grid-template-rows:48px|80px|48px gap:md w:70x max-w:full grid-template-rows:80px|48px|80px@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+</div>
 ```

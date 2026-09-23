@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-snap-type',
-  description: 'Setting how strictly snap points are enforced on the scroll container.',
+  description: 'Choose the axis and strictness of snapping for a scroll container.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-snap-type',

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-template-areas',
-  description: 'Setting areas in the grid container',
+  description: 'Name rectangular grid regions and map items into them.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-template-areas',

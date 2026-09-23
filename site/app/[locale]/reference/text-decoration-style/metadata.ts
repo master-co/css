@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-decoration-style',
-  description: 'Setting the style of the decoration line that is used on text.',
+  description: 'Change the pattern of an existing text decoration line.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-decoration-style',

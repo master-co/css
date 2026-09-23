@@ -3,50 +3,76 @@
 
 ## Examples \{#examples\}
 ### Cap a fluid element \{#cap-a-fluid-element\}
-Use `max-w:*` to let an element shrink with its container while preventing it from growing too wide.
+`max-w:*` sets an upper bound; it does not make a narrow element grow. Compare `w:full` capped at 192px with a preferred width of 80px under the same cap. Automatic inline margins center both inside the 280px parent.
+
+<DemoExample page="max-width" section="cap-a-fluid-element" />
+
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:5xl mx:auto">
-  ...
-</main>
+<!-- Fluid width reaches the cap -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:full max-w:48x mx:auto p:sm">192px cap</div>
+</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['w:full', 'max-w:5xl', 'mx:auto']}
-  </Class2CSS>
-</details>
+```html
+<!-- Small width stays small -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:20x max-w:48x mx:auto p:sm">80px</div>
+</div>
+```
 
 ### Set a readable measure \{#set-a-readable-measure\}
-Use text-relative units when the maximum width is based on reading comfort instead of the container scale.
+Text-relative limits constrain the line length using the current font. This compact specimen uses `max-w:24ch` so the cap is visible in the docs column. The cap includes the specimen’s padding. The zero glyph defines `ch`; it is not a count of arbitrary characters.
+
+<DemoExample page="max-width" section="set-a-readable-measure" />
+
 ```html
-<!-- @MARK max-w:72ch -->
-<article class="w:full max-w:72ch">
-  ...
-</article>
+<div id="layout" class="w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:full max-w:24ch p:sm font:mono font:sm leading:24px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
+</div>
 ```
 
+Choose a measure for your typeface and content; a longer article may use a larger value such as `max-w:72ch`. The maximum and the available containing width both limit the result.
+
 ### Keep media responsive \{#keep-media-responsive\}
-Use `max-w:full` to prevent replaced elements such as images or videos from overflowing their parent.
+The source is 320 × 200px. `max-w:full` caps its width at the 240px parent, and `h:auto` preserves its intrinsic ratio, giving a 240 × 150px image. A wider parent does not force the image to upscale.
+
+<DemoExample page="max-width" section="keep-media-responsive" />
+
 ```html
-<!-- @MARK max-w:full --><!-- @MARK h:auto -->
-<img class="h:auto max-w:full" src="..." alt="" />
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto max-w:full" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
 
 ### Use viewport and container caps \{#use-viewport-and-container-caps\}
-Use `max-vw` when an element should never exceed the viewport width. Use `max-w:*` when the cap should follow the container theme token scale.
+A viewport cap is not a parent-width cap. Here `max-vw` permits a box as wide as the current iframe even inside a 240px parent; `max-w:full` restricts the second box to that parent. Scroll the preview horizontally if needed to see the viewport-capped edge.
+
+<DemoExample page="max-width" section="use-viewport-and-container-caps" />
+
 ```html
-<!-- @MARK max-vw --><!-- @MARK max-w:7xl@lg -->
-<section class="max-vw max-w:7xl@lg">
-  ...
-</section>
+<!-- Viewport cap -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <div id="target" class="w:1000px max-vw p:sm">100vw maximum</div>
+</div>
 ```
+
+```html
+<!-- Containing-block cap -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <div id="target" class="w:1000px max-w:full p:sm">100% maximum</div>
+</div>
+```
+
+The preview’s width control changes the actual viewport. Container theme tokens such as `max-w:3xs` are fixed theme values, not percentages of the parent.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="max-w:full max-w:72ch@print max-w:4xl@sm">...</div>
-```
+Resize past `sm` to relax the cap from 160px to 240px. The blue panel still prefers its parent’s full width; the smaller maximum determines the visible size.
 
-Pair `max-w:*` with `w:full` for wrappers that should be fluid until they hit the cap.
+<DemoExample page="max-width" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="w:full max-w:40x p:sm max-w:60x@sm">Responsive cap</div>
+</div>
+```

@@ -3,52 +3,57 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set a counter on one item \{#set-a-counter-on-one-item\}
-Use `counter-set` to set an existing counter to a specific value on selected elements. MDN recommends [`counter-reset`](/reference/counter-reset) for creating counters and `counter-set` for changing a counter value in the flow.
-<Demo $py={0}>
-  <DemoPanel>
-    <ol className="grid gap:xl m:0 p:0 list-style:none counter-reset:step">
-      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:gray-20::before content:counter(step)::before bg:gray-80::before@dark bg:gray-90@dark">
-        <span>Install dependencies</span>
-      </li>
-      <li className="flex items-center p:10x b:1px|solid|blue-20 r:lg bg:blue-5 counter-increment:step counter-set:step|9 inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:blue-60::before fg:white::before content:counter(step)::before b:blue-80@dark bg:blue-95@dark">
-        <span>Jump to the deployment checklist</span>
-      </li>
-      <li className="flex items-center p:10x r:lg bg:gray-5 counter-increment:step inline-flex::before flex-shrink:0::before items-center::before justify-center::before size:7x::before mr:md::before r:full::before font:0.813rem::before font:bold::before bg:gray-20::before content:counter(step)::before bg:gray-80::before@dark bg:gray-90@dark">
-        <span>Verify production</span>
-      </li>
-    </ol>
-  </DemoPanel>
-</Demo>
+Set `step` to 9 on the second item. A counter is reset, incremented, then set on an element in that order, so the second item displays 9 and the following item advances to 10.
+
+<DemoExample page="counter-set" section="set-a-counter-on-one-item" />
+
 ```html
-<!-- @MARK counter-reset:step -->
-<ol class="list-style:none counter-reset:step">
-  <!-- @MARK counter-increment:step -->
-  <!-- @MARK content:counter(step)::before -->
-  <li class="counter-increment:step inline-flex::before r:full::before content:counter(step)::before">Install dependencies</li>
-  <!-- @MARK counter-set:step|9 -->
-  <li class="counter-increment:step counter-set:step|9 inline-flex::before r:full::before content:counter(step)::before">Jump to the deployment checklist</li>
-  <li class="counter-increment:step inline-flex::before r:full::before content:counter(step)::before">Verify production</li>
+<!-- Sequence · 1, 9, 10 -->
+<ol role="list" class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|0">
+  <li class="mb:2xs counter-increment:step|1 text:blue::before
+    content:counter(step)'.\00a0'::before">Install dependencies</li>
+  <li id="target" value="9" class="mb:2xs counter-increment:step|1 counter-set:step|9
+    text:blue::before content:counter(step)'.\00a0'::before">Deployment checklist</li>
+  <li class="mb:2xs counter-increment:step|1 text:blue::before
+    content:counter(step)'.\00a0'::before">Verify production</li>
 </ol>
 ```
 
+The list item’s HTML `value="9"` keeps its ordinal consistent with the visible jump. `counter-set` updates the innermost matching counter; if none exists, it creates one. Use [counter-reset](/reference/counter-reset) to establish an intentional scope.
+
 ### Set multiple counters \{#set-multiple-counters\}
-Separate counter names and values with `|` to set more than one counter in the same declaration.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="p:3xl r:lg bg:gray-5 counter-set:chapter|2|section|4 bg:gray-90@dark">
-      <div className="mb:md font:13px text:gray">Current position</div>
-      <div className="font-weight:560 font:22px text:neutral font:1.375rem::before font:bold::before fg:blue-60::before content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before"></div>
-    </div>
-  </DemoPanel>
-</Demo>
+Separate names and integer values with `|`. This heading sets both `chapter` and `section` before reading them in its prefix.
+
+<DemoExample page="counter-set" section="set-multiple-counters" />
+
 ```html
-<!-- @MARK counter-set:chapter|2|section|4 -->
-<!-- @MARK content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before -->
-<h2 class="counter-set:chapter|2|section|4 content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)::before">Resume point</h2>
+<!-- Two names · one declaration -->
+<h2 id="target" class="m:0 font:md font:medium leading:lg
+    counter-set:chapter|2|section|4 text:blue::before
+    content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)':\00a0'::before">Resume point</h2>
 ```
 
+Neither counter was created earlier in this example. Setting them establishes the two values locally.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to set the second section to 9 on screen. The headings change from 1, 2, 3 to 1, 9, 10; print preserves the consecutive sequence.
+
+<DemoExample page="counter-set" section="apply-conditionally" />
+
 ```html
-<div class="counter-set:section|4:hover counter-set:section|4@dark counter-set:section|4@print counter-set:section|4@sm">…</div>
+<!-- Real viewport · conditional jump -->
+<article class="counter-reset:section">
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Overview</h2>
+  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before counter-set:none@print
+    counter-set:section|9@screen&sm">Installation</h2>
+  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
+    counter-increment:section text:blue::before
+    content:counter(section)'.\00a0'::before">Configuration</h2>
+</article>
 ```
+
+The conditional set changes the running value, so subsequent headings continue from the new number. The source headings remain unchanged.

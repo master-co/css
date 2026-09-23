@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'list-style',
-  description: 'Setting all the list style properties at once.',
+  description: 'Set marker type, position and image together.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=list-style',

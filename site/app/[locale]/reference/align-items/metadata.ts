@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'align-items',
-  description: 'Controlling how items are aligned along its cross axis.',
+  description: 'Align flex items across a line or grid items within their block-axis areas.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=align-items',

@@ -1,3 +1,3 @@
-const syntaxes = [['will-change:`value`']]
+const syntaxes = ['will-change:auto', ['will-change:`value`']]
 
 export default syntaxes

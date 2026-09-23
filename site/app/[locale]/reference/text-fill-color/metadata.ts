@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-fill-color',
-  description: 'Setting the color of text.',
+  description: 'Control glyph fill independently of the foreground color.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=-webkit-text-fill-color',

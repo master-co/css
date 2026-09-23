@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'transition',
-  description: 'Controlling animation speed when changing CSS properties.',
+  description: 'Setting the properties, duration, easing and delay of CSS transitions.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=transition',

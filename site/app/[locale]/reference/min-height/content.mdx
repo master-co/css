@@ -3,45 +3,65 @@
 
 ## Examples \{#examples\}
 ### Set a baseline height \{#set-a-baseline-height\}
-Use `min-h:*` when content may grow but the region still needs a minimum block size.
+`min-h:*` establishes a physical height floor without fixing the final height. Both panels have `min-h:20x` (80px). One line leaves free space; four 20px lines plus 24px padding require 104px.
+
+<DemoExample page="min-height" section="set-a-baseline-height" />
+
 ```html
-<!-- @MARK min-h:48x -->
-<section class="min-h:48x">
-  ...
-</section>
+<!-- One line · 80px floor -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="min-h:20x p:sm leading:20px">Keep room for content.</div>
+</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['min-h:48x']}
-  </Class2CSS>
-</details>
+```html
+<!-- Four lines · 104px content -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="min-h:20x p:sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.</div>
+</div>
+```
 
 ### Build viewport sections \{#build-viewport-sections\}
-Use native viewport units for full-screen or near full-screen layouts.
+`min-h:100dvh` makes the region at least as tall as the actual dynamic viewport. This iframe is 320px tall. The blue region reaches 320px even though its content is shorter; scroll inside the preview to see its lower edge and measurement.
+
+<DemoExample page="min-height" section="build-viewport-sections" />
+
 ```html
-<!-- @MARK min-h:100dvh -->
-<main class="min-h:100dvh">
-  ...
-</main>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="min-h:100dvh p:sm">Viewport-height floor</div>
+</div>
 ```
 
-`100dvh` follows the dynamic viewport size on modern mobile browsers. Use `min-vh` when the legacy `100vh` value is the intended cap.
+`min-vh` uses min-height:100vh. Both utilities establish a floor, not a cap. Content may make the region taller. On mobile, `dvh` responds to changing browser controls; an embedded viewport does not reproduce the outer browser’s toolbar changes.
 
 ### Let content define the final size \{#let-content-define-the-final-size\}
-Unlike `h:*`, a minimum height does not clip or force overflow by itself. It establishes a floor, then lets content expand the element.
+Compare the same four lines in an 80px fixed-height box and an 80px minimum-height box. The fixed box stays 80px while its content remains visible beyond the edge. The minimum-height box grows to 104px and contains every line.
+
+<DemoExample page="min-height" section="let-content-define-the-final-size" />
+
 ```html
-<!-- @MARK min-h:32x --><!-- @MARK overflow:visible -->
-<article class="overflow:visible min-h:32x">
-  ...
-</article>
+<!-- Fixed height · visible overflow -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="overflow h:20x p:sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.</div>
+</div>
 ```
+
+```html
+<!-- Minimum height · grows -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="min-h:20x p:sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.</div>
+</div>
+```
+
+Height limits and overflow are separate properties. A minimum allows normal content growth; neither a fixed nor a minimum height automatically clips the content.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="min-h:32x min-h:0@print min-h:100dvh@sm">...</div>
-```
+Resize past `sm` to raise the minimum height from 64px to 112px. Short content exposes the extra space; longer content can still exceed either floor.
 
-Use [height](/reference/height) when the element should have an exact height.
+<DemoExample page="min-height" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="min-h:16x p:sm min-h:28x@sm">Room to grow</div>
+</div>
+```

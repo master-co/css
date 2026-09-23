@@ -1,48 +1,218 @@
-import { IconCircle } from '@tabler/icons-react'
-
 ## Overview [sr-only] \{#overview\}
-<Overview/>
-
-Use the native animation direction property directly.
-```html
-<div class="animation-direction:reverse">
-```
-
----
+<Overview />
 
 ## Basic usage \{#basic-usage\}
 ### Play forward \{#play-forward\}
-The animation plays forward in each cycle.
-<Basic className="animation-direction:normal"/>
+Play each cycle from 24px to 96px. The one-second linear path repeats with the same direction.
+
+<DemoExample page="animation-direction" section="play-forward" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- normal -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:normal
+             animation-duration:1s
+             animation-iteration-count:infinite
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>{['animation-direction:normal']}</Class2CSS>
+</details>
+
+A new normal cycle jumps back to its starting keyframe. Direction does not change the number or duration of cycles.
 
 ### Play backward \{#play-backward\}
-The animation plays backward in each cycle. For example, rotate counterclockwise.
-<Basic className="animation-direction:reverse"/>
+Play each cycle from 96px back to 24px by reversing the same keyframes.
+
+<DemoExample page="animation-direction" section="play-backward" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- reverse -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:reverse
+             animation-duration:1s
+             animation-iteration-count:infinite
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+Reverse also reverses easing. An ease-in curve read backward behaves like ease-out; this linear example keeps speed constant.
 
 ### Play alternately \{#play-alternately\}
-The animation **reverses direction each cycle** and **the first iteration plays forward**.
-<Basic className="animation-direction:alternate"/>
+Play the first cycle forward, then the second backward. The direction changes at each one-second boundary.
+
+<DemoExample page="animation-direction" section="play-alternately" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- alternate -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:alternate
+             animation-duration:1s
+             animation-iteration-count:infinite
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+Iterations are counted from one. Odd iterations go forward and even iterations go backward, so the marker returns without a jump between these endpoints.
 
 ### Play alternately and reverse first \{#play-alternately-and-reverse-first\}
-The animation **reverses direction each cycle** and **the first iteration plays backward**.
-<Basic className="animation-direction:alternate-reverse"/>
+Start at 96px and play backward first, then forward on the next cycle.
+
+<DemoExample page="animation-direction" section="play-alternately-and-reverse-first" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- alternate-reverse -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:alternate-reverse
+             animation-duration:1s
+             animation-iteration-count:infinite
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+Odd iterations run backward and even iterations run forward. The keyframes, duration and easing remain identical to the alternate example.
 
 ### Fade out \{#fade-out\}
-Reverse a project-defined `fade` keyframe so that you don't need to define a new keyframe for `fade-out`.
-<Demo>
-  <IconCircle className="app-icon-primary animation-direction:reverse animation-duration:1s animation-iteration-count:infinite animation-name:fade stroke:.5" width="48" height="48" />
-</Demo>
+Reverse the preset `fade` keyframes, which normally go from opacity 0 to 1. This one-shot example fades its decorative marker out over one second.
+
+<DemoExample page="animation-direction" section="fade-out" />
+
 ```html
-<!-- @MARK animation-name:fade --><!-- @MARK animation-direction:reverse -->
-<svg class="animation-direction:reverse animation-duration:1s animation-iteration-count:infinite animation-name:fade">…</svg>
+<!-- Fades out once -->
+<div class="flex items-center gap:md p:sm">
+  <span id="target" aria-hidden="true"
+    class="block h:40px w:64px b:1px|solid|blue-60 r:sm
+           bg:blue-10 opacity:1
+           animation-direction:reverse
+           animation-duration:1s
+           animation-fill-mode:forwards
+           animation-name:fade
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion"></span>
+  <span class="font:sm">Fades out once</span>
+</div>
 ```
-For one-shot animations, remove `infinite`.
+
+Forwards fill retains the last value of the completed reverse iteration: opacity 0. The visible message remains readable, and print removes the animation.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="animation-direction:normal:hover">…</div>
-<div class="animation-direction:normal@sm">…</div>
-<div class="animation-direction:normal@dark">…</div>
-<div class="animation-direction:normal@print">…</div>
+Resize before replaying. The path runs backward below `sm` and forward at `sm`, using a real viewport query.
+
+<DemoExample page="animation-direction" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
 ```
+
+```html
+<!-- Reverse → normal at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-direction:reverse
+             animation-duration:1s
+             animation-iteration-count:infinite
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-direction:normal@sm">→</span>
+  </div>
+</div>
+```
+
+Direction changes reuse the existing timeline; they do not inherently restart it. Replay starts the comparison again from time zero.

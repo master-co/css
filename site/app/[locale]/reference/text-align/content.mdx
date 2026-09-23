@@ -3,20 +3,33 @@
 
 ## Examples \{#examples\}
 ### Align contents to the left \{#align-contents-to-the-left\}
-Use `text-left` to align contents to the left.
-<Basic className="text-left" />
+Use `text-left` to align each line to the physical left edge, regardless of the paragraph’s base direction.
 
-### Align contents to the right \{#align-contents-to-the-right\}
-Use `text-right` to align contents to the right.
-<Basic className="text-right" />
-
-### Center contents \{#center-contents\}
-Use `text-center` to center contents.
-<Basic className="text-center" />
+<DemoExample page="text-align" section="align-contents-to-the-left" />
 
 ```html
-<!-- @MARK text-center -->
-<p class="text-center">Centered text</p>
+<!-- text-left -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-left">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+### Align contents to the right \{#align-contents-to-the-right\}
+Use `text-right` to align each line to the physical right edge. The paragraph keeps the same width and position.
+
+<DemoExample page="text-align" section="align-contents-to-the-right" />
+
+```html
+<!-- text-right -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-right">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+### Center contents \{#center-contents\}
+Use `text-center` to center each line’s inline content within the paragraph. Use layout utilities to center the paragraph itself.
+
+<DemoExample page="text-align" section="center-contents" />
+
+```html
+<!-- text-center -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-center">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
@@ -27,21 +40,52 @@ Use `text-center` to center contents.
 </details>
 
 ### Align contents to the left and right \{#align-contents-to-the-left-and-right\}
-Use `text-justify` to align contents to the left and right.
-<Basic className="text-justify" />
+Use `text-justify` to distribute space across a line so both edges meet the paragraph’s sides. The final line normally stays start-aligned.
+
+<DemoExample page="text-align" section="align-contents-to-the-left-and-right" />
+
+```html
+<!-- text-justify -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-justify">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+Check the spacing at the actual reading width; short lines can produce large gaps between words.
 
 ### Use logical alignment \{#use-logical-alignment\}
-Use `text-start` and `text-end` when alignment should follow the writing direction instead of always mapping to physical left or right.
+`text-start` and `text-end` follow the inline direction. In these horizontal paragraphs, start is left for LTR and right for RTL.
+
+<DemoExample page="text-align" section="use-logical-alignment" />
+
 ```html
-<!-- @MARK text-start --><!-- @MARK text-end -->
-<p class="text-start">Start-aligned content</p>
-<p class="text-end">End-aligned content</p>
+<!-- LTR · text-start -->
+<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font:md leading:24px text-start">Good tools make room for clear thinking.</p>
 ```
 
-Use physical `text-left` and `text-right` when the design explicitly requires those sides regardless of direction.
+```html
+<!-- LTR · text-end -->
+<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font:md leading:24px text-end">Good tools make room for clear thinking.</p>
+```
+
+```html
+<!-- RTL · text-start -->
+<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font:md leading:24px text-start">أدوات واضحة تمنح الأفكار مساحة.</p>
+```
+
+```html
+<!-- RTL · text-end -->
+<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font:md leading:24px text-end">أدوات واضحة تمنح الأفكار مساحة.</p>
+```
+
+Use physical `text-left` or `text-right` only when that physical edge is intentional.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the real preview viewport. The text starts at the inline start, centers at `sm`, and aligns to the inline end at `lg`. Print restores start alignment.
+
+<DemoExample page="text-align" section="apply-conditionally" />
+
 ```html
-<div class="text-start text-start@print text-center@sm text-end@lg">...</div>
+<!-- Responsive inline alignment -->
+<p id="target" class="w:full m:0 font:md leading:24px text-start text-start@print text-center@screen&sm text-end@screen&lg">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
+
+The screen-qualified conditions keep viewport breakpoints from overriding the print rule.

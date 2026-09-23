@@ -3,11 +3,35 @@
 
 ## Examples \{#examples\}
 ### Collapse table borders \{#collapse-table-borders\}
-Use `border-collapse:collapse` when adjacent table cell borders should merge into a single border.
+Adjacent cells share a single border in the collapsed model. This complete table supplies its own 2px cell borders; the shared edge stays 2px.
+
+<DemoExample page="border-collapse" section="collapse-table-borders" />
+
 ```html
-<!-- @MARK border-collapse:collapse -->
-<table class="border-collapse:collapse">
-  <tr><td>Cell</td></tr>
+<!-- Collapse · one shared edge -->
+<table id="target"
+  class="w:240px max-w:100% border-collapse:collapse
+         border-spacing:0 font:sm text-left text:body
+         table-layout:fixed">
+  <caption class="pb:sm font:semibold text-left">
+    Project assets
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Design
+      </th>
+      <td class="p:xs b:2px|solid|blue">12 files</td>
+    </tr>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Research
+      </th>
+      <td class="p:xs b:2px|solid|blue">8 files</td>
+    </tr>
+  </tbody>
 </table>
 ```
 
@@ -18,25 +42,139 @@ Use `border-collapse:collapse` when adjacent table cell borders should merge int
   </Class2CSS>
 </details>
 
+Conflicting borders are resolved by the native table rules. A `hidden` border suppresses a shared edge; `none` has the lowest priority.
+
 ### Separate table borders \{#separate-table-borders\}
-Use `border-collapse:separate` when cells need their own border boxes and spacing.
+Separate mode gives every cell its own border box. With zero spacing, two neighboring 2px borders meet as a 4px seam.
+
+<DemoExample page="border-collapse" section="separate-table-borders" />
+
 ```html
-<!-- @MARK border-collapse:separate -->
-<table class="border-collapse:separate">
-  <tr><td>Cell</td></tr>
+<!-- Separate · two touching edges -->
+<table id="target"
+  class="w:240px max-w:100% border-collapse:separate
+         border-spacing:0 font:sm text-left text:body
+         table-layout:fixed">
+  <caption class="pb:sm font:semibold text-left">
+    Project assets
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Design
+      </th>
+      <td class="p:xs b:2px|solid|blue">12 files</td>
+    </tr>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Research
+      </th>
+      <td class="p:xs b:2px|solid|blue">8 files</td>
+    </tr>
+  </tbody>
 </table>
 ```
+
+Unlike collapsed borders, these edges are painted independently. Use spacing to leave a visible gap between the boxes.
 
 ### Match border spacing to the mode \{#match-border-spacing-to-the-mode\}
-Collapsed borders ignore `border-spacing`. Use separate borders when spacing between cells is part of the design.
+Compare the same `border-spacing:xs` in both modes. The token resolves to 8px here, but only the separate model uses the gap.
+
+<DemoExample page="border-collapse" section="match-border-spacing-to-the-mode" />
+
 ```html
-<table class="border-collapse:separate border-spacing:xs">
-  <tr><td>Cell</td></tr>
+<!-- Collapse · spacing ignored -->
+<table id="target"
+  class="w:240px max-w:100% border-collapse:collapse
+         border-spacing:xs font:sm text-left
+         text:body table-layout:fixed">
+  <caption class="pb:sm font:semibold text-left">
+    Project assets
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Design
+      </th>
+      <td class="p:xs b:2px|solid|blue">12 files</td>
+    </tr>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Research
+      </th>
+      <td class="p:xs b:2px|solid|blue">8 files</td>
+    </tr>
+  </tbody>
 </table>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<table class="border-collapse:collapse border-collapse:collapse@print border-collapse:separate@sm">...</table>
+<!-- Separate · 8px spacing -->
+<table id="target"
+  class="w:240px max-w:100% border-collapse:separate
+         border-spacing:xs font:sm text-left
+         text:body table-layout:fixed">
+  <caption class="pb:sm font:semibold text-left">
+    Project assets
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Design
+      </th>
+      <td class="p:xs b:2px|solid|blue">12 files</td>
+    </tr>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Research
+      </th>
+      <td class="p:xs b:2px|solid|blue">8 files</td>
+    </tr>
+  </tbody>
+</table>
 ```
+
+The computed spacing can remain 8px even when collapse makes it ineffective. Inspect the actual space between cells, not just the readout.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen the preview to `sm` to give cells separate borders and 8px gaps. Print always returns to collapsed borders.
+
+<DemoExample page="border-collapse" section="apply-conditionally" />
+
+```html
+<!-- Collapse → separate at sm -->
+<table id="target"
+  class="w:240px max-w:100% border-collapse:collapse
+         border-spacing:xs font:sm text-left
+         text:body table-layout:fixed
+         border-collapse:collapse@print
+         border-collapse:separate@screen&sm">
+  <caption class="pb:sm font:semibold text-left">
+    Project assets
+  </caption>
+  <tbody>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Design
+      </th>
+      <td class="p:xs b:2px|solid|blue">12 files</td>
+    </tr>
+    <tr>
+      <th scope="row"
+        class="p:xs b:2px|solid|blue font:medium">
+        Research
+      </th>
+      <td class="p:xs b:2px|solid|blue">8 files</td>
+    </tr>
+  </tbody>
+</table>
+```
+
+This is a real table in a resizable iframe. The screen qualification keeps the responsive rule from overriding print.

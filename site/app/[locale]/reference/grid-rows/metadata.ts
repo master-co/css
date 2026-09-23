@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-rows',
-  description: 'Style utility for creating multiple grid rows.',
+  description: 'Create equal grid rows and fill them column by column.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-template-rows',

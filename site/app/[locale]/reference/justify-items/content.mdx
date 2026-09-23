@@ -3,11 +3,14 @@
 
 ## Examples \{#examples\}
 ### Align grid items inline \{#align-grid-items-inline\}
-Use `justify-items:*` to set the default inline-axis alignment for children in a grid container.
+Use `justify-items:center` to center each grid item in its own area along the inline axis. These two equal columns are wider than their labels; the 160px row keeps the area height visible while `items-start` holds the labels at the top.
+
+<DemoExample page="justify-items" section="align-grid-items-inline" />
+
 ```html
-<!-- @MARK grid --><!-- @MARK justify-items:center -->
-<div class="grid justify-items:center">
-  ...
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:center gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">Alpha</div>
+  <div id="peer" class="p:sm">Beta</div>
 </div>
 ```
 
@@ -18,19 +21,32 @@ Use `justify-items:*` to set the default inline-axis alignment for children in a
   </Class2CSS>
 </details>
 
-### Stretch items by default \{#stretch-items-by-default\}
-Use `justify-items:stretch` when grid children should fill their grid areas inline.
+This sets the default for children with `justify-self:auto`. It does not distribute the tracks; use [justify-content](/reference/justify-content) for that.
+
+### Stretch automatic-width items \{#stretch-items-by-default\}
+`justify-items:stretch` fills the inline size of each grid area when the item’s width is automatic. The blue label fills its first column; the violet label keeps its explicitly set 80px width.
+
+<DemoExample page="justify-items" section="stretch-items-by-default" />
+
 ```html
-<!-- @MARK justify-items:stretch -->
-<section class="grid justify-items:stretch">...</section>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap:md w:70x max-w:full">
+  <div id="target" class="p:sm">Auto width</div>
+  <div id="peer" class="w:20x p:sm">80px</div>
+</div>
 ```
 
-Use [justify-self](/reference/justify-self) when only one grid item needs different alignment.
+Minimum and maximum widths still constrain stretching. Use [justify-self](/reference/justify-self) to override this default for one item.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. The automatic-width labels fill their columns by default. From `sm`, each label takes its intrinsic width and centers within the same grid area.
+
+<DemoExample page="justify-items" section="apply-conditionally" />
+
 ```html
-<div class="justify-items:stretch justify-items:stretch@print justify-items:center@sm">...</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap:md w:70x max-w:full justify-items:center@sm">
+  <div id="target" class="p:sm">Alpha</div>
+  <div id="peer" class="p:sm">Beta</div>
+</div>
 ```
 
-For flexbox main-axis distribution, use [justify-content](/reference/justify-content) instead.
+`justify-items` has no effect on flex items. Use [justify-content](/reference/justify-content) to distribute a flex line’s free space.

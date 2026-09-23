@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-columns',
-  description: 'Style utility for creating multiple grid columns.',
+  description: 'Create equal grid columns with a zero minimum and fractional width.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-template-columns',

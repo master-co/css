@@ -2,37 +2,55 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Use antialiased text \{#use-antialiased-text\}
-Use `font-antialiased` when display text should use grayscale antialiasing.
+`font-antialiased` emits `-webkit-font-smoothing: antialiased` and `-moz-osx-font-smoothing: grayscale`. These are nonstandard, platform-specific requests; support and appearance vary with the browser and operating system.
+
+<DemoExample page="font-smooth" section="use-antialiased-text" />
+
 ```html
-<!-- @MARK font-antialiased -->
-<h1 class="font-antialiased">Dashboard</h1>
+<!-- font-subpixel-antialiased -->
+<p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased">Design with clarity.</p>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['font-antialiased']}
-  </Class2CSS>
-</details>
-
-### Restore subpixel antialiasing \{#restore-subpixel-antialiasing\}
-Use `font-subpixel-antialiased` when you want to return to the platform default smoothing behavior.
 ```html
-<!-- @MARK font-subpixel-antialiased -->
-<p class="font-antialiased font-subpixel-antialiased@sm">
-  Body text
-</p>
+<!-- font-antialiased -->
+<p id="target" class="m:0 font:xl leading:md font-antialiased">Design with clarity.</p>
+```
+
+Compare the actual text on your target platform. An accepted declaration does not guarantee a visible rasterization difference.
+
+### Restore browser antialiasing \{#restore-subpixel-antialiasing\}
+`font-subpixel-antialiased` resets both vendor properties to `auto`. The browser chooses its rendering method; the utility name does not guarantee subpixel output.
+
+<DemoExample page="font-smooth" section="restore-subpixel-antialiasing" />
+
+```html
+<!-- An inherited request with a local reset -->
+<div class="font-antialiased"><p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased">Design with clarity.</p></div>
 ```
 
 ### Use sparingly \{#use-sparingly\}
-Font smoothing is platform-specific. Prefer testing it on the actual surfaces where the text will appear.
+Check text on the surfaces where it will appear. Neither smoothing mode is universally sharper or more readable. Prefer suitable size, weight and contrast before adding a rendering hint.
+
+<DemoExample page="font-smooth" section="use-sparingly" />
+
 ```html
-<h2 class="font-antialiased">Large heading</h2>
+<!-- Light surface -->
+<p id="target" class="m:0 p:md r:sm font:xl leading:md bg:white fg:gray-90 font-antialiased">Design with clarity.</p>
+```
+
+```html
+<!-- Dark surface -->
+<p id="target" class="m:0 p:md r:sm font:xl leading:md bg:gray-90 fg:white font-antialiased">Design with clarity.</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use the Theme control to request grayscale antialiasing in dark mode. The readout reports the browser’s computed vendor property; it is not a measurement of rendering quality.
+
+<DemoExample page="font-smooth" section="apply-conditionally" />
+
 ```html
-<p class="font-antialiased:hover font-subpixel-antialiased@print font-subpixel-antialiased@sm">...</p>
+<!-- A theme-specific rendering request -->
+<p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased font-antialiased@dark">Design with clarity.</p>
 ```

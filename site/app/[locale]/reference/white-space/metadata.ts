@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'white-space',
-  description: 'Controlling how whitespace and line breaks within an element are handled.',
+  description: 'Control how authored spaces, newlines and soft wrapping are handled.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=white-space',

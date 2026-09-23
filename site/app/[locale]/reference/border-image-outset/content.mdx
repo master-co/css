@@ -3,32 +3,100 @@
 
 ## Basic usage \{#basic-usage\}
 ### Extend the border image outside the box \{#extend-the-border-image-outside-the-box\}
-Use `border-image-outset` to paint the border image beyond the element's border box. The outset area does not create extra layout space.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="m:xl p:10x b:12px|solid|transparent r:lg border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
-      <div className="font-weight:560 font:lg text:neutral">Outset 8</div>
-      <p className="my:md font:sm text:gray">The painted border image extends outward.</p>
-    </div>
-  </DemoPanel>
-</Demo>
+Outset moves image paint outside the border box without adding layout space. Compare zero with `1`, which multiplies the 12px regular border width.
+
+<DemoExample page="border-image-outset" section="extend-the-border-image-outside-the-box" />
+
 ```html
-<!-- @MARK border-image-outset:8 -->
-<div class="b:12px|solid|transparent border-image-outset:8 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-  Outset 8
+<!-- Zero outset · border-box edge -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:220px max-w:100% m:lg p:md
+         b:12px|solid|blue-60 border-image-outset:0
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
+
+```html
+<!-- Outset 1 · 12px outside -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:220px max-w:100% m:lg p:md
+         b:12px|solid|blue-60 border-image-outset:1
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['border-image-outset:1', 'border-image-outset:12px']}
+  </Class2CSS>
+</details>
+
+The authored margin leaves room for paint. `1` means a multiplier, while `1px` is a length; an outset of `8` would extend 96px on this border.
 
 ### Use separate vertical and horizontal values \{#use-separate-vertical-and-horizontal-values\}
+Two values apply to top/bottom, then left/right. This example extends 8px vertically and 16px horizontally.
+
+<DemoExample page="border-image-outset" section="use-separate-vertical-and-horizontal-values" />
+
 ```html
-<!-- @MARK border-image-outset:8|16 -->
-<div class="b:12px|solid|transparent border-image-outset:8|16 border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-  Vertical and horizontal outset
+<!-- 8px vertical · 16px horizontal -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:220px max-w:100% m:lg p:md
+         b:12px|solid|blue-60
+         border-image-outset:8px|16px
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
 
+Three values mean top, horizontal, bottom. Four follow top, right, bottom, left. Outset paint can overlap nearby content if the layout does not reserve room.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+At `sm`, move the painted edge 12px outward. Print returns the image to the border box.
+
+<DemoExample page="border-image-outset" section="apply-conditionally" />
+
 ```html
-<div class="border-image-outset:8:hover border-image-outset:8@dark border-image-outset:8@print border-image-outset:8@sm">…</div>
+<!-- Zero → 12px outset at sm -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:220px max-w:100% m:lg p:md
+         b:12px|solid|blue-60 border-image-outset:0
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border
+         border-image-outset:0@print
+         border-image-outset:12px@screen&sm">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
+
+The measured box remains 220 × 130. Outset is a paint adjustment, so it does not change the declared margin or content size.

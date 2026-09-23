@@ -3,11 +3,14 @@
 
 ## Examples \{#examples\}
 ### Contain layout and paint \{#contain-layout-and-paint\}
-Use `contain:content` for self-contained panels where layout and paint work should not affect the outside page.
+Use `contain:content` to combine layout, paint and style containment. It does not include size containment: the panel can still respond to its content. The comparison below makes the paint boundary visible.
+
+<DemoExample page="contain" section="contain-layout-and-paint" />
+
 ```html
 <!-- @MARK contain:content -->
-<section class="contain:content">
-  Feed item
+<section class="h:32x w:48x contain:content">
+  <div class="h:20x w:3xs">Wide content</div>
 </section>
 ```
 
@@ -19,25 +22,36 @@ Use `contain:content` for self-contained panels where layout and paint work shou
 </details>
 
 ### Contain painting \{#contain-painting\}
-Use `contain:paint` when overflowing visual effects should be contained without opting into every containment mode.
+Use `contain:paint` to prevent descendants from painting beyond the panel. The violet block is wider than its parent, so clipping is visible at the boundary. This example shows painting behavior, not a measured performance improvement.
+
+<DemoExample page="contain" section="contain-painting" />
+
 ```html
 <!-- @MARK contain:paint -->
-<div class="contain:paint">
-  Preview
+<div class="h:32x w:48x contain:paint">
+  <div class="h:20x w:3xs">Wide content</div>
 </div>
 ```
 
 ### Reset containment \{#reset-containment\}
-Use `contain:none` when a nested element needs to participate normally in layout or painting again.
+Reset containment on the element that owns it. A child with `contain:none` cannot escape an ancestor’s paint containment. Here the same panel changes from `paint` to `none` at `sm`; widen the preview to reveal the overflow.
+
+<DemoExample page="contain" section="reset-containment" />
+
 ```html
 <!-- @MARK contain:none -->
-<div class="contain:content">
-  <div class="contain:none">Escapes containment</div>
+<div class="h:32x w:48x contain:paint contain:none@sm">
+  <div class="h:20x w:3xs">Wide content</div>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Leave painting unconstrained initially, then apply paint containment at `sm`. The child keeps the same width in both states. Read [conditions](/reference/rules/conditions) for breakpoint syntax.
+
+<DemoExample page="contain" section="apply-conditionally" />
+
 ```html
-<div class="contain:content contain:none@print contain:paint@sm">...</div>
+<div class="h:32x w:48x contain:none contain:paint@sm">
+  <div class="h:20x w:3xs">Wide content</div>
+</div>
 ```

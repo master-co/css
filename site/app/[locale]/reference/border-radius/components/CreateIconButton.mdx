@@ -1,14 +1,13 @@
-import { IconArrowUp } from '@tabler/icons-react';
-
-Use the `round` token to create an icon button.
-<Demo>
-  <button className='btn btn-lg yellow touch-yellow round p:0'>
-    <IconArrowUp className='size:1em' />
-  </button>
-</Demo>
 ```html
-<!-- @MARK round -->
-<button class="round …">
-  <svg>…</svg>
+<!-- Circle · width determines height -->
+<button id="target" type="button" aria-label="Move up"
+  class="inline-flex items-center justify-center
+         w:48px round p:0 b:1px|solid|base
+         bg:surface-base text:blue box-border">
+  <svg width="20" height="20" viewBox="0 0 24 24"
+    fill="none" stroke="currentColor" stroke-width="2"
+    aria-hidden="true" focusable="false">
+    <path d="M12 19V5m-6 6 6-6 6 6" />
+  </svg>
 </button>
 ```

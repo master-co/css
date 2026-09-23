@@ -3,41 +3,190 @@
 
 ## Examples \{#examples\}
 ### Limit what can animate \{#limit-what-can-animate\}
-Use `transition-property:*` to choose the properties that are allowed to animate. Prefer a small property list for predictable state changes.
+Toggle each checkbox to move and fade the same layer. The first transition includes only opacity, so its position changes immediately; the second includes both properties.
+
+<DemoExample page="transition-property" section="limit-what-can-animate" />
+
 ```html
-<!-- @MARK transition-property:opacity -->
-<div class="opacity:.6 transition-duration:150ms transition-property:opacity opacity:1:hover">
-  Online
-</div>
+<!-- Opacity only · position changes immediately -->
+<label class="block w:280px max-w:100% font:sm
+         opacity:.72:has(input:checked)>span>span@screen
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move and fade"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move and fade
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:opacity
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+```html
+<!-- Opacity + transform · both interpolate -->
+<label class="block w:280px max-w:100% font:sm
+         opacity:.72:has(input:checked)>span>span@screen
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move and fade"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move and fade
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:opacity,transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition-property:opacity']}
+    {['transition-property:opacity', 'transition-property:opacity,transform']}
   </Class2CSS>
 </details>
 
-### Pair with duration and easing \{#pair-with-duration-and-easing\}
-`transition-property:*` only chooses the property. Add `transition-duration:*` and `transition-timing-function:*` when the transition needs a specific feel.
-```html
-<!-- @MARK transition-property:transform -->
-<button class="transition-duration:200ms transition-property:transform transition-timing-function:ease-out transform:translateY(-1px):hover">
-  Lift
-</button>
-```
+The 800ms duration makes the difference visible. A property list selects which changed values interpolate; it neither creates the value change nor animates other properties.
 
-### Disable accidental transitions \{#disable-accidental-transitions\}
-Use `transition-property:none` to stop inherited component styles or variant styles from animating a state.
+### Pair with duration and easing \{#pair-with-duration-and-easing\}
+Focus or hover this native button. A 200ms duration and the smooth easing token turn its explicit transform change into a transition.
+
+<DemoExample page="transition-property" section="pair-with-duration-and-easing" />
+
 ```html
-<!-- @MARK transition-property:none -->
-<div class="transition-property:none@print">
-  Static in print
+<!-- Transform · 200ms smooth -->
+<div class="p:sm">
+  <button id="target" type="button"
+    class="inline-grid place-items:center h:64px
+           w:160px p:sm b:1px|solid|blue-60 r:sm
+           font:sm bg:blue-10 fg:blue-80 transform:none
+           transition-property:transform
+           transition-timing-function:smooth
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible
+           transform:none@print
+           transition-duration:0ms@print
+           transition-duration:normal@screen&motion
+           transform:translateY(-8px):is(:hover,:focus-visible)@screen">
+    Lift layer
+  </button>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The initial duration is zero. Choosing a property alone does not add time. For multiple properties, duration, delay and easing lists match by position; shorter lists repeat and extra values are unused.
+
+### Disable accidental transitions \{#disable-accidental-transitions\}
+Compare the same movement with transform selected and with none. Both specimens declare 800ms, but none prevents a transition from being created.
+
+<DemoExample page="transition-property" section="disable-accidental-transitions" />
+
 ```html
-<div class="transition-property:opacity:hover transition-property:none@print transition-property:transform@sm">...</div>
+<!-- Transform selected · interpolated movement -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:transform
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+```html
+<!-- None selected · immediate movement -->
+<label class="block w:280px max-w:100% font:sm
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:none
+             transition-timing-function:linear
+             transition-duration:0ms@print
+             transition-duration:slowest@screen&motion">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+Use none to override a component or variant declaration through the cascade. Transition properties are not inherited, and disabling a transition does not disable the control or prevent the final CSS value from applying.
+
+### Apply conditionally \{#apply-conditionally\}
+Toggle the layer after resizing. Below `sm`, only opacity interpolates; at `sm`, transform joins the property list. The endpoints stay the same.
+
+<DemoExample page="transition-property" section="apply-conditionally" />
+
+```html
+<!-- Opacity → opacity + transform at sm -->
+<label class="block w:280px max-w:100% font:sm
+         opacity:.72:has(input:checked)>span>span@screen
+         transform:translateX(96px):has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Move and fade"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Move and fade
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition-property:opacity
+             transition-timing-function:linear
+             transition-duration:slowest@screen&motion
+             transition-property:none@print
+             transition-property:opacity,transform@screen&sm">
+      Layer 01
+    </span>
+  </span>
+</label>
+```
+
+This is a native property-list change inside the resized viewport. Reduced motion removes the duration, and print selects none.

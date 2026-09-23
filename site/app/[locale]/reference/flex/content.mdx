@@ -3,56 +3,81 @@
 
 ## Examples \{#examples\}
 ### Let an item fill remaining space \{#let-an-item-fill-remaining-space\}
-Use `flex:1` on a flex item that should grow and shrink to take the available space.
+`flex:1` lets an item take the space left after fixed siblings and gaps. In this row, the sidebar keeps its 96px width and the main area expands. `min-w:0` lets the main area shrink below its content’s automatic minimum width.
+
+<DemoExample page="flex" section="let-an-item-fill-remaining-space" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK flex:1 -->
-<div class="flex gap:md">
-  <aside class="flex:0 w:24x">...</aside>
-  <main class="flex:1 min-w:0">...</main>
+<div id="layout" class="flex gap:md">
+  <div id="peer" class="flex:none size:24x p:sm">Sidebar</div>
+  <div id="target" class="flex:1 h:24x min-w:0 p:sm">Flexible content</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'w:24x', 'flex:0', 'flex:1', 'min-w:0']}
+    {['flex', 'flex:none', 'flex:1', 'min-w:0']}
   </Class2CSS>
 </details>
 
 ### Prevent an item from flexing \{#prevent-an-item-from-flexing\}
-Use `flex:0` for icons, fixed media, and side controls that should keep their measured size while siblings flex around them.
+Use `flex:none` to prevent both growth and shrinkage while keeping the item’s own width or height. The initials below keep a 48px square while the profile text takes the remaining space.
+
+<DemoExample page="flex" section="prevent-an-item-from-flexing" />
+
 ```html
-<!-- @MARK flex:0 --><!-- @MARK size:10x -->
-<div class="flex items-center gap:sm">
-  <img class="flex:0 size:10x" src="..." alt="" />
-  <span class="min-w:0">Profile details</span>
+<div id="layout" class="flex items-center gap:md">
+  <span id="target" class="grid flex:none place-items:center size:12x" aria-hidden="true">AL</span>
+  <div id="peer" class="flex:1 min-w:0 p:sm">Alex Lee<br>Product designer</div>
 </div>
 ```
 
+(i) `flex:0` is different: browsers expand it to `0 1 0%`, so it can shrink and does not retain a width as its basis. `flex:none` expands to `0 0 auto`.
+
 ### Set grow, shrink, and basis together \{#set-grow-shrink-and-basis-together\}
-The `flex` property is shorthand for `flex-grow`, `flex-shrink`, and `flex-basis`. Use pipe separators when you need to pass multiple CSS values.
+The shorthand sets `flex-grow`, `flex-shrink`, and `flex-basis` in that order. Pipe separators pass multiple values. Here `flex:0|0|18x` gives the sidebar a 72px basis with no growth or shrinkage.
+
+<DemoExample page="flex" section="set-grow-shrink-and-basis-together" />
+
 ```html
-<!-- @MARK flex:0|0|18x -->
-<aside class="flex:0|0|18x">
-  ...
-</aside>
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex:0|0|18x h:24x p:sm">Sidebar</div>
+  <div id="peer" class="flex:1 h:24x min-w:0 p:sm">Main content</div>
+</div>
 ```
 
-Reach for [flex-grow](/reference/flex-grow), [flex-shrink](/reference/flex-shrink), or [flex-basis](/reference/flex-basis) when only one part of the shorthand should change.
+Use [flex-grow](/reference/flex-grow), [flex-shrink](/reference/flex-shrink), or [flex-basis](/reference/flex-basis) when only one component should change.
 
 ### Remember the parent display \{#remember-the-parent-display\}
-`flex:*` affects a flex item. The parent still needs `flex`, `inline-flex`, or another layout mode that makes the child participate in flex sizing.
+The shorthand affects a child only when it is a flex item. Compare these identical children: a block parent stacks them at their own widths; adding `flex` puts them in a row and lets `flex:1` absorb the available space.
+
+<DemoExample page="flex" section="remember-the-parent-display" />
+
 ```html
-<!-- @MARK flex -->
-<section class="flex">
-  <div class="flex:1">...</div>
-</section>
+<div id="layout" class="block">
+  <div id="target" class="flex:1 size:24x min-w:0 p:sm">Target</div>
+  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+</div>
+```
+
+```html
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex:1 size:24x min-w:0 p:sm">Target</div>
+  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change flex behavior at a real viewport width. The blue item keeps a 96px width by default, then grows to fill the row from `sm`. Resize the preview to cross the breakpoint.
+
+<DemoExample page="flex" section="apply-conditionally" />
+
 ```html
-<div class="flex:0 flex:0@print flex:1@sm">...</div>
+<div id="layout" class="flex gap:md">
+  <div id="target" class="flex:none size:24x min-w:0 p:sm flex:1@sm">Target</div>
+  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+</div>
 ```
 
-For text-heavy flex children, pair flexible sizing with `min-w:0` so long content can shrink.
+A long unbroken value may still need wrapping or truncation after `min-w:0` allows the box to shrink.

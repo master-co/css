@@ -3,29 +3,51 @@
 
 ## Basic usage \{#basic-usage\}
 ### Define explicit columns \{#define-explicit-columns\}
-Use `grid-template-columns` to define the track list for grid columns.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-template-columns:96px|1fr|72px gap:xs">
-      <div className="overflow:hidden min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">96px</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">1fr</div>
-      <div className="overflow:hidden min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">72px</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-template-columns` defines the explicit column track list. This example reserves 64px and 48px for the outer tracks; `1fr` receives the remaining 136px after the two 16px gaps in a 280px container.
+
+<DemoExample page="grid-template-columns" section="define-explicit-columns" />
+
 ```html
-<!-- @MARK grid-template-columns:96px|1fr|72px -->
-<div class="grid grid-template-columns:96px|1fr|72px">…</div>
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:64px|1fr|48px gap:md w:70x max-w:full">
+  <div id="peer" class="p:sm">A</div>
+  <div id="target" class="p:sm">1fr</div>
+  <div id="item-3" class="p:sm">C</div>
+</div>
 ```
 
-### Use minmax \{#use-minmax\}
+The track list alone does not enable Grid; include `grid` on the parent. Additional rows reuse these columns. `fr` divides remaining space after fixed tracks and gaps, subject to track minimums.
+
+### Control a track’s minimum \{#use-minmax\}
+`minmax(0,1fr)` allows a flexible track to shrink below its content’s minimum size. Compare a plain `1fr` first column with a zero-minimum first column, each beside `2fr`. Both blue items contain the same 192px-wide content plus padding.
+
+<DemoExample page="grid-template-columns" section="use-minmax" />
+
 ```html
-<!-- @MARK grid-template-columns:minmax(0,1fr)|2fr -->
-<div class="grid grid-template-columns:minmax(0,1fr)|2fr">…</div>
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:1fr|2fr gap:md w:70x max-w:full">
+  <div id="target" class="overflow:clip p:sm"><span class="block w:48x">192px content</span></div>
+  <div id="peer" class="p:sm">2</div>
+</div>
 ```
+
+```html
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:minmax(0,1fr)|2fr gap:md w:70x max-w:full">
+  <div id="target" class="overflow:clip p:sm"><span class="block w:48x">192px content</span></div>
+  <div id="peer" class="p:sm">2</div>
+</div>
+```
+
+With an automatic minimum, the first track reserves room for the content. With a zero minimum, the available 264px divides into 88px and 176px tracks. The content itself stays 192px wide; `overflow:clip` makes its excess visibly stop at the blue cell. Track sizing and content overflow are separate choices. The non-scrollable clip value does not by itself remove the automatic track minimum.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. Start with two equal fractional tracks. From `sm`, reserve 80px for the first column and let the second fill the remainder. The same four items continue into the next row.
+
+<DemoExample page="grid-template-columns" section="apply-conditionally" />
+
 ```html
-<div class="grid-template-columns:96px|1fr|72px:hover grid-template-columns:96px|1fr|72px@dark grid-template-columns:96px|1fr|72px@print grid-template-columns:96px|1fr|72px@sm">…</div>
+<div id="layout" class="grid grid-auto-rows:48px grid-template-columns:1fr|1fr gap:md w:70x max-w:full grid-template-columns:80px|1fr@sm">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```

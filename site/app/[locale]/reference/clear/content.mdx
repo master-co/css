@@ -5,66 +5,57 @@
 
 ## Basic usage \{#basic-usage\}
 ### Clearing both left and right floats \{#clearing-both-left-and-right-floats\}
-Use `both:clear` to move the element below all floated elements.
-<Demo>
-  <div>
-    <div className="box float:left h:200px w:150px">Left</div>
-    <div className="box float:right h:120px w:150px">Right</div>
-    <div className="box clear:both h:80px w:300px">Clear</div>
-  </div>
-</Demo>
+Use `clear:both` on the block that must start below preceding floats on either side. Clearing applies within the same block formatting context; it does not change the floats themselves.
+
+The preview gives the two floats different heights so you can distinguish clearing one side from clearing both.
+
+<DemoExample page="clear" section="clearing-both-left-and-right-floats" />
+
 ```html
 <div>
-  <div class="float:left">Left</div>
-  <div class="float:right">Right</div>
+  <div class="float:left h:34x w:34%">Left</div>
+  <div class="float:right h:22x w:34%">Right</div>
   <!-- @MARK clear:both -->
   <div class="clear:both">Clear</div>
 </div>
 ```
 
 ### Clearing left floats \{#clearing-left-floats\}
-Use `both:left` to move the element below all left floated elements.
-<Demo>
-  <div>
-    <div className="box float:right h:200px w:150px">Right</div>
-    <div className="box float:right h:200px w:150px">Right</div>
-    <div className="box float:left h:120px w:150px">Left</div>
-    <div className="box clear:left h:120px w:150px">Clear</div>
-  </div>
-</Demo>
+Use `clear:left` when the block must pass the left float. It can still sit beside a taller right float.
+
+<DemoExample page="clear" section="clearing-left-floats" />
+
 ```html
 <div>
-  <div class="float:right">Right</div>
-  <div class="float:right">Right</div>
-  <div class="float:left">Left</div>
+  <div class="float:left h:18x w:34%">Left</div>
+  <div class="float:right h:34x w:34%">Right</div>
   <!-- @MARK clear:left -->
   <div class="clear:left">Clear</div>
 </div>
 ```
 
 ### Clearing right floats \{#clearing-right-floats\}
-Use `both:right` to move the element below all right floated elements.
-<Demo>
-  <div>
-    <div className="box float:left h:200px w:150px">Left</div>
-    <div className="box float:left h:200px w:150px">Left</div>
-    <div className="box float:right h:120px w:150px">Right</div>
-    <div className="box clear:right h:120px w:150px">Clear</div>
-  </div>
-</Demo>
+Use `clear:right` when the block must pass the right float. It can still sit beside a taller left float.
+
+<DemoExample page="clear" section="clearing-right-floats" />
+
 ```html
 <div>
-  <div class="float:left">Left</div>
-  <div class="float:left">Left</div>
-  <div class="float:right">Right</div>
-  <!-- @MARK clear:left -->
-  <div class="clear:left">Clear</div>
+  <div class="float:left h:34x w:34%">Left</div>
+  <div class="float:right h:18x w:34%">Right</div>
+  <!-- @MARK clear:right -->
+  <div class="clear:right">Clear</div>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use `clear:left` initially, then clear both sides at `sm` or in print. The preview also applies `clear:both` on keyboard focus: press Tab to reach the blue block and compare its position. See [selectors](/reference/rules/selectors) and [conditions](/reference/rules/conditions) for the syntax.
+
+<DemoExample page="clear" section="apply-conditionally" />
+
 ```html
-<div class="clear:both:hover clear:both@dark clear:both@print clear:both@sm">…</div>
+<div tabindex="0" class="clear:left clear:both:focus-visible clear:both@print clear:both@sm">
+  Focus with Tab
+</div>
 ```
 

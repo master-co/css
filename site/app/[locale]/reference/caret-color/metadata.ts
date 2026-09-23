@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'caret-color',
-  description: 'Setting the color of the cursor in text input.',
+  description: 'Setting the insertion caret color in editable text.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=caret-color',

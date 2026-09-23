@@ -3,51 +3,63 @@
 
 ## Examples \{#examples\}
 ### Order positioned elements \{#order-positioned-elements\}
-Use `z:*` to control the stacking order of overlapping positioned elements. Values can be positive, negative, or zero.
-<Demo className="py:0">
-  <div className="flex p:xl ml:-2x>div">
-    <div className="box z:9 b:2px fg:white bg:blue-58!">1</div>
-    <div className="box z:3 b:2px fg:white bg:blue-58!">2</div>
-    <div className="box z:1 b:2px fg:white bg:blue-58!">3</div>
-    <div className="box z:-1 b:2px fg:white bg:blue-58!">4</div>
-    <div className="box z:-9 b:2px fg:white bg:blue-58!">5</div>
-  </div>
-</Demo>
+`z:*` controls paint order within a stacking context. These positioned boxes overlap; larger values paint above smaller ones. Flex and grid items can also use z-index without a non-static position.
+
+<DemoExample page="z-index" section="order-positioned-elements" />
+
 ```html
-<div class="z:9">1</div>
-<div class="z:3">2</div>
-<!-- @MARK z:1 -->
-<div class="z:1">3</div>
-<div class="z:-1">4</div>
-<div class="z:-9">5</div>
+<div class="rel isolate h:44x">
+  <div class="abs left top z:30 h:24x w:40x">Layer 30</div>
+  <div class="abs left:lg top:lg z:20 h:24x w:40x">Layer 20</div>
+  <!-- @MARK z:10 -->
+  <div class="abs left:2xl top:2xl z:10 h:24x w:40x">Layer 10</div>
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['z:1']}
+    {['z:10']}
   </Class2CSS>
 </details>
 
 ### Use negative stacking when intentional \{#use-negative-stacking-when-intentional\}
-Negative z-index is useful for decorative layers inside an isolated component.
-```html
-<!-- @MARK z:-1 -->
-<div class="rel isolate">
-  <div class="abs inset:0 z:-1"></div>
-</div>
-```
+A negative z-index can place decoration behind content. `isolate` establishes a local stacking context, keeping this decoration above the parent’s background and behind its ordinary content.
 
-### Prefer local stacking contexts \{#prefer-local-stacking-contexts\}
-Use `isolate` or another stacking-context boundary when z-index values should not compete with the whole page.
+<DemoExample page="z-index" section="use-negative-stacking-when-intentional" />
+
 ```html
-<article class="rel isolate">
-  <div class="z:10">Menu</div>
+<article class="rel isolate h:40x p:md">
+  <!-- @MARK z:-1 -->
+  <div class="abs inset:0 z:-1" aria-hidden="true"></div>
+  <p>Foreground content</p>
 </article>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+### Prefer local stacking contexts \{#prefer-local-stacking-contexts\}
+A child’s z-index competes inside its own stacking context. The blue `z:99` child cannot rise above the violet `z:1` sibling because its entire parent context is at `z:0`.
+
+<DemoExample page="z-index" section="prefer-local-stacking-contexts" />
+
 ```html
-<div class="z:1:hover z:0@print z:10@sm">...</div>
+<div class="rel h:44x">
+  <article class="rel z:0 isolate h:40x w:48x">
+    <div class="abs left:md top:md z:99 h:24x w:40x">Child 99</div>
+  </article>
+  <div class="abs left:2xl top:2xl z:1 h:24x w:40x">Sibling 1</div>
+</div>
+```
+
+### Apply conditionally \{#apply-conditionally\}
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to change the behavior when a state or viewport condition applies. Focus the blue box with Tab to bring it above the violet box. The same paint order applies from `sm` upward.
+
+<DemoExample page="z-index" section="apply-conditionally" />
+
+```html
+<div class="rel isolate h:44x">
+  <div tabindex="0" class="abs left top z:0 h:24x w:40x z:20:focus-visible z:20@sm">
+    Focus with Tab
+  </div>
+  <div class="abs left:2xl top:2xl z:10 h:24x w:40x">Layer 10</div>
+</div>
 ```

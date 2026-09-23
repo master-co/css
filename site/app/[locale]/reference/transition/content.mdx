@@ -3,40 +3,115 @@
 
 ## Examples \{#examples\}
 ### Declare a complete transition \{#declare-a-complete-transition\}
-Use `transition:*` when the property, duration, and easing belong together. Separate the parts with `|` so the class maps to the native `transition` shorthand.
+Hover or keyboard-focus the button to increase its opacity. The shorthand keeps the property, duration and easing together; `|` separates native CSS value parts.
+
+<DemoExample page="transition" section="declare-a-complete-transition" />
+
 ```html
-<!-- @MARK transition:opacity|150ms|ease-out -->
-<button class="opacity:.72 transition:opacity|150ms|ease-out opacity:1:hover">
-  Save changes
-</button>
+<!-- Opacity · 150ms ease-out -->
+<div class="p:sm">
+  <button id="target" type="button"
+    class="inline-grid place-items:center h:64px
+           w:160px p:sm b:1px|solid|blue-60 r:sm
+           font:sm bg:blue-10 fg:blue-80 opacity:.72
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible
+           opacity:1@print transition:none@print
+           transition:opacity|fast|ease-out@screen&motion
+           opacity:1:is(:hover,:focus-visible)@screen">
+    Preview changes
+  </button>
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition:opacity|150ms|ease-out']}
+    {['transition:opacity|fast|ease-out@screen&motion']}
   </Class2CSS>
 </details>
 
+A transition needs a changed value. This button returns to its resting opacity when hover and focus end. The first time in a shorthand is duration; a second time is delay. Duration and easing tokens come from the [motion scale](/guide/motion).
+
 ### Animate transforms explicitly \{#animate-transforms-explicitly\}
-Keep the transitioned property narrow. A transform transition is cheaper to reason about than `transition:all` because layout, color, and shadow changes will not animate by accident.
+Focus or hover the real link to lift it by 8px. Only transform interpolates, while the link retains its native destination and keyboard behavior.
+
+<DemoExample page="transition" section="animate-transforms-explicitly" />
+
 ```html
-<!-- @MARK transition:transform|200ms|ease-in-out --><!-- @MARK transform:translateY(-2px):hover -->
-<a class="inline-block transition:transform|200ms|ease-in-out transform:translateY(-2px):hover">
-  View report
-</a>
+<!-- Transform · named link with a real destination -->
+<div class="p:sm">
+  <a id="target" href="#report"
+    class="inline-grid place-items:center h:64px
+           w:160px p:sm b:1px|solid|blue-60 r:sm
+           font:sm bg:blue-10 fg:blue-80 transform:none
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible
+           transform:none@print transition:none@print
+           transition:transform|normal|smooth@screen&motion
+           transform:translateY(-8px):is(:hover,:focus-visible)@screen">
+    View report
+  </a>
+</div>
+<p id="report" tabindex="-1" class="mt:md font:sm">Report destination</p>
 ```
+
+Naming the property prevents unrelated color, border or size changes from joining the transition. Activate the link to reach the in-frame report destination; its movement does not change that action.
 
 ### Split longhands when states differ \{#split-longhands-when-states-differ\}
-Use the longhand utilities when one part changes independently, such as disabling the duration for print while keeping the same property and easing.
+The longhands below keep opacity and ease-out fixed while enabling a 150ms duration only when motion is allowed. Print removes the duration.
+
+<DemoExample page="transition" section="split-longhands-when-states-differ" />
+
 ```html
-<button class="transition-duration:150ms transition-property:opacity transition-timing-function:ease-out transition-duration:0ms@print">
-  Continue
-</button>
+<!-- Independent duration · hover or focus -->
+<div class="p:sm">
+  <button id="target" type="button"
+    class="inline-grid place-items:center h:64px
+           w:160px p:sm b:1px|solid|blue-60 r:sm
+           font:sm bg:blue-10 fg:blue-80 opacity:.72
+           transition-property:opacity
+           transition-timing-function:ease-out
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible
+           opacity:1@print
+           transition-duration:0ms@print
+           transition-duration:fast@screen&motion
+           opacity:1:is(:hover,:focus-visible)@screen">
+    Preview emphasis
+  </button>
+</div>
 ```
 
+Transitions are not inherited. Put the longhands on the element that changes. A later transition shorthand can reset duration, easing and delay, so use a focused longhand when only one part should change.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use the native checkbox to change opacity. Below `sm` the change is immediate; at `sm` the same change takes 150ms when motion is allowed.
+
+<DemoExample page="transition" section="apply-conditionally" />
+
 ```html
-<div class="transition:opacity|150ms|ease-out:hover transition:opacity|150ms|ease-out@dark transition:none@print transition:opacity|150ms|ease-out@sm">...</div>
+<!-- Immediate → eased at sm -->
+<label class="block w:280px max-w:100% font:sm
+         opacity:.72:has(input:checked)>span>span@screen">
+  <input type="checkbox" aria-label="Fade layer"
+    class="mr:xs accent-color:blue
+           outline:2px|solid|blue:focus-visible
+           outline-offset:3px:focus-visible">
+  Fade layer
+  <span aria-hidden="true"
+    class="block h:64px mt:md p:xs
+           outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:48px w:128px
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 opacity:1 transform:none
+             transition:none transition:none@print
+             transition:opacity|fast|smooth@screen&motion&sm">
+      Layer 01
+    </span>
+  </span>
+</label>
 ```
+
+The viewport control changes a real iframe width. Print and reduced motion keep the state change immediate; the checkbox remains keyboard operable in either case.

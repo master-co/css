@@ -2,66 +2,133 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Radius curves the border and background without changing the box dimensions. Compare the same 240 × 96 panel with square corners and a preset radius.
+
+<DemoExample page="border-radius" section="basic-usage" />
 <BasicUsage />
 
 ### Create a pill button \{#create-a-pill-button\}
+`rounded` applies a very large radius, creating a pill on this content-sized button. It does not force a square.
+
+<DemoExample page="border-radius" section="create-a-pill-button" />
 <CreatePillButton />
 
 ### Create an icon button \{#create-an-icon-button\}
+`round` sets both a 50% border radius and `aspect-ratio:1/1`. Give this icon-only button a width and an accessible name; its height follows the square ratio.
+
+<DemoExample page="border-radius" section="create-an-icon-button" />
 <CreateIconButton />
 
 ### Use a radius token \{#use-a-radius-token\}
-Use `r:*` to apply a border radius token or size directly.
+`r:2xl` rounds the box’s own border and background. It does not, by itself, clip a child image. Compare the same child with and without explicit overflow clipping.
+
+<DemoExample page="border-radius" section="use-a-radius-token" />
+
 ```html
-<!-- @MARK r:md -->
-<div class="r:md">
-  Rounded panel
+<!-- Radius only · child corners stay square -->
+<div id="target"
+  class="w:240px max-w:100% r:2xl bg:surface-muted
+         box-border">
+  <img src="/demo/landscape.svg"
+    alt="Blue and violet mountains"
+    width="320" height="200"
+    class="block h:auto w:full" />
+</div>
+```
+
+```html
+<!-- Radius + overflow hidden · child is clipped -->
+<div id="target"
+  class="overflow:hidden w:240px max-w:100% r:2xl
+         bg:surface-muted box-border">
+  <img src="/demo/landscape.svg"
+    alt="Blue and violet mountains"
+    width="320" height="200"
+    class="block h:auto w:full" />
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['r:md']}
+    {['r:2xl']}
   </Class2CSS>
 </details>
 
+Clipping also affects overflowing content and descendant focus indicators. Add it only when that behavior is intended.
+
 ### Round individual corners \{#round-individual-corners\}
-Use CSS corner properties or corner shorthands when only part of the element should be rounded.
+`rtl`, `rtr`, `rbl` and `rbr` address the physical top-left, top-right, bottom-left and bottom-right corners.
+
+<DemoExample page="border-radius" section="round-individual-corners" />
+
 ```html
-<!-- @MARK rtl:md --><!-- @MARK rtr:md -->
-<div class="rtl:md rtr:md">
+<!-- Top corners only -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid|blue
+         rtl:xl rtr:xl font:md bg:surface-muted
+         text:body box-border">
   Rounded top
 </div>
 ```
 
-Use `rtl`, `rtr`, `rbl`, and `rbr` for individual corners.
 ```html
-<!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
-<div class="rbl:sm rtr:md">
-  Rounded corners
+<!-- Opposite corners -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid|blue
+         rbl:xl rtr:xl font:md bg:surface-muted
+         text:body box-border">
+  Diagonal corners
 </div>
 ```
 
+These corner aliases remain physical when writing direction changes.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to increase the radius from `sm` to `xl`. Print restores square corners. The measured outer dimensions stay the same.
+
+<DemoExample page="border-radius" section="apply-conditionally" />
+
 ```html
-<div class="r:md:hover r:0@print r:lg@sm">...</div>
+<!-- Small → large radius at sm -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid|blue
+         r:sm font:md bg:surface-muted text:body
+         box-border r:0@print r:xl@screen&sm">
+  Preview panel
+</div>
 ```
+
+Use [conditional queries](/reference/rules/conditions) to choose the radius without changing the box’s dimensions.
 
 ---
 
 ## Customization \{#customization\}
 ### Use custom border radius \{#use-custom-border-radius\}
-Customize your border radius tokens by defining [theme tokens](/guide/theme).
+Define project radius tokens in `@theme`, then use the same token key in the class. This example adds a named panel radius instead of replacing a preset size.
+
+<DemoExample page="border-radius" section="use-custom-border-radius" />
+
 ```css name=index.css
 @theme {
-  --radius-xs: 0.125rem; /* [!code ++] */
-  --radius-sm: 0.25rem; /* [!code ++] */
+  --radius-panel: 1.125rem;
 }
 ```
-Apply the defined `radius` variables.
+
 ```html
-<div class="r:sm">...</div>
+<!-- Configured panel radius · 18px -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b:2px|solid|blue
+         r:panel font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
+</div>
 ```
+
+The readout reports the browser’s resolved value. Here `1.125rem` becomes 18px at a 16px root size.

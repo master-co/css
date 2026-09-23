@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'shape-image-threshold',
-  description: 'Setting the alpha channel threshold for a CSS shape.',
+  description: 'Setting the alpha threshold used to extract an image-based shape.',
   category: 'Shapes & Masks',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=shape-image-threshold',

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'clear',
-  description: 'Moving an element below floating elements instead of floating to the left or right.',
+  description: 'Move a block below preceding floats on the left, right, or both sides.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=clear',

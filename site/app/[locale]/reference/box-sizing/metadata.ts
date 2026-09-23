@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'box-sizing',
-  description: 'Setting how the total width and height of an element is calculated.',
+  description: 'Choose whether declared dimensions include padding and borders.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=box-sizing',

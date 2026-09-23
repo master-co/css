@@ -1,5 +1,5 @@
 const syntaxes = [
-  'min-vh',
+  'min-vw',
   'min-w:full',
   'min-w:fit',
   'min-w:min',

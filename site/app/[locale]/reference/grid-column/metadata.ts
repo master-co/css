@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'grid-column',
-  description: 'Setting a grid items\'s size and location in a grid layout.',
+  description: 'Place a grid item between column lines or across a number of columns.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=grid-column',

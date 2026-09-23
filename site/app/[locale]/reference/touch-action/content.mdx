@@ -1,43 +1,113 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`touch-action` tells the browser which native pan and zoom gestures may begin on a region. It does not implement a drawing tool, drag handler or carousel. Test gestures with a touch device; mouse dragging is a different input path.
 
 ## Examples \{#examples\}
 ### Disable browser gestures on a custom surface \{#disable-browser-gestures-on-a-custom-surface\}
-Use `touch-action:none` for canvases or drag surfaces that handle their own touch gestures.
+Compare `touch-action:none` with `auto` on identical scrollable regions. A touch swipe can pan the automatic region; `none` prevents browser panning from a gesture that starts on its region.
+
+<DemoExample page="touch-action" section="disable-browser-gestures-on-a-custom-surface" />
+
 ```html
-<!-- @MARK touch-action:none -->
-<canvas class="touch-action:none">
-  Drawing surface
-</canvas>
+<!-- None · native touch panning blocked -->
+<div id="target" role="region" aria-label="Gesture test" tabindex="0"
+
+class="overflow:auto h:160px w:240px max-w:full
+       b:1px|solid|base r:sm touch-action:none">
+  <div
+
+  class="flex flex-col justify-between h:360px
+         w:480px p:md bg:surface-raised">
+    <p class="m:0">Start · swipe vertically or horizontally</p>
+    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+  </div>
+</div>
+```
+
+```html
+<!-- Auto · native touch panning allowed -->
+<div id="target" role="region" aria-label="Gesture test" tabindex="0"
+
+class="overflow:auto h:160px w:240px max-w:full
+       b:1px|solid|base r:sm touch-action:auto">
+  <div
+
+  class="flex flex-col justify-between h:360px
+         w:480px p:md bg:surface-raised">
+    <p class="m:0">Start · swipe vertically or horizontally</p>
+    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+  </div>
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['touch-action:none']}
-  </Class2CSS>
+  <Class2CSS>{['touch-action:none']}</Class2CSS>
 </details>
 
+These are real scroll containers with no custom gesture handler. Both remain scrollable with keyboard input or other scrolling mechanisms. Limit `none` to surfaces that need it, because it also prevents native zoom gestures from starting there.
+
 ### Allow vertical scrolling \{#allow-vertical-scrolling\}
-Use `touch-action:pan-y` for horizontal carousels so the page can still scroll vertically.
+Use `touch-action:pan-y` to allow vertical native panning while excluding horizontal panning from gestures that begin here. The content overflows both axes, so the difference can be tested.
+
+<DemoExample page="touch-action" section="allow-vertical-scrolling" />
+
 ```html
-<!-- @MARK touch-action:pan-y -->
-<div class="overflow-x:auto touch-action:pan-y">
-  Carousel
+<!-- Vertical touch panning only -->
+<div id="target" role="region" aria-label="Gesture test" tabindex="0"
+
+class="overflow:auto h:160px w:240px max-w:full
+       b:1px|solid|base r:sm touch-action:pan-y">
+  <div
+
+  class="flex flex-col justify-between h:360px
+         w:480px p:md bg:surface-raised">
+    <p class="m:0">Start · swipe vertically or horizontally</p>
+    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+  </div>
 </div>
 ```
 
+This restriction does not implement a horizontal carousel. A custom horizontal drag interaction needs its own handler. Add the native `pinch-zoom` value when pinch zoom should remain allowed; keyboard scrolling is unaffected.
+
 ### Optimize tap controls \{#optimize-tap-controls\}
-Use `touch-action:manipulation` on buttons and links when the element only needs tap and click behavior.
+Use `touch-action:manipulation` on a real tap target. This native checkbox toggles its state with touch, pointer or keyboard input.
+
+<DemoExample page="touch-action" section="optimize-tap-controls" />
+
 ```html
-<!-- @MARK touch-action:manipulation -->
-<button class="touch-action:manipulation">
-  Submit
-</button>
+<label id="target"
+
+class="inline-flex items-center gap:sm p:md
+       b:1px|solid|base r:sm
+       touch-action:manipulation">
+  <input type="checkbox"> Show grid
+</label>
 ```
 
+`manipulation` allows panning and pinch zoom while excluding additional gestures such as double-tap zoom. It does not disable scrolling, synthesize a click or guarantee a measurable speed improvement.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize before starting a new gesture. Below `sm`, the region allows automatic gestures; at `sm`, it permits vertical panning and pinch zoom.
+
+<DemoExample page="touch-action" section="apply-conditionally" />
+
 ```html
-<div class="touch-action:none:hover touch-action:auto@print touch-action:pan-y@sm">...</div>
+<!-- Auto → pan-y and pinch zoom at sm -->
+<div id="target" role="region" aria-label="Gesture test" tabindex="0"
+
+class="overflow:auto h:160px w:240px max-w:full
+       b:1px|solid|base r:sm touch-action:auto
+       touch-action:pan-y|pinch-zoom@screen&sm">
+  <div
+
+  class="flex flex-col justify-between h:360px
+         w:480px p:md bg:surface-raised">
+    <p class="m:0">Start · swipe vertically or horizontally</p>
+    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+  </div>
+</div>
 ```
+
+The browser considers the gesture target and relevant ancestors. Changing the property after a gesture has started does not change that gesture’s handling. Restrictions on an outer iframe element do not replace the rules inside its document.

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'counter-increment',
-  description: 'Increasing or decreasing the value of named CSS counters.',
+  description: 'Advance or decrease named CSS counters in document order.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=counter-increment',

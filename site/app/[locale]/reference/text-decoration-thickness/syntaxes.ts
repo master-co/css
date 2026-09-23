@@ -1,5 +1,6 @@
 const syntaxes = [
-  'text-decoration:from-font',
+  'text-decoration-thickness:auto',
+  'text-decoration-thickness:from-font',
   ['text-decoration-thickness:`size`'],
 ]
 

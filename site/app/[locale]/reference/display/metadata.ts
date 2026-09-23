@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'display',
-  description: 'Controlling the element\'s inner and outer display types.',
+  description: 'Choose how an element participates in flow and lays out its children.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=display',

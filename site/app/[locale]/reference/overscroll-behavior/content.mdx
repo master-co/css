@@ -3,11 +3,19 @@
 
 ## Examples \{#examples\}
 ### Contain nested scrolling \{#contain-nested-scrolling\}
-Use `overscroll-behavior:contain` on a scroll area when reaching its edge should not chain scrolling to the page behind it.
+`overscroll-behavior:contain` keeps a gesture from chaining to an ancestor when the inner scroll area reaches its boundary. Send the inner collection to its end, then scroll over it again. Compare the outer position in the two panels.
+
+<DemoExample page="overscroll-behavior" section="contain-nested-scrolling" />
+
 ```html
-<!-- @MARK overscroll-behavior:contain -->
-<div class="overflow:auto overscroll-behavior:contain">
-  Modal content
+<div id="outer-scroll" class="overflow-y:auto h:56x p:sm overscroll-behavior:contain"
+  tabindex="0" aria-label="Outer collection">
+  <!-- @MARK overscroll-behavior:contain -->
+  <div id="inner-scroll" class="overflow-y:auto h:36x overscroll-behavior:contain"
+    tabindex="0" aria-label="Inner collection">
+    <div class="h:xs">Inner collection</div>
+  </div>
+  <div class="h:xs mt:md">Outer collection continues</div>
 </div>
 ```
 
@@ -18,26 +26,54 @@ Use `overscroll-behavior:contain` on a scroll area when reaching its edge should
   </Class2CSS>
 </details>
 
-### Block page bounce on one axis \{#block-page-bounce-on-one-axis\}
-Use axis-specific utilities when only vertical or horizontal scroll chaining should be controlled.
+### Suppress boundary effects on one axis \{#block-page-bounce-on-one-axis\}
+`overscroll-behavior-y:none` blocks vertical chaining and the browser’s local vertical overscroll effect. `contain` still allows local effects. Rubber-band bounce, glow and navigation gestures depend on the browser and device, so compare their behavior on the platform you support.
+
+<DemoExample page="overscroll-behavior" section="block-page-bounce-on-one-axis" />
+
 ```html
-<!-- @MARK overscroll-behavior-y:none -->
-<div class="overflow-y:auto overscroll-behavior-y:none">
-  Sheet
+<div id="outer-scroll" class="overflow-y:auto h:56x p:sm overscroll-behavior:contain"
+  tabindex="0" aria-label="Outer collection">
+  <!-- @MARK overscroll-behavior-y:none -->
+  <div id="inner-scroll" class="overflow-y:auto h:36x overscroll-behavior-y:none"
+    tabindex="0" aria-label="Inner collection">
+    <div class="h:xs">Inner collection</div>
+  </div>
+  <div class="h:xs mt:md">Outer collection continues</div>
 </div>
 ```
 
 ### Keep horizontal gestures local \{#keep-horizontal-gestures-local\}
-Horizontal carousels often need `overscroll-behavior-x:contain` so a sideways gesture stays inside the carousel.
+Use `overscroll-behavior-x:contain` on the inner horizontal scroller. At its right edge, another horizontal gesture stays inside that component instead of advancing the outer track.
+
+<DemoExample page="overscroll-behavior" section="keep-horizontal-gestures-local" />
+
 ```html
-<!-- @MARK overscroll-behavior-x:contain -->
-<div class="overflow-x:auto overscroll-behavior-x:contain">
-  Carousel
+<div id="outer-scroll" class="overflow-x:auto p:sm overscroll-behavior:contain">
+  <div class="flex gap:md w:160x">
+    <!-- @MARK overscroll-behavior-x:contain -->
+    <div id="inner-scroll" class="overflow-x:auto flex-shrink:0 h:36x w:56x overscroll-behavior-x:contain"
+      tabindex="0" aria-label="Inner horizontal collection">
+      <div class="h:full w:md">Inner collection</div>
+    </div>
+    <div class="h:36x w:xs">Outer collection continues</div>
+  </div>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to apply the change only when its condition matches. The inner scroller contains chaining at narrow widths and allows it from `sm`. Resize, send the inner collection to its end, then try another gesture.
+
+<DemoExample page="overscroll-behavior" section="apply-conditionally" />
+
 ```html
-<div class="overscroll-behavior:contain overscroll-behavior:auto@print overscroll-behavior:auto@sm">...</div>
+<div id="outer-scroll" class="overflow-y:auto h:56x p:sm overscroll-behavior:contain"
+  tabindex="0" aria-label="Outer collection">
+  <!-- @MARK overscroll-behavior:contain -->
+  <div id="inner-scroll" class="overflow-y:auto h:36x overscroll-behavior:contain overscroll-behavior:auto@sm"
+    tabindex="0" aria-label="Inner collection">
+    <div class="h:xs">Inner collection</div>
+  </div>
+  <div class="h:xs mt:md">Outer collection continues</div>
+</div>
 ```

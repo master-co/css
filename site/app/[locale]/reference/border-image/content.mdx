@@ -3,34 +3,82 @@
 
 ## Basic usage \{#basic-usage\}
 ### Draw a gradient border image \{#draw-a-gradient-border-image\}
-Use `border-image` to set the source, slice, optional width, outset, and repeat behavior in one declaration. Keep a regular border width and style as a fallback.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="p:10x b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30 r:lg surface:raised">
-      <div className="font-weight:560 font:lg text:neutral">Gradient border image</div>
-      <p className="my:md font:sm text:gray">The image is sliced and painted into the border area.</p>
-    </div>
-  </DemoPanel>
-</Demo>
+The shorthand sets the source, slice, width, outset and repeat behavior. A 12px solid blue border supplies layout width and a visible fallback; the gradient supplies the painted edge.
+
+<DemoExample page="border-image" section="draw-a-gradient-border-image" />
+
 ```html
-<!-- @MARK b:16px|solid|transparent -->
-<!-- @MARK border-image:linear-gradient(45deg,dodgerblue,hotpink)|30 -->
-<div class="b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30">
-  Gradient border image
+<!-- Gradient image · complete shorthand -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image:linear-gradient(135deg,#2563eb,#7c3aed)|1
+         font:md bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['border-image:linear-gradient(135deg,#2563eb,#7c3aed)|1']}
+  </Class2CSS>
+</details>
+
+The `1` is a source slice, while the omitted image width defaults to `1` times the regular border width. Omitted shorthand components reset to their initial values.
 
 ### Include width and repeat \{#include-width-and-repeat\}
-The shorthand can also include border image width after `/` and repeat behavior after `|`.
+A slash introduces the painted width; the following repeat keyword controls the edge tiles. Compare a native width multiplier with an explicit CSS length on the same 12px border.
+
+<DemoExample page="border-image" section="include-width-and-repeat" />
+
 ```html
-<!-- @MARK border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round -->
-<div class="b:16px|solid|transparent border-image:linear-gradient(45deg,dodgerblue,hotpink)|30/16|round">
-  Rounded repeat border image
+<!-- Width 2 · 24px paint -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image:url('/demo/border-grid.svg')|24/2|round
+         font:md bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="border-image:linear-gradient(45deg,dodgerblue,hotpink)|30:hover border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@dark border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@print border-image:linear-gradient(45deg,dodgerblue,hotpink)|30@sm">…</div>
+<!-- Width 16px · explicit paint -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image:url('/demo/border-grid.svg')|24/16px|round
+         font:md bg:surface-base text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
+
+`/2` means twice each regular border width. `/16px` means 16px; `/16` would mean sixteen times the border width. Image paint does not change the measured 250 × 130 layout box.
+
+### Apply conditionally \{#apply-conditionally\}
+At `sm`, a patterned image replaces the regular blue border. Print removes the image and shows that authored fallback again.
+
+<DemoExample page="border-image" section="apply-conditionally" />
+
+```html
+<!-- Fallback → patterned image at sm -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image:none font:md bg:surface-base
+         text:body box-border border-image:none@print
+         border-image:url('/demo/border-grid.svg')|24/1|round@screen&sm">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+The class changes the actual border-image shorthand. All layout dimensions and the regular border remain explicit.

@@ -3,12 +3,18 @@
 
 ## Examples \{#examples\}
 ### Clamp long summaries \{#clamp-long-summaries\}
-Use `line-clamp:*` to limit text to a fixed number of lines and hide the overflow.
+`line-clamp:3` provides the legacy box display, vertical orientation, three-line limit and overflow handling together. Compare a complete paragraph with its three-line preview.
+
+<DemoExample page="line-clamp" section="clamp-long-summaries" />
+
 ```html
-<!-- @MARK line-clamp:3 -->
-<p class="line-clamp:3">
-  Master CSS turns class strings into deterministic CSS rules, making it practical to keep styling close to markup without giving up cascade control.
-</p>
+<!-- line-clamp:none -->
+<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px line-clamp:none">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+```
+
+```html
+<!-- line-clamp:3 -->
+<p id="target" class="line-clamp:3 w:240px max-w:100% m:0 font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```
 
 <details>
@@ -18,25 +24,42 @@ Use `line-clamp:*` to limit text to a fixed number of lines and hide the overflo
   </Class2CSS>
 </details>
 
+The utility also sets emergency wrapping and an ellipsis. Keep padding outside the clamped text box.
+
 ### Remove a clamp \{#remove-a-clamp\}
-Use `line-clamp:none` when a responsive layout has enough space to show the whole paragraph.
+`line-clamp:none` resets only the line limit. It does not undo the other declarations supplied by `line-clamp:2`, such as box display and hidden overflow.
+
+<DemoExample page="line-clamp" section="remove-a-clamp" />
+
 ```html
-<!-- @MARK line-clamp:none@sm -->
-<p class="line-clamp:2 line-clamp:none@sm">
-  The full description appears once the layout has enough horizontal room.
-</p>
+<!-- Two lines · reveal at sm -->
+<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px line-clamp:none@sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```
+
+Resize the viewport past `sm` to read the complete paragraph at the same line width.
 
 ### Keep important content accessible \{#keep-important-content-accessible\}
-Line clamping is visual truncation. Do not hide required legal, error, or instruction text behind a clamp without another way to read it.
+Provide an explicit way to read a truncated description. This native disclosure works with pointer, touch and keyboard input; a `title` tooltip alone is not a reliable full-text path.
+
+<DemoExample page="line-clamp" section="keep-important-content-accessible" />
+
 ```html
-<p class="line-clamp:2" title="Full project description">
-  Project description
-</p>
+<!-- Preview with a complete reading path -->
+<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<details class="w:240px max-w:100% mt:md">
+  <summary class="font:md cursor:pointer">Read the full project description</summary>
+  <p class="mb:0 mt:sm font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+</details>
 ```
 
+Clamping is visual: the underlying text may remain available to assistive technology. Keep required instructions and errors fully visible.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use two preview lines initially and three at `sm` on screen. Print removes the line limit so the complete description is available.
+
+<DemoExample page="line-clamp" section="apply-conditionally" />
+
 ```html
-<p class="line-clamp:2:hover line-clamp:none@print line-clamp:3@sm">...</p>
+<!-- Responsive preview · full print content -->
+<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px line-clamp:none@print line-clamp:3@screen&sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```

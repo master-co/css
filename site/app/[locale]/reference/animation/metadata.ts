@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'animation',
-  description: 'Applying an animation between styles.',
+  description: 'Applying named CSS keyframes and animation tokens.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=animation',

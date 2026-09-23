@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-margin',
-  description: 'Setting the scroll margin of an element.',
+  description: 'Expand a target’s alignment area for snapping and scroll-into-view navigation.',
   category: 'Spacing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-margin',

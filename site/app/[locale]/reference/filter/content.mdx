@@ -3,10 +3,26 @@
 
 ## Examples \{#examples\}
 ### Apply filter functions \{#apply-filter-functions\}
-Use `filter:*` with functions such as `blur(...)`, `brightness(...)`, and `drop-shadow(...)` to apply CSS filters.
+Filter functions process the element’s painted result in their written order. Compare the complete source with blur followed by brightness, using the same image dimensions.
+
+<DemoExample page="filter" section="apply-filter-functions" />
+
 ```html
-<!-- @MARK filter:blur(4px)|brightness(.8) -->
-<img class="filter:blur(4px)|brightness(.8)" src="..." alt="" />
+<!-- Original · sharp source -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:137.5px w:220px max-w:100% m:md
+         filter:none object-cover" />
+```
+
+```html
+<!-- Blur then dim · one filter list -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:137.5px w:220px max-w:100% m:md
+         filter:blur(4px)|brightness(.8) object-cover" />
 ```
 
 <details>
@@ -16,26 +32,77 @@ Use `filter:*` with functions such as `blur(...)`, `brightness(...)`, and `drop-
   </Class2CSS>
 </details>
 
+The margin leaves room for blur outside the layout box. A filter changes paint, including descendants, without changing the measured box. Replacing the filter value replaces the whole function list.
+
 ### Use drop shadow for transparent images \{#use-drop-shadow-for-transparent-images\}
-Use `filter:drop-shadow(...)` when the shadow should follow the alpha shape of an image or SVG.
+Drop-shadow follows the source’s alpha silhouette. The same transparent SVG makes its difference from a rectangular box shadow visible.
+
+<DemoExample page="filter" section="use-drop-shadow-for-transparent-images" />
+
 ```html
-<!-- @MARK filter:drop-shadow(0|2px|4px|black/.2) -->
-<img class="filter:drop-shadow(0|2px|4px|black/.2)" src="..." alt="" />
+<!-- Drop shadow · follows the shapes -->
+<svg id="target" role="img"
+  aria-label="Circle and diamond"
+  width="160" height="120" viewBox="0 0 160 120"
+  class="block m:md
+         filter:drop-shadow(0|4px|2px|#7c3aed)">
+  <circle cx="48" cy="60" r="28" fill="#2563eb" />
+  <path d="M100 30 140 60 100 90 60 60Z" fill="#7c3aed" />
+</svg>
 ```
 
-Use [box-shadow](/reference/box-shadow) for the element box instead.
+```html
+<!-- Box shadow · follows the viewport box -->
+<svg id="target" role="img"
+  aria-label="Circle and diamond"
+  width="160" height="120" viewBox="0 0 160 120"
+  class="block m:md shadow:0|4px|2px|#7c3aed">
+  <circle cx="48" cy="60" r="28" fill="#2563eb" />
+  <path d="M100 30 140 60 100 90 60 60Z" fill="#7c3aed" />
+</svg>
+```
+
+The empty SVG corners cast no drop-shadow. A box shadow follows the SVG element’s rectangular box, even where its contents are transparent. Both samples reserve the same margin around their paint.
 
 ### Reset filters \{#reset-filters\}
-Use `filter:none` to remove filters at a breakpoint or state.
+Use `filter:none` to remove the entire chain. Open print preview to restore this filtered image without changing its dimensions.
+
+<DemoExample page="filter" section="reset-filters" />
+
 ```html
-<!-- @MARK filter:none -->
-<img class="filter:none@print" src="..." alt="" />
+<!-- Filtered on screen · original in print -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:137.5px w:220px max-w:100% m:md
+         filter:blur(4px)|brightness(.8) object-cover
+         filter:none@print" />
 ```
+
+The print rule resets blur and brightness together. To keep one effect, provide the desired complete filter list instead of none.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the native button to restore its colors. The filter includes the artwork and label; print always uses the unfiltered result.
+
+<DemoExample page="filter" section="apply-conditionally" />
+
 ```html
-<div class="filter:none filter:blur(4px):hover filter:none@print">...</div>
+<!-- Grayscale → color on hover or focus -->
+<button id="target" type="button"
+  class="block p:0 b:1px|solid|base r:sm
+         bg:surface-base text:body
+         filter:grayscale(1) filter:none@print
+         filter:none:hover@screen
+         filter:none:focus-visible@screen">
+  <img src="/demo/landscape.svg"
+  width="320" height="200"
+  alt=""
+  class="block h:137.5px w:220px max-w:100%
+         object-cover" />
+  <span class="block p:sm font:md">
+    Preview artwork
+  </span>
+</button>
 ```
 
-Filters can be expensive on large areas; use them where the visual benefit is clear.
+The button keeps the accessible name “Preview artwork”; the image is decorative within it. The native focus ring remains visible. Evaluate large filtered areas in the actual interface rather than assuming a performance gain.

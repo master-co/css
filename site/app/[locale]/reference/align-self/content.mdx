@@ -2,13 +2,15 @@
 <Overview/>
 
 ## Examples \{#examples\}
-### Override cross-axis alignment for one item \{#override-cross-axis-alignment-for-one-item\}
-Use `self-*` utilities when a single flex or grid item needs different cross-axis alignment than its siblings.
+### Override alignment for one item \{#override-cross-axis-alignment-for-one-item\}
+Use `self-center` to override the parent’s `items-start` alignment for just the blue item. In this 144px row, the 64px item centers vertically while its 48px sibling remains at the top.
+
+<DemoExample page="align-self" section="override-cross-axis-alignment-for-one-item" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK items-start --><!-- @MARK self-center -->
-<div class="flex items-start gap:md">
-  <img class="self-center size:10x" src="..." alt="" />
-  <p class="m:0">Text that controls the row height.</p>
+<div id="layout" class="flex items-start gap:md h:36x">
+  <div id="target" class="self-center h:16x w:24x p:sm">Self center</div>
+  <div id="peer" class="h:12x w:24x p:sm">Parent start</div>
 </div>
 ```
 
@@ -19,19 +21,31 @@ Use `self-*` utilities when a single flex or grid item needs different cross-axi
   </Class2CSS>
 </details>
 
+For a flex item, `align-self` acts on the cross axis. For a grid item, it acts along the block axis inside that item’s grid area.
+
 ### Stretch a single item \{#stretch-a-single-item\}
-Use `self-stretch` when one child should fill the cross size even if the group alignment is different.
+`self-stretch` fills the line’s cross size when that item’s own cross size is automatic. The blue item stretches to 96px while the parent keeps its other items centered.
+
+<DemoExample page="align-self" section="stretch-a-single-item" />
+
 ```html
-<!-- @MARK self-stretch -->
-<button class="self-stretch">...</button>
+<div id="layout" class="flex items-center gap:md">
+  <div id="target" class="self-stretch w:24x p:sm">Auto height</div>
+  <div id="peer" class="size:24x p:sm">96px height</div>
+  <div id="item-3" class="h:12x w:16x p:sm">48px</div>
+</div>
 ```
 
-Use [align-items](/reference/align-items) when all items should share the same alignment.
+An explicit height prevents stretching in this row. Use [align-items](/reference/align-items) when every item should follow the same default.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="self-auto self-auto@print self-center@sm">...</div>
-```
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. `self-auto` follows the parent’s `items-end` value. From `sm`, `self-center` overrides that default for the blue item; its sibling stays at the bottom.
 
-The effect depends on the parent layout mode and axis.
+<DemoExample page="align-self" section="apply-conditionally" />
+
+```html
+<div id="layout" class="flex items-end gap:md h:36x">
+  <div id="target" class="self-auto h:16x w:24x p:sm self-center@sm">Target</div>
+  <div id="peer" class="h:12x w:24x p:sm">Parent end</div>
+</div>
+```

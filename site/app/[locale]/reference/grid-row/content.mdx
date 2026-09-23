@@ -3,32 +3,56 @@
 
 ## Basic usage \{#basic-usage\}
 ### Place an item by rows \{#place-an-item-by-rows\}
-Use `grid-row` to place an item between row grid lines.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-cols:2 grid-template-rows:48px|48px|48px gap:xs">
-      <div className="grid-row:1/3 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-        <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">grid-row:1/3</div>
-        <div className="font-weight:560 font:sm text:neutral">Item</div>
-      </div>
-      <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">A</div>
-      <div className="min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">B</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-row:1/3` places the blue item between row lines 1 and 3, covering the first two 48px rows and their 16px gap. Compare `1/-1`, which covers all three explicit rows.
+
+<DemoExample page="grid-row" section="place-an-item-by-rows" />
+
 ```html
-<!-- @MARK grid-row:1/3 -->
-<div class="grid-row:1/3">Item</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-row:1/3 p:sm">1 → 3</div>
+  <div id="peer" class="grid-col:2 p:sm">02</div>
+  <div id="item-3" class="grid-col:2 p:sm">03</div>
+  <div id="item-4" class="grid-col:2 p:sm">04</div>
+</div>
 ```
+
+```html
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-row:1/-1 p:sm">1 → −1</div>
+  <div id="peer" class="grid-col:2 p:sm">02</div>
+  <div id="item-3" class="grid-col:2 p:sm">03</div>
+  <div id="item-4" class="grid-col:2 p:sm">04</div>
+</div>
+```
+
+Row line numbers follow the block direction. Negative indices count from the end of the explicit rows, not any additional implicit rows. Use `grid-row-start:1` and `grid-row-end:3` when setting each edge separately.
 
 ### Span rows \{#span-rows\}
+`grid-row-span:2` spans two rows while leaving placement automatic. The blue item takes the first available pair of cells in one column; the next items fill the unoccupied cells. A span includes any gap between its tracks.
+
+<DemoExample page="grid-row" section="span-rows" />
+
 ```html
-<!-- @MARK grid-row-span:2 -->
-<div class="grid-row-span:2">Spans two rows</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-row-span:2 p:sm">2 rows</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
 ```
 
+A span sets the number of tracks, not a fixed height. Use explicit row lines when the item must begin at a particular boundary.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The blue item starts in one row. From `sm`, it spans all three explicit rows. The other items stay in the second column.
+
+<DemoExample page="grid-row" section="apply-conditionally" />
+
 ```html
-<div class="grid-row:1/3:hover grid-row:1/3@dark grid-row:1/3@print grid-row:1/3@sm">…</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-row:auto p:sm grid-row:1/-1@sm">Target</div>
+  <div id="peer" class="grid-col:2 p:sm">02</div>
+  <div id="item-3" class="grid-col:2 p:sm">03</div>
+  <div id="item-4" class="grid-col:2 p:sm">04</div>
+</div>
 ```

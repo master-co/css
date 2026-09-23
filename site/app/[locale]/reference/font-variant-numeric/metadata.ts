@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'font-variant-numeric',
-  description: 'Controlling the usage of alternate glyphs for numbers, fractions, and ordinal markers.',
+  description: 'Choose numeric glyph variants supported by the current font.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=font-variant-numeric',

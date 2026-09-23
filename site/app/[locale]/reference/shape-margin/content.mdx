@@ -1,38 +1,193 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document shape-margin values */}
 
 ## Examples \{#examples\}
 ### Add space around a shape \{#add-space-around-a-shape\}
-Use `shape-margin:*` with floated shapes so inline content does not sit directly on the shape boundary.
+Shape-margin expands the shape’s wrap boundary without resizing its paint. Both circles have a 40px radius inside a 120 × 120 float; compare no shape margin with the 16px `md` token.
+
+<DemoExample page="shape-margin" section="add-space-around-a-shape" />
+
 ```html
-<!-- @MARK shape-margin:1rem -->
-<img class="float:left shape-margin:1rem shape-outside:circle(40px)" src="/images/avatar.jpg" alt="Avatar">
+<!-- No shape margin · text near the circle -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:0
+           shape-outside:circle(40px)|border-box">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+```html
+<!-- Margin md · expanded wrap boundary -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:md
+           shape-outside:circle(40px)|border-box">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shape-margin:1rem']}
+    {['shape-margin:md']}
   </Class2CSS>
 </details>
 
-### Increase margin for large media \{#increase-margin-for-large-media\}
-Use a larger shape margin when the floated media is visually heavy or the text column is narrow.
+The SVG and its normal 32px right/bottom margins stay unchanged. The border-box reference keeps the circle centered in the SVG. Shape-margin adds distance around that circle rather than ordinary spacing around the rectangular element.
+
+### Reserve room for a larger shape margin \{#increase-margin-for-large-media\}
+Compare 16px and 32px shape margins while preserving the artwork. The larger wrap boundary needs room inside the float’s margin box, so both examples explicitly reserve `mr:xl mb:xl`.
+
+<DemoExample page="shape-margin" section="increase-margin-for-large-media" />
+
 ```html
-<!-- @MARK shape-margin:2rem -->
-<img class="float:left shape-margin:2rem shape-outside:circle(40px)" src="/images/photo.jpg" alt="Photo">
+<!-- Margin md · 16px around the circle -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:md
+           shape-outside:circle(40px)|border-box">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
+
+```html
+<!-- Margin xl · 32px around the circle -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:xl
+           shape-outside:circle(40px)|border-box">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+A shape is clipped to the float’s margin box. Increasing shape-margin alone cannot extend wrapping beyond that box. Keep enough reading width; a large margin in a narrow column can leave very short lines.
 
 ### Pair with shape outside \{#pair-with-shape-outside\}
-`shape-margin:*` only has an effect when the element participates in shape layout, usually with `float:*` and `shape-outside:*`.
+Shape-margin needs a shape on a float. Compare the same 16px value with shape-none and an explicit circle.
+
+<DemoExample page="shape-margin" section="pair-with-shape-outside" />
+
 ```html
-<img class="float:left shape-margin:1rem shape-outside:circle(40px)" src="/images/avatar.jpg" alt="">
+<!-- No shape · ordinary float margin box -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-none shape-margin:md">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<img class="shape-margin:1rem:hover shape-margin:0@print shape-margin:2rem@sm" src="/images/avatar.jpg" alt="">
+<!-- Circle · shape margin changes wrapping -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:md
+           shape-outside:circle(40px)|border-box">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+
+The first example keeps normal rectangular float wrapping. The second expands the circle’s boundary; transparent corners remain available for inline content. Neither example changes the SVG’s painted radius.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to increase the shape margin from `md` to `xl`. Print uses no additional shape margin. The circle and ordinary float margins stay fixed.
+
+<DemoExample page="shape-margin" section="apply-conditionally" />
+
+```html
+<!-- Margin md → xl at sm -->
+<article class="flow-root w:280px max-w:100% font:sm
+         leading:24px text:body">
+  <svg id="target" role="img" aria-label="Blue circle"
+    width="120" height="120" viewBox="0 0 120 120"
+    class="float:left mb:xl mr:xl
+           outline:1px|solid|muted fill:blue-60
+           shape-margin:md
+           shape-outside:circle(40px)|border-box
+           shape-margin:0@print
+           shape-margin:xl@screen&sm">
+    <circle cx="60" cy="60" r="40" />
+  </svg>
+  <p class="m:0">
+    A clear layout leaves room for both artwork and words.
+    Follow the first lines as they pass the blue shape.
+    Their starting positions change with the available space.
+    Below the float, the paragraph returns to its full width.
+    The artwork keeps the same size throughout the comparison.
+  </p>
+</article>
+```
+
+The native viewport query changes actual line wrapping. The labels and live values are outside the float context and cannot become part of its paragraph.

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'max-size',
-  description: 'Style shorthand for setting the max-width and max-height of an element.',
+  description: 'Apply paired or logical maximum dimensions.',
   category: 'Sizing',
   type: 'entity',
   fileURL: import.meta.url

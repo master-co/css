@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'counter-reset',
-  description: 'Creating named CSS counters and initializing them to specific values.',
+  description: 'Create named CSS counters and choose their initial values.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=counter-reset',

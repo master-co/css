@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'background-position',
-  description: 'Setting the initial position for background image.',
+  description: 'Positioning background images within their positioning area.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=background-position',

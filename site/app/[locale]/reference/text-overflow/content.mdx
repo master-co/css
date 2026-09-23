@@ -3,46 +3,57 @@
 
 ## Examples \{#examples\}
 ### Clip overflowing inline text \{#clip-overflowing-inline-text\}
-Use `text-clip` when overflowing inline content should be cut off without an ellipsis.
+`text-clip` selects a clipped edge with no ellipsis. It does not establish clipping: this example also supplies a block box, constrained width, nowrap and hidden overflow.
+
+<DemoExample page="text-overflow" section="clip-overflowing-inline-text" />
+
 ```html
-<!-- @MARK text-clip -->
-<span class="text-clip">Long label</span>
+<!-- Clip marker · complete prerequisites -->
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-clip white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 ### Show an ellipsis \{#show-an-ellipsis\}
-Use `text-ellipsis` with `overflow:hidden`, `white-space:nowrap`, and a constrained width.
+`text-ellipsis` paints an ellipsis when inline content overflows the clipped edge. The full filename remains in the DOM.
+
+<DemoExample page="text-overflow" section="show-an-ellipsis" />
+
 ```html
-<!-- @MARK w:40x --><!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
-<span class="overflow:hidden w:40x text-ellipsis white-space:nowrap">
-  quarterly-roadmap-final-version.pdf
-</span>
+<!-- Ellipsis marker · identical width -->
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['w:40x', 'overflow:hidden', 'white-space:nowrap', 'text-ellipsis']}
+    {['text-ellipsis', 'white-space:nowrap', 'overflow:hidden']}
   </Class2CSS>
 </details>
 
-`text-overflow` only changes the marker at the clipped edge. It does not create clipping by itself.
-
 ### Use in flex rows \{#use-in-flex-rows\}
-In flex or grid children, add `min-w:0` to the shrinking text region so the ellipsis can actually engage.
+When the clipping element is nested inside a flexible wrapper, set `min-w:0` on that wrapper so it can shrink below its content width. Put the ellipsis on the nested block that actually clips the text.
+
+<DemoExample page="text-overflow" section="use-in-flex-rows" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK min-w:0 --><!-- @MARK text-ellipsis -->
-<div class="flex gap:sm">
-  <span class="flex:0">File</span>
-  <span class="overflow:hidden min-w:0 text-ellipsis white-space:nowrap">
-    quarterly-roadmap-final-version.pdf
-  </span>
+<!-- Flexible wrapper · nested clipping -->
+<div class="flex gap:sm w:240px max-w:100%">
+  <span class="flex:none font:sm">File</span>
+  <div id="wrapper" class="flex:1 min-w:0">
+    <span id="target" class="block overflow:hidden font:md leading:24px text-ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
+  </div>
 </div>
 ```
 
+An element with scrollable overflow such as `overflow:hidden` can already have a zero automatic Flex minimum. The wrapper above has visible overflow, so its separate minimum is the constraint being removed.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The preview clips the same single line at the base viewport and adds an ellipsis at `sm`. Print restores wrapping and visible overflow so the filename is not truncated.
+
+<DemoExample page="text-overflow" section="apply-conditionally" />
+
 ```html
-<div class="text-clip text-clip@print text-ellipsis@sm">...</div>
+<!-- Clip · ellipsis · complete print text -->
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-clip white-space:nowrap overflow@print text-clip@print white-space:normal@print text-ellipsis@screen&sm">quarterly-roadmap-final-version.pdf</span>
 ```
 
 Use [line-clamp](/reference/line-clamp) for multi-line truncation.

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'background',
-  description: 'Setting all background style properties at once.',
+  description: 'Setting multiple background properties with one shorthand.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=background',

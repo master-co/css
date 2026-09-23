@@ -3,32 +3,104 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set a gradient source \{#set-a-gradient-source\}
-Use `border-image-source` to choose the image painted into the border. Pair it with [`border-image-slice`](/reference/border-image-slice), plus a visible border width and style.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="p:10x b:16px|solid|transparent r:lg border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink) surface:raised">
-      <div className="font-weight:560 font:lg text:neutral">Gradient source</div>
-      <p className="my:md font:sm text:gray">The source image supplies the pixels for the border.</p>
-    </div>
-  </DemoPanel>
-</Demo>
+A source can be a gradient or an image file. Both panels keep their own slice, width and repeat settings; only the source changes.
+
+<DemoExample page="border-image-source" section="set-a-gradient-source" />
+
 ```html
-<!-- @MARK border-image-source:linear-gradient(135deg,dodgerblue,hotpink) -->
-<!-- @MARK border-image-slice:30 -->
-<div class="b:16px|solid|transparent border-image-slice:30 border-image-source:linear-gradient(135deg,dodgerblue,hotpink)">
-  Gradient source
+<!-- Gradient · continuous color -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
 
-### Use no source \{#use-no-source\}
-When the source is `none`, the normal border style is displayed instead.
 ```html
-<!-- @MARK border-image-source:none -->
-<div class="b:16px|solid|blue-60 border-image-source:none">Fallback border</div>
+<!-- SVG · distinct corners and edges -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The local SVG has a 96 × 96 coordinate grid with 24-unit corner slices. Border images require their other paint prerequisites; choosing a source alone does not define the intended geometry.
+
+### Use no source \{#use-no-source\}
+`none` removes the image paint and reveals the ordinary border. Compare the same geometry before and after removing the source.
+
+<DemoExample page="border-image-source" section="use-no-source" />
+
 ```html
-<div class="border-image-source:linear-gradient(135deg,dodgerblue,hotpink):hover border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@dark border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@print border-image-source:linear-gradient(135deg,dodgerblue,hotpink)@sm">…</div>
+<!-- Image source · patterned border -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
+
+```html
+<!-- No source · regular blue border -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:none
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+The blue fallback is authored as `b:12px|solid|blue-60`. Slice and width values remain declared when the source is absent.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to replace the gradient with the SVG source. Print uses no image and retains the solid border.
+
+<DemoExample page="border-image-source" section="apply-conditionally" />
+
+```html
+<!-- Gradient → SVG at sm -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:linear-gradient(135deg,#2563eb,#7c3aed)
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border
+         border-image-source:none@print
+         border-image-source:url('/demo/border-grid.svg')@screen&sm">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+Changing only the source preserves the slice, image width and repeat declarations.

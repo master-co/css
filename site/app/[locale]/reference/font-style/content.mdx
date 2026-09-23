@@ -2,38 +2,50 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Italicize emphasis \{#italicize-emphasis\}
-Use `italic` for emphasized text when the typeface includes an italic style.
+`italic` requests an italic face. Use semantic markup such as `<em>` when the words carry emphasis; font styling alone does not add that meaning.
+
+<DemoExample page="font-style" section="italicize-emphasis" />
+
 ```html
-<!-- @MARK italic -->
-<em class="italic">Important</em>
+<!-- Normal surrounding text · italic emphasis -->
+<p id="context" class="m:0 font:md leading:md">Keep the <em id="target" class="italic">important detail</em> in view.</p>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['italic']}
-  </Class2CSS>
-</details>
+This preview uses an upright Geist face, so the browser synthesizes the slant. A family with a designed italic face can look different.
 
 ### Use oblique text \{#use-oblique-text\}
-Use `oblique` when the design calls for a slanted style rather than a true italic face.
+`oblique` requests a slanted face. The visible distinction from italic depends on the available font; neither utility changes the words or their semantics.
+
+<DemoExample page="font-style" section="use-oblique-text" />
+
 ```html
-<!-- @MARK oblique -->
-<span class="oblique">Draft</span>
+<!-- font-style:normal -->
+<p id="target" class="m:0 font-style:normal font:xl leading:sm">Design with clarity.</p>
+```
+
+```html
+<!-- oblique -->
+<p id="target" class="m:0 oblique font:xl leading:sm">Design with clarity.</p>
 ```
 
 ### Reset font style \{#reset-font-style\}
-Use `font-style:normal` to cancel inherited italic or oblique styles.
+Use `font-style:normal` on a child to override an inherited slant. The reset changes the child’s appearance; the surrounding text keeps its italic style.
+
+<DemoExample page="font-style" section="reset-font-style" />
+
 ```html
-<!-- @MARK font-style:normal -->
-<span class="italic">
-  <span class="font-style:normal">Not emphasized</span>
-</span>
+<!-- An upright child inside italic text -->
+<p id="context" class="m:0 italic font:xl leading:md">A slanted phrase with <span id="target" class="font-style:normal">an upright detail</span>.</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The button becomes italic on hover or keyboard focus. This makes the actual selector state observable without relying on a breakpoint.
+
+<DemoExample page="font-style" section="apply-conditionally" />
+
 ```html
-<span class="italic:hover font-style:normal@print font-style:normal@sm">...</span>
+<!-- Pointer and keyboard states -->
+<button type="button" id="target" class="font-style:normal font:md italic:hover italic:focus-visible">Focus or hover to compare</button>
 ```

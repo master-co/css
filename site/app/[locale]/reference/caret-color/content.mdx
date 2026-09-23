@@ -1,44 +1,90 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`caret-color` changes the insertion caret in an editable element. It is independent of the mouse pointer, selection highlight and focus outline.
 
 ## Examples \{#examples\}
 ### Set the text caret color \{#set-the-text-caret-color\}
-Use `caret-color:*` to change the insertion caret color in inputs and editable text.
-<InteractingIndicator>Focus on input to see the cursor color</InteractingIndicator>
+Focus either input and edit its value. `caret-color:blue` requests a colored insertion caret while `caret-color:auto` lets the browser choose.
 
-<Demo class="py:0">
-  <input type="text" className="p:0.313rem|0.625rem b:2px|solid|base r:lg outline:none surface:raised caret-color:pink-70 transition:caret-color|.3s b:2px|solid|pink-70:focus" />
-</Demo>
+<DemoExample page="caret-color" section="set-the-text-caret-color" />
+
 ```html
-<!-- @MARK caret-color:pink-70 -->
-<input type="text" class="caret-color:pink-70">
+<!-- Automatic caret -->
+<label class="grid gap:sm w:240px max-w:full">
+  Layer name
+  <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
+    class="w:full caret-color:auto">
+</label>
+<p id="caret-help" class="mb:0 mt:sm font:xs text:muted">Type a name, then move the insertion caret with the arrow keys.</p>
+```
+
+```html
+<!-- Blue caret -->
+<label class="grid gap:sm w:240px max-w:full">
+  Layer name
+  <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
+    class="w:full caret-color:blue">
+</label>
+<p id="caret-help" class="mb:0 mt:sm font:xs text:muted">Type a name, then move the insertion caret with the arrow keys.</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['caret-color:pink-70']}
-  </Class2CSS>
+  <Class2CSS>{['caret-color:blue']}</Class2CSS>
 </details>
 
+Caret blinking and paint are platform behavior. The readout reports the requested computed color; a still screenshot can catch the caret between blinks.
+
 ### Use the current text color \{#use-the-current-text-color\}
-Use `caret-color:current` when the caret should follow the foreground color.
+Use `caret-color:current` to follow the input’s foreground color. The semantic text color adapts to light and dark themes.
+
+<DemoExample page="caret-color" section="use-the-current-text-color" />
+
 ```html
-<!-- @MARK caret-color:current -->
-<input class="fg:blue-60 caret-color:current" value="Editable value">
+<!-- Caret follows text -->
+<label class="grid gap:sm w:240px max-w:full">
+  Layer name
+  <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
+    class="w:full text:blue caret-color:current">
+</label>
+<p id="caret-help" class="mb:0 mt:sm font:xs text:muted">Type a name, then move the insertion caret with the arrow keys.</p>
 ```
 
 ### Hide the caret intentionally \{#hide-the-caret-intentionally\}
-Use `caret-color:transparent` only for custom editing surfaces that draw their own caret.
+`caret-color:transparent` hides the insertion marker while the field remains editable. This example intentionally has no replacement caret, so the loss is visible when you type.
+
+<DemoExample page="caret-color" section="hide-the-caret-intentionally" />
+
 ```html
-<!-- @MARK caret-color:transparent -->
-<div contenteditable="true" class="caret-color:transparent">
-  Custom editor
-</div>
+<!-- Transparent caret -->
+<label class="grid gap:sm w:240px max-w:full">
+  Layer name
+  <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
+    class="w:full caret-color:transparent">
+</label>
+<p id="caret-help" class="mb:0 mt:sm font:xs text:muted">The caret is hidden. This is a behavior demonstration, not a complete custom editor.</p>
 ```
 
+Only hide the native caret when an editing implementation provides a usable replacement. This class does not draw one or disable keyboard input.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use `caret-color:violet:focus` to change the insertion caret when the field receives real focus. The field keeps its blue text and separate focus outline.
+
+<DemoExample page="caret-color" section="apply-conditionally" />
+
 ```html
-<input class="caret-color:blue-60:focus caret-color:current@print caret-color:current@sm">
+<!-- Focus changes only the caret -->
+<label class="grid gap:sm w:240px max-w:full">
+  Layer name
+  <input id="target" type="text" value="Untitled canvas" aria-describedby="caret-help"
+    class="w:full text:blue caret-color:current
+           caret-color:violet:focus">
+</label>
+<p id="caret-help" class="mb:0 mt:sm font:xs text:muted">Type a name, then move the insertion caret with the arrow keys.</p>
+<label class="flex items-center gap:sm mt:md">
+  <input type="checkbox"> Lock layer after editing
+</label>
 ```
+
+Focus the checkbox to leave the field; focus the text input again to restore the violet caret.

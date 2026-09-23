@@ -1,7 +1,5 @@
-import AnimationDirectionBasicDemo from '../../reference/animation-direction/components/BasicDemo';
-
 ## Overview [sr-only] \{#overview\}
-CSS at-rules such as `@media`, `@supports`, `@container`, `@layer`, and `@starting-style` apply CSS only when a condition is true. Master CSS writes those conditions as suffixes on the class that needs them.
+Append an `@` suffix to place a declaration inside a media query, support query, container query, cascade layer, or starting-style rule. Queries control when a rule matches; layers control cascade order, and starting styles supply the initial state of a transition.
 
 ```text name=master css
 hidden@md
@@ -12,7 +10,7 @@ hidden@sidebar(xs)
 hidden@md&<lg
 hidden@!screen
 opacity:0@start
-backdrop-filter:blur(5px)@supports(backdrop-filter(0px))
+backdrop-filter:blur(5px)@supports(backdrop-filter:blur(0px))
 ```
 Read a conditional class from left to right:
 
@@ -22,56 +20,54 @@ declaration<selector?>@condition
 
 ```html
 <!-- @MARK :hover@md -->
-<button class="bg:blue-60:hover@md">Save</button>
+<button type="button" class="bg:blue-60:hover@md">Save</button>
 ```
 
 This applies `bg:blue-60` only when the button matches `:hover` and the `@md` condition is true.
 
 <details>
   <summary>Complete generated rules for these conditions</summary>
-  <Class2CSS>{['hidden@md', 'hidden@print', 'hidden@default', 'hidden@container(xs)', 'hidden@sidebar(xs)', 'hidden@md&<lg', 'hidden@!screen', 'opacity:0@start', 'backdrop-filter:blur(5px)@supports(backdrop-filter(0px))']}</Class2CSS>
+  <Class2CSS>{['hidden@md', 'hidden@print', 'hidden@default', 'hidden@container(xs)', 'hidden@sidebar(xs)', 'hidden@md&<lg', 'hidden@!screen', 'opacity:0@start', 'backdrop-filter:blur(5px)@supports(backdrop-filter:blur(0px))']}</Class2CSS>
 </details>
 Use short tokens for common cases, and use raw condition syntax when a condition is specific to one component. Comparison operators, logical operators, and grouped conditions let you express ranges without writing separate CSS blocks.
 
 The same property can have different values under different conditions.
 ```html
 <!-- @MARK @sm @md -->
-<h2 class="font:lg font:2xl@sm font:3xl@md …">
+<h2 class="font:lg font:2xl@sm font:3xl@md">Example</h2>
 ```
 You can also combine a selector and a query in one class.
 ```html
 <!-- @MARK :hover@sm -->
-<div class="fg:white:hover@sm …">
+<div class="fg:white:hover@sm">Example</div>
 ```
 
----
-
 ## Common condition variants \{#common-condition-variants\}
-Condition variants are named conditions. Some are built in, while breakpoint tokens and mode tokens come from your project manifest.
+Condition variants are named conditions. Some suffixes are built in; breakpoint and mode names are supplied by the active manifest. Layer suffixes select an output layer rather than testing a browser condition.
 
 | Token                         | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
-| `@base`                       | `css @layer base`                                         |
-| `@default`                    | `css @layer defaults`                                     |
-| `@component`                  | `css @layer components`                                   |
-| `@utility`                    | `css @layer utilities`                                    |
-| `@print`                      | `css @media print`                                        |
-| `@screen`                     | `css @media screen`                                       |
-| `@all`                        | `css @media all`                                          |
-| `@speech`                     | `css @media speech`                                       |
-| `@container`                  | `css @container`                                          |
-| `@start`                      | `css @starting-style`                                     |
-| `@starting-style`             | `css @starting-style`                                     |
-| `@motion`                     | `css @media (prefers-reduced-motion: no-preference)`      |
-| `@reduce-motion`              | `css @media (prefers-reduced-motion: reduce)`             |
-| `@landscape`                  | `css @media (orientation: landscape)`                     |
-| `@portrait`                   | `css @media (orientation: portrait)`                      |
+| `@base`                       | `@layer base`                                         |
+| `@default`                    | `@layer defaults`                                     |
+| `@component`                  | `@layer components`                                   |
+| `@utility`                    | `@layer utilities`                                    |
+| `@print`                      | `@media print`                                        |
+| `@screen`                     | `@media screen`                                       |
+| `@all`                        | `@media all`                                          |
+| `@speech`                     | `@media speech`                                       |
+| `@container`                  | `@container`                                          |
+| `@start`                      | `@starting-style`                                     |
+| `@starting-style`             | `@starting-style`                                     |
+| `@motion`                     | `@media (prefers-reduced-motion: no-preference)`      |
+| `@reduce-motion`              | `@media (prefers-reduced-motion: reduce)`             |
+| `@landscape`                  | `@media (orientation: landscape)`                     |
+| `@portrait`                   | `@media (orientation: portrait)`                      |
 
 ### `sm`, `md`, `lg`, and more \{#sm--md--lg--and-more\}
 Use `@sm`, `@md`, `@lg`, and other breakpoint tokens to apply styles based on viewport width. A plain breakpoint token means "at or above this width."
 ```html
 <!-- @MARK @sm -->
-<div class="hidden@sm">
+<div class="hidden@sm">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -86,24 +82,23 @@ Mode names also become condition variants. `@dark` and `@light` are available by
 
 ```html
 <!-- @MARK @dark -->
-<div class="bg:gray-90@dark">
+<div class="bg:gray-90@dark">Example</div>
 ```
 
-The generated CSS depends on [`mode-trigger`](/guide/variables-and-modes#mode-triggers). A mode can become a media query, a class wrapper, or a shadow host wrapper.
+The generated CSS depends on [`mode-trigger`](/reference/rules/modes#mode-triggers). A mode can become a media query, a class wrapper, or a shadow host wrapper.
 
 ### `base`, `default`, `component`, `utility` \{#base--default--component--utility\}
 Use `@base`, `@default`, `@component`, and `@utility` to place generated rules in those cascade layers.
 
-By default, there are four layer shorthands: `@base`, `@default`, `@component`, and `@utility`.
 ```html
 <!-- @MARK @base -->
-<div class="hidden@base">
+<div class="hidden@base">Example</div>
 <!-- @MARK @default -->
-<div class="hidden@default">
+<div class="hidden@default">Example</div>
 <!-- @MARK @component -->
-<div class="hidden@component">
+<div class="hidden@component">Example</div>
 <!-- @MARK @utility -->
-<div class="hidden@utility">
+<div class="hidden@utility">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -119,73 +114,71 @@ See [cascade layers](/guide/cascade-layers) for layer order and override behavio
 Use `@print`, `@screen`, `@all`, or `@speech` for media types. For example, hide an element when printing:
 ```html
 <!-- @MARK @print -->
-<div class="hidden@print">
+<div class="hidden@print">Example</div>
 ```
 
 ### `motion`, `reduce-motion` \{#motion--reduce-motion\}
 Use `@motion` for motion-safe animation and `@reduce-motion` for reduced-motion alternatives.
-<AnimationDirectionBasicDemo className="animation-direction:normal" />
 ```html
 <!-- @MARK @motion -->
-<svg class="animation:rotate|slowest|linear|infinite@motion">...</svg>
+<span class="inline-block animation:rotate|slowest|linear|infinite@motion" aria-hidden="true">↻</span>
+<span>Syncing</span>
 ```
 
-{/* ### `prefers-color-scheme` 🚧 */}
-{/* ### `prefers-contrast` 🚧 */}
+<Class2CSS>{['animation:rotate|slowest|linear|infinite@motion']}</Class2CSS>
+
+The text remains meaningful when reduced motion prevents the decoration from rotating. See the [motion guide](/guide/motion) for working playback examples and reduced-motion alternatives.
+
 ### `orientation` \{#orientation\}
-Use `@landscape` or `@portrait` to apply styles based on device orientation.
+Use `@landscape` or `@portrait` for the viewport's aspect ratio. These queries describe the viewport dimensions, not the physical orientation of the device.
 ```html
 <!-- @MARK @landscape -->
-<div class="hidden@landscape">
+<div class="hidden@landscape">Example</div>
 ```
 
 ### `@starting-style` \{#starting-style\}
 `@starting-style` and its alias `@start` define starting values for transitions when an element first appears.
 
-(click) Try opening the popover target to see the zoom in effect.
-<StartingStyleExample />
+This native popover uses a starting scale when it opens. The transition is restricted to `@motion`; with reduced motion, the content appears without the transition.
 ```html
 <!-- @MARK transform:scale(0)@start -->
-<div id="target" popover="auto" class="transition:transform|slow|smooth transform:scale(0)@start">
-  ...
-  <button popovertarget="target" popovertargetaction="hide">Close</button>
+<div id="target" popover="auto" class="transform:scale(0)@start transition:transform|slow|smooth@motion">
+  <p>Release details</p>
+  <button type="button" popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
-<button popovertarget="target">Open Popover</button>
+<button type="button" popovertarget="target">Open Popover</button>
 ```
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['transition:transform|slow|smooth', 'transform:scale(0)@starting-style']}
+        {['transition:transform|slow|smooth@motion', 'transform:scale(0)@start']}
     </Class2CSS>
 </details>
-
----
 
 ## Arbitrary conditions and queries \{#arbitrary-conditions-and-queries\}
 Use arbitrary conditions when a built-in token would hide too much detail or when the condition is only used once.
 
 | Syntax                        | CSS                                                       |
 |-------------------------------|-----------------------------------------------------------|
-| `@media(<feature>)`           | `css @media (<feature>)`                                  |
-| `@supports(<feature>)`        | `css @supports (<feature>)`                               |
-| `@layer(<name>)`              | `css @layer <name>`                                       |
-| `@container(<size>)`          | `css @container (<size>)`                                 |
-| `@<name>(<size>)`             | `css @container <name> (<size>)`                          |
-
+| `@media(<feature>)`           | `@media (<feature>)`                                  |
+| `@supports(<feature>)`        | `@supports (<feature>)`                               |
+| `@layer(<name>)`              | `@layer <name>`                                       |
+| `@container(<size>)`          | `@container (<size>)`                                 |
+| `@<name>(<size>)`             | `@container <name> (<size>)`                          |
 
 ### `@media(<feature>)` \{#mediafeature\}
 Use `@media()` for arbitrary [CSS media queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_media_queries).
 ```html
 <!-- @MARK @media(pointer:coarse) -->
-<div class="hidden@media(pointer:coarse)">
+<div class="hidden@media(pointer:coarse)">Example</div>
 ```
 Create a [condition variant](/reference/directives/theme#custom-variant) if the same media query appears repeatedly.
 
 ### `@supports(<feature>)` \{#supportsfeature\}
 Use `@supports()` to apply a declaration only when the browser supports a feature.
 ```html
-<!-- @MARK @supports(backdrop-filter(0px)) -->
-<div class="hidden@supports(backdrop-filter(0px))">
+<!-- @MARK @supports(backdrop-filter:blur(0px)) -->
+<div class="hidden@supports(backdrop-filter:blur(0px))">Example</div>
 ```
 Create a [condition variant](/reference/directives/theme#custom-variant) if the same support check appears repeatedly.
 
@@ -193,7 +186,7 @@ Create a [condition variant](/reference/directives/theme#custom-variant) if the 
 Use `@layer()` to put a declaration in a named cascade layer.
 ```html
 <!-- @MARK @layer(modifiers) -->
-<div class="hidden@layer(modifiers)">
+<div class="hidden@layer(modifiers)">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -201,7 +194,7 @@ Use `@layer()` to put a declaration in a named cascade layer.
         {['hidden@layer(modifiers)']}
     </Class2CSS>
 </details>
-Custom layer output is still organized inside the Master CSS layer model.
+The generated `modifiers` layer is nested inside `utilities`. It is a sublayer of the utility layer, not a new top-level peer of `theme`, `base`, or `components`. See [layer precedence](/reference/rules/layers#how-layers-control-the-cascade) before relying on its priority.
 
 ### `@container(<size>)` \{#containersize\}
 Use `@container(<size>)` when the nearest container, not the viewport, should control the style.
@@ -222,10 +215,9 @@ Create a [condition variant](/reference/directives/theme#custom-variant) if a lo
 See [container queries](/guide/responsive-design#based-on-container-sizes) for the full container workflow.
 
 ### `@<container>(<size>)` \{#containersize-1\}
-Use `@<container>(<size>)` to target a named container.
+Use `@<container>(<size>)` to target a named container. Set both its name and `inline-size` containment so the query can respond to its width.
 ```html
-<aside class="container:sidebar">
-  ...
+<aside class="container:sidebar/inline-size">
     <!-- @MARK @sidebar(sm) -->
     <div class="hidden@sidebar(sm)">...</div>
 </aside>
@@ -233,12 +225,10 @@ Use `@<container>(<size>)` to target a named container.
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['container:sidebar', 'hidden@sidebar(sm)']}
+        {['container:sidebar/inline-size', 'hidden@sidebar(sm)']}
     </Class2CSS>
 </details>
 When a suffix name is not a breakpoint token, mode token, or custom condition variant, Master CSS treats it as a named container query.
-
----
 
 ## Comparison operators \{#comparison-operators\}
 Comparison operators turn breakpoint and container tokens into ranges.
@@ -257,14 +247,14 @@ Use them when a style should apply below, above, or between theme-defined sizes.
 ### `width`, `height` \{#width--height\}
 You can prefix a comparison with `w` for `width` or `h` for `height`. If no feature is specified, `width` is used.
 
-(i) Use `@<feature?><operator><size>` to specify the feature query.
+Use `@<feature?><operator><size>` to specify the feature query.
 ```html
 <!-- @MARK @sm -->
-<div class="hidden@sm">
+<div class="hidden@sm">Example</div>
 <!-- @MARK @h<sm -->
-<div class="hidden@h<sm">
+<div class="hidden@h<sm">Example</div>
 <!-- @MARK @h>=sm&h<lg -->
-<div class="hidden@h>=sm&h<lg">
+<div class="hidden@h>=sm&h<lg">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -275,21 +265,20 @@ You can prefix a comparison with `w` for `width` or `h` for `height`. If no feat
 
 Numeric sizes can include decimals. Unitless `@w>=600.5` and `@container(600.5)` use `root-size` to convert the value to `rem`; with the default root size of `16`, both use `37.53125rem`. Raw queries such as `@media(width>=37.5rem)` preserve their explicit unit.
 
-(x) Put the feature name before the operator. Feature names after or between operators are not supported yet.
+Put the feature name before the operator. Feature names after or between operators are not supported yet.
 {/* eslint-disable @master/css/no-invalid-classes -- intentional unsupported query examples */}
 ```html
-<div class="hidden@sm<=h">
-<div class="hidden@sm<=h<=lg">
+<div class="hidden@sm<=h">Example</div>
+<div class="hidden@sm<=h<=lg">Example</div>
 ```
 {/* eslint-enable @master/css/no-invalid-classes */}
-
 
 ### `@>=N` — At or above \{#n--at-or-above\}
 Use `@N` or `@>=N` when the target width is greater than or equal to a size token. These are interchangeable for width.
 ```html
-<div class="hidden@sm"> <!-- [!code focus] -->
-<div class="hidden@>=sm"> <!-- [!code focus] -->
-<div class="hidden@h>=sm"> <!-- [!code focus] -->
+<div class="hidden@sm">Example</div> <!-- [!code focus] -->
+<div class="hidden@>=sm">Example</div> <!-- [!code focus] -->
+<div class="hidden@h>=sm">Example</div> <!-- [!code focus] -->
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -302,7 +291,7 @@ Use `@N` or `@>=N` when the target width is greater than or equal to a size toke
 Use `@>N` when the target must be strictly greater than the size token.
 ```html
 <!-- @MARK @>sm -->
-<div class="hidden@>sm">
+<div class="hidden@>sm">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -315,7 +304,7 @@ Use `@>N` when the target must be strictly greater than the size token.
 Use `@<=N` when the target width can be equal to or below the size token.
 ```html
 <!-- @MARK @<=sm -->
-<div class="hidden@<=sm">
+<div class="hidden@<=sm">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -328,8 +317,8 @@ Use `@<=N` when the target width can be equal to or below the size token.
 Use `@<N` for targets smaller than a size token. The shorthand `@!N` behaves the same for this breakpoint form.
 ```html
 <!-- @MARK @<sm -->
-<div class="hidden@<sm">
-<div class="hidden@!sm">
+<div class="hidden@<sm">Example</div>
+<div class="hidden@!sm">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -344,7 +333,7 @@ Use `&` to combine comparisons into one range.
 For example, to apply styles between `sm` (inclusive) and `md` (exclusive), use:
 ```html
 <!-- @MARK @sm&<md -->
-<div class="hidden@sm&<md">
+<div class="hidden@sm&<md">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>
@@ -353,8 +342,6 @@ For example, to apply styles between `sm` (inclusive) and `md` (exclusive), use:
     </Class2CSS>
 </details>
 This is useful for layout adjustments that only make sense inside one range.
-
----
 
 ## Logical operators \{#logical-operators\}
 Logical operators combine conditions inside one suffix.
@@ -370,7 +357,7 @@ Logical operators combine conditions inside one suffix.
 Negates the condition immediately following it.
 ```html
 <!-- @MARK ! -->
-<div class="hidden@!md">
+<div class="hidden@!md">Example</div>
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -384,7 +371,7 @@ For a breakpoint token, `@!md` means "not at or above `md`", which is effectivel
 Use `,` when any listed condition can match.
 ```html
 <!-- @MARK , -->
-<div class="block@<sm,>=lg">
+<div class="block@<sm,>=lg">Example</div>
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -398,7 +385,7 @@ This means: show the element below `sm` or at `lg` and above.
 Use `&` when every condition must match.
 ```html
 <!-- @MARK & -->
-<div class="hidden@sm&<lg">
+<div class="hidden@sm&<lg">Example</div>
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -408,11 +395,11 @@ Use `&` when every condition must match.
 </details>
 This applies only when the target is between `sm` (inclusive) and `lg` (exclusive).
 
-### `only` — Exact match \{#only--exact-match\}
-Use `only` for native media-query `only` semantics.
+### `only` — Media-type guard \{#only--exact-match\}
+Use `only` with a media type for the native media-query keyword. It guards against older user agents that do not understand media queries; it does not make a size comparison exact.
 ```html
 <!-- @MARK only -->
-<div class="hidden@only(print)">
+<div class="hidden@only(print)">Example</div>
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -422,13 +409,11 @@ Use `only` for native media-query `only` semantics.
 </details>
 This generates `@media only print`.
 
----
-
 ## Grouping conditions \{#grouping-conditions\}
 Use parentheses to group conditions before applying a logical operator to the group.
 ```html
 <!-- @MARK !(screen&(any-hover:hover)) -->
-<div class="hidden@!(screen&(any-hover:hover))">
+<div class="hidden@!(screen&(any-hover:hover))">Example</div>
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -439,12 +424,12 @@ Use parentheses to group conditions before applying a logical operator to the gr
 This applies when the target is **not** a screen with any hover capability.
 
 ### Replace whitespace with parentheses \{#replace-whitespace-with-parentheses\}
-Class names cannot contain whitespace, so condition arguments that would normally contain spaces are written with parentheses.
+Whitespace separates HTML class names. Master CSS uses function-shaped suffixes for conditions whose CSS form contains spaces.
 
 For example, `@layer(modifiers)` becomes `@layer modifiers`.
 ```html
 <!-- @MARK (modifiers) -->
-<div class="hidden@layer(modifiers)">
+<div class="hidden@layer(modifiers)">Example</div>
 ```
 <details>
     <summary>Generated CSS</summary>

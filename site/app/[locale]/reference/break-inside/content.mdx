@@ -3,45 +3,42 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set the break inside behavior \{#set-the-break-inside-behavior\}
-Use `break-inside:value` to set how breaks should behave inside a generated box.
-<Demo>
-  <ul className="columns:2 p:0 w:200px_:where(li) m:0!_:where(li:first-child)">
-    <li className="box h:90px">1</li>
-    <li className="box h:70px break-inside:avoid">2</li>
-    <li className="box h:90px">3</li>
-    <li className="box h:40px">4</li>
-  </ul>
-</Demo>
+Use `break-inside:avoid` to keep a card or other block together when content flows across columns or pages. It is an avoidance request: content taller than the available fragment can still need to break.
+
+Both previews use a 200px-tall column container. Compare the blue block with automatic breaks and with `avoid`.
+
+<DemoExample page="break-inside" section="set-the-break-inside-behavior" />
+
 ```html
-<ul class="columns:2">
-  <li class="h:90px">1</li>
+<div class="columns:2 h:50x column-fill:auto">
+  <div class="h:130px">1</div>
   <!-- @MARK break-inside:avoid -->
-  <li class="h:70px break-inside:avoid">2</li>
-  <li class="h:90px">3</li>
-  <li class="h:40px">4</li>
-</ul>
+  <div class="h:90px break-inside:avoid">2</div>
+  <div class="h:60px">3</div>
+  <div class="h:40px">4</div>
+</div>
 ```
-Before setting the `break-inside:avoid`, the item is break within the list. It looks like this:
-<Demo>
-  <ul className="columns:2 p:0 w:200px_:where(li) m:0!_:where(li:first-child)">
-    <li className="box h:90px">1</li>
-    <li className="box h:70px">2</li>
-    <li className="box h:90px">3</li>
-    <li className="box h:40px">4</li>
-  </ul>
-</Demo>
+Without the avoidance rule, the second block can continue into the next column:
 ```html
-<ul class="columns:2">
-  <li class="h:90px">1</li>
-  <li class="h:70px">2</li>
-  <li class="h:90px">3</li>
-  <li class="h:40px">4</li>
-</ul>
+<div class="columns:2 h:50x column-fill:auto">
+  <div class="h:130px">1</div>
+  <div class="h:90px">2</div>
+  <div class="h:60px">3</div>
+  <div class="h:40px">4</div>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keep fragmentation automatic at narrow widths and avoid splitting the block at `sm`. Resize the preview to compare the blue block in the same two-column context. See [conditions](/reference/rules/conditions).
+
+<DemoExample page="break-inside" section="apply-conditionally" />
+
 ```html
-<div class="break-inside:avoid:hover break-inside:avoid@dark break-inside:avoid@print break-inside:avoid@sm">…</div>
+<div class="columns:2 h:50x column-fill:auto">
+  <div class="h:130px">1</div>
+  <div class="h:90px break-inside:auto break-inside:avoid@sm">2</div>
+  <div class="h:60px">3</div>
+  <div class="h:40px">4</div>
+</div>
 ```
 

@@ -1,36 +1,89 @@
 ## Overview [sr-only] \{#overview\}
-<Overview />
+<Overview/>
 
 ## Examples \{#examples\}
+
 ### Set outline color \{#set-outline-color\}
-Use `outline:*` with a color value to set the outline color.
+`outline:<color>` changes only outline color. These buttons declare their style and 3px width separately, so the blue and violet outlines have identical geometry.
+
+<DemoExample page="outline-color" section="set-outline-color" />
+
 ```html
-<!-- @MARK outline:blue-60 -->
-<button class="outline:solid outline:2px outline:blue-60">
-  ...
+<!-- Blue outline · 3px solid -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- Violet outline · same width -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px
+         outline:violet font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
 </button>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:blue-60']}
+    {['outline:blue']}
   </Class2CSS>
 </details>
 
 ### Inherit the text color \{#inherit-the-text-color\}
-Use `outline:current` when the outline should follow `currentColor`.
+`outline:current` follows the element’s own computed foreground. Hover or keyboard-focus the button to change both its label and outline through one text-color rule.
+
+<DemoExample page="outline-color" section="inherit-the-text-color" />
+
 ```html
-<!-- @MARK outline:current -->
-<button class="outline:current fg:blue-60">...</button>
+<!-- Current color · follows this label -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px
+         outline:current font:md bg:surface-base
+         text:blue box-border
+         bg:surface-muted:focus-visible
+         text:violet:hover@screen
+         text:violet:focus-visible@screen">
+  Current color
+</button>
 ```
 
-Use `outline:transparent` only when a transparent outline is needed to reserve contrast-mode behavior or avoid layout-free jumps between states.
+The foreground may be inherited, but `currentColor` does not inherit the parent’s outline. A transparent outline still has a style and width; its visibility under forced colors depends on the user agent, so test the actual accessibility mode.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keyboard focus changes the outline from transparent to blue. Print uses the current text color. All three states preserve the same width, style and layout box.
+
+<DemoExample page="outline-color" section="apply-conditionally" />
+
 ```html
-<div class="outline:transparent outline:blue-60:focus outline:current@print">...</div>
+<!-- Transparent → blue on keyboard focus -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:3px
+         outline:transparent font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible
+         outline:current@print
+         outline:blue:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-The outline also needs a visible width and style.
+An outline needs both a visible style and width. A transparent resting ring is not a visible focus indicator until its color changes.

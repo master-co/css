@@ -3,41 +3,102 @@
 
 ## Examples \{#examples\}
 ### Set text stroke color \{#set-text-stroke-color\}
-Use `text-stroke:*` with a color value to control only the stroke color.
+A color value such as `text-stroke:blue-50` changes only the stroke color. Both specimens supply the same 1px width and solid fill.
+
+<DemoExample page="text-stroke-color" section="set-text-stroke-color" />
+
 ```html
-<!-- @MARK text-stroke:blue-60 -->
-<h2 class="text-stroke:1px text-stroke:blue-60">
-  Stroke color
-</h2>
+<!-- 1px stroke · blue-50 -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+>
+  Outline
+</p>
+```
+
+```html
+<!-- 1px stroke · violet-50 -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:violet-50"
+>
+  Outline
+</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-stroke:blue-60']}
+    {['text-stroke:blue-50']}
   </Class2CSS>
 </details>
 
 ### Use the current color \{#use-the-current-color\}
-Use `text-stroke:current` when the stroke should follow the foreground color.
+`text-stroke:current` follows the foreground color. Transparent fill makes the independent outline easy to inspect; the stroke width remains 1px.
+
+<DemoExample page="text-stroke-color" section="use-the-current-color" />
+
 ```html
-<!-- @MARK text-stroke:current -->
-<h2 class="fg:blue-60 text-stroke:1px text-stroke:current">
-  Current stroke
-</h2>
+<!-- Foreground · blue-50 -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         fg:blue-50 text-fill-color:transparent text-stroke:1px
+         text-stroke:current"
+>
+  Outline
+</p>
+```
+
+```html
+<!-- Foreground · violet-50 -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         fg:violet-50 text-fill-color:transparent text-stroke:1px
+         text-stroke:current"
+>
+  Outline
+</p>
 ```
 
 ### Make the stroke transparent \{#make-the-stroke-transparent\}
-Use `text-stroke:transparent` to hide the stroke without changing width.
+`text-stroke:transparent` hides the edge without resetting its width. Keep the glyph fill visible so the text remains readable.
+
+<DemoExample page="text-stroke-color" section="make-the-stroke-transparent" />
+
 ```html
-<!-- @MARK text-stroke:transparent -->
-<h2 class="text-stroke:1px text-stroke:transparent">
-  No visible stroke
-</h2>
+<!-- 1px width · blue-50 edge -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+>
+  Outline
+</p>
+```
+
+```html
+<!-- 1px width · transparent edge -->
+<p id="target"
+  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+         text-fill-color:current text-stroke:1px text-stroke:transparent"
+>
+  Outline
+</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus to switch the stroke from blue to violet. Print makes only the stroke transparent; its 1px width and the solid glyph fill remain.
+
+<DemoExample page="text-stroke-color" section="apply-conditionally" />
+
 ```html
-<h2 class="text-stroke:blue-60:hover text-stroke:transparent@print text-stroke:current@sm">...</h2>
+<!-- Pointer and keyboard states -->
+<button id="target" type="button"
+  class="font:3xl font:semibold leading:1.5 text-fill-color:current
+         text-stroke:1px text-stroke:blue-50 text-stroke:transparent@print
+         text-stroke:violet-50:hover@screen
+         text-stroke:violet-50:focus-visible@screen"
+>
+  Outline
+</button>
 ```

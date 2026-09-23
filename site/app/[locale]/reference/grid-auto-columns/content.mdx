@@ -3,30 +3,29 @@
 
 ## Basic usage \{#basic-usage\}
 ### Size implicit columns \{#size-implicit-columns\}
-Use `grid-auto-columns` to size columns created outside the explicit grid.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid overflow:auto grid-auto-columns:96px grid-auto-flow:column gap:xs">
-      <div className="min-w:0 p:sm b:1px|solid|blue-20 r:lg text-center bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-        <div className="overflow:hidden font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">96px</div>
-        <div className="font-weight:560 font:sm text:neutral">A</div>
-      </div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">B</div>
-      <div className="min-w:0 p:sm r:lg text-center bg:gray-5 bg:gray-90@dark">C</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-auto-columns` sizes columns outside the explicit track list. This grid defines one 80px column. Column auto-flow places the next two items into new 72px columns; the blue item is in the first implicit column.
+
+<DemoExample page="grid-auto-columns" section="size-implicit-columns" />
+
 ```html
-<div class="grid grid-auto-flow:column">
-  <!-- @MARK grid-auto-columns:96px -->
-  <div class="grid-auto-columns:96px">A</div>
-  <div>B</div>
-  <div>C</div>
+<div id="layout" class="grid grid-auto-columns:72px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap:md w:70x max-w:full">
+  <div id="peer" class="p:sm">80px</div>
+  <div id="target" class="p:sm">72px</div>
+  <div id="item-3" class="p:sm">72px</div>
 </div>
 ```
 
+The 80px explicit column is unchanged. Implicit columns can also arise when an item is placed beyond the explicit grid. Fixed tracks keep their size even if their total width exceeds the container; choose smaller or flexible tracks, or provide a scrollable wrapper when that overflow is intentional.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The explicit column stays 80px. The two implicit columns grow from 56px to 80px at `sm`; only their sizing rule changes.
+
+<DemoExample page="grid-auto-columns" section="apply-conditionally" />
+
 ```html
-<div class="grid-auto-columns:96px:hover grid-auto-columns:96px@dark grid-auto-columns:96px@print grid-auto-columns:96px@sm">…</div>
+<div id="layout" class="grid grid-auto-columns:56px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap:md w:70x max-w:full grid-auto-columns:80px@sm">
+  <div id="peer" class="p:sm">Fixed</div>
+  <div id="target" class="p:sm">01</div>
+  <div id="item-3" class="p:sm">02</div>
+</div>
 ```

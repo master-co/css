@@ -1,5 +1,5 @@
 ## Overview [sr-only] \{#overview\}
-Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before Master CSS has proved whether it is a valid utility, project-defined class, or native class from a pruned stylesheet.
+Static rendering starts by finding latent classes. A latent class is a possible class name found in source text before validation establishes whether it is a utility, project-defined class, or native class from a pruned stylesheet.
 
 ```txt
 source text
@@ -17,15 +17,13 @@ The scanner does not run your app. It reads files as text, collects strings that
 </article>
 ```
 
-The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active manifest. Valid classes generate CSS; invalid candidates are cached and ignored.
+The source contains `card`, `p:md`, `bg:white`, `shadow:md`, `font:lg`, and `font:semibold`. Those candidates are validated against the active manifest. Accepted utility and configured classes can generate CSS. A native class can retain a matching rule from a pruned stylesheet. Invalid candidates produce neither result.
 
 The generated result for `p:md` and `shadow:md` includes their theme dependencies:
 
 <Class2CSS>{['p:md', 'shadow:md']}</Class2CSS>
 
 The same scanning model is used by build integrations and by Node tools that create `MasterCSSScanner` from `@master/css-tooling/scanner/node`.
-
----
 
 ## Source boundaries \{#source-boundaries\}
 Build integrations and CLI flows scan common source-like project files by default. Ordinary app files such as HTML, JavaScript, TypeScript, JSX, TSX, framework files, Markdown, MDX, and PHP should not need a broad `@source` directive or a matching test-file exclusion.
@@ -41,53 +39,49 @@ Use `@source` and `@source not` only when a stylesheet needs an explicit excepti
 
 `@source` adds files that may contain classes. `@source not` removes files from that explicit source set. Multiple source directives are combined as `(source union) - (source not union)`.
 
-For exact stylesheet directive syntax, see [CSS directives](/reference#directives).
+See [source directives](/reference/directives/source) for path syntax and [candidate policy](/reference/directives/candidates) for safelists and blocklists.
 
 In Vite, transformed modules are also fed to the scanner during development. That makes updates fast, but production correctness still depends on class names that exist in scanned source files or are explicitly included.
-
----
 
 ## Candidate scanning \{#candidate-scanning\}
 Scanning is intentionally broad. The scanner looks through markup, JSX, strings, template literals, object maps, and framework files for tokens that could be class names.
 
-```tsx name=src/Button.tsx
+```html name=src/index.html
+<button id="delete-button" type="button" class="px:md r:md">Delete</button>
+```
+
+```js name=src/button.js
 const toneClasses = {
   neutral: 'bg:white text:neutral',
   destructive: 'bg:red-60 fg:white'
 }
 
-export function Button({ destructive }: { destructive?: boolean }) {
-  return (
-    <button className={`btn px:md r:md ${destructive ? toneClasses.destructive : toneClasses.neutral}`}>
-      Delete
-    </button>
-  )
+function setDestructive(destructive) {
+  const tone = destructive ? toneClasses.destructive : toneClasses.neutral
+  document.querySelector('#delete-button').className = `px:md r:md ${tone}`
 }
 ```
 
-The scanner can see all complete class strings in this file:
+The scanner can see these complete class strings across the two files:
 
 ```txt
 bg:white
 text:neutral
 bg:red-60
 fg:white
-btn
 r:md
 px:md
 ```
 
 It will also see unrelated words from source text. That is expected. Candidates only matter after validation.
 
-```tsx name=src/EmptyState.tsx
-export function EmptyState() {
-  return <p className="text:gray">No invoices found.</p>
+```js name=src/empty-state.js
+function showEmptyState() {
+  return '<p class="text:gray">No invoices found.</p>'
 }
 ```
 
 Words such as `function`, `return`, `No`, `invoices`, and `found` may be discovered as candidates, but they do not match valid Master CSS rules or known native classes, so they do not produce output.
-
----
 
 ## Validation \{#validation\}
 After candidate scanning, Master CSS validates each class against the active manifest. A candidate can be accepted in three common ways:
@@ -108,104 +102,99 @@ After candidate scanning, Master CSS validates each class against the active man
 }
 ```
 
-```tsx name=src/Hero.tsx
-export function Hero() {
-  return (
-    <section className="grid gap:xl">
-      <h1 className="hero-title">Master CSS</h1>
-      <a className="btn bg:blue-60 fg:white" href="/docs">Read docs</a>
-    </section>
-  )
-}
+```html name=src/index.html
+<section class="grid gap:xl">
+  <h1 class="hero-title">Master CSS</h1>
+  <a class="btn bg:blue-60 fg:white" href="/guide">Read docs</a>
+</section>
 ```
 
 `hero-title` and `btn` are valid because the project CSS entry defines them. `grid`, `gap:xl`, `bg:blue-60`, and `fg:white` are validated through the utility engine.
 
 Configured classes are still on-demand. Defining `.btn` in the project CSS entry does not emit it by itself; `.btn` must appear in scanned source or be included through `@safelist`.
 
----
-
 ## Complete classes \{#complete-classes\}
 Static rendering works when the complete class string exists in source. It cannot infer class names from fragments, data returned by an API, or values assembled after startup.
 
-(x) Do not build class names from fragments.
+Avoid fragments:
 
-```tsx
+```js
 const className = 'bg:' + (error ? 'red-60' : 'green-60')
 ```
 
 The complete strings `bg:red-60` and `bg:green-60` do not exist in source, so static rendering cannot reliably generate either rule.
 
-(o) Write complete class names.
+Keep each possible class complete:
 
-```tsx
+```js
 const className = error ? 'bg:red-60' : 'bg:green-60'
 ```
 
-For component variants, map dynamic inputs to complete class lists.
+For variants, map a dynamic input to a complete class list.
 
-(x) Avoid utility fragments in props.
+An interpolated color fragment has the same problem:
 
-```tsx
-function Badge({ tone }: { tone: 'red' | 'green' | 'gray' }) {
-  return <span className={`px:xs r:full fg:white bg:${tone}`}>Status</span>
-}
+```js
+const className = `px:xs r:full fg:white bg:${tone}`
 ```
 
-(o) Use a static variant map.
+Keep the supported variants in a static map:
 
-```tsx
+```js
 const toneClasses = {
   destructive: 'bg:red-60 fg:white',
   confirmed: 'bg:green-60 fg:white',
   neutral: 'bg:gray-10 fg:gray-90'
 }
 
-function Badge({ tone }: { tone: keyof typeof toneClasses }) {
-  return <span className={`px:xs r:full ${toneClasses[tone]}`}>Status</span>
-}
+const className = `px:xs r:full ${toneClasses[tone] ?? toneClasses.neutral}`
 ```
 
 This also gives each variant room to choose its own contrast, hover state, disabled treatment, and dark-mode behavior.
 
----
-
 ## Runtime values \{#runtime-values\}
 When the value is dynamic but the declaration shape is stable, keep the class static and pass the value through a CSS variable.
 
-```tsx
-function Headline({ size }: { size: string }) {
-  return (
-    <h1
-      className="font-size:$headline-size leading:1.1"
-      style={{ '--headline-size': size } as React.CSSProperties}
-    >
-      Launch notes
-    </h1>
-  )
+```html
+<h1 id="headline" class="font-size:var(--headline-size) leading:1.1" style="--headline-size: 2rem">
+  Launch notes
+</h1>
+```
+
+```js
+function setHeadlineSize(size) {
+  document.querySelector('#headline').style.setProperty('--headline-size', size)
+}
+
+setHeadlineSize('3rem')
+```
+
+The class `font-size:var(--headline-size)` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which follows native CSS custom property behavior.
+
+Use `var()` for a value supplied only by the DOM. The `$name` shorthand looks up a variable registered in the active manifest; an inline custom property is not a manifest declaration.
+
+Use the same pattern for a data-driven progress value. Keep an accessible numeric value alongside the visual width:
+
+```html
+<div id="progress" role="progressbar" aria-label="Upload progress"
+  aria-valuemin="0" aria-valuemax="100" aria-valuenow="25"
+  class="overflow:hidden h:4x r:full bg:gray-10">
+  <div id="progress-fill" class="h:full w:var(--progress) bg:blue-60 transition:width|fast|smooth@motion"
+    style="--progress: 25%"></div>
+</div>
+```
+
+```js
+function setProgress(value) {
+  const percent = Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : 0
+  document.querySelector('#progress').setAttribute('aria-valuenow', String(percent))
+  document.querySelector('#progress-fill').style.setProperty('--progress', `${percent}%`)
 }
 ```
 
-The class `font-size:$headline-size` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which is normal CSS.
-
-Use the same pattern for data-driven sizes, positions, and progress values.
-
-```tsx
-function Progress({ value }: { value: number }) {
-  return (
-    <div className="overflow:hidden h:4x r:full bg:gray-10">
-      <div
-        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
-        style={{ '--progress': `${value}%` } as React.CSSProperties}
-      />
-    </div>
-  )
-}
-```
+Only the CSS variable and accessible value change. The width class remains static, and `@motion` limits the transition to users without a reduced-motion preference.
 
 If the class name itself only exists after the page is running, use [runtime rendering](/guide/rendering-modes#runtime-rendering) or [progressive rendering](/guide/rendering-modes#progressive-rendering). The browser runtime can observe the DOM and generate rules for classes that appear later.
-
----
 
 ## Included and excluded classes \{#included-and-excluded-classes\}
 Use `@safelist` for bounded classes that do not exist in scanned source. Common cases include CMS enums, database values, server-rendered fragments, or a third-party widget with a known class contract.
@@ -225,9 +214,7 @@ Use `@blocklist` when broad scanning finds tokens that look like valid classes b
 @blocklist 'example-token';
 ```
 
-Keep both lists small. The most reliable scanning path is still complete class strings in source.
-
----
+Keep both lists specific. The most reliable scanning path is still complete class strings in source.
 
 ## Checklist \{#checklist\}
 - Put complete class names in scanned source.

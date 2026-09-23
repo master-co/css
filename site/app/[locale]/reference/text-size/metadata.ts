@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-size',
-  description: 'Style utility for setting optimally proportioned font size, line height and letter spacing all at once.',
+  description: 'Apply font size, line height and letter spacing as one size-dependent treatment.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=font-size',

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'overflow',
-  description: 'Controlling the desired behavior for an element\'s overflow.',
+  description: 'Control clipping and scrolling when content exceeds its container.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=overflow',

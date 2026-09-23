@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'word-spacing',
-  description: 'Setting the spacing between words.',
+  description: 'Adjust the extra spacing between words without changing letter spacing.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=word-spacing',

@@ -2,35 +2,97 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Set border width \{#set-border-width\}
-Use `b:*` with a size value to set `border-width`.
+`b:<size>` changes only border width. Both panels below have the same 240 × 96 border box. A thicker border leaves less room for content and padding inside that fixed outer size.
+
+<DemoExample page="border-width" section="set-border-width" />
+
 ```html
-<!-- @MARK b:1px -->
-<div class="b-solid b:1px">
-  ...
+<!-- 2px border · fixed outer box -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:2px b:blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
+</div>
+```
+
+```html
+<!-- 8px border · same outer box -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:8px b:blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b:1px']}
+    {['b:2px']}
   </Class2CSS>
 </details>
 
+With `box-content`, border widths add outside the declared content dimensions instead. A `none` or `hidden` border style produces zero used width.
+
 ### Set one side or axis \{#set-one-side-or-axis\}
-Use `bt:*`, `br:*`, `bb:*`, and `bl:*` for physical sides. Use `bx:*` and `by:*` for logical axes.
+Physical aliases such as `bt` always address the named edge. `by` changes the block-axis pair, which becomes the left and right edges in vertical writing.
+
+<DemoExample page="border-width" section="set-one-side-or-axis" />
+
 ```html
-<!-- @MARK bt:2px --><!-- @MARK by:1px -->
-<div class="by:1px bt:2px">...</div>
+<!-- Top edge · physical -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:blue bb:0
+         bl:0 br:0 bt:6px font:md bg:surface-muted
+         text:body box-border">
+  Top: 6px
+</div>
 ```
 
-Use [border](/reference/border) when width, style, and color should be declared together.
+```html
+<!-- Block edges · horizontal writing -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:0 b:blue
+         by:6px font:md bg:surface-muted text:body
+         box-border">
+  Top and bottom: 6px
+</div>
+```
+
+```html
+<!-- Block edges · vertical writing -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:0 b:blue
+         by:6px font:md bg:surface-muted text:body
+         box-border writing-mode:vertical-rl">
+  Left and right: 6px
+</div>
+```
+
+`bx` sets inline-axis widths. Keep a visible style and color when adjusting width independently.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to add a 6px border. The explicitly fixed border-box dimensions remain unchanged; the content area becomes smaller. Print returns to zero width.
+
+<DemoExample page="border-width" section="apply-conditionally" />
+
 ```html
-<div class="b:0 b:0@print b:1px@sm">...</div>
+<!-- 0 → 6px at sm · fixed outer geometry -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:0 b:blue
+         font:md bg:surface-muted text:body
+         box-border b:0@print b:6px@screen&sm">
+  Preview panel
+</div>
 ```
 
-Remember that a border is not visible unless its style is not `none`.
+The screen-qualified condition does not override the print reset. Use [border](/reference/border) to declare width, style and color together.

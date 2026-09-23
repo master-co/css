@@ -3,57 +3,87 @@
 
 ## Examples \{#examples\}
 ### Set a custom ratio \{#set-a-custom-ratio\}
-Use `aspect-ratio:<ratio>` to reserve a proportional box before media or content finishes loading.
+`aspect-ratio:4/3` provides a preferred proportion. With a 240px width and automatic height, this image gets a 180px height. The source is rectangular; `object-cover` crops it into the requested box.
+
+<DemoExample page="aspect-ratio" section="set-a-custom-ratio" />
+
 ```html
-<!-- @MARK aspect-ratio:4/3 --><!-- @MARK w:full -->
-<img class="w:full aspect-ratio:4/3 object-cover" src="..." alt="" />
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:full aspect-ratio:4/3 object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['aspect-ratio:4/3', 'w:full']}
-  </Class2CSS>
-</details>
+The ratio helps reserve space before media loads. Keep at least one dimension automatic if the ratio should determine that dimension.
 
 ### Use square and video shortcuts \{#use-square-and-video-shortcuts\}
-Use `square` for `1 / 1` and `video` for a common widescreen media frame.
-```html
-<!-- @MARK square -->
-<div class="square bg:gray-5"></div>
+`square` sets aspect-ratio:1/1; `video` sets 16/9. With the same 160px width and automatic height, the boxes are 160 × 160px and 160 × 90px.
 
-<!-- @MARK video -->
-<iframe class="w:full video" src="..." title="Product walkthrough"></iframe>
+<DemoExample page="aspect-ratio" section="use-square-and-video-shortcuts" />
+
+```html
+<!-- Square · 1:1 -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:40x square object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
+```
+
+```html
+<!-- Widescreen · 16:9 -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:40x video object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
 
 ### Pair with one explicit axis \{#pair-with-one-explicit-axis\}
-Aspect ratio needs at least one axis to be resolved by width, height, or content. The common pattern is a fluid width with an aspect ratio.
+An automatic dimension lets the preferred ratio participate in sizing. Compare a 240px-wide 16:9 box, which is 135px tall, with the same ratio and an explicit 80px height. The two definite dimensions win in the second example.
+
+<DemoExample page="aspect-ratio" section="pair-with-one-explicit-axis" />
+
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:4xl --><!-- @MARK aspect-ratio:16/9 -->
-<figure class="w:full max-w:4xl aspect-ratio:16/9">
-  ...
-</figure>
+<!-- Automatic height · ratio applies -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:auto w:60x video p:sm">16:9</div>
+</div>
 ```
 
-If both width and height are fixed, the browser follows those dimensions and the ratio is only a preferred constraint.
+```html
+<!-- Definite height · 80px -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="h:20x w:60x video p:sm">240 × 80</div>
+</div>
+```
 
 ### Use the video shortcut \{#use-the-video-shortcut\}
-Use `video` when you need the common `16 / 9` media frame.
+`video` describes a 16:9 preferred box; it does not create a player or load media. This figure has a definite fluid width, no default figure margin, and an actual image that fills its 16:9 frame.
+
+<DemoExample page="aspect-ratio" section="use-the-video-shortcut" />
+
 ```html
-<figure class="w:full video">...</figure>
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <figure id="target" class="w:full video m:0">
+    <img id="peer" class="block full object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+  </figure>
+</div>
 ```
 
 ### Choose size for fixed squares \{#choose-size-for-fixed-squares\}
-Use [size](/reference/size) for fixed square UI elements. Use `aspect-ratio:*` when at least one axis should remain fluid.
+For a fixed 40px square control, [size](/reference/size) directly sets both dimensions. A ratio is more useful when one dimension should be derived from the other.
+
+<DemoExample page="aspect-ratio" section="choose-size-for-fixed-squares" />
+
 ```html
-<!-- @MARK size:10x -->
-<button class="size:10x round">...</button>
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:10x round p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="aspect-ratio:1/1 aspect-ratio:16/9@dark aspect-ratio:auto@print aspect-ratio:4/3@sm">...</div>
-```
+Resize past `sm` to change a 240px-wide media box from 1:1 to 4:3. Its automatic height follows the real ratio, changing from 240px to 180px.
 
-Use `object-cover` or `object-contain` on replaced media when the content should adapt inside the reserved ratio.
+<DemoExample page="aspect-ratio" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:full square object-cover aspect-ratio:4/3@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
+```

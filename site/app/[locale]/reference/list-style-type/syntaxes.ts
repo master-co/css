@@ -1,6 +1,6 @@
 const syntaxes = [
-  'list-style:disc',
-  'list-style:decimal',
+  'list-style-type:disc',
+  'list-style-type:decimal',
   ['list-style-type:`type`'],
 ]
 

@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'flex-wrap',
-  description: 'Setting how flex items wrap.',
+  description: 'Control flex line wrapping and cross-axis stacking.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=flex-wrap',

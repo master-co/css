@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'animation-name',
-  description: 'Setting the names of the animation.',
+  description: 'Selecting the keyframes that an animation runs.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=animation-name',

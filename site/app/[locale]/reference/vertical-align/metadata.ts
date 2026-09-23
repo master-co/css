@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'vertical-align',
-  description: 'Setting vertical alignment.',
+  description: 'Align inline content and table-cell content in their native formatting contexts.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=vertical-align',

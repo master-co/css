@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'transition-duration',
-  description: 'Setting the length of time a transition should takes to complete.',
+  description: 'Setting how long a CSS property transition takes.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=transition-duration',

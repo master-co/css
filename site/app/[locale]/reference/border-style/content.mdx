@@ -2,12 +2,20 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Set border style \{#set-border-style\}
-Use `b-solid`, `b-dashed`, and related short style utilities to set `border-style`.
+`b-solid` sets the style independently of width and color. A border needs all three to be visible.
+
+<DemoExample page="border-style" section="set-border-style" />
+
 ```html
-<!-- @MARK b-solid -->
-<div class="b-solid b:1px">
-  ...
+<!-- Solid style · 3px width -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-solid b:3px b:blue
+         font:md bg:surface-muted text:body
+         box-border">
+  Preview panel
 </div>
 ```
 
@@ -19,23 +27,85 @@ Use `b-solid`, `b-dashed`, and related short style utilities to set `border-styl
 </details>
 
 ### Use dashed or dotted borders \{#use-dashed-or-dotted-borders\}
-Use `b-dashed` or `b-dotted` for separators, drop zones, and placeholder states.
+Compare dashed and dotted borders of the same box. Both use a 3px border; the browser distributes the pattern along each edge.
+
+<DemoExample page="border-style" section="use-dashed-or-dotted-borders" />
+
 ```html
-<!-- @MARK b-dashed -->
-<div class="b-dashed b:1px">Upload files</div>
+<!-- Dashed border -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-dashed b:3px
+         b:blue font:md bg:surface-muted text:body
+         box-border">
+  Dashed frame
+</div>
 ```
+
+```html
+<!-- Dotted border -->
+<div id="target"
+  class="flex items-center justify-center h:96px
+         w:240px max-w:100% p:md b-dotted b:3px
+         b:blue font:md bg:surface-muted text:body
+         box-border">
+  Dotted frame
+</div>
+```
+
+Use these patterns to support a visible label. The decorative samples do not imply an active upload or drag target.
 
 ### Remove border style \{#remove-border-style\}
-Use `b-none` when a border rule should no longer render.
+`b-none` and `b-hidden` both produce zero used border width on these ordinary boxes. Compare them with a solid 6px border while the declared content dimensions remain 160 × 48.
+
+<DemoExample page="border-style" section="remove-border-style" />
+
 ```html
-<!-- @MARK b-none -->
-<button class="b-none">...</button>
+<!-- Solid · border adds to content box -->
+<div id="target"
+  class="h:48px w:160px p:md b-solid b:6px b:blue
+         bg:surface-muted text:body box-content">
+  Content box
+</div>
 ```
+
+```html
+<!-- None · no used border width -->
+<div id="target"
+  class="h:48px w:160px p:md b-none b:6px b:blue
+         bg:surface-muted text:body box-content">
+  Content box
+</div>
+```
+
+```html
+<!-- Hidden · same ordinary box geometry -->
+<div id="target"
+  class="h:48px w:160px p:md b-hidden b:6px b:blue
+         bg:surface-muted text:body box-content">
+  Content box
+</div>
+```
+
+`hidden` differs from `none` in collapsed-table border conflict resolution. It does not hide the element or its content; see [border collapse](/reference/border-collapse).
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus this button to switch from solid to dashed without changing its width or color. Print removes the border style.
+
+<DemoExample page="border-style" section="apply-conditionally" />
+
 ```html
-<div class="b-solid b-dashed:hover b-none@print">...</div>
+<!-- Solid → dashed · width stays 2px -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm b-solid
+         b:2px b:blue r:sm font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible b-none@print
+         b-dashed:hover@screen
+         b-dashed:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-Use side aliases such as `bt-solid` when only one side should change style.
+A side alias such as `bt-dashed` changes only the top edge. The button’s independent focus ring remains available.

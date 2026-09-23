@@ -2,37 +2,68 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Use the background shorthand \{#use-the-background-shorthand\}
-Use `bg:*` with pipe separators when several background longhands should be set together.
+Combine an image, position, size and repetition in one `bg:*` class. Pipes separate values; `/` separates position from size.
+
+<DemoExample page="background" section="use-the-background-shorthand" />
+
 ```html
-<!-- @MARK bg:url(/hero.jpg)|center/cover|no-repeat -->
-<section class="bg:url(/hero.jpg)|center/cover|no-repeat">
-  ...
-</section>
+<!-- Centered cover · one shorthand -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100%
+         bg:url(/demo/landscape.svg)|center/cover|no-repeat"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/hero.jpg)|center/cover|no-repeat']}
+    {['bg:url(/demo/landscape.svg)|center/cover|no-repeat']}
   </Class2CSS>
 </details>
 
+The image has a 320 × 200 intrinsic size. The 320 × 160 frame crops it vertically when centered and covered. A background is decorative: put essential imagery and alternative text in an `<img>`.
+
 ### Prefer focused utilities for simple changes \{#prefer-focused-utilities-for-simple-changes\}
-Use [background-color](/reference/background-color), [background-image](/reference/background-image), [background-position](/reference/background-position), [background-size](/reference/background-size), and [background-repeat](/reference/background-repeat) when only one background part should change.
+Hover or focus each surface. The first changes only the background color, preserving its image, size and position. The second applies the full shorthand and resets the omitted image to `none`.
+
+<DemoExample page="background" section="prefer-focused-utilities-for-simple-changes" />
+
 ```html
-<!-- @MARK bg:white --><!-- @MARK bg-center --><!-- @MARK bg-cover -->
-<article class="bg-center bg-cover bg:white">
-  ...
-</article>
+<!-- Color longhand · keeps the image -->
+<div id="target" tabindex="0" role="img" aria-label="Change only the background color"
+  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg) bg:blue-20:hover@screen
+         bg:blue-20:focus-visible@screen"
+></div>
 ```
 
-The native `background` shorthand resets several background longhands. Use it intentionally when that reset is part of the design.
+```html
+<!-- Full shorthand · resets the image -->
+<div id="target" tabindex="0" role="img" aria-label="Reset the complete background"
+  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)
+         background:var(--color-blue-20):hover@screen
+         background:var(--color-blue-20):focus-visible@screen"
+></div>
+```
+
+`bg:blue-20` resolves to `background-color`; `background:var(--color-blue-20)` explicitly requests the native shorthand. Choose [color](/reference/background-color), [image](/reference/background-image), [position](/reference/background-position), [size](/reference/background-size) or [repeat](/reference/background-repeat) utilities when the other parts should stay intact.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the actual preview viewport to `sm` to apply the complete image shorthand. Narrow screens and print keep a plain surface.
+
+<DemoExample page="background" section="apply-conditionally" />
+
 ```html
-<div class="bg:white bg:white@print bg:url(/hero.jpg)|center/cover|no-repeat@sm">...</div>
+<!-- Plain surface → image at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg:surface-muted background:white@print
+         bg:url(/demo/landscape.svg)|center/cover|no-repeat@screen&sm"
+></div>
 ```
 
-Use layered backgrounds with comma-separated values only when the visual needs multiple images or gradients.
+The screen-qualified condition does not run during printing. The print shorthand clears the image and resets the other background longhands.

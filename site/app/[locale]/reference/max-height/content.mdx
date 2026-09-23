@@ -3,41 +3,59 @@
 
 ## Examples \{#examples\}
 ### Cap a vertical region \{#cap-a-vertical-region\}
-Use `max-h:*` when content should stop growing past a limit.
+`max-h:*` limits the box’s height. This 144px child sits inside a region capped at 96px. `overflow-y:auto` makes the remaining content reachable. Focus the named region with Tab, then scroll with the keyboard or pointer.
+
+<DemoExample page="max-height" section="cap-a-vertical-region" />
+
 ```html
-<!-- @MARK max-h:64x --><!-- @MARK overflow-y:auto -->
-<div class="overflow-y:auto max-h:3xs">
-  ...
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="overflow-y:auto max-h:24x" tabindex="0" role="region" aria-label="Layer notes"><div id="item-3" class="h:36x p:sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.<br />Scroll to see the final line.<br />End of the example.</div></div>
 </div>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['max-h:64x', 'overflow-y:auto']}
-  </Class2CSS>
-</details>
+A maximum height does not clip content by itself. Choose visible overflow, clipping or scrolling intentionally; keep a scroll region reachable and meaningfully named.
 
 ### Keep media inside a frame \{#keep-media-inside-a-frame\}
-Use `max-h:*` with `object-contain` or `object-cover` when replaced media must stay within a visual frame.
-```html
-<!-- @MARK max-h:48x --><!-- @MARK w:full -->
-<img class="w:full max-h:48x object-contain" src="..." alt="" />
-```
+The image box is 240px wide with a preferred 160px height and a 96px cap. `object-contain` fits the complete source inside the resulting 240 × 96px rectangle; the same box with `object-cover` crops it.
 
-### Use viewport caps \{#use-viewport-caps\}
-Use `max-vh` or native viewport units when overlays and menus must stay within the visible viewport.
+<DemoExample page="max-height" section="keep-media-inside-a-frame" />
+
 ```html
-<!-- @MARK max-h:80dvh --><!-- @MARK overflow:auto -->
-<div class="overflow:auto max-h:80dvh">
-  ...
+<!-- Contain the complete image -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block h:40x w:full max-h:24x object-contain" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="max-h:none max-h:none@print max-h:3xs@sm">...</div>
+<!-- Cover the box with a crop -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <img id="target" class="block h:40x w:full max-h:24x object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
 
-Pair max height with an overflow rule when content can exceed the cap.
+Object fitting affects the pixels inside a replaced element. It does not change the element’s computed box dimensions.
+
+### Use viewport caps \{#use-viewport-caps\}
+`max-h:50dvh` limits this scroll region to half the real iframe height: 160px in this 320px viewport. Its 280px content stays intact and scrollable.
+
+<DemoExample page="max-height" section="use-viewport-caps" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="overflow:auto max-h:50dvh" tabindex="0" role="region" aria-label="Viewport-capped notes"><div id="item-3" class="flex flex-col justify-between h:70x p:sm"><span>Start of content</span><span>End of content</span></div></div>
+</div>
+```
+
+Use `max-vh` for a 100vh cap. Account for surrounding controls and insets separately when sizing an overlay.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize past `sm` to raise the scrolling region’s maximum from 80px to 128px. The same 160px content remains present at both widths.
+
+<DemoExample page="max-height" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="overflow-y:auto max-h:20x max-h:32x@sm" tabindex="0" role="region" aria-label="Responsive layer list"><div id="item-3" class="flex flex-col justify-between h:40x p:sm"><span>First layer</span><span>Last layer</span></div></div>
+</div>
+```

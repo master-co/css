@@ -2,12 +2,35 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Set outline width \{#set-outline-width\}
-Use `outline:*` with a size to set `outline-width`.
+A length in `outline:<size>` changes the outline width independently. Compare 2px and 6px outlines around identical buttons; their layout size does not grow.
+
+<DemoExample page="outline-width" section="set-outline-width" />
+
 ```html
-<!-- @MARK outline:2px -->
-<button class="outline:solid outline:2px">
-  ...
+<!-- 2px outline · same layout box -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:2px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- 6px outline · paint grows outward -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:6px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
 </button>
 ```
 
@@ -19,18 +42,71 @@ Use `outline:*` with a size to set `outline-width`.
 </details>
 
 ### Use keyword widths \{#use-keyword-widths\}
-Use `outline:thin`, `outline:medium`, or `outline:thick` for native keyword widths.
+Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widths without resetting style or color. The explicit `outline-width:*` longhands are equivalent. Read the browser’s resolved pixel values below.
+
+<DemoExample page="outline-width" section="use-keyword-widths" />
+
 ```html
-<!-- @MARK outline:thick|solid -->
-<button class="outline:thick|solid">...</button>
+<!-- Thin · native width keyword -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-thin outline-offset:3xs outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
 ```
 
-The outline also needs a style to be visible.
+```html
+<!-- Medium · native width keyword -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-medium
+         outline-solid outline-offset:3xs
+         outline:blue font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+```html
+<!-- Thick · native width keyword -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-thick outline-offset:3xs
+         outline:blue font:md bg:surface-base
+         text:body box-border
+         bg:surface-muted:focus-visible">
+  Preview details
+</button>
+```
+
+These keywords resolve to lengths. `outline:thin` is instead a full shorthand with the style omitted; that resets the style to `none` and leaves no visible outline. A visible style must be supplied.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Keyboard focus increases the outline from 2px to 4px. Width grows into the surrounding paint area without moving or resizing the button. Print removes the outline width.
+
+<DemoExample page="outline-width" section="apply-conditionally" />
+
 ```html
-<div class="outline:0 outline:2px:focus outline:0@print">...</div>
+<!-- 2px → 4px on keyboard focus -->
+<button id="target" type="button"
+  class="inline-flex items-center justify-center
+         min-h:44px max-w:100% px:md py:sm
+         b:1px|solid|base r:sm outline-solid
+         outline-offset:3xs outline:2px outline:blue
+         font:md bg:surface-base text:body box-border
+         bg:surface-muted:focus-visible
+         outline:0@print
+         outline:4px:focus-visible@screen">
+  Preview details
+</button>
 ```
 
-Use [outline-offset](/reference/outline-offset) to move the outline away from the element edge.
+Use [outline-offset](/reference/outline-offset) to change the gap independently of thickness.

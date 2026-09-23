@@ -1,43 +1,200 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
 
 ## Examples \{#examples\}
 ### Set keyframe easing \{#set-keyframe-easing\}
-Use `animation-timing-function:*` to control how keyframes progress between each keyframe stop.
+Compare linear, ease-in and ease-out over the same one-second path. Replay starts all three native timelines together.
+
+<DemoExample page="animation-timing-function" section="set-keyframe-easing" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
 ```html
-<!-- @MARK animation-timing-function:ease-out -->
-<div class="animation-duration:300ms animation-name:fade animation-timing-function:ease-out">
-  Enters
+<!-- Linear · even progress -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- Ease-in · slower start -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:ease-in
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+```html
+<!-- Ease-out · slower finish -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:ease-out
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['animation-timing-function:ease-out']}
-  </Class2CSS>
+  <Class2CSS>{['animation-timing-function:ease-out']}</Class2CSS>
 </details>
 
-### Use linear timing for rotation \{#use-linear-timing-for-rotation\}
-Continuous indicators usually need `linear` so the motion does not speed up and slow down every cycle.
-```html
-<!-- @MARK animation-timing-function:linear -->
-<svg class="animation-duration:1s animation-name:rotate animation-timing-function:linear">
-  ...
-</svg>
-```
+An easing function redistributes progress between keyframe stops. It does not change the declared duration or endpoints.
 
-### Match easing to intent \{#match-easing-to-intent\}
-Use `ease-out` for entrance motion and `ease-in` for exit motion. Prefer `linear` for clocks, progress, and loading rotation.
+### Use linear timing for rotation \{#use-linear-timing-for-rotation\}
+Compare a constant-speed turn with ease-in-out. Both have a two-second duration and infinite count.
+
+<DemoExample page="animation-timing-function" section="use-linear-timing-for-rotation" />
+
 ```html
-<!-- @MARK animation-timing-function:ease-in -->
-<div class="animation-timing-function:ease-out animation-timing-function:ease-in:hover">
-  Dismiss
+<!-- Linear · steady turn -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:linear
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Linear · steady turn</span>
 </div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<div class="animation-timing-function:ease-out:hover animation-timing-function:ease-in@print animation-timing-function:linear@sm">...</div>
+<!-- Ease-in-out · changing speed -->
+<div class="flex items-center gap:md p:sm">
+  <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
+    fill="none" stroke="currentColor" stroke-width="2"
+    class="text:blue animation-duration:2s
+           animation-iteration-count:infinite
+           animation-name:rotate
+           animation-timing-function:ease-in-out
+           animation:none@print
+           animation-play-state:paused@reduce-motion">
+    <circle cx="24" cy="24" r="17" opacity=".25" />
+    <path d="M24 8v16h12 M19 13l5-5 5 5" />
+  </svg>
+  <span class="font:sm">Ease-in-out · changing speed</span>
+</div>
 ```
+
+The linear hand maintains angular speed across cycles. Ease-in-out slows near each cycle boundary, even though a full turn ends at the same visual orientation.
+
+### Match easing to intent \{#match-easing-to-intent\}
+For a deliberately stepped movement, place a timing function on the starting keyframe. It controls the interval leading to the next keyframe.
+
+<DemoExample page="animation-timing-function" section="match-easing-to-intent" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); animation-timing-function:steps(4,end); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- Keyframe easing · four 18px steps -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:linear
+             animation:none@print
+             animation-play-state:paused@reduce-motion">→</span>
+  </div>
+</div>
+```
+
+The element declares linear, but the keyframe’s steps(4,end) overrides it for this interval. Easing on the final 100% keyframe has no following interval to affect.
+
+### Apply conditionally \{#apply-conditionally\}
+Resize before replaying to switch from ease-out to linear at `sm`. The one-second duration and 72px path remain unchanged.
+
+<DemoExample page="animation-timing-function" section="apply-conditionally" />
+
+```css name=index.css
+@theme {
+  @keyframes layer-slide {
+    from { transform: translateX(24px); }
+    to { transform: translateX(96px); }
+  }
+}
+```
+
+```html
+<!-- Ease-out → linear at sm -->
+<div class="w:240px max-w:100%">
+  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <div aria-hidden="true"
+    class="h:56px p:xs outline:1px|dashed|muted">
+    <span id="target"
+      class="grid place-items:center h:40px w:48px
+             b:1px|solid|blue-60 r:sm bg:blue-10
+             fg:blue-80 transform:none
+             animation-duration:1s
+             animation-fill-mode:forwards
+             animation-name:layer-slide
+             animation-timing-function:ease-out
+             animation:none@print
+             animation-play-state:paused@reduce-motion
+             animation-timing-function:linear@sm">→</span>
+  </div>
+</div>
+```
+
+The native query changes the element’s easing. A keyframe-level easing would take precedence for its own interval; these keyframes contain no such override.

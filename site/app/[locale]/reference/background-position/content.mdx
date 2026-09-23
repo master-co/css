@@ -2,33 +2,84 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Position a background image \{#position-a-background-image\}
-Use `bg-center`, `bg-top`, `bg-right`, `bg-bottom`, or `bg-left` to set `background-position`.
+Use position shortcuts to align an image within its positioning area. This 160 × 100 image is smaller than its 320 × 160 frame, leaving visible free space.
+
+<DemoExample page="background-position" section="position-a-background-image" />
+
 ```html
-<!-- @MARK bg:url(/hero.jpg) --><!-- @MARK bg-center -->
-<section class="bg-center bg-cover bg:url(/hero.jpg)">
-  ...
-</section>
+<!-- Left · vertical center -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-left bg-no-repeat
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- Center · both axes -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- Right · vertical center -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-no-repeat bg-right
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/hero.jpg)', 'bg-center']}
+    {['bg-left', 'bg-center', 'bg-right']}
   </Class2CSS>
 </details>
 
+A single horizontal keyword keeps the vertical axis centered. `bg-top` and `bg-bottom` center the horizontal axis.
+
 ### Use explicit positions \{#use-explicit-positions\}
-Use `background-position:*` when you need two-value or measured positions.
+A two-value position supplies horizontal then vertical offsets. Percentages align matching points on the image and positioning area; lengths offset the image from the top-left.
+
+<DemoExample page="background-position" section="use-explicit-positions" />
+
 ```html
-<!-- @MARK background-position:50%|25% -->
-<div class="background-position:50%|25%">...</div>
+<!-- 50% 25% · shares the free space -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-no-repeat background-position:50%|25%
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
+
+```html
+<!-- 24px 12px · measured offset -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:160px w:xs max-w:100% bg-no-repeat background-position:lg|sm
+         background-size:160px|100px bg:surface-muted
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+At the full 320 × 160 frame size, `50% 25%` gives x = (320 − 160) × 50% = 80px and y = (160 − 100) × 25% = 15px. On narrow screens the frame shrinks, so the horizontal result changes. If the image fills an axis exactly, percentages on that axis produce no movement.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The image covers a deliberately shallow frame. Widen to `sm` to move its crop from center to top; print restores the center crop.
+
+<DemoExample page="background-position" section="apply-conditionally" />
+
 ```html
-<div class="bg-center bg-center@print bg-top@sm">...</div>
+<!-- Centered crop → top crop at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:120px w:xs max-w:100% bg-center bg-cover bg-no-repeat
+         bg:url(/demo/landscape.svg) bg-center@print bg-top@screen&sm"
+></div>
 ```
 
-Position changes are most visible when the image is larger than the background area or when `bg-cover` crops the image.
+Cover crops vertically here because the frame is wider than the source’s 8:5 ratio. Position moves the cropped image without changing its rendered size.

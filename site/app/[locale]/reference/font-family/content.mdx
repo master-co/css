@@ -2,105 +2,190 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Use a family token to give related content a consistent typeface and fallback stack.
+
+<DemoExample page="font-family" section="basic-usage" />
+
 <BasicUsage />
 
 ### Set the font family \{#set-the-font-family\}
-Set the typeface of an element using the `font-family:` syntax.
-<Demo $py={0}>
-  <DemoPanel className="flex flex-col gap:xl">
-    <div className="w:full">
-      <DemoP className="font-family:cursive">Heavy boxes perform quick waltzes and jigs.</DemoP>
-    </div>
-  </DemoPanel>
-</Demo>
+Use `font-family:*` for a native family value. Generic families such as `cursive` resolve to a platform font, so this specimen may look different across devices.
+
+<DemoExample page="font-family" section="set-the-font-family" />
+
 ```html
-<!-- @MARK font-family:cursive -->
-<p class="font-family:cursive">Heavy boxes perform quick waltzes and jigs.</p>
+<!-- A platform-selected cursive face -->
+<p id="target" class="m:0 font-family:cursive font:xl leading:md">Design with clarity.</p>
 ```
-In practice, you wouldn't arbitrarily set the font family within the template; instead, you would unify your fonts through [custom fonts](#use-custom-fonts).
 
 ### Apply fonts globally \{#apply-fonts-globally\}
-Relying on the `font-family` inherited behavior, you can set the entire page font in `html <body>`.
+Set `font:sans` on `<body>` to establish the inherited family. These nested paragraphs do not declare their own font family.
+
+<DemoExample page="font-family" section="apply-fonts-globally" />
+
 ```html
-<!-- @MARK font:sans -->
-<body class="font:sans">…</body>
+<!-- The actual preview body owns the family -->
+<body class="font:sans">
+  <main class="font:xl leading:md">
+    <p id="target" class="m:0">A shared reading voice.</p>
+    <section><p class="m:0">Inherited through another element.</p></section>
+  </main>
+</body>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the button to switch from the sans stack to the mono stack. Its text stays the same, but the glyph advances can change.
+
+<DemoExample page="font-family" section="apply-conditionally" />
+
 ```html
-<div class="font:mono:hover font:mono@dark font:mono@print font:mono@sm">…</div>
+<!-- A family change on a real state -->
+<button type="button" id="target" class="font:md font:sans font:mono:hover font:mono:focus-visible">Focus or hover to compare</button>
 ```
+
 ### Apply fonts to specified elements \{#apply-fonts-to-specified-elements\}
-Use the `mcss _:is(code,pre)` to select specified elements and apply the font.
+The descendant selector `_:is(code,pre)` applies `font:mono` to matching elements below the body. Regular paragraphs keep the inherited sans family.
+
+<DemoExample page="font-family" section="apply-fonts-to-specified-elements" />
+
 ```html
-<!-- @MARK font:mono_:is(code,pre) -->
-<body class="font:mono_:is(code,pre)">…</body>
+<!-- Sans prose · mono code -->
+<body class="font:sans font:mono_:is(code,pre)">
+  <main class="font:md leading:md">
+    <p id="target" class="m:0">Prepare a clear canvas.</p>
+    <pre class="mx:0 mb:0 mt:sm"><code id="code">const ready = true</code></pre>
+  </main>
+</body>
 ```
 
 ---
 
 ## Resolve whitespaces in the value \{#resolve-whitespaces-in-the-value\}
-Whitespace is used in the class attribute of the template to separate different classes. To replace whitespaces ` ` with non-breaking spaces `\00a0`.
-```html
-<!-- @MARK font-family:'Open\00a0Sans' -->
-<p class="font-family:'Open\00a0Sans'">…</p>
-```
-Is it not very kind to use `\00a0` in markup?
+Spaces separate classes in HTML. For a literal family name, the CSS escape `\000020` represents a space without splitting the class. Six hex digits make the escape unambiguous. The escaped name must match the loaded font’s declared family; `\00a0` would represent a different, non-breaking-space character.
 
-(o) Predefine your [font](/guide/theme) tokens without `\00a0`.
+<DemoExample page="font-family" section="resolve-whitespaces-in-the-value" />
+
 ```css name=index.css
-@theme {
-  --font-family-open-sans: Open Sans; /* [!code ++] */
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/IBMPlexMono-Regular.woff2') format('woff2');
 }
 ```
-Apply your custom fonts:
+
 ```html
-<!-- @MARK font:open-sans -->
-<p class="font:open-sans">…</p>
+<!-- An escaped family name -->
+<p id="target" class="m:0 font-family:'IBM\000020Plex\000020Mono' font:xl leading:md">Design with clarity.</p>
 ```
+
+```css name=index.css
+@theme {
+  --font-family-code: 'IBM Plex Mono', monospace;
+}
+```
+
+```html
+<!-- The same face through a readable token -->
+<p id="target" class="m:0 font:xl leading:md font:code">Design with clarity.</p>
+```
+
+Prefer a token for repeated use. Defining a family token does not download the font file.
 
 ---
 
 ## Customization \{#customization\}
 ### Use custom fonts \{#use-custom-fonts\}
-Customize your font tokens by defining [theme tokens](/guide/theme). For example, add `Geist` as the general font and `Fira Code` as the code font.
+Override the preset sans and mono stacks using `--font-sans` and `--font-mono`. Load matching faces as well; a theme token only supplies the family name.
+
+<DemoExample page="font-family" section="use-custom-fonts" />
+
 ```css name=index.css
-@theme {
-  --font-sans: "Geist"; /* [!code ++] */
-  --font-mono: "Fira Code"; /* [!code ++] */
-}
-```
-Apply the defined `font-family` variables. For example, presetting the global fonts in `html <body>`:
-```html
-<!-- @MARK font:sans --><!-- @MARK font:mono_:is(code,pre) -->
-<body class="font-feature-settings:'ss01' font:sans font:mono_:is(code,pre)">…</body>
-```
-Don't forget to add the [font faces](/guide/fonts#font-faces).
-
-### Google fonts \{#google-fonts\}
-The fastest way to declare custom font faces is through [Google Fonts](https://fonts.google.com/).
-```html name=index.html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fira+Code&family=Roboto:wght@400;500;600;700;800&display=swap" rel="stylesheet"> <!-- [!code ++] -->
-</head>
-</html>
-```
-
-### Self-hosted fonts \{#self-hosted-fonts\}
-You can also self-host the fonts via native CSS, as usual.
-```css name=styles/fonts.css
 @font-face {
   font-family: 'Geist';
   font-style: normal;
   font-weight: 100 900;
   font-display: swap;
-  src: url("/fonts/GeistVariable.woff2") format("woff2");
+  src: url('/fonts/GeistVariable.woff2') format('woff2');
 }
 ```
-Self-host the complete font build when you rely on advanced OpenType features such as `font-feature-settings:'ss01'`.
+
+```css name=index.css
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/IBMPlexMono-Regular.woff2') format('woff2');
+}
+```
+
+```css name=index.css
+@theme {
+  --font-sans: 'Geist';
+  --font-mono: 'IBM Plex Mono';
+}
+```
+
+```html
+<!-- Loaded custom faces · inherited and selected -->
+<body class="font:sans font:mono_:is(code,pre)">
+  <main class="font:xl leading:md">
+    <p id="target" class="m:0">Design with clarity.</p>
+    <pre class="mx:0 mb:0 mt:sm"><code id="code">const ready = true</code></pre>
+  </main>
+</body>
+```
+
+### Google fonts \{#google-fonts\}
+A hosted stylesheet declares the font faces; a family class then applies them. This preview requests Roboto from Google Fonts and reports whether a matching face loaded. When the request is blocked or unavailable, the fallback remains readable.
+
+<DemoExample page="font-family" section="google-fonts" />
+
+```html
+<!-- A hosted stylesheet and its actual consumer -->
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap">
+</head>
+<body>
+  <p id="target" class="m:0 font-family:Roboto,sans-serif font:xl leading:md">Design with clarity.</p>
+</body>
+</html>
+```
+
+Use a fallback stack and verify that the stylesheet includes the weights, styles and characters your content needs.
+
+### Self-hosted fonts \{#self-hosted-fonts\}
+Declare a face with `@font-face`, using the path of your own font file. The variable face below advertises its supported 100–900 weight range and uses `swap` to keep text visible while loading.
+
+<DemoExample page="font-family" section="self-hosted-fonts" />
+
+```css name=index.css
+@font-face {
+  font-family: 'Geist';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/fonts/GeistVariable.woff2') format('woff2');
+}
+```
+
+```css name=index.css
+@theme {
+  --font-family-interface: 'Geist', sans-serif;
+}
+```
+
+```html
+<!-- A locally hosted variable face -->
+<p id="target" class="m:0 font-weight:550 font:xl leading:md font:interface">Design with clarity.</p>
+```
+
+Keep the declared range consistent with the actual file. Feature availability also depends on that file, not just the family name.

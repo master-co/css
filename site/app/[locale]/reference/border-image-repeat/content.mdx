@@ -3,32 +3,127 @@
 
 ## Basic usage \{#basic-usage\}
 ### Round repeated edge slices \{#round-repeated-edge-slices\}
-Use `border-image-repeat` to control how the edge slices fit the border image area.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="p:10x b:16px|solid|transparent r:lg border-image-repeat:round border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink) surface:raised">
-      <div className="font-weight:560 font:lg text:neutral">Round repeat</div>
-      <p className="my:md font:sm text:gray">The slices are adjusted so repetitions fit evenly.</p>
-    </div>
-  </DemoPanel>
-</Demo>
+Use the patterned source to compare all four edge-fitting modes. Corners remain corners; only the middle edge regions stretch or repeat.
+
+<DemoExample page="border-image-repeat" section="round-repeated-edge-slices" />
+
 ```html
-<!-- @MARK border-image-repeat:round -->
-<div class="b:16px|solid|transparent border-image-repeat:round border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-  Round repeat
+<!-- Stretch · one stretched tile -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
 
-### Set vertical and horizontal behavior \{#set-vertical-and-horizontal-behavior\}
 ```html
-<!-- @MARK border-image-repeat:round|stretch -->
-<div class="b:16px|solid|transparent border-image-repeat:round|stretch border-image-slice:30 border-image-source:linear-gradient(45deg,dodgerblue,hotpink)">
-  Round vertically, stretch horizontally
+<!-- Repeat · natural tiles, clipped ends -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:repeat
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
 </div>
 ```
+
+```html
+<!-- Round · whole tiles resized to fit -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:round
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+```html
+<!-- Space · whole tiles with gaps -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:space
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['border-image-repeat:round']}
+  </Class2CSS>
+</details>
+
+`repeat` may clip partial tiles at the ends. `round` adjusts tile size to fit a whole number. `space` distributes available space between whole tiles.
+
+### Set horizontal and vertical behavior \{#set-vertical-and-horizontal-behavior\}
+With two values, the first controls horizontal edges (top and bottom); the second controls vertical edges (left and right).
+
+<DemoExample page="border-image-repeat" section="set-vertical-and-horizontal-behavior" />
+
+```html
+<!-- Horizontal round · vertical stretch -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:round|stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
+```
+
+`round|stretch` repeats whole tiles along the top and bottom while stretching one tile down each side. The two-value order differs from width/outset pairs.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+At `sm`, switch from stretch to round while preserving source, slices and border dimensions. Print returns to stretch.
+
+<DemoExample page="border-image-repeat" section="apply-conditionally" />
+
 ```html
-<div class="border-image-repeat:round:hover border-image-repeat:round@dark border-image-repeat:round@print border-image-repeat:round@sm">…</div>
+<!-- Stretch → round at sm -->
+<div id="target"
+  class="flex items-center justify-center h:130px
+         w:250px max-w:100% p:md b:12px|solid|blue-60
+         border-image-repeat:stretch
+         border-image-slice:24
+         border-image-source:url('/demo/border-grid.svg')
+         border-image-width:1 font:md bg:surface-base
+         text:body box-border
+         border-image-repeat:stretch@print
+         border-image-repeat:round@screen&sm">
+  <span class="px:xs py:3xs bg:surface-base text:body">
+    Edge sample
+  </span>
+</div>
 ```
+
+The patterned edges expose the change directly; a smooth gradient would make repetition harder to distinguish.

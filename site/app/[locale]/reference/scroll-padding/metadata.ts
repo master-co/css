@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-padding',
-  description: 'Setting the scroll padding of an element.',
+  description: 'Inset a scroll container’s preferred viewing region without changing layout.',
   category: 'Spacing',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-padding',

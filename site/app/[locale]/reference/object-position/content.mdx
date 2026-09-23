@@ -3,10 +3,26 @@
 
 ## Examples \{#examples\}
 ### Center cropped media \{#center-cropped-media\}
-Use `object-center` to keep the center of an image visible when `object-cover` crops the edges.
+`object-center` distributes crop equally between opposite edges. This 240 × 100 frame shows a 240 × 150 cover image, so 25px is clipped from both top and bottom.
+
+<DemoExample page="object-position" section="center-cropped-media" />
+
 ```html
-<!-- @MARK object-center -->
-<img class="aspect-ratio:16/9 object-center object-cover" src="/images/photo.jpg" alt="Photo">
+<!-- Center · equal vertical crop -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-center object-cover" />
+```
+
+```html
+<!-- Top · crop only at the bottom -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-cover object-top" />
 ```
 
 <details>
@@ -16,22 +32,73 @@ Use `object-center` to keep the center of an image visible when `object-cover` c
   </Class2CSS>
 </details>
 
+The class positions the content inside a replaced element. It does not align the image element within its parent. Both boxes keep the same dimensions and fit mode.
+
 ### Pin the top of an image \{#pin-the-top-of-an-image\}
-Use `object-top` for portraits or screenshots where the important content is near the top.
+`object-top` aligns the source’s top edge with the frame. Compare it with bottom alignment; the sun and mountain peaks expose the vertical shift.
+
+<DemoExample page="object-position" section="pin-the-top-of-an-image" />
+
 ```html
-<!-- @MARK object-top -->
-<img class="aspect-ratio:4/3 object-cover object-top" src="/images/portrait.jpg" alt="Portrait">
+<!-- Top · preserve the upper edge -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-cover object-top" />
 ```
+
+```html
+<!-- Bottom · preserve the lower edge -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-bottom object-cover" />
+```
+
+Choose the edge that contains the important subject. Positioning only becomes visible on an axis where content and box dimensions differ; changing horizontal alignment would have no effect in this example.
 
 ### Use precise positions \{#use-precise-positions\}
-Use `object-position:*|*` when the focal point needs a custom x and y position.
+Two values specify horizontal then vertical position. Percentages distribute the available space, which is negative on a cropped axis. Edge offsets instead place a source edge at a fixed distance.
+
+<DemoExample page="object-position" section="use-precise-positions" />
+
 ```html
-<!-- @MARK object-position:50%|25% -->
-<img class="object-cover object-position:50%|25%" src="/images/scene.jpg" alt="Scene">
+<!-- 50% 25% · 12.5px top crop -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-cover
+         object-position:50%|25%" />
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<img class="object-center:hover object-position:50%|50%@print object-top@sm" src="/images/photo.jpg" alt="">
+<!-- Left 12px · top 8px -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-cover
+         object-position:left|12px|top|8px" />
 ```
+
+With 50px of excess image height, 25% moves the image 12.5px upward. The second sample moves its top-left corner 12px right and 8px down, exposing the element background along those edges. Values are not coordinates of a point to center.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen to `sm` to pin the top edge. Print returns to centered cropping.
+
+<DemoExample page="object-position" section="apply-conditionally" />
+
+```html
+<!-- Center → top at sm -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block h:100px w:240px max-w:100%
+         bg:surface-base object-center object-cover
+         object-center@print object-top@screen&sm" />
+```
+
+The native viewport condition changes the image content’s position. The element’s box and source scaling stay fixed.

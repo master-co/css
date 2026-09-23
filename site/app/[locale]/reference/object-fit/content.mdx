@@ -3,35 +3,101 @@
 
 ## Examples \{#examples\}
 ### Cover a fixed frame \{#cover-a-fixed-frame\}
-Use `object-cover` when media should fill its frame while preserving its aspect ratio.
+The same 320 × 200 source fills two explicit 220 × 220 image boxes. `object-cover` keeps the natural ratio and crops excess width; `object-fill` stretches each axis independently.
+
+<DemoExample page="object-fit" section="cover-a-fixed-frame" />
+
 ```html
-<!-- @MARK object-cover -->
-<img class="w:full aspect-ratio:16/9 object-cover" src="/images/cover.jpg" alt="Cover">
+<!-- Cover · preserved proportions -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-cover object-right" />
+```
+
+```html
+<!-- Fill · stretched to the square -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-fill object-right" />
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['object-cover']}
+    {['object-cover', 'object-fill']}
   </Class2CSS>
 </details>
 
+Right alignment keeps the sun in view. The sun stays round with cover and becomes an ellipse with fill. These classes size the content inside the image element; they do not change its layout dimensions. The SVG source allows its viewport to stretch so the fill comparison remains visible.
+
 ### Contain the full media \{#contain-the-full-media\}
-Use `object-contain` when the full image or video must remain visible inside the frame.
+`object-contain` fits the whole source inside the square while keeping its ratio. Compare it with cover in the same geometry.
+
+<DemoExample page="object-fit" section="contain-the-full-media" />
+
 ```html
-<!-- @MARK object-contain -->
-<img class="w:full aspect-ratio:1/1 object-contain" src="/images/logo.png" alt="Logo">
+<!-- Contain · complete artwork -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-contain object-right" />
 ```
+
+```html
+<!-- Cover · cropped width -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-cover object-right" />
+```
+
+The unused bands show the image element’s own background. The image content is about 220 × 137.5 here, while its layout box remains 220 × 220. Use [object-position](/reference/object-position) to move the content within that box.
 
 ### Disable object fitting \{#disable-object-fitting\}
-Use `object-fit:none` when the media should render at its intrinsic size within the content box.
+`object-fit:none` uses the source’s natural 320 × 200 size. In this narrower box, content clips at the left edge. `object-scale-down` chooses the smaller result of none and contain.
+
+<DemoExample page="object-fit" section="disable-object-fitting" />
+
 ```html
-<!-- @MARK object-fit:none -->
-<img class="object-fit:none" src="/images/icon.png" alt="Icon">
+<!-- None · natural size, clipped left edge -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-right object-fit:none" />
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<img class="object-cover:hover object-fit:none@print object-contain@sm" src="/images/photo.jpg" alt="">
+<!-- Scale down · shrink the full source -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-right object-scale-down" />
 ```
+
+Both samples retain the same 220 × 220 layout box. Scale-down may shrink media but does not enlarge it beyond the none result. Explicit width and height are necessary to make this fitting comparison meaningful.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen the preview to `sm` to switch from cover to contain. Print also uses contain so the complete image remains visible.
+
+<DemoExample page="object-fit" section="apply-conditionally" />
+
+```html
+<!-- Cover → contain at sm -->
+<img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:220px max-w:100%
+         bg:surface-base object-cover object-right
+         object-contain@print
+         object-contain@screen&sm" />
+```
+
+The responsive rule uses the iframe’s real viewport. The authored square stays the same size; only the way its source fits changes.

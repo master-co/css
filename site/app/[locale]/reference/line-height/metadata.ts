@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'line-height',
-  description: 'Setting the height of a line box.',
+  description: 'Set line height and understand how unitless values differ from fixed lengths.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=line-height',

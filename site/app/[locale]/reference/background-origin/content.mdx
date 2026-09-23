@@ -2,34 +2,92 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Choose the background positioning area \{#choose-the-background-positioning-area\}
-Use `bg-origin-padding`, `bg-origin-border`, or `bg-origin-content` to decide which box positions the background image.
+Compare the same 80 × 50 image at the top-left of three positioning areas. The 8px border and 24px padding make each origin visible.
+
+<DemoExample page="background-origin" section="choose-the-background-positioning-area" />
+
 ```html
-<!-- @MARK bg-origin-content -->
-<section class="p:md b:1px|solid|gray-20 bg-origin-content">
-  ...
-</section>
+<!-- Border origin · x 0, y 0 -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-border
+         background-position:0|0 background-size:80px|50px
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- Padding origin · x 8, y 8 -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-padding
+         background-position:0|0 background-size:80px|50px
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+```html
+<!-- Content origin · x 32, y 32 -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-content
+         background-position:0|0 background-size:80px|50px
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg-origin-content']}
+    {['bg-origin-border', 'bg-origin-padding', 'bg-origin-content']}
   </Class2CSS>
 </details>
 
+Offsets above are relative to the outer border edge. The dashed border may paint over the image. The clipping area stays `border-box` in all three specimens.
+
 ### Align art with borders or content \{#align-art-with-borders-or-content\}
-Use `bg-origin-border` when the background should start from the border box, and `bg-origin-content` when it should align with the content box.
+Percentage image sizes also use the chosen positioning area. With `background-size:100%|100%`, the image fills either the border box or the content box; it may be distorted because both dimensions are forced.
+
+<DemoExample page="background-origin" section="align-art-with-borders-or-content" />
+
 ```html
-<!-- @MARK bg-origin-border --><!-- @MARK bg-origin-content -->
-<div class="bg-origin-border">...</div>
-<div class="bg-origin-content">...</div>
+<!-- Fill the border positioning area -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-border
+         background-position:0|0 background-size:100%|100%
+         bg:url(/demo/landscape.svg)"
+></div>
 ```
 
-This affects positioning and sizing, not clipping. Use [background-clip](/reference/background-clip) to control where the background is painted.
+```html
+<!-- Fill the content positioning area -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-content
+         background-position:0|0 background-size:100%|100%
+         bg:url(/demo/landscape.svg)"
+></div>
+```
+
+Origin changes positioning and sizing, not clipping. Keep [background-clip](/reference/background-clip) separate. For `background-attachment:fixed`, the viewport supplies the positioning area instead.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen the preview to `sm` to move the same image from the padding origin to the content origin. Print returns to padding-box positioning.
+
+<DemoExample page="background-origin" section="apply-conditionally" />
+
 ```html
-<div class="bg-origin-padding bg-origin-padding@print bg-origin-content@sm">...</div>
+<!-- Padding → content at sm -->
+<div id="target" role="img" aria-label="Geometric landscape"
+  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
+         bg-clip-border bg-no-repeat bg-origin-padding
+         background-position:0|0 background-size:80px|50px
+         bg:url(/demo/landscape.svg) bg-origin-padding@print
+         bg-origin-content@screen&sm"
+></div>
 ```
+
+The border, padding, image size and clipping remain unchanged, making the origin shift visible.

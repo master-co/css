@@ -3,67 +3,61 @@
 
 ## Basic usage \{#basic-usage\}
 ### Place an item by grid lines \{#place-an-item-by-grid-lines\}
-Use `grid-area` to place a grid item by `row-start / column-start / row-end / column-end`.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-cols:3 grid-template-rows:64px|88px|88px gap:xs">
-      <div className="overflow:hidden grid-area:1/1/2/4 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">grid-area:1/1/2/4</div>
-        <div className="overflow:hidden font-weight:560 font:md text-ellipsis white-space:nowrap text:neutral">Header</div>
-      </div>
-      <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
-        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/1/4/2</div>
-        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Nav</div>
-      </div>
-      <div className="overflow:hidden grid-area:2/2/4/4 min-w:0 p:sm r:lg bg:gray-5 bg:gray-90@dark">
-        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap text:gray">2/2/4/4</div>
-        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Content</div>
-      </div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-area` takes four values: row-start, column-start, row-end, then column-end. The blue content starts at row line 2 and column line 2, and ends at line 4 on both axes. It covers two rows and two columns, including their internal gaps.
+
+<DemoExample page="grid-area" section="place-an-item-by-grid-lines" />
+
 ```html
-<div class="grid grid-cols:3 grid-template-rows:64px|88px|88px">
-  <!-- @MARK grid-area:1/1/2/4 -->
-  <header class="grid-area:1/1/2/4">Header</header>
-
-  <!-- @MARK grid-area:2/1/4/2 -->
-  <nav class="grid-area:2/1/4/2">Navigation</nav>
-
-  <!-- @MARK grid-area:2/2/4/4 -->
-  <main class="grid-area:2/2/4/4">Content</main>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:48px|64px|64px gap:md w:70x max-w:full">
+  <header id="peer" class="grid-area:1/1/2/4 p:sm">Header</header>
+  <aside id="item-3" class="grid-area:2/1/4/2 p:sm">Nav</aside>
+  <section id="target" class="grid-area:2/2/4/4 p:sm">Content</section>
 </div>
 ```
 
+A three-track axis has four boundary lines. Line numbers follow the grid container’s writing mode; these examples use horizontal left-to-right writing. Explicitly assigning the same cells to multiple items can overlap them: placement is separate from paint order.
+
 ### Span tracks \{#span-tracks\}
-Use `span` values when the item should cover a number of rows or columns from its starting line.
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-cols:4 gap:xs grid-template-rows:64|64|64">
-      <div className="overflow:hidden grid-area:2/2/span|2/span|2 min-w:0 p:sm b:1px|solid|blue-20 r:lg bg:blue-5 b:blue-80@dark bg:blue-95@dark">
-        <div className="overflow:hidden mb:3xs font:11px font:bold text-ellipsis white-space:nowrap fg:blue-60">2/2/span 2/span 2</div>
-        <div className="overflow:hidden font-weight:560 font:sm text-ellipsis white-space:nowrap text:neutral">Featured</div>
-      </div>
-      <div className="overflow:hidden grid-area:1/1/2/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Toolbar</div>
-      <div className="overflow:hidden grid-area:2/1/4/2 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Aside</div>
-      <div className="overflow:hidden grid-area:2/4/4/5 min-w:0 p:sm r:lg font:13px text-ellipsis white-space:nowrap bg:gray-5 text:gray bg:gray-90@dark">Notes</div>
-    </div>
-  </DemoPanel>
-</Demo>
+Use `span|2` for an end value to cover two tracks from the starting line. Here `2/2/span|2/span|2` starts at line 2 in both directions. The three automatic siblings fill the first row while the blue panel spans the lower-right four cells.
+
+<DemoExample page="grid-area" section="span-tracks" />
+
 ```html
-<!-- @MARK grid-area:2/2/span|2/span|2 -->
-<section class="grid-area:2/2/span|2/span|2">Featured panel</section>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-area:2/2/span|2/span|2 p:sm">2 × 2 tracks</div>
+  <div id="peer" class="p:sm">01</div>
+  <div id="item-3" class="p:sm">02</div>
+  <div id="item-4" class="p:sm">03</div>
+</div>
 ```
+
+The span counts tracks, not pixels. Changing a track size or gap changes the panel’s size without changing its placement.
 
 ### Use a named area \{#use-a-named-area\}
-`grid-area` also accepts a custom identifier that matches a named area from [`grid-template-areas`](/reference/grid-template-areas).
+Use an area name from the parent’s [grid-template-areas](/reference/grid-template-areas). The blue `hero` region covers both columns in the first row. The track lists supply its 64px height and the lower row’s 80px height.
+
+<DemoExample page="grid-area" section="use-a-named-area" />
+
 ```html
-<!-- @MARK grid-area:hero -->
-<section class="grid-area:hero">Hero</section>
+<div id="layout" class="grid grid-template-areas:'hero\20hero'|'nav\20main' grid-template-columns:80px|1fr grid-template-rows:64px|80px gap:md w:70x max-w:full">
+  <section id="target" class="grid-area:hero p:sm">Hero</section>
+  <aside id="peer" class="grid-area:nav p:sm">Nav</aside>
+  <section id="item-3" class="grid-area:main p:sm">Content</section>
+</div>
 ```
 
+Use `\20` for a space inside a quoted row. A name is a placement reference; it does not create that region or its dimensions on its own.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The blue item begins in normal auto-placement. From `sm`, it occupies the lower-right two-by-two region; the siblings remain auto-placed in the same three-column grid.
+
+<DemoExample page="grid-area" section="apply-conditionally" />
+
 ```html
-<div class="grid-area:auto:hover grid-area:auto@dark grid-area:auto@print grid-area:auto@sm">…</div>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
+  <div id="target" class="grid-area:auto p:sm grid-area:2/2/span|2/span|2@sm">Target</div>
+  <div id="peer" class="p:sm">01</div>
+  <div id="item-3" class="p:sm">02</div>
+  <div id="item-4" class="p:sm">03</div>
+</div>
 ```

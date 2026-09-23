@@ -4,28 +4,56 @@
 ---
 
 ## Basic usage \{#basic-usage\}
-### With opacity \{#with-opacity\}
-Add the suffix `/alpha` to change the opacity of any color.
-<Basic className="bg:blue" />
 
-Use `bg:*` for preset palette colors, project theme colors, and one-off colors.
+### With opacity \{#with-opacity\}
+Append `/alpha` to make just the background paint translucent. The split backing surface shows through the half-alpha sample; the foreground remains fully opaque.
+
+<DemoExample page="background-color" section="with-opacity" />
+
 ```html
-<!-- @MARK bg:blue --><!-- @MARK bg:pink/.12 -->
-<section class="bg:blue">...</section>
-<span class="bg:pink/.12">Badge</span>
+<!-- Opaque background -->
+<section class="p:md
+         bg:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
+  <div id="target"
+  class="w:100% p:lg bg:blue-50 text:body"
+>
+    <span class="p:xs bg:surface-base text:body">Foreground stays opaque</span>
+  </div>
+</section>
+```
+
+```html
+<!-- 50% background alpha -->
+<section class="p:md
+         bg:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
+  <div id="target"
+  class="w:100% p:lg bg:blue-50/.5 text:body"
+>
+    <span class="p:xs bg:surface-base text:body">Foreground stays opaque</span>
+  </div>
+</section>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:blue', 'bg:pink/.12']}
+    {['bg:blue-50', 'bg:blue-50/.5']}
   </Class2CSS>
 </details>
 
-Use alpha suffixes for local overlays, badges, and hover states. Add project theme colors only when a repeated color decision needs a shared name.
+A background alpha does not dim text or child elements. [Opacity](/reference/opacity) composites the entire element. Use palette colors for a specific shade or a theme-aware semantic color such as `bg:blue`.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus the button to add a translucent background. Its label and focus ring remain visible in both themes; print removes the tint.
+
+<DemoExample page="background-color" section="apply-conditionally" />
+
 ```html
-<div class="bg:blue bg:pink/.12:hover bg:white@print">...</div>
+<!-- Pointer and keyboard · background only -->
+<button id="target" type="button"
+  class="font:md bg:surface-base text:body bg:transparent@print
+         bg:blue-50/.15:hover@screen bg:blue-50/.15:focus-visible@screen"
+>Preview details</button>
 ```
+
+Keep an explicit text color when changing a surface; alpha alone does not guarantee readable contrast.

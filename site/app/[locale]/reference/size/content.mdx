@@ -3,64 +3,97 @@
 
 ## Examples \{#examples\}
 ### Set width and height together \{#set-width-and-height-together\}
-Use `size:*` when the same value should apply to both `width` and `height`. This keeps square UI pieces readable in markup.
-```html
-<!-- @MARK size:10x -->
-<button class="grid place-content:center size:10x">
-  ...
-</button>
-```
+`size:*` applies the same preferred value to physical width and height. `size:10x` creates this 40px square button. Its centered icon is decorative; the button’s accessible name describes its action.
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['size:10x']}
-  </Class2CSS>
-</details>
+<DemoExample page="size" section="set-width-and-height-together" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:10x p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+</div>
+```
 
 ### Build square media and controls \{#build-square-media-and-controls\}
-`size:*` is a good fit for icons, avatars, swatches, checkboxes, handles, and fixed loading indicators.
+Use a definite paired size for avatars, swatches or compact media. The source image is 320 × 200px; `size:16x` gives it a 64px square box and `object-cover` crops the image to fill it.
+
+<DemoExample page="size" section="build-square-media-and-controls" />
+
 ```html
-<!-- @MARK size:12x --><!-- @MARK round -->
-<img class="size:12x round object-cover" src="..." alt="" />
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block size:16x round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
 ```
+
+Width and height HTML attributes provide the source dimensions. The CSS size overrides the rendered box; [object-fit](/reference/object-fit) controls how the image is drawn inside it.
 
 ### Set one logical axis \{#set-one-logical-axis\}
-Use `size-x:*` for inline size and `size-y:*` for block size.
+`size-x:*` sets inline-size and `size-y:*` sets block-size. These are logical directions. With 160px inline size and 80px block size, horizontal writing produces a 160 × 80px box; vertical writing produces 80 × 160px.
+
+<DemoExample page="size" section="set-one-logical-axis" />
+
 ```html
-<!-- @MARK size-x:md --><!-- @MARK size-y:20x -->
-<aside class="size-x:md size-y:20x">...</aside>
+<!-- Horizontal writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="p:sm size-x:40x size-y:20x">Inline →</div>
+</div>
 ```
 
-Use [aspect-ratio](/reference/aspect-ratio) when the element should keep a non-square ratio while one axis remains fluid.
 ```html
-<!-- @MARK w:full --><!-- @MARK aspect-ratio:16/9 -->
-<video class="w:full aspect-ratio:16/9" controls></video>
+<!-- Vertical writing -->
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <div id="target" class="p:sm size-x:40x size-y:20x writing-mode:vertical-rl">Inline →</div>
+</div>
 ```
+
+Use physical [width](/reference/width) and [height](/reference/height) when a dimension must keep the same physical direction across writing modes.
 
 ### Use the `full` static utility \{#use-the-full-static-utility\}
-The `full` utility sets both axes to `100%`. Use `w:full` or `h:full` when only one axis should fill.
-```html
-<!-- @MARK full -->
-<div class="full">...</div>
+`full` sets both width and height to 100%. In this definite 240 × 120px parent it fills both axes. `w:full` fills only the width, leaving the height to the content.
 
-<!-- @MARK w:full -->
-<div class="w:full">...</div>
+<DemoExample page="size" section="use-the-full-static-utility" />
+
+```html
+<!-- Both axes -->
+<div id="layout" class="h:30x w:60x" role="group" aria-label="Available space">
+  <div id="target" class="full p:sm leading:20px">Full</div>
+</div>
 ```
 
-### Use intrinsic static utilities \{#use-intrinsic-static-utilities\}
-Use `fit` when both axes should follow `fit-content`, or `full` when both axes should fill the available space.
 ```html
-<!-- @MARK fit -->
-<div class="fit">
-  Compact content
+<!-- Width only -->
+<div id="layout" class="h:30x w:60x" role="group" aria-label="Available space">
+  <div id="target" class="w:full p:sm leading:20px">Width only</div>
+</div>
+```
+
+The percentage height needs a definite reference here. An automatic-height parent does not become definite merely because its child has `full`.
+
+### Use intrinsic static utilities \{#use-intrinsic-static-utilities\}
+`fit` sets both preferred dimensions to fit-content. The compact label below follows its words and padding; the longer text wraps within the available width and gains height.
+
+<DemoExample page="size" section="use-intrinsic-static-utilities" />
+
+```html
+<!-- Compact content -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <div id="target" class="fit p:sm leading:20px">Compact action</div>
+</div>
+```
+
+```html
+<!-- Wrapping content -->
+<div id="layout" class="w:60x" role="group" aria-label="Available space">
+  <div id="target" class="fit p:sm leading:20px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
 </div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="size:8x full@dark size:6x@print size:10x@sm">...</div>
-```
+Resize past `sm` to change the same media box from 48px square to 80px square. Both physical axes change together, while the source image keeps its intrinsic dimensions.
 
-For physical one-axis sizing, use [width](/reference/width) and [height](/reference/height).
+<DemoExample page="size" section="apply-conditionally" />
+
+```html
+<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
+  <img id="target" class="block size:12x object-cover size:20x@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+</div>
+```

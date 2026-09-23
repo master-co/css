@@ -2,34 +2,37 @@
 <Overview/>
 
 ## Examples \{#examples\}
+
 ### Basic usage \{#basic-usage\}
+Compare the same uppercase label across the tracking scale.
+
+<DemoExample page="letter-spacing" section="basic-usage" />
+
 <BasicUsage />
 
-Use `tracking:*` to control letter spacing. Tight tracking is common for large headings, while wider tracking is often used for short uppercase labels.
+### Use a custom value \{#use-a-custom-value\}
+An `em` value scales with the element’s font size. This explicit `0.03em` adds 0.6px at 20px type; the box readout measures the complete run.
+
+<DemoExample page="letter-spacing" section="use-a-custom-value" />
+
 ```html
-<!-- @MARK tracking:tight --><!-- @MARK tracking:wide -->
-<h1 class="tracking:tight">Product launch</h1>
-<p class="font:xs tracking:wide text-transform:uppercase">Preview</p>
+<!-- A measured custom adjustment -->
+<p id="target" class="inline-block m:0 font:xl leading:md tracking:.03em">CLEAR TYPE</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['tracking:tight', 'tracking:wide']}
+    {['tracking:.03em']}
   </Class2CSS>
 </details>
 
-### Use a custom value \{#use-a-custom-value\}
-Use `tracking:*` with an explicit CSS value when the spacing is a local typographic adjustment.
-```html
-<!-- @MARK tracking:.04em -->
-<span class="tracking:.04em">Custom tracking</span>
-```
-
-Avoid wide tracking on long paragraphs because it reduces readability.
-
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or keyboard-focus the button to increase tracking. Leave enough room for the text to grow without clipping.
+
+<DemoExample page="letter-spacing" section="apply-conditionally" />
+
 ```html
-<div class="tracking:normal tracking:wide:hover tracking:normal@print tracking:tight@sm">...</div>
+<!-- Pointer and keyboard states -->
+<button type="button" id="target" class="font:md tracking:normal tracking:wide:hover tracking:wide:focus-visible">Explore the canvas</button>
 ```

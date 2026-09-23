@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-behavior',
-  description: 'Setting the scrolling behavior for a scrolling box.',
+  description: 'Choose immediate or smooth navigation within a scroll container.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-behavior',

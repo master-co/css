@@ -1,19 +1,11 @@
-Use tokens like `text:3xl` and `text:4xl` to style page titles and hero sections.
-<Demo $py={0}>
-  <DemoPanel className="flex flex-col gap:xl w:full">
-    <div className="w:full">
-      <DemoLabel>text:4xl</DemoLabel>
-      <DemoP className="text:4xl font:regular text-pretty">Designing for clarity and consistency across every platform.</DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>text:3xl</DemoLabel>
-      <DemoP className="text:3xl font:regular text-pretty">Designing for clarity and consistency across every platform.</DemoP>
-    </div>
-  </DemoPanel>
-</Demo>
+Larger steps use tighter leading and tracking. Keep titles short enough to wrap comfortably at narrow widths.
+
 ```html
-<!-- @MARK text:4xl -->
-<h1 class="text:4xl">Designing for clarity and consistency...</h1>
-<!-- @MARK text:3xl -->
-<h1 class="text:3xl">Designing for clarity and consistency...</h1>
+<!-- text:3xl -->
+<h2 id="target" class="max-w:28ch m:0 text:3xl font:regular">Space for good ideas.</h2>
+```
+
+```html
+<!-- text:4xl -->
+<h2 id="target" class="max-w:28ch m:0 text:4xl font:regular">Space for good ideas.</h2>
 ```

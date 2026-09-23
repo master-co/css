@@ -3,27 +3,31 @@
 
 ## Basic usage \{#basic-usage\}
 ### Name areas in a grid \{#name-areas-in-a-grid\}
-Use `grid-template-areas` to define named layout regions, then place children with [`grid-area`](/reference/grid-area).
-<Demo $py={0}>
-  <DemoPanel>
-    <div className="grid grid-template-areas:'head_head'|'nav_main' grid-template-columns:96px|1fr grid-template-rows:56px|96px gap:xs">
-      <div className="overflow:hidden grid-area:head min-w:0 p:sm b:1px|solid|blue-20 r:lg text-ellipsis white-space:nowrap bg:blue-5 b:blue-80@dark bg:blue-95@dark">Head</div>
-      <div className="overflow:hidden grid-area:nav min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Nav</div>
-      <div className="overflow:hidden grid-area:main min-w:0 p:sm r:lg text-ellipsis white-space:nowrap bg:gray-5 bg:gray-90@dark">Main</div>
-    </div>
-  </DemoPanel>
-</Demo>
+`grid-template-areas` names rectangular regions. Each quoted string describes one row; use `\20` for spaces within that string and `|` between rows. Here `head` spans both columns, with `nav` and `main` below it.
+
+<DemoExample page="grid-template-areas" section="name-areas-in-a-grid" />
+
 ```html
-<!-- @MARK grid-template-areas:'head_head'|'nav_main' -->
-<div class="grid grid-template-areas:'head_head'|'nav_main'">
-  <header class="grid-area:head">Head</header>
-  <nav class="grid-area:nav">Nav</nav>
-  <main class="grid-area:main">Main</main>
+<div id="layout" class="grid grid-template-areas:'head\20head'|'nav\20main' grid-template-columns:80px|1fr grid-template-rows:48px|96px gap:md w:70x max-w:full">
+  <header id="target" class="grid-area:head p:sm">Header</header>
+  <aside id="peer" class="grid-area:nav p:sm">Nav</aside>
+  <section id="item-3" class="grid-area:main p:sm">Content</section>
 </div>
 ```
 
+Place children with the matching [grid-area](/reference/grid-area) name. Repeated names must form a filled rectangle, and every row must contain the same number of cells. Use `.` for an unnamed cell. The area map does not set track sizes: those are supplied separately here.
+
+Setting `grid-template-areas:none` removes the named regions but leaves the children’s placement values intact. Reset their `grid-area` values too if the intention is to return them to auto-placement.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to change the layout at a real viewport width. The named regions stack in one column initially. From `sm`, the header spans two columns and navigation sits beside content. The area map and track sizes change together; the children keep their names and source order.
+
+<DemoExample page="grid-template-areas" section="apply-conditionally" />
+
 ```html
-<div class="grid-template-areas:none:hover grid-template-areas:none@dark grid-template-areas:none@print grid-template-areas:none@sm">…</div>
+<div id="layout" class="grid grid-template-areas:'head'|'nav'|'main' grid-template-columns:1fr grid-template-rows:48px|48px|96px gap:md w:70x max-w:full grid-template-areas:'head\20head'|'nav\20main'@sm grid-template-columns:80px|1fr@sm grid-template-rows:48px|96px@sm">
+  <header id="target" class="grid-area:head p:sm">Header</header>
+  <aside id="peer" class="grid-area:nav p:sm">Nav</aside>
+  <section id="item-3" class="grid-area:main p:sm">Content</section>
+</div>
 ```

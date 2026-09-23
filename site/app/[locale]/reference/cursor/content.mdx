@@ -1,43 +1,81 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`cursor` requests a pointer shape over an element. The operating system and input device determine its appearance; a shape does not create an action or disable a control.
 
 ## Examples \{#examples\}
 ### Show clickable affordance \{#show-clickable-affordance\}
-Use `cursor:pointer` for custom controls that are not native buttons or links.
+Use `cursor:pointer` on a real disclosure control. Click or press Enter on the summary to reveal its setting.
+
+<DemoExample page="cursor" section="show-clickable-affordance" />
+
 ```html
-<!-- @MARK cursor:pointer -->
-<div role="button" tabindex="0" class="cursor:pointer">
-  Open menu
-</div>
+<details>
+  <summary id="target"
+    class="p:sm b:1px|solid|base r:sm cursor:pointer">Canvas settings</summary>
+  <label class="flex items-center gap:sm mt:md">
+    <input type="checkbox"> Show grid
+  </label>
+</details>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['cursor:pointer']}
-  </Class2CSS>
+  <Class2CSS>{['cursor:pointer']}</Class2CSS>
 </details>
 
+The native summary already supplies focus, keyboard activation and expanded state. A `div` with a pointer cursor would not provide those behaviors.
+
 ### Mark disabled actions \{#mark-disabled-actions\}
-Use `cursor:not-allowed` with a real disabled state or equivalent accessibility attributes.
+Pair `cursor:not-allowed` with the native `disabled` attribute. The cursor is a visual cue; `disabled` is what prevents the reset action.
+
+<DemoExample page="cursor" section="mark-disabled-actions" />
+
 ```html
-<!-- @MARK cursor:not-allowed -->
-<button disabled class="opacity:.5 cursor:not-allowed">
-  Unavailable
-</button>
+<form class="grid justify-items:start gap:md">
+  <label class="grid gap:xs w:240px max-w:full">
+    Project name <input type="text" value="Canvas" class="w:full">
+  </label>
+  <button id="target" type="reset" disabled
+    class="opacity:.6 cursor:not-allowed">
+    Reset unavailable
+  </button>
+  <button type="reset">Reset name</button>
+</form>
 ```
+
+Edit the name first, then compare the disabled button with the enabled reset. `aria-disabled` alone would not prevent activation; a custom control must implement that behavior.
 
 ### Support drag handles \{#support-drag-handles\}
-Use `cursor:grab` and `cursor:grabbing` to make draggable handles clearer.
+Use `cursor:grab` with `cursor:grabbing:active` on content that really participates in native dragging. This image has `draggable="true"`.
+
+<DemoExample page="cursor" section="support-drag-handles" />
+
 ```html
-<!-- @MARK cursor:grab --><!-- @MARK cursor:grabbing:active -->
-<button class="cursor:grab cursor:grabbing:active">
-  Move
-</button>
+<img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
+  width="240" height="144"
+  class="block h:auto w:240px max-w:full r:sm
+         cursor:grab cursor:grabbing:active" draggable="true">
+<p class="mb:0 mt:sm font:xs text:muted">Drag the image, or <a href="/demo/landscape.svg" download>download the artwork</a>.</p>
 ```
 
+The grabbing style applies while the element is active. Once native dragging begins, the operating system may show its own drag feedback. These classes do not implement reordering or a drop target.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize to request `cursor:pointer` at `sm` and `cursor:default` below it. The disclosure opens with the mouse or keyboard at either width.
+
+<DemoExample page="cursor" section="apply-conditionally" />
+
 ```html
-<div class="cursor:pointer:hover cursor:auto@print cursor:default@sm">...</div>
+<details>
+  <summary id="target"
+
+  class="p:sm b:1px|solid|base r:sm cursor:default
+         cursor:auto@print cursor:pointer@screen&sm">Canvas settings</summary>
+  <label class="flex items-center gap:sm mt:md">
+    <input type="checkbox"> Show grid
+  </label>
+</details>
 ```
+
+Hover with a pointing device to inspect the native cursor. Touch devices may show no cursor even though the computed value changes.

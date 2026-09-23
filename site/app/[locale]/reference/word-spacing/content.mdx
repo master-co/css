@@ -1,40 +1,65 @@
 ## Overview [sr-only] \{#overview\}
 <Overview/>
-{/* eslint-disable @master/css/prefer-canonical-classes -- reference examples intentionally document word-spacing values */}
 
 ## Examples \{#examples\}
+
 ### Add space between words \{#add-space-between-words\}
-Use `word-spacing:*` for short labels, all-caps headings, or dense text where words need more separation.
+`word-spacing` adjusts the normal space between words. An `em` value follows the element’s font size; it does not change the distance between every pair of letters.
+
+<DemoExample page="word-spacing" section="add-space-between-words" />
+
 ```html
-<!-- @MARK word-spacing:.04em -->
-<p class="word-spacing:.04em">
-  Quarterly revenue report
-</p>
+<!-- word-spacing:0 -->
+<p id="target" class="inline-block m:0 font:md leading:md word-spacing:0">Make room for ideas.</p>
 ```
 
-<details>
-  <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['word-spacing:.04em']}
-  </Class2CSS>
-</details>
+```html
+<!-- word-spacing:.25em -->
+<p id="target" class="inline-block m:0 font:md leading:md word-spacing:.25em">Make room for ideas.</p>
+```
+
+{/* eslint-disable @master/css/prefer-canonical-classes -- This comparison deliberately teaches fixed word-spacing lengths. */}
 
 ### Use fixed spacing when needed \{#use-fixed-spacing-when-needed\}
-Any valid CSS length can be used when the spacing needs to match a fixed visual rhythm.
+A length adds the same amount to each word separator regardless of type size. These two samples add 4px per space, while their glyphs use different sizes.
+
+<DemoExample page="word-spacing" section="use-fixed-spacing-when-needed" />
+
 ```html
-<!-- @MARK word-spacing:2px -->
-<span class="word-spacing:2px">Invoice total</span>
+<!-- font:sm · +4px per space -->
+<p id="target" class="inline-block m:0 font:sm leading:md word-spacing:4px">Make room for ideas.</p>
 ```
+
+```html
+<!-- font:xl · +4px per space -->
+<p id="target" class="inline-block m:0 font:xl leading:md word-spacing:4px">Make room for ideas.</p>
+```
+
+{/* eslint-enable @master/css/prefer-canonical-classes */}
 
 ### Avoid overusing wide spacing \{#avoid-overusing-wide-spacing\}
-Large word spacing can hurt readability in paragraphs. Prefer it for short runs of text.
+Large word gaps can break the visual continuity of a paragraph. Compare the same line width and content with no extra spacing and a deliberately wide setting.
+
+<DemoExample page="word-spacing" section="avoid-overusing-wide-spacing" />
+
 ```html
-<p class="word-spacing:0">Long body copy keeps normal word spacing.</p>
+<!-- word-spacing:0 -->
+<p id="target" class="max-w:24ch m:0 font:md leading:md word-spacing:0">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
 ```html
-<p class="word-spacing:.04em:hover word-spacing:0@print word-spacing:0@sm">...</p>
+<!-- word-spacing:.5em -->
+<p id="target" class="max-w:24ch m:0 font:md leading:md word-spacing:.5em">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
+
+`word-spacing:0` keeps the font’s normal spaces; it does not remove whitespace from the text.
+
+### Apply conditionally \{#apply-conditionally\}
+Hover or keyboard-focus the button to add word spacing. The content and letter spacing remain unchanged.
+
+<DemoExample page="word-spacing" section="apply-conditionally" />
+
+```html
+<!-- Pointer and keyboard states -->
+<button type="button" id="target" class="font:md word-spacing:0 word-spacing:.25em:hover word-spacing:.25em:focus-visible">Make room for ideas.</button>
+```

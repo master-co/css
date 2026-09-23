@@ -3,12 +3,30 @@
 
 ## Examples \{#examples\}
 ### Enable smooth anchor scrolling \{#enable-smooth-anchor-scrolling\}
-Use `scroll-behavior:smooth` on the scrolling container or root element when anchor navigation should animate.
+`scroll-behavior:smooth` lets the browser animate anchor navigation and scroll API calls that use automatic behavior. It does not set the speed of a wheel or touch gesture. Follow the links to move between real destinations in this bounded scroller.
+
+<DemoExample page="scroll-behavior" section="enable-smooth-anchor-scrolling" />
+
 ```html
-<!-- @MARK scroll-behavior:smooth -->
-<main class="scroll-behavior:smooth">
-  ...
-</main>
+<nav aria-label="Collection sections">
+  <a href="#overview">Overview</a>
+  <a href="#details">Details</a>
+  <a href="#resources">Resources</a>
+</nav>
+<div id="scrollport" class="overflow-y:auto h:56x scroll-behavior:smooth scroll-behavior:auto@reduce-motion" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
 
 <details>
@@ -18,25 +36,93 @@ Use `scroll-behavior:smooth` on the scrolling container or root element when anc
   </Class2CSS>
 </details>
 
-### Keep static output immediate \{#keep-static-output-immediate\}
-Use `scroll-behavior:auto` when a context should jump directly, such as print or automated layout measurement.
+The browser chooses the timing and may ignore smooth scrolling. The `@reduce-motion` override uses the user’s actual system preference.
+
+### Use immediate scrolling \{#keep-static-output-immediate\}
+`scroll-behavior:auto` uses the browser’s ordinary immediate scrolling behavior. Activate Details to compare the direct jump with the animated example above.
+
+<DemoExample page="scroll-behavior" section="keep-static-output-immediate" />
+
 ```html
-<!-- @MARK scroll-behavior:auto -->
-<main class="scroll-behavior:smooth scroll-behavior:auto@print">
-  ...
-</main>
+<nav aria-label="Collection sections">
+  <a href="#overview">Overview</a>
+  <a href="#details">Details</a>
+  <a href="#resources">Resources</a>
+</nav>
+<div id="scrollport" class="overflow-y:auto h:56x scroll-behavior:auto" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
 
+<details>
+  <summary>Generated CSS</summary>
+  <Class2CSS>
+    {['scroll-behavior:auto']}
+  </Class2CSS>
+</details>
+
 ### Combine with scroll offsets \{#combine-with-scroll-offsets\}
-Smooth scrolling pairs well with `scroll-mt:*` on the destination element or `scroll-pt:*` on the container.
+Use scroll padding on the container to reserve its viewing region, and scroll margin on a target for extra clearance. Details stops 64px below the top: 48px for the sticky header plus 16px of target clearance.
+
+<DemoExample page="scroll-behavior" section="combine-with-scroll-offsets" />
+
 ```html
-<main class="scroll-pt:3xl scroll-behavior:smooth">
-  <section id="details" class="scroll-mt:3xl">Details</section>
-</main>
+<nav aria-label="Collection sections">
+  <a href="#overview">Overview</a>
+  <a href="#details">Details</a>
+  <a href="#resources">Resources</a>
+</nav>
+<div id="scrollport" class="overflow-y:auto h:56x scroll-pt:2xl scroll-behavior:smooth scroll-behavior:auto@reduce-motion" tabindex="0" aria-label="Scrollable collection">
+  <header class="sticky top z:1 h:12x">Collection navigation</header>
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs scroll-mt:md">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions) to apply the change only when its condition matches. This scroller moves immediately at narrow widths. From `sm`, it animates only when the user has not requested reduced motion.
+
+<DemoExample page="scroll-behavior" section="apply-conditionally" />
+
 ```html
-<main class="scroll-behavior:smooth scroll-behavior:auto@print">...</main>
+<nav aria-label="Collection sections">
+  <a href="#overview">Overview</a>
+  <a href="#details">Details</a>
+  <a href="#resources">Resources</a>
+</nav>
+<div id="scrollport" class="overflow-y:auto h:56x scroll-behavior:auto scroll-behavior:smooth@motion&sm" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h:3xs">
+    <strong>Overview</strong>
+    <p>Collect the decisions and shared assets for this project in one place.</p>
+  </section>
+  <section id="details" class="h:3xs">
+    <strong>Details</strong>
+    <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
+  </section>
+  <section id="resources" class="h:3xs">
+    <strong>Resources</strong>
+    <p>Keep source files and supporting notes beside the finished collection.</p>
+  </section>
+</div>
 ```

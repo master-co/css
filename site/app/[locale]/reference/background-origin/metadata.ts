@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'background-origin',
-  description: 'Setting the background\'s origin.',
+  description: 'Choosing the positioning area for a background image.',
   category: 'Color & Backgrounds',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=background-origin',

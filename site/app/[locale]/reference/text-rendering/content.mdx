@@ -3,12 +3,22 @@
 
 ## Examples \{#examples\}
 ### Optimize legibility \{#optimize-legibility\}
-Use `text-rendering:optimizeLegibility` for headings or short text where ligatures and kerning quality matter more than rendering speed.
+`text-rendering:optimizeLegibility` requests a rendering tradeoff favoring legibility. The property originates in SVG and is also applied to HTML text by browsers; an accepted value does not guarantee a visible change.
+
+<DemoExample page="text-rendering" section="optimize-legibility" />
+
 ```html
-<!-- @MARK text-rendering:optimizeLegibility -->
-<h2 class="text-rendering:optimizeLegibility">
-  Product analytics
-</h2>
+<!-- text-rendering:auto -->
+<svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
+  <text id="target" x="4" y="44" class="font:3xl text-rendering:auto fill:current">AV office</text>
+</svg>
+```
+
+```html
+<!-- text-rendering:optimizeLegibility -->
+<svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
+  <text id="target" x="4" y="44" class="font:3xl text-rendering:optimizeLegibility fill:current">AV office</text>
+</svg>
 ```
 
 <details>
@@ -18,24 +28,38 @@ Use `text-rendering:optimizeLegibility` for headings or short text where ligatur
   </Class2CSS>
 </details>
 
-### Prefer speed for dense updates \{#prefer-speed-for-dense-updates\}
-Use `text-rendering:optimizeSpeed` in fast-updating or very dense surfaces when rendering performance matters.
+For explicit kerning or ligatures, use their dedicated font properties. Do not use this hint as a substitute for choosing and testing the font.
+
+### Request a speed-oriented rendering hint \{#prefer-speed-for-dense-updates\}
+`text-rendering:optimizeSpeed` requests a speed-oriented tradeoff. It is not evidence of faster rendering; benchmark the actual application before treating it as an optimization.
+
+<DemoExample page="text-rendering" section="prefer-speed-for-dense-updates" />
+
 ```html
-<!-- @MARK text-rendering:optimizeSpeed -->
-<div class="text-rendering:optimizeSpeed">
-  Streaming log output
-</div>
+<!-- Native SVG rendering hint -->
+<svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
+  <text id="target" x="4" y="44" class="font:3xl text-rendering:optimizeSpeed fill:current">AV office</text>
+</svg>
 ```
 
 ### Return to browser behavior \{#return-to-browser-behavior\}
-Use `text-rendering:auto` when the browser should choose the rendering strategy.
+`text-rendering:auto` restores the browser’s default tradeoff. This paragraph resets an inherited legibility hint while its parent keeps that request.
+
+<DemoExample page="text-rendering" section="return-to-browser-behavior" />
+
 ```html
-<!-- @MARK text-rendering:auto -->
-<p class="text-rendering:auto">Default rendering</p>
+<!-- Inherited hint · local auto reset -->
+<div class="text-rendering:optimizeLegibility">
+  <p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-rendering:auto">AV office — a readable interface.</p>
+</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Hover or focus the button to request a different rendering strategy. The computed hint changes even on platforms where the visible glyphs remain the same.
+
+<DemoExample page="text-rendering" section="apply-conditionally" />
+
 ```html
-<p class="text-rendering:optimizeLegibility:hover text-rendering:auto@print text-rendering:auto@sm">...</p>
+<!-- Pointer and keyboard rendering hint -->
+<button id="target" type="button" tabindex="0" class="font:xl text-rendering:auto text-rendering:optimizeLegibility:hover text-rendering:optimizeLegibility:focus-visible">AV office</button>
 ```

@@ -3,11 +3,43 @@
 
 ## Examples \{#examples\}
 ### Set the pivot point \{#set-the-pivot-point\}
-Use `transform-origin:*` to define the point an element rotates, scales, or skews around.
+Compare the same 75% scale around the center and the top-left corner. Violet points mark each pivot outside the transformed layer.
+
+<DemoExample page="transform-origin" section="set-the-pivot-point" />
+
 ```html
-<!-- @MARK transform-origin:center -->
-<div class="transform-origin:center transform:scale(.96):hover">
-  Scales from center
+<!-- Center · four edges move inward -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="grid place-items:start|center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.75)
+             transform-origin:center">
+      Center pivot
+    </div>
+    <span aria-hidden="true"
+      class="abs left:77px top:45px size:6px r:full
+             bg:violet-60 untouchable"></span>
+  </div>
+</div>
+```
+
+```html
+<!-- Top left · two edges stay fixed -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="grid place-items:start|center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.75)
+             transform-origin:top|left">
+      Corner pivot
+    </div>
+    <span aria-hidden="true"
+      class="abs left:-3px top:-3px size:6px r:full
+             bg:violet-60 untouchable"></span>
+  </div>
 </div>
 ```
 
@@ -18,25 +50,102 @@ Use `transform-origin:*` to define the point an element rotates, scales, or skew
   </Class2CSS>
 </details>
 
+The transform is identical in both examples. Only the pivot changes. Origin percentages refer to the transform reference box; the usual HTML border box is 160 × 96 here.
+
 ### Use two-axis origins \{#use-two-axis-origins\}
-Separate multi-word origins with `|` so they become space-separated CSS values.
+The first coordinate is horizontal and the second is vertical. Compare a top-right keyword pair with the explicit point 25% across and 75% down.
+
+<DemoExample page="transform-origin" section="use-two-axis-origins" />
+
 ```html
-<!-- @MARK transform-origin:top|right -->
-<div class="transform:rotate(2deg) transform-origin:top|right">
-  Rotates from the corner
+<!-- Top right · 160px, 0px -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.75)
+             transform-origin:top|right">
+      Top-right pivot
+    </div>
+    <span aria-hidden="true"
+      class="abs right:-3px top:-3px size:6px r:full
+             bg:violet-60 untouchable"></span>
+  </div>
 </div>
 ```
+
+```html
+<!-- 25% 75% · 40px, 72px -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.75)
+             transform-origin:25%|75%">
+      Offset pivot
+    </div>
+    <span aria-hidden="true"
+      class="abs left:37px top:69px size:6px r:full
+             bg:violet-60 untouchable"></span>
+  </div>
+</div>
+```
+
+Use `|` for spaces inside a class value. Percentage offsets use the selected reference box. A third origin value, when needed for 3D transforms, is a length along the Z axis.
 
 ### Match the origin to the interaction \{#match-the-origin-to-the-interaction\}
-Menus, tooltips, and popovers usually feel more natural when their origin is close to the anchor that opened them.
+Focus or hover this native button to grow its preview from the top-left anchor. The fixed violet point shows which corner remains in place.
+
+<DemoExample page="transform-origin" section="match-the-origin-to-the-interaction" />
+
 ```html
-<div class="transform:scale(.98) transform-origin:top|left">
-  Anchored menu
+<!-- Anchored preview · hover or focus -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <button id="target" type="button"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.8)
+             transform-origin:top|left
+             outline:2px|solid|blue:focus-visible
+             outline-offset:3px:focus-visible
+             transform:none@print
+             transition:transform|fast|ease-out@motion
+             transform:scale(1):hover@screen
+             transform:scale(1):focus-visible@screen">
+      Preview layer
+    </button>
+    <span aria-hidden="true"
+      class="abs left:-3px top:-3px size:6px r:full
+             bg:violet-60 untouchable"></span>
+  </div>
 </div>
 ```
 
+Choose an origin that explains the relationship to the trigger. This example teaches the scale geometry on a real button; an actual menu also needs its own focus and dismissal behavior. Reduced motion removes the animated interpolation.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Widen to `sm` to move the pivot from the center to the top-right corner. The scale stays at 75%, making the origin change visible.
+
+<DemoExample page="transform-origin" section="apply-conditionally" />
+
 ```html
-<div class="transform-origin:center:hover transform-origin:center@print transform-origin:top|right@sm">...</div>
+<!-- Center → top right at sm -->
+<div class="p:lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+    <div id="target"
+      class="grid place-items:center h:96px w:160px p:sm
+             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
+             fg:blue-80 transform:scale(.75)
+             transform-origin:center
+             transform-origin:center@print
+             transform-origin:top|right@screen&sm">
+      Same scale
+    </div>
+  </div>
+</div>
 ```
+
+The live origin values come from the real viewport query. Print restores the center origin while preserving the scale.

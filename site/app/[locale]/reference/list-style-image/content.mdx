@@ -3,40 +3,78 @@
 
 ## Examples \{#examples\}
 ### Use an image marker \{#use-an-image-marker\}
-Use `list-style-image:url(*)` when each list item should use an image marker.
+Point `list-style-image` at an image asset. This local SVG has an intrinsic size of 12 × 12; it replaces the square marker while preserving the list’s outside position.
+
+<DemoExample page="list-style-image" section="use-an-image-marker" />
+
 ```html
-<!-- @MARK list-style-image:url(/marker.svg) -->
-<ul class="list-style-image:url(/marker.svg)">
-  <li>Custom marker</li>
+<!-- 12 × 12 SVG · native marker -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:square|outside list-style-image:url(/demo/marker.svg)">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
+
+Keep a type marker as a fallback. Image markers do not use the text’s foreground color; the asset controls its own paint.
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['list-style-image:url(/marker.svg)']}
+    {['list-style-image:url(/demo/marker.svg)']}
   </Class2CSS>
 </details>
 
 ### Use a gradient marker \{#use-a-gradient-marker\}
-Gradient functions can also be used when a generated marker is more appropriate than an asset.
+A CSS gradient can be the marker image. Reference the preset color variables explicitly and separate color stops with a comma inside the function.
+
+<DemoExample page="list-style-image" section="use-a-gradient-marker" />
+
 ```html
-<!-- @MARK list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40)) -->
-<ul class="list-style-image:linear-gradient(var(--color-blue-60)|var(--color-blue-40))">
-  <li>Gradient marker</li>
+<!-- Generated image · blue to violet -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:disc|outside
+    list-style-image:linear-gradient(var(--color-blue-50),var(--color-violet-50))">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
+
+A gradient has no intrinsic dimensions. Its native marker size depends on the browser and font; the readout reports the actual image value, not a fixed marker size.
 
 ### Fall back to type markers \{#fall-back-to-type-markers\}
-Use `list-style:disc` or another type utility when image markers are not desired in a condition.
+Set only the image to `none` when the type and position should survive. Open print preview: the SVG becomes a square marker and remains outside.
+
+<DemoExample page="list-style-image" section="fall-back-to-type-markers" />
+
 ```html
-<ul class="list-style-image:url(/marker.svg) list-style:disc@print">
-  <li>Printable marker</li>
+<!-- Screen SVG · print square -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:square|outside list-style-image:url(/demo/marker.svg)
+    list-style-image:none@print">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
 </ul>
 ```
 
+A `list-style` shorthand would reset all three properties. `list-style-image:none` removes the image independently.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize past `sm` to add the image on screen. The square type remains the fallback at every size; print uses that type without an image.
+
+<DemoExample page="list-style-image" section="apply-conditionally" />
+
 ```html
-<ul class="list-style-image:url(/marker.svg):hover list-style:disc@print list-style:disc@sm">...</ul>
+<!-- Real viewport · square to SVG -->
+<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+    list-style:square|outside list-style-image:none
+    list-style-image:none@print
+    list-style-image:url(/demo/marker.svg)@screen&sm">
+  <li class="mb:2xs">Collect references</li>
+  <li class="mb:2xs">Compare the spacing across every screen size.</li>
+  <li class="mb:2xs">Review the composition</li>
+</ul>
 ```

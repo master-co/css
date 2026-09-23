@@ -1,25 +1,16 @@
-Use tokens like `text:sm`, `text:md`, and `text:lg` to style body text, descriptions, and paragraphs.
-<Demo $py={0}>
-  <DemoPanel className="flex flex-col gap:xl w:full">
-    <div className="w:full">
-      <DemoLabel>text:sm</DemoLabel>
-      <DemoP className="text:sm font:regular">Design is not just about aesthetics—it’s about communication. Proper font sizes and spacing help present information clearly and improve usability.</DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>text:md</DemoLabel>
-      <DemoP className="text:md font:regular">Design is not just about aesthetics—it’s about communication. Proper font sizes and spacing help present information clearly and improve usability.</DemoP>
-    </div>
-    <div className="w:full">
-      <DemoLabel>text:lg</DemoLabel>
-      <DemoP className="text:lg font:regular">Design is not just about aesthetics—it’s about communication. Proper font sizes and spacing help present information clearly and improve usability.</DemoP>
-    </div>
-  </DemoPanel>
-</Demo>
+Use the smaller type steps for supporting text and body copy. Each `text:*` utility sets font size, line height and letter spacing together.
+
 ```html
-<!-- @MARK text:sm -->
-<p class="text:sm">Design is not just about aesthetics—it’s...</p>
-<!-- @MARK text:md -->
-<p class="text:md">Design is not just about aesthetics—it’s...</p>
-<!-- @MARK text:lg -->
-<p class="text:lg">Design is not just about aesthetics—it’s...</p>
+<!-- text:sm -->
+<p id="target" class="max-w:28ch m:0 text:sm font:regular">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+```html
+<!-- text:md -->
+<p id="target" class="max-w:28ch m:0 text:md font:regular">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+```
+
+```html
+<!-- text:lg -->
+<p id="target" class="max-w:28ch m:0 text:lg font:regular">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```

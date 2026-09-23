@@ -3,34 +3,50 @@
 
 ## Examples \{#examples\}
 ### Allow an item to shrink \{#allow-an-item-to-shrink\}
-Use `flex-shrink:1` when a flex item can become smaller than its basis to fit the row.
+`flex-shrink` distributes a shortage of space relative to each item’s basis. These 192px and 96px bases, plus the 16px gap, exceed the 280px row. With equal shrink factors, the larger basis loses twice as much width.
+
+<DemoExample page="flex-shrink" section="allow-an-item-to-shrink" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK flex-shrink:1 -->
-<div class="flex">
-  <main class="flex-shrink:1 min-w:0">...</main>
+<div id="layout" class="flex gap:md w:70x max-w:full">
+  <div id="target" class="flex-basis:48x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">192px basis</span></div>
+  <div id="peer" class="flex-basis:24x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">96px basis</span></div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'flex-shrink:1', 'min-w:0']}
+    {['flex-shrink:1', 'min-w:0']}
   </Class2CSS>
 </details>
 
+At the full 280px row width, the items settle at 176px and 88px. `min-w:0` removes their automatic content minimum so the shrink calculation can fit the row.
+
 ### Prevent fixed media from shrinking \{#prevent-fixed-media-from-shrinking\}
-Use `flex-shrink:0` for icons, avatars, and fixed side regions that should preserve their measured size.
+`flex-shrink:0` keeps a fixed avatar from losing width when a long text sibling needs space. The 48px avatar stays square; the text box can shrink and wrap inside the 280px row.
+
+<DemoExample page="flex-shrink" section="prevent-fixed-media-from-shrinking" />
+
 ```html
-<!-- @MARK flex-shrink:0 --><!-- @MARK size:10x -->
-<img class="flex-shrink:0 size:10x" src="..." alt="" />
+<div id="layout" class="flex items-center gap:md w:70x max-w:full">
+  <span id="target" class="grid flex-shrink:0 place-items:center size:12x" aria-hidden="true">AL</span>
+  <div id="peer" class="wrap-anywhere flex-basis:xs min-w:0 p:sm">Alexandra Lee<br>alexandra.lee@collaborative.design.example</div>
+</div>
 ```
 
-Text siblings often need `min-w:0` so they shrink instead of pushing fixed media out of the container.
+Removing the minimum-width constraint changes the box’s sizing. A separate wrapping rule handles an unbroken address that would otherwise paint outside it.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Use [conditional queries](/reference/rules/conditions) to preserve the blue item’s 192px basis from `sm`. The row remains 280px wide so resizing isolates the change in shrink behavior; the violet item absorbs the remaining shortage.
+
+<DemoExample page="flex-shrink" section="apply-conditionally" />
+
 ```html
-<div class="flex-shrink:1 flex-shrink:1@print flex-shrink:0@sm">...</div>
+<div id="layout" class="flex gap:md w:70x max-w:full">
+  <div id="target" class="flex-basis:48x flex-shrink:1 h:24x min-w:0 flex-shrink:0@sm"><span class="block p:sm">Target</span></div>
+  <div id="peer" class="flex-basis:24x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">Peer</span></div>
+</div>
 ```
 
-Use [flex](/reference/flex) when the grow, shrink, and basis values should be expressed as one rule.
+Use [flex](/reference/flex) when growth, shrinkage and basis should be expressed as one rule.

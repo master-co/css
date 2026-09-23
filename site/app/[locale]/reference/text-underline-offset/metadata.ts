@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'text-underline-offset',
-  description: 'Setting the distance of a text decoration line from its original position.',
+  description: 'Move underline paint independently of text layout and line thickness.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=text-underline-offset',

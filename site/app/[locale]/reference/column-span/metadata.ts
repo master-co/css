@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'column-span',
-  description: 'Setting how elements span across multiple columns.',
+  description: 'Let a block cross the columns of a multi-column container.',
   category: 'Layout',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=column-span',

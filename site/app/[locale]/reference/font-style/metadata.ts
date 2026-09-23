@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'font-style',
-  description: 'Setting font style of an element.',
+  description: 'Apply italic or oblique styling and reset inherited font style.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=font-style',

@@ -2,27 +2,11 @@
 <Overview/>
 
 ## Basic usage \{#basic-usage\}
-### Block & Inline \{#block--inline\}
-Use `block`, `inline`, and `inline-block` to set the flow of elements.
-<Demo $py={0}>
-  <div className='p:xl bg:float'>
-    <p>
-      Block elements start on a new line and take the available width.
-      <span className="box block! bg:slate-95!@light">
-        `display:block`
-      </span>
-      Inline elements stay in the same text flow and only occupy the space they need.
-      <span className="box inline! my:xs bg:slate-95!@light">
-        `display:inline`
-      </span>
-      Inline-block elements stay inline but can accept box dimensions.
-      <span className="box inline-block! my:xs bg:slate-95!@light">
-        `display:inline-block`
-      </span>
-      Use the display mode that matches the element's role in the flow.
-    </p>
-  </div>
-</Demo>
+### Block and inline boxes \{#block--inline\}
+Use `block` to start a new block, `inline` to participate in the surrounding text, and `inline-block` for an inline box that accepts width and height. Compare where the text before and after each specimen ends up.
+
+<DemoExample page="display" section="block--inline" />
+
 ```html
 <div>
   Block elements start on a new line.
@@ -41,67 +25,37 @@ Use `block`, `inline`, and `inline-block` to set the flow of elements.
 </div>
 ```
 
-import aron from '~/site/public/images/authors/aron.jpg'
-
 ### Flex \{#flex\}
-Use `flex` to create a block-level flex container.
-<Demo>
-  <div className="flex items-center gap:sm p:2x|5x r:10px bg:float">
-    <Image src={aron} alt="avatar" className="h:auto round object-cover" width="64" height="64" />
-    <div>
-      <div className="text:sm font:medium capitalize font:gray-88@dark">aron</div>
-      <p className="m:0 text:13px">CSS needs a revolution</p>
-    </div>
-  </div>
-</Demo>
+Use `flex` when direct children should share one row or column. The container itself participates in the outer layout as a block.
+
+<DemoExample page="display" section="flex" />
+
 ```html
 <div class="flex items-center gap:sm">
-  <img src="...">
-  <div>
-    <div>aron</div>
-    <p>CSS needs a revolution</p>
-  </div>
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
 </div>
 ```
 
-### Inline Flex \{#inline-flex\}
-Use `inline-flex` to create an inline-level flex container.
-<Demo $py={0}>
-  <div className='p:xl bg:float'>
-    <p className="font:md leading:1.75rem">
-      Inline flex is useful when an inline phrase needs aligned children.
-      The element still participates in text flow while its contents use flex alignment.
-      <span className="box inline-flex! overflow:hidden items-baseline! mx:sm p:0! b:0 bg:slate-95!@light">
-        <Image src={aron} alt="avatar" className="self-end h:auto object-cover" width="24" height="24" />
-        <span className="px:0.625rem text:sm font:medium capitalize font:gray-88@dark">aron</span>
-      </span>
-      This keeps the badge baseline-aligned with the surrounding sentence.
-    </p>
-  </div>
-</Demo>
+### Inline flex \{#inline-flex\}
+Use `inline-flex` for a badge or compact control whose children need flex alignment while the whole object stays in a line of text.
+
+<DemoExample page="display" section="inline-flex" />
+
 ```html
-<div>
-  Inline flex keeps this badge in the text flow.
-  <div class="inline-flex items-baseline mx:sm">
-    <img src="...">
-    <div>Aron</div>
-  </div>
-  The surrounding sentence continues after it.
-</div>
+<p>
+  Status: <span class="inline-flex items-center gap:xs">
+    <span aria-hidden="true">●</span><span>In progress</span>
+  </span> while the next task is queued.
+</p>
 ```
 
 ### Grid \{#grid\}
-Use `grid` to create a block-level grid container.
-<Demo>
-  <div className="w:full">
-    <div className="grid grid-template-columns:repeat(2,auto) gap:sm">
-      <div className="box">01</div>
-      <div className="box">02</div>
-      <div className="box">03</div>
-      <div className="box">04</div>
-    </div>
-  </div>
-</Demo>
+Use `grid` to place direct children in rows and columns. Define tracks with [`grid-template-columns`](/reference/grid-template-columns) or [`grid-template-rows`](/reference/grid-template-rows).
+
+<DemoExample page="display" section="grid" />
+
 ```html
 <div class="grid grid-template-columns:repeat(2,auto) gap:sm">
   <div>01</div>
@@ -111,81 +65,29 @@ Use `grid` to create a block-level grid container.
 </div>
 ```
 
-### Inline Grid \{#inline-grid\}
-Use `inline-grid` to create a inline-level grid container.
-<Demo>
-  <div className="flex gap:sm w:full">
-    <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-      <div className="box">01</div>
-      <div className="box">02</div>
-      <div className="box">03</div>
-      <div className="box">04</div>
-    </div>
-    <div className="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-      <div className="box">01</div>
-      <div className="box">02</div>
-      <div className="box">03</div>
-      <div className="box">04</div>
-    </div>
-  </div>
-</Demo>
+### Inline grid \{#inline-grid\}
+Use `inline-grid` when a small grid should sit within text or beside other inline content. Its children use grid layout; the grid itself remains inline.
+
+<DemoExample page="display" section="inline-grid" />
+
 ```html
-<div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-  <div>01</div>
-  <div>02</div>
-  <div>03</div>
-  <div>04</div>
-</div>
-<div class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
-  <div>01</div>
-  <div>02</div>
-  <div>03</div>
-  <div>04</div>
-</div>
+<p>
+  Before <span class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
+    <span>01</span><span>02</span>
+    <span>03</span><span>04</span>
+  </span> after.
+</p>
 ```
 
 ### Table \{#table\}
-Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-row-group`, `table-column-group`, `table-header-group`, and `table-footer-group` to create elements that behave like their respective table elements.
-<Demo>
-  <div className="table overflow:hidden w:80% b:1px|solid|slate-90 r:10px p:5x|1.875rem_:where(div)">
-    <div className="table-caption font:bold text-center">Orders</div>
-    <div className="table-header-group font:bold bg:gray-90">
-      <div className="table-row">
-        <div className="table-cell">Product</div>
-        <div className="table-cell text-center">Qty</div>
-        <div className="table-cell text-center">Price</div>
-      </div>
-    </div>
-    <div className="table-row-group bb:1px|solid|slate-90_:where(div) bg:slate-99">
-      <div className="table-row">
-        <div className="table-cell">Milk</div>
-        <div className="table-cell text-center">2</div>
-        <div className="table-cell text-center">10.00</div>
-      </div>
-      <div className="table-row">
-        <div className="table-cell">Cola</div>
-        <div className="table-cell text-center">3</div>
-        <div className="table-cell text-center">12.00</div>
-      </div>
-      <div className="table-row">
-        <div className="table-cell">Juice</div>
-        <div className="table-cell text-center">5</div>
-        <div className="table-cell text-center">18.00</div>
-      </div>
-    </div>
-    <div className="table-footer-group font:bold bg:gray-90">
-      <div className="table-row">
-        <div className="table-cell">Total</div>
-        <div className="table-cell text-center">10</div>
-        <div className="table-cell text-center">40.00</div>
-      </div>
-    </div>
-  </div>
-</Demo>
+Table display values reproduce the visual table layout model. Use native `<table>`, `<tr>`, `<th>` and `<td>` elements for tabular data: CSS display values do not supply their accessibility semantics.
+
+<DemoExample page="display" section="table" />
+
 ```html
 <div class="table">
   <div class="table-caption">Orders</div>
-  <div class="table-header-group bg:gray-90">
+  <div class="table-header-group">
     <div class="table-row">
       <div class="table-cell">Product</div>
       <div class="table-cell">Qty</div>
@@ -209,7 +111,7 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
       <div class="table-cell">18.00</div>
     </div>
   </div>
-  <div class="table-footer-group bg:gray-90">
+  <div class="table-footer-group">
     <div class="table-row">
       <div class="table-cell">Total</div>
       <div class="table-cell text-center">10</div>
@@ -220,17 +122,10 @@ Use `table`, `table-row`, `table-column`, `table-cell`, `table-caption`, `table-
 ```
 
 ### Contents \{#contents\}
-Use `contents` to make the element's children behave like direct children of the element's parent, ignoring the element itself.
-<Demo>
-  <div className="flex gap:5x w:full">
-    <div className="box flex:1">01</div>
-    <div className="contents">
-      <div className="box flex:1">02</div>
-      <div className="box flex:1">03</div>
-    </div>
-    <div className="box flex:1">04</div>
-  </div>
-</Demo>
+Use `contents` to omit a wrapper’s own layout box. Its children then participate directly in the parent’s layout. The wrapper remains in the DOM, but its own background, border and dimensions no longer produce a box.
+
+<DemoExample page="display" section="contents" />
+
 ```html
 <div class="flex gap:5x">
   <div class="flex:1">01</div>
@@ -242,34 +137,23 @@ Use `contents` to make the element's children behave like direct children of the
 </div>
 ```
 
-### Flow Root \{#flow-root\}
-Use `flow-root` to create a block-level element that establishes a new block formatting context.
-{<Demo $py={0}>
-  <div className="w:full p:xl bg:float">
-    <div className="flow-root w:full bg:stripe-pink">
-      <Image src="/images/blur.png" className="float:left my:0 mr:1.875rem r:lg object-cover" width={160} height={90} alt="Float Image" />
-      <p className="my:0">The paragraph wraps around the floated image because the parent establishes a new formatting context.</p>
-    </div>
-    <p>Use `flow-root` to clear floats.</p>
-  </div>
-</Demo>}
+### Flow root \{#flow-root\}
+Use `flow-root` on a wrapper that should contain its floated children. It establishes a block formatting context without using overflow clipping.
+
+<DemoExample page="display" section="flow-root" />
+
 ```html
 <div class="flow-root">
-  <img class="float:left" .../>
+  <img class="float:left w:32x mr:md" src="/demo/landscape.svg" alt="Landscape">
   <p>The paragraph wraps around the floated image.</p>
 </div>
-Use flow-root to clear floats
 ```
 
-### List Item \{#list-item\}
-Use `list-item` to create a block that behave like a list item.
-<Demo>
-  <div className="my:xs_:where(div)">
-    <div className="list-item">01</div>
-    <div className="list-item">02</div>
-    <div className="list-item">03</div>
-  </div>
-</Demo>
+### List items \{#list-item\}
+Use `list-item` to generate a list-item box and marker. Prefer `<ul>` or `<ol>` with `<li>` for semantic lists; this utility controls their visual display.
+
+<DemoExample page="display" section="list-item" />
+
 ```html
 <div>
   <div class="list-item">01</div>
@@ -279,14 +163,10 @@ Use `list-item` to create a block that behave like a list item.
 ```
 
 ### Hidden \{#hidden\}
-Use `hidden` to hide the element. The element is not rendered in the document.
-<Demo>
-  <div className="flex gap:5x w:full flex:1_:where(div)">
-    <div className="box">01</div>
-    <div className="box hidden!">02</div>
-    <div className="box">03</div>
-  </div>
-</Demo>
+Use `hidden` to apply `display:none`. The element and its descendants produce no layout boxes and are absent from the accessibility tree. Use [`visibility`](/reference/visibility) when its space should remain.
+
+<DemoExample page="display" section="hidden" />
+
 ```html
 <div class="flex gap:5x">
   <div>01</div>
@@ -296,7 +176,14 @@ Use `hidden` to hide the element. The element is not rendered in the document.
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Switch the same items from a grid to a flex row on screens at `sm`, then use ordinary block flow in print. Combining `screen` and `sm` keeps the wide-screen rule from also applying to wide printed pages. Read [conditions](/reference/rules/conditions) for breakpoint and media syntax.
+
+<DemoExample page="display" section="apply-conditionally" />
+
 ```html
-<div class="display:block:hover display:block@dark display:block@print display:block@sm">...</div>
+<div class="grid grid-cols:2 gap:sm block@print flex@screen&sm">
+  <div>01</div>
+  <div>02</div>
+  <div>03</div>
+</div>
 ```

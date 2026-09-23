@@ -1,42 +1,107 @@
 ## Overview [sr-only] \{#overview\}
-<Overview/>
+<Overview />
+
+`pointer-events` controls pointer hit testing. It does not remove an element from the tab order or disable keyboard activation. Use `auto` and `none` for HTML hit testing; values such as `fill`, `stroke`, and `visiblePainted` describe SVG geometry.
 
 ## Examples \{#examples\}
 ### Let clicks pass through an overlay \{#let-clicks-pass-through-an-overlay\}
-Use `pointer-events:none` when an overlay is visual only and should not block the control beneath it.
+Compare the same transparent overlay with `pointer-events:none` and `pointer-events:auto`. Click the checkbox underneath each overlay.
+
+<DemoExample page="pointer-events" section="let-clicks-pass-through-an-overlay" />
+
 ```html
-<!-- @MARK pointer-events:none -->
-<div class="rel">
-  <button>Open</button>
-  <span class="abs inset:0 pointer-events:none"></span>
+<!-- None · reaches the checkbox -->
+<div class="rel px:lg pb:lg pt:xl b:1px|solid|base r:sm">
+  <label class="flex items-center gap:sm">
+    <input type="checkbox"> Snap to grid
+  </label>
+  <div id="target" aria-hidden="true"
+    class="abs inset:0 b:1px|dashed|violet r:sm
+           untouchable">
+    <span class="abs right:xs top:xs font:xs text:violet">Overlay</span>
+  </div>
+</div>
+```
+
+```html
+<!-- Auto · overlay intercepts the pointer -->
+<div class="rel px:lg pb:lg pt:xl b:1px|solid|base r:sm">
+  <label class="flex items-center gap:sm">
+    <input type="checkbox"> Snap to grid
+  </label>
+  <div id="target" aria-hidden="true"
+    class="abs inset:0 b:1px|dashed|violet r:sm
+           pointer-events:auto">
+    <span class="abs right:xs top:xs font:xs text:violet">Overlay</span>
+  </div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>
-    {['pointer-events:none']}
-  </Class2CSS>
+  <Class2CSS>{['pointer-events:none']}</Class2CSS>
 </details>
 
+Both checkboxes remain reachable with Tab and Space. The overlay has no action; only the first lets pointer input reach the native control underneath.
+
 ### Use the untouchable alias \{#use-the-untouchable-alias\}
-`untouchable` is an alias for `pointer-events:none` and is useful for decorative icons and images.
+`untouchable` emits `pointer-events:none`. Here the decorative SVG is skipped during hit testing and the button receives the pointer instead.
+
+<DemoExample page="pointer-events" section="use-the-untouchable-alias" />
+
 ```html
-<!-- @MARK untouchable -->
-<svg class="untouchable" aria-hidden="true">...</svg>
+<form class="grid justify-items:start gap:md">
+  <label class="grid gap:xs w:240px max-w:full">
+    Project name <input type="text" value="Canvas" class="w:full">
+  </label>
+  <button type="reset"
+    class="inline-flex items-center gap:sm">
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20"
+      fill="none" stroke="currentColor" stroke-width="1.5" id="target" class="untouchable">
+      <path d="M4 8a6 6 0 1 1 0 5 M4 3v5h5" />
+    </svg>
+    <span>Reset name</span>
+  </button>
+</form>
 ```
 
+Edit the name, then click directly on the reset icon. The native reset restores the field. `aria-hidden="true"` separately excludes the decoration from the button’s accessible name.
+
 ### Restore pointer events on a child \{#restore-pointer-events-on-a-child\}
-Combine a non-interactive parent with `pointer-events:auto` on a child that should still receive clicks.
+The property is inherited. A child with `pointer-events:auto` can receive pointer input inside a parent set to `none`.
+
+<DemoExample page="pointer-events" section="restore-pointer-events-on-a-child" />
+
 ```html
-<!-- @MARK pointer-events:auto -->
-<div class="pointer-events:none">
-  <button class="pointer-events:auto">Dismiss</button>
+<div class="p:md b:1px|dashed|violet r:sm untouchable">
+  <p class="font:xs text:muted">Parent ignores direct pointer targeting</p>
+  <label id="target"
+    class="flex items-center gap:sm pointer-events:auto">
+    <input type="checkbox"> Enable snapping
+  </label>
 </div>
 ```
 
+The child’s events can still pass through the parent during event propagation. Pointer exclusion on a parent is not an event-listener firewall.
+
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the real viewport. The overlay intercepts pointer input below `sm` and lets it pass through at `sm`.
+
+<DemoExample page="pointer-events" section="apply-conditionally" />
+
 ```html
-<div class="pointer-events:none:hover pointer-events:auto@print pointer-events:auto@sm">...</div>
+<!-- Auto → none at sm -->
+<div class="rel px:lg pb:lg pt:xl b:1px|solid|base r:sm">
+  <label class="flex items-center gap:sm">
+    <input type="checkbox"> Snap to grid
+  </label>
+  <div id="target" aria-hidden="true"
+
+  class="abs inset:0 b:1px|dashed|violet r:sm
+         pointer-events:auto untouchable@screen&sm">
+    <span class="abs right:xs top:xs font:xs text:violet">Overlay</span>
+  </div>
+</div>
 ```
+
+Use Tab and Space to toggle the checkbox at either width. The conditional rule changes pointer targeting only; it is not a disabled state.

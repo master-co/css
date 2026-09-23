@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'justify-content',
-  description: 'Controlling how items are aligned along its main axis.',
+  description: 'Distribute free space along the flex main axis or between grid columns.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=justify-content',

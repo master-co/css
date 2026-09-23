@@ -2,37 +2,64 @@
 <Overview/>
 
 ## Examples \{#examples\}
-### Align multiple rows or tracks \{#align-multiple-rows-or-tracks\}
-Use `content-*` utilities to distribute rows in a multi-line flex container or tracks in a grid container along the cross axis.
+### Distribute wrapped flex lines \{#align-multiple-rows-or-tracks\}
+Use `content-between` to put the first and last flex lines against opposite cross-axis edges, distributing the remaining space between them. Four 120px-wide items form two lines in this 280px row. Its 224px height leaves room beyond the two 48px lines and their gap.
+
+<DemoExample page="align-content" section="align-multiple-rows-or-tracks" />
+
 ```html
-<!-- @MARK flex --><!-- @MARK flex-wrap --><!-- @MARK content-between -->
-<div class="flex flex-wrap content-between h:3xs">
-  ...
+<div id="layout" class="flex flex-wrap content-between gap:md h:56x w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:30x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:30x p:sm">02</div>
+  <div id="item-3" class="flex:none h:12x w:30x p:sm">03</div>
+  <div id="item-4" class="flex:none h:12x w:30x p:sm">04</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'flex-wrap', 'content-between', 'h:64x']}
+    {['flex', 'flex-wrap', 'content-between']}
   </Class2CSS>
 </details>
 
-### Center wrapped lines \{#center-wrapped-lines\}
-Use `content-center` when the group of rows should sit in the middle of the container.
+In Flexbox, `align-content` positions lines along the cross axis. In Grid, it positions tracks along the block axis. With horizontal writing and a row flex direction, both axes run vertically.
+
+### Center lines or grid tracks \{#center-wrapped-lines\}
+`content-center` packs the lines or tracks together, then centers the group. These examples both use two 48px rows, a 16px gap and a 224px container height, leaving 56px above and below the group.
+
+<DemoExample page="align-content" section="center-wrapped-lines" />
+
 ```html
-<!-- @MARK content-center -->
-<section class="grid content-center h:3xs">
-  ...
-</section>
+<div id="layout" class="flex flex-wrap content-center gap:md h:56x w:70x max-w:full">
+  <div id="target" class="flex:none h:12x w:30x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:30x p:sm">02</div>
+  <div id="item-3" class="flex:none h:12x w:30x p:sm">03</div>
+  <div id="item-4" class="flex:none h:12x w:30x p:sm">04</div>
+</div>
 ```
 
-`align-content` needs extra space in the cross axis. If there is only one line or no free space, it may not visibly change the layout.
+```html
+<div id="layout" class="grid grid-cols:2 grid-template-rows:12x|12x content-center gap:md h:56x w:70x max-w:full">
+  <div id="target" class="p:sm">01</div>
+  <div id="peer" class="p:sm">02</div>
+  <div id="item-3" class="p:sm">03</div>
+  <div id="item-4" class="p:sm">04</div>
+</div>
+```
+
+`align-content` has no effect on a `flex-nowrap` container. A `flex-wrap` container can use it even when its items happen to fit on one line. Use [align-items](/reference/align-items) to align individual items within their line or grid area.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
-```html
-<div class="content-start content-start@print content-between@sm">...</div>
-```
+Use [conditional queries](/reference/rules/conditions) to change alignment at a real viewport width. The wrapped lines start at the top by default and move to opposite edges from `sm`. The container stays 280px wide so the number of lines stays the same while you resize the preview.
 
-Use [align-items](/reference/align-items) for item alignment within each row.
+<DemoExample page="align-content" section="apply-conditionally" />
+
+```html
+<div id="layout" class="flex flex-wrap content-start gap:md h:56x w:70x max-w:full content-between@sm">
+  <div id="target" class="flex:none h:12x w:30x p:sm">01</div>
+  <div id="peer" class="flex:none h:12x w:30x p:sm">02</div>
+  <div id="item-3" class="flex:none h:12x w:30x p:sm">03</div>
+  <div id="item-4" class="flex:none h:12x w:30x p:sm">04</div>
+</div>
+```

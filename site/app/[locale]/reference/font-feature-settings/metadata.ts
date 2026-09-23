@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'font-feature-settings',
-  description: 'Controlling advanced typographic features in OpenType fonts.',
+  description: 'Control supported OpenType features with raw tags or named tokens.',
   category: 'Typography',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=font-feature-settings',

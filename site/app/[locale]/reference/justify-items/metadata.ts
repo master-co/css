@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'justify-items',
-  description: 'Controlling how items are aligned along its inline axis.',
+  description: 'Set the default inline-axis alignment of items inside their grid areas.',
   category: 'Flexbox & Grid',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=justify-items',

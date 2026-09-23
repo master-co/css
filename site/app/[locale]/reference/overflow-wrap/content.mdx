@@ -3,12 +3,22 @@
 
 ## Examples \{#examples\}
 ### Break long unbroken content \{#break-long-unbroken-content\}
-Use `wrap-break-word` when long URLs, hashes, or generated identifiers should wrap only when needed to avoid overflow.
+`wrap-break-word` allows an otherwise unbreakable run to wrap when it would overflow. Ordinary words still use their normal boundaries.
+
+<DemoExample page="overflow-wrap" section="break-long-unbroken-content" />
+
 ```html
-<!-- @MARK wrap-break-word -->
-<p class="wrap-break-word">
-  https://example.com/releases/2026/very-long-generated-path
-</p>
+<!-- wrap-normal -->
+<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
+  <p id="target" class="wrap-normal w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+</div>
+```
+
+```html
+<!-- wrap-break-word -->
+<div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
+  <p id="target" class="wrap-break-word w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+</div>
 ```
 
 <details>
@@ -19,29 +29,46 @@ Use `wrap-break-word` when long URLs, hashes, or generated identifiers should wr
 </details>
 
 ### Allow breaks anywhere \{#allow-breaks-anywhere\}
-Use `wrap-anywhere` for very narrow UI where even emergency wrapping should consider every character boundary.
+`wrap-anywhere` and `wrap-break-word` both allow emergency breaks. Their intrinsic sizing differs: only `anywhere` counts those extra opportunities when calculating min-content width.
+
+<DemoExample page="overflow-wrap" section="allow-breaks-anywhere" />
+
 ```html
-<!-- @MARK wrap-anywhere -->
-<code class="wrap-anywhere">
-  7e9a41f817c928c6d9a4b6501f1e2bd6
-</code>
+<!-- wrap-break-word -->
+<code id="target" class="block wrap-break-word w:min-content m:0 font:md leading:24px">PREVIEW</code>
 ```
+
+```html
+<!-- wrap-anywhere -->
+<code id="target" class="block wrap-anywhere w:min-content m:0 font:md leading:24px">PREVIEW</code>
+```
+
+These boxes deliberately use `w:min-content`. Compare the measured widths as well as the visible wrapping.
 
 ### Restore normal wrapping \{#restore-normal-wrapping\}
-Use `wrap-normal` to undo an aggressive wrapping rule at a larger breakpoint or in print.
+`wrap-normal` removes the emergency-break allowance. This child resets an inherited `wrap-anywhere`; the parent retains its own wrapping rule.
+
+<DemoExample page="overflow-wrap" section="restore-normal-wrapping" />
+
 ```html
-<!-- @MARK wrap-anywhere --><!-- @MARK wrap-normal@md -->
-<p class="wrap-anywhere wrap-normal@md">
-  ...
-</p>
+<!-- Inherited anywhere · local normal reset -->
+<div class="wrap-anywhere">
+  <div id="scrollport" role="region" aria-label="Reset wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
+    <p id="target" class="wrap-normal w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  </div>
+</div>
 ```
 
-Compared with [word-break](/reference/word-break), overflow wrapping is usually a gentler way to protect layouts from unbroken content.
+If an unbroken run no longer fits, provide a suitable overflow strategy or keep emergency wrapping.
 
 ### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+Resize the viewport to change the intrinsic width of the same min-content box. It uses `wrap-break-word` initially and `wrap-anywhere` at `sm` on screen.
+
+<DemoExample page="overflow-wrap" section="apply-conditionally" />
+
 ```html
-<div class="wrap-break-word wrap-normal@print wrap-anywhere@sm">...</div>
+<!-- One token · native intrinsic sizing -->
+<code id="target" class="block wrap-break-word w:min-content m:0 font:md leading:24px wrap-normal@print wrap-anywhere@screen&sm">PREVIEW</code>
 ```
 
-Use [overflow](/reference/overflow) and [text-overflow](/reference/text-overflow) when content should be clipped instead of wrapped.
+Print restores normal wrapping. Use [text-overflow](/reference/text-overflow) when the design needs clipping instead of wrapping.

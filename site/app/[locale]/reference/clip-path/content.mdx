@@ -3,37 +3,118 @@
 
 ## Examples \{#examples\}
 ### Clip to a circle \{#clip-to-a-circle\}
-Use `clip-path:circle(*)` to apply a circular clip path.
+A circular clip hides paint outside its boundary. The outer outline marks the unchanged 160 × 160 layout box; the circle has a 60px radius.
+
+<DemoExample page="clip-path" section="clip-to-a-circle" />
+
 ```html
-<!-- @MARK clip-path:circle(40px) -->
-<img class="clip-path:circle(40px)" src="/images/avatar.jpg" alt="Avatar">
+<!-- No clip · complete square -->
+<div class="size:160px outline:1px|solid|muted
+         bg:surface-base">
+  <img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:160px max-w:100% clip-none
+         object-cover object-right" />
+</div>
+```
+
+```html
+<!-- Circle · 60px radius -->
+<div class="size:160px outline:1px|solid|muted
+         bg:surface-base">
+  <img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:160px max-w:100% object-cover
+         object-right clip-path:circle(60px)" />
+</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['clip-path:circle(40px)']}
+    {['clip-path:circle(60px)']}
   </Class2CSS>
 </details>
 
+The source still occupies the full image box. Clipping changes which parts are painted and excludes clipped areas from pointer hit testing. Labels and measurements remain outside the clip.
+
 ### Clip with an inset \{#clip-with-an-inset\}
-Use `clip-path:inset(*)` with `|` between values when the inset has multiple sides.
+Inset values cut inward from the reference box. This example removes 8px at top and bottom, 24px at left and right, with 12px rounded corners.
+
+<DemoExample page="clip-path" section="clip-with-an-inset" />
+
 ```html
-<!-- @MARK clip-path:inset(0|20px) -->
-<div class="clip-path:inset(0|20px)">
-  Cropped content
+<!-- Unclipped · original border -->
+<div
+  class="h:120px w:240px max-w:100%
+         outline:1px|solid|muted bg:surface-base">
+  <div id="target"
+    class="grid place-items:center h:120px w:240px
+           max-w:100% b:2px|solid|blue-60 font:md
+           bg:blue-10 fg:blue-80 clip-none">
+    Clipped panel
+  </div>
 </div>
 ```
 
-### Remove clipping \{#remove-clipping\}
-Use `clip-none` when a responsive or state variant should restore the full element.
 ```html
-<!-- @MARK clip-none -->
-<img class="clip-path:circle(40px) clip-none@sm" src="/images/avatar.jpg" alt="Avatar">
+<!-- Inset · rounded paint boundary -->
+<div
+  class="h:120px w:240px max-w:100%
+         outline:1px|solid|muted bg:surface-base">
+  <div id="target"
+    class="grid place-items:center h:120px w:240px
+           max-w:100% b:2px|solid|blue-60 font:md
+           bg:blue-10 fg:blue-80
+           clip-path:inset(8px|24px|round|12px)">
+    Clipped panel
+  </div>
+</div>
 ```
 
-### Apply conditionally \{#apply-conditionally\}
-Apply styles based on different states using [selectors](/reference/rules/selectors) and [conditional queries](/reference/rules/conditions).
+The clip affects the background, border and contents together. The new curved edge is not a new border; the original blue border is clipped away. The outer neutral outline belongs to the surrounding layout box.
+
+### Remove clipping \{#remove-clipping\}
+Widen to `sm` to restore the complete image with `clip-none`. Print also shows the full square.
+
+<DemoExample page="clip-path" section="remove-clipping" />
+
 ```html
-<div class="clip-path:inset(0|20px):hover clip-none@print clip-path:circle(40px)@sm">...</div>
+<!-- Circle → full image at sm -->
+<div class="size:160px outline:1px|solid|muted
+         bg:surface-base">
+  <img id="target" src="/demo/landscape.svg"
+  width="320" height="200"
+  alt="Blue and violet mountains beneath a yellow sun"
+  class="block size:160px max-w:100% object-cover
+         object-right clip-path:circle(60px)
+         clip-none@print clip-none@screen&sm" />
+</div>
 ```
+
+Removing the clip reveals existing paint. The image dimensions and its position in normal flow do not change.
+
+### Apply conditionally \{#apply-conditionally\}
+Widen the real preview viewport to `sm` to inset the panel. Print removes the clip and restores its complete border.
+
+<DemoExample page="clip-path" section="apply-conditionally" />
+
+```html
+<!-- Full panel → inset at sm -->
+<div
+  class="h:120px w:240px max-w:100%
+         outline:1px|solid|muted bg:surface-base">
+  <div id="target"
+    class="grid place-items:center h:120px w:240px
+           max-w:100% b:2px|solid|blue-60 font:md
+           bg:blue-10 fg:blue-80 clip-none
+           clip-none@print
+           clip-path:inset(8px|24px|round|12px)@screen&sm">
+    Clipped panel
+  </div>
+</div>
+```
+
+The native condition affects only the clip. Keep meaningful controls and their focus indicators outside a decorative clipping region.

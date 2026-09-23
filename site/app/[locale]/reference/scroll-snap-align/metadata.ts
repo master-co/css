@@ -2,7 +2,7 @@ import define from 'internal/utils/metadata'
 
 const metadata = define({
   title: 'scroll-snap-align',
-  description: 'Setting the scroll snap position.',
+  description: 'Align an item’s snap area with the start, center, or end of its snapport.',
   category: 'Motion',
   type: 'entity',
   canIUseLink: 'https://caniuse.com/?search=scroll-snap-align',
