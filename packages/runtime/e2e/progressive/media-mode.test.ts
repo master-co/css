@@ -2,9 +2,9 @@ import { test, expect } from '@playwright/test'
 import init from '../init'
 
 test('prerender', async ({ page }) => {
-  const text = '@layer theme{:root{--color-foo:rgb(0 0 0)}:host(.light){color-scheme:light;--color-foo:rgb(255 255 255)}:host(.dark){color-scheme:dark;--color-foo:rgb(100 100 100)}}@layer utilities{.fg\\:foo{color:var(--color-foo)}}'
+  const text = '@layer theme{:root{--color-foo:rgb(0 0 0)}:host(.light){color-scheme:light;--color-foo:rgb(255 255 255)}:host(.dark){color-scheme:dark;--color-foo:rgb(100 100 100)}}@layer utilities{.fg-foo{color:var(--color-foo)}}'
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="fg:foo"></div>'
+    document.body.innerHTML = '<div class="fg-foo"></div>'
   })
   await init(page, text, {
     modeTrigger: 'host',

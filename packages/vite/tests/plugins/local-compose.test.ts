@@ -73,7 +73,7 @@ describe('LocalComposePlugin', () => {
 
       const result = await (plugin as any).transform.call(
         { addWatchFile },
-        '.home { @compose py:5xl; }',
+        '.home { @compose py-5xl; }',
         path.join(root, 'src/Home.module.css')
       )
 

@@ -69,6 +69,12 @@ pub(super) fn compare_rule_priority(
         .then_with(|| compare_features(&left.priority, &right.priority))
         .then_with(|| left.priority.selector.cmp(&right.priority.selector))
         .then_with(|| left.utility_type.cmp(&right.utility_type))
+        .then_with(|| {
+            left.priority
+                .value_priority
+                .cmp(&right.priority.value_priority)
+        })
+        .then_with(|| natural_compare(&left.priority.sort_key, &right.priority.sort_key))
         .then_with(|| natural_compare(&left.key, &right.key))
 }
 

@@ -7,6 +7,10 @@ export const MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE = '/_master-css/hydration/
 export const MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME = 'master-css-hydration'
 
 export interface MasterCSSRulePriority {
+  /** Token values sort before raw values within the same cascade tier. */
+  readonly valuePriority?: -1 | 0
+  /** Parsed declaration identity, independent of public aliases. */
+  readonly sortKey?: string
   readonly features?: readonly (readonly [string, number, number])[]
   readonly selector: number
 }

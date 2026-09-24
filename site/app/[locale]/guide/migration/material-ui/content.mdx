@@ -74,7 +74,7 @@ export const theme = createTheme({
 ```
 
 ```html
-<section class="b:1px|solid|base fg:body bg:surface r:control">
+<section class="b:1px|solid|var(--color-line-base) fg-body bg-surface r-control">
   ...
 </section>
 ```
@@ -107,7 +107,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 ```tsx name=DashboardPanel.tsx
 export function DashboardPanel({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap:md p:lg bg:surface r:control">
+    <section className="grid gap-md p-lg bg-surface r-control">
       {children}
     </section>
   )
@@ -117,7 +117,7 @@ export function DashboardPanel({ children }: { children: React.ReactNode }) {
 Use Material UI components with `className` when the component still provides useful behavior and forwards the class to the root element.
 
 ```tsx
-<Button className="min-w:0 px:md" variant="contained">
+<Button className="min-w:0 px-md" variant="contained">
   Save
 </Button>
 ```
@@ -134,11 +134,11 @@ When many `sx` blocks encode the same product role, move that role into a Master
 
 @components {
   panel {
-    @compose p:lg b:1px|solid|base r:lg fg:body shadow:sm bg:surface;
+    @compose p-lg b:1px|solid|var(--color-line-base) r-lg fg-body shadow-sm bg-surface;
   }
 
   toolbar {
-    @compose flex items-center gap:sm min-h:12x;
+    @compose flex items-center gap-sm min-h:3rem;
   }
 }
 ```
@@ -163,7 +163,7 @@ Translate static responsive `sx` into Master CSS conditions.
 ```
 
 ```html
-<section class="grid grid-cols:1 gap:md grid-cols:3@md">
+<section class="grid grid-cols:1 gap-md grid-cols:3@md">
   ...
 </section>
 ```
@@ -171,7 +171,7 @@ Translate static responsive `sx` into Master CSS conditions.
 For component state, prefer the native state or attribute when it belongs to your markup.
 
 ```html
-<button class="bg:blue-60 bg:blue-70:hover opacity:.5:disabled">
+<button class="bg-blue-60 bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```

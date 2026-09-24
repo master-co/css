@@ -22,11 +22,11 @@ test('keeps default variable buckets before mode buckets when CSSOM buckets are 
     })
     document.documentElement.classList.add('dark')
     const dependency = document.createElement('p')
-    dependency.className = 'fg:blue'
+    dependency.className = 'fg-blue'
     document.body.append(dependency)
     await waitForRuntimeRuleFlush()
     const target = document.createElement('p')
-    target.className = 'fg:accent'
+    target.className = 'fg-accent'
     document.body.append(target)
     await waitForRuntimeRuleFlush()
     const sheet = document.querySelector<HTMLStyleElement>('style#master-css')?.sheet

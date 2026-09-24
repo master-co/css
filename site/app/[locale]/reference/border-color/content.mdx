@@ -13,9 +13,9 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Primary · blue -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid
-         border-color:blue font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b:2px|solid
+         border-color-blue font-md bg-surface-muted
+         text-body box-border">
   Preview panel
 </div>
 ```
@@ -24,9 +24,9 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Comparison · violet -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid
-         border-color:violet font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b:2px|solid
+         border-color-violet font-md bg-surface-muted
+         text-body box-border">
   Preview panel
 </div>
 ```
@@ -34,12 +34,12 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['border-color:blue']}
+    {['border-color-blue']}
   </Class2CSS>
 </details>
 
 ### Use side-specific color utilities \{#use-side-specific-color-utilities\}
-`bt:transparent` changes only the top edge’s paint. Its 6px border still occupies space, keeping content and outer dimensions aligned with the fully painted box.
+`border-top-color:transparent` changes only the top edge’s paint. Its 6px border still occupies space, keeping content and outer dimensions aligned with the fully painted box.
 
 <DemoExample page="border-color" section="use-side-specific-color-utilities" />
 
@@ -47,8 +47,8 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Four painted edges -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:6px|solid|blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b:6px|solid|var(--color-blue)
+         font-md bg-surface-muted text-body
          box-border">
   Preview panel
 </div>
@@ -58,14 +58,14 @@ A color needs a visible border width and style. Compare identical 2px solid bord
 <!-- Transparent top · width preserved -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:6px|solid|blue
-         bt:transparent font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b:6px|solid|var(--color-blue)
+         border-top-color:transparent font-md bg-surface-muted
+         text-body box-border">
   Preview panel
 </div>
 ```
 
-Transparent color differs from `bt:0` or `bt-none`, which remove the used border width.
+Transparent color differs from `border-top-width:0` or `bt-none`, which remove the used border width.
 
 ### Follow the current text color \{#follow-the-current-text-color\}
 `border-color:currentColor` follows the same element’s foreground. Hover or keyboard-focus this button: one foreground change updates both its text and border.
@@ -76,12 +76,12 @@ Transparent color differs from `bt:0` or `bt-none`, which remove the used border
 <!-- Current color · foreground and edge -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:2px|solid border-color:currentColor r:sm
-         font:md bg:surface-base text:blue box-border
-         bg:surface-muted:focus-visible
-         text:violet:hover@screen
-         text:violet:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:2px|solid border-color:currentColor r-sm
+         font-md bg-surface-base text-blue box-border
+         bg-surface-muted:focus-visible
+         text-violet:hover@screen
+         text-violet:focus-visible@screen">
   Current color
 </button>
 ```
@@ -97,10 +97,10 @@ At `sm`, the blue border follows the violet foreground through `currentColor`. P
 <!-- Blue → current color at sm -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:2px|solid border-color:blue r:sm font:md
-         bg:surface-base text:violet box-border
-         bg:surface-muted:focus-visible
+         min-h:44px max-w:100% px-md py-sm
+         b:2px|solid border-color-blue r-sm font-md
+         bg-surface-base text-violet box-border
+         bg-surface-muted:focus-visible
          border-color:transparent@print
          border-color:currentColor@screen&sm">
   Preview details
@@ -133,9 +133,9 @@ Define a semantic line token in each theme, then compile the token declarations 
 <!-- Configured divider · mode-aware paint -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid font:md
-         bg:surface-muted text:body box-border
-         border-color:divider">
+         w:240px max-w:100% p-md b:2px|solid font-md
+         bg-surface-muted text-body box-border
+         border-color-divider">
   Project divider
 </div>
 ```

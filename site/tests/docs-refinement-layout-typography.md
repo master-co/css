@@ -32,7 +32,7 @@ during a browser sweep: development hot reload can interrupt an active navigatio
 Validation includes all 711 compiled scenes, TypeScript, Reference and Markdown
 export tests, documentation-example tests, llms tests, and AI context budgets.
 The full site lint run reported no errors; follow-up scoped lint retains only three
-intentional canonical-alias warnings for the guide's `m:1x`, `p:2x`, and `gap:3x`
+intentional canonical-alias warnings for the guide's `m:0.25rem`, `p:0.5rem`, and `gap:0.75rem`
 teaching examples. Replacing these with token aliases would contradict the lesson.
 The final production build and CSS contract update remain part of the full review.
 

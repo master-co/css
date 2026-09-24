@@ -9,12 +9,12 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Normal float · rectangular wrap -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60 shape-none">
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60 shape-none">
     <circle cx="60" cy="60" r="48" />
   </svg>
   <p class="m:0">
@@ -29,12 +29,12 @@ Shape-outside changes the area that adjacent inline content avoids around a floa
 
 ```html
 <!-- Circle · text follows the curved boundary -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60
            shape-outside:circle(48px)|border-box">
     <circle cx="60" cy="60" r="48" />
   </svg>
@@ -64,12 +64,12 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- No shape · wraps at the box edge -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60 shape-none">
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60 shape-none">
     <rect x="24" y="0" width="72" height="120" />
   </svg>
   <p class="m:0">
@@ -84,12 +84,12 @@ The inset removes 24px from both horizontal sides of the wrap area. The painted 
 
 ```html
 <!-- Inset · wraps at the painted edge -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue rectangle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60
            shape-outside:inset(0|24px)|border-box">
     <rect x="24" y="0" width="72" height="120" />
   </svg>
@@ -112,12 +112,12 @@ Open print preview to replace the circular wrap area with the ordinary float mar
 
 ```html
 <!-- Circular on screen · rectangular in print -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60
            shape-outside:circle(48px)|border-box
            shape-none@print">
     <circle cx="60" cy="60" r="48" />
@@ -141,12 +141,12 @@ Widen the real preview viewport to `sm` to wrap around the circle. Print uses th
 
 ```html
 <!-- Rectangle → circle at sm -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left outline:1px|solid|muted
-           fill:blue-60 shape-none shape-none@print
+    class="float:left outline:1px|solid|var(--color-line-muted)
+           fill-blue-60 shape-none shape-none@print
            shape-outside:circle(48px)|border-box@screen&sm">
     <circle cx="60" cy="60" r="48" />
   </svg>

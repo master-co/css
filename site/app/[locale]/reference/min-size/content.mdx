@@ -3,13 +3,13 @@
 
 ## Examples \{#examples\}
 ### Set minimum width and height together \{#set-minimum-width-and-height-together\}
-`min:*` sets matching physical minimum width and height. This button prefers 24 × 24px, but `min:10x` raises both dimensions to 40px.
+`min:*` sets matching physical minimum width and height. This button prefers 24 × 24px, but `min:2.5rem` raises both dimensions to 40px.
 
 <DemoExample page="min-size" section="set-minimum-width-and-height-together" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="grid place-items:center size:6x min:10x p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:1.5rem min:2.5rem p:0 border-width:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
 </div>
 ```
 
@@ -20,15 +20,15 @@ Use a shared minimum with flexible content and padding. Both native buttons have
 
 ```html
 <!-- Short label -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="min:11x px:md py:sm b:0" type="button">Save</button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="min:2.75rem px-md py-sm border-width:0" type="button">Save</button>
 </div>
 ```
 
 ```html
 <!-- Longer label -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="min:11x px:md py:sm b:0" type="button">Save all changes</button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="min:2.75rem px-md py-sm border-width:0" type="button">Save all changes</button>
 </div>
 ```
 
@@ -41,15 +41,15 @@ Choose target dimensions and surrounding space for the interaction and accessibi
 
 ```html
 <!-- Horizontal writing -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="size:8x min-size-x:30x min-size-y:16x p:sm writing-mode:horizontal-tb">Floor</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="size:2rem min-size-x:7.5rem min-size-y:4rem p-sm writing-mode:horizontal-tb">Floor</div>
 </div>
 ```
 
 ```html
 <!-- Vertical writing -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="size:8x min-size-x:30x min-size-y:16x p:sm writing-mode:vertical-rl">Floor</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="size:2rem min-size-x:7.5rem min-size-y:4rem p-sm writing-mode:vertical-rl">Floor</div>
 </div>
 ```
 
@@ -60,15 +60,15 @@ Percentages need a reference on each axis. In a definite 240 × 160px parent, `m
 
 ```html
 <!-- Definite width and height -->
-<div id="layout" class="h:40x w:60x" role="group" aria-label="Available space">
-  <div id="target" class="size:8x min:50% p:xs leading:16px">50%</div>
+<div id="layout" class="h:10rem w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="size:2rem min:50% p-xs leading:16px">50%</div>
 </div>
 ```
 
 ```html
 <!-- Automatic parent height -->
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <div id="target" class="size:8x min:50% p:xs leading:16px">50%</div>
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="size:2rem min:50% p-xs leading:16px">50%</div>
 </div>
 ```
 
@@ -78,7 +78,7 @@ Resize past `sm` to raise both physical floors from 48px to 80px. The preferred 
 <DemoExample page="min-size" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="size:8x min:12x p:sm min:20x@sm">Min</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="size:2rem min:3rem p-sm min:5rem@sm">Min</div>
 </div>
 ```

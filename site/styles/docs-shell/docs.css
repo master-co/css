@@ -1,14 +1,14 @@
 @components {
   doc-card {
-    @compose p:xl surface:raised shadow:lg w:full;
+    @compose p-xl surface-raised shadow-lg w:100%;
   }
 
   doc-table {
-    @compose bb:1px|solid|muted;
+    @compose bb:1px|solid|var(--color-line-muted);
     overflow-x: auto;
 
     :is(tbody tr:last th, tbody tr:last td) {
-      @compose bb:0px!;
+      @compose border-bottom-width:0px!;
     }
 
     :is(thead th) {
@@ -20,7 +20,7 @@
     }
 
     td p code {
-      @compose font:85%;
+      @compose font-size:85%;
     }
 
     :is(tr, th, td, tbody, thead) {

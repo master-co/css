@@ -20,10 +20,10 @@ declaration<selector?>@condition
 
 ```html
 <!-- @MARK :hover@md -->
-<button type="button" class="bg:blue-60:hover@md">Save</button>
+<button type="button" class="bg-blue-60:hover@md">Save</button>
 ```
 
-This applies `bg:blue-60` only when the button matches `:hover` and the `@md` condition is true.
+This applies `bg-blue-60` only when the button matches `:hover` and the `@md` condition is true.
 
 <details>
   <summary>Complete generated rules for these conditions</summary>
@@ -34,12 +34,12 @@ Use short tokens for common cases, and use raw condition syntax when a condition
 The same property can have different values under different conditions.
 ```html
 <!-- @MARK @sm @md -->
-<h2 class="font:lg font:2xl@sm font:3xl@md">Example</h2>
+<h2 class="font-lg font-2xl@sm font-3xl@md">Example</h2>
 ```
 You can also combine a selector and a query in one class.
 ```html
 <!-- @MARK :hover@sm -->
-<div class="fg:white:hover@sm">Example</div>
+<div class="fg-white:hover@sm">Example</div>
 ```
 
 ## Common condition variants \{#common-condition-variants\}
@@ -82,7 +82,7 @@ Mode names also become condition variants. `@dark` and `@light` are available by
 
 ```html
 <!-- @MARK @dark -->
-<div class="bg:gray-90@dark">Example</div>
+<div class="bg-gray-90@dark">Example</div>
 ```
 
 The generated CSS depends on [`mode-trigger`](/reference/rules/modes#mode-triggers). A mode can become a media query, a class wrapper, or a shadow host wrapper.
@@ -121,11 +121,11 @@ Use `@print`, `@screen`, `@all`, or `@speech` for media types. For example, hide
 Use `@motion` for motion-safe animation and `@reduce-motion` for reduced-motion alternatives.
 ```html
 <!-- @MARK @motion -->
-<span class="inline-block animation:rotate|slowest|linear|infinite@motion" aria-hidden="true">↻</span>
+<span class="inline-block animation:rotate|var(--duration-slowest)|linear|infinite@motion" aria-hidden="true">↻</span>
 <span>Syncing</span>
 ```
 
-<Class2CSS>{['animation:rotate|slowest|linear|infinite@motion']}</Class2CSS>
+<Class2CSS>{['animation:rotate|var(--duration-slowest)|linear|infinite@motion']}</Class2CSS>
 
 The text remains meaningful when reduced motion prevents the decoration from rotating. See the [motion guide](/guide/motion) for working playback examples and reduced-motion alternatives.
 
@@ -142,7 +142,7 @@ Use `@landscape` or `@portrait` for the viewport's aspect ratio. These queries d
 This native popover uses a starting scale when it opens. The transition is restricted to `@motion`; with reduced motion, the content appears without the transition.
 ```html
 <!-- @MARK transform:scale(0)@start -->
-<div id="target" popover="auto" class="transform:scale(0)@start transition:transform|slow|smooth@motion">
+<div id="target" popover="auto" class="transform:scale(0)@start transition:transform|var(--duration-slow)|var(--easing-smooth)@motion">
   <p>Release details</p>
   <button type="button" popovertarget="target" popovertargetaction="hide">Close</button>
 </div>
@@ -151,7 +151,7 @@ This native popover uses a starting scale when it opens. The transition is restr
 <details>
     <summary>Generated CSS</summary>
     <Class2CSS>
-        {['transition:transform|slow|smooth@motion', 'transform:scale(0)@start']}
+        {['transition:transform|var(--duration-slow)|var(--easing-smooth)@motion', 'transform:scale(0)@start']}
     </Class2CSS>
 </details>
 

@@ -30,17 +30,17 @@ export const dynamic = 'force-static'
 export const revalidate = false
 
 export default function Page() {
-  return <main className="min-h:100dvh p:md bg:demo-canvas text:body">
-    <header className="flex items-baseline justify-between gap:md mb:md">
-      <h1 className="m:0 text:sm font:semibold">Field notes</h1>
+  return <main className="min-h:100dvh p-md bg-demo-canvas text-body">
+    <header className="flex items-baseline justify-between gap-md mb-md">
+      <h1 className="m:0 text-sm font-semibold">Field notes</h1>
       <span className="demo-label">12 images / landscape</span>
     </header>
-    <div data-gallery className="grid-cols:2 gap:md grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
-      <Image className="grid-col-span:2 grid-row-span:2 full min-h:0 r:sm object-cover"
+    <div data-gallery className="grid-cols:2 gap-md grid-cols:3@2xs grid-cols:4@sm grid-cols:5@md">
+      <Image className="grid-col-span:2 grid-row-span:2 full min-h:0 r-sm object-cover"
         src={mountain1} placeholder="blur" sizes="(min-width:1024px) 40vw, (min-width:834px) 50vw, (min-width:600px) 66vw, 100vw"
         alt="Snowy peaks emerging from a sea of clouds" />
       {mountains.map(([mountain, alt]) => <Image key={mountain.src}
-        className="h:auto w:full aspect-ratio:2/1 r:sm object-cover"
+        className="h:auto w:100% aspect-ratio:2/1 r-sm object-cover"
         src={mountain} placeholder="blur" sizes="(min-width:1024px) 20vw, (min-width:834px) 25vw, (min-width:600px) 33vw, 50vw" alt={alt} />)}
     </div>
   </main>

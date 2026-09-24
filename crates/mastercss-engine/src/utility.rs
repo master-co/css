@@ -1,56 +1,68 @@
 use super::{
-    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_NATIVE_VALUE_NAMESPACES,
-    CompiledVariable, ConditionFeature, HashMap, ManifestProjection, Ordering, StoredRule,
-    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
+    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
+    CompiledVariable, ConditionFeature, GeneratedRuleIr, HashMap, ManifestProjection, Ordering,
+    StoredRule, UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatch, UtilityMatcher,
     UtilityMatcherType, collect_css_variable_names, format_standard_number,
-    is_native_shorthand_property, normalize_css_math_functions, normalize_dynamic_value,
+    is_native_shorthand_property, normalize_css_math_functions,
 };
 
-pub(crate) fn append_builtin_native_value_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    for (properties, variable_alias_refs) in BUILTIN_NATIVE_VALUE_NAMESPACES {
+pub(crate) fn append_builtin_token_utilities(utilities: &mut Vec<UtilityDefinition>) {
+    for (properties, variable_alias_refs) in BUILTIN_TOKEN_NAMESPACES {
         for property in *properties {
-            if utilities.iter().any(|utility| utility.id == *property) {
-                continue;
-            }
-            utilities.push(UtilityDefinition {
-                id: (*property).into(),
-                name: Some((*property).into()),
-                utility_type: if is_native_shorthand_property(property) {
-                    -1
-                } else {
-                    0
-                },
-                order: Some(0),
-                layer: UtilityLayerName::Utilities,
-                kind: None,
-                keys: Vec::new(),
-                alias_groups: Vec::new(),
-                variable_aliases: Vec::new(),
-                variable_alias_refs: variable_alias_refs
+            let mut keys = vec![*property];
+            keys.extend(
+                BUILTIN_KEY_ALIASES
                     .iter()
-                    .map(|reference| (*reference).to_owned())
-                    .collect(),
-                variables: HashMap::new(),
-                variable_entries: Vec::new(),
-                native_fallback: true,
-                emit: UtilityEmit::Property {
-                    property: (*property).into(),
-                },
-                matchers: vec![UtilityMatcher::Key {
-                    keys: vec![(*property).into()],
-                }],
-            });
+                    .filter_map(|(alias, target)| (*target == *property).then_some(*alias)),
+            );
+            for key in keys {
+                utilities.push(UtilityDefinition {
+                    id: format!("token:{key}"),
+                    name: Some(format!("{key}-")),
+                    utility_type: if is_native_shorthand_property(property) {
+                        -1
+                    } else {
+                        0
+                    },
+                    order: Some(0),
+                    layer: UtilityLayerName::Utilities,
+                    kind: None,
+                    keys: Vec::new(),
+                    alias_groups: Vec::new(),
+                    variable_aliases: Vec::new(),
+                    variable_alias_refs: variable_alias_refs
+                        .iter()
+                        .map(|value| (*value).to_owned())
+                        .collect(),
+                    variables: HashMap::new(),
+                    variable_entries: Vec::new(),
+                    native_fallback: false,
+                    builtin_token: true,
+                    emit: UtilityEmit::Property {
+                        property: (*property).into(),
+                    },
+                    matchers: vec![UtilityMatcher::Token {
+                        prefix: format!("{key}-"),
+                    }],
+                });
+            }
         }
     }
 }
 
 pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<UtilityDefinition>) {
-    for property in BUILTIN_NATIVE_DECLARATION_PROPERTIES {
-        if utilities.iter().any(|utility| utility.id == *property) {
+    let properties = BUILTIN_NATIVE_DECLARATION_PROPERTIES.iter().chain(
+        BUILTIN_TOKEN_NAMESPACES
+            .iter()
+            .flat_map(|(properties, _)| properties.iter()),
+    );
+    for property in properties {
+        let id = format!("native:{property}");
+        if utilities.iter().any(|utility| utility.id == id) {
             continue;
         }
         utilities.push(UtilityDefinition {
-            id: (*property).into(),
+            id,
             name: Some((*property).into()),
             utility_type: if is_native_shorthand_property(property) {
                 -1
@@ -67,6 +79,7 @@ pub(crate) fn append_builtin_native_declaration_utilities(utilities: &mut Vec<Ut
             variables: HashMap::new(),
             variable_entries: Vec::new(),
             native_fallback: true,
+            builtin_token: false,
             emit: UtilityEmit::Property {
                 property: (*property).into(),
             },
@@ -138,16 +151,25 @@ pub(crate) fn layer_index(layer: UtilityLayerName) -> usize {
 }
 
 pub(crate) fn compare_stored_rules(left: &StoredRule, right: &StoredRule) -> Ordering {
-    left.ir
-        .sort_tier
-        .cmp(&right.ir.sort_tier)
-        .then_with(|| {
-            compare_condition_features(&left.ir.priority.features, &right.ir.priority.features)
-        })
-        .then_with(|| left.ir.priority.selector.cmp(&right.ir.priority.selector))
-        .then_with(|| left.ir.utility_type.cmp(&right.ir.utility_type))
-        .then_with(|| natural_compare(&left.ir.key, &right.ir.key))
+    compare_rule_priority(&left.ir, &right.ir)
         .then_with(|| left.manifest_order.cmp(&right.manifest_order))
+}
+
+/// Compare generated rule order within one CSS layer. Hosts that reason about
+/// conflicts must use the same value-source and declaration ordering as rendering.
+pub fn compare_rule_priority(left: &GeneratedRuleIr, right: &GeneratedRuleIr) -> Ordering {
+    left.sort_tier
+        .cmp(&right.sort_tier)
+        .then_with(|| compare_condition_features(&left.priority.features, &right.priority.features))
+        .then_with(|| left.priority.selector.cmp(&right.priority.selector))
+        .then_with(|| left.utility_type.cmp(&right.utility_type))
+        .then_with(|| {
+            left.priority
+                .value_priority
+                .cmp(&right.priority.value_priority)
+        })
+        .then_with(|| natural_compare(&left.priority.sort_key, &right.priority.sort_key))
+        .then_with(|| natural_compare(&left.key, &right.key))
 }
 
 pub(crate) fn compare_condition_features(
@@ -223,12 +245,13 @@ pub fn natural_compare(left: &str, right: &str) -> Ordering {
     }
 }
 
-pub(crate) fn match_utility(
+pub(crate) fn match_utility_filtered(
     class_name: &str,
     utility: &UtilityDefinition,
     manifest: &ManifestProjection,
+    accepts: impl Fn(&UtilityMatcher) -> bool,
 ) -> Option<UtilityMatch> {
-    for matcher in &utility.matchers {
+    for matcher in utility.matchers.iter().filter(|matcher| accepts(matcher)) {
         match matcher {
             UtilityMatcher::Static { name }
                 if class_name.strip_prefix(name).is_some_and(|rest| {
@@ -295,35 +318,40 @@ pub(crate) fn match_utility(
                     }
                 }
             }
-            UtilityMatcher::Variable { keys, segments } => {
-                for key in keys {
-                    let Some(raw_value) = class_name
-                        .strip_prefix(key)
-                        .and_then(|rest| rest.strip_prefix(':'))
-                    else {
-                        continue;
-                    };
-                    let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if value.is_empty()
-                        || contains_legacy_variable_function(&value)
-                        || (segments.as_deref() != Some("multiple")
-                            && has_top_level_value_separator(&value))
-                    {
-                        continue;
-                    }
-                    let Some((value, variable_names)) =
-                        resolve_utility_alias_value(&value, utility, manifest)
-                    else {
-                        continue;
-                    };
-                    return Some(UtilityMatch {
-                        value: Some(value),
-                        value_normalized: false,
-                        state_token,
-                        variable_names,
-                        matcher_type: UtilityMatcherType::Variable,
-                    });
+            UtilityMatcher::Token { prefix } => {
+                let (negative, raw_value) = if let Some(value) = class_name.strip_prefix(prefix) {
+                    (false, value)
+                } else if let Some(value) = class_name
+                    .strip_prefix('-')
+                    .and_then(|name| name.strip_prefix(prefix))
+                {
+                    (true, value)
+                } else {
+                    continue;
+                };
+                let (value, state_token) = split_dynamic_value_state(raw_value);
+                if value.is_empty() || has_top_level_value_separator(&value) {
+                    continue;
                 }
+                if value.starts_with('-') {
+                    continue;
+                }
+                if negative && !super::named::allows_negative_token(utility) {
+                    continue;
+                }
+                let token = if negative { format!("-{value}") } else { value };
+                let Some((value, variable_names)) =
+                    resolve_utility_alias_value(&token, utility, manifest)
+                else {
+                    continue;
+                };
+                return Some(UtilityMatch {
+                    value: Some(value),
+                    value_normalized: true,
+                    state_token,
+                    variable_names,
+                    matcher_type: UtilityMatcherType::Token,
+                });
             }
             UtilityMatcher::Value { keys, segments } => {
                 for key in keys {
@@ -385,27 +413,9 @@ pub(crate) fn resolve_utility_value(
     utility: &UtilityDefinition,
     manifest: &ManifestProjection,
 ) -> Option<(String, Vec<String>)> {
-    resolve_value(value, Some(utility), manifest)
-}
-
-pub(crate) fn resolve_value(
-    value: &str,
-    utility: Option<&UtilityDefinition>,
-    manifest: &ManifestProjection,
-) -> Option<(String, Vec<String>)> {
     if let Some((key, alpha)) = value.split_once('/') {
-        let variable_name = key
-            .strip_prefix('$')
-            .filter(|name| manifest.compiled_variables.contains_key(*name))
-            .map(str::to_owned)
-            .or_else(|| utility.and_then(|utility| utility.variables.get(key).cloned()))
-            .or_else(|| {
-                manifest
-                    .compiled_variables
-                    .contains_key(key)
-                    .then(|| key.to_owned())
-            })?;
-        let variable = manifest.compiled_variables.get(&variable_name)?;
+        let variable_name = utility.variables.get(key)?;
+        let variable = manifest.compiled_variables.get(variable_name)?;
         if !variable.namespace.starts_with("color") {
             return None;
         }
@@ -433,11 +443,7 @@ pub(crate) fn resolve_value(
     let (negative, key) = value
         .strip_prefix('-')
         .map_or((false, value), |key| (true, key));
-    let variable_name = key
-        .strip_prefix('$')
-        .filter(|name| manifest.compiled_variables.contains_key(*name))
-        .or_else(|| utility.and_then(|utility| utility.variables.get(key).map(String::as_str)))
-        .or_else(|| manifest.compiled_variables.contains_key(key).then_some(key))?;
+    let variable_name = utility.variables.get(key)?;
     let variable = manifest.compiled_variables.get(variable_name)?;
     if negative && variable.variable_type != "number" {
         return None;
@@ -477,7 +483,7 @@ pub(crate) fn resolve_utility_alias_value(
 
 pub(crate) fn resolve_value_components(
     value: &str,
-    utility: Option<&UtilityDefinition>,
+    _utility: Option<&UtilityDefinition>,
     manifest: &ManifestProjection,
 ) -> (String, Vec<String>) {
     let mut output = String::with_capacity(value.len());
@@ -485,20 +491,11 @@ pub(crate) fn resolve_value_components(
     let mut quote = None;
     let mut escaped = false;
     let mut variable_names = Vec::new();
-    let flush = |token: &mut String, output: &mut String, variable_names: &mut Vec<String>| {
+    let flush = |token: &mut String, output: &mut String, _variable_names: &mut Vec<String>| {
         if token.is_empty() {
             return;
         }
-        if let Some((resolved, names)) = resolve_value(token, utility, manifest) {
-            output.push_str(&resolved);
-            for name in names {
-                if !variable_names.contains(&name) {
-                    variable_names.push(name);
-                }
-            }
-        } else {
-            output.push_str(&normalize_dynamic_value(token, &manifest.settings));
-        }
+        output.push_str(token);
         token.clear();
     };
     for character in value.chars() {

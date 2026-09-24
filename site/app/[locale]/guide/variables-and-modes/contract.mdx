@@ -24,9 +24,9 @@ Modes are named buckets for alternate variable values. They let the same class s
 ```
 
 ```html
-<!-- @MARK bg:surface-card --><!-- @MARK p:card --><!-- @MARK bg:brand -->
-<article class="bg:surface-card p:card">
-  <button type="button" class="fg:white bg:brand">Save</button>
+<!-- @MARK bg-surface-card --><!-- @MARK p-card --><!-- @MARK bg-brand -->
+<article class="bg-surface-card p-card">
+  <button type="button" class="fg-white bg-brand">Save</button>
 </article>
 ```
 
@@ -34,7 +34,7 @@ Modes are named buckets for alternate variable values. They let the same class s
 ### Check a custom spacing token \{#custom-spacing-example\}
 Compile the theme together with the class that uses it. This example adds a project token to the current preset; changing its value changes the generated theme variable.
 
-<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p:card']} />
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
 `@theme`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then generates the required rules and their variable or keyframe dependencies. Static theme resources are an explicit exception to on-demand emission.
 
@@ -45,11 +45,11 @@ Compile the theme together with the class that uses it. This example adds a proj
 ```
 
 ```html
-<!-- @MARK bg:brand -->
-<button type="button" class="fg:white bg:brand">Save</button>
+<!-- @MARK bg-brand -->
+<button type="button" class="fg-white bg-brand">Save</button>
 ```
 
-When `bg:brand` is generated, Master CSS resolves `brand` through the background color namespace and emits a declaration that references `--color-brand`. The variable itself is emitted in the `theme` layer.
+When `bg-brand` is generated, Master CSS resolves `brand` through the background color namespace and emits a declaration that references `--color-brand`. The variable itself is emitted in the `theme` layer.
 
 Regular CSS custom property behavior still applies. Values inherit through the DOM, cascade by selector, and compute where the browser sees the declaration.
 
@@ -69,9 +69,9 @@ Write theme custom properties as `--<namespace>-<key>`. Master CSS resolves the 
 The utility decides which namespace it reads. The same key can mean different values in different contexts:
 
 ```html
-<!-- @MARK p:card --><!-- @MARK r:card --><!-- @MARK text:action --><!-- @MARK b:1px|solid|divider -->
-<article class="r:card b:1px|solid|divider p:card">
-  <a class="text:action" href="/settings">Settings</a>
+<!-- @MARK p-card --><!-- @MARK r-card --><!-- @MARK text-action --><!-- @MARK b:1px|solid|var(--color-divider) -->
+<article class="r-card b:1px|solid|var(--color-divider) p-card">
+  <a class="text-action" href="/settings">Settings</a>
 </article>
 ```
 
@@ -87,11 +87,11 @@ Contextual utilities keep class strings short by searching the namespace they al
 
 | Class | Namespace searched |
 | --- | --- |
-| `p:md` | `spacing-md` |
-| `r:md` | `radius-md` |
-| `max-w:md` | `container-md` |
+| `p-md` | `spacing-md` |
+| `r-md` | `radius-md` |
+| `max-w-md` | `container-md` |
 | `grid-cols:2@md` | `breakpoint-md` |
-| `text:body` | `color-text-body` |
+| `text-body` | `color-text-body` |
 
 This is why token keys should be named for their namespace. `md` can work across spacing, radius, container, and breakpoint scales because the utility supplies the missing context.
 
@@ -107,7 +107,7 @@ Use native CSS `var()` when a token should reference another theme token:
 ## Inline and static variables \{#inline-and-static-variables\}
 Regular theme variables emit CSS custom properties when generated rules need them. Inline variables behave like utility shorthands: Master CSS resolves the value and writes it directly into generated declarations.
 
-<ConfiguredExample source={'@theme inline { --color-brand: #4f46e5; --spacing-feature: 1.5rem; }'} classes={['bg:brand', 'p:feature']} label="Inline token values" />
+<ConfiguredExample source={'@theme inline { --color-brand: #4f46e5; --spacing-feature: 1.5rem; }'} classes={['bg-brand', 'p-feature']} label="Inline token values" />
 
 Inline variables can reference other inline variables. If an inline variable references a regular theme variable, Master CSS keeps the regular `var(--*)` reference and emits that dependency when needed. Inline variables cannot be mode-specific.
 
@@ -146,8 +146,8 @@ Use `@theme static` when a variable or managed keyframes definition should be em
 ```
 
 ```html
-<!-- @MARK bg:surface-card --><!-- @MARK text:card -->
-<article class="bg:surface-card text:card">...</article>
+<!-- @MARK bg-surface-card --><!-- @MARK text-card -->
+<article class="bg-surface-card text-card">...</article>
 ```
 
 When a token has mode-specific values, generated utilities reference the same CSS custom property. The active mode changes the variable value, not the class name.
@@ -204,7 +204,7 @@ For manual theme switches, set `mode-trigger` to `class`:
 <!-- @MARK dark -->
 <html class="dark">
   <body>
-    <div class="bg:surface-card text:card">...</div>
+    <div class="bg-surface-card text-card">...</div>
   </body>
 </html>
 ```
@@ -217,11 +217,10 @@ Settings are not design tokens, but a few of them shape variable and class outpu
 ```css name=index.css
 @settings {
   root-size: 16;
-  base-unit: 4;
   scope: #app;
 }
 ```
 
-`root-size` controls numeric conversion to root-relative units such as `rem`. `base-unit` controls multiplier units such as `1x`, `2x`, and `4x`. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
+`root-size` supplies the root-size assumption used by conditions and tooling; declaration values keep their explicit units. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
 
 See the [settings directive](/reference/directives/settings) for accepted settings and the [theme directive](/reference/directives/theme) for declaration syntax. Use [Theme tokens](/guide/theme) for the project authoring workflow.

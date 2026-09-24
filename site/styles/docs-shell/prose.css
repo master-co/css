@@ -1,12 +1,12 @@
 @defaults {
   prose {
     h2:has(+:is(h3, section)) {
-      @compose font:sm tracking:wide text:body;
+      @compose font-sm tracking-wide text-body;
     }
 
     @light {
       :is(p, li, table) code {
-        @compose bg:neutral-0;
+        @compose bg-neutral-0;
       }
     }
 
@@ -17,23 +17,23 @@
     }
 
     :is(p) {
-      @compose font:md;
+      @compose font-md;
     }
 
     :is(li) {
-      @compose font:sm;
+      @compose font-sm;
     }
 
     :is(p, li) {
-      @compose leading:xl;
+      @compose leading-xl;
     }
 
     summary {
-      @compose text:sm;
+      @compose text-sm;
     }
 
     :is(p, li) {
-      @compose max-w:breakpoint-sm;
+      @compose max-w:var(--breakpoint-sm);
     }
 
     :is(h2)+*>h3:first-child {
@@ -49,27 +49,27 @@
     }
 
     :is(h2, h3) {
-      @compose w:fit;
+      @compose w:fit-content;
     }
 
     :is(a, mark, u) {
-      @compose text-underline:3xs;
+      @compose text-underline-3xs;
     }
 
     :is(p, li, figcaption, summary, td, th) :is(a, u) {
-      @compose text-decoration:from-font|underline|accent/.5|dotted;
+      @compose text-decoration:from-font|underline|color-mix(in|oklab,var(--color-accent)|50%,transparent)|dotted;
     }
 
     :is(p, li, figcaption, td, th) :is(a):hover {
-      @compose decoration-solid fg:accent;
+      @compose decoration-solid fg-accent;
     }
 
     :is(del) {
-      @compose text-decoration:from-font|line-through|crimson-60;
+      @compose text-decoration:from-font|line-through|var(--color-crimson-60);
     }
 
     :is(mark) {
-      @compose bg:transparent;
+      @compose background-color:transparent;
     }
 
     :is(h2, h3) a {
@@ -77,23 +77,23 @@
     }
 
     :is(h2) {
-      @compose text:2xl;
+      @compose text-2xl;
     }
 
     :is(h3) {
-      @compose text:xl;
+      @compose text-xl;
     }
 
     :is(h4) {
-      @compose text:md;
+      @compose text-md;
     }
 
     :is(h5) {
-      @compose text:sm;
+      @compose text-sm;
     }
 
     :is(h6) {
-      @compose text:sm;
+      @compose text-sm;
     }
 
     :is(h2, h3):not(.sr-only)+ :is(h2, h3) {
@@ -121,12 +121,12 @@
     }
 
     :is(p, li, table) code:not(.code-block) {
-      @compose p:4xs|3xs r:sm b:1px|solid|muted;
+      @compose p:var(--spacing-4xs)|var(--spacing-3xs) r-sm b:1px|solid|var(--color-line-muted);
       font-size: small;
     }
 
     :is(th) {
-      @compose text:strong;
+      @compose text-strong;
     }
 
     :is(pre) {
@@ -146,7 +146,7 @@
     }
 
     .task-list-item input {
-      @compose size:1em mr:xs;
+      @compose size:1em mr-xs;
       vertical-align: middle;
     }
 
@@ -172,12 +172,12 @@
 
     @variant sm {
       :is(h1, h2, h3, h4, h5, h6) {
-        @compose mt:2xl scroll-mt:100px;
+        @compose mt-2xl scroll-mt:100px;
       }
     }
 
     :is(h1, h2, h3, h4, h5, h6) {
-      @compose mt:lg scroll-mt:60px;
+      @compose mt-lg scroll-mt:60px;
     }
 
     :is(ul) {
@@ -189,11 +189,11 @@
     }
 
     :is(strong, b, code, a, mark, h2, h3, h4, summary) {
-      @compose text:strong;
+      @compose text-strong;
     }
 
     ::marker {
-      @compose text:disabled;
+      @compose text-disabled;
     }
 
     :is(summary) {
@@ -205,7 +205,7 @@
     }
 
     :is(blockquote) {
-      @compose bl:5px|solid|subtle;
+      @compose bl:5px|solid|var(--color-line-subtle);
     }
 
     :is(img) {
@@ -213,11 +213,11 @@
     }
 
     :is(figcaption) {
-      @compose text:sm p:15px|20px|0 w:fit text:muted;
+      @compose text-sm p:15px|20px|0 w:fit-content text-muted;
     }
 
     :is(table) {
-      @compose w:full;
+      @compose w:100%;
     }
 
     :is(table) {
@@ -225,24 +225,24 @@
     }
 
     :is(td, th) {
-      @compose bb:1px|solid|muted;
+      @compose bb:1px|solid|var(--color-line-muted);
     }
 
     :is(tbody) :is(tr:last-child)> :is(td, th) {
-      @compose bb:0px;
+      @compose border-bottom-width:0px;
     }
 
     :is(thead) th {
-      @compose bb:1px|solid|muted;
+      @compose bb:1px|solid|var(--color-line-muted);
     }
 
     :is(hr) {
-      @compose bb:1px|solid|muted my:lg;
+      @compose bb:1px|solid|var(--color-line-muted) my-lg;
     }
 
     @variant sm {
       :is(hr) {
-        @compose my:2xl;
+        @compose my-2xl;
       }
     }
 
@@ -271,7 +271,7 @@
     }
 
     :is(table) code {
-      @compose font:xs leading:1 font:regular;
+      @compose font-xs leading:1 font-regular;
     }
 
     :is(p) code {
@@ -279,7 +279,7 @@
     }
 
     :is(th, td) {
-      @compose text:sm;
+      @compose text-sm;
     }
 
     :is(th, td) {

@@ -338,13 +338,16 @@
           "MasterCSSCompilerInspection",
           "MasterCSSCompilerOptions",
           "MasterCSSPrepareStylesheetBundleRequest",
+          "MasterCSSRCMigrationRequest",
+          "MasterCSSRCMigrationResult",
           "MasterCSSRenderStylesheetBundleRequest",
           "MasterCSSStylesheetAsset",
           "MasterCSSStylesheetBundle",
           "compileCSS",
           "compileManifest",
           "createCompiler",
-          "inspectCSS"
+          "inspectCSS",
+          "migrateRC"
         ],
         "./node": [
           "MasterCSSCompileManifestFileDeliveryOptions",
@@ -372,6 +375,7 @@
           "composeStylesheetHostSync",
           "createCompilerSync",
           "inspectCSSSync",
+          "migrateRCSync",
           "resolveStylesheetSync"
         ],
         "./project": [
@@ -450,7 +454,7 @@
           "createMasterCSSInspectionReport"
         ]
       },
-      "surface": "f1fbee6c4195960b"
+      "surface": "710409adbbfcb3ac"
     },
     "@master/create-css": {
       "directory": "create",
@@ -888,6 +892,7 @@
           "CSSDirectiveUtilityDynamicDefinition",
           "CSSDirectiveUtilityPatternDefinition",
           "CSSDirectiveUtilityRuleDefinition",
+          "CSSDirectiveUtilityTokenDefinition",
           "CSSDirectiveVariableDefinition",
           "CSSDirectiveVariableValue",
           "CSSDirectiveVariantDefinitions",
@@ -945,7 +950,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "f06c33f4d21cd1d5"
+      "surface": "b9128de4c4dd64a3"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1032,10 +1037,10 @@
         ],
         "./builtins": [
           "MasterCSSBuiltinKeyAliases",
-          "MasterCSSBuiltinNativeValueNamespace",
-          "MasterCSSBuiltinNativeValueNamespaces",
+          "MasterCSSBuiltinTokenNamespace",
+          "MasterCSSBuiltinTokenNamespaces",
           "builtinKeyAliases",
-          "builtinNativeValueNamespaces"
+          "builtinTokenNamespaces"
         ],
         "./lexer": [
           "MasterCSSCSSAnalysis",
@@ -1198,7 +1203,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "5940ae6e257d7b32"
+      "surface": "7093222eed066c71"
     },
     "@master/css-vite": {
       "directory": "vite",

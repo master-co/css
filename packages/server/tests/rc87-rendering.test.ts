@@ -22,12 +22,12 @@ function countHydrationManifestScripts(html: string) {
 
 it('render <html>', () => {
   expect(render([
-    '<html class="bg:white">',
+    '<html class="bg-white">',
     '<body><div class="text-center"></div></body>',
     '</html>'
   ].join('')).html).toEqual([
-    '<html class="bg:white">',
-    '<head><style id="master-css">@layer utilities{.text-center{text-align:center}.bg\\:white{background-color:oklch(100% 0 none)}}</style></head>',
+    '<html class="bg-white">',
+    '<head><style id="master-css">@layer utilities{.text-center{text-align:center}.bg-white{background-color:oklch(100% 0 none)}}</style></head>',
     '<body><div class="text-center"></div></body>',
     '</html>'
   ].join(''))
@@ -35,14 +35,14 @@ it('render <html>', () => {
 
 it('should not render the new style element', () => {
   const result = render([
-    '<html class="bg:white">',
+    '<html class="bg-white">',
     '<head><style id="master-css"></style></head>',
     '</html>'
   ].join(''))
 
   expect(result.html).toEqual([
-    '<html class="bg:white">',
-    '<head><style id="master-css">@layer utilities{.bg\\:white{background-color:oklch(100% 0 none)}}</style></head>',
+    '<html class="bg-white">',
+    '<head><style id="master-css">@layer utilities{.bg-white{background-color:oklch(100% 0 none)}}</style></head>',
     '</html>'
   ].join(''))
   expect(result.html.match(/id="master-css"/g)).toHaveLength(1)

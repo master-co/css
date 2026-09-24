@@ -80,7 +80,7 @@ describe('shared scanner plugins', () => {
       await findPlugin(plugins, 'master-css:scanner').configResolved.call({}, fakeViteConfig)
       const usageGraphPlugin = findPlugin(plugins, 'master-css:usage-graph')
       for (const id of ids) {
-        await usageGraphPlugin.transform.call({}, '<div class="bg:white">x</div>', id)
+        await usageGraphPlugin.transform.call({}, '<div class="bg-white">x</div>', id)
       }
       return ctx.scanner.scanModuleCalls
     }

@@ -8,14 +8,14 @@
 <DemoExample page="scroll-snap-type" section="snap-on-the-horizontal-axis" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md snap-x"
+<div id="scrollport" class="flex overflow-x:auto gap-md snap-x"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 6</article>
 </div>
 ```
 
@@ -32,12 +32,12 @@
 <DemoExample page="scroll-snap-type" section="require-a-snap-point" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:56x scroll-snap-type:y|mandatory"
+<div id="scrollport" class="overflow-y:auto h:14rem scroll-snap-type:y|mandatory"
   tabindex="0" aria-label="Vertical panels">
-  <section id="panel-1" class="h:56x snap-start">Panel 1</section>
-  <section id="panel-2" class="h:56x snap-start">Panel 2</section>
-  <section id="panel-3" class="h:56x snap-start">Panel 3</section>
-  <section id="panel-4" class="h:56x snap-start">Panel 4</section>
+  <section id="panel-1" class="h:14rem snap-start">Panel 1</section>
+  <section id="panel-2" class="h:14rem snap-start">Panel 2</section>
+  <section id="panel-3" class="h:14rem snap-start">Panel 3</section>
+  <section id="panel-4" class="h:14rem snap-start">Panel 4</section>
 </div>
 ```
 
@@ -54,14 +54,14 @@
 <DemoExample page="scroll-snap-type" section="allow-nearby-snap-points" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|proximity"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|proximity"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 6</article>
 </div>
 ```
 
@@ -78,11 +78,11 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="scroll-snap-type" section="apply-conditionally" />
 
 ```html
-<div id="scrollport" class="flex overflow:auto gap:md h:56x snap-x flex-col@sm scroll-snap-type:y|mandatory@sm"
+<div id="scrollport" class="flex overflow:auto gap-md h:14rem snap-x flex-col@sm scroll-snap-type:y|mandatory@sm"
   tabindex="0" aria-label="Responsive panels">
-  <section id="panel-1" class="flex-shrink:0 h:56x w:48x snap-start w:full@sm">Panel 1</section>
-  <section id="panel-2" class="flex-shrink:0 h:56x w:48x snap-start w:full@sm">Panel 2</section>
-  <section id="panel-3" class="flex-shrink:0 h:56x w:48x snap-start w:full@sm">Panel 3</section>
-  <section id="panel-4" class="flex-shrink:0 h:56x w:48x snap-start w:full@sm">Panel 4</section>
+  <section id="panel-1" class="flex-shrink:0 h:14rem w:12rem snap-start w:100%@sm">Panel 1</section>
+  <section id="panel-2" class="flex-shrink:0 h:14rem w:12rem snap-start w:100%@sm">Panel 2</section>
+  <section id="panel-3" class="flex-shrink:0 h:14rem w:12rem snap-start w:100%@sm">Panel 3</section>
+  <section id="panel-4" class="flex-shrink:0 h:14rem w:12rem snap-start w:100%@sm">Panel 4</section>
 </div>
 ```

@@ -10,21 +10,21 @@ Use the `list-style` shorthand when marker type and position belong together. Co
 
 ```html
 <!-- disc · inside -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:disc|inside">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 
 ```html
 <!-- decimal · inside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:decimal|inside">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ol>
 ```
 
@@ -44,11 +44,11 @@ Supply a real image URL. The image takes precedence over the specified disc type
 
 ```html
 <!-- Local SVG · disc fallback -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:disc|outside list-style-image:url(/demo/marker.svg)">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 
@@ -61,11 +61,11 @@ Resize past `sm` to move decimal markers inside while preserving their type. Use
 
 ```html
 <!-- Decimal retained · outside to inside -->
-<ol id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ol id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:decimal|outside list-style-position:inside@screen&sm">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ol>
 ```
 
@@ -78,12 +78,12 @@ Resize past `sm` to replace the whole marker treatment: disc outside becomes squ
 
 ```html
 <!-- Whole shorthand · real viewport -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:disc|outside list-style:disc|outside@print
     list-style:square|inside@screen&sm">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 

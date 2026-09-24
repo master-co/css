@@ -28,7 +28,7 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
 
 @components {
   btn {
-    @compose inline-flex align-items:center justify-content:center gap:2x px:md h:10x r:md font:medium;
+    @compose inline-flex align-items:center justify-content:center gap:0.5rem px-md h:2.5rem r-md font-medium;
   }
 }
 ```
@@ -124,7 +124,7 @@ Keep project-specific commands in the same file so the agent does not have to in
 Ask the agent to optimize for readable markup, not the shortest possible class list.
 
 ```html
-<button class="inline-flex items-center gap:xs h:10x px:md r:md fg:white bg:blue-70:hover opacity:.5:disabled bg:brand">
+<button class="inline-flex items-center gap-xs h:2.5rem px-md r-md fg-white bg-blue-70:hover opacity:.5:disabled bg-brand">
   Save
 </button>
 ```
@@ -132,9 +132,9 @@ Ask the agent to optimize for readable markup, not the shortest possible class l
 Readable Master CSS usually follows these habits:
 
 - Use complete class strings instead of building classes from small string fragments.
-- Prefer project tokens such as `bg:brand`, `p:card`, and `r:card` when they exist.
+- Prefer project tokens such as `bg-brand`, `p-card`, and `r-card` when they exist.
 - Use native declaration syntax such as `scroll-margin-top:4rem` when it is clearer than a custom abstraction.
-- Keep selector states and conditions attached to the class they affect, such as `bg:blue-70:hover` and `grid-cols:3@md`.
+- Keep selector states and conditions attached to the class they affect, such as `bg-blue-70:hover` and `grid-cols:3@md`.
 - Move repeated product values into `@theme`; move repeated product patterns into `@components` only when a named abstraction improves maintainability.
 
 Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
@@ -246,3 +246,14 @@ Run the app, inspect the affected page in desktop and mobile widths, and compare
 - Use [Style declarations](/reference/rules/declarations) when you need syntax details.
 - Use [Theme Tokens](/guide/theme) and [Global Styles](/guide/global-styles#shared-vocabulary) when AI suggestions reveal repeated product vocabulary.
 - Use [Migration](/guide/migration) when an AI coding agent is converting an existing styling system to Master CSS.
+
+
+## Named tokens and native values
+
+Use hyphens for named tokens, such as `font-mono`, `fg-red`, and `p-md`. Use colons for direct CSS values, such as `font-size:16px`, `fg:red`, and `p:1rem`. Property aliases have fixed meanings: `bg:#fff` is the native `background` shorthand, so use `background-color:#fff` for a color-only change.
+
+Use explicit `var(--name)` references inside raw values, including functions and multi-value declarations. Do not generate `$name`, Master length `x`, or `base-unit`. Native resolution `x` in `image-set()` remains valid. Do not invent numeric names such as `p-4` unless the project defines that token.
+
+Resolve ambiguous short names with an explicit prefix, for example `font-family-brand` or `font-size-brand`. Check compiler diagnostics and generated declarations; the revised spelling alone does not establish CSS validity or improved AI accuracy.
+
+When upgrading an existing v2 RC project, use [Migrating from Master CSS v2 RC](/guide/migration/v2-rc), preserve the original manifest and settings, and review migration proposals before applying them.

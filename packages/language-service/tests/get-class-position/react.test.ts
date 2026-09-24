@@ -79,10 +79,10 @@ test.concurrent('parse failure falls back to regex positions', () => {
 })
 
 test.concurrent('regex fallback ignores class attributes inside JS comments', () => {
-  const doc = createDoc('tsx', 'const broken = <\n// <div className="fg:red"></div>\n<div className="fg:blue"></div>')
+  const doc = createDoc('tsx', 'const broken = <\n// <div className="fg-red"></div>\n<div className="fg-blue"></div>')
   const languageService = new CSSLanguageService()
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
-    'fg:blue'
+    'fg-blue'
   ])
 })
 

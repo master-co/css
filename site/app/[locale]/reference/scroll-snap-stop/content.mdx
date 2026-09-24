@@ -8,14 +8,14 @@
 <DemoExample page="scroll-snap-stop" section="force-a-snap-stop" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 6</article>
 </div>
 ```
 
@@ -42,14 +42,14 @@ document.querySelector('#scrollport').scrollBy({ left: 600, behavior: 'instant' 
 <DemoExample page="scroll-snap-stop" section="keep-normal-scroll-momentum" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 6</article>
 </div>
 ```
 
@@ -59,14 +59,14 @@ Apply `snap-always` only where an intermediate stop helps orientation. Here Pane
 <DemoExample page="scroll-snap-stop" section="use-sparingly" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-always snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-always snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start">Panel 6</article>
 </div>
 ```
 
@@ -76,13 +76,13 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="scroll-snap-stop" section="apply-conditionally" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-normal snap-start snap-always@sm">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-normal snap-start snap-always@sm">Panel 6</article>
 </div>
 ```

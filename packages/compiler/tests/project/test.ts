@@ -420,7 +420,7 @@ test('resolves Master CSS workspace packages and optional language server', () =
         '@master/css-preset': '^1.2.3'
       }
     }, {
-      'index.js': 'export const builtinKeyAliases = {}; export const builtinNativeValueNamespaces = []'
+      'index.js': 'export const builtinKeyAliases = {}; export const builtinTokenNamespaces = []'
     })
     const presetDir = writeNodePackage(cssDir, '@master/css-preset', {
       exports: {

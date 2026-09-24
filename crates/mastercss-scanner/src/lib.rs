@@ -438,13 +438,13 @@ mod tests {
                 },
                 {
                     "id": "color-red",
-                    "name": "fg:red",
+                    "name": "fg-red",
                     "type": 0,
                     "emit": {
                         "type": "static",
                         "rules": [{ "declarations": { "color": "red" } }]
                     },
-                    "matchers": [{ "type": "static", "name": "fg:red" }]
+                    "matchers": [{ "type": "static", "name": "fg-red" }]
                 }
             ]
         })
@@ -457,18 +457,18 @@ mod tests {
         let first = scanner
             .scan(
                 "App.tsx",
-                "export const App = () => <div className=\"block unknown fg:red\" />",
+                "export const App = () => <div className=\"block unknown fg-red\" />",
             )
             .unwrap();
         assert!(first.changed);
-        assert_eq!(first.valid_classes, ["block", "fg:red"]);
+        assert_eq!(first.valid_classes, ["block", "fg-red"]);
         assert_eq!(first.invalid_classes, ["unknown"]);
         assert_eq!(first.transition.mutations.len(), 2);
 
         let cached = scanner
             .scan(
                 "App.tsx",
-                "export const App = () => <div className=\"block unknown fg:red\" />",
+                "export const App = () => <div className=\"block unknown fg-red\" />",
             )
             .unwrap();
         assert!(!cached.changed);

@@ -55,7 +55,7 @@ test('expects the variable output', async ({ page }) => {
   await page.evaluate(() => {
     const p = document.createElement('p')
     p.id = 'mp'
-    p.classList.add('bg:first')
+    p.classList.add('bg-first')
     document.body.append(p)
   })
   await waitForRuntimeRuleFlush(page)
@@ -63,39 +63,40 @@ test('expects the variable output', async ({ page }) => {
     await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text),
     {
       theme: ':root{--color-first:#111111}.light{color-scheme:light;--color-first:#333333}.dark{color-scheme:dark;--color-first:#222222}',
-      utilities: '.bg\\:first{background-color:var(--color-first)}'
+      utilities: '.bg-first{background-color:var(--color-first)}'
     }
   )
 
   await page.evaluate(() => {
     const p = document.getElementById('mp')
     p?.classList.add(
-      'bg:second',
-      'b:third',
-      '{outline:fourth;accent-color:fifth}',
-      'fg:second',
-      'accent-color:sixth'
+      'bg-second',
+      'b-third',
+      '{outline-fourth;accent-color-fifth}',
+      'fg-second',
+      'accent-color-sixth'
     )
   })
   await waitForRuntimeRuleFlush(page)
   let text = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(text).toMatch(/\.dark\{[^}]*--color-second:#444444[^}]*\}/)
   expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
-  expect(text).toContain('.bg\\:second{background-color:var(--color-second)}')
+  expect(text).toContain('.bg-second{background-color:var(--color-second)}')
   expect(text).toMatch(/:root\{[^}]*--color-third:#666666[^}]*\}/)
   expect(text).toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
-  expect(text).toContain('.b\\:third{border-color:var(--color-third)}')
+  expect(text).toContain('.b-third{border-color:var(--color-third)}')
   expect(text).toMatch(/:root\{[^}]*--color-fourth:#888888[^}]*\}/)
   expect(text).toMatch(/\.dark\{[^}]*--color-fourth:#999999[^}]*\}/)
   expect(text).toMatch(/\.light\{[^}]*--color-fourth:#000000[^}]*\}/)
   expect(text).toMatch(/\.dark\{[^}]*--color-fifth:#022222[^}]*\}/)
   expect(text).toMatch(/\.light,:root\{[^}]*--color-fifth:#033333[^}]*\}/)
-  expect(text).toContain('.\\{outline\\:fourth\\;accent-color\\:fifth\\}{outline-color:var(--color-fourth);accent-color:var(--color-fifth)}')
-  expect(text).toContain('.fg\\:second{color:var(--color-second)}')
+  expect(text).toContain('.\\{outline-fourth\\;accent-color-fifth\\}{accent-color:var(--color-fifth)}')
+  expect(text).toContain('.\\{outline-fourth\\;accent-color-fifth\\}{outline-color:var(--color-fourth)}')
+  expect(text).toContain('.fg-second{color:var(--color-second)}')
   expect(text).toMatch(/\.light,:root\{[^}]*--color-sixth:#666666[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('bg:second')
+    document.getElementById('mp')?.classList.remove('bg-second')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -104,7 +105,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('b:third')
+    document.getElementById('mp')?.classList.remove('b-third')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -113,7 +114,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).not.toMatch(/\.light\{[^}]*--color-third:#777777[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('{outline:fourth;accent-color:fifth}')
+    document.getElementById('mp')?.classList.remove('{outline-fourth;accent-color-fifth}')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -125,7 +126,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).not.toMatch(/\.light, :root\{[^}]*--color-fifth:#033333[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('fg:second')
+    document.getElementById('mp')?.classList.remove('fg-second')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -134,7 +135,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).not.toMatch(/\.light,:root\{[^}]*--color-second:#555555[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('bg:first')
+    document.getElementById('mp')?.classList.remove('bg-first')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -144,7 +145,7 @@ test('expects the variable output', async ({ page }) => {
   expect(text).not.toMatch(/\.light, :root\{[^}]*--color-first:#333333[^}]*\}/)
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('accent-color:sixth')
+    document.getElementById('mp')?.classList.remove('accent-color-sixth')
   })
   await waitForRuntimeRemovalFlush(page)
   await flushRetainedClassRules(page)
@@ -157,7 +158,7 @@ test('sets native color-scheme on local class-triggered mode islands', async ({ 
     document.documentElement.className = 'light'
     document.documentElement.style.colorScheme = 'light'
     const element = document.createElement('div')
-    element.className = 'fg:second dark'
+    element.className = 'fg-second dark'
     document.body.append(element)
     await new Promise<void>(resolve => {
       requestAnimationFrame(() => {

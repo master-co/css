@@ -3,7 +3,7 @@ import { ContainerNamespaceTable } from './components/ContainerNamespace'
 ## Overview [sr-only]
 Containers define the size scale for reusable layout surfaces. In Master CSS, the container namespace has two related jobs:
 
-* Provide contextual size values such as `max-w:md`, `w:3xl`, `size:lg`, and `flex-basis:sm`.
+* Provide contextual size values such as `max-w-md`, `w-3xl`, `size-lg`, and `flex-basis-sm`.
 * Provide thresholds for `@container(<size>)` queries, so components can respond to the space they actually receive.
 
 Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use containers for component-level adaptation and shared width caps.
@@ -38,26 +38,26 @@ This lets sizing utilities use `md`, `5xl`, or project token names without the `
 ---
 
 ## Use container values in sizing utilities
-Sizing utilities that read from the container namespace use contextual shorthand. Write `max-w:md`; do not repeat the namespace inside the value.
+Sizing utilities that read from the container namespace use contextual shorthand. Write `max-w-md`; do not repeat the namespace inside the value.
 
 ```html
-<!-- @MARK w:full --><!-- @MARK max-w:5xl --><!-- @MARK mx:auto -->
-<main class="w:full max-w:5xl mx:auto">
+<!-- @MARK w:100% --><!-- @MARK max-w-5xl --><!-- @MARK mx:auto -->
+<main class="w:100% max-w-5xl mx:auto">
   ...
 </main>
 
-<!-- @MARK flex-basis:md -->
-<aside class="flex-basis:md flex-shrink:0">...</aside>
+<!-- @MARK flex-basis-md -->
+<aside class="flex-basis-md flex-shrink:0">...</aside>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['w:full', 'max-w:5xl', 'mx:auto', 'flex-basis:md']}
+    {['w:100%', 'max-w-5xl', 'mx:auto', 'flex-basis-md']}
   </Class2CSS>
 </details>
 
-The shorthand is contextual: `md` can mean a container value inside `max-w:md`, and a breakpoint threshold inside `@md`. The utility or variant decides which namespace is active.
+The shorthand is contextual: `md` can mean a container value inside `max-w-md`, and a breakpoint threshold inside `@md`. The utility or variant decides which namespace is active.
 
 <ContainerSizeValues />
 
@@ -69,7 +69,7 @@ Add `container` to an ancestor whose inline size comes from the surrounding layo
 ```html
 <section class="container">
   <!-- @MARK grid-cols:2@container(md) -->
-  <article class="grid-cols:1 gap:lg grid-cols:2@container(md)">
+  <article class="grid-cols:1 gap-lg grid-cols:2@container(md)">
     ...
   </article>
 </section>
@@ -78,7 +78,7 @@ Add `container` to an ancestor whose inline size comes from the surrounding layo
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'grid-cols:1', 'grid-cols:2@container(md)', 'gap:lg']}
+    {['container', 'grid-cols:1', 'grid-cols:2@container(md)', 'gap-lg']}
   </Class2CSS>
 </details>
 
@@ -141,8 +141,8 @@ Container size values and container queries are related, but they solve differen
 
 | Need | Use | Example |
 | --- | --- | --- |
-| Cap a page wrapper | Container value | `w:full max-w:7xl mx:auto` |
-| Cap a content measure | Local or container value | `max-w:72ch` or `max-w:5xl` |
+| Cap a page wrapper | Container value | `w:100% max-w-7xl mx:auto` |
+| Cap a content measure | Local or container value | `max-w:72ch` or `max-w-5xl` |
 | Adapt a reusable component | Container query | `grid-cols:2@container(md)` |
 | Coordinate nested responsive regions | Named container | `grid-cols:2@card(3xs)` |
 | Change the whole page shell | Breakpoint | `grid-cols:12@md` |

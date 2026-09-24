@@ -20,7 +20,7 @@ export function AnimationTokenTable() {
     return {
       key: name,
       token: `--animate-${name}`,
-      utility: `animate:${name}`,
+      utility: `animate-${name}`,
       value: String(value),
       description: animationDescriptions[name]
     }

@@ -9,36 +9,36 @@ Compare the same 75% scale around the center and the top-left corner. Violet poi
 
 ```html
 <!-- Center · four edges move inward -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:start|center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:start|center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:center">
       Center pivot
     </div>
     <span aria-hidden="true"
-      class="abs left:77px top:45px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs left:77px top:45px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
 
 ```html
 <!-- Top left · two edges stay fixed -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:start|center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:start|center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:top|left">
       Corner pivot
     </div>
     <span aria-hidden="true"
-      class="abs left:-3px top:-3px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs left:-3px top:-3px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
@@ -59,36 +59,36 @@ The first coordinate is horizontal and the second is vertical. Compare a top-rig
 
 ```html
 <!-- Top right · 160px, 0px -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:top|right">
       Top-right pivot
     </div>
     <span aria-hidden="true"
-      class="abs right:-3px top:-3px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs right:-3px top:-3px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
 
 ```html
 <!-- 25% 75% · 40px, 72px -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:25%|75%">
       Offset pivot
     </div>
     <span aria-hidden="true"
-      class="abs left:37px top:69px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs left:37px top:69px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
@@ -102,24 +102,24 @@ Focus or hover this native button to grow its preview from the top-left anchor. 
 
 ```html
 <!-- Anchored preview · hover or focus -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.8)
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.8)
              transform-origin:top|left
-             outline:2px|solid|blue:focus-visible
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              transform:none@print
-             transition:transform|fast|ease-out@motion
+             transition:transform|var(--duration-fast)|ease-out@motion
              transform:scale(1):hover@screen
              transform:scale(1):focus-visible@screen">
       Preview layer
     </button>
     <span aria-hidden="true"
-      class="abs left:-3px top:-3px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs left:-3px top:-3px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
@@ -133,12 +133,12 @@ Widen to `sm` to move the pivot from the center to the top-right corner. The sca
 
 ```html
 <!-- Center → top right at sm -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:center
              transform-origin:center@print
              transform-origin:top|right@screen&sm">

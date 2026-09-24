@@ -12,24 +12,24 @@ Append `/alpha` to make just the background paint translucent. The split backing
 
 ```html
 <!-- Opaque background -->
-<section class="p:md
-         bg:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
+<section class="p-md
+         background-image:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
   <div id="target"
-  class="w:100% p:lg bg:blue-50 text:body"
+  class="w:100% p-lg bg-blue-50 text-body"
 >
-    <span class="p:xs bg:surface-base text:body">Foreground stays opaque</span>
+    <span class="p-xs bg-surface-base text-body">Foreground stays opaque</span>
   </div>
 </section>
 ```
 
 ```html
 <!-- 50% background alpha -->
-<section class="p:md
-         bg:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
+<section class="p-md
+         background-image:linear-gradient(90deg,transparent|50%,var(--color-surface-muted)|50%)">
   <div id="target"
-  class="w:100% p:lg bg:blue-50/.5 text:body"
+  class="w:100% p-lg bg-blue-50/.5 text-body"
 >
-    <span class="p:xs bg:surface-base text:body">Foreground stays opaque</span>
+    <span class="p-xs bg-surface-base text-body">Foreground stays opaque</span>
   </div>
 </section>
 ```
@@ -37,11 +37,11 @@ Append `/alpha` to make just the background paint translucent. The split backing
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:blue-50', 'bg:blue-50/.5']}
+    {['bg-blue-50', 'bg-blue-50/.5']}
   </Class2CSS>
 </details>
 
-A background alpha does not dim text or child elements. [Opacity](/reference/opacity) composites the entire element. Use palette colors for a specific shade or a theme-aware semantic color such as `bg:blue`.
+A background alpha does not dim text or child elements. [Opacity](/reference/opacity) composites the entire element. Use palette colors for a specific shade or a theme-aware semantic color such as `bg-blue`.
 
 ### Apply conditionally \{#apply-conditionally\}
 Hover or focus the button to add a translucent background. Its label and focus ring remain visible in both themes; print removes the tint.
@@ -51,8 +51,8 @@ Hover or focus the button to add a translucent background. Its label and focus r
 ```html
 <!-- Pointer and keyboard · background only -->
 <button id="target" type="button"
-  class="font:md bg:surface-base text:body bg:transparent@print
-         bg:blue-50/.15:hover@screen bg:blue-50/.15:focus-visible@screen"
+  class="font-md bg-surface-base text-body background-color:transparent@print
+         bg-blue-50/.15:hover@screen bg-blue-50/.15:focus-visible@screen"
 >Preview details</button>
 ```
 

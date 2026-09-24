@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'aspnet-core',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/aspnet-core'>{$('Runtime Rendering')}</Tab>
       <Tab href='/guide/installation/aspnet-core/static-rendering'>{$('Static Rendering')}</Tab>
     </Tabs>,

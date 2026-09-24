@@ -22,10 +22,10 @@ function PreviousVector() {
 function FloatExample({ adopted }: { adopted: boolean }) {
   return (
     <Demo title="Text flow" caption="The image floats left. Width, spacing and float belong to the lesson.">
-      <DemoSurface className="flow-root p:md font:sm">
+      <DemoSurface className="flow-root p-md font-sm">
         {adopted
-          ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left h:auto w:28x mb:sm mr:md r:sm" />
-          : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left h:auto w:28x mb:sm mr:md r:sm" />}
+          ? <DemoMedia src="/demo/landscape.svg" width={112} height={70} alt="Sun above layered mountains" className="float:left h:auto w:7rem mb-sm mr-md r-sm" />
+          : <Image src="/demo/landscape.svg" width={112} height={70} unoptimized alt="Sun above layered mountains" className="float:left h:auto w:7rem mb-sm mr-md r-sm" />}
         <DemoText className="m:0">Text wraps around the floated image and continues in the remaining inline space. Reset the float when the image should return to normal document flow.</DemoText>
       </DemoSurface>
     </Demo>
@@ -66,8 +66,8 @@ export default function Page() {
         <p className={styles.sectionCopy}>The fallback uses <code>currentColor</code>, so actual utility classes determine the subject color. A supplied <code>src</code> keeps its own pixels and alt text.</p>
         <Demo>
           <div className={styles.variantGrid}>
-            <div><span className={styles.variantLabel}>Subject · blue</span><DemoMedia className={`${styles.mediaSpecimen} fg:demo-blue`} aria-label="Blue outlined mountain landscape" /></div>
-            <div><span className={styles.variantLabel}>Comparison · violet</span><DemoMedia className={`${styles.mediaSpecimen} fg:demo-violet`} aria-label="Violet outlined mountain landscape" /></div>
+            <div><span className={styles.variantLabel}>Subject · blue</span><DemoMedia className={`${styles.mediaSpecimen} fg-demo-blue`} aria-label="Blue outlined mountain landscape" /></div>
+            <div><span className={styles.variantLabel}>Comparison · violet</span><DemoMedia className={`${styles.mediaSpecimen} fg-demo-violet`} aria-label="Violet outlined mountain landscape" /></div>
             <div><span className={styles.variantLabel}>Asset · source supplied</span><DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} className={styles.mediaSpecimen} /></div>
           </div>
         </Demo>

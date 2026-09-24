@@ -10,12 +10,12 @@ A quoted four-character tag selects an OpenType feature. Here `tnum` gives each 
 
 ```html
 <!-- Default proportional digits -->
-<div id="target" class="font-feature-settings:normal font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="font-feature-settings:normal font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ```html
 <!-- Raw feature · 'tnum' -->
-<div id="target" class="font-feature-settings:'tnum' font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="font-feature-settings:'tnum' font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ### Reset features \{#reset-features\}
@@ -25,7 +25,7 @@ A quoted four-character tag selects an OpenType feature. Here `tnum` gives each 
 
 ```html
 <!-- Raw tnum inherited, then reset -->
-<div id="context" class="font-feature-settings:'tnum' font:3xl leading:sm">
+<div id="context" class="font-feature-settings:'tnum' font-3xl leading-sm">
   <p class="m:0"><span id="inherited" class="inline-block">11111</span></p>
   <p id="target" class="m:0 font-feature-settings:normal"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></p>
 </div>
@@ -38,12 +38,12 @@ Use [`tabular-nums`](/reference/font-variant-numeric) for ordinary numeric forma
 
 ```html
 <!-- font-feature-settings:'tnum' -->
-<div id="target" class="font-feature-settings:'tnum' font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="font-feature-settings:'tnum' font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ```html
 <!-- tabular-nums -->
-<div id="target" class="tabular-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="tabular-nums font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ### Use feature tokens \{#use-feature-tokens\}
@@ -58,7 +58,7 @@ Name a repeated feature setting in `@theme`, then use the token through the same
 ```
 ```html
 <!-- A project token for numeric data -->
-<div id="target" class="font:3xl leading:sm font-feature-settings:data"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="font-3xl leading-sm font-feature-settings-data"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -68,5 +68,5 @@ Hover or keyboard-focus the numeric sample. The raw `tnum` feature changes the a
 
 ```html
 <!-- Compare proportional and tabular advances -->
-<div id="target" tabindex="0" role="group" aria-label="Numeric feature sample" class="font-feature-settings:normal font:3xl leading:sm font-feature-settings:'tnum':hover font-feature-settings:'tnum':focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" tabindex="0" role="group" aria-label="Numeric feature sample" class="font-feature-settings:normal font-3xl leading-sm font-feature-settings:'tnum':hover font-feature-settings:'tnum':focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```

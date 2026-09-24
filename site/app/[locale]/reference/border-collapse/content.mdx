@@ -11,25 +11,25 @@ Adjacent cells share a single border in the collapsed model. This complete table
 <!-- Collapse · one shared edge -->
 <table id="target"
   class="w:240px max-w:100% border-collapse:collapse
-         border-spacing:0 font:sm text-left text:body
+         border-spacing:0 font-sm text-left text-body
          table-layout:fixed">
-  <caption class="pb:sm font:semibold text-left">
+  <caption class="pb-sm font-semibold text-left">
     Project assets
   </caption>
   <tbody>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Design
       </th>
-      <td class="p:xs b:2px|solid|blue">12 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">12 files</td>
     </tr>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Research
       </th>
-      <td class="p:xs b:2px|solid|blue">8 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">8 files</td>
     </tr>
   </tbody>
 </table>
@@ -53,25 +53,25 @@ Separate mode gives every cell its own border box. With zero spacing, two neighb
 <!-- Separate · two touching edges -->
 <table id="target"
   class="w:240px max-w:100% border-collapse:separate
-         border-spacing:0 font:sm text-left text:body
+         border-spacing:0 font-sm text-left text-body
          table-layout:fixed">
-  <caption class="pb:sm font:semibold text-left">
+  <caption class="pb-sm font-semibold text-left">
     Project assets
   </caption>
   <tbody>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Design
       </th>
-      <td class="p:xs b:2px|solid|blue">12 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">12 files</td>
     </tr>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Research
       </th>
-      <td class="p:xs b:2px|solid|blue">8 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">8 files</td>
     </tr>
   </tbody>
 </table>
@@ -80,7 +80,7 @@ Separate mode gives every cell its own border box. With zero spacing, two neighb
 Unlike collapsed borders, these edges are painted independently. Use spacing to leave a visible gap between the boxes.
 
 ### Match border spacing to the mode \{#match-border-spacing-to-the-mode\}
-Compare the same `border-spacing:xs` in both modes. The token resolves to 8px here, but only the separate model uses the gap.
+Compare the same `border-spacing-xs` in both modes. The token resolves to 8px here, but only the separate model uses the gap.
 
 <DemoExample page="border-collapse" section="match-border-spacing-to-the-mode" />
 
@@ -88,25 +88,25 @@ Compare the same `border-spacing:xs` in both modes. The token resolves to 8px he
 <!-- Collapse · spacing ignored -->
 <table id="target"
   class="w:240px max-w:100% border-collapse:collapse
-         border-spacing:xs font:sm text-left
-         text:body table-layout:fixed">
-  <caption class="pb:sm font:semibold text-left">
+         border-spacing-xs font-sm text-left
+         text-body table-layout:fixed">
+  <caption class="pb-sm font-semibold text-left">
     Project assets
   </caption>
   <tbody>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Design
       </th>
-      <td class="p:xs b:2px|solid|blue">12 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">12 files</td>
     </tr>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Research
       </th>
-      <td class="p:xs b:2px|solid|blue">8 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">8 files</td>
     </tr>
   </tbody>
 </table>
@@ -116,25 +116,25 @@ Compare the same `border-spacing:xs` in both modes. The token resolves to 8px he
 <!-- Separate · 8px spacing -->
 <table id="target"
   class="w:240px max-w:100% border-collapse:separate
-         border-spacing:xs font:sm text-left
-         text:body table-layout:fixed">
-  <caption class="pb:sm font:semibold text-left">
+         border-spacing-xs font-sm text-left
+         text-body table-layout:fixed">
+  <caption class="pb-sm font-semibold text-left">
     Project assets
   </caption>
   <tbody>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Design
       </th>
-      <td class="p:xs b:2px|solid|blue">12 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">12 files</td>
     </tr>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Research
       </th>
-      <td class="p:xs b:2px|solid|blue">8 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">8 files</td>
     </tr>
   </tbody>
 </table>
@@ -151,27 +151,27 @@ Widen the preview to `sm` to give cells separate borders and 8px gaps. Print alw
 <!-- Collapse → separate at sm -->
 <table id="target"
   class="w:240px max-w:100% border-collapse:collapse
-         border-spacing:xs font:sm text-left
-         text:body table-layout:fixed
+         border-spacing-xs font-sm text-left
+         text-body table-layout:fixed
          border-collapse:collapse@print
          border-collapse:separate@screen&sm">
-  <caption class="pb:sm font:semibold text-left">
+  <caption class="pb-sm font-semibold text-left">
     Project assets
   </caption>
   <tbody>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Design
       </th>
-      <td class="p:xs b:2px|solid|blue">12 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">12 files</td>
     </tr>
     <tr>
       <th scope="row"
-        class="p:xs b:2px|solid|blue font:medium">
+        class="p-xs b:2px|solid|var(--color-blue) font-medium">
         Research
       </th>
-      <td class="p:xs b:2px|solid|blue">8 files</td>
+      <td class="p-xs b:2px|solid|var(--color-blue)">8 files</td>
     </tr>
   </tbody>
 </table>

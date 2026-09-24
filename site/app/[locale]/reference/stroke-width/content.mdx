@@ -12,7 +12,7 @@ A numeric `stroke:*` value sets stroke width in SVG user coordinates. In this 96
 <svg id="target" role="img"
   aria-label="Horizontal line with width one"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:none stroke:blue-60 stroke:1">
+  class="block fill:none stroke-blue-60 stroke-width:1">
   <path d="M4 12h16" />
 </svg>
 ```
@@ -22,7 +22,7 @@ A numeric `stroke:*` value sets stroke width in SVG user coordinates. In this 96
 <svg id="target" role="img"
   aria-label="Horizontal line with width two"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:none stroke:blue-60 stroke:2">
+  class="block fill:none stroke-blue-60 stroke-width:2">
   <path d="M4 12h16" />
 </svg>
 ```
@@ -30,7 +30,7 @@ A numeric `stroke:*` value sets stroke width in SVG user coordinates. In this 96
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['stroke:1', 'stroke:2']}
+    {['stroke-width:1', 'stroke-width:2']}
   </Class2CSS>
 </details>
 
@@ -46,8 +46,8 @@ A width needs a visible stroke paint. Compare a 1.5-unit current-color stroke wi
 <svg id="target" role="img"
   aria-label="Scaling horizontal stroke"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fg:blue-60 fill:none stroke:current
-         stroke-linecap:round stroke:1.5">
+  class="block fg-blue-60 fill:none stroke-current
+         stroke-linecap:round stroke-width:1.5">
   <path d="M4 12h16" />
 </svg>
 ```
@@ -57,8 +57,8 @@ A width needs a visible stroke paint. Compare a 1.5-unit current-color stroke wi
 <svg id="target" role="img"
   aria-label="Non-scaling horizontal stroke"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fg:blue-60 fill:none stroke:current
-         stroke-linecap:round stroke:1.5">
+  class="block fg-blue-60 fill:none stroke-current
+         stroke-linecap:round stroke-width:1.5">
   <path class="vector-effect:non-scaling-stroke"
     d="M4 12h16" />
 </svg>
@@ -76,8 +76,8 @@ Widen the preview to `sm` to double the stroke from one to two user units. Print
 <svg id="target" role="img"
   aria-label="Responsive horizontal stroke"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:none stroke:blue-60 stroke:1
-         stroke:1@print stroke:2@screen&sm">
+  class="block fill:none stroke-blue-60 stroke-width:1
+         stroke-width:1@print stroke-width:2@screen&sm">
   <path d="M4 12h16" />
 </svg>
 ```

@@ -8,16 +8,16 @@
 <DemoExample page="inset" section="pin-all-sides" />
 
 ```html
-<div class="rel h:40x">
-  <!-- @MARK inset:md -->
-  <div class="abs inset:md">Inset on all four sides</div>
+<div class="rel h:10rem">
+  <!-- @MARK inset-md -->
+  <div class="abs inset-md">Inset on all four sides</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['inset:md']}
+    {['inset-md']}
   </Class2CSS>
 </details>
 
@@ -27,9 +27,9 @@ Use individual side utilities to place an object against selected edges. This bu
 <DemoExample page="inset" section="pin-one-side" />
 
 ```html
-<div class="rel h:40x">
-  <!-- @MARK top:md --><!-- @MARK right:md -->
-  <button type="button" class="abs right:md top:md">Close</button>
+<div class="rel h:10rem">
+  <!-- @MARK top-md --><!-- @MARK right-md -->
+  <button type="button" class="abs right-md top-md">Close</button>
 </div>
 ```
 
@@ -39,7 +39,7 @@ Use `abs inset:0` to cover the parent’s positioning area. Leave the overlay’
 <DemoExample page="inset" section="center-overlays-with-inset" />
 
 ```html
-<div class="rel h:40x">
+<div class="rel h:10rem">
   <!-- @MARK inset:0 -->
   <div class="abs inset:0">Overlay</div>
 </div>
@@ -51,8 +51,8 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="inset" section="apply-conditionally" />
 
 ```html
-<div class="rel h:40x">
-  <div tabindex="0" class="abs inset:sm inset:xl:focus-visible inset:lg@sm">
+<div class="rel h:10rem">
+  <div tabindex="0" class="abs inset-sm inset-xl:focus-visible inset-lg@sm">
     Focus with Tab
   </div>
 </div>

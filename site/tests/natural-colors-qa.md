@@ -14,7 +14,7 @@ colors and 16 mode-aware variables (base hue and text hue for each family).
   palette colors and all existing mode aliases. A before/after comparison of their
   complete manifest records found no differences. No old colors required correction.
 - `olive` intentionally changes from the CSS named color to the preset alias in
-  classes such as `fg:olive` and `bg:olive`. `#808000` preserves the original color.
+  classes such as `fg-olive` and `bg-olive`. `#808000` preserves the original color.
 - `theme.css` remains the public entry and imports the internal `colors.css`.
   Fresh Rust compilation agrees with the checked-in manifest; native CSS is unchanged.
 

@@ -50,17 +50,17 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    '<div className="fg:brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:4x bg:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
+    '<div className="fg-brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:1rem background-color:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
     'tsx',
     {
       manifest: createPresetManifest({
-        variables: [{ key: 'brand', value: '#123456' }],
+        variables: [{ namespace: 'color', key: 'brand', value: '#123456' }],
         utilities: [
           {
             name: 'btn',
             layer: 'components',
             rules: [
-              { selector: '&', declarations: { color: 'var(--brand)' } },
+              { selector: '&', declarations: { color: 'var(--color-brand)' } },
               { selector: '&', declarations: { display: 'block' } }
             ]
           }
@@ -84,8 +84,8 @@ test.concurrent('renders semantic tokens for class attributes', () => {
   expectToken(tokens, 'of', 'modifier', ['pseudoClass'])
   expectToken(tokens, '.', 'operator', ['selector', 'selectorPunctuation'])
   expectToken(tokens, 'active', 'class', ['selector'])
-  expectToken(tokens, '4', 'number')
-  expectToken(tokens, 'x', 'enumMember', ['unit'])
+  expectToken(tokens, '1', 'number')
+  expectToken(tokens, 'rem', 'enumMember', ['unit'])
   expectToken(tokens, 'rgb', 'function')
   expectToken(tokens, 'scrollbar', 'modifier', ['pseudoElement'])
   expectToken(tokens, 'btn', 'class', ['declaration', 'component'])
@@ -94,22 +94,22 @@ test.concurrent('renders semantic tokens for class attributes', () => {
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
   const { tokens } = renderTokens(
-    '<div className="h:$size-sm fg:$color-blue-50/.5 content:x::before bg:rgb(0|0|0) fg:red_:where(a:hover) font:mono_:is(code,pre)@base font:semibold_:headings font:semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
+    '<div className="h:var(--size-sm) fg:color-mix(in|oklab,var(--color-blue-50)|50%,transparent) content:x::before background-color:rgb(0|0|0) fg-red_:where(a:hover) font-mono_:is(code,pre)@base font-semibold_:headings font-semibold_:is(h1,h2,h3,h4,h5,h6)"></div>',
     'tsx',
     {
       manifest: createPresetManifest({
         variables: [
-          { key: 'size-sm', value: 16 },
+          { key: 'size-sm', value: '16px' },
           { namespace: 'color', key: 'blue-50', value: 'oklch(60% 0.2 250)' }
         ]
       })
     }
   )
 
-  expectToken(tokens, '$size-sm', 'variable')
-  expectToken(tokens, '$color-blue-50', 'variable')
-  expectToken(tokens, '/', 'operator', ['valueSeparator'])
-  expectToken(tokens, '.5', 'number')
+  expectToken(tokens, '--size-sm', 'variable')
+  expectToken(tokens, '--color-blue-50', 'variable')
+  expectToken(tokens, ',', 'operator', ['valueSeparator'])
+  expectToken(tokens, '50', 'number')
   expectToken(tokens, 'x', 'enumMember')
   expectToken(tokens, '::', 'operator', ['pseudoElement', 'selector', 'pseudoElementDelimiter'])
   expectToken(tokens, 'before', 'modifier', ['pseudoElement'])
@@ -150,7 +150,7 @@ test.concurrent('renders semantic tokens for vendor-prefixed native declarations
 
 test.concurrent('renders semantic tokens for container queries and slash-separated string values', () => {
   const { tokens } = renderTokens(
-    '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg-center bg-cover bg:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
+    '<div className="hidden@container(sm&<=md) container:card/inline-size grid-cols:2@card(3xs) bg-center bg-cover background-image:url(/hero.jpg) hidden@media(pointer:coarse) hidden@h>=sm&h<lg"></div>',
     'html'
   )
 
@@ -173,7 +173,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
   expectToken(tokens, 'xs', 'enumMember', ['query', 'unit'])
   expectToken(tokens, 'bg-center', 'enumMember')
   expectToken(tokens, 'bg-cover', 'enumMember')
-  expectToken(tokens, 'bg', 'property')
+  expectToken(tokens, 'background-image', 'property')
   expectToken(tokens, 'url', 'function')
   expectToken(tokens, '/hero.jpg', 'string')
   expectToken(tokens, '@media', 'keyword', ['query'])
@@ -193,7 +193,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
   const { tokens } = renderTokens([
     '@components {',
     '    monaco-editor {',
-    '        @compose --vscode-editor-background:transparent! bg:blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
+    '        @compose --vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
     '    }',
     '}'
   ].join('\n'), 'css')
@@ -202,7 +202,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
   expectToken(tokens, 'transparent', 'enumMember')
   expectToken(tokens, '!', 'operator', ['important'])
   expectToken(tokens, 'bg', 'property')
-  expectToken(tokens, 'blue', 'enumMember')
+  expectToken(tokens, 'blue', 'variable')
   expectToken(tokens, 'filter', 'property')
   expectToken(tokens, 'drop-shadow', 'function')
   expectToken(tokens, 'rgba', 'function')
@@ -212,7 +212,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
 
 test.concurrent('renders semantic tokens for grouped declarations, strings, units, and important marks', () => {
   const { tokens } = renderTokens(
-    '<div class="{fg:red;bg:blue} transform:translate(10x|20px) content:\'a|b\' size:10x fg:red!"></div>',
+    '<div class="{fg-red;bg-blue} transform:translate(2.5rem|20px) content:\'a|b\' size:2.5rem fg-red!"></div>',
     'html'
   )
 
@@ -221,14 +221,14 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
   expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expectToken(tokens, 'bg', 'property')
-  expectToken(tokens, 'blue', 'enumMember')
+  expectToken(tokens, 'blue', 'variable')
   expectToken(tokens, 'transform', 'property')
   expectToken(tokens, 'translate', 'function')
   expectToken(tokens, '(', 'operator', ['functionPunctuation'])
-  expectToken(tokens, '10', 'number')
-  expectToken(tokens, 'x', 'enumMember', ['unit'])
+  expectToken(tokens, '2.5', 'number')
+  expectToken(tokens, 'rem', 'enumMember', ['unit'])
   // Master CSS uses `|` as a compact separator in places where native CSS
   // often uses whitespace or commas, so it keeps a distinct value role.
   expectToken(tokens, '|', 'operator', ['valueSeparator'])
@@ -237,7 +237,7 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
   expectToken(tokens, ')', 'operator', ['functionPunctuation'])
   expectToken(tokens, '\'', 'string', ['quoted'])
   expectToken(tokens, 'a|b', 'string', ['quoted'])
-  expectToken(tokens, 'x', 'enumMember', ['unit'])
+  expectToken(tokens, 'rem', 'enumMember', ['unit'])
   expectToken(tokens, '!', 'operator', ['important'])
 })
 
@@ -266,7 +266,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   const { tokens } = renderTokens(`
     @master entry;
     @reference "./tokens.css";
-    @safelist "block fg:red:hover@md";
+    @safelist "block fg-red:hover@md";
 
     @settings {
       root-size: 16;
@@ -294,16 +294,16 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
 
     @components {
       btn {
-        @compose inline-flex fg:primary:hover@md;
+        @compose inline-flex fg-primary:hover@md;
         @dark {
-          @compose bg:blue;
+          @compose bg-blue;
         }
         @variant <sm {
           @compose block;
         }
         ::scrollbar-thumb:hover {
           @dark {
-            @compose fg:primary;
+            @compose fg-primary;
           }
         }
       }
@@ -326,7 +326,7 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         background-color: --value();
       }
 
-      text-decoration:<~color|*> {
+      text-decoration-<~color> {
         text-decoration: --value();
       }
 
@@ -346,16 +346,16 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         }
       }
     }
-  `, 'css')
+  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
-  expectToken(tokens, 'primary', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'primary', 'variable')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
   expectToken(tokens, 'inline-flex', 'enumMember')
-  expectToken(tokens, 'blue', 'enumMember')
+  expectToken(tokens, 'blue', 'variable')
 
   expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
@@ -482,12 +482,12 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
     @source not "a;b.css";
     @source "critical.tsx";
     @reference "./a;b.css";
-    @safelist "block fg:red";
+    @safelist "block fg-red";
     @blocklist "debug-*";
     @preserve native;
 
     .btn {
-      @compose fg:red;
+      @compose fg-red;
     }
 
     @custom-variant quoted { @media (x: "a;b") { @slot; } }
@@ -495,7 +495,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })
@@ -511,7 +511,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
 })
 
 test.concurrent('does not tokenize quoted compose preludes as class lists', () => {
-  const { tokens } = renderTokens('.btn { @compose "block fg:red"; }', 'css')
+  const { tokens } = renderTokens('.btn { @compose "block fg-red"; }', 'css')
 
   expect(tokens).toEqual([])
 })

@@ -7,32 +7,32 @@ import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
 const shadowRoles: Record<string, { utility: string, role: string, description: string }> = {
   xs: {
-    utility: 'shadow:xs',
+    utility: 'shadow-xs',
     role: 'Quiet separation',
     description: 'Small controls, table rows, and subtle raised states.'
   },
   sm: {
-    utility: 'shadow:sm',
+    utility: 'shadow-sm',
     role: 'Standard surface',
     description: 'Cards, reusable panels, and quiet product surfaces.'
   },
   md: {
-    utility: 'shadow:md',
+    utility: 'shadow-md',
     role: 'Temporary lift',
     description: 'Hover lift, floating toolbars, and command surfaces.'
   },
   lg: {
-    utility: 'shadow:lg',
+    utility: 'shadow-lg',
     role: 'Detached overlay',
     description: 'Dropdowns, popovers, toasts, and menus.'
   },
   xl: {
-    utility: 'shadow:xl',
+    utility: 'shadow-xl',
     role: 'Workflow interruption',
     description: 'Drawers, dialogs, and focused panels.'
   },
   '2xl': {
-    utility: 'shadow:2xl',
+    utility: 'shadow-2xl',
     role: 'Blocking layer',
     description: 'Modals and spotlight surfaces above a dimmed page.'
   }
@@ -89,13 +89,13 @@ export function ShadowTokenTable() {
 export function ShadowScaleDemo() {
   return (
     <Demo>
-      <div className="container w:full">
-        <div className="grid-cols:1 gap:xl w:full grid-cols:2@container(2xs)">
+      <div className="container w:100%">
+        <div className="grid-cols:1 gap-xl w:100% grid-cols:2@container(2xs)">
           {getShadowRows().map(({ key, utility, role, description }) => (
-            <div className={`surface:raised r:lg p:lg ${utility}`} key={key}>
+            <div className={`surface-raised r-lg p-lg ${utility}`} key={key}>
               <DemoLabel>{utility}</DemoLabel>
-              <div className="font:medium text:strong">{role}</div>
-              <p className="mx:0 mb:0 mt:xs text:sm text:muted">{description}</p>
+              <div className="font-medium text-strong">{role}</div>
+              <p className="mx:0 mb:0 mt-xs text-sm text-muted">{description}</p>
             </div>
           ))}
         </div>
@@ -106,9 +106,9 @@ export function ShadowScaleDemo() {
 
 function SurfaceStack() {
   return (
-    <div className="p:lg r:lg surface:raised shadow:lg">
-      <div className="text:lg font:medium text:strong">Raised surface</div>
-      <p className="mx:0 mb:0 mt:xs text:sm text:muted">Cards use a large shadow on a raised surface.</p>
+    <div className="p-lg r-lg surface-raised shadow-lg">
+      <div className="text-lg font-medium text-strong">Raised surface</div>
+      <p className="mx:0 mb:0 mt-xs text-sm text-muted">Cards use a large shadow on a raised surface.</p>
     </div>
   )
 }

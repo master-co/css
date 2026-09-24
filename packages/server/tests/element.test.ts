@@ -8,10 +8,10 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 it('render elements', () => {
   expect(renderHTML([
     '<div class="text-center"></div>',
-    '<div class="bg:white"></div>'
+    '<div class="bg-white"></div>'
   ].join(''), { manifest: defaultManifest }).html).toEqual([
-    '<style id="master-css">@layer utilities{.text-center{text-align:center}.bg\\:white{background-color:oklch(100% 0 none)}}</style>',
+    '<style id="master-css">@layer utilities{.text-center{text-align:center}.bg-white{background-color:oklch(100% 0 none)}}</style>',
     '<div class="text-center"></div>',
-    '<div class="bg:white"></div>'
+    '<div class="bg-white"></div>'
   ].join(''))
 })

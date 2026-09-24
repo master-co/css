@@ -116,26 +116,26 @@ describe('native target resolution', () => {
       }]
     } as never)
     try {
-      expect(lint.canonicalClassNames(['margin:md'], [true])).toEqual({
+      expect(lint.canonicalClassNames(['margin-md'], [true])).toEqual({
         version: 1,
-        suggestions: [{ className: 'margin:md', recommended: 'm:md' }]
+        suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
       })
-      expect(lint.rawValueCandidates(['m:md|17px'], undefined, [])).toEqual({
+      expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
         version: 1,
         candidates: [
-          { className: 'm:md|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+          { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
         ]
       })
       const result = lint.analyzeClassListPolicy({
         version: 1,
-        classList: 'm:md|17px',
-        classNames: ['m:md|17px'],
+        classList: 'm:var(--spacing-md)|17px',
+        classNames: ['m:var(--spacing-md)|17px'],
         rawValuePolicy: { allowedPatterns: [] }
       }) as { diagnostics: unknown[] }
       expect(result.diagnostics).toContainEqual(expect.objectContaining({
         ruleId: 'no-unapproved-raw-values',
         code: 'unapproved-raw-value',
-        range: { start: 0, end: 9 }
+        range: { start: 0, end: 24 }
       }))
     } finally {
       lint.dispose()
@@ -177,6 +177,7 @@ describe('native target resolution', () => {
       expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
         version: 2,
         colorToken: 'rgba(0|0|0/.5)',
+        editable: true,
         sourceFormat: { syntax: 'rgb' }
       })
       expect(language.colorTokens([{

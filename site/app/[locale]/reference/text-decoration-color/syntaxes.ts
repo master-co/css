@@ -1,6 +1,6 @@
 const syntaxes = [
-  'text-decoration:current',
-  'text-decoration:transparent',
+  'text-decoration-current',
+  'text-decoration-color:transparent',
   ['text-decoration:`color`'],
 ]
 

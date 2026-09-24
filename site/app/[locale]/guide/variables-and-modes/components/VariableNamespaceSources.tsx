@@ -1,5 +1,5 @@
 import InlineCode from '~/site/docs-shell/components/InlineCode'
-import { builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
+import { builtinTokenNamespaces } from '@master/css-tooling/builtins'
 import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 
 const utilities = manifestUtilities
@@ -7,7 +7,7 @@ const MAX_VISIBLE_UTILITIES = 8
 
 const namespaceEntries = (() => {
   const entries = new Map<string, string[]>()
-  for (const namespace of builtinNativeValueNamespaces) {
+  for (const namespace of builtinTokenNamespaces) {
     for (const ref of namespace.variableAliasRefs || []) {
       const variableNamespace = ref.replace(/^[=~]/, '')
       for (const property of namespace.properties) {

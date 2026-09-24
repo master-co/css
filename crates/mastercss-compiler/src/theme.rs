@@ -159,14 +159,12 @@ pub(crate) fn lower_settings_rule(
                 })?);
             }
             "base-unit" => {
-                manifest_input.base_unit = Some(strict_css_number(&value).ok_or_else(|| {
-                    directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "base-unit must be a number",
-                    )
-                })?);
+                return Err(directive_error(
+                    source,
+                    filename,
+                    rule.start_byte,
+                    "base-unit and Master length x units were removed; migrate lengths to CSS units or named tokens",
+                ));
             }
             "default-mode" => {
                 if value == "false" {

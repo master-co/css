@@ -127,7 +127,7 @@ test('moves class subtrees across document and shadow roots without stale counts
     document.body.append(hostA, hostB)
     const rootA = hostA.attachShadow({ mode: 'open' })
     const rootB = hostB.attachShadow({ mode: 'open' })
-    rootA.innerHTML = '<section id="moved" class="block"><span class="fg:red-60"></span></section>'
+    rootA.innerHTML = '<section id="moved" class="block"><span class="fg-red-60"></span></section>'
     const runtimeA = await globalThis.MasterCSSRuntime.start({ manifest, root: rootA })
     const runtimeB = await globalThis.MasterCSSRuntime.start({ manifest, root: rootB })
     runtimeA.observe()
@@ -149,7 +149,7 @@ test('moves class subtrees across document and shadow roots without stale counts
     const afterSameRootMove = runtimeB.snapshot().usageCounts
 
     const documentNode = document.createElement('div')
-    documentNode.className = 'font:bold'
+    documentNode.className = 'font-bold'
     document.body.append(documentNode)
     await new Promise(resolve => setTimeout(resolve, 0))
     rootB.append(documentNode)
@@ -159,7 +159,7 @@ test('moves class subtrees across document and shadow roots without stale counts
       b: runtimeB.snapshot().usageCounts
     }
 
-    runtimeA.deleteClassRules(['block', 'fg:red-60'])
+    runtimeA.deleteClassRules(['block', 'fg-red-60'])
     const sourceTextAfterCleanup = runtimeA.snapshot().cssText
     runtimeA.dispose()
     runtimeB.dispose()
@@ -167,19 +167,19 @@ test('moves class subtrees across document and shadow roots without stale counts
   }, defaultManifest)
 
   expect(result.before).toEqual({
-    a: { block: 1, 'fg:red-60': 1 },
+    a: { block: 1, 'fg-red-60': 1 },
     b: {}
   })
   expect(result.afterShadowMove).toEqual({
     a: {},
-    b: { block: 1, 'fg:red-60': 1 }
+    b: { block: 1, 'fg-red-60': 1 }
   })
-  expect(result.afterSameRootMove).toEqual({ block: 1, 'fg:red-60': 1 })
-  expect(result.afterDocumentMove.document).not.toHaveProperty('font:bold')
+  expect(result.afterSameRootMove).toEqual({ block: 1, 'fg-red-60': 1 })
+  expect(result.afterDocumentMove.document).not.toHaveProperty('font-bold')
   expect(result.afterDocumentMove.b).toEqual({
     block: 1,
-    'fg:red-60': 1,
-    'font:bold': 1
+    'fg-red-60': 1,
+    'font-bold': 1
   })
   expect(result.sourceTextAfterCleanup).toBe('')
 })

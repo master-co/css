@@ -12,11 +12,11 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 <!-- 2px outline · same layout box -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:2px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:2px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -25,11 +25,11 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 <!-- 6px outline · paint grows outward -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:6px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:6px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -37,7 +37,7 @@ A length in `outline:<size>` changes the outline width independently. Compare 2p
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:2px']}
+    {['outline-width:2px']}
   </Class2CSS>
 </details>
 
@@ -50,11 +50,11 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <!-- Thin · native width keyword -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-thin outline-offset:3xs outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-thin outline-offset-3xs outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -63,12 +63,12 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <!-- Medium · native width keyword -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-medium
-         outline-solid outline-offset:3xs
-         outline:blue font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-medium
+         outline-solid outline-offset-3xs
+         outline-blue font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -77,12 +77,12 @@ Use `outline-thin`, `outline-medium` and `outline-thick` for native keyword widt
 <!-- Thick · native width keyword -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-thick outline-offset:3xs
-         outline:blue font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-thick outline-offset-3xs
+         outline-blue font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -98,13 +98,13 @@ Keyboard focus increases the outline from 2px to 4px. Width grows into the surro
 <!-- 2px → 4px on keyboard focus -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:2px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible
-         outline:0@print
-         outline:4px:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:2px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible
+         outline-width:0@print
+         outline-width:4px:focus-visible@screen">
   Preview details
 </button>
 ```

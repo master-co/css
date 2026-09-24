@@ -12,14 +12,14 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   let prevDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex - 1]
   let nextDefinedMetadata = currentPageIndex !== -1 && pages[currentPageIndex + 1]
   const Nav = ({ definedMetadata, navigatorIconClass }: any) =>
-    <Link href={definedMetadata.pathname} passHref className="flex-col flex:1|1|100% justify-start! r:sm flex:1|1|50%@sm">
+    <Link href={definedMetadata.pathname} passHref className="flex-col flex:1|1|100% justify-start! r-sm flex:1|1|50%@sm">
       <div className='flex items-center'>
-        <IconChevronLeft className={clsx('size:14px stroke:text-subtle vertical-align:middle', navigatorIconClass)} />
-        <span className="font:xs text:muted">{$(definedMetadata.category)}</span>
+        <IconChevronLeft className={clsx('size:14px stroke-text-subtle vertical-align:middle', navigatorIconClass)} />
+        <span className="font-xs text-muted">{$(definedMetadata.category)}</span>
       </div>
-      <div className="line-clamp:1 w:full mt:sm font:md text:strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
+      <div className="clamp-lines:1 w:100% mt-sm font-md text-strong">{$(definedMetadata.title.absolute || definedMetadata.title)}</div>
       {definedMetadata.description && (
-        <p className="line-clamp:2 w:full mb:0 mt:0.625rem text:xs text-pretty text:body font-weight:460_b">
+        <p className="clamp-lines:2 w:100% mb:0 mt:0.625rem text-xs text-pretty text-body font-weight:460_b">
           {$(definedMetadata.description)}
         </p>
       )}
@@ -27,8 +27,8 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   return (nextDefinedMetadata || prevDefinedMetadata) && (
     <>
       <hr className="hr" />
-      <div className="flex gap:10x flex-wrap@<sm">
-        {prevDefinedMetadata && <Nav definedMetadata={prevDefinedMetadata} navigatorIconClass="ml:-1x mr:0.375rem mt:-0.125rem" />}
+      <div className="flex gap:2.5rem flex-wrap@<sm">
+        {prevDefinedMetadata && <Nav definedMetadata={prevDefinedMetadata} navigatorIconClass="ml:-0.25rem mr:0.375rem mt:-0.125rem" />}
         {nextDefinedMetadata && <Nav definedMetadata={nextDefinedMetadata} navigatorIconClass="ml:0.375rem order:1 rotate:180deg mt:-0.125rem" />}
       </div>
     </>

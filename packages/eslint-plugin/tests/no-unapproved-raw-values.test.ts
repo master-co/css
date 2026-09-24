@@ -27,10 +27,10 @@ const registryFieldManifest = createPresetManifest({
 
 jsxTester.run('no unapproved raw values', rule, {
   valid: [
-    { code: `<div class="font:md m:md m:md|lg fg:red-60 text-center">Tokens and static utilities</div>` },
+    { code: `<div class="font-md m-md m:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-center">Tokens and static utilities</div>` },
     { code: `<div class="font:error unknown-class">Invalid and unknown classes are ignored</div>` },
     {
-      code: `<div class="font:15px">Raw values disabled</div>`,
+      code: `<div class="font-size:15px">Raw values disabled</div>`,
       options: [{ allowRawValues: true }]
     },
     {
@@ -46,18 +46,18 @@ jsxTester.run('no unapproved raw values', rule, {
       options: [{ allowedPatterns: ['^calc\\('] }]
     },
     {
-      code: `<div class="m:md|calc(1rem+1px) m:calc(1rem+1px)|md">Allowed multi-value segment by pattern</div>`,
+      code: `<div class="m:var(--spacing-md)|calc(1rem+1px) m:calc(1rem+1px)|var(--spacing-md)">Allowed multi-value segment by pattern</div>`,
       options: [{ allowedPatterns: ['^calc\\('] }]
     },
   ],
   invalid: [
     {
-      code: `<div class="font:15px m:17px fg:#123456">Raw values</div>`,
+      code: `<div class="font-size:15px m:17px fg:#123456">Raw values</div>`,
       errors: [
         {
           messageId: 'unapprovedRawValue',
           data: {
-            message: 'Raw value "15px" is not approved for class "font:15px". Use a token or allow the value explicitly.'
+            message: 'Raw value "15px" is not approved for class "font-size:15px". Use a token or allow the value explicitly.'
           }
         },
         { messageId: 'unapprovedRawValue' },
@@ -65,7 +65,7 @@ jsxTester.run('no unapproved raw values', rule, {
       ]
     },
     {
-      code: `<div class="m:md|17px m:calc(1rem+1px)|18px m:19px|20px">Multi-value raw value segments</div>`,
+      code: `<div class="m:var(--spacing-md)|17px m:calc(1rem+1px)|18px m:19px|20px">Multi-value raw value segments</div>`,
       options: [{ allowedPatterns: ['^calc\\('] }],
       errors: [
         { messageId: 'unapprovedRawValue' },
@@ -74,7 +74,7 @@ jsxTester.run('no unapproved raw values', rule, {
       ]
     },
     {
-      code: `clsx('font:15px m:17px')`,
+      code: `clsx('font-size:15px m:17px')`,
       errors: [
         { messageId: 'unapprovedRawValue' },
         { messageId: 'unapprovedRawValue' },
@@ -119,7 +119,7 @@ createTester({
   }
 }).run('no unapproved raw values custom manifest', rule, {
   valid: [
-    { code: `<div class="m:card">Custom token</div>` }
+    { code: `<div class="m-card">Custom token</div>` }
   ],
   invalid: [
     {
@@ -148,7 +148,7 @@ jsxTester.run('no unapproved raw values parser smoke tests', rule, {
   valid: [],
   invalid: [
     {
-      code: `<template><div class="font:15px">Vue</div></template>`,
+      code: `<template><div class="font-size:15px">Vue</div></template>`,
       errors: [{ messageId: 'unapprovedRawValue' }],
       filename: 'test.vue',
       languageOptions: {
@@ -156,7 +156,7 @@ jsxTester.run('no unapproved raw values parser smoke tests', rule, {
       }
     },
     {
-      code: `<div class="font:15px">Svelte</div>`,
+      code: `<div class="font-size:15px">Svelte</div>`,
       errors: [{ messageId: 'unapprovedRawValue' }],
       filename: 'test.svelte',
       languageOptions: {
@@ -164,7 +164,7 @@ jsxTester.run('no unapproved raw values parser smoke tests', rule, {
       }
     },
     {
-      code: `<div class="font:15px">Angular</div>`,
+      code: `<div class="font-size:15px">Angular</div>`,
       errors: [{ messageId: 'unapprovedRawValue' }],
       languageOptions: {
         parser: await import('@angular-eslint/template-parser')
@@ -173,7 +173,7 @@ jsxTester.run('no unapproved raw values parser smoke tests', rule, {
     {
       code: `
       # Test
-      <div class="font:15px">MDX</div>`,
+      <div class="font-size:15px">MDX</div>`,
       errors: [{ messageId: 'unapprovedRawValue' }],
       filename: 'test.mdx',
       languageOptions: {

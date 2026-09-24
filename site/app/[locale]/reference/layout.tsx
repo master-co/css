@@ -13,7 +13,7 @@ export async function generateStaticParams() {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <Body className="bg:surface-base">
+    <Body className="bg-surface-base">
       <DocHeader contained />
       <DocWrapper>
         <ReferenceNavigation categoryOrder={pageCategories.map(category => category.name)} documents={(catalogJSON as ReferenceCatalog).documents.map(({ id, kind, title, category, url }) => ({ id, kind, title, category, url }))} />

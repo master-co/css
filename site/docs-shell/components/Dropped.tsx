@@ -9,7 +9,7 @@ const Dropped = ({ p1, p2, target }: any) => {
     p2 = p2.replace(/.*class="(.*)".*/gm, '$1')
   }
   return (
-    <small className="font-weight:460 text:success">↓ {
+    <small className="font-weight:460 text-success">↓ {
       Math.round(Math.abs((p1.length - p2.length) / p1.length) * 100)
     }% code</small>
   )

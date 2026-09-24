@@ -8,16 +8,16 @@
 <DemoExample page="place-self" section="align-one-item-on-both-axes" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
-  <div id="target" class="place-self:end h:12x w:20x p:sm">Target</div>
-  <div id="peer" class="h:12x w:20x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="place-self:end h:3rem w:5rem p-sm">Target</div>
+  <div id="peer" class="h:3rem w:5rem p-sm">Start</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
-  <div id="target" class="place-self:end|start h:12x w:20x p:sm">Target</div>
-  <div id="peer" class="h:12x w:20x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="place-self:end|start h:3rem w:5rem p-sm">Target</div>
+  <div id="peer" class="h:3rem w:5rem p-sm">Start</div>
 </div>
 ```
 
@@ -36,9 +36,9 @@ These directions refer to the grid container’s writing mode. The examples use 
 <DemoExample page="place-self" section="center-one-item" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap:md w:70x max-w:full">
-  <div id="target" class="place-self:center h:16x w:24x p:sm">Centered</div>
-  <div id="peer" class="h:16x w:24x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="place-self:center h:4rem w:6rem p-sm">Centered</div>
+  <div id="peer" class="h:4rem w:6rem p-sm">Start</div>
 </div>
 ```
 
@@ -50,8 +50,8 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="place-self" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:end gap:md w:70x max-w:full">
-  <div id="target" class="place-self:auto h:12x w:20x p:sm place-self:center@sm">Target</div>
-  <div id="peer" class="h:12x w:20x p:sm">End</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:end gap-md w:17.5rem max-w:100%">
+  <div id="target" class="place-self:auto h:3rem w:5rem p-sm place-self:center@sm">Target</div>
+  <div id="peer" class="h:3rem w:5rem p-sm">End</div>
 </div>
 ```

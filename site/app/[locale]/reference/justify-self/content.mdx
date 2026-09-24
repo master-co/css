@@ -8,9 +8,9 @@ Use `justify-self:end` to move the blue item to its grid area’s inline end. Th
 <DemoExample page="justify-self" section="align-one-grid-item-inline" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
-  <div id="target" class="justify-self:end h:16x w:20x p:sm">Self end</div>
-  <div id="peer" class="h:16x w:20x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="justify-self:end h:4rem w:5rem p-sm">Self end</div>
+  <div id="peer" class="h:4rem w:5rem p-sm">Start</div>
 </div>
 ```
 
@@ -29,9 +29,9 @@ This changes the item’s position inside its area, not its grid placement or th
 <DemoExample page="justify-self" section="center-an-item-inside-its-area" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
-  <img id="target" class="justify-self:center h:16x w:20x object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
-  <div id="peer" class="h:16x w:20x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap-md w:17.5rem max-w:100%">
+  <img id="target" class="justify-self:center h:4rem w:5rem object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
+  <div id="peer" class="h:4rem w:5rem p-sm">Start</div>
 </div>
 ```
 
@@ -43,9 +43,9 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="justify-self" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap:md w:70x max-w:full">
-  <div id="target" class="justify-self:auto h:16x w:20x p:sm justify-self:end@sm">Target</div>
-  <div id="peer" class="h:16x w:20x p:sm">Start</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="justify-self:auto h:4rem w:5rem p-sm justify-self:end@sm">Target</div>
+  <div id="peer" class="h:4rem w:5rem p-sm">Start</div>
 </div>
 ```
 

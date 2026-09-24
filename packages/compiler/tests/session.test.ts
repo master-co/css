@@ -22,7 +22,7 @@ interface SemanticParityCorpus {
 
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const semanticParityCorpus = JSON.parse(readFileSync(
-  new URL('../../../parity/rust-semantic-corpus.json', import.meta.url),
+  new URL('../../../parity/v2-language-corpus.json', import.meta.url),
   'utf8'
 )) as SemanticParityCorpus
 
@@ -42,7 +42,7 @@ test('native compiler sessions batch semantic operations and reject use after di
   }))
 })
 
-test('native and Wasm compiler sessions execute the semantic compiler corpus', async () => {
+test('native and Wasm compiler sessions execute the v2 language compiler corpus', async () => {
   expect(semanticParityCorpus.version).toBe(2)
 
   const native = createCompilerSync()

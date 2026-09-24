@@ -48,7 +48,7 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       await wait(() => stderr.includes('Cannot rebuild CSS:'))
       if (before) expect(output()).toEqual(before)
       const errors = (stderr.match(/Cannot rebuild CSS:/g) || []).length
-      writeFileSync(join(cwd, 'index.html'), '<div class="example block fg:blue"></div>')
+      writeFileSync(join(cwd, 'index.html'), '<div class="example block fg-blue"></div>')
       await wait(() => (stderr.match(/Cannot rebuild CSS:/g) || []).length > errors)
       if (before) expect(output()).toEqual(before)
       const restartCount = (stderr.match(/Restart watching source changes/g) || []).length
@@ -60,10 +60,10 @@ for (const mode of ['deleted-resource', 'deleted-import', 'new-resource', 'new-i
       if (mode === 'deleted-import' || mode === 'new-import' || mode === 'new-resource') expect(css()).toMatch(/color:\s*(?:#00f|blue)\b/)
       if (mode === 'new-import') expect(css()).toMatch(/background-color:\s*(?:#0f0|lime)\b/)
       if (mode.includes('resource')) expect(readdirSync(join(cwd, 'dist')).some(file => file.endsWith('.svg') && readFileSync(join(cwd, 'dist', file), 'utf8') === image('blue'))).toBe(true)
-      expect(readFileSync(join(cwd, 'dist/output.css'), 'utf8')).toContain('.fg\\:blue')
+      expect(readFileSync(join(cwd, 'dist/output.css'), 'utf8')).toContain('.fg-blue')
       // A later app edit must still be scanned after recovery.
-      writeFileSync(join(cwd, 'index.html'), '<div class="example block fg:red"></div>')
-      await wait(() => readFileSync(join(cwd, 'dist/output.css'), 'utf8').includes('.fg\\:red'))
+      writeFileSync(join(cwd, 'index.html'), '<div class="example block fg-red"></div>')
+      await wait(() => readFileSync(join(cwd, 'dist/output.css'), 'utf8').includes('.fg-red'))
       const settled = (stderr.match(/Restart watching source changes/g) || []).length
       await new Promise(resolve => setTimeout(resolve, 250))
       expect((stderr.match(/Restart watching source changes/g) || []).length).toBe(settled)

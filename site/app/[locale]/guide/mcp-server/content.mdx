@@ -156,7 +156,7 @@ Prompt templates guide common AI workflows without asking the client to infer th
 | `review-mastercss-classes` | Run class diagnostics and propose only safe, scoped write previews. |
 | `migrate-to-mastercss` | Audit an existing styling system and produce an incremental migration plan before editing. |
 
-Use `migrate-to-mastercss` when a project is moving from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, or Master CSS v1. The prompt should make the agent inspect the workspace first, then return a plan with:
+Use `migrate-to-mastercss` when a project is moving from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, Master CSS v1, or [Master CSS v2 RC](/guide/migration/v2-rc). A v2 RC upgrade saves the original manifest and browser baseline before coordinating package, artifact, and source updates; it does not run old and new runtimes together. The prompt should make the agent inspect the workspace first, then return a plan with:
 
 - the current framework, package manager, and styling systems
 - stylesheet entries, source extraction coverage, and existing Master CSS tokens or component classes

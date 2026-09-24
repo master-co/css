@@ -18,7 +18,7 @@ it('validates classes through a Rust session and host CSS oracle', () => {
   try {
     const classNames = [
       'text-center',
-      'font:.75rem@media(print)',
+      'font-size:.75rem@media(print)',
       'mt:var(--top)',
       'right:max(0px,calc(50%-45.3125rem))',
       '{text-wrap:pretty}',

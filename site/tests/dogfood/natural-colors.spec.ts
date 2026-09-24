@@ -44,7 +44,7 @@ test('material compositions resolve both modes without overflow', async ({ page 
       const paints = await frame.locator('svg [class]').evaluateAll(elements => elements.map(element => getComputedStyle(element).fill))
       expect(paints.filter(value => value.startsWith('oklch')).length).toBeGreaterThan(4)
       if (name === 'boutique') {
-        const text = frame.locator('.text\\:petrol').first()
+        const text = frame.locator('.text-petrol').first()
         await expect(text).toHaveCSS('color', mode === 'light' ? 'oklch(0.493 0.091 219)' : 'oklch(0.768 0.066 213)')
         const link = frame.getByRole('link', { name: 'View the palette' })
         await link.focus()

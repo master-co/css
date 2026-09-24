@@ -394,7 +394,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '.global-section { padding-block: var(--spacing-5xl); }'
       ].join('\n'))
 
-      const result = await transformStyleSource(modulePath, '.home { @compose py:5xl; }', {
+      const result = await transformStyleSource(modulePath, '.home { @compose py-5xl; }', {
         projectDir: root,
         masterImport: '../node_modules/.master-css/master-utilities.css'
       })
@@ -526,7 +526,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
       .toContain('const response = await fetch(masterCSSManifestSpecifier)')
     expect((compiler.inputFileSystem._writeVirtualFile as any).mock.calls.at(-1)?.[2])
-      .not.toContain('font-weight-bold')
+      .not.toContain('font-weight:bold')
     expect([...(plugin as any).manifestJSONAssets.values()].at(-1))
       .toContain('"version":1')
   })

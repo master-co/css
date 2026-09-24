@@ -23,8 +23,8 @@ const originHTMLText = dedent`
     <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
-    <h1 class="font:heavy font:48px btn hmr-test">Hello World</h1>
-    <button class="bg:primary">Submit</button>
+    <h1 class="font-heavy font-size:48px btn hmr-test">Hello World</h1>
+    <button class="bg-primary">Submit</button>
   </body>
   </html>
 `
@@ -104,14 +104,14 @@ it('start watch process', async () => {
     waitForDataMatch(subprocess, (data) => data.includes('exported'))
   ])
   const fileCSSText = await waitForCSSContent((css) => [
-    'font:heavy',
-    'font:48px',
-    'bg:primary',
+    'font-heavy',
+    'font-size:48px',
+    'bg-primary',
     'btn'
   ].every((eachClass) => css.includes(cssEscape(eachClass))))
-  expect(fileCSSText).toContain(cssEscape('font:heavy'))
-  expect(fileCSSText).toContain(cssEscape('font:48px'))
-  expect(fileCSSText).toContain(cssEscape('bg:primary'))
+  expect(fileCSSText).toContain(cssEscape('font-heavy'))
+  expect(fileCSSText).toContain(cssEscape('font-size:48px'))
+  expect(fileCSSText).toContain(cssEscape('bg-primary'))
   expect(fileCSSText).toContain(cssEscape('btn'))
 })
 

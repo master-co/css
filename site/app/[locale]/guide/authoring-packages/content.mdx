@@ -62,11 +62,11 @@ Use `master.css` for shared vocabulary that should be available to consuming pro
 
 @components {
   btn {
-    @compose inline-flex align-items:center justify-content:center gap:xs px:action-x py:xs r:action font:sm font:medium;
-    @compose bg:brand fg:white;
+    @compose inline-flex align-items:center justify-content:center gap-xs px-action-x py-xs r-action font-sm font-medium;
+    @compose bg-brand fg-white;
 
     &:is(:hover, :focus-visible) {
-      @compose bg:brand/.85;
+      @compose bg-brand/.85;
     }
   }
 }
@@ -95,7 +95,7 @@ The imported source becomes part of the project CSS entry graph. Project markup 
 
 ```html
 <button class="btn">Save changes</button>
-<section class="p:lg content-auto">...</section>
+<section class="p-lg content-auto">...</section>
 ```
 
 When a local CSS file only needs the package as compile-time context, use `@reference` instead:
@@ -132,7 +132,7 @@ Treat exported tokens and managed class names like public API.
 
 Removing or renaming a token, variant, utility, or component class is a breaking change. Changing the generated CSS for an existing public class should be intentional and documented. Adding new tokens, variants, utilities, or component classes is usually a minor change when it does not alter existing output.
 
-Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg:brand`, `text:action`, `content-auto`, or `btn` without reading the package source.
+Prefer readable names over internal implementation names. A consuming app should be able to understand why it uses `bg-brand`, `text-action`, `content-auto`, or `btn` without reading the package source.
 
 ---
 
@@ -146,7 +146,7 @@ Before publishing, test the package through a small consuming project or fixture
 
 ```html
 <button class="btn">Save</button>
-<article class="p:lg r:lg bg:surface-raised content-auto">
+<article class="p-lg r-lg bg-surface-raised content-auto">
   ...
 </article>
 ```
@@ -158,7 +158,7 @@ npx @master/css-cli lint --format json --exit-code never
 ```
 
 ```bash name=Terminal
-npx @master/css-cli inspect --classes "btn content-auto bg:brand" --format json --exit-code never
+npx @master/css-cli inspect --classes "btn content-auto bg-brand" --format json --exit-code never
 ```
 
 The goal is to confirm that the package can be imported by name, its vocabulary is visible to the project manifest, and the generated CSS matches the contract you intend to publish.

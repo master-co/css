@@ -22,7 +22,7 @@ test('font size and full treatment differ only in their documented type properti
   await expect(page.locator('[id="without-vs-with--textsize"]')).toHaveCount(1)
   const weights = page.locator('table').filter({ hasText: 'Value / specimen' }).locator('tbody tr')
   await expect(weights).toHaveCount(9)
-  expect(await weights.locator('span.text\\:md').evaluateAll(items => items.map(item => getComputedStyle(item).fontWeight))).toEqual(['100', '200', '300', '400', '500', '600', '700', '800', '900'])
+  expect(await weights.locator('span.text-md').evaluateAll(items => items.map(item => getComputedStyle(item).fontWeight))).toEqual(['100', '200', '300', '400', '500', '600', '700', '800', '900'])
 })
 
 test('finite native animations start paused, finish once and replay after completion', async ({ page, browserName }) => {

@@ -8,9 +8,9 @@
 <DemoExample page="flex" section="let-an-item-fill-remaining-space" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="peer" class="flex:none size:24x p:sm">Sidebar</div>
-  <div id="target" class="flex:1 h:24x min-w:0 p:sm">Flexible content</div>
+<div id="layout" class="flex gap-md">
+  <div id="peer" class="flex:none size:6rem p-sm">Sidebar</div>
+  <div id="target" class="flex:1 h:6rem min-w:0 p-sm">Flexible content</div>
 </div>
 ```
 
@@ -27,23 +27,23 @@ Use `flex:none` to prevent both growth and shrinkage while keeping the item’s 
 <DemoExample page="flex" section="prevent-an-item-from-flexing" />
 
 ```html
-<div id="layout" class="flex items-center gap:md">
-  <span id="target" class="grid flex:none place-items:center size:12x" aria-hidden="true">AL</span>
-  <div id="peer" class="flex:1 min-w:0 p:sm">Alex Lee<br>Product designer</div>
+<div id="layout" class="flex items-center gap-md">
+  <span id="target" class="grid flex:none place-items:center size:3rem" aria-hidden="true">AL</span>
+  <div id="peer" class="flex:1 min-w:0 p-sm">Alex Lee<br>Product designer</div>
 </div>
 ```
 
 (i) `flex:0` is different: browsers expand it to `0 1 0%`, so it can shrink and does not retain a width as its basis. `flex:none` expands to `0 0 auto`.
 
 ### Set grow, shrink, and basis together \{#set-grow-shrink-and-basis-together\}
-The shorthand sets `flex-grow`, `flex-shrink`, and `flex-basis` in that order. Pipe separators pass multiple values. Here `flex:0|0|18x` gives the sidebar a 72px basis with no growth or shrinkage.
+The shorthand sets `flex-grow`, `flex-shrink`, and `flex-basis` in that order. Pipe separators pass multiple values. Here `flex:0|0|4.5rem` gives the sidebar a 72px basis with no growth or shrinkage.
 
 <DemoExample page="flex" section="set-grow-shrink-and-basis-together" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex:0|0|18x h:24x p:sm">Sidebar</div>
-  <div id="peer" class="flex:1 h:24x min-w:0 p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex:0|0|4.5rem h:6rem p-sm">Sidebar</div>
+  <div id="peer" class="flex:1 h:6rem min-w:0 p-sm">Main content</div>
 </div>
 ```
 
@@ -56,15 +56,15 @@ The shorthand affects a child only when it is a flex item. Compare these identic
 
 ```html
 <div id="layout" class="block">
-  <div id="target" class="flex:1 size:24x min-w:0 p:sm">Target</div>
-  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+  <div id="target" class="flex:1 size:6rem min-w:0 p-sm">Target</div>
+  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex:1 size:24x min-w:0 p:sm">Target</div>
-  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex:1 size:6rem min-w:0 p-sm">Target</div>
+  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
 </div>
 ```
 
@@ -74,9 +74,9 @@ Use [conditional queries](/reference/rules/conditions) to change flex behavior a
 <DemoExample page="flex" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex:none size:24x min-w:0 p:sm flex:1@sm">Target</div>
-  <div id="peer" class="flex:none size:24x p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex:none size:6rem min-w:0 p-sm flex:1@sm">Target</div>
+  <div id="peer" class="flex:none size:6rem p-sm">Main content</div>
 </div>
 ```
 

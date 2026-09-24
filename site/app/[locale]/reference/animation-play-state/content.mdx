@@ -11,10 +11,10 @@ Check Run indicator to set the child SVG’s play state to running. Uncheck it t
 <!-- Native checkbox · run and pause -->
 <div
   class="animation-play-state:running:has(input:checked)>svg@screen&motion">
-  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <label class="block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue
+    class="text-blue
            animation:rotate|2s|linear|infinite
            animation-play-state:paused
            animation:none@print">
@@ -41,12 +41,12 @@ Start the indicator with the checkbox, then hover the stationary panel to pause 
 <div
   class="animation-play-state:running:has(input:checked)>div>svg@screen&motion
          animation-play-state:paused:has(input:checked)>div:hover>svg@screen&motion">
-  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
-  <div class="p:sm b:1px|dashed|muted r:sm">
-    <p class="mb:sm font:sm">Hover this panel to pause</p>
+  <label class="block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <div class="p-sm b:1px|dashed|var(--color-line-muted) r-sm">
+    <p class="mb-sm font-sm">Hover this panel to pause</p>
     <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
       fill="none" stroke="currentColor" stroke-width="2"
-      class="text:blue
+      class="text-blue
              animation:rotate|2s|linear|infinite
              animation-play-state:paused
              animation:none@print">
@@ -69,12 +69,12 @@ Start the indicator, then focus the Project name field. The editor’s focus-wit
 <div
   class="animation-play-state:paused:has(input:checked)>div:focus-within>svg@screen&motion
          animation-play-state:running:has(input:checked)>div>svg@screen&motion">
-  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
-  <div class="p:sm b:1px|solid|muted r:sm">
-    <label class="block mb:sm font:sm">Project name <input type="text" value="Canvas" class="max-w:100% p:xs b:1px|solid|muted r:sm outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible"></label>
+  <label class="block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <div class="p-sm b:1px|solid|var(--color-line-muted) r-sm">
+    <label class="block mb-sm font-sm">Project name <input type="text" value="Canvas" class="max-w:100% p-xs b:1px|solid|var(--color-line-muted) r-sm outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible"></label>
     <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
       fill="none" stroke="currentColor" stroke-width="2"
-      class="text:blue
+      class="text-blue
              animation:rotate|2s|linear|infinite
              animation-play-state:paused
              animation:none@print">
@@ -96,10 +96,10 @@ Check Run indicator and resize the viewport. The child stays paused below `sm` a
 <!-- Run only at sm -->
 <div
   class="animation-play-state:running:has(input:checked)>svg@screen&motion&sm">
-  <label class="block mb:sm font:sm"><input type="checkbox" class="mr:xs accent-color:blue outline:2px|solid|blue:focus-visible outline-offset:3px:focus-visible">Run indicator</label>
+  <label class="block mb-sm font-sm"><input type="checkbox" class="mr-xs accent-color-blue outline:2px|solid|var(--color-blue):focus-visible outline-offset:3px:focus-visible">Run indicator</label>
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue
+    class="text-blue
            animation:rotate|2s|linear|infinite
            animation-play-state:paused
            animation:none@print">

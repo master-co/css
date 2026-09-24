@@ -15,8 +15,8 @@ Generated CSS:
 
 Use the variable from another declaration with native CSS `var()`.
 ```html
-<!-- @MARK --button-bg:red-60 --><!-- @MARK bg:var(--button-bg) -->
-<button class="bg:var(--button-bg) --button-bg:red-60">
+<!-- @MARK --button-bg:var(--color-red-60) --><!-- @MARK background-color:var(--button-bg) -->
+<button class="background-color:var(--button-bg) --button-bg:var(--color-red-60)">
   Save
 </button>
 ```

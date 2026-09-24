@@ -37,12 +37,12 @@ describe('Svelte server hook renderer', () => {
     const html = await renderWithHandle(handle, [
       '<html><he',
       'ad><meta class="block"></head><body>',
-      '<div class="fg:red"></div></body></html>'
+      '<div class="fg-red"></div></body></html>'
     ])
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain('.block')
-    expect(html).toContain('.fg\\:red')
+    expect(html).toContain('.fg-red')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g')))
       .toHaveLength(1)
@@ -51,16 +51,16 @@ describe('Svelte server hook renderer', () => {
   test('isolates render state between responses', async () => {
     const handle = createMasterCSSHandle({ manifest: defaultManifest })
     const first = await renderWithHandle(handle, [
-      '<html><head></head><body class="fg:red"></body></html>'
+      '<html><head></head><body class="fg-red"></body></html>'
     ])
     const second = await renderWithHandle(handle, [
-      '<html><head></head><body class="fg:blue"></body></html>'
+      '<html><head></head><body class="fg-blue"></body></html>'
     ])
 
-    expect(first).toContain('.fg\\:red')
-    expect(first).not.toContain('.fg\\:blue')
-    expect(second).toContain('.fg\\:blue')
-    expect(second).not.toContain('.fg\\:red')
+    expect(first).toContain('.fg-red')
+    expect(first).not.toContain('.fg-blue')
+    expect(second).toContain('.fg-blue')
+    expect(second).not.toContain('.fg-red')
   })
 
   test('supports external hydration manifest storage', async () => {
@@ -108,11 +108,11 @@ describe('Svelte server hook renderer', () => {
       }
     })
     const html = await renderWithHandle(handle, [
-      '<html><head></head><body class="bg:red-60 animate:fade"></body></html>'
+      '<html><head></head><body class="bg-red-60 animate-fade"></body></html>'
     ])
 
-    expect(html).toContain('.bg\\:red-60{background-color:var(--color-red-60)}')
-    expect(html).toContain('.animate\\:fade{animation:var(--animate-fade)}')
+    expect(html).toContain('.bg-red-60{background-color:var(--color-red-60)}')
+    expect(html).toContain('.animate-fade{animation:var(--animate-fade)}')
     expect(html).not.toContain('--color-red-60:')
     expect(html).not.toContain('@keyframes fade')
     expect(html).not.toMatch(

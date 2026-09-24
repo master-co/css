@@ -3,9 +3,8 @@ use std::collections::HashSet;
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalClassSuggestionIr,
     CanonicalComposeDirectiveIr, CanonicalComposeSuggestionIr, CanonicalComposeSuggestionKind,
-    EngineSession, LINT_BATCH_VERSION, LintClassListPolicy, LintSession, PartialClassConflictIr,
-    RawValueCandidateIr, RawValuePolicy, SourceRange, ValidatorBatchIr,
-    classify_host_rule_validation,
+    EngineSession, LINT_BATCH_VERSION, LintClassListPolicy, LintSession, RawValueCandidateIr,
+    RawValuePolicy, SourceRange, ValidatorBatchIr, classify_host_rule_validation,
 };
 
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
@@ -18,7 +17,7 @@ const MANIFEST: &str = r#"{
       "utilities":[
         {"id":"block","name":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]},
         {"id":"m","name":"m:","type":-1,"variableAliasRefs":["~spacing"],"emit":{"type":"property","property":"margin"},"matchers":[{"type":"key","keys":["m"]}]},
-        {"id":"mx","name":"mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["mx"]}]},
+        {"id":"physical-mx","name":"physical-mx:","type":-1,"emit":{"type":"template","declarations":{"margin-right":null,"margin-left":null}},"matchers":[{"type":"key","keys":["physical-mx"]}]},
         {"id":"ml","name":"ml:","type":-1,"emit":{"type":"property","property":"margin-left"},"matchers":[{"type":"key","keys":["ml"]}]},
         {"id":"mr","name":"mr:","type":-1,"emit":{"type":"property","property":"margin-right"},"matchers":[{"type":"key","keys":["mr"]}]},
         {"id":"fg","name":"fg:","type":0,"emit":{"type":"property","property":"color"},"matchers":[{"type":"key","keys":["fg"]}]}
@@ -33,11 +32,13 @@ fn classifies_host_rule_validation_results_in_rust() {
         version: 1,
         classes: vec![
             mastercss_schema::ValidatorClassIr {
+                diagnostics: Vec::new(),
                 class_name: "block".into(),
                 matched: true,
                 rules: engine.inspect("block").unwrap().rules,
             },
             mastercss_schema::ValidatorClassIr {
+                diagnostics: Vec::new(),
                 class_name: "unknown".into(),
                 matched: false,
                 rules: Vec::new(),
@@ -83,37 +84,37 @@ fn sorts_and_finds_full_conflicts_without_retaining_rules() {
 
     let mut default_session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let conditional = default_session
-        .analyze(["m:10x@sm", "m:3.125rem@sm"], None, &HashSet::new())
+        .analyze(["m:2.5rem@sm", "m:3.125rem@sm"], None, &HashSet::new())
         .unwrap();
     assert_eq!(
         conditional.sorted_class_names,
-        ["m:3.125rem@sm", "m:10x@sm"]
+        ["m:2.5rem@sm", "m:3.125rem@sm"]
     );
 
     let partial = session
-        .analyze(["mx:2px", "ml:3px"], None, &HashSet::new())
+        .analyze(["physical-mx:2px", "ml:3px"], None, &HashSet::new())
         .unwrap();
-    assert_eq!(
-        partial.partial_conflicts,
-        [PartialClassConflictIr {
-            class_name: "mx:2px".into(),
-            replacement: "mr:2px".into(),
-            conflict: "ml:3px".into(),
-        }]
+    assert!(
+        partial.partial_conflicts.is_empty(),
+        "A replacement must preserve the source priority tier"
     );
 }
 
 #[test]
 fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
     let mut session = LintSession::create(MANIFEST).unwrap();
-    let class_names = vec!["m:md".into(), "m:md|17px".into(), "block".into()];
+    let class_names = vec![
+        "m-md".into(),
+        "m:var(--spacing-md)|17px".into(),
+        "block".into(),
+    ];
     let candidates = session
         .raw_value_candidates(&class_names, None, &HashSet::new())
         .unwrap();
     assert_eq!(
         candidates.candidates,
         [RawValueCandidateIr {
-            class_name: "m:md|17px".into(),
+            class_name: "m:var(--spacing-md)|17px".into(),
             key: "m".into(),
             segments: vec!["17px".into()],
             properties: vec!["margin".into()],
@@ -122,8 +123,8 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
 
     let ir = session
         .analyze_class_list(
-            "😀 m:md|17px",
-            &["😀".into(), "m:md|17px".into()],
+            "😀 m:var(--spacing-md)|17px",
+            &["😀".into(), "m:var(--spacing-md)|17px".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -140,17 +141,17 @@ fn discovers_raw_value_segments_and_creates_policy_diagnostics() {
         .iter()
         .find(|diagnostic| diagnostic.code == "unapproved-raw-value")
         .unwrap();
-    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 12 });
+    assert_eq!(diagnostic.range, SourceRange { start: 3, end: 27 });
     assert_eq!(
         diagnostic.message,
-        "Raw value \"17px\" is not approved for class \"m:md|17px\". Use a token or allow the value explicitly."
+        "Raw value \"17px\" is not approved for class \"m:var(--spacing-md)|17px\". Use a token or allow the value explicitly."
     );
     assert_eq!(diagnostic.data["properties"], serde_json::json!(["margin"]));
 
     let approved = session
         .analyze_class_list(
-            "m:md|17px",
-            &["m:md|17px".into()],
+            "m:var(--spacing-md)|17px",
+            &["m:var(--spacing-md)|17px".into()],
             None,
             &HashSet::new(),
             LintClassListPolicy {
@@ -175,8 +176,8 @@ fn suggests_canonical_classes_from_engine_facts() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let class_names = [
         "text-align:center:hover@sm",
-        "font:16px",
-        "margin:md",
+        "font-size:16px",
+        "margin-md",
         "position:relative",
         "m:1rem|1.5rem",
         "m:var(--spacing-md)",
@@ -201,32 +202,12 @@ fn suggests_canonical_classes_from_engine_facts() {
         result.suggestions,
         [
             CanonicalClassSuggestionIr {
-                class_name: "text-align:center:hover@sm".into(),
-                recommended: "text-center:hover@sm".into(),
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "font:16px".into(),
-                recommended: "font:md".into(),
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "margin:md".into(),
-                recommended: "m:md".into(),
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "position:relative".into(),
-                recommended: "rel".into(),
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "m:1rem|1.5rem".into(),
-                recommended: "m:md|lg".into(),
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "m:var(--spacing-md)".into(),
-                recommended: "m:md".into(),
+                class_name: "margin-md".into(),
+                recommended: "m-md".into()
             },
             CanonicalClassSuggestionIr {
                 class_name: "block@dark@sm".into(),
-                recommended: "block@sm@dark".into(),
+                recommended: "block@sm@dark".into()
             },
         ]
     );
@@ -237,20 +218,17 @@ fn suggests_canonical_classes_from_engine_facts() {
 fn suggests_canonical_composition_groups_from_engine_facts() {
     let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
     let cases = [
-        (vec!["w:md", "h:md"], Some("size:md")),
-        (vec!["min-w:md", "min-h:md"], Some("min-size:md")),
-        (vec!["max-w:md", "max-h:md"], Some("max-size:md")),
-        (vec!["mt:md", "mb:md"], Some("my:md")),
-        (vec!["ml:md", "mr:md"], Some("mx:md")),
-        (vec!["pt:md", "pb:md"], Some("py:md")),
-        (vec!["pl:md", "pr:md"], Some("px:md")),
-        (vec!["margin-top:md", "margin-bottom:md"], Some("my:md")),
-        (
-            vec!["mt:md@dark@sm", "mb:md@dark@sm"],
-            Some("my:md@sm@dark"),
-        ),
-        (vec!["w:md", "h:lg"], None),
-        (vec!["mt:md", "mb:md@sm"], None),
+        (vec!["w-md", "h-md"], None::<&str>),
+        (vec!["min-w-md", "min-h-md"], None::<&str>),
+        (vec!["max-w-md", "max-h-md"], None::<&str>),
+        (vec!["mt-md", "mb-md"], None::<&str>),
+        (vec!["ml-md", "mr-md"], None::<&str>),
+        (vec!["pt-md", "pb-md"], None::<&str>),
+        (vec!["pl-md", "pr-md"], None::<&str>),
+        (vec!["margin-top-md", "margin-bottom-md"], None::<&str>),
+        (vec!["mt-md@dark@sm", "mb-md@dark@sm"], None::<&str>),
+        (vec!["w-md", "h-lg"], None),
+        (vec!["mt-md", "mb-md@sm"], None),
     ];
     for (class_names, expected) in cases {
         let class_names = class_names
@@ -309,9 +287,9 @@ fn creates_structural_compose_directives_from_engine_facts() {
             suggestions: vec![
                 CanonicalComposeSuggestionIr {
                     actual: "text-align:center".into(),
-                    recommended: "text-center".into(),
+                    recommended: "text-align: center".into(),
                     class_names: vec!["text-align:center".into()],
-                    kind: CanonicalComposeSuggestionKind::Class,
+                    kind: CanonicalComposeSuggestionKind::NativeDeclaration,
                 },
                 CanonicalComposeSuggestionIr {
                     actual: "contain:content".into(),
@@ -321,11 +299,11 @@ fn creates_structural_compose_directives_from_engine_facts() {
                 },
             ],
             structural_change: Some(true),
-            replacement: Some("@compose text-center;\ncontain: content;".into()),
+            replacement: Some("text-align: center;\ncontain: content;".into()),
         }
     );
 
-    let class_names = ["bg:blue-60:hover@sm", "block@dark"].map(str::to_owned);
+    let class_names = ["bg-blue-60:hover@sm", "block@dark"].map(str::to_owned);
     let native_support = vec![
         true;
         session
@@ -342,7 +320,7 @@ fn creates_structural_compose_directives_from_engine_facts() {
         .unwrap();
     assert_eq!(
         result.replacement.as_deref(),
-        Some("&:hover { @variant sm { @compose bg:blue-60; } }\n@dark { @compose block; }")
+        Some("&:hover { @variant sm { @compose bg-blue-60; } }\n@dark { @compose block; }")
     );
     assert_eq!(
         result
@@ -370,4 +348,105 @@ fn creates_structural_compose_directives_from_engine_facts() {
         Some("contain: content !important;")
     );
     assert_eq!(session.engine.css_text(), "");
+}
+
+#[test]
+fn named_aliases_preserve_identity_and_conflicts_follow_engine_order() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    let names = [
+        "margin-md",
+        "-margin-md",
+        "margin:16px",
+        "padding:1rem",
+        "p:16px",
+        "font-size:16px",
+    ]
+    .map(str::to_owned);
+    let support = vec![true; session.native_declaration_candidates(&names).unwrap().len()];
+    let result = session
+        .canonical_class_names(
+            &names,
+            Some(&support),
+            &CanonicalClassNameOptions::default(),
+        )
+        .unwrap();
+    assert_eq!(
+        result
+            .suggestions
+            .iter()
+            .map(|s| (s.class_name.as_str(), s.recommended.as_str()))
+            .collect::<Vec<_>>(),
+        [
+            ("margin-md", "m-md"),
+            ("-margin-md", "-m-md"),
+            ("margin:16px", "m:16px"),
+            ("padding:1rem", "p:1rem")
+        ]
+    );
+    for names in [["p-md", "p:8px"], ["p:8px", "p-md"]] {
+        let support = vec![true; session.native_declaration_candidates(names).unwrap().len()];
+        let result = session
+            .analyze(names, Some(&support), &HashSet::new())
+            .unwrap();
+        assert_eq!(result.conflicts.len(), 1);
+        assert_eq!(result.conflicts[0].class_name, "p-md");
+        assert_eq!(result.conflicts[0].conflicts, ["p:8px"]);
+    }
+}
+
+#[test]
+fn conflict_sorting_is_total_with_unknown_classes_and_ignores_html_order() {
+    let classes = (0..80)
+        .flat_map(|i| [format!("p:{i}px"), format!("unknown-{i}")])
+        .collect::<Vec<_>>();
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    for input in [classes.clone(), classes.into_iter().rev().collect()] {
+        let result = session
+            .analyze(input.iter().map(String::as_str), None, &HashSet::new())
+            .unwrap();
+        assert_eq!(result.conflicts.len(), 79);
+        assert!(
+            result
+                .conflicts
+                .iter()
+                .all(|conflict| conflict.conflicts == ["p:79px"])
+        );
+    }
+}
+
+#[test]
+fn canonical_partial_fixes_preserve_static_cascade_positions() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    for classes in [["b-solid", "bt-dashed"], ["bt-dashed", "b-solid"]] {
+        let result = session.analyze(classes, None, &HashSet::new()).unwrap();
+        assert!(result.partial_conflicts.is_empty());
+    }
+}
+
+#[test]
+fn unknown_named_prefixes_follow_the_unknown_class_policy() {
+    let mut session = LintSession::create(DEFAULT_MANIFEST).unwrap();
+    for strict in [false, true] {
+        let result = session
+            .analyze_class_list(
+                "bg-custom-card",
+                &["bg-custom-card".into()],
+                None,
+                &HashSet::new(),
+                LintClassListPolicy {
+                    disallow_unknown_class: strict,
+                    ..Default::default()
+                },
+            )
+            .unwrap();
+        let unknown = result
+            .diagnostics
+            .iter()
+            .filter(|diagnostic| diagnostic.rule_id == "no-invalid-classes")
+            .collect::<Vec<_>>();
+        assert_eq!(unknown.len(), usize::from(strict));
+        if strict {
+            assert_eq!(unknown[0].code, "unknown-token");
+        }
+    }
 }

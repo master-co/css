@@ -6,6 +6,7 @@ export const migrationGuides = [
   { slug: 'material-ui', brand: 'mui', title: 'Material UI', description: 'App-owned sx styles, resolved values and retained widgets.' },
   { slug: 'bootstrap', brand: 'bootstrap', title: 'Bootstrap', description: 'Grid geometry, vendor cascade and JavaScript components.' },
   { slug: 'sass', brand: 'sass', title: 'Sass', description: 'Compiler inputs, variables, mixins and useful native CSS.' },
+  { slug: 'v2-rc', brand: 'mastercss', title: 'Master CSS v2 RC', description: 'Named tokens, native declarations, unit migration and coordinated package upgrades.' },
   { slug: 'v1', brand: 'v1', title: 'Master CSS v1', description: 'Package upgrades, CSS-first configuration and runtime wiring.' }
 ] as const
 

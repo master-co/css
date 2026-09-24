@@ -1,7 +1,7 @@
 const syntaxes = [
   'order:0',
-  'order:first',
-  'order:last',
+  'order-first',
+  'order-last',
   ['order:`value`'],
 ]
 

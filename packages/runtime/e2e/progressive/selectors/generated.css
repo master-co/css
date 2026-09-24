@@ -18,7 +18,7 @@
     display: none
   }
 
-  .content\:external\:\:after::after {
+  .content-external\:\:after::after {
     content: var(--content-external)
   }
 }

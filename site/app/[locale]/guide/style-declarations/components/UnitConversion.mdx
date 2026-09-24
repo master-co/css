@@ -1,25 +1,24 @@
-export const code1 = /* eslint-disable @master/css/prefer-canonical-classes -- intentional unit conversion source examples */ `
-  <!-- @MARK 3rem -->
-  <p class="font:3rem">
+export const code1 = `
+  <!-- @MARK font-size:3rem -->
+  <p class="font-size:3rem">
 `
 export const code2 = `
-  <!-- @MARK font:12x -->
-  <p class="font:12x">
+  <!-- @MARK font-size:48px -->
+  <p class="font-size:48px">
 `
-/* eslint-enable @master/css/prefer-canonical-classes */
 
-Use the `x` unit when a value should follow the project base-unit rhythm and emit `rem`.
+Write native CSS units explicitly. Use `rem` for a length relative to the root font size:
 <Code lang="html">
   {code1}
 </Code>
 
-(o) Use multiplier units instead of relying on implicit numeric conversion. <Dropped p1={code1} p2={code2} target="class" />
+Use `px` when the design calls for a fixed CSS pixel length:
 <Code lang="html">
   {code2}
 </Code>
 
-With the default `base-unit: 4`, `12x` becomes `3rem`.
+These values have different behavior when the root font size changes. Master CSS preserves the unit you write and does not convert declaration values using `root-size`.
 
-Bare numbers are emitted as written. For example, `font:48` emits `font-size: 48`, not `3rem`; for a valid length use `font:3rem` or `font:12x`.
+Bare numbers are also emitted as written. For example, `font-size:48` emits `font-size: 48`, which is not a valid nonzero CSS length. Use an explicit unit or a named token such as `font-lg`.
 
-Use explicit units when you need to preserve a value exactly as written.
+The former Master length multiplier `x` and `base-unit` setting have been removed. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc) to convert existing projects using their original settings. Native resolution values such as `image-set(url(a.png)|1x,url(b.png)|2x)` retain their CSS meaning.

@@ -17,7 +17,7 @@ afterEach(() => {
   contexts.clear()
 })
 
-function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', includeGeneratedCSS = true) {
+function makeContext(command: 'serve' | 'build', css = '.fg-red{color:red}', includeGeneratedCSS = true) {
   const context = {
     config: { command, root: process.cwd() },
     includeGeneratedCSS,
@@ -27,7 +27,7 @@ function makeContext(command: 'serve' | 'build', css = '.fg\\:red{color:red}', i
       slotCSSRule: SLOT,
       css: { text: css, manifest: defaultManifest },
       config: {},
-      latentClasses: new Set(['fg:red']),
+      latentClasses: new Set(['fg-red']),
       validClasses: new Set(),
       nativeClassNames: new Set(),
       usedNativeClasses: new Set(),
@@ -74,12 +74,12 @@ describe('StyleEntryPlugin', () => {
   })
 
   test('serve load inlines current extracted CSS and tracks the virtual CSS module for HMR', async () => {
-    const context = makeContext('serve', '.fg\\:red{color:red}')
+    const context = makeContext('serve', '.fg-red{color:red}')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
     const result = await (plugin as any).load.call({}, RESOLVED_VIRTUAL_CSS_ID)
 
-    expect(result).toContain('.fg\\:red')
+    expect(result).toContain('.fg-red')
     expect(context.virtualCSSImporters).toEqual(new Set([RESOLVED_VIRTUAL_CSS_ID]))
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
   })
@@ -133,7 +133,7 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )
 
-    expect(result.code).toContain('.fg\\:red')
+    expect(result.code).toContain('.fg-red')
     expect(result.code).not.toBe(SLOT)
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
@@ -168,7 +168,7 @@ describe('StyleEntryPlugin', () => {
       '/project/src/style.css'
     )
 
-    expect(result.code).toContain('.fg\\:red')
+    expect(result.code).toContain('.fg-red')
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain('@fontsource/fira-mono')
     const graph = collectDeliveredCSS(context, result.code)
@@ -194,7 +194,7 @@ describe('StyleEntryPlugin', () => {
     expect(result.code).toContain('text-rendering: geometricprecision')
     expect(result.code).not.toContain('@master/css')
     expect(result.code).not.toContain(SLOT)
-    expect(result.code).not.toContain('.fg\\:red')
+    expect(result.code).not.toContain('.fg-red')
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
       prunesNativeCSS: true
     })

@@ -10,12 +10,12 @@ Tabular digits have equal advance widths, which helps align equally formatted va
 
 ```html
 <!-- proportional-nums -->
-<div id="target" class="proportional-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="proportional-nums font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 ```html
 <!-- tabular-nums -->
-<div id="target" class="tabular-nums font:3xl leading:sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" class="tabular-nums font-3xl leading-sm"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```
 
 Decimal points, signs and different digit counts still need an appropriate table or alignment strategy.
@@ -40,12 +40,12 @@ Decimal points, signs and different digit counts still need an appropriate table
 
 ```html
 <!-- font-variant-numeric:normal -->
-<p id="target" class="m:0 font-variant-numeric:normal font:3xl leading:sm font:code-demo">0O 00 2026</p>
+<p id="target" class="m:0 font-variant-numeric:normal font-3xl leading-sm font-code-demo">0O 00 2026</p>
 ```
 
 ```html
 <!-- slashed-zero -->
-<p id="target" class="m:0 slashed-zero font:3xl leading:sm font:code-demo">0O 00 2026</p>
+<p id="target" class="m:0 slashed-zero font-3xl leading-sm font-code-demo">0O 00 2026</p>
 ```
 
 An unsupported OpenType feature is ignored. The computed property alone does not prove that the glyph changed.
@@ -57,7 +57,7 @@ An unsupported OpenType feature is ignored. The computed property alone does not
 
 ```html
 <!-- Tabular parent · proportional child -->
-<div id="context" class="tabular-nums font:3xl leading:sm">
+<div id="context" class="tabular-nums font-3xl leading-sm">
   <p class="m:0"><span id="inherited" class="inline-block">11111</span></p>
   <p id="target" class="m:0 font-variant-numeric:normal"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></p>
 </div>
@@ -70,5 +70,5 @@ Focus the sample with the keyboard or hover it to enable tabular digits. Read th
 
 ```html
 <!-- A real state change -->
-<div id="target" tabindex="0" role="group" aria-label="Numeric variant sample" class="proportional-nums font:3xl leading:sm tabular-nums:hover tabular-nums:focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
+<div id="target" tabindex="0" role="group" aria-label="Numeric variant sample" class="proportional-nums font-3xl leading-sm tabular-nums:hover tabular-nums:focus-visible"><span id="ones" class="inline-block">11111</span><br><span id="eights" class="inline-block">88888</span></div>
 ```

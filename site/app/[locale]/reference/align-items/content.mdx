@@ -8,9 +8,9 @@ Use `items-center` to align the centers of flex items across a line. Here a 64px
 <DemoExample page="align-items" section="align-items-on-the-cross-axis" />
 
 ```html
-<div id="layout" class="flex items-center gap:md">
-  <img id="target" class="flex:none size:16x object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
-  <div id="peer" class="p:sm">Landscape study</div>
+<div id="layout" class="flex items-center gap-md">
+  <img id="target" class="flex:none size:4rem object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
+  <div id="peer" class="p-sm">Landscape study</div>
 </div>
 ```
 
@@ -29,16 +29,16 @@ Compare `items-start` and `items-end` with the same 96px image and two-line capt
 <DemoExample page="align-items" section="align-to-the-start-or-end" />
 
 ```html
-<div id="layout" class="flex items-start gap:md">
-  <img id="target" class="flex:none size:24x object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
-  <div id="peer" class="min-w:0 p:sm">Landscape study<br>Canvas collection</div>
+<div id="layout" class="flex items-start gap-md">
+  <img id="target" class="flex:none size:6rem object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
+  <div id="peer" class="min-w:0 p-sm">Landscape study<br>Canvas collection</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex items-end gap:md">
-  <img id="target" class="flex:none size:24x object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
-  <div id="peer" class="min-w:0 p:sm">Landscape study<br>Canvas collection</div>
+<div id="layout" class="flex items-end gap-md">
+  <img id="target" class="flex:none size:6rem object-cover" src="/demo/landscape.svg" alt="Sun above layered mountains" />
+  <div id="peer" class="min-w:0 p-sm">Landscape study<br>Canvas collection</div>
 </div>
 ```
 
@@ -48,16 +48,16 @@ Compare `items-start` and `items-end` with the same 96px image and two-line capt
 <DemoExample page="align-items" section="stretch-children" />
 
 ```html
-<div id="layout" class="flex items-stretch gap:md h:32x">
-  <div id="target" class="w:24x p:sm">Auto height</div>
-  <div id="peer" class="h:16x w:24x p:sm">64px height</div>
+<div id="layout" class="flex items-stretch gap-md h:8rem">
+  <div id="target" class="w:6rem p-sm">Auto height</div>
+  <div id="peer" class="h:4rem w:6rem p-sm">64px height</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex items-stretch gap:md">
-  <div id="target" class="w:24x p:sm">Auto height</div>
-  <div id="peer" class="size:24x p:sm">96px height</div>
+<div id="layout" class="flex items-stretch gap-md">
+  <div id="target" class="w:6rem p-sm">Auto height</div>
+  <div id="peer" class="size:6rem p-sm">96px height</div>
 </div>
 ```
 
@@ -69,9 +69,9 @@ Use `items-baseline` to put the first text baselines of differently sized flex i
 <DemoExample page="align-items" section="align-text-baselines" />
 
 ```html
-<div id="layout" class="flex items-baseline gap:sm">
-  <span id="target" class="font:5xl leading:1">24</span>
-  <span id="peer" class="font:sm leading:1">messages</span>
+<div id="layout" class="flex items-baseline gap-sm">
+  <span id="target" class="font-5xl leading:1">24</span>
+  <span id="peer" class="font-sm leading:1">messages</span>
 </div>
 ```
 
@@ -83,8 +83,8 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="align-items" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex items-start gap:md h:32x items-center@sm items-stretch@lg">
-  <div id="target" class="w:24x p:sm">Auto height</div>
-  <div id="peer" class="h:16x w:24x p:sm">64px height</div>
+<div id="layout" class="flex items-start gap-md h:8rem items-center@sm items-stretch@lg">
+  <div id="target" class="w:6rem p-sm">Auto height</div>
+  <div id="peer" class="h:4rem w:6rem p-sm">64px height</div>
 </div>
 ```

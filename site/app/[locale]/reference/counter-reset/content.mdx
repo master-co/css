@@ -10,11 +10,11 @@ Create `section` with an initial value of zero. The first increment occurs on th
 ```html
 <!-- Scope · this article -->
 <article id="target" class="counter-reset:section">
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Setup</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Usage</h2>
 </article>
 ```
@@ -29,11 +29,11 @@ Specify an integer after the counter name. This article initializes `chapter` to
 ```html
 <!-- Initial 4 · first heading 5 -->
 <article id="target" class="counter-reset:chapter|4">
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:chapter text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:chapter text-blue::before
     content:counter(chapter)'.\00a0'::before">Advanced topics</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:chapter text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:chapter text-blue::before
     content:counter(chapter)'.\00a0'::before">Deployment</h2>
 </article>
 ```
@@ -45,16 +45,16 @@ Where supported, `reversed(step)` derives an initial value from the elements tha
 
 ```html
 <!-- Native support · explicit countdown fallback -->
-<p class="mx:0 mb:2xs mt:0 font:sm hidden@supports(counter-reset:reversed(step))">Explicit fallback · starts at 4</p>
-<p class="hidden mx:0 mb:2xs mt:0 font:sm
+<p class="mx:0 mb-2xs mt:0 font-sm hidden@supports(counter-reset:reversed(step))">Explicit fallback · starts at 4</p>
+<p class="hidden mx:0 mb-2xs mt:0 font-sm
     block@supports(counter-reset:reversed(step))">Native reversed() · item-derived start</p>
-<ol id="target" role="list" reversed class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|4
+<ol id="target" role="list" reversed class="m:0 p:0 font-md leading-lg list-style:none counter-reset:step|4
     counter-reset:reversed(step)@supports(counter-reset:reversed(step))">
-  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+  <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Final review</li>
-  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+  <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Deploy</li>
-  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+  <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Monitor</li>
 </ol>
 ```
@@ -70,11 +70,11 @@ Resize past `sm` to initialize this chapter counter at 4 on screen. The headings
 <!-- Real viewport · initial 0 or 4 -->
 <article id="target" class="counter-reset:chapter counter-reset:chapter@print
     counter-reset:chapter|4@screen&sm">
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:chapter text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:chapter text-blue::before
     content:counter(chapter)'.\00a0'::before">Setup</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:chapter text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:chapter text-blue::before
     content:counter(chapter)'.\00a0'::before">Usage</h2>
 </article>
 ```

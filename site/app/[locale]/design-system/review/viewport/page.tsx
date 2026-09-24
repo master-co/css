@@ -13,7 +13,7 @@ export const metadata = {
   description: 'Original Guide iframe controls, previous shared viewport, and the adopted framed viewport.'
 }
 
-const classes = ['p:md', 'p:lg@sm', 'fg:blue-60:hover', 'fg:blue-60:focus-visible']
+const classes = ['p-md', 'p-lg@sm', 'fg-blue-60:hover', 'fg-blue-60:focus-visible']
 const breakpoint = getThemeNumericVariableEntries('breakpoint').find(entry => entry.key === 'sm')?.px
 if (!breakpoint) throw new Error('Viewport review requires the preset sm breakpoint')
 const widths = [

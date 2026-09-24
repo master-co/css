@@ -8,69 +8,69 @@
 <DemoExample page="flex-basis" section="set-the-starting-size-of-a-flex-item" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex-basis:24x flex-shrink:0 h:24x p:sm">Sidebar</div>
-  <div id="peer" class="flex:1 h:24x min-w:0 p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex-basis:6rem flex-shrink:0 h:6rem p-sm">Sidebar</div>
+  <div id="peer" class="flex:1 h:6rem min-w:0 p-sm">Main content</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex-basis:24x', 'flex-shrink:0']}
+    {['flex-basis:6rem', 'flex-shrink:0']}
   </Class2CSS>
 </details>
 
 In horizontal writing, a row uses the basis as a starting width and a column uses it as a starting height. The final size can still be limited by min/max sizes and flexing.
 
 ### Use content or parent-sized basis values \{#use-content-or-parent-sized-basis-values\}
-`flex-basis:full` resolves to `100%` of a definite container main size. `flex-basis:fit` and `flex-basis:max` resolve to the intrinsic keywords `fit-content` and `max-content`. These three rows keep the same content and disable growth and shrinkage so their starting sizes are easy to compare.
+`flex-basis:100%` resolves to `100%` of a definite container main size. `flex-basis:fit-content` and `flex-basis:max-content` resolve to the intrinsic keywords `fit-content` and `max-content`. These three rows keep the same content and disable growth and shrinkage so their starting sizes are easy to compare.
 
 <DemoExample page="flex-basis" section="use-content-or-parent-sized-basis-values" />
 
 ```html
 <div id="layout" class="flex">
-  <div id="target" class="flex-basis:full flex-shrink:0 min-w:0 p:sm">Design library</div>
+  <div id="target" class="flex-basis:100% flex-shrink:0 min-w:0 p-sm">Design library</div>
 </div>
 ```
 
 ```html
 <div id="layout" class="flex">
-  <div id="target" class="flex-basis:fit flex-shrink:0 p:sm">Design library</div>
+  <div id="target" class="flex-basis:fit-content flex-shrink:0 p-sm">Design library</div>
 </div>
 ```
 
 ```html
 <div id="layout" class="flex">
-  <div id="target" class="flex-basis:max flex-shrink:0 p:sm">Design library</div>
+  <div id="target" class="flex-basis:max-content flex-shrink:0 p-sm">Design library</div>
 </div>
 ```
 
 Fit-content is bounded by the available space and the content’s minimum size. Max-content uses the unwrapped content width. With this short label, both intrinsic sizes can be equal. A percentage basis in a container with an indefinite main size instead falls back to content sizing.
 
 ### Use container basis values \{#use-container-basis-values\}
-`flex-basis:md` reads the `md` token from the shared [container scale](/guide/sizing). Its basis is 28rem in the default theme; the actual item may be smaller when the row needs to shrink. The adjacent 80px region stays fixed.
+`flex-basis-md` reads the `md` token from the shared [container scale](/guide/sizing). Its basis is 28rem in the default theme; the actual item may be smaller when the row needs to shrink. The adjacent 80px region stays fixed.
 
 <DemoExample page="flex-basis" section="use-container-basis-values" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex-basis:md h:24x min-w:0 p:sm">Container basis</div>
-  <div id="peer" class="flex:none h:24x w:20x p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex-basis-md h:6rem min-w:0 p-sm">Container basis</div>
+  <div id="peer" class="flex:none h:6rem w:5rem p-sm">Main content</div>
 </div>
 ```
 
 A basis is a starting size, not a minimum width. The live size reading shows the resulting border box after the available width and the gap have been accounted for.
 
 ### Prefer shorthand for complete flex behavior \{#prefer-shorthand-for-complete-flex-behavior\}
-Use [flex](/reference/flex) when growth, shrinkage and the basis belong together. In this 240px-tall column, `flex:0|0|18x` reserves a 72px header; the remaining region grows below it.
+Use [flex](/reference/flex) when growth, shrinkage and the basis belong together. In this 240px-tall column, `flex:0|0|4.5rem` reserves a 72px header; the remaining region grows below it.
 
 <DemoExample page="flex-basis" section="prefer-shorthand-for-complete-flex-behavior" />
 
 ```html
-<div id="layout" class="flex flex-col gap:md h:60x">
-  <div id="target" class="flex:0|0|18x p:sm">72px header</div>
-  <div id="peer" class="flex:1 min-h:0 p:sm">Remaining height</div>
+<div id="layout" class="flex flex-col gap-md h:15rem">
+  <div id="target" class="flex:0|0|4.5rem p-sm">72px header</div>
+  <div id="peer" class="flex:1 min-h:0 p-sm">Remaining height</div>
 </div>
 ```
 
@@ -80,8 +80,8 @@ Use [conditional queries](/reference/rules/conditions) to switch the basis at a 
 <DemoExample page="flex-basis" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex flex-wrap gap:md">
-  <div id="target" class="flex-basis:full flex-shrink:0 h:24x p:sm flex-basis:24x@sm">Sidebar</div>
-  <div id="peer" class="flex:1|1|32x h:24x min-w:0 p:sm">Main content</div>
+<div id="layout" class="flex flex-wrap gap-md">
+  <div id="target" class="flex-basis:100% flex-shrink:0 h:6rem p-sm flex-basis:6rem@sm">Sidebar</div>
+  <div id="peer" class="flex:1|1|8rem h:6rem min-w:0 p-sm">Main content</div>
 </div>
 ```

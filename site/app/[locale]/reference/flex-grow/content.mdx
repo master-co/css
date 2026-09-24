@@ -8,9 +8,9 @@
 <DemoExample page="flex-grow" section="let-an-item-grow" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex-basis:16x flex-grow:1 h:24x min-w:0 p:sm">Grow 1</div>
-  <div id="peer" class="flex-basis:16x flex-grow:2 h:24x min-w:0 p:sm">Grow 2</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex-basis:4rem flex-grow:1 h:6rem min-w:0 p-sm">Grow 1</div>
+  <div id="peer" class="flex-basis:4rem flex-grow:2 h:6rem min-w:0 p-sm">Grow 2</div>
 </div>
 ```
 
@@ -29,9 +29,9 @@ Padding is included in each item’s basis here because the site uses border-box
 <DemoExample page="flex-grow" section="keep-an-item-at-its-basis" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex-basis:24x flex-grow:0 h:24x min-w:0 p:sm">Grow 0</div>
-  <div id="peer" class="flex-basis:16x flex-grow:1 h:24x min-w:0 p:sm">Main content</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex-basis:6rem flex-grow:0 h:6rem min-w:0 p-sm">Grow 0</div>
+  <div id="peer" class="flex-basis:4rem flex-grow:1 h:6rem min-w:0 p-sm">Main content</div>
 </div>
 ```
 
@@ -41,9 +41,9 @@ Use [conditional queries](/reference/rules/conditions) to enable growth only whe
 <DemoExample page="flex-grow" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex gap:md">
-  <div id="target" class="flex-basis:20x flex-grow:0 h:24x min-w:0 p:sm flex-grow:1@sm">Target</div>
-  <div id="peer" class="flex-basis:20x flex-grow:0 h:24x min-w:0 p:sm">Peer</div>
+<div id="layout" class="flex gap-md">
+  <div id="target" class="flex-basis:5rem flex-grow:0 h:6rem min-w:0 p-sm flex-grow:1@sm">Target</div>
+  <div id="peer" class="flex-basis:5rem flex-grow:0 h:6rem min-w:0 p-sm">Peer</div>
 </div>
 ```
 

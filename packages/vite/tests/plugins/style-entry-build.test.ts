@@ -50,7 +50,7 @@ function makeBundle(entries: Record<string, string>) {
 }
 
 const SLOT = '#master-css-slot{--slot:0}'
-const REAL_CSS = '.bg\\:white{background-color:white}.fg\\:black{color:black}'
+const REAL_CSS = '.bg-white{background-color:white}.fg-black{color:black}'
 
 describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
   test('replaces placeholder when present and does NOT warn', async () => {

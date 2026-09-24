@@ -9,16 +9,16 @@ Hover or keyboard-focus the native button to move it upward by 8px. The dashed o
 
 ```html
 <!-- Translate upward · hover or focus -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:none
-             outline:2px|solid|blue:focus-visible
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:none
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              transform:none@print
-             transition:transform|fast|ease-out@motion
+             transition:transform|var(--duration-fast)|ease-out@motion
              transform:translateY(-8px):hover@screen
              transform:translateY(-8px):focus-visible@screen">
       Lift layer
@@ -43,16 +43,16 @@ Hold the button with a pointer, or focus it and hold Space. Its native active st
 
 ```html
 <!-- Scale while pressed · native button -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:none
-             outline:2px|solid|blue:focus-visible
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:none
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              transform:none@print
-             transition:transform|fast|ease-out@motion
+             transition:transform|var(--duration-fast)|ease-out@motion
              transform:scale(.9):active@screen">
       Press and hold
     </button>
@@ -69,12 +69,12 @@ Compare a 12-degree rotation with a 12-degree horizontal skew. Both layers begin
 
 ```html
 <!-- Rotate · around the center -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:rotate(12deg)">
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:rotate(12deg)">
       Rotated layer
     </div>
   </div>
@@ -83,12 +83,12 @@ Compare a 12-degree rotation with a 12-degree horizontal skew. Both layers begin
 
 ```html
 <!-- Skew · horizontal shear -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:skewX(-12deg)">
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:skewX(-12deg)">
       Skewed layer
     </div>
   </div>
@@ -104,18 +104,18 @@ The top-right pivot stays fixed while this layer scales to 75%. The violet marke
 
 ```html
 <!-- Top-right pivot · unchanged anchor -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:scale(.75)
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:scale(.75)
              transform-origin:top|right">
       Scaled layer
     </div>
     <span aria-hidden="true"
-      class="abs right:-3px top:-3px size:6px r:full
-             bg:violet-60 untouchable"></span>
+      class="abs right:-3px top:-3px size:6px r:100%
+             bg-violet-60 untouchable"></span>
   </div>
 </div>
 ```
@@ -129,12 +129,12 @@ Widen the actual viewport to `sm` to translate the layer 24px to the right. Prin
 
 ```html
 <!-- Original → translated at sm -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:none
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:none
              transform:none@print
              transform:translateX(24px)@screen&sm">
       Layer 01

@@ -18,6 +18,7 @@ import type { CompileCSSOptions, CompileCSSResult } from './contracts'
 
 export interface BindingCompilerSession {
   readonly binding: MasterCSSCompilerBindingSession['binding']
+  migrateRC: MasterCSSCompilerBindingSession['migrateRC']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileCSS(source: string, options?: CompileCSSOptions): CompileCSSResult
   analyzeCSSDependencies: MasterCSSCompilerBindingSession['analyzeCSSDependencies']
@@ -53,6 +54,7 @@ function reviveCompileResult(result: CompileCSSResult) {
 function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingCompilerSession {
   return {
     binding: session.binding,
+    migrateRC: (request) => session.migrateRC(request),
     inspectCSS: (source: string) => session.inspectCSS(source),
     compileCSS(source, options = {}) {
       return reviveCompileResult(session.compileCSSDirectives(source, {

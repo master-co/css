@@ -7,6 +7,7 @@ interface CompilerOperations {
   findManifestEntries?: MasterCSSCompilerBindingSession['findManifestEntries']
   loadProjectManifest?: MasterCSSCompilerBindingSession['loadProjectManifest']
   loadPreparedProjectManifest?: MasterCSSCompilerBindingSession['loadPreparedProjectManifest']
+  migrateRC: MasterCSSCompilerBindingSession['migrateRC']
   inspectCSS: MasterCSSCompilerBindingSession['inspectCSS']
   compileNativeCSS: MasterCSSCompilerBindingSession['compileNativeCSS']
   compileCSSDirectives: MasterCSSCompilerBindingSession['compileCSSDirectives']
@@ -71,6 +72,7 @@ export function bindCompilerBindingSession(
     loadPreparedProjectManifest: (projectDir, baseManifest, graphs) => invoke('project', () =>
       operations.loadPreparedProjectManifest?.(projectDir, baseManifest, graphs)
         ?? unavailable('Prepared project manifest loading')),
+    migrateRC: (request) => invoke('compiler', () => operations.migrateRC(request)),
     inspectCSS: (source) => invoke('compiler', () => operations.inspectCSS(source), source),
     compileNativeCSS: (source, options) =>
       invoke('compiler', () => operations.compileNativeCSS(source, options), source),

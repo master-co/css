@@ -6,13 +6,13 @@ import { renderHTML } from '../src'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test('renders a complete immutable HTML result', () => {
-  const result = renderHTML('<div class="fg:red bg:blue"></div>', {
+  const result = renderHTML('<div class="fg-red bg-blue"></div>', {
     manifest: defaultManifest
   })
 
-  expect(result.classNames).toEqual(['fg:red', 'bg:blue'])
-  expect(result.cssText).toContain('.fg\\:red')
-  expect(result.cssText).toContain('.bg\\:blue')
+  expect(result.classNames).toEqual(['fg-red', 'bg-blue'])
+  expect(result.cssText).toContain('.fg-red')
+  expect(result.cssText).toContain('.bg-blue')
   expect(Object.isFrozen(result)).toBe(true)
   expect(Object.isFrozen(result.classNames)).toBe(true)
   expect(Object.isFrozen(result.invalidClassNames)).toBe(true)
@@ -21,8 +21,8 @@ test('renders a complete immutable HTML result', () => {
 
 
 test('deduplicates decoded classes in first appearance order without changing HTML entities', () => {
-  const html = '<div class="fg:red mt:0&gt;div fg:red"></div><span class="mt:0>div bg:blue fg:red"></span>'
+  const html = '<div class="fg-red mt:0&gt;div fg-red"></div><span class="mt:0>div bg-blue fg-red"></span>'
   const result = renderHTML(html, { manifest: defaultManifest })
-  expect(result.classNames).toEqual(['fg:red', 'mt:0>div', 'bg:blue'])
+  expect(result.classNames).toEqual(['fg-red', 'mt:0>div', 'bg-blue'])
   expect(result.html).toContain(html)
 })

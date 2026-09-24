@@ -38,21 +38,21 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   },
   mastercss_inspect_class: {
     purpose: 'Check how one class is interpreted by the active manifest. Use `mastercss_trace_class` when the question is whether project scanning actually finds it.',
-    fields: { className, mode }, example: { className: 'p:md' }, exampleNote: 'Inspect a preset spacing class in the connected workspace.',
+    fields: { className, mode }, example: { className: 'p-md' }, exampleNote: 'Inspect a preset spacing class in the connected workspace.',
     output: 'The result includes `className`, `valid`, `rules`, semantic inspection data, and the generated `css` string. Check `manifest.status` and entries before using custom tokens. A valid class alone does not establish that it appears in scanned source.',
     lifecycle: readOnly
   },
   mastercss_trace_class: {
     purpose: 'Trace a class through source discovery, scanner state, and generated CSS to explain why it is present or missing.',
     fields: { className, patterns, includeCss: 'Include the full generated stylesheet text in `css.text`. Omitted by default.', mode },
-    example: { className: 'p:md', patterns: ['src/button.html'], includeCss: true }, exampleNote: 'The file must exist under the server root and contain the class you want to trace.',
+    example: { className: 'p-md', patterns: ['src/button.html'], includeCss: true }, exampleNote: 'The file must exist under the server root and contain the class you want to trace.',
     output: 'Read `status`, `reason`, and `detected` together, then inspect `occurrences`, `inspection`, `scanner`, and `diagnostics`. `css` describes the scan output. A valid inspection and a detected source occurrence answer different questions.',
     lifecycle: readOnly
   },
   mastercss_extract_classes: {
     purpose: 'Find exact class tokens and source positions in a buffer, or inspect extraction across selected project files.',
     fields: { content: 'Source buffer to inspect. When provided, it takes precedence over project patterns, including when the string is empty.', filePath: filePath + ' Defaults to `index.html` in content mode.', patterns, includeRules: 'Include generated rules in each class inspection. Defaults to false.' },
-    example: { content: '<button class="flex gap:sm p:md">Save</button>', filePath: 'src/button.html', includeRules: true }, exampleNote: 'This buffer is inspected without writing `src/button.html`.',
+    example: { content: '<button class="flex gap-sm p-md">Save</button>', filePath: 'src/button.html', includeRules: true }, exampleNote: 'This buffer is inspected without writing `src/button.html`.',
     output: '`files` contains language IDs and class records with tokens, ranges, locations, validity, status, and inspection data. `inputs.mode` distinguishes content from project mode. `summary` counts files and classes; project mode also includes scanner counts and diagnostics.',
     lifecycle: readOnly
   },
@@ -66,14 +66,14 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_render_css: {
     purpose: 'Generate CSS for a small literal class list or HTML fragment using the connected project context.',
     fields: { html: 'HTML fragment to extract classes from. A nonempty string takes precedence over `classList`.', classList: 'Whitespace-separated complete classes. Used when `html` is absent or empty.' },
-    example: { classList: 'flex gap:sm' }, exampleNote: 'Generate a small flex layout without creating a source file.',
+    example: { classList: 'flex gap-sm' }, exampleNote: 'Generate a small flex layout without creating a source file.',
     output: 'The result contains extracted `classes`, `invalid` class names, and `css.text` plus its UTF-8 byte count. Check the manifest status and invalid list as well as the CSS. Empty input produces no class request.',
     lifecycle: readOnly
   },
   mastercss_scan_project: {
     purpose: 'Inspect scanned files, stylesheet entries, generated CSS, and optional missing-class checks for a chosen source scope.',
     fields: { patterns, classes: 'Complete class names to check against the generated output. This does not add classes to source or safelist them.', includeCss: 'Include the generated stylesheet in `css.text`. Omitted by default.' },
-    example: { patterns: ['src/button.html'], classes: ['p:md'], includeCss: true }, exampleNote: 'Use an existing source file. The requested class is checked against actual scan output.',
+    example: { patterns: ['src/button.html'], classes: ['p-md'], includeCss: true }, exampleNote: 'Use an existing source file. The requested class is checked against actual scan output.',
     output: 'Read `summary` and `diagnostics`, then `files`, `stylesheets`, scanner state, `css`, and `missingCSS`. The report includes the configured `root` and manifest status. Check the discovered stylesheet entries before attributing a missing rule to extraction.',
     lifecycle: readOnly
   },
@@ -93,7 +93,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
       beforeContent: 'Before source buffer, used when both other before inputs are absent.', afterContent: 'After source buffer, used when both other after inputs are absent.',
       filePath: filePath + ' Defaults to `index.html`.'
     },
-    example: { beforeClassList: 'p:sm', afterClassList: 'p:md' }, exampleNote: 'Compare two spacing values under the same manifest.',
+    example: { beforeClassList: 'p-sm', afterClassList: 'p-md' }, exampleNote: 'Compare two spacing values under the same manifest.',
     output: '`classes` and `rules` describe additions and removals, `invalid` lists rejected classes, and `css` includes before/after text and a diff. The current `bytes` and `bytesDelta` fields count UTF-16 code units with JavaScript string lengths, not UTF-8 bytes or compressed transfer sizes.',
     lifecycle: readOnly
   },
@@ -106,7 +106,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_lint_content: {
     purpose: 'Check an unsaved source buffer with the native class diagnostics and the connected workspace’s manifest.',
     fields: { content: 'Complete source buffer to lint.', filePath, rules },
-    example: { content: '<button class="p:md flex">Save</button>', filePath: 'src/button.html', rules: 'sort-classes' }, exampleNote: 'The virtual HTML path selects the source language; no file is written.',
+    example: { content: '<button class="p-md flex">Save</button>', filePath: 'src/button.html', rules: 'sort-classes' }, exampleNote: 'The virtual HTML path selects the source language; no file is written.',
     output: '`files` includes the buffer’s diagnostics and fix proposals, with a diagnostic `summary` and manifest status. Fix proposals are data in the result, not applied edits. Manifest-loading failures are reported in the same report.',
     lifecycle: readOnly
   },
@@ -127,7 +127,7 @@ export const mcpEditorial: Record<string, ToolEditorial> = {
   mastercss_preview_directive_format: {
     purpose: 'Format directives in a source buffer or create a file-formatting preview. Content mode returns formatted text directly and does not create an apply token.',
     fields: { content: 'Source buffer. When present, selects content mode and takes precedence over patterns.', filePath: filePath + ' Defaults to `master.css` in content mode.', patterns: 'File paths or glob patterns for file mode. Defaults to CSS, SCSS, Less, Vue, Svelte, and Astro sources outside node_modules.', range: 'Optional formatting range, using zero-based UTF-16 positions.', 'range.start': 'Inclusive start position.', 'range.start.line': 'Zero-based line index.', 'range.start.character': 'Zero-based UTF-16 code-unit offset.', 'range.end': 'Exclusive end position.', 'range.end.line': 'Zero-based line index.', 'range.end.character': 'Zero-based UTF-16 code-unit offset.', ttlMs },
-    example: { content: '.card {\n  @compose bg:transparent !;\n}', filePath: 'card.css' }, exampleNote: 'The returned `formatted` string joins the importance marker to its class without editing a file.',
+    example: { content: '.card {\n  @compose background-color:transparent !;\n}', filePath: 'card.css' }, exampleNote: 'The returned `formatted` string joins the importance marker to its class without editing a file.',
     output: 'Both modes report files, edits, changed counts, and `mode`. Content mode includes `formatted`; file mode includes `inputs` and `preview`. Formatting uses the default preset language service and does not load the project manifest.',
     lifecycle: 'Content mode does not write files or store a token. In file mode, ' + previewLife[0].toLowerCase() + previewLife.slice(1)
   },

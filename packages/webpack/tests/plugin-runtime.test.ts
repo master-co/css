@@ -583,8 +583,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     compiler.hooks.thisCompilation.call(compilation as any)
 
     // Two modules succeed, then finishModules fires.
-    compilation.hooks.succeedModule.call(makeModule('/a.tsx', '<div class="bg:white">a</div>'))
-    compilation.hooks.succeedModule.call(makeModule('/b.tsx', '<div class="fg:black">b</div>'))
+    compilation.hooks.succeedModule.call(makeModule('/a.tsx', '<div class="bg-white">a</div>'))
+    compilation.hooks.succeedModule.call(makeModule('/b.tsx', '<div class="fg-black">b</div>'))
 
     const finishStart = Date.now()
     await new Promise<void>((resolve, reject) => {

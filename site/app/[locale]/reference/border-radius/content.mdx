@@ -22,38 +22,38 @@ Radius curves the border and background without changing the box dimensions. Com
 <CreateIconButton />
 
 ### Use a radius token \{#use-a-radius-token\}
-`r:2xl` rounds the box’s own border and background. It does not, by itself, clip a child image. Compare the same child with and without explicit overflow clipping.
+`r-2xl` rounds the box’s own border and background. It does not, by itself, clip a child image. Compare the same child with and without explicit overflow clipping.
 
 <DemoExample page="border-radius" section="use-a-radius-token" />
 
 ```html
 <!-- Radius only · child corners stay square -->
 <div id="target"
-  class="w:240px max-w:100% r:2xl bg:surface-muted
+  class="w:240px max-w:100% r-2xl bg-surface-muted
          box-border">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
     width="320" height="200"
-    class="block h:auto w:full" />
+    class="block h:auto w:100%" />
 </div>
 ```
 
 ```html
 <!-- Radius + overflow hidden · child is clipped -->
 <div id="target"
-  class="overflow:hidden w:240px max-w:100% r:2xl
-         bg:surface-muted box-border">
+  class="overflow:hidden w:240px max-w:100% r-2xl
+         bg-surface-muted box-border">
   <img src="/demo/landscape.svg"
     alt="Blue and violet mountains"
     width="320" height="200"
-    class="block h:auto w:full" />
+    class="block h:auto w:100%" />
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['r:2xl']}
+    {['r-2xl']}
   </Class2CSS>
 </details>
 
@@ -68,9 +68,9 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <!-- Top corners only -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid|blue
-         rtl:xl rtr:xl font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+         rtl-xl rtr-xl font-md bg-surface-muted
+         text-body box-border">
   Rounded top
 </div>
 ```
@@ -79,9 +79,9 @@ Clipping also affects overflowing content and descendant focus indicators. Add i
 <!-- Opposite corners -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid|blue
-         rbl:xl rtr:xl font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+         rbl-xl rtr-xl font-md bg-surface-muted
+         text-body box-border">
   Diagonal corners
 </div>
 ```
@@ -97,9 +97,9 @@ Widen to `sm` to increase the radius from `sm` to `xl`. Print restores square co
 <!-- Small → large radius at sm -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid|blue
-         r:sm font:md bg:surface-muted text:body
-         box-border r:0@print r:xl@screen&sm">
+         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+         r-sm font-md bg-surface-muted text-body
+         box-border r:0@print r-xl@screen&sm">
   Preview panel
 </div>
 ```
@@ -124,8 +124,8 @@ Define project radius tokens in `@theme`, then use the same token key in the cla
 <!-- Configured panel radius · 18px -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid|blue
-         r:panel font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+         r-panel font-md bg-surface-muted text-body
          box-border">
   Preview panel
 </div>

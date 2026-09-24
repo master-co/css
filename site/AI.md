@@ -104,7 +104,7 @@ Visible documentation examples should be as framework-neutral as practical:
 - Prefer native `html`, `css`, and `js` blocks.
 - Use `class`, not React `className`, in visible HTML examples.
 - In `/guide` pages, describe default integration and CLI scanning as zero-configuration for ordinary app sources. Use CSS scanner directives such as `@source`, `@source not`, `@safelist`, and `@blocklist` for explicit exceptions or scoped examples over JavaScript scanner options unless the section is specifically about integration configuration. Do not present broad `src/**/*` includes or test-file excludes as setup boilerplate.
-- Use native CSS references such as `w:var(--size)` for custom properties assigned inline or by JavaScript. The `$name` shorthand resolves a variable registered in the active manifest; it does not resolve an arbitrary runtime-only custom property.
+- Use native CSS references such as `w:var(--size)` for custom properties assigned inline or by JavaScript. Use explicit `var(--name)` for every custom-property reference; the `$name` shortcut and Master length `x` are removed. Preserve native resolution `x`.
 - Use `document.startViewTransition()` with a direct DOM update and fallback in visible JavaScript examples.
 - Avoid exposing Next.js, React state, `flushSync`, or `next/image` in visible examples unless the section is about that framework integration.
 - Implementation demos may use React, Next.js, and `flushSync`; displayed code does not need to match exactly.
@@ -134,18 +134,18 @@ Before changing guide demo layout, spacing, sizing, color, radius, typography, o
 Follow the public Design Tokens policy when writing site code, demos, and examples:
 
 - Prefer configured foundation tokens from `packages/preset/src/theme.css`.
-- Prefer preset palette, surface, line, and text aliases such as `fg:blue-60`, `text:body`, `text:muted`, `text:blue`, `surface:raised`, `bg:surface-base`, `bg:blue`, `bg:blue-5`, and `b:1px|solid|base`.
+- Prefer preset palette, surface, line, and text aliases such as `fg-blue-60`, `text-body`, `text-muted`, `text-blue`, `surface-raised`, `bg-surface-base`, `bg-blue`, `bg-blue-5`, and `border:1px|solid|var(--color-line-base)`.
 - Use project semantic tokens such as `divider`, `accent`, or `danger` only when the page or project defines those tokens in `@theme`.
-- Preserve typography semantics: use `font:<size>` for raw font-size-only replacements, and `text:<size>` only when the complete type treatment is intended.
-- Prefer scale tokens such as `p:sm`, `gap:md`, and `mt:lg` over routine raw spacing, color, shadow, or timing values.
-- Prefer contextual shorthand such as `b:1px|solid|base`, `b:1px|solid|muted`, `text:body`, and `transition:opacity|normal|standard` when the utility already resolves a namespace.
+- Preserve typography semantics: use `font-size:<value>` for raw font-size-only replacements, and `text-<token>` or `text:<number>` only when the complete type treatment is intended.
+- Prefer scale tokens such as `p-sm`, `gap-md`, and `mt-lg` over routine raw spacing, color, shadow, or timing values.
+- Prefer contextual shorthand such as `border:1px|solid|var(--color-line-base)`, `border:1px|solid|var(--color-line-muted)`, `text-body`, and `transition:opacity|var(--duration-normal)|var(--easing-standard)` for explicit custom-property references in multi-value declarations.
 - Low-level values are acceptable when teaching syntax, no token exists, the value is local measured geometry, or the value is structural layout such as `w:50%`, `h:100dvh`, `m:0`, `m:1px`, `z:1`, or `opacity:.64`.
 - Promote reused visual low-level values to named tokens.
 - Use docs callout markers as regular text paragraphs: `(x)`, `(o)`, `(!)`, and `(i)`.
 
 For numeric theme variable overview tables, read values from `site/utils/theme-variables` or a narrow derived helper. Render token, value, and reference unit columns; use `ThemeNumberVariableTable` for numeric spacing, radius, breakpoint, and container scales unless a guide needs a specialized table. Keep token overview tables data-driven and separate from generated CSS examples.
 
-For shared foundation namespaces, follow the `/guide/spacing#namespace-for-spacing` pattern: render a namespace-consumer table that groups the utilities and native properties that can use that namespace. Prefer `NamespaceUtilityTable` with keys derived from `site/utils/manifest-utilities` so rows stay aligned with the preset manifest, engine native value namespaces, and built-in key aliases. Keep the group labels reader-facing and curated, but do not hand-author unsupported keys. Use a namespace-consumer table separately from token value tables: token tables explain available values, while namespace tables explain where those values can be used. Verify the namespace source in engine/preset data before documenting it.
+For shared foundation namespaces, follow the `/guide/spacing#namespace-for-spacing` pattern: render a namespace-consumer table that groups the utilities and native properties that can use that namespace. Prefer `NamespaceUtilityTable` with keys derived from `site/utils/manifest-utilities` so rows stay aligned with the preset manifest, engine named-token namespaces, and built-in key aliases. Keep the group labels reader-facing and curated, but do not hand-author unsupported keys. Use a namespace-consumer table separately from token value tables: token tables explain available values, while namespace tables explain where those values can be used. Verify the namespace source in engine/preset data before documenting it.
 
 ## Assets
 

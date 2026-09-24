@@ -4,14 +4,14 @@
 
 ## Examples \{#examples\}
 ### Set decoration color \{#set-decoration-color\}
-`text-decoration-color:blue-50` changes the line color without changing the glyph color. Both specimens explicitly supply an underline; a color alone cannot create one.
+`text-decoration-color-blue-50` changes the line color without changing the glyph color. Both specimens explicitly supply an underline; a color alone cannot create one.
 
 <DemoExample page="text-decoration-color" section="set-decoration-color" />
 
 ```html
 <!-- Current foreground -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
          text-decoration-color:currentColor text-decoration-thickness:2px"
 >
   Design together
@@ -21,8 +21,8 @@
 ```html
 <!-- Independent blue line -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-color:blue-50 text-decoration-thickness:2px"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-color-blue-50 text-decoration-thickness:2px"
 >
   Design together
 </p>
@@ -31,20 +31,20 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-decoration-color:blue-50']}
+    {['text-decoration-color-blue-50']}
   </Class2CSS>
 </details>
 
 ### Follow the current text color \{#follow-the-current-text-color\}
-`text-decoration:current` sets the decoration color to `currentColor`. Change the foreground and the underline follows it.
+`text-decoration-current` sets the decoration color to `currentColor`. Change the foreground and the underline follows it.
 
 <DemoExample page="text-decoration-color" section="follow-the-current-text-color" />
 
 ```html
 <!-- Foreground · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:2px text-decoration:current fg:blue-50"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:2px text-decoration-current fg-blue-50"
 >
   Design together
 </p>
@@ -53,8 +53,8 @@
 ```html
 <!-- Foreground · violet-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:2px text-decoration:current fg:violet-50"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:2px text-decoration-current fg-violet-50"
 >
   Design together
 </p>
@@ -63,15 +63,15 @@
 The line is still required. Unlike a full `text-decoration` shorthand, this color form leaves its line and style intact.
 
 ### Hide decoration color \{#hide-decoration-color\}
-`text-decoration:transparent` hides the line’s paint while retaining its line type and thickness. Decoration does not reserve extra layout space in either state.
+`text-decoration-color:transparent` hides the line’s paint while retaining its line type and thickness. Decoration does not reserve extra layout space in either state.
 
 <DemoExample page="text-decoration-color" section="hide-decoration-color" />
 
 ```html
 <!-- Line color · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:3px text-decoration:blue-50"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:3px text-decoration-blue-50"
 >
   Design together
 </p>
@@ -80,8 +80,8 @@ The line is still required. Unlike a full `text-decoration` shorthand, this colo
 ```html
 <!-- Line color · transparent -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:3px text-decoration:transparent"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:3px text-decoration-color:transparent"
 >
   Design together
 </p>
@@ -97,10 +97,10 @@ Hover or focus to change only the underline color from the current foreground to
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:2xl leading:xl underline text-decoration-thickness:2px
-         text-decoration:current text-decoration:current@print
-         text-decoration-color:blue-50:hover@screen
-         text-decoration-color:blue-50:focus-visible@screen"
+  class="font-2xl leading-xl underline text-decoration-thickness:2px
+         text-decoration-current text-decoration-current@print
+         text-decoration-color-blue-50:hover@screen
+         text-decoration-color-blue-50:focus-visible@screen"
 >
   Design together
 </button>

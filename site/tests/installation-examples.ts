@@ -46,7 +46,7 @@ export function verifyInstallationExamples() {
       mkdirSync(join(root, 'node_modules/@master'), { recursive: true })
       for (const name of ['css', 'css-vite', 'css-runtime']) symlinkSync(fileURLToPath(new URL(`node_modules/@master/${name}`, rootURL)), join(root, 'node_modules/@master', name), 'dir')
       symlinkSync(fileURLToPath(new URL('node_modules/vite', rootURL)), join(root, 'node_modules/vite'), 'dir')
-      writeFileSync(join(root, 'index.html'), '<html><head><script type="module" src="/src/main.js"></script></head><body><h1 class="m:md italic font:3xl font:heavy text:strong">Hello World</h1></body></html>')
+      writeFileSync(join(root, 'index.html'), '<html><head><script type="module" src="/src/main.js"></script></head><body><h1 class="m-md italic font-3xl font-heavy text-strong">Hello World</h1></body></html>')
       const built = spawnSync(process.execPath, [fileURLToPath(new URL('node_modules/vite/bin/vite.js', rootURL)), 'build'], { cwd: root, encoding: 'utf8', timeout: 30000 })
       assert.equal(built.status, 0, built.stderr)
       const assets = readdirSync(join(root, 'dist/assets'))

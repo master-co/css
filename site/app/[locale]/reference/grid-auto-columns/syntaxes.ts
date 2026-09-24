@@ -3,7 +3,7 @@ const syntaxes = [
   'grid-auto-columns:min-content',
   'grid-auto-columns:max-content',
   ['grid-auto-columns:`value`'],
-  ['grid-auto-columns:minmax(`min`,`max`)'],
+  ['grid-auto-columns:minmax(`min-content`,`max-content`)'],
 ]
 
 export default syntaxes

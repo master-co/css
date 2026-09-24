@@ -3,7 +3,7 @@ import { expect, test, type Page } from '@playwright/test'
 test('inline mode tokens resolve without emitting inline resources', async ({ page }) => {
   const failures = capturePageFailures(page)
   await page.goto('/en/guide/introduction')
-  const raised = page.locator('[class~="surface:raised"]').first()
+  const raised = page.locator('[class~="surface-raised"]').first()
   await raised.waitFor({ state: 'attached' })
 
   const light = await readRaisedThemeState(page, raised, 'light')

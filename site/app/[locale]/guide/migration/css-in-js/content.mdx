@@ -66,7 +66,7 @@ export function Button(props: React.ButtonHTMLAttributes<HTMLButtonElement>) {
   const { className, ...buttonProps } = props
   return (
     <button
-      className={['inline-flex items-center gap:xs min-h:10x px:md r:md bg:primary fg:white', className].filter(Boolean).join(' ')}
+      className={['inline-flex items-center gap-xs min-h:2.5rem px-md r-md bg-primary fg-white', className].filter(Boolean).join(' ')}
       type="button"
       {...buttonProps}
     />
@@ -81,8 +81,8 @@ If the project needs a named component class, define it once in CSS.
 
 @components {
   btn {
-    @compose inline-flex items-center justify-center gap:xs min-h:10x px:md r:md bg:primary fg:white;
-    &:hover { @compose bg:blue-70; }
+    @compose inline-flex items-center justify-center gap-xs min-h:2.5rem px-md r-md bg-primary fg-white;
+    &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }
   }
 }
@@ -99,15 +99,15 @@ Avoid building Master CSS class names from string fragments. Static rendering an
 
 ```tsx
 const toneClasses = {
-  neutral: 'bg:surface fg:body b:1px|solid|base',
-  primary: 'bg:blue-60 fg:white bg:blue-70:hover',
-  danger: 'bg:red-60 fg:white bg:red-70:hover'
+  neutral: 'bg:surface fg-body b:1px|solid|var(--color-line-base)',
+  primary: 'bg-blue-60 fg-white bg-blue-70:hover',
+  danger: 'bg-red-60 fg-white bg-red-70:hover'
 }
 
 const sizeClasses = {
-  sm: 'h:8x px:sm font:sm',
-  md: 'h:10x px:md font:sm',
-  lg: 'h:12x px:lg font:md'
+  sm: 'h:2rem px-sm font-sm',
+  md: 'h:2.5rem px-md font-sm',
+  lg: 'h:3rem px-lg font-md'
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -118,7 +118,7 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 export function Button({ tone = 'primary', size = 'md', className, ...props }: ButtonProps) {
   return (
     <button
-      className={['inline-flex items-center r:md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
+      className={['inline-flex items-center r-md', sizeClasses[size], toneClasses[tone], className].filter(Boolean).join(' ')}
       type="button"
       {...props}
     />
@@ -136,9 +136,9 @@ Runtime values should not become generated class names. Keep the class static an
 ```tsx
 export function Meter({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:2x r:full bg:gray-10">
+    <div className="overflow:hidden h:0.5rem r:100% bg-gray-10">
       <div
-        className="h:full w:$value bg:green-60 transition:width|fast|smooth"
+        className="h:100% w:var(--value) bg-green-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--value': `${value}%` } as React.CSSProperties}
       />
     </div>

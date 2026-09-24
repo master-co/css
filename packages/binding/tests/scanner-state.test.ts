@@ -23,13 +23,13 @@ const manifest = {
     },
     {
       id: 'color-red',
-      name: 'fg:red',
+      name: 'fg-red',
       type: 0,
       emit: {
         type: 'static',
         rules: [{ declarations: { color: 'red' } }]
       },
-      matchers: [{ type: 'static', name: 'fg:red' }]
+      matchers: [{ type: 'static', name: 'fg-red' }]
     }
   ]
 }
@@ -38,13 +38,13 @@ describe('Rust scanner state session', () => {
   test('keeps source cache and valid/invalid class state behind an opaque handle', () => {
     const scanner = loadNativeToolingBinding({ required: true })!
       .createScannerSession(manifest as never)
-    const source = 'export const App = () => <div className="block unknown fg:red" />'
+    const source = 'export const App = () => <div className="block unknown fg-red" />'
 
     expect(scanner.scan('App.tsx', source)).toMatchObject({
       changed: true,
       cacheHit: false,
-      candidates: ['block', 'unknown', 'fg:red'],
-      validClasses: ['block', 'fg:red'],
+      candidates: ['block', 'unknown', 'fg-red'],
+      validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       transition: { version: 1 }
     })
@@ -58,8 +58,8 @@ describe('Rust scanner state session', () => {
     })
 
     expect(scanner.snapshot()).toMatchObject({
-      latentClasses: ['block', 'unknown', 'fg:red'],
-      validClasses: ['block', 'fg:red'],
+      latentClasses: ['block', 'unknown', 'fg-red'],
+      validClasses: ['block', 'fg-red'],
       invalidClasses: ['unknown'],
       cachedSources: 1,
       engine: { version: 1 }

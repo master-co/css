@@ -8,20 +8,20 @@
 <DemoExample page="grid-row" section="place-an-item-by-rows" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-row:1/3 p:sm">1 → 3</div>
-  <div id="peer" class="grid-col:2 p:sm">02</div>
-  <div id="item-3" class="grid-col:2 p:sm">03</div>
-  <div id="item-4" class="grid-col:2 p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-row:1/3 p-sm">1 → 3</div>
+  <div id="peer" class="grid-col:2 p-sm">02</div>
+  <div id="item-3" class="grid-col:2 p-sm">03</div>
+  <div id="item-4" class="grid-col:2 p-sm">04</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-row:1/-1 p:sm">1 → −1</div>
-  <div id="peer" class="grid-col:2 p:sm">02</div>
-  <div id="item-3" class="grid-col:2 p:sm">03</div>
-  <div id="item-4" class="grid-col:2 p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-row:1/-1 p-sm">1 → −1</div>
+  <div id="peer" class="grid-col:2 p-sm">02</div>
+  <div id="item-3" class="grid-col:2 p-sm">03</div>
+  <div id="item-4" class="grid-col:2 p-sm">04</div>
 </div>
 ```
 
@@ -33,11 +33,11 @@ Row line numbers follow the block direction. Negative indices count from the end
 <DemoExample page="grid-row" section="span-rows" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-row-span:2 p:sm">2 rows</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-row-span:2 p-sm">2 rows</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```
 
@@ -49,10 +49,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-row" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-row:auto p:sm grid-row:1/-1@sm">Target</div>
-  <div id="peer" class="grid-col:2 p:sm">02</div>
-  <div id="item-3" class="grid-col:2 p:sm">03</div>
-  <div id="item-4" class="grid-col:2 p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-row:auto p-sm grid-row:1/-1@sm">Target</div>
+  <div id="peer" class="grid-col:2 p-sm">02</div>
+  <div id="item-3" class="grid-col:2 p-sm">03</div>
+  <div id="item-4" class="grid-col:2 p-sm">04</div>
 </div>
 ```

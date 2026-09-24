@@ -21,7 +21,7 @@ function specimen(kind: 'original' | 'previous' | 'adopted') {
 
 function spacingTiles(candidate: boolean) {
   return (
-    <div className="grid-cols:2 gap:md w:full p:md r:md bg:stripe-pink grid-cols:5@sm">
+    <div className="grid-cols:2 gap-md w:100% p-md r-md background-color:var(--stripe-pink) grid-cols:5@sm">
       {Array.from({ length: 10 }, (_, index) => candidate
         ? <DemoItem key={index} className={styles.spacingTile}>{index + 1}</DemoItem>
         : <div key={index} className="app-box">{index + 1}</div>)}

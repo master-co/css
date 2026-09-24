@@ -5,14 +5,14 @@ import Link from '~/site/docs-shell/components/Link'
 export default function Donors({ sponsorTiers, sponsorsOfLevel }: any) {
   return sponsorTiers.map((eachSponsorTier: any) => (
     <Fragment key={eachSponsorTier.name}>
-      <div className="flex items-center gap:0.625rem mt:2xl mb:5x">
+      <div className="flex items-center gap:0.625rem mt-2xl mb:1.25rem">
         <h2 id={eachSponsorTier.name} className="capitalize m:0!">
           {eachSponsorTier.name}
         </h2>
         <hr className="flex:1|1|auto my:0!" />
       </div>
       { }
-      <div className={`align-items:center gap:${eachSponsorTier.gap - 20} gap:${eachSponsorTier.gap}@sm grid-cols:${eachSponsorTier.columns}`}>
+      <div className={`align-items:center gap:${eachSponsorTier.gap - 20}px gap:${eachSponsorTier.gap}px@sm grid-cols:${eachSponsorTier.columns}`}>
         {sponsorsOfLevel[eachSponsorTier.name] &&
           sponsorsOfLevel[eachSponsorTier.name].map((eachSponsor: any, i: number) => (
             // eslint-disable-next-line @next/next/no-img-element

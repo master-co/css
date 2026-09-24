@@ -35,10 +35,10 @@ describe('MasterCSSScanner public API', () => {
 
     expect(scanner.css.text).toContain('.block{display:block}')
 
-    await scanner.scan('index.html', '<div class="fg:red"></div>')
+    await scanner.scan('index.html', '<div class="fg-red"></div>')
     await scanner.reset()
 
-    expect(scanner.validClasses.has('fg:red')).toBe(false)
+    expect(scanner.validClasses.has('fg-red')).toBe(false)
     expect(scanner.css.text).toContain('.block{display:block}')
   })
 })

@@ -38,7 +38,7 @@ export function verifyLintExamples() {
     }
     assert.deepEqual(lint.verify(html('font:'), config('no-invalid-classes')), [])
     assert.equal(lint.verify(html('btn'), config('no-invalid-classes', { disallowUnknownClass: true })).length, 1)
-    assert.deepEqual(lint.verify(html('m:sm@sm m:lg@md'), config('no-conflicting-classes')), [])
+    assert.deepEqual(lint.verify(html('m-sm@sm m-lg@md'), config('no-conflicting-classes')), [])
     // The authored short diffs also use each section's actual rule.
     const source = deliverySource('code-linting')
     for (const [heading, rule] of [['Sort classes', 'sort-classes'], ['Prefer canonical classes', 'prefer-canonical-classes'], ['No conflicting classes', 'no-conflicting-classes']]) {
@@ -60,8 +60,8 @@ export function verifyLintExamples() {
     // ESLint arrays replace defaults; service arrays below extend them.
     const custom = config('sort-classes')
     custom[0].settings = { '@master/css': { manifest: preset, classFunctions: ['cn'] } }
-    assert.equal(lint.verify("clsx('p:md flex')", custom).length, 0)
-    assert.equal(lint.verify("cn('p:md flex')", custom).length, 1)
+    assert.equal(lint.verify("clsx('p-md flex')", custom).length, 0)
+    assert.equal(lint.verify("cn('p-md flex')", custom).length, 1)
   } finally { rmSync(root, { recursive: true, force: true }) }
 }
 
@@ -70,11 +70,11 @@ export function verifyLanguageExamples() {
   try {
     const hover = toolingExample('hover')
     const doc = createDoc('html', hover.source)
-    const output = service.inspectSyntax(doc, doc.positionAt(hover.source.indexOf('bg:') + 3))
-    assert.equal((output?.contents as { value: string }).value, `\`\`\`css\n${hover.result}\n\`\`\``)
-    const source = '<button class="p:">Save</button>'
+    const output = service.inspectSyntax(doc, doc.positionAt(hover.source.indexOf('bg-') + 3))
+    assert.equal((output?.contents as { value: string }).value, `Named token: \`--color-blue-60\`\n\n\`\`\`css\n${hover.result}\n\`\`\``)
+    const source = '<button class="p-">Save</button>'
     const completion = createDoc('html', source)
-    const items = service.suggestSyntax(completion, completion.positionAt(source.indexOf('p:') + 2), { triggerKind: 2, triggerCharacter: ':' })
+    const items = service.suggestSyntax(completion, completion.positionAt(source.indexOf('p-') + 2), { triggerKind: 2, triggerCharacter: '-' })
     for (const option of toolingOptions.completions.options) assert.equal(items?.find(item => item.label === option.name)?.detail, option.description)
     const format = toolingExample('format')
     const css = createDoc('css', format.source)

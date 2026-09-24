@@ -15,12 +15,12 @@ export default function ExpandContent(props: any) {
       })}>
         {props.children}
       </div>
-      <div className={clsx('rel flex items-center justify-center w:full bg:linear-gradient(transparent,surface-base)', {
-        'sticky bottom pb:md pt:1em': expanded,
-        'mb:2em mt:-30x pt:30x': !expanded,
+      <div className={clsx('rel flex items-center justify-center w:100% background-image:linear-gradient(transparent,var(--color-surface-base))', {
+        'sticky bottom pb-md pt:1em': expanded,
+        'mb:2em mt:-7.5rem pt:7.5rem': !expanded,
       })}>
-        <button className={clsx('rounded outline:1px|solid|subtle outline-offset:0 surface:raised shadow:sm btn btn-sm', {
-          'mt:-8x': !expanded
+        <button className={clsx('rounded outline:1px|solid|var(--color-line-subtle) outline-offset:0 surface-raised shadow-sm btn btn-sm', {
+          'mt:-2rem': !expanded
         })} onClick={() => setExpanded(!expanded)}>{$(expanded ? 'Collapse' : 'Expand')}</button>
       </div>
     </>

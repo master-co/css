@@ -42,7 +42,7 @@ test('restores syntax placeholders without styling the whole text token', () => 
   assert.deepEqual(token?.children?.[0], { type: 'text', value: 'mt:' })
   assert.equal(placeholder?.type, 'element')
   assert.equal(placeholder?.tagName, 'span')
-  assert.equal(placeholder?.properties?.class, 'text:muted italic mr:0.125rem:not(:last)')
+  assert.equal(placeholder?.properties?.class, 'text-muted italic mr:0.125rem:not(:last)')
   assert.equal(collectText(placeholder ?? {}), '<size>')
 })
 
@@ -114,8 +114,8 @@ test('proxies URL placeholders with valid URL values', () => {
 
 test('proxies preset namespace placeholders and restores declaration values', () => {
   const placeholders = createSyntaxTrPlaceholderContext()
-  const proxy = placeholders.proxy('animate:`name`')
-  assert.equal(proxy, 'animate:fade')
+  const proxy = placeholders.proxy('animate-`name`')
+  assert.equal(proxy, 'animate-fade')
 
   const declarations = generateDeclarations(proxy)
   assert.equal(declarations.animation, 'var(--animate-fade)')
@@ -125,7 +125,7 @@ test('proxies preset namespace placeholders and restores declaration values', ()
     '\n',
     convertDeclarationsToCSS(declarations)
   ])
-  assert.match(restored, /animate:<name>/)
+  assert.match(restored, /animate-<name>/)
   assert.match(restored, /animation: <name>;/)
   assert.doesNotMatch(restored, /fade|--animate/)
 })
@@ -152,15 +152,15 @@ test('restores generic placeholders split across text nodes', () => {
 
 test('uses the current syntax declarations before falling back to preview syntax', () => {
   assert.equal(
-    generateSyntaxTrDeclarations('bg:red', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('bg-red', 'bg-blue-60')?.['background-color'],
     'var(--color-red)'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('bg:#12345678', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('background-color:#12345678', 'bg-blue-60')?.['background-color'],
     '#12345678'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('unknown:`value`', 'bg:blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('unknown:`value`', 'bg-blue-60')?.['background-color'],
     'var(--color-blue-60)'
   )
 })

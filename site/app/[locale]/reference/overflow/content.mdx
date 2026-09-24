@@ -9,8 +9,8 @@
 
 ```html
 <!-- @MARK overflow:hidden -->
-<div class="overflow:hidden h:40x w:56x r:md">
-  <div class="h:3xs w:xs">Content larger than its frame</div>
+<div class="overflow:hidden h:10rem w:14rem r-md">
+  <div class="h-3xs w-xs">Content larger than its frame</div>
 </div>
 ```
 
@@ -28,13 +28,13 @@
 
 ```html
 <!-- @MARK overflow-y:auto -->
-<div class="overflow-y:auto h:40x w:56x" tabindex="0" aria-label="Vertical collection">
-  <div class="h:3xs">Tall collection</div>
+<div class="overflow-y:auto h:10rem w:14rem" tabindex="0" aria-label="Vertical collection">
+  <div class="h-3xs">Tall collection</div>
 </div>
 
 <!-- @MARK overflow-x:auto -->
-<div class="overflow-x:auto w:56x" tabindex="0" aria-label="Horizontal collection">
-  <div class="h:40x w:xs">Wide collection</div>
+<div class="overflow-x:auto w:14rem" tabindex="0" aria-label="Horizontal collection">
+  <div class="h:10rem w-xs">Wide collection</div>
 </div>
 ```
 
@@ -47,8 +47,8 @@
 
 ```html
 <!-- @MARK overflow:clip -->
-<div class="overflow:clip h:40x w:56x r:md">
-  <div class="h:3xs w:xs">Content larger than its frame</div>
+<div class="overflow:clip h:10rem w:14rem r-md">
+  <div class="h-3xs w-xs">Content larger than its frame</div>
 </div>
 ```
 
@@ -61,7 +61,7 @@ A single-line ellipsis needs a constrained block, hidden overflow, and text that
 
 ```html
 <!-- @MARK overflow:hidden --><!-- @MARK white-space:nowrap --><!-- @MARK text-ellipsis -->
-<div class="overflow:hidden w:56x text-ellipsis white-space:nowrap">
+<div class="overflow:hidden w:14rem text-ellipsis white-space:nowrap">
   A very long file name that should not widen the toolbar
 </div>
 ```
@@ -72,8 +72,8 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="overflow" section="apply-conditionally" />
 
 ```html
-<div class="overflow:hidden h:40x w:56x overflow@print overflow:auto@screen&sm">
-  <div class="h:3xs w:xs">Content larger than its frame</div>
+<div class="overflow:hidden h:10rem w:14rem overflow@print overflow:auto@screen&sm">
+  <div class="h-3xs w-xs">Content larger than its frame</div>
 </div>
 ```
 

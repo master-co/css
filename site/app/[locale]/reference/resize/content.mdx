@@ -11,12 +11,12 @@ Use `resize:both` with `overflow:auto` and explicit minimum and maximum dimensio
 
 ```html
 <!-- Both axes · constrained control -->
-<label class="grid gap:sm">
+<label class="grid gap-sm">
   Notes
   <textarea id="target" rows="3"
 
   class="overflow:auto h:96px w:240px min-h:80px
-         min-w:160px max-h:176px max-w:full
+         min-w:160px max-h:176px max-w:100%
          resize:both">A clear layout leaves room for the next idea.</textarea>
 </label>
 ```
@@ -35,24 +35,24 @@ Compare `resize:vertical` and `resize:horizontal` on the same initial box. Only 
 
 ```html
 <!-- Vertical only -->
-<label class="grid gap:sm">
+<label class="grid gap-sm">
   Notes
   <textarea id="target" rows="3"
 
   class="overflow:auto h:96px w:240px min-h:80px
-         min-w:160px max-h:176px max-w:full
+         min-w:160px max-h:176px max-w:100%
          resize:vertical">A clear layout leaves room for the next idea.</textarea>
 </label>
 ```
 
 ```html
 <!-- Horizontal only -->
-<label class="grid gap:sm">
+<label class="grid gap-sm">
   Notes
   <textarea id="target" rows="3"
 
   class="overflow:auto h:96px w:240px min-h:80px
-         min-w:160px max-h:176px max-w:full
+         min-w:160px max-h:176px max-w:100%
          resize:horizontal">A clear layout leaves room for the next idea.</textarea>
 </label>
 ```
@@ -66,12 +66,12 @@ Horizontal growth remains bounded by the preview width. On mobile, a browser may
 
 ```html
 <!-- Fixed box · editable content -->
-<label class="grid gap:sm">
+<label class="grid gap-sm">
   Notes
   <textarea id="target" rows="3"
 
   class="overflow:auto h:96px w:240px min-h:80px
-         min-w:160px max-h:176px max-w:full
+         min-w:160px max-h:176px max-w:100%
          resize:none">Line one.
 Line two.
 Line three.
@@ -90,12 +90,12 @@ Allow vertical resizing at `sm` while keeping it disabled below that breakpoint 
 
 ```html
 <!-- None → vertical at sm -->
-<label class="grid gap:sm">
+<label class="grid gap-sm">
   Notes
   <textarea id="target" rows="3"
 
   class="overflow:auto h:96px w:240px min-h:80px
-         min-w:160px max-h:176px max-w:full
+         min-w:160px max-h:176px max-w:100%
          resize:none resize:vertical@screen&sm">A clear layout leaves room for the next idea.</textarea>
 </label>
 ```

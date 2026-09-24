@@ -99,7 +99,7 @@ CSS directive syntax in CSS-family documents is highlighted by the shared TextMa
 const edits = languageService.formatDirectives(textDocument)
 ```
 
-Directive formatting returns LSP text edits for Master CSS directive source. It supports CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents. The formatter repairs directive class-list important markers such as `bg:transparent !` to `bg:transparent!` and does not change compiler semantics or generated CSS.
+Directive formatting returns LSP text edits for Master CSS directive source. It supports CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents. The formatter repairs directive class-list important markers such as `background-color:transparent !` to `background-color:transparent!` and does not change compiler semantics or generated CSS.
 
 Pass an LSP range as the second argument for range formatting:
 

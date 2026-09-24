@@ -61,14 +61,14 @@ Move local visual declarations into markup when the class list is easier to revi
 ```tsx name=Card.tsx
 export function Card({ children }: { children: React.ReactNode }) {
   return (
-    <section className="grid gap:md p:lg r:lg bg:surface">
+    <section className="grid gap-md p-lg r-lg bg-surface">
       {children}
     </section>
   )
 }
 ```
 
-Prefer named theme tokens such as `bg:surface`, `p:card`, or `r:card` when the value is a product decision. Prefer direct native declaration classes such as `scroll-margin-top:4rem` when the CSS property is clearer than inventing a new abstraction.
+Prefer named theme tokens such as `bg-surface`, `p-card`, or `r-card` when the value is a product decision. Prefer direct native declaration classes such as `scroll-margin-top:4rem` when the CSS property is clearer than inventing a new abstraction.
 
 ---
 
@@ -81,7 +81,7 @@ Use `@reference` to make project tokens, components, utilities, and custom varia
 @reference "../app.css";
 
 .button {
-  @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:blue-60 fg:white;
+  @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-blue-60 fg-white;
 }
 
 .button:disabled {
@@ -118,7 +118,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 ```
 
 ```html
-<article class="r:card fg:body grid-cols:3@md bg:surface p:card">
+<article class="r-card fg-body grid-cols:3@md bg-surface p-card">
   ...
 </article>
 ```
@@ -126,7 +126,7 @@ Project-owned custom properties usually belong in `@theme` before large-scale cl
 Keep plain CSS custom properties when the value is runtime-owned, component-private, or intentionally outside the design system.
 
 ```tsx
-<div className="w:$progress bg:blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
+<div className="w:var(--progress) bg-blue-60" style={{ '--progress': `${value}%` } as React.CSSProperties} />
 ```
 
 ---

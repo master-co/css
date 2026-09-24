@@ -1,10 +1,10 @@
 export const code1 = `
   <!-- @MARK calc(100%-1rem) --><!-- @MARK var(--size-sm) --><!-- @MARK rgba(0,0,0,.5) -->
-  <div class="h:var(--size-sm) w:calc(100%-1rem) bg:rgba(0,0,0,.5)">
+  <div class="h:var(--size-sm) w:calc(100%-1rem) background-color:rgba(0,0,0,.5)">
 `
 export const code2 = `
-  <!-- @MARK calc(100%-4x) --><!-- @MARK $size-sm --><!-- @MARK black/.5 -->
-  <div class="h:$size-sm w:calc(100%-4x) bg:black/.5">
+  <!-- @MARK var(--spacing-sm) -->
+  <div class="w:calc(100%-var(--spacing-sm)) bg-black/.5">
 `
 
 Write native CSS functions directly when that is the clearest expression of the value.
@@ -12,9 +12,9 @@ Write native CSS functions directly when that is the clearest expression of the 
   {code1}
 </Code>
 
-(o) Combine functions with multiplier units, token shortcuts, and [variable syntax](#variable-properties). <Dropped p1={code1} p2={code2} target="class" />
+Reference theme variables explicitly with `var(--name)`, including inside functions. A separate named color token can use an opacity modifier:
 <Code lang="html">
   {code2}
 </Code>
 
-Inside functions, Master CSS still resolves the parts it understands. For example, `4x` follows the project base-unit scale, `$size-sm` references a CSS variable, and color opacity syntax like `black/.5` stays compact.
+Colon values do not look up tokens or interpret `$name` shortcuts. The `|` character encodes a space in class values; CSS functions, quoted strings, and explicit units keep their native meaning.

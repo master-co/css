@@ -13,7 +13,7 @@ for (const mode of nextInstallationModes) test(`Next.js production application d
   await expect(heading).toHaveCSS('font-style', 'italic')
   await expect(heading).toHaveCSS('margin-top', '16px')
   if (mode !== 'static') {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
   }
   await page.goto(url + '/dynamic')

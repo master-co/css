@@ -327,10 +327,10 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
     @blocklist "debug-*";
     @theme inline dark {}
     @preserve native;
-    @safelist "block fg:red:hover@md";
-    @compose inline-flex fg:primary:hover@md bg:transparent! bg:transparent!@sm;
+    @safelist "block fg-red:hover@md";
+    @compose inline-flex fg-primary:hover@md background-color:transparent! bg:transparent!@sm;
     @utilities {
-      font:<~font-size|number> {
+      font-<~font-size> {
         font-size: --value();
       }
       text-<left|center|right> {
@@ -351,8 +351,8 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
   expectScope(tokens, 'native', 'support.constant.property-value.master-css')
   expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'inline-flex', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'fg', 'support.type.property-name.master-css')
-  expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
+  expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
   expectScope(tokens, '@md', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, '!', 'keyword.operator.important.css')
@@ -360,7 +360,6 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
   expectScope(tokens, 'font', 'support.type.property-name.master-css')
   expectScope(tokens, '~', 'keyword.operator.master-css')
   expectScope(tokens, 'font-size', 'variable.parameter.master-css')
-  expectScope(tokens, 'number', 'variable.parameter.master-css')
   expectScope(tokens, 'text-', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, 'left', 'support.constant.property-value.master-css')
   expectScope(tokens, 'center', 'support.constant.property-value.master-css')
@@ -437,19 +436,19 @@ test('highlights detailed Master directive syntax without misclassifying native 
     @source not "src/**/*.{ts,tsx}";
     @reference "./tokens.css";
     @blocklist "debug-*";
-    @safelist "dialog-open bg:primary@dark {fg:red;bg:blue}";
+    @safelist "dialog-open bg-primary@dark {fg-red;bg-blue}";
 
     @custom-variant headings { @media all { @slot; } }
 
     @components {
       btn:hover {
-        @compose static native inline-flex align-items:center fg:primary:hover@md w:$size;
+        @compose static native inline-flex align-items:center fg-primary:hover@md w:var(--size);
         @variant h>=sm&h<lg {
           @compose block;
         }
         ::scrollbar-thumb:hover {
           @dark {
-            @compose fg:primary;
+            @compose fg-primary;
           }
         }
       }
@@ -460,8 +459,8 @@ test('highlights detailed Master directive syntax without misclassifying native 
         content-visibility: auto;
       }
 
-      text-decoration:<~color|*> {
-        text-decoration: --value();
+      text-decoration-color-<~color> {
+        text-decoration-color: --value();
       }
     }
   `)
@@ -472,12 +471,12 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectScope(tokens, '--color-primary', 'variable.css.custom-property.master-css')
   expectScope(tokens, '--alpha', 'support.function.misc.master-css')
   expectScope(tokens, '--color-blue-60', 'variable.argument.css')
-  expectScope(tokens, '$size', 'variable.other.master-css')
+  expectScope(tokens, '--size', 'variable.argument.css')
   expectScope(tokens, '-0.072', 'constant.numeric.css')
   expectScope(tokens, 'em', 'keyword.other.unit.em.css')
   expectScope(tokens, 'dialog-open', 'entity.other.attribute-name.class.master-css')
-  expectScope(tokens, 'bg', 'support.type.property-name.master-css')
-  expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
+  expectScope(tokens, 'bg-primary', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, 'fg-primary', 'entity.other.attribute-name.class.master-css')
   expectScope(tokens, '@dark', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, 'headings', 'variable.parameter.master-css')
   expectScope(tokens, 'btn', 'entity.other.attribute-name.class.master-css')
@@ -490,9 +489,8 @@ test('highlights detailed Master directive syntax without misclassifying native 
   expectScope(tokens, 'sm', 'support.constant.property-value.master-css.query')
   expectScope(tokens, 'lg', 'support.constant.property-value.master-css.query')
   expectScope(tokens, 'scrollbar-thumb', 'entity.other.attribute-name.pseudo-class.master-css')
-  expectScope(tokens, 'text-decoration', 'support.type.property-name.master-css')
+  expectScope(tokens, 'text-decoration-color', 'support.type.property-name.master-css')
   expectScope(tokens, 'color', 'variable.parameter.master-css')
-  expectScope(tokens, '*', 'keyword.operator.master-css')
   expectScope(tokens, '--value', 'support.function.misc.master-css')
   expectNoSomeScope(tokens, 'src', 'entity.other.attribute-name.class.master-css')
   expectNoSomeScope(tokens, 'tokens', 'entity.other.attribute-name.class.master-css')

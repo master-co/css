@@ -10,12 +10,12 @@ function getModeRows(namespace: string, utilities: (key: string) => string[], pr
     light: String(variable.value), dark: String(dark.get(variable.key)),
   }))
 }
-const textRows = getModeRows('color-text', key => [`text:${key}`], 'text')
+const textRows = getModeRows('color-text', key => [`text-${key}`], 'text')
 const textRoleKeys = new Set(['body', 'strong', 'muted', 'subtle', 'disabled', 'placeholder', 'inverse', 'link', 'link-hover'])
 export const rowsByGroup = {
-  surfaces: getModeRows('color-surface', key => [`surface:${key}`], 'background'),
-  lineRoles: getModeRows('color-line', key => [`b:${key}`], 'line'),
-  baseHue: getModeRows('color', key => [`bg:${key}`, `fg:${key}`], 'background'),
+  surfaces: getModeRows('color-surface', key => [`surface-${key}`], 'background'),
+  lineRoles: getModeRows('color-line', key => [`b-${key}`], 'line'),
+  baseHue: getModeRows('color', key => [`bg-${key}`, `fg-${key}`], 'background'),
   textRoles: textRows.filter(({ key }) => textRoleKeys.has(key)),
   textHue: textRows.filter(({ key }) => !textRoleKeys.has(key)),
 }

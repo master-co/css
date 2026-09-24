@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'vuejs',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/vuejs'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
       <Tab href='/guide/installation/vuejs/static-rendering'>{$('Static Rendering')}</Tab>
     </Tabs>,

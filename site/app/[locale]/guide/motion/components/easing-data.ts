@@ -14,7 +14,7 @@ const easingDescriptions: Record<string, string> = {
 
 export function getEasingRows() {
   return getThemeVariables('easing').map(({ key, name, value }) => ({
-    token: `--${name}`, utilities: [`animation-timing-function:${key}`], value: String(value),
+    token: `--${name}`, utilities: [`animation-timing-function-${key}`], value: String(value),
     description: easingDescriptions[key]
   }))
 }

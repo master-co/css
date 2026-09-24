@@ -9,7 +9,7 @@ If you use a local AI coding agent, start with [AI Coding with Master CSS](/guid
 ## Frameworks
 Migration guides for source styling systems with enough differences to need their own migration path.
 
-<IconButtons url="/guide/migration" className="my:lg grid-cols:4@sm">
+<IconButtons url="/guide/migration" className="my-lg grid-cols:4@sm">
   {[
     { ...brands['tailwindcss'], disabled: false },
     { ...brands['css'], disabled: false, name: 'CSS Modules', path: 'css' },
@@ -17,6 +17,7 @@ Migration guides for source styling systems with enough differences to need thei
     { ...brands['mui'], disabled: false, path: 'material-ui' },
     { ...brands['bootstrap'], disabled: false, path: 'bootstrap' },
     { ...brands['sass'], disabled: false },
+    { ...brands['mastercss'], disabled: false, name: 'Master CSS v2 RC', path: 'v2-rc' },
     { ...brands['v1'], disabled: false, name: 'Master CSS v1' },
   ]}
 </IconButtons>
@@ -24,6 +25,8 @@ Migration guides for source styling systems with enough differences to need thei
 ---
 
 ## Migration strategy
+For an existing v2 RC project, follow [Migrating from Master CSS v2 RC](/guide/migration/v2-rc). That guide coordinates package, artifact, and source upgrades from a saved baseline; do not initialize old and new Master runtimes together.
+
 CSS migration depends on project context. A static checklist cannot reliably know which files contain product styles, which classes come from a third-party package, which values are design tokens, or which custom CSS is clearer than a generated utility class.
 
 Start with an audit, then migrate incrementally. The first milestone is not deleting the previous styling system; it is getting Master CSS installed, generating CSS for new or converted markup, and keeping the existing UI stable while conversion is in progress.
@@ -95,7 +98,9 @@ Review the migration as code and as UI.
 
 ## Custom engine and binding migration
 
-Binding ABI 7 adds `executionState(classNames)` to `MasterCSSEngine` and its binding session. Upgrade the native artifact and all Wasm providers together; the loaders reject ABI 6 artifacts. Manifest v1, hydration v1, document analysis v2 and transition v1 retain their data shapes.
+Binding ABI 8 introduces named token matchers, value-source priority, and token diagnostics, and removes `baseUnit` and the old `variable` matcher. Upgrade the native artifact and all Wasm providers together; loaders reject older artifacts. Manifest v1 and hydration v1 retain their envelope versions, but their supported fields have changed: regenerate manifests and hydration data with the upgraded packages. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).
+
+`MasterCSSEngine` and its binding session also require `executionState(classNames)`.
 
 If your custom engine forwards operations to an official engine, forward the new method too. This complete wrapper illustrates the required surface:
 

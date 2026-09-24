@@ -10,7 +10,7 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
   try {
     expect(engine.inspect('block').valid).toBe(true)
     expect(engine.executionState(['block']).classes).toEqual([{ className: 'block', references: [] }])
-    const classes = ['block', 'fg:red-60', 'block@base', 'unknown', 'block']
+    const classes = ['block', 'fg-red-60', 'block@base', 'unknown', 'block']
     engine.ensureClassRules(classes)
     const snapshot = engine.snapshot()
     const state = engine.executionState(classes)

@@ -15,7 +15,7 @@ const animationDescriptions: Record<string, string> = {
 
 export function getAnimationRows() {
   return getThemeVariables('animate').map(({ key, name, value }) => ({
-    token: `--${name}`, utilities: [`animate:${key}`], value: String(value),
+    token: `--${name}`, utilities: [`animate-${key}`], value: String(value),
     description: animationDescriptions[key]
   }))
 }

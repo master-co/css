@@ -10,7 +10,7 @@
 
 ```html
 <!-- Normal surrounding text · italic emphasis -->
-<p id="context" class="m:0 font:md leading:md">Keep the <em id="target" class="italic">important detail</em> in view.</p>
+<p id="context" class="m:0 font-md leading-md">Keep the <em id="target" class="italic">important detail</em> in view.</p>
 ```
 
 This preview uses an upright Geist face, so the browser synthesizes the slant. A family with a designed italic face can look different.
@@ -22,12 +22,12 @@ This preview uses an upright Geist face, so the browser synthesizes the slant. A
 
 ```html
 <!-- font-style:normal -->
-<p id="target" class="m:0 font-style:normal font:xl leading:sm">Design with clarity.</p>
+<p id="target" class="m:0 font-style:normal font-xl leading-sm">Design with clarity.</p>
 ```
 
 ```html
 <!-- oblique -->
-<p id="target" class="m:0 oblique font:xl leading:sm">Design with clarity.</p>
+<p id="target" class="m:0 oblique font-xl leading-sm">Design with clarity.</p>
 ```
 
 ### Reset font style \{#reset-font-style\}
@@ -37,7 +37,7 @@ Use `font-style:normal` on a child to override an inherited slant. The reset cha
 
 ```html
 <!-- An upright child inside italic text -->
-<p id="context" class="m:0 italic font:xl leading:md">A slanted phrase with <span id="target" class="font-style:normal">an upright detail</span>.</p>
+<p id="context" class="m:0 italic font-xl leading-md">A slanted phrase with <span id="target" class="font-style:normal">an upright detail</span>.</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -47,5 +47,5 @@ The button becomes italic on hover or keyboard focus. This makes the actual sele
 
 ```html
 <!-- Pointer and keyboard states -->
-<button type="button" id="target" class="font-style:normal font:md italic:hover italic:focus-visible">Focus or hover to compare</button>
+<button type="button" id="target" class="font-style:normal font-md italic:hover italic:focus-visible">Focus or hover to compare</button>
 ```

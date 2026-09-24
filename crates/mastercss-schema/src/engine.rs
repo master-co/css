@@ -6,6 +6,16 @@ pub struct RulePriorityIr {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub features: Vec<(String, f64, f64)>,
     pub selector: i32,
+    /// Named tokens precede direct values within the same utility/condition tier.
+    #[serde(default, skip_serializing_if = "is_zero_priority")]
+    pub value_priority: i8,
+    /// Declaration semantics, independent of aliases and the class separator.
+    #[serde(default, skip_serializing_if = "String::is_empty")]
+    pub sort_key: String,
+}
+
+fn is_zero_priority(value: &i8) -> bool {
+    *value == 0
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -178,6 +188,8 @@ pub struct EngineInspectionIr {
     pub class_name: String,
     pub valid: bool,
     pub rules: Vec<GeneratedRuleIr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

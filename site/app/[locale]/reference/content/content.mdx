@@ -9,9 +9,9 @@ Apply a descendant selector to add a supplementary arrow after links whose `href
 
 ```html
 <!-- Descendant selector · external link -->
-<article class="font:md leading:lg
+<article class="font-md leading-lg
     content:'\00a0↗'_:where(a[href^='http'])::after">
-  <p class="m:0">Read the <a id="target" class="underline text:blue" href="https://www.example.com">project website</a>.</p>
+  <p class="m:0">Read the <a id="target" class="underline text-blue" href="https://www.example.com">project website</a>.</p>
   <p class="m:0">Return to <a class="underline" href="/en/reference/content">this reference</a>.</p>
 </article>
 ```
@@ -25,7 +25,7 @@ HTML whitespace separates class names. Inside a quoted `content` string, `\00a0`
 
 ```html
 <!-- Escaped non-breaking space -->
-<a id="target" class="font:md underline text:blue content:'\00a0↗'::after" href="https://www.example.com">Project website</a>
+<a id="target" class="font-md underline text-blue content:'\00a0↗'::after" href="https://www.example.com">Project website</a>
 ```
 
 A theme token can hold a quoted string with ordinary whitespace. Keep its declaration in your stylesheet:
@@ -38,8 +38,8 @@ A theme token can hold a quoted string with ordinary whitespace. Keep its declar
 
 ```html
 <!-- Quoted theme value -->
-<a id="target" class="font:md underline text:blue
-    content:external::after" href="https://www.example.com">Project website</a>
+<a id="target" class="font-md underline text-blue
+    content-external::after" href="https://www.example.com">Project website</a>
 ```
 
 The two strings use different spaces: the escape is non-breaking, while the token contains an ordinary space. The readout shows the browser’s actual `::after` content.
@@ -51,7 +51,7 @@ Hover or focus this link to generate its arrow. The base pseudo-element has `con
 
 ```html
 <!-- Pointer and keyboard · same link -->
-<a id="target" class="font:md underline text:blue content:none::after
+<a id="target" class="font-md underline text-blue content:none::after
     content:none::after@print
     content:'\00a0↗':hover::after@screen
     content:'\00a0↗':focus-visible::after@screen" href="https://www.example.com">Project website</a>

@@ -39,8 +39,8 @@ export default defineConfig([
 `@master/css/sort-classes` keeps class strings stable and reviewable. It sorts known Master CSS classes before unknown classes, follows generated layer and condition priority, and groups base classes by their generated CSS intent: position and layout, size, spacing, box, typography, paint, and effects.
 
 ```mcss
-bg:white font:md flex px:4x rel w:full shadow:lg rounded z:10 gap:2x <!-- [!code --] -->
-rel z:10 flex gap:2x w:full px:4x rounded font:md bg:white shadow:lg <!-- [!code ++] -->
+bg:white font:md flex px:4x rel w:full shadow:lg rounded z:10 gap:0.5rem <!-- [!code --] -->
+rel z:10 flex gap:0.5rem w:full px:4x rounded font:md bg:white shadow:lg <!-- [!code ++] -->
 ```
 
 Variants such as `:hover`, `@dark`, and `@sm` stay after the base class body in generated condition order.
@@ -53,8 +53,8 @@ flex w:full p:2x text-center bg:black:hover block@dark <!-- [!code ++] -->
 Sorting also removes duplicate class values in the same class string.
 
 ```mcss
-inline-flex px:md inline-flex <!-- [!code --] -->
-inline-flex px:md <!-- [!code ++] -->
+inline-flex px-md inline-flex <!-- [!code --] -->
+inline-flex px-md <!-- [!code ++] -->
 ```
 
 Ordering is a formatting policy. It does not change generated CSS, but it makes class strings easier to review and keeps automated fixes deterministic across frameworks and editors.
@@ -99,7 +99,7 @@ Define project classes in the CSS entry when they are intentional:
 ```css name=index.css
 @components {
   btn {
-    @compose inline-flex px:md;
+    @compose inline-flex px-md;
   }
 }
 ```
@@ -108,39 +108,22 @@ Define project classes in the CSS entry when they are intentional:
 `@master/css/prefer-canonical-classes` keeps committed classes close to the project vocabulary.
 
 ```mcss
-text-align:center font:16px margin:md <!-- [!code --] -->
-text-center font:md m:md <!-- [!code ++] -->
+margin:16px block@dark@sm <!-- [!code --] -->
+m:16px block@sm@dark <!-- [!code ++] -->
 ```
 
-It also canonicalizes multi-value tokens and direct CSS variable references when every value maps to the active theme:
+Canonical fixes preserve value sources and cascade priority. A literal stays a literal; `font-size:16px` is not replaced by a token that happens to equal `16px` today. Explicit `var()` references and multi-value declarations retain their identities. A shorter static utility or composition is not suggested when it changes the existing shorthand, longhand, or value-source priority.
 
-```mcss
-m:1rem|1.5rem fg:var(--color-red-60) <!-- [!code --] -->
-m:md|lg fg:red-60 <!-- [!code ++] -->
-```
+Use the explicit [v2 RC migration command](/guide/migration/v2-rc#6-preview-and-apply-migration-proposals) for historical token syntax. Canonical linting does not guess the meaning of old colon tokens.
 
-Related size and spacing pairs can be composed into shorter utilities:
-
-```mcss
-w:md h:md mt:md mb:md padding-left:1rem padding-right:1rem <!-- [!code --] -->
-size:md my:md px:md <!-- [!code ++] -->
-```
-
-Condition suffixes are kept in a stable order for safe breakpoint and mode combinations:
-
-```mcss
-block@dark@sm font:16px@dark@sm mt:md@dark@sm mb:md@dark@sm <!-- [!code --] -->
-block@sm@dark font:md@sm@dark my:md@sm@dark <!-- [!code ++] -->
-```
-
-The same fixes apply inside unquoted `@compose` class lists when ESLint is running on a parsed CSS or style source:
+The same rules apply inside parsed `@compose` class lists. Native declarations and variant blocks can make the retained intent explicit:
 
 ```css
 .btn {
-  @compose text-align:center contain:content bg:blue-60:hover@sm; /* [!code --] */
-  @compose text-center; /* [!code ++] */
+  @compose text-align:center contain:content bg-blue-60:hover@sm; /* [!code --] */
+  text-align: center; /* [!code ++] */
   contain: content; /* [!code ++] */
-  &:hover { @variant sm { @compose bg:blue-60; } } /* [!code ++] */
+  &:hover { @variant sm { @compose bg-blue-60; } } /* [!code ++] */
 }
 ```
 
@@ -159,12 +142,9 @@ Framework files with parsed `<style>` blocks, such as Vue and Svelte files, can 
 
 | Option | Default | Effect |
 | --- | --- | --- |
-| `preferStaticUtilities` | `true` | Prefer named or semantic utilities such as `text-center` over native declaration forms. |
-| `preferThemeTokens` | `true` | Prefer theme token values such as `font:md` over equivalent raw values. |
-| `preferPropertyAliases` | `true` | Prefer shorter property aliases such as `m:md` over `margin:md`. |
-| `preferVariableReferences` | `true` | Prefer token keys such as `fg:red-60` over direct references such as `fg:var(--color-red-60)`. |
-| `preferMultiValueTokens` | `true` | Prefer tokenized multi-value forms such as `m:md|lg` over equivalent raw segments. |
-| `preferCompositionUtilities` | `true` | Prefer composed utilities such as `size:md` over equivalent `w:md h:md` pairs. |
+| `preferStaticUtilities` | `true` | Recommend equivalent named utilities only when value source and cascade priority are preserved. |
+| `preferPropertyAliases` | `true` | Prefer fixed property aliases such as `m:16px` over `margin:16px`. |
+| `preferCompositionUtilities` | `true` | Recommend a composition only when it preserves the existing priority and declarations. |
 | `preferConditionOrder` | `true` | Prefer stable condition suffix order such as `@sm@dark` over `@dark@sm`. |
 | `preferNativeDeclarationsInCompose` | `true` | Prefer native declarations over declaration-like classes inside CSS `@compose`. |
 | `preferVariantBlocksInCompose` | `true` | Prefer `@variant`, `@dark`, and `@light` blocks over suffixes inside CSS `@compose`. |
@@ -181,7 +161,6 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferThemeTokens: true,
         preferPropertyAliases: false
       }]
     }
@@ -193,16 +172,16 @@ export default defineConfig([
 `@master/css/no-conflicting-classes` reports classes that emit the same declaration properties in the same variant scope.
 
 ```mcss
-m:0.625rem m:5x <!-- [!code --] -->
-m:5x <!-- [!code ++] -->
+m:0.625rem m:1.25rem <!-- [!code --] -->
+m:1.25rem <!-- [!code ++] -->
 ```
 
-(!) `"m:0.625rem" is overridden by "m:5x".`
+(!) `"m:0.625rem" is overridden by "m:1.25rem".`
 
 Variant scope matters. Classes with different selectors, modes, or conditions do not conflict with each other.
 
 ```mcss
-m:10x@sm m:3.125rem@md
+m:2.5rem@sm m:3.125rem@md
 ```
 
 When a conflict can be fixed automatically, the rule removes the earlier overridden class and keeps the later class. Review the fix if the authoring order was carrying intent.
@@ -295,7 +274,6 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferThemeTokens: true,
         preferPropertyAliases: false
       }]
     }

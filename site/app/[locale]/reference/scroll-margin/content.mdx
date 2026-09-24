@@ -8,17 +8,17 @@
 <DemoExample page="scroll-margin" section="offset-anchor-targets" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
-  <header class="sticky top z:1 h:12x">Collection navigation</header>
-  <section id="overview" class="h:3xs">
+<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
+  <header class="sticky top z:1 h:3rem">Collection navigation</header>
+  <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
   </section>
-  <section id="details" class="h:3xs scroll-mt:3xl">
+  <section id="details" class="h-3xs scroll-mt-3xl">
     <strong>Details</strong>
     <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
   </section>
-  <section id="resources" class="h:3xs">
+  <section id="resources" class="h-3xs">
     <strong>Resources</strong>
     <p>Keep source files and supporting notes beside the finished collection.</p>
   </section>
@@ -28,7 +28,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['scroll-mt:3xl']}
+    {['scroll-mt-3xl']}
   </Class2CSS>
 </details>
 
@@ -40,21 +40,21 @@ The destination controls use the browser’s scroll-into-view behavior. The same
 <DemoExample page="scroll-margin" section="add-horizontal-snap-margin" />
 
 ```html
-<div id="scrollport" class="flex overflow-x:auto gap:md scroll-snap-type:x|mandatory"
+<div id="scrollport" class="flex overflow-x:auto gap-md scroll-snap-type:x|mandatory"
   tabindex="0" aria-label="Horizontal panels">
-  <article id="panel-1" class="flex-shrink:0 h:36x w:48x snap-start">Panel 1</article>
-  <article id="panel-2" class="flex-shrink:0 h:36x w:48x scroll-mx:md snap-start">Panel 2</article>
-  <article id="panel-3" class="flex-shrink:0 h:36x w:48x snap-start">Panel 3</article>
-  <article id="panel-4" class="flex-shrink:0 h:36x w:48x snap-start">Panel 4</article>
-  <article id="panel-5" class="flex-shrink:0 h:36x w:48x snap-start">Panel 5</article>
-  <article id="panel-6" class="flex-shrink:0 h:36x w:48x snap-start">Panel 6</article>
+  <article id="panel-1" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 1</article>
+  <article id="panel-2" class="flex-shrink:0 h:9rem w:12rem scroll-mx-md snap-start">Panel 2</article>
+  <article id="panel-3" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 3</article>
+  <article id="panel-4" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 4</article>
+  <article id="panel-5" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 5</article>
+  <article id="panel-6" class="flex-shrink:0 h:9rem w:12rem snap-start">Panel 6</article>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['scroll-mx:md']}
+    {['scroll-mx-md']}
   </Class2CSS>
 </details>
 
@@ -64,16 +64,16 @@ The destination controls use the browser’s scroll-into-view behavior. The same
 <DemoExample page="scroll-margin" section="use-all-side-margin-for-compact-cases" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
-  <section id="overview" class="h:3xs">
+<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
   </section>
-  <section id="details" class="h:3xs scroll-m:sm">
+  <section id="details" class="h-3xs scroll-m-sm">
     <strong>Details</strong>
     <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
   </section>
-  <section id="resources" class="h:3xs">
+  <section id="resources" class="h-3xs">
     <strong>Resources</strong>
     <p>Keep source files and supporting notes beside the finished collection.</p>
   </section>
@@ -88,16 +88,16 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="scroll-margin" section="apply-conditionally" />
 
 ```html
-<div id="scrollport" class="overflow-y:auto h:56x" tabindex="0" aria-label="Scrollable collection">
-  <section id="overview" class="h:3xs">
+<div id="scrollport" class="overflow-y:auto h:14rem" tabindex="0" aria-label="Scrollable collection">
+  <section id="overview" class="h-3xs">
     <strong>Overview</strong>
     <p>Collect the decisions and shared assets for this project in one place.</p>
   </section>
-  <section id="details" class="h:3xs scroll-mt:md scroll-mt:xl@sm">
+  <section id="details" class="h-3xs scroll-mt-md scroll-mt-xl@sm">
     <strong>Details</strong>
     <p>Review the structure, spacing and behavior before preparing the final handoff.</p>
   </section>
-  <section id="resources" class="h:3xs">
+  <section id="resources" class="h-3xs">
     <strong>Resources</strong>
     <p>Keep source files and supporting notes beside the finished collection.</p>
   </section>

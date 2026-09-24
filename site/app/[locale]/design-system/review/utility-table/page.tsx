@@ -32,7 +32,7 @@ function PreviousSharedTable() {
     <thead><tr><th scope="col">Group</th><th scope="col">Utility keys and purpose</th></tr></thead>
     <tbody>{groups.map((group) => <tr key={group.label}>
       <th scope="row" className="white-space:nowrap">{group.label}</th>
-      <td><div>{group.keys.map((key, index) => <span key={key}><InlineCode className="white-space:nowrap">{key}</InlineCode>{index < group.keys.length - 1 && ', '}</span>)}</div><div className="mt:xs">{group.description}</div></td>
+      <td><div>{group.keys.map((key, index) => <span key={key}><InlineCode className="white-space:nowrap">{key}</InlineCode>{index < group.keys.length - 1 && ', '}</span>)}</div><div className="mt-xs">{group.description}</div></td>
     </tr>)}</tbody>
   </table></div></figure>
 }

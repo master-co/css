@@ -552,6 +552,36 @@
     "master-managed-pattern": {
       "patterns": [
         {
+          "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(-)(<)(?=[~=])",
+          "beginCaptures": {
+            "3": {
+              "name": "support.type.property-name.master-css"
+            },
+            "4": {
+              "name": "keyword.operator.master-css"
+            },
+            "5": {
+              "name": "punctuation.definition.generic.begin.master-css"
+            }
+          },
+          "end": "(>)",
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.generic.end.master-css"
+            }
+          },
+          "patterns": [
+            {
+              "match": "[~|=*]",
+              "name": "keyword.operator.master-css"
+            },
+            {
+              "match": "[_a-zA-Z-][_a-zA-Z0-9-]*",
+              "name": "variable.parameter.master-css"
+            }
+          ]
+        },
+        {
           "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(:)(<)",
           "beginCaptures": {
             "3": {
@@ -817,12 +847,44 @@
     "master-class-fragment": {
       "patterns": [
         {
+          "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(:{1,2})(hover|focus-visible|focus-within|focus|active|visited|disabled|checked|first-child|last-child|before|after)(?=[:@!_\\s;\\'\"}]|$)",
+          "captures": {
+            "1": {
+              "name": "entity.other.attribute-name.class.master-css"
+            },
+            "2": {
+              "name": "punctuation.definition.entity.master-css"
+            },
+            "3": {
+              "name": "entity.other.attribute-name.pseudo-class.master-css"
+            }
+          }
+        },
+        {
+          "begin": "\\b(var)(\\()",
+          "beginCaptures": {
+            "1": {
+              "name": "support.function.misc.master-css"
+            }
+          },
+          "end": "\\)",
+          "patterns": [
+            {
+              "match": "--[_a-zA-Z0-9-]+",
+              "name": "variable.argument.css"
+            },
+            {
+              "include": "#master-value"
+            }
+          ]
+        },
+        {
           "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(?=:{1,2}[_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)",
           "name": "entity.other.attribute-name.class.master-css"
         },
         {
           "match": "\\$[_a-zA-Z-][_a-zA-Z0-9-]*",
-          "name": "variable.other.master-css"
+          "name": "invalid.deprecated.master-css"
         },
         {
           "match": "(?<=:)(?![_a-zA-Z-][_a-zA-Z0-9-]*\\s*\\{)([_a-zA-Z-][_a-zA-Z0-9-]*)(?=[:@!_\\s;'\")]|$)",

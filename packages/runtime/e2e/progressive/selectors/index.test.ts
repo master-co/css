@@ -42,12 +42,15 @@ test('selectors', async ({ page }) => {
 
   await expect.poll(() => page.evaluate(() => ({
     base: globalThis.__MASTER_CSS_RUNTIME_TEST__.baseLayer.rules.find((rule) => rule.name === 'block_button@base')?.text,
-    defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.find(
+    defaults: globalThis.__MASTER_CSS_RUNTIME_TEST__.defaultsLayer.rules.filter(
       (rule) => rule.name === '{flex;rel}_:is(h4,.app-nav)@default'
-    )?.text
+    ).map(rule => rule.text)
   }))).toEqual({
     base: '.block_button\\@base button{display:block}',
-    defaults: '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex;position:relative}'
+    defaults: [
+      '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){display:flex}',
+      '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav){position:relative}'
+    ]
   })
 
   expect(await page.evaluate(() => {

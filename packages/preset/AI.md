@@ -13,7 +13,7 @@
 
 ## Does Not Own
 
-- Engine built-in key aliases, namespaces, native value namespaces, or namespace refs.
+- Engine built-in key aliases, namespaces, named-token namespaces, or namespace refs.
 - Engine execution behavior.
 - Project manifest discovery.
 - Build integration behavior.
@@ -63,6 +63,6 @@ pnpm --filter @master/css-preset build
 
 ## Utility Definition Notes
 
-Apply the utility definition ladder in `AGENTS.md`. Default token namespaces and property aliases belong to the Rust engine registries in `crates/mastercss-engine/src/manifest.rs`; `@master/css-tooling/builtins` exposes generated read-only projections (`builtinKeyAliases`, `builtinNativeValueNamespaces`). Do not edit those generated projections or add registry fields to the preset manifest.
+Apply the utility definition ladder in `AGENTS.md`. Default token namespaces and property aliases belong to the Rust engine registries in `crates/mastercss-engine/src/manifest.rs`; `@master/css-tooling/builtins` exposes generated read-only projections (`builtinKeyAliases`, `builtinTokenNamespaces`). Do not edit those generated projections or add registry fields to the preset manifest.
 
 Author preset utilities in `src/utilities.css`. The former `src/utilities.ts` implementation no longer exists; compiler-inexpressible behavior must be handled by the owning Rust semantic layer, not a new TypeScript fallback. Explain why simpler manifest mechanisms cannot express an added utility.

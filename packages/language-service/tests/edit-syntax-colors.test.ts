@@ -7,13 +7,15 @@ import { createPresetManifest } from './helpers/create-preset-manifest'
 const expectEditedColors = async ({
   before,
   after,
-  source
+  source,
+  named = false
 }: {
   before: string
   after: string
   source: RegExp
+  named?: boolean
 }) => {
-  const beforeContent = `export default () => <div className='fg:${before}'></div>`
+  const beforeContent = `export default () => <div className='fg${named ? '-' : ':'}${before}'></div>`
   const afterContent = `export default () => <div className='fg:${after}'></div>`
   const beforeDoc = createDoc('tsx', beforeContent)
   const afterDoc = createDoc('tsx', afterContent)
@@ -35,7 +37,7 @@ const expectEditedColors = async ({
   ]))
   expect(new Set(labels).size).toBe(labels.length)
   expect(presentations.every(({ label, textEdit }) =>
-    textEdit?.newText === label && textEdit.range === beforeColorInformation.range
+    textEdit?.newText === (named ? 'color:' : '') + label && textEdit.range === beforeColorInformation.range
   )).toBe(true)
 }
 
@@ -44,7 +46,7 @@ test.concurrent('hex', async () => {
 })
 
 test.concurrent('variable', async () => {
-  await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0|none/0.5)', source: /^oklch\(/u })
+  await expectEditedColors({ before: 'white/.5', after: 'oklch(100%|0|none/0.5)', source: /^oklch\(/u, named: true })
 })
 
 test.concurrent('rgb', async () => {

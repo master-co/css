@@ -58,6 +58,7 @@ impl ValidatorSession {
                     class_name: class_name.clone(),
                     matched: inspection.valid,
                     rules: inspection.rules,
+                    diagnostics: inspection.diagnostics,
                 })
             })
             .collect::<Result<Vec<_>, EngineError>>()?;
@@ -131,7 +132,9 @@ mod tests {
         assert!(result.classes[0].matched);
         assert_eq!(
             result.classes[0].rules[0].text,
-            ".\\{text-wrap\\:pretty\\;block\\}{text-wrap:pretty;display:block}"
+            ".\\{text-wrap\\:pretty\\;block\\}{text-wrap:pretty}"
         );
+        assert_eq!(result.classes[0].rules.len(), 2);
+        assert!(result.classes[0].rules[1].text.contains("display:block"));
     }
 }

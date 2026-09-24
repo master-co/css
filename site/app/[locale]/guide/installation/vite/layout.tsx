@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'vite',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/vite'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
       <Tab href='/guide/installation/vite/static-rendering'>{$('Static Rendering')}</Tab>
     </Tabs>,

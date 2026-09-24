@@ -14,19 +14,19 @@ In supporting browsers, `user-drag:none` prevents the image from starting a nati
 ```html
 <!-- CSS · native image drag disabled -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:none">
+  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:none">
 ```
 
 ```html
 <!-- Default image · native drag allowed -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:auto">
+  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:auto">
 ```
 
 ```html
 <!-- HTML · explicit false -->
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-  width="240" height="144" class="block h:auto w:240px max-w:full r:sm " draggable="false">
+  width="240" height="144" class="block h:auto w:240px max-w:100% r-sm " draggable="false">
 ```
 
 <details>
@@ -44,7 +44,7 @@ The artwork is the same loaded image in every specimen. Try dragging with a poin
 ```html
 <!-- Vendor CSS request -->
 <div id="target"
-  class="p:md b:1px|solid|base r:sm user-select:none
+  class="p-md b:1px|solid|var(--color-line-base) r-sm user-select:none
          user-drag:element">
   Canvas asset
 </div>
@@ -53,7 +53,7 @@ The artwork is the same loaded image in every specimen. Try dragging with a poin
 ```html
 <!-- Standard HTML request -->
 <div id="target" draggable="true"
-  class="p:md b:1px|solid|base r:sm user-select:none">
+  class="p-md b:1px|solid|var(--color-line-base) r-sm user-select:none">
   Canvas asset
 </div>
 ```
@@ -68,7 +68,7 @@ Use `user-drag:auto` to return to the browser’s normal drag rules. Resize from
 ```html
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
   width="240" height="144"
-  class="block h:auto w:240px max-w:full r:sm
+  class="block h:auto w:240px max-w:100% r-sm
          user-drag:none user-drag:auto@screen&sm">
 ```
 
@@ -81,11 +81,11 @@ Use a stable native checkbox to change the image’s drag policy. When Lock imag
 
 ```html
 <div class="user-drag:none:has(>label>input:checked)>img">
-  <label class="flex items-center gap:sm mb:md">
+  <label class="flex items-center gap-sm mb-md">
     <input type="checkbox"> Lock image dragging
   </label>
   <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
-    width="240" height="144" class="block h:auto w:240px max-w:full r:sm user-drag:auto">
+    width="240" height="144" class="block h:auto w:240px max-w:100% r-sm user-drag:auto">
 </div>
 ```
 

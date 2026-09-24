@@ -8,19 +8,19 @@
 <DemoExample page="flex-wrap" section="allow-items-to-wrap" />
 
 ```html
-<div id="layout" class="flex flex-wrap gap:sm w:84x max-w:full">
-  <div id="item-1" class="flex:none h:16x w:24x p:sm">01</div>
-  <div id="item-2" class="flex:none h:16x w:24x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:24x p:sm">03</div>
-  <div id="item-4" class="flex:none h:16x w:24x p:sm">04</div>
-  <div id="item-5" class="flex:none h:16x w:24x p:sm">05</div>
+<div id="layout" class="flex flex-wrap gap-sm w:21rem max-w:100%">
+  <div id="item-1" class="flex:none h:4rem w:6rem p-sm">01</div>
+  <div id="item-2" class="flex:none h:4rem w:6rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:6rem p-sm">03</div>
+  <div id="item-4" class="flex:none h:4rem w:6rem p-sm">04</div>
+  <div id="item-5" class="flex:none h:4rem w:6rem p-sm">05</div>
 </div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['flex', 'flex-wrap', 'gap:sm']}
+    {['flex', 'flex-wrap', 'gap-sm']}
   </Class2CSS>
 </details>
 
@@ -32,12 +32,12 @@ Wrapping and shrinking are separate decisions. `flex:none` holds these specimens
 <DemoExample page="flex-wrap" section="keep-items-on-one-line" />
 
 ```html
-<div id="layout" class="flex overflow-x:auto flex-nowrap gap:sm w:84x max-w:full" tabindex="0" aria-label="Single-line collection">
-  <div id="item-1" class="flex:none h:16x w:24x p:sm">01</div>
-  <div id="item-2" class="flex:none h:16x w:24x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:24x p:sm">03</div>
-  <div id="item-4" class="flex:none h:16x w:24x p:sm">04</div>
-  <div id="item-5" class="flex:none h:16x w:24x p:sm">05</div>
+<div id="layout" class="flex overflow-x:auto flex-nowrap gap-sm w:21rem max-w:100%" tabindex="0" aria-label="Single-line collection">
+  <div id="item-1" class="flex:none h:4rem w:6rem p-sm">01</div>
+  <div id="item-2" class="flex:none h:4rem w:6rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:6rem p-sm">03</div>
+  <div id="item-4" class="flex:none h:4rem w:6rem p-sm">04</div>
+  <div id="item-5" class="flex:none h:4rem w:6rem p-sm">05</div>
 </div>
 ```
 
@@ -47,12 +47,12 @@ Wrapping and shrinking are separate decisions. `flex:none` holds these specimens
 <DemoExample page="flex-wrap" section="reverse-wrap-direction" />
 
 ```html
-<div id="layout" class="flex flex-wrap-reverse gap:sm w:84x max-w:full">
-  <div id="item-1" class="flex:none h:16x w:24x p:sm">01</div>
-  <div id="item-2" class="flex:none h:16x w:24x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:24x p:sm">03</div>
-  <div id="item-4" class="flex:none h:16x w:24x p:sm">04</div>
-  <div id="item-5" class="flex:none h:16x w:24x p:sm">05</div>
+<div id="layout" class="flex flex-wrap-reverse gap-sm w:21rem max-w:100%">
+  <div id="item-1" class="flex:none h:4rem w:6rem p-sm">01</div>
+  <div id="item-2" class="flex:none h:4rem w:6rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:6rem p-sm">03</div>
+  <div id="item-4" class="flex:none h:4rem w:6rem p-sm">04</div>
+  <div id="item-5" class="flex:none h:4rem w:6rem p-sm">05</div>
 </div>
 ```
 
@@ -64,12 +64,12 @@ Use [conditional queries](/reference/rules/conditions) to allow wrapping from `s
 <DemoExample page="flex-wrap" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex overflow-x:auto flex-nowrap gap:sm w:84x max-w:full flex-wrap@sm" tabindex="0" aria-label="Responsive collection">
-  <div id="item-1" class="flex:none h:16x w:24x p:sm">01</div>
-  <div id="item-2" class="flex:none h:16x w:24x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:24x p:sm">03</div>
-  <div id="item-4" class="flex:none h:16x w:24x p:sm">04</div>
-  <div id="item-5" class="flex:none h:16x w:24x p:sm">05</div>
+<div id="layout" class="flex overflow-x:auto flex-nowrap gap-sm w:21rem max-w:100% flex-wrap@sm" tabindex="0" aria-label="Responsive collection">
+  <div id="item-1" class="flex:none h:4rem w:6rem p-sm">01</div>
+  <div id="item-2" class="flex:none h:4rem w:6rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:6rem p-sm">03</div>
+  <div id="item-4" class="flex:none h:4rem w:6rem p-sm">04</div>
+  <div id="item-5" class="flex:none h:4rem w:6rem p-sm">05</div>
 </div>
 ```
 

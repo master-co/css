@@ -38,7 +38,7 @@ Use the `@default` class suffix, `@defaults` managed definitions, or native CSS 
 ### Components \{#components\}
 Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write these managed class definitions in `@components`.
 
-<ConfiguredExample source={'@components { btn { @compose inline-flex bg:blue-60 fg:white; } }'} classes={['btn']} element="button" label="Preview button" />
+<ConfiguredExample source={'@components { btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn']} element="button" label="Preview button" />
 
 The compiler records these definitions in the manifest with the components layer. They remain on-demand: defining `btn` does not emit its CSS until the class is used or composed by another generated style.
 
@@ -48,7 +48,7 @@ Use `utilities` for built-in utilities, animation utilities, and custom static u
 ```css name=index.css
 @utilities {
   flow {
-    @compose grid gap:md;
+    @compose grid gap-md;
   }
 
   content-auto {
@@ -117,8 +117,8 @@ Put brand or content defaults in the defaults layer when they should apply acros
 Avoid using the base layer for brand or content typography:
 
 ```html
-<!-- @MARK font:mono_:is(code,pre)@base -->
-<body class="font:mono_:is(code,pre)@base">…</body>
+<!-- @MARK font-mono_:is(code,pre)@base -->
+<body class="font-mono_:is(code,pre)@base">…</body>
 ```
 
 Base should normalize. Defaults should express broad design defaults.
@@ -128,7 +128,7 @@ With the base order loaded, normal utility declarations take precedence over nor
 
 Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
 
-<ConfiguredExample source={'@components { btn { @compose inline-flex bg:blue-60 fg:white; } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
+<ConfiguredExample source={'@components { btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
@@ -179,10 +179,10 @@ Native style rules can still compose Master CSS utilities when the rule should r
 
 ```css name=app.css
 .card {
-  @compose block p:md;
+  @compose block p-md;
 
   @dark {
-    @compose bg:neutral-90;
+    @compose bg-neutral-90;
   }
 }
 ```

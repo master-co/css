@@ -3,7 +3,7 @@ import { describe, test, expect } from 'vitest'
 import path from 'node:path'
 
 const SOURCE = 'foo.tsx'
-const CONTENT = `<div className="bg:white fg:black m:2x">hi</div>`
+const CONTENT = `<div className="bg-white fg-black m:0.5rem">hi</div>`
 const ROOT = path.join(path.parse(process.cwd()).root, 'project')
 
 describe('content-hash cache (Phase A optimisation)', () => {
@@ -30,8 +30,8 @@ describe('content-hash cache (Phase A optimisation)', () => {
 
   test('cache invalidates on content change', async () => {
     const ex = await new MasterCSSScanner({}).init()
-    const v1 = await ex.scan(SOURCE, `<div class="bg:red">a</div>`)
-    const v2 = await ex.scan(SOURCE, `<div class="bg:blue">b</div>`)
+    const v1 = await ex.scan(SOURCE, `<div class="bg-red">a</div>`)
+    const v2 = await ex.scan(SOURCE, `<div class="bg-blue">b</div>`)
     expect(v1).toBe(true)
     expect(v2).toBe(true)
   })
@@ -51,22 +51,22 @@ describe('Rust scanner validity cache', () => {
   test('same class across many files remains a single generated rule', async () => {
     const ex = await new MasterCSSScanner({}).init()
     // First file with the class — populates validClasses + the rules cache.
-    await ex.scan('a.tsx', `<div className="bg:white">a</div>`)
-    expect(ex.validClasses.has('bg:white')).toBe(true)
-    await ex.scan('b.tsx', `<div className="bg:white">b</div>`)
-    await ex.scan('c.tsx', `<div className="bg:white">c</div>`)
-    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg:white')).toHaveLength(1)
+    await ex.scan('a.tsx', `<div className="bg-white">a</div>`)
+    expect(ex.validClasses.has('bg-white')).toBe(true)
+    await ex.scan('b.tsx', `<div className="bg-white">b</div>`)
+    await ex.scan('c.tsx', `<div className="bg-white">c</div>`)
+    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg-white')).toHaveLength(1)
     expect(ex.state.cachedSources).toBe(3)
   })
 
   test('same class across many files is processed once', async () => {
     const ex = await new MasterCSSScanner({}).init()
     // First file with the class — populates validClasses + the rules cache.
-    await ex.scan('a.tsx', `<div className="bg:white">a</div>`)
-    expect(ex.validClasses.has('bg:white')).toBe(true)
-    await ex.scan('b.tsx', `<div className="bg:white">b</div>`)
-    await ex.scan('c.tsx', `<div className="bg:white">c</div>`)
-    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg:white')).toHaveLength(1)
+    await ex.scan('a.tsx', `<div className="bg-white">a</div>`)
+    expect(ex.validClasses.has('bg-white')).toBe(true)
+    await ex.scan('b.tsx', `<div className="bg-white">b</div>`)
+    await ex.scan('c.tsx', `<div className="bg-white">c</div>`)
+    expect(ex.state.engine.rules.filter(({ className }) => className === 'bg-white')).toHaveLength(1)
     expect(ex.state.cachedSources).toBe(3)
   })
 })
@@ -74,27 +74,27 @@ describe('Rust scanner validity cache', () => {
 describe('class exclusion matcher', () => {
   test('resets stateful regular expressions while filtering repeated classes', async () => {
     const ex = await new MasterCSSScanner({
-      blocklist: [/^bg:/g]
+      blocklist: [/^bg-/g]
     }).init()
 
-    await ex.scan(SOURCE, `<div className="bg:red bg:blue block">hi</div>`)
+    await ex.scan(SOURCE, `<div className="bg-red bg-blue block">hi</div>`)
 
-    expect(ex.validClasses.has('bg:red')).toBe(false)
-    expect(ex.validClasses.has('bg:blue')).toBe(false)
+    expect(ex.validClasses.has('bg-red')).toBe(false)
+    expect(ex.validClasses.has('bg-blue')).toBe(false)
     expect(ex.validClasses.has('block')).toBe(true)
   })
 
   test('rebuilds when blocklist is reassigned', async () => {
     const ex = await new MasterCSSScanner({
-      blocklist: [/^bg:/]
+      blocklist: [/^bg-/]
     }).init()
 
-    await ex.scan('excluded.tsx', `<div className="bg:red block">hi</div>`)
+    await ex.scan('excluded.tsx', `<div className="bg-red block">hi</div>`)
     ex.options.blocklist = []
-    await ex.scan('included.tsx', `<div className="bg:blue">hi</div>`)
+    await ex.scan('included.tsx', `<div className="bg-blue">hi</div>`)
 
-    expect(ex.validClasses.has('bg:red')).toBe(false)
-    expect(ex.validClasses.has('bg:blue')).toBe(true)
+    expect(ex.validClasses.has('bg-red')).toBe(false)
+    expect(ex.validClasses.has('bg-blue')).toBe(true)
   })
 })
 
@@ -210,10 +210,10 @@ describe('module source matcher cache', () => {
     }, ROOT).init()
 
     expect(await ex.scanModule(path.join(ROOT, 'src/App.tsx'), `<div className="block">hi</div>`)).toBe(true)
-    expect(await ex.scanModule(path.join(ROOT, 'src/skip.tsx'), `<div className="fg:red">hi</div>`)).toBe(false)
-    expect(await ex.scanModule(path.join(ROOT, 'src/data.json'), `<div className="bg:red">hi</div>`)).toBe(false)
+    expect(await ex.scanModule(path.join(ROOT, 'src/skip.tsx'), `<div className="fg-red">hi</div>`)).toBe(false)
+    expect(await ex.scanModule(path.join(ROOT, 'src/data.json'), `<div className="bg-red">hi</div>`)).toBe(false)
     expect(ex.validClasses.has('block')).toBe(true)
-    expect(ex.validClasses.has('fg:red')).toBe(false)
-    expect(ex.validClasses.has('bg:red')).toBe(false)
+    expect(ex.validClasses.has('fg-red')).toBe(false)
+    expect(ex.validClasses.has('bg-red')).toBe(false)
   })
 })

@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import Bg from '~/site/docs-shell/components/Bg'
 
 export default () => {
-  const previewSyntax = 'bg:blue-60'
+  const previewSyntax = 'bg-blue-60'
   return (
     <>
       <SyntaxTable>

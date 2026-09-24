@@ -116,7 +116,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(manifest.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
 
     const css = createTestCSS(manifest)
-    css.ensureClassRules('btn', 'content-auto', 'm:card')
+    css.ensureClassRules('btn', 'content-auto', 'm-card')
     expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
     expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
     expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
@@ -124,7 +124,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
     expect(css.componentsLayer.text).toContain('.btn:nth-child(2n){display:grid}')
     expect(css.utilitiesLayer.text).toContain('.content-auto{content-visibility:auto}')
-    expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:var(--spacing-card)}')
+    expect(css.utilitiesLayer.text).toContain('.m-card{margin:var(--spacing-card)}')
   })
 
   test('lowers managed enum patterns as semantic utilities without replacing exact utility precedence', () => {
@@ -194,7 +194,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('badge-success')?.layerName).toBe('components')
   })
 
-  test('lowers managed dynamic colon entries without restoring fixed keyword aliases', () => {
+  test('lowers separate named token and raw parameter entries', () => {
     const { manifest } = compileCSSManifest(`
       @theme {
         --font-size-sm: .875rem;
@@ -202,198 +202,95 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --font-weight-bold: 700;
         --color-red: red;
         --color-text-red: #900;
+        --container-card: 20rem;
       }
-
       @utilities {
-        font:<~font-size|number> {
-          font-size: --value();
-        }
-
-        font:<~font-family> {
-          font-family: --value();
-        }
-
-        font:<~font-weight> {
-          font-weight: --value();
-        }
-
-        bg:<color> {
-          background-color: --value();
-        }
-
-        fg:<~color-text|color> {
-          color: --value();
-        }
-
+        font-<~font-size> { font-size: --value(); }
+        font-<~font-family> { font-family: --value(); }
+        font-<~font-weight> { font-weight: --value(); }
+        font-size:<number> { font-size: --value(); }
+        bg-<~color> { background-color: --value(); }
+        fg-<~color-text|~color> { color: --value(); }
         grid-cols:<number|*> {
           display: grid;
           grid-template-columns: repeat(--value(), minmax(0, 1fr));
         }
-
-        grid-col-span:<number|*> {
-          grid-column: span --value()/span --value();
-        }
-
-        size:<~container|number|*> {
-          width: --value();
-          height: --value();
-        }
-
-        gap:<*|number> {
-          gap: --value();
-        }
-
-        accent:<color|*> {
-          accent-color: --value();
-        }
-
+        grid-col-span:<number|*> { grid-column: span --value()/span --value(); }
+        size-<~container> { width: --value(); height: --value(); }
+        size:<number|*> { width: --value(); height: --value(); }
+        gap:<*|number> { gap: --value(); }
+        accent:<color|*> { accent-color: --value(); }
         user-select:<auto|none|text|all> {
           -webkit-user-select: --value();
           user-select: --value();
         }
-
-        line-clamp:<number|none> {
-          -webkit-line-clamp: --value();
-        }
-
-        text:<~font-size|number> {
+        clamp-lines:<number|none> { -webkit-line-clamp: --value(); }
+        text-<~font-size> {
           font-size: --value();
           line-height: max(1.8em - max(0rem, --value() - 1rem) * 1.12, --value());
           letter-spacing: clamp(-0.072em, calc((--value() - 1rem) * -0.048), 0em);
         }
-
-        text-decoration:<~color|*> {
+        text-decoration:<*> {
           -webkit-text-decoration: --value();
           text-decoration: --value();
         }
       }
     `)
-
-    expect(manifest.utilities?.find((utility) => utility.id === 'font:<~font-size|number>')).toMatchObject({
-      kind: 'number',
-      variableAliasRefs: ['~font-size'],
-      matchers: expect.arrayContaining([
-        { type: 'variable', keys: ['font'] },
-        { type: 'value', keys: ['font'] }
-      ])
+    const utility = (id: string) => manifest.utilities?.find(utility => utility.id === id)
+    expect(utility('font-<~font-size>')).toMatchObject({
+      variableAliasRefs: ['~font-size'], matchers: [{ type: 'token', prefix: 'font-' }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'grid-cols:<number|*>')).toMatchObject({
-      kind: 'number',
-      type: UtilityType.Normal,
-      matchers: expect.arrayContaining([
-        { type: 'value', keys: ['grid-cols'] },
-        { type: 'key', keys: ['grid-cols'] }
-      ])
+    expect(utility('font-size:<number>')).toMatchObject({
+      kind: 'number', matchers: [{ type: 'value', keys: ['font-size'] }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'size:<~container|number|*>')).toMatchObject({
-      kind: 'number',
-      type: UtilityType.Shorthand,
-      variableAliasRefs: ['~container'],
-      matchers: expect.arrayContaining([
-        { type: 'variable', keys: ['size'] },
-        { type: 'value', keys: ['size'] },
-        { type: 'key', keys: ['size'] }
-      ])
+    expect(utility('size-<~container>')).toMatchObject({
+      type: UtilityType.Shorthand, variableAliasRefs: ['~container'],
+      matchers: [{ type: 'token', prefix: 'size-' }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'gap:<*|number>')).toMatchObject({
-      kind: 'number',
-      matchers: expect.arrayContaining([
-        { type: 'value', keys: ['gap'] },
-        { type: 'key', keys: ['gap'] }
-      ])
+    for (const key of ['grid-cols', 'grid-col-span', 'size']) {
+      expect(utility(`${key}:<number|*>`)).toMatchObject({
+        kind: 'number', matchers: [{ type: 'value', keys: [key] }, { type: 'key', keys: [key] }]
+      })
+    }
+    expect(utility('accent:<color|*>')).toMatchObject({
+      kind: 'color', matchers: [{ type: 'value', keys: ['accent'] }, { type: 'key', keys: ['accent'] }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'accent:<~color|color|*>')).toMatchObject({
-      kind: 'color',
-      variableAliasRefs: ['~color'],
-      matchers: expect.arrayContaining([
-        { type: 'variable', keys: ['accent'] },
-        { type: 'value', keys: ['accent'] },
-        { type: 'key', keys: ['accent'] }
-      ])
+    expect(utility('accent:<color|*>')).not.toHaveProperty('variableAliasRefs')
+    expect(utility('user-select:<auto|none|text|all>')).toMatchObject({
+      matchers: [{ type: 'pattern', prefix: 'user-select:', values: ['auto', 'none', 'text', 'all'] }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'bg:<~color|color>')).toMatchObject({
-      kind: 'color',
-      variableAliasRefs: ['~color'],
-      matchers: expect.arrayContaining([
-        { type: 'variable', keys: ['bg'] },
-        { type: 'value', keys: ['bg'] }
-      ])
+    expect(utility('text-<~font-size>')?.emit).toMatchObject({
+      type: 'static', rules: [{ declarations: {
+        'font-size': null,
+        'line-height': ['max(1.8em - max(0rem, ', null, ' - 1rem) * 1.12, ', null, ')'],
+        'letter-spacing': ['clamp(-.072em, calc((', null, ' - 1rem) * -.048), 0em)']
+      } }]
     })
-    expect(manifest.utilities?.find((utility) => utility.id === 'fg:<~color-text|~color|color>')).toMatchObject({
-      variableAliasRefs: ['~color-text', '~color']
-    })
-    expect(manifest.utilities?.find((utility) => utility.id === 'user-select:<auto|none|text|all>')).toMatchObject({
-      matchers: [{
-        type: 'pattern',
-        prefix: 'user-select:',
-        values: ['auto', 'none', 'text', 'all']
-      }]
-    })
-    expect(manifest.utilities?.find((utility) => utility.id === 'line-clamp:<number|none>')).toMatchObject({
-      kind: 'number',
-      matchers: expect.arrayContaining([
-        { type: 'value', keys: ['line-clamp'] },
-        {
-          type: 'pattern',
-          prefix: 'line-clamp:',
-          values: ['none']
-        }
-      ])
-    })
-    expect(manifest.utilities?.find((utility) => utility.id === 'text:<~font-size|number>')).toMatchObject({
-      kind: 'number',
-      variableAliasRefs: ['~font-size'],
-      emit: {
-        type: 'static',
-        rules: [{
-          declarations: {
-            'font-size': null,
-            'line-height': [
-              'max(1.8em - max(0rem, ',
-              null,
-              ' - 1rem) * 1.12, ',
-              null,
-              ')'
-            ],
-            'letter-spacing': [
-              'clamp(-.072em, calc((',
-              null,
-              ' - 1rem) * -.048), 0em)'
-            ]
-          }
-        }]
-      }
-    })
-    expect(manifest.utilities?.find((utility) => utility.id === 'text-decoration:<~color|*>')).toMatchObject({
-      variableAliasRefs: ['~color'],
-      matchers: expect.arrayContaining([
-        { type: 'variable', keys: ['text-decoration'] },
-        { type: 'key', keys: ['text-decoration'] }
-      ])
-    })
-
     const css = createTestCSS(manifest)
-    expect(css.createRule('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
-    expect(css.createRule('font:sans')?.text).toBe('.font\\:sans{font-family:var(--font-family-sans)}')
-    expect(css.createRule('font:bold')?.text).toBe('.font\\:bold{font-weight:var(--font-weight-bold)}')
-    expect(css.createRule('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
-    expect(css.createRule('bg:red')?.text).toBe('.bg\\:red{background-color:var(--color-red)}')
-    expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
-    expect(css.createRule('fg:red')?.text).toBe('.fg\\:red{color:var(--color-text-red)}')
-    expect(css.createRule('grid-cols:3')?.text).toBe('.grid-cols\\:3{display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))}')
-    expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
-    expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
-    expect(css.createRule('grid-col-span:var(--span)')?.text).toBe('.grid-col-span\\:var\\(--span\\){grid-column:span var(--span)/span var(--span)}')
-    expect(css.createRule('size:4x')?.text).toBe('.size\\:4x{width:1rem;height:1rem}')
-    expect(css.createRule('size:4x|8x')?.text).toBe('.size\\:4x\\|8x{width:1rem 2rem;height:1rem 2rem}')
-    expect(css.createRule('gap:var(--gap)')?.text).toBe('.gap\\:var\\(--gap\\){gap:var(--gap)}')
-    expect(css.createRule('accent:var(--accent)')?.text).toBe('.accent\\:var\\(--accent\\){accent-color:var(--accent)}')
-    expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
-    expect(css.createRule('line-clamp:3')?.text).toBe('.line-clamp\\:3{-webkit-line-clamp:3}')
-    expect(css.createRule('line-clamp:none')?.text).toBe('.line-clamp\\:none{-webkit-line-clamp:none}')
-    expect(css.createRule('text-decoration:underline|red')?.text)
-      .toBe('.text-decoration\\:underline\\|red{-webkit-text-decoration:underline var(--color-red);text-decoration:underline var(--color-red)}')
-    expect(css.createRule('bg:cover')).toBeUndefined()
+    const cases: [string, string][] = [
+      ['font-sm', 'font-size:var(--font-size-sm)'],
+      ['font-sans', 'font-family:var(--font-family-sans)'],
+      ['font-bold', 'font-weight:var(--font-weight-bold)'],
+      ['font-size:1rem', 'font-size:1rem'],
+      ['bg-red', 'background-color:var(--color-red)'],
+      ['fg-red', 'color:var(--color-text-red)'],
+      ['grid-cols:3', 'display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))'],
+      ['grid-cols:var(--cols)', 'display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))'],
+      ['grid-col-span:2', 'grid-column:span 2/span 2'],
+      ['grid-col-span:var(--span)', 'grid-column:span var(--span)/span var(--span)'],
+      ['size:1rem', 'width:1rem;height:1rem'],
+      ['size-card', 'width:var(--container-card);height:var(--container-card)'],
+      ['size:1rem|2rem', 'width:1rem 2rem;height:1rem 2rem'],
+      ['gap:var(--gap)', 'gap:var(--gap)'],
+      ['accent:var(--accent)', 'accent-color:var(--accent)'],
+      ['user-select:none', '-webkit-user-select:none;user-select:none'],
+      ['clamp-lines:3', '-webkit-line-clamp:3'],
+      ['clamp-lines:none', '-webkit-line-clamp:none'],
+      ['text-decoration:underline|var(--color-red)', '-webkit-text-decoration:underline var(--color-red);text-decoration:underline var(--color-red)']
+    ]
+    for (const [className, declarations] of cases) expect(css.createRule(className)?.text).toContain(`{${declarations}}`)
+    expect(css.createRule('accent:red')?.text).toContain('{accent-color:red}')
+    expect(css.createRule('bg:cover')?.text).not.toContain('background-size')
   })
 
   test('rejects unsupported managed enum pattern syntax', () => {
@@ -501,7 +398,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Invalid managed dynamic utility namespace')
+    `, { baseManifest: defaultManifest })).toThrow('Token namespaces require named patterns')
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -517,15 +414,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
           color: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+    `, { baseManifest: defaultManifest })).toThrow('Token namespaces require named patterns')
 
     expect(() => compileCSSManifest(`
       @utilities {
-        x:<color|none> {
-          color: --value();
+        paint:<color|none> {
+          fill: --value();
         }
       }
-    `, { baseManifest: defaultManifest })).toThrow('Managed dynamic utility enum values cannot be combined with namespaces')
+    `, { baseManifest: defaultManifest })).not.toThrow()
 
     expect(() => compileCSSManifest(`
       @utilities {
@@ -663,12 +560,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       @components {
         btn {
-          @compose text-align:center contain:content bg:blue-60:hover@sm block@dark;
+          @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
         }
       }
 
       .card {
-        @compose text-align:center contain:content bg:blue-60:hover@sm block@dark;
+        @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
       }
     `, { baseManifest: defaultManifest })
     const after = compileCSSManifest(`
@@ -683,7 +580,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
           &:hover {
             @variant sm {
-              @compose bg:blue-60;
+              @compose bg-blue-60;
             }
           }
 
@@ -699,7 +596,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
         &:hover {
           @variant sm {
-            @compose bg:blue-60;
+            @compose bg-blue-60;
           }
         }
 
@@ -720,12 +617,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         prose {
           @variant sm {
             :is(h1, h2, h3, h4, h5, h6) {
-              @compose mt:2xl scroll-mt:100px;
+              @compose mt-2xl scroll-mt:100px;
             }
           }
 
           :is(h1, h2, h3, h4, h5, h6) {
-            @compose mt:lg scroll-mt:60px;
+            @compose mt-lg scroll-mt:60px;
           }
         }
       }

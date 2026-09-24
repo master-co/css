@@ -11,5 +11,5 @@ const rendered = renderHTML(html, {
 })
 
 it('basic', () => {
-  expect(rendered.html).toContain('.\\{font\\:mono\\;font-feature\\:normal\\}_\\:where\\(code\\,kbd\\,samp\\)')
+  expect(rendered.html).toContain('.\\{font-mono\\;font-feature-settings\\:normal\\}_\\:where\\(code\\,kbd\\,samp\\)')
 })

@@ -11,20 +11,20 @@ Use `appearance:none` to replace a select’s platform treatment. This example s
 
 ```html
 <!-- Custom appearance -->
-<label class="grid gap:sm w:240px max-w:full">
+<label class="grid gap-sm w:240px max-w:100%">
   Sort assets
   <span class="rel block">
     <select id="target"
 
-    class="w:full pr:xl b:1px|solid|base r:sm
-           bg:surface-base appearance:none">
+    class="w:100% pr-xl b:1px|solid|var(--color-line-base) r-sm
+           bg-surface-base appearance:none">
       <option value="newest">Newest first</option>
       <option value="oldest">Oldest first</option>
       <option value="name">Name</option>
     </select>
     <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"
       fill="none" stroke="currentColor" stroke-width="1.5"
-      class="abs right:sm top:50%
+      class="abs right-sm top:50%
              transform:translateY(-50%) untouchable">
       <path d="m4 6 4 4 4-4" />
     </svg>
@@ -34,10 +34,10 @@ Use `appearance:none` to replace a select’s platform treatment. This example s
 
 ```html
 <!-- Native comparison -->
-<label class="grid gap:sm w:240px max-w:full">
+<label class="grid gap-sm w:240px max-w:100%">
   Sort assets
   <span class="rel block">
-    <select id="target" class="w:full appearance:auto">
+    <select id="target" class="w:100% appearance:auto">
       <option value="newest">Newest first</option>
       <option value="oldest">Oldest first</option>
       <option value="name">Name</option>
@@ -60,12 +60,12 @@ Switch the same select from `appearance:none` to `appearance:auto` at `sm`. This
 
 ```html
 <!-- Resize to restore native paint -->
-<label class="grid gap:sm w:240px max-w:full">
+<label class="grid gap-sm w:240px max-w:100%">
   Sort assets
   <span class="rel block">
     <select id="target"
 
-    class="w:full appearance:none appearance:auto@print
+    class="w:100% appearance:none appearance:auto@print
            appearance:auto@screen&sm">
       <option value="newest">Newest first</option>
       <option value="oldest">Oldest first</option>
@@ -84,20 +84,20 @@ Keep a visible label and real options. Use the keyboard or native picker to chan
 
 ```html
 <!-- Labeled native select -->
-<label class="grid gap:sm w:240px max-w:full">
+<label class="grid gap-sm w:240px max-w:100%">
   Sort assets
   <span class="rel block">
     <select id="target"
 
-    class="w:full pr:xl b:1px|solid|base r:sm
-           bg:surface-base appearance:none">
+    class="w:100% pr-xl b:1px|solid|var(--color-line-base) r-sm
+           bg-surface-base appearance:none">
       <option value="newest">Newest first</option>
       <option value="oldest">Oldest first</option>
       <option value="name">Name</option>
     </select>
     <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16"
       fill="none" stroke="currentColor" stroke-width="1.5"
-      class="abs right:sm top:50%
+      class="abs right-sm top:50%
              transform:translateY(-50%) untouchable">
       <path d="m4 6 4 4 4-4" />
     </svg>
@@ -114,18 +114,18 @@ Remove native appearance only on focused selects with `appearance:none:focus`. M
 
 ```html
 <!-- Focus changes appearance -->
-<label class="grid gap:sm w:240px max-w:full">
+<label class="grid gap-sm w:240px max-w:100%">
   Sort assets
   <span class="rel block">
     <select id="target"
-      class="w:full appearance:auto appearance:none:focus">
+      class="w:100% appearance:auto appearance:none:focus">
       <option value="newest">Newest first</option>
       <option value="oldest">Oldest first</option>
       <option value="name">Name</option>
     </select>
   </span>
 </label>
-<label class="flex items-center gap:sm mt:md">
+<label class="flex items-center gap-sm mt-md">
   <input type="checkbox"> Include archived assets
 </label>
 ```

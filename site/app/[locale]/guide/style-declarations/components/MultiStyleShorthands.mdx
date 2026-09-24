@@ -1,14 +1,14 @@
 export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
   <!-- @MARK padding-top:1rem --><!-- @MARK padding-bottom:1rem --><!-- @MARK padding-left:2rem --><!-- @MARK padding-right:2rem --><!-- @MARK border-width:.0625rem --><!-- @MARK border-color:red --><!-- @MARK border-style:solid -->
-  <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color:red border-style:solid">
+  <p class="padding-top:1rem padding-bottom:1rem padding-left:2rem padding-right:2rem border-width:.0625rem border-color-red border-style:solid">
 `
 export const code2 = `
-  <!-- @MARK padding:4x|8x --><!-- @MARK border:1px|solid|red -->
-  <p class="padding:4x|8x border:1px|solid|red">
+  <!-- @MARK padding:1rem|2rem --><!-- @MARK border:1px|solid|red -->
+  <p class="padding:1rem|2rem border:1px|solid|var(--color-red)">
 `
 export const code3 = `
-  <!-- @MARK p:4x|8x --><!-- @MARK b:1px|solid|red -->
-  <p class="p:4x|8x b:1px|solid|red">
+  <!-- @MARK p:1rem|2rem --><!-- @MARK b:1px|solid|red -->
+  <p class="p:1rem|2rem b:1px|solid|var(--color-red)">
 `
 /* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
 
@@ -19,7 +19,7 @@ Use the same value order as native CSS shorthands, but replace spaces with `|` s
   {code1}
 </Code>
 
-(o) Use the CSS shorthand with explicit or multiplier units. <Dropped p1={code1} p2={code2} target="class" />
+(o) Use the CSS shorthand with explicit CSS units. <Dropped p1={code1} p2={code2} target="class" />
 <Code lang="html">
   {code2}
 </Code>

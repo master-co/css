@@ -69,7 +69,7 @@ test('dispose on progressive', async ({ page }) => {
     const nextRuntime = await globalThis.MasterCSSRuntime.start({ manifest })
     nextRuntime.observe()
     document.body.classList.add('block')
-    document.body.classList.add('font:bold')
+    document.body.classList.add('font-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => {
@@ -78,7 +78,7 @@ test('dispose on progressive', async ({ page }) => {
       .map(([className, snapshot]) => [className, snapshot.rules.length]))
   })).toMatchObject({
     block: 1,
-    'font:bold': 1
+    'font-bold': 1
   })
 })
 
@@ -134,7 +134,7 @@ test('inserts functional pseudo-class selector aliases into native CSSOM', async
     if (message.type() === 'error') consoleErrors.push(message.text())
   })
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="pb:8x:not(:last) text-center_td:not(:first)"></div>'
+    document.body.innerHTML = '<div class="pb:2rem:not(:last) text-center_td:not(:first)"></div>'
   })
   await init(page)
 
@@ -142,7 +142,7 @@ test('inserts functional pseudo-class selector aliases into native CSSOM', async
     .map((cssRule) => cssRule.cssText)
   )).toEqual([
     '.text-center_td\\:not\\(\\:first\\) td:not(:first-child) { text-align: center; }',
-    '.pb\\:8x\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
+    '.pb\\:2rem\\:not\\(\\:last\\):not(:last-child) { padding-bottom: 2rem; }'
   ])
   expect(consoleErrors.find((message) => message.includes('insertRule'))).toBeUndefined()
 })
@@ -288,7 +288,7 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
 test('registers emittedGlobals counts on an existing runtime', async ({ page }) => {
   await init(page)
   await page.evaluate(() => {
-    document.body.innerHTML = '<div class="fg:red-60 animation:fade|1s"></div>'
+    document.body.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
   })
   await waitForRuntimeRuleFlush(page)
   const result = await page.evaluate(async (manifest) => {
@@ -316,7 +316,7 @@ test('registers emittedGlobals counts on an existing runtime', async ({ page }) 
   expect(result.same).toBe(true)
   expect(result.before).toContain('--color-red-60:')
   expect(result.before).toContain('@keyframes fade{')
-  expect(result.after).toContain('.fg\\:red-60')
+  expect(result.after).toContain('.fg-red-60')
   expect(result.after).toContain('.animation\\:fade\\|1s')
   expect(result.after).not.toContain('--color-red-60:')
   expect(result.after).not.toContain('@keyframes fade{')
@@ -332,7 +332,7 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
     const host = document.createElement('div')
     document.body.append(host)
     const root = host.attachShadow({ mode: 'open' })
-    root.innerHTML = '<div class="fg:red-60 animation:fade|1s"></div>'
+    root.innerHTML = '<div class="fg-red-60 animation:fade|1s"></div>'
     const first = globalThis.MasterCSSRuntime.start({ manifest, root })
     const second = globalThis.MasterCSSRuntime.start({
       manifest,
@@ -372,13 +372,13 @@ test('merges emittedGlobals from concurrent starts before resolving callers', as
   expect(result.same).toBe(true)
   expect(result.counts).toEqual({
     'animation:fade|1s': 1,
-    'fg:red-60': 1
+    'fg-red-60': 1
   })
   expect(result.emittedGlobals).toEqual({
     variables: { 'color-red-60': 3 },
     animations: { fade: 4 }
   })
-  expect(result.text).toContain('.fg\\:red-60')
+  expect(result.text).toContain('.fg-red-60')
   expect(result.text).toContain('.animation\\:fade\\|1s')
   expect(result.text).not.toContain('--color-red-60:')
   expect(result.text).not.toContain('@keyframes fade{')

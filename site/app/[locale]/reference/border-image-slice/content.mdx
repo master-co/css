@@ -11,16 +11,16 @@ The source below is 96 × 96, with corners that end at coordinate 24. Compare un
 <!-- 24 source units · 12px border paint -->
 <img src="/demo/border-grid.svg" width="96" height="96"
   alt="96 × 96 source with 24-unit violet corners"
-  class="block mb:md" />
+  class="block mb-md" />
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -30,13 +30,13 @@ The source below is 96 × 96, with corners that end at coordinate 24. Compare un
 <!-- 25% of 96 · same slice -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:25%
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -60,13 +60,13 @@ The center is discarded by default. Adding `fill` paints its pale blue region be
 <!-- Center discarded · normal surface -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -76,13 +76,13 @@ The center is discarded by default. Adding `fill` paints its pale blue region be
 <!-- Fill · center painted -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24|fill
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -99,15 +99,15 @@ At `sm`, include the source center with `fill`. Print drops the center while kee
 <!-- Discarded → filled center at sm -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border
          border-image-slice:24@print
          border-image-slice:24|fill@screen&sm">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>

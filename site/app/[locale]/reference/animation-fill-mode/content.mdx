@@ -19,13 +19,13 @@ Compare no fill with forwards fill after a one-second movement. The ordinary pos
 ```html
 <!-- None · returns to base -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:none
              animation-name:layer-slide
@@ -39,13 +39,13 @@ Compare no fill with forwards fill after a one-second movement. The ordinary pos
 ```html
 <!-- Forwards · retains end -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -80,13 +80,13 @@ Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe dur
 ```html
 <!-- Backwards · starting state only -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:backwards
              animation-name:layer-slide
@@ -100,13 +100,13 @@ Both specimens wait 600ms. Backwards fill applies the 24px starting keyframe dur
 ```html
 <!-- Both · starting and ending states -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:both
              animation-name:layer-slide
@@ -136,13 +136,13 @@ Use none to return to ordinary styling during the 600ms delay and after the one-
 ```html
 <!-- None · base before and after -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:none
              animation-name:layer-slide
@@ -172,13 +172,13 @@ Resize before replaying. Below `sm`, both retains the starting and ending states
 ```html
 <!-- Both → none at sm -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:both
              animation-name:layer-slide

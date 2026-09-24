@@ -3,13 +3,13 @@
 
 ## Examples \{#examples\}
 ### Preserve a minimum width \{#preserve-a-minimum-inline-size\}
-`min-w:*` sets a lower bound on physical width. This button prefers 80px but `min-w:32x` keeps it at least 128px wide. Padding and text remain part of its border-box width.
+`min-w:*` sets a lower bound on physical width. This button prefers 80px but `min-w:8rem` keeps it at least 128px wide. Padding and text remain part of its border-box width.
 
 <DemoExample page="min-width" section="preserve-a-minimum-inline-size" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="w:20x min-w:32x p:sm b:0" type="button">Continue</button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="w:5rem min-w:8rem p-sm border-width:0" type="button">Continue</button>
 </div>
 ```
 
@@ -22,17 +22,17 @@ A flex item’s automatic minimum can keep it as wide as an unbreakable child. H
 
 ```html
 <!-- Automatic minimum -->
-<div id="layout" class="flex gap:md w:60x" role="group" aria-label="Available space">
-  <div id="peer" class="flex:0|0|48px p:sm">01</div>
-  <div id="target" class="overflow:clip flex:1|1|0"><span id="item-3" class="block w:56x p:sm">Unbreakable content</span></div>
+<div id="layout" class="flex gap-md w:15rem" role="group" aria-label="Available space">
+  <div id="peer" class="flex:0|0|48px p-sm">01</div>
+  <div id="target" class="overflow:clip flex:1|1|0"><span id="item-3" class="block w:14rem p-sm">Unbreakable content</span></div>
 </div>
 ```
 
 ```html
 <!-- Zero minimum -->
-<div id="layout" class="flex gap:md w:60x" role="group" aria-label="Available space">
-  <div id="peer" class="flex:0|0|48px p:sm">01</div>
-  <div id="target" class="overflow:clip flex:1|1|0 min-w:0"><span id="item-3" class="block w:56x p:sm">Unbreakable content</span></div>
+<div id="layout" class="flex gap-md w:15rem" role="group" aria-label="Available space">
+  <div id="peer" class="flex:0|0|48px p-sm">01</div>
+  <div id="target" class="overflow:clip flex:1|1|0 min-w:0"><span id="item-3" class="block w:14rem p-sm">Unbreakable content</span></div>
 </div>
 ```
 
@@ -45,48 +45,48 @@ The preferred width is constrained by its minimum and maximum. Compare a 140px p
 
 ```html
 <!-- Minimum wins over preference -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:50% min-w:40x max-w:50x p:sm">160px</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:50% min-w:10rem max-w:12.5rem p-sm">160px</div>
 </div>
 ```
 
 ```html
 <!-- Maximum caps preference -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:60x min-w:40x max-w:50x p:sm">200px</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:15rem min-w:10rem max-w:12.5rem p-sm">200px</div>
 </div>
 ```
 
 ```html
 <!-- Minimum wins over maximum -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:60x min-w:56x max-w:48x p:sm">224px</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:15rem min-w:14rem max-w:12rem p-sm">224px</div>
 </div>
 ```
 
 ### Use intrinsic keywords \{#use-intrinsic-keywords\}
-Intrinsic minimums can raise a small preferred width. All three boxes request `w:0` inside a 112px parent. `min-w:min` uses the longest unbreakable word; `min-w:fit` also considers the available width; `min-w:max` keeps the phrase on one line.
+Intrinsic minimums can raise a small preferred width. All three boxes request `w:0` inside a 112px parent. `min-w:min-content` uses the longest unbreakable word; `min-w:fit-content` also considers the available width; `min-w:max-content` keeps the phrase on one line.
 
 <DemoExample page="min-width" section="use-intrinsic-keywords" />
 
 ```html
 <!-- Minimum content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:0 min-w:min p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:0 min-w:min-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
 ```html
 <!-- Fit content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:0 min-w:fit p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:0 min-w:fit-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
 ```html
 <!-- Maximum content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:0 min-w:max p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:0 min-w:max-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
@@ -96,7 +96,7 @@ Resize past `sm` to raise the lower bound from zero to 160px. The preferred widt
 <DemoExample page="min-width" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:20x min-w:0 p:sm min-w:40x@sm">Floor</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:5rem min-w:0 p-sm min-w:10rem@sm">Floor</div>
 </div>
 ```

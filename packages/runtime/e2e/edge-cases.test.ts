@@ -85,7 +85,7 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
 
   const disconnected = await page.evaluate(async () => {
     globalThis.__MASTER_CSS_RUNTIME_TEST__.disconnect()
-    document.body.innerHTML = '<div class="font:bold"></div>'
+    document.body.innerHTML = '<div class="font-bold"></div>'
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
@@ -106,16 +106,16 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
     }
   })
   expect(reconnected.counts).toEqual({
-    'font:bold': 1
+    'font-bold': 1
   })
   expect(reconnected.text).toContain(':root{--font-weight-bold:700}')
-  expect(reconnected.text).toContain('.font\\:bold{font-weight:var(--font-weight-bold)}')
+  expect(reconnected.text).toContain('.font-bold{font-weight:var(--font-weight-bold)}')
   expect(reconnected.text).not.toContain('.block{display:block}')
 })
 test('mutation removals keep counts immediate and retain CSSOM rules after settle', async ({ page }) => {
   await init(page)
   await page.evaluate(() => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
   })
   await waitForRuntimeRuleFlush(page)
 
@@ -124,33 +124,33 @@ test('mutation removals keep counts immediate and retain CSSOM rules after settl
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
       text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(duringFlushWindow.counts).toEqual({})
   expect(duringFlushWindow.hasClassUtility).toBe(true)
-  expect(duringFlushWindow.text).toContain('.fg\\:red-60')
+  expect(duringFlushWindow.text).toContain('.fg-red-60')
 
   await waitForRuntimeRemovalFlush(page)
   const afterFlush = await page.evaluate(() => ({
     counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
     text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterFlush).toEqual({
     counts: {},
     hasClassUtility: true,
-    retainedClassNames: ['fg:red-60'],
-    text: expect.stringContaining('.fg\\:red-60')
+    retainedClassNames: ['fg-red-60'],
+    text: expect.stringContaining('.fg-red-60')
   })
 
   const afterForcedCleanup = await page.evaluate(() => ({
     removedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules(),
     counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
     text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterForcedCleanup).toEqual({
@@ -166,8 +166,8 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   await init(page)
   await page.evaluate(() => {
     document.body.innerHTML = [
-      '<p id="keep" class="fg:blue-60"></p>',
-      '<p id="target" class="fg:red-60 bg:green-60 animation:fade|1s"></p>'
+      '<p id="keep" class="fg-blue-60"></p>',
+      '<p id="target" class="fg-red-60 bg-green-60 animation:fade|1s"></p>'
     ].join('')
   })
   await waitForRuntimeRuleFlush(page)
@@ -191,8 +191,8 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
       sheetText
     }
   })
-  expect(afterBatchFlush.classUtilities).toEqual(['fg:blue-60', 'fg:red-60', 'bg:green-60', 'animation:fade|1s'])
-  expect(afterBatchFlush.retainedClassNames).toEqual(['fg:red-60', 'bg:green-60', 'animation:fade|1s'])
+  expect(afterBatchFlush.classUtilities).toEqual(['fg-blue-60', 'fg-red-60', 'bg-green-60', 'animation:fade|1s'])
+  expect(afterBatchFlush.retainedClassNames).toEqual(['fg-red-60', 'bg-green-60', 'animation:fade|1s'])
   expect(afterBatchFlush.themeCounts).toEqual({
     'color-blue-60': 1,
     'color-red-60': 1,
@@ -201,13 +201,13 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   expect(afterBatchFlush.animationCounts).toEqual({
     fade: 1
   })
-  expect(afterBatchFlush.text).toContain('.fg\\:blue-60')
-  expect(afterBatchFlush.text).toContain('.fg\\:red-60')
-  expect(afterBatchFlush.text).toContain('.bg\\:green-60')
+  expect(afterBatchFlush.text).toContain('.fg-blue-60')
+  expect(afterBatchFlush.text).toContain('.fg-red-60')
+  expect(afterBatchFlush.text).toContain('.bg-green-60')
   expect(afterBatchFlush.text).toContain('@keyframes fade')
-  expect(afterBatchFlush.sheetText).toContain('.fg\\:blue-60')
-  expect(afterBatchFlush.sheetText).toContain('.fg\\:red-60')
-  expect(afterBatchFlush.sheetText).toContain('.bg\\:green-60')
+  expect(afterBatchFlush.sheetText).toContain('.fg-blue-60')
+  expect(afterBatchFlush.sheetText).toContain('.fg-red-60')
+  expect(afterBatchFlush.sheetText).toContain('.bg-green-60')
   expect(afterBatchFlush.sheetText).toContain('@keyframes fade')
 
   const afterForcedCleanup = await page.evaluate(() => {
@@ -227,25 +227,25 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
     }
   })
   expect(afterForcedCleanup.removedCount).toBe(3)
-  expect(afterForcedCleanup.classUtilities).toEqual(['fg:blue-60'])
+  expect(afterForcedCleanup.classUtilities).toEqual(['fg-blue-60'])
   expect(afterForcedCleanup.retainedClassNames).toEqual([])
   expect(afterForcedCleanup.themeCounts).toEqual({
     'color-blue-60': 1
   })
   expect(afterForcedCleanup.animationCounts).toEqual({})
-  expect(afterForcedCleanup.text).toContain('.fg\\:blue-60')
-  expect(afterForcedCleanup.text).not.toContain('.fg\\:red-60')
-  expect(afterForcedCleanup.text).not.toContain('.bg\\:green-60')
+  expect(afterForcedCleanup.text).toContain('.fg-blue-60')
+  expect(afterForcedCleanup.text).not.toContain('.fg-red-60')
+  expect(afterForcedCleanup.text).not.toContain('.bg-green-60')
   expect(afterForcedCleanup.text).not.toContain('@keyframes fade')
-  expect(afterForcedCleanup.sheetText).toContain('.fg\\:blue-60')
-  expect(afterForcedCleanup.sheetText).not.toContain('.fg\\:red-60')
-  expect(afterForcedCleanup.sheetText).not.toContain('.bg\\:green-60')
+  expect(afterForcedCleanup.sheetText).toContain('.fg-blue-60')
+  expect(afterForcedCleanup.sheetText).not.toContain('.fg-red-60')
+  expect(afterForcedCleanup.sheetText).not.toContain('.bg-green-60')
   expect(afterForcedCleanup.sheetText).not.toContain('@keyframes fade')
 
   const afterDirectMutation = await page.evaluate(() => {
     const runtime = globalThis.__MASTER_CSS_RUNTIME_TEST__
     runtime.ensureClassRules(['block'])
-    runtime.deleteClassRules(['fg:blue-60'])
+    runtime.deleteClassRules(['fg-blue-60'])
     const sheetText = Array.from(runtime.style!.sheet!.cssRules)
       .map((cssRule) => cssRule.cssText)
       .join('\n')
@@ -260,13 +260,13 @@ test('mutation removal flush keeps remaining native CSSOM references valid', asy
   expect(afterDirectMutation.themeCounts).toEqual({})
   expect(afterDirectMutation.text).toBe('@layer utilities{.block{display:block}}')
   expect(afterDirectMutation.sheetText).toContain('.block')
-  expect(afterDirectMutation.sheetText).not.toContain('.fg\\:blue-60')
+  expect(afterDirectMutation.sheetText).not.toContain('.fg-blue-60')
 })
 
 test('re-adding a retained class cancels retained cleanup', async ({ page }) => {
   await init(page)
   await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => resolve())
@@ -277,40 +277,40 @@ test('re-adding a retained class cancels retained cleanup', async ({ page }) => 
   await waitForRuntimeRemovalFlush(page)
 
   const afterReadd = await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     const removedCount = globalThis.__MASTER_CSS_RUNTIME_TEST__.flushRetainedClassRules()
     return {
       removedCount,
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
       retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
       text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
   expect(afterReadd.counts).toEqual({
-    'fg:red-60': 1
+    'fg-red-60': 1
   })
   expect(afterReadd.removedCount).toBe(0)
   expect(afterReadd.retainedClassNames).toEqual([])
   expect(afterReadd.hasClassUtility).toBe(true)
-  expect(afterReadd.text).toContain('.fg\\:red-60')
+  expect(afterReadd.text).toContain('.fg-red-60')
 })
 
 test('direct remove deletes retained CSSOM rules synchronously', async ({ page }) => {
   await init(page)
   await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
   })
   await waitForRuntimeRemovalFlush(page)
 
   const afterDirectRemove = await page.evaluate(() => {
-    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg:red-60'])
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg-red-60'])
     return {
       retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
       text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
   })
@@ -365,7 +365,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
         element.className = `z:${index}`
         wrapper.append(element)
       }
-      document.body.innerHTML = '<p class="fg:blue-60"></p>'
+      document.body.innerHTML = '<p class="fg-blue-60"></p>'
       document.body.append(wrapper)
       await waitFrames(2)
       wrapper.remove()
@@ -387,7 +387,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
         retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
         hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         queuedIdleCount: idleCallbacks.size
       }
 
@@ -397,7 +397,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
         retainedHasReusedClass: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.has('z:0'),
         hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text,
         queuedIdleCount: idleCallbacks.size
       }
@@ -407,7 +407,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
         retainedCount: globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames.size,
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
         hasReusedClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('z:0'),
-        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:blue-60'),
+        hasActiveClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-blue-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
@@ -423,14 +423,14 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
     }
   })
   expect(result.beforeHardLimitCleanup.counts).toEqual({
-    'fg:blue-60': 1
+    'fg-blue-60': 1
   })
   expect(result.beforeHardLimitCleanup.retainedCount).toBe(520)
   expect(result.beforeHardLimitCleanup.retainedHasReusedClass).toBe(true)
   expect(result.beforeHardLimitCleanup.queuedIdleCount).toBe(1)
 
   expect(result.afterReuseBeforeCleanup.counts).toEqual({
-    'fg:blue-60': 1,
+    'fg-blue-60': 1,
     'z:0': 1
   })
   expect(result.afterReuseBeforeCleanup.retainedCount).toBe(519)
@@ -440,7 +440,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
   expect(result.afterReuseBeforeCleanup.queuedIdleCount).toBe(1)
 
   expect(result.afterHardLimitCleanup.counts).toEqual({
-    'fg:blue-60': 1,
+    'fg-blue-60': 1,
     'z:0': 1
   })
   expect(result.afterHardLimitCleanup.retainedCount).toBeLessThanOrEqual(128)
@@ -448,19 +448,19 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
   expect(result.afterHardLimitCleanup.retainedHasReusedClass).toBe(false)
   expect(result.afterHardLimitCleanup.hasReusedClassUtility).toBe(true)
   expect(result.afterHardLimitCleanup.hasActiveClassUtility).toBe(true)
-  expect(result.afterHardLimitCleanup.text).toContain('.fg\\:blue-60')
+  expect(result.afterHardLimitCleanup.text).toContain('.fg-blue-60')
   expect(result.afterHardLimitCleanup.text).toContain('.z\\:0')
   expect(result.afterHardLimitCleanup.queuedIdleCount).toBe(0)
 
   expect(result.afterForcedCleanup.removedCount).toBe(result.afterHardLimitCleanup.retainedCount)
   expect(result.afterForcedCleanup.retainedCount).toBe(0)
   expect(result.afterForcedCleanup.counts).toEqual({
-    'fg:blue-60': 1,
+    'fg-blue-60': 1,
     'z:0': 1
   })
   expect(result.afterForcedCleanup.hasReusedClassUtility).toBe(true)
   expect(result.afterForcedCleanup.hasActiveClassUtility).toBe(true)
-  expect(result.afterForcedCleanup.text).toContain('.fg\\:blue-60')
+  expect(result.afterForcedCleanup.text).toContain('.fg-blue-60')
   expect(result.afterForcedCleanup.text).toContain('.z\\:0')
   expect(result.afterForcedCleanup.text).not.toContain('.z\\:1')
 })
@@ -468,7 +468,7 @@ test('retained hard-limit cleanup returns to soft target and preserves active cl
 test('mutation removals are canceled when a class returns before flush', async ({ page }) => {
   await init(page)
   await page.evaluate(() => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
   })
   await waitForRuntimeRuleFlush(page)
 
@@ -480,12 +480,12 @@ test('mutation removals are canceled when a class returns before flush', async (
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60')
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60')
     }
   })
   expect(duringFlushWindow).toEqual({
     counts: {
-      'fg:red-60': 1
+      'fg-red-60': 1
     },
     hasClassUtility: true
   })
@@ -493,37 +493,37 @@ test('mutation removals are canceled when a class returns before flush', async (
   await waitForRuntimeRemovalFlush(page)
   const afterFlush = await page.evaluate(() => ({
     counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+    hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
     text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
   }))
   expect(afterFlush.counts).toEqual({
-    'fg:red-60': 1
+    'fg-red-60': 1
   })
   expect(afterFlush.hasClassUtility).toBe(true)
-  expect(afterFlush.text).toContain('.fg\\:red-60')
+  expect(afterFlush.text).toContain('.fg-red-60')
 })
 
 test('direct ensureClassRules and deleteClassRules stay synchronous', async ({ page }) => {
   await init(page)
 
   const result = await page.evaluate(async () => {
-    globalThis.__MASTER_CSS_RUNTIME_TEST__.ensureClassRules(['fg:red-60'])
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.ensureClassRules(['fg-red-60'])
     const added = {
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
       text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
     }
-    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg:red-60'])
+    globalThis.__MASTER_CSS_RUNTIME_TEST__.deleteClassRules(['fg-red-60'])
     return {
       added,
       removed: {
-        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
     }
   })
 
   expect(result.added.hasClassUtility).toBe(true)
-  expect(result.added.text).toContain('.fg\\:red-60')
+  expect(result.added.text).toContain('.fg-red-60')
   expect(result.removed).toEqual({
     hasClassUtility: false,
     text: ''
@@ -549,14 +549,14 @@ test('observer-added cold classes update counts immediately and flush rules befo
 
     try {
       const target = document.createElement('p')
-      target.className = 'fg:red-60'
+      target.className = 'fg-red-60'
       document.body.append(target)
       await new Promise(resolve => setTimeout(resolve, 0))
 
       const beforeFlush = {
         queuedFrameCount: queuedFrames.size,
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
@@ -567,7 +567,7 @@ test('observer-added cold classes update counts immediately and flush rules befo
 
       const afterFlush = {
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
-        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
 
@@ -581,22 +581,22 @@ test('observer-added cold classes update counts immediately and flush rules befo
   expect(result.beforeFlush).toEqual({
     queuedFrameCount: 1,
     counts: {
-      'fg:red-60': 1
+      'fg-red-60': 1
     },
     hasClassUtility: false,
     text: ''
   })
   expect(result.afterFlush.counts).toEqual({
-    'fg:red-60': 1
+    'fg-red-60': 1
   })
   expect(result.afterFlush.hasClassUtility).toBe(true)
-  expect(result.afterFlush.text).toContain('.fg\\:red-60')
+  expect(result.afterFlush.text).toContain('.fg-red-60')
 })
 
 test('observer-added retained classes are reused immediately', async ({ page }) => {
   await init(page)
   await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => resolve())
@@ -621,13 +621,13 @@ test('observer-added retained classes are reused immediately', async ({ page }) 
     }
 
     try {
-      document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+      document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
       await new Promise(resolve => setTimeout(resolve, 0))
       return {
         queuedFrameCount: queuedFrames.size,
         counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts),
         retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames],
-        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+        hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
         text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text
       }
     } finally {
@@ -637,12 +637,12 @@ test('observer-added retained classes are reused immediately', async ({ page }) 
   })
 
   expect(result.counts).toEqual({
-    'fg:red-60': 1
+    'fg-red-60': 1
   })
   expect(result.queuedFrameCount).toBe(0)
   expect(result.retainedClassNames).toEqual([])
   expect(result.hasClassUtility).toBe(true)
-  expect(result.text).toContain('.fg\\:red-60')
+  expect(result.text).toContain('.fg-red-60')
 })
 
 test('observer queued cold classes removed before flush are skipped', async ({ page }) => {
@@ -712,7 +712,7 @@ test('observer queued cold classes removed before flush are skipped', async ({ p
 test('disconnect and dispose clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -734,7 +734,7 @@ test('disconnect and dispose clear pending mutation additions and removals', asy
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
   const disposed = await page.evaluate(async (manifest) => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))

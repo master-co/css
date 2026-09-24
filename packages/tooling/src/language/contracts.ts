@@ -1,3 +1,4 @@
+import type { MasterCSSLanguageInspection as BindingInspection } from '@master/css-binding/tooling'
 import type { MasterCSSHydrationRule } from '@master/css-schema/hydration-manifest'
 import type {
   MasterCSSManifestVariable,
@@ -11,6 +12,7 @@ export type MasterCSSLanguageClassKind =
   | 'semantic'
   | 'pattern'
   | 'declaration'
+  | 'token'
 
 export interface MasterCSSLanguageClassListContext {
   readonly start: number
@@ -60,7 +62,7 @@ export interface MasterCSSFormatDirectivesResult {
 export interface MasterCSSLanguageClass {
   readonly className: string
   readonly kind: MasterCSSLanguageClassKind
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
+  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token' | 'value')[]
   readonly keyToken?: string
   readonly valueToken?: string
   readonly stateToken?: string
@@ -104,9 +106,10 @@ export interface MasterCSSLanguageInspection {
   readonly valueToken?: string
   readonly stateToken?: string
   readonly important: boolean
-  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'variable' | 'value')[]
+  readonly matcherTypes: readonly ('static' | 'pattern' | 'key' | 'token' | 'value')[]
   readonly variables: readonly MasterCSSLanguageClassVariable[]
   readonly rules: readonly MasterCSSHydrationRule[]
+  readonly diagnostics?: BindingInspection['diagnostics']
   readonly text: string
 }
 
@@ -128,6 +131,8 @@ export interface MasterCSSLanguageCompletionIndex {
 
 export interface MasterCSSLanguageColorPresentation {
   readonly version: 2
+  readonly editable: boolean
+  readonly replacementPrefix?: string
   readonly colorToken: string
   readonly sourceFormat?: MasterCSSLanguageColorFormat
 }

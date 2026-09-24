@@ -147,7 +147,7 @@ same two-phase API:
 
 ```ts
 const bundle = compiler.prepareStylesheetBundle({
-  source: 'body{margin:0}#master-css-slot{--slot:0}body{color:green}',
+  source: 'body{margin:0}#master-css-slot{--slot:0}body{color-green}',
   from: 'bundle.css',
   slotCSSRule: '#master-css-slot{--slot:0}',
   managed: result // The complete compileStylesheets result above

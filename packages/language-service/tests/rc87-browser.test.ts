@@ -8,7 +8,7 @@ import { SEMANTIC_TOKEN_MODIFIERS, SEMANTIC_TOKEN_TYPES } from '@master/css-tool
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest = createPresetManifest({
-  variables: [{ key: 'brand', value: '#123456' }],
+  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }],
   utilities: [
     {
       name: 'btn',
@@ -44,7 +44,7 @@ function decodeSingleLineBrowserSemanticTokens(source: string, data: ArrayLike<n
 }
 
 test.concurrent('collects browser semantic tokens for HTML class attributes', () => {
-  const source = '<div class="text-align:center fg:brand block btn"></div>'
+  const source = '<div class="text-align:center fg-brand block btn"></div>'
   const tokens = collectBrowserSemanticTokenItems(source, 'html', { manifest })
   const mapped = tokens.map((token) => ({
     text: tokenText(source, token),
@@ -63,7 +63,7 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
 })
 
 test.concurrent('encodes browser role-derived semantic token modifiers', () => {
-  const source = '<div class="{fg:red;block}>li:hover@sm"></div>'
+  const source = '<div class="{fg-red;block}>li:hover@sm"></div>'
   const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
   const tokens = decodeSingleLineBrowserSemanticTokens(source, semanticTokens?.data || [])
   const declarationTerminatorIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationTerminator')
@@ -71,7 +71,7 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 
   expect(tokens).toEqual(expect.arrayContaining([
     { text: '{', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
-    { text: ':', type: 'operator', modifiers: ['declarationSeparator'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationSeparator') },
+    { text: '-', type: 'operator', modifiers: ['declarationSeparator'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationSeparator') },
     { text: ';', type: 'operator', modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
     { text: '}', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
     { text: '>', type: 'operator', modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
@@ -83,7 +83,7 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 
 test.concurrent('collects browser semantic tokens only for CSS directive class-list spans', () => {
   const source = `
-    @safelist "hidden fg:red";
+    @safelist "hidden fg-red";
 
     @theme {
       --color-brand: var(--brand, #123);
@@ -97,7 +97,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 
     @components {
       btn {
-        @compose block fg:brand;
+        @compose block fg-brand;
         &:hover {
           color: var(--brand, red);
         }
@@ -114,7 +114,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
   expect(mapped).toEqual(expect.arrayContaining([
     { text: 'hidden', type: 'enumMember', modifiers: [] },
     { text: 'fg', type: 'property', modifiers: [] },
-    { text: 'red', type: 'enumMember', modifiers: [] },
+    { text: 'red', type: 'variable', modifiers: [] },
     { text: 'block', type: 'enumMember', modifiers: [] },
     { text: 'brand', type: 'variable', modifiers: [] }
   ]))
@@ -140,7 +140,7 @@ test.concurrent('does not collect browser semantic tokens for managed syntax wit
         font-size: --value();
 
         @light {
-          color: var(--brand);
+          color: var(--color-brand);
         }
       }
     }

@@ -7,7 +7,7 @@ export type MasterCSSManifestDefaultMode = 'light' | 'dark' | 'none' | string
 export type MasterCSSManifestModeTrigger = 'class' | 'media' | 'host'
 export type MasterCSSManifestVariantToken = `:${string}` | `::${string}` | `@${string}`
 export type MasterCSSManifestUtilityKind = 'number' | 'color' | 'image'
-/** Defaults to single for variable/value matchers; multiple is an explicit opt-in. */
+/** Defaults to single for raw value matchers; multiple is an explicit opt-in. */
 export type MasterCSSManifestUtilityMatcherValueSegments = 'single' | 'multiple'
 
 export type MasterCSSManifestCSSDeclarationPrimitive = string | number | null
@@ -69,7 +69,6 @@ export type MasterCSSManifestSelectors = Record<string, MasterCSSManifestSelecto
 
 export interface MasterCSSManifestSettings {
   rootSize?: number
-  baseUnit?: number
   defaultMode?: MasterCSSManifestDefaultMode
   scope?: string
   important?: boolean
@@ -121,7 +120,7 @@ export type MasterCSSManifestUtilityMatcher =
   | { type: 'static'; name: string }
   | { type: 'pattern'; prefix: string; values: string[]; valueMap?: Record<string, string> }
   | { type: 'key'; keys: string[] }
-  | { type: 'variable'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
+  | { type: 'token'; prefix: string }
   | { type: 'value'; keys: string[]; segments?: MasterCSSManifestUtilityMatcherValueSegments }
 
 export type MasterCSSManifestVariableAlias = [key: string, name: string]

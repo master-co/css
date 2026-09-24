@@ -8,9 +8,9 @@ Use `justify-items:center` to center each grid item in its own area along the in
 <DemoExample page="justify-items" section="align-grid-items-inline" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:center gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">Alpha</div>
-  <div id="peer" class="p:sm">Beta</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:center gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">Alpha</div>
+  <div id="peer" class="p-sm">Beta</div>
 </div>
 ```
 
@@ -29,9 +29,9 @@ This sets the default for children with `justify-self:auto`. It does not distrib
 <DemoExample page="justify-items" section="stretch-items-by-default" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">Auto width</div>
-  <div id="peer" class="w:20x p:sm">80px</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">Auto width</div>
+  <div id="peer" class="w:5rem p-sm">80px</div>
 </div>
 ```
 
@@ -43,9 +43,9 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="justify-items" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap:md w:70x max-w:full justify-items:center@sm">
-  <div id="target" class="p:sm">Alpha</div>
-  <div id="peer" class="p:sm">Beta</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px items-start justify-items:stretch gap-md w:17.5rem max-w:100% justify-items:center@sm">
+  <div id="target" class="p-sm">Alpha</div>
+  <div id="peer" class="p-sm">Beta</div>
 </div>
 ```
 

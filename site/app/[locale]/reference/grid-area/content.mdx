@@ -8,10 +8,10 @@
 <DemoExample page="grid-area" section="place-an-item-by-grid-lines" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-template-rows:48px|64px|64px gap:md w:70x max-w:full">
-  <header id="peer" class="grid-area:1/1/2/4 p:sm">Header</header>
-  <aside id="item-3" class="grid-area:2/1/4/2 p:sm">Nav</aside>
-  <section id="target" class="grid-area:2/2/4/4 p:sm">Content</section>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:48px|64px|64px gap-md w:17.5rem max-w:100%">
+  <header id="peer" class="grid-area:1/1/2/4 p-sm">Header</header>
+  <aside id="item-3" class="grid-area:2/1/4/2 p-sm">Nav</aside>
+  <section id="target" class="grid-area:2/2/4/4 p-sm">Content</section>
 </div>
 ```
 
@@ -23,11 +23,11 @@ Use `span|2` for an end value to cover two tracks from the starting line. Here `
 <DemoExample page="grid-area" section="span-tracks" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-area:2/2/span|2/span|2 p:sm">2 × 2 tracks</div>
-  <div id="peer" class="p:sm">01</div>
-  <div id="item-3" class="p:sm">02</div>
-  <div id="item-4" class="p:sm">03</div>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-area:2/2/span|2/span|2 p-sm">2 × 2 tracks</div>
+  <div id="peer" class="p-sm">01</div>
+  <div id="item-3" class="p-sm">02</div>
+  <div id="item-4" class="p-sm">03</div>
 </div>
 ```
 
@@ -39,10 +39,10 @@ Use an area name from the parent’s [grid-template-areas](/reference/grid-templ
 <DemoExample page="grid-area" section="use-a-named-area" />
 
 ```html
-<div id="layout" class="grid grid-template-areas:'hero\20hero'|'nav\20main' grid-template-columns:80px|1fr grid-template-rows:64px|80px gap:md w:70x max-w:full">
-  <section id="target" class="grid-area:hero p:sm">Hero</section>
-  <aside id="peer" class="grid-area:nav p:sm">Nav</aside>
-  <section id="item-3" class="grid-area:main p:sm">Content</section>
+<div id="layout" class="grid grid-template-areas:'hero\20hero'|'nav\20main' grid-template-columns:80px|1fr grid-template-rows:64px|80px gap-md w:17.5rem max-w:100%">
+  <section id="target" class="grid-area:hero p-sm">Hero</section>
+  <aside id="peer" class="grid-area:nav p-sm">Nav</aside>
+  <section id="item-3" class="grid-area:main p-sm">Content</section>
 </div>
 ```
 
@@ -54,10 +54,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-area" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap:md w:70x max-w:full">
-  <div id="target" class="grid-area:auto p:sm grid-area:2/2/span|2/span|2@sm">Target</div>
-  <div id="peer" class="p:sm">01</div>
-  <div id="item-3" class="p:sm">02</div>
-  <div id="item-4" class="p:sm">03</div>
+<div id="layout" class="grid grid-cols:3 grid-template-rows:repeat(3,48px) gap-md w:17.5rem max-w:100%">
+  <div id="target" class="grid-area:auto p-sm grid-area:2/2/span|2/span|2@sm">Target</div>
+  <div id="peer" class="p-sm">01</div>
+  <div id="item-3" class="p-sm">02</div>
+  <div id="item-4" class="p-sm">03</div>
 </div>
 ```

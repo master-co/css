@@ -146,7 +146,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py:5xl; }'
+      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')
@@ -169,7 +169,7 @@ describe('Next style CSS loader', () => {
     const result = await runStylesheetLoader(
       root,
       pagePath,
-      '@reference "./globals.css"; .home-section { @compose py:5xl; }'
+      '@reference "./globals.css"; .home-section { @compose py-5xl; }'
     )
 
     expect(result.content).toContain('.home-section{padding-block:var(--spacing-5xl)}')

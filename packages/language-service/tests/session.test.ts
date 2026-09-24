@@ -23,10 +23,10 @@ function createService(manifest: MasterCSSManifest = defaultManifest) {
 describe('Rust-backed language service', () => {
   test('uses Rust for document contexts and hover inspection', () => {
     const service = createService()
-    const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="fg:red:hover"></div>')
+    const document = TextDocument.create('file:///index.html', 'html', 1, '<div class="fg-red:hover"></div>')
     const position = document.positionAt(18)
 
-    expect(service.getClassPosition(document, position)?.token).toBe('fg:red:hover')
+    expect(service.getClassPosition(document, position)?.token).toBe('fg-red:hover')
     expect(service.inspectSyntax(document, position)?.contents).toBeTruthy()
   })
 
@@ -90,7 +90,7 @@ describe('Rust-backed language service', () => {
       'file:///index.html',
       'html',
       1,
-      '<div class="fg:runtime-brand"></div>'
+      '<div class="fg-runtime-brand"></div>'
     )
 
     expect(await service.renderSyntaxColors(document)).toHaveLength(1)

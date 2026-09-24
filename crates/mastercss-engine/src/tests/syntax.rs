@@ -74,8 +74,8 @@ fn renders_selector_condition_layer_and_important_state() {
             "block!",
             "@layer utilities{.block\\!{display:block!important}}",
         ),
-        ("w:1x", "@layer utilities{.w\\:1x{width:0.25rem}}"),
-        ("m:-1x", "@layer utilities{.m\\:-1x{margin:-.25rem}}"),
+        ("w:0.25rem", "@layer utilities{.w\\:0\\.25rem{width:0.25rem}}"),
+        ("m:-0.25rem", "@layer utilities{.m\\:-0\\.25rem{margin:-0.25rem}}"),
         (
             "block:before",
             "@layer utilities{.block\\:before::before{display:block}}",
@@ -264,12 +264,12 @@ fn separates_child_selectors_from_dynamic_values() {
     engine.ensure_class_rules([class_name]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.bg\\:transparent_\\:is\\(\\.monaco-editor\\,\\.monaco-editor-background\\,\\.monaco-editor_\\.margin\\) :is(.monaco-editor,.monaco-editor-background,.monaco-editor .margin){background-color:transparent}}"
+        "@layer utilities{.bg\\:transparent_\\:is\\(\\.monaco-editor\\,\\.monaco-editor-background\\,\\.monaco-editor_\\.margin\\) :is(.monaco-editor,.monaco-editor-background,.monaco-editor .margin){background:transparent}}"
     );
 }
 
 #[test]
-fn preserves_pattern_utility_precedence_inside_groups() {
+fn native_property_precedes_overlapping_enum_name_inside_groups() {
     let manifest = r#"{
           "version":1,
           "utilities":[{
@@ -285,7 +285,7 @@ fn preserves_pattern_utility_precedence_inside_groups() {
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.\\{text-wrap\\:pretty\\}{text-wrap:wrap}}"
+        "@layer utilities{.\\{text-wrap\\:pretty\\}{text-wrap:pretty}}"
     );
 }
 
@@ -378,32 +378,31 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
             }
           ]},
           "utilities":[{
-            "id":"bg:<~color|color>",
+            "id":"bg-<~color>",
             "type":0,
             "kind":"color",
             "variableAliasRefs":["~color"],
             "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
             "matchers":[
-              {"type":"variable","keys":["bg"]},
-              {"type":"value","keys":["bg"]}
+              {"type":"token","prefix":"bg-"}
             ]
           }]
         }"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     assert_eq!(
-        engine.native_declaration_candidates(["bg:stripe"]).unwrap(),
+        engine.native_declaration_candidates(["bg:var(--stripe)"]).unwrap(),
         vec![NativeDeclarationCandidateIr {
-            class_name: "bg:stripe".into(),
+            class_name: "bg:var(--stripe)".into(),
             property: "background".into(),
             value: "var(--stripe)".into(),
         }]
     );
     engine
-        .ensure_class_rules_with_native_support(["bg:stripe"], &[true])
+        .ensure_class_rules_with_native_support(["bg:var(--stripe)"], &[true])
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
+        "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
     );
 }
 
@@ -426,13 +425,13 @@ fn preserves_native_alias_matchers_for_shared_declarations() {
         .ensure_class_rules_with_native_support(["background:var(--stripe)"], &[true])
         .unwrap();
     engine
-        .ensure_class_rules_with_native_support(["bg:stripe"], &[true])
+        .ensure_class_rules_with_native_support(["bg:var(--stripe)"], &[true])
         .unwrap();
 
-    assert!(engine.inspect("bg:stripe").unwrap().valid);
+    assert!(engine.inspect("bg:var(--stripe)").unwrap().valid);
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:stripe{background:var(--stripe)}}"
+        "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
     );
 }
 
@@ -449,14 +448,14 @@ fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
             "type":0,
             "variableAliasRefs":["color"],
             "emit":{"type":"property","property":"color"},
-            "matchers":[{"type":"variable","keys":["fg"]}]
+            "matchers":[{"type":"token","prefix":"fg-"}]
           }]
         }"##;
     let mut engine = EngineSession::create(manifest).unwrap();
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.fg\\:brand{color:#123}}"
+        "@layer utilities{.fg-brand{color:#123}}"
     );
     assert!(
         engine
@@ -496,14 +495,14 @@ fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
             "type":0,
             "variableAliasRefs":["color-surface"],
             "emit":{"type":"property","property":"background-color"},
-            "matchers":[{"type":"variable","keys":["surface"]}]
+            "matchers":[{"type":"token","prefix":"surface-"}]
           }]
         }"##;
     let mut engine = EngineSession::create(manifest).unwrap();
-    engine.ensure_class_rules(["surface:raised"]).unwrap();
+    engine.ensure_class_rules(["surface-raised"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface\\:raised{background-color:var(--color-surface-raised)}}"
+        "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
     );
     assert_eq!(
         engine
@@ -522,7 +521,7 @@ fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
     assert!(engine.css_text().contains("--color-surface-raised:#fff"));
     assert!(!engine.css_text().contains("--color-white:"));
 
-    engine.delete_class_rules(["surface:raised"]).unwrap();
+    engine.delete_class_rules(["surface-raised"]).unwrap();
     assert_eq!(engine.css_text(), "");
 }
 

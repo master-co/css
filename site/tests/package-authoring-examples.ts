@@ -55,7 +55,7 @@ export async function verifyPackageAuthoringExamples() {
     const local = fences.find(f => f.name === 'components/Button.module.css')!
     const compiled = await compileRenderedStylesheet(files.write(local.name, local.text), local.text, options)
     assert.deepEqual(compiled.diagnostics.filter(d => d.severity === 'error'), [])
-    assert.match(compiled.css, /\.button:focus-visible\{outline:2px solid var\(--color-brand\);outline-offset:3px\}/)
+    assert.match(compiled.css, /\.button:focus-visible\{outline-width:2px solid var\(--color-brand\);outline-offset:3px\}/)
     assert.match(compiled.css, /\.button:hover/)
     assert.doesNotMatch(compiled.css, /@reference|@compose/)
 

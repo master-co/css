@@ -8,20 +8,20 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 const runtimeClassNames = [
   'block',
   'text:center',
-  'bg:red-60',
+  'bg-red-60',
   'fg:primary',
-  'm:4x',
-  'pb:8x:not(:last)',
+  'm:1rem',
+  'pb:2rem:not(:last)',
   'w:calc(var(--h)|/|var(--w)*100%)',
   'grid-cols:3',
   'hidden@sm',
   'b:1px|solid|line',
-  'font:.75rem',
+  'font-size:.75rem',
   'round',
   'fixed',
   'animation:fade|1s',
-  'translate:-md',
-  'bg:linear-gradient(current,black)',
+  '-translate-md',
+  'background-image:linear-gradient(currentColor,oklch(0%|0|none))',
   'flex@sm'
 ]
 

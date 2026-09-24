@@ -9,8 +9,8 @@ Use `contain:content` to combine layout, paint and style containment. It does no
 
 ```html
 <!-- @MARK contain:content -->
-<section class="h:32x w:48x contain:content">
-  <div class="h:20x w:3xs">Wide content</div>
+<section class="h:8rem w:12rem contain:content">
+  <div class="h:5rem w-3xs">Wide content</div>
 </section>
 ```
 
@@ -28,8 +28,8 @@ Use `contain:paint` to prevent descendants from painting beyond the panel. The v
 
 ```html
 <!-- @MARK contain:paint -->
-<div class="h:32x w:48x contain:paint">
-  <div class="h:20x w:3xs">Wide content</div>
+<div class="h:8rem w:12rem contain:paint">
+  <div class="h:5rem w-3xs">Wide content</div>
 </div>
 ```
 
@@ -40,8 +40,8 @@ Reset containment on the element that owns it. A child with `contain:none` canno
 
 ```html
 <!-- @MARK contain:none -->
-<div class="h:32x w:48x contain:paint contain:none@sm">
-  <div class="h:20x w:3xs">Wide content</div>
+<div class="h:8rem w:12rem contain:paint contain:none@sm">
+  <div class="h:5rem w-3xs">Wide content</div>
 </div>
 ```
 
@@ -51,7 +51,7 @@ Leave painting unconstrained initially, then apply paint containment at `sm`. Th
 <DemoExample page="contain" section="apply-conditionally" />
 
 ```html
-<div class="h:32x w:48x contain:none contain:paint@sm">
-  <div class="h:20x w:3xs">Wide content</div>
+<div class="h:8rem w:12rem contain:none contain:paint@sm">
+  <div class="h:5rem w-3xs">Wide content</div>
 </div>
 ```

@@ -4,7 +4,7 @@ import { createCompiler, type MasterCSSPrepareStylesheetBundleRequest } from '..
 import { createCompilerSync } from '../src/node'
 
 const slotCSSRule = '#master-css-slot{--slot:0}'
-const source = `/*🦀*/@namespace svg 'http://www.w3.org/2000/svg';svg|a{fill:red}${slotCSSRule}svg|a{fill:blue;background-image:url(image.svg?q=1#part)}`
+const source = `/*🦀*/@namespace svg 'http://www.w3.org/2000/svg';svg|a{fill:red}${slotCSSRule}svg|a{fill-blue;background-image:url(image.svg?q=1#part)}`
 
 test('BH-0004 native/Wasm bundle transport reconnects compiled imports and relocates original references', async () => {
   using native = await createCompiler({ binding: 'native' })

@@ -10,26 +10,26 @@ Compare normal paint with multiply across two opaque backdrops. The same blue fo
 ```html
 <!-- Normal · one foreground color -->
 <div class="rel isolate h:160px w:240px
-         max-w:100% bg:#e2e8f0">
+         max-w:100% background-color:#e2e8f0">
   <div aria-hidden="true"
-    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+    class="abs bottom right top w:120px background-color:#c4b5fd"></div>
   <div id="target" role="img"
     aria-label="Blue foreground across two backdrops"
-    class="abs left:72px top:xl size:96px r:lg
-           bg:#2563eb mix-blend-mode:normal"></div>
+    class="abs left:72px top-xl size:96px r-lg
+           background-color:#2563eb mix-blend-mode:normal"></div>
 </div>
 ```
 
 ```html
 <!-- Multiply · combines with both backdrops -->
 <div class="rel isolate h:160px w:240px
-         max-w:100% bg:#e2e8f0">
+         max-w:100% background-color:#e2e8f0">
   <div aria-hidden="true"
-    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+    class="abs bottom right top w:120px background-color:#c4b5fd"></div>
   <div id="target" role="img"
     aria-label="Blue foreground across two backdrops"
-    class="abs left:72px top:xl size:96px r:lg
-           bg:#2563eb mix-blend-mode:multiply"></div>
+    class="abs left:72px top-xl size:96px r-lg
+           background-color:#2563eb mix-blend-mode:multiply"></div>
 </div>
 ```
 
@@ -50,13 +50,13 @@ Open print preview to remove multiply with `mix-blend-mode:normal`. The blue for
 ```html
 <!-- Multiply on screen · normal in print -->
 <div class="rel isolate h:160px w:240px
-         max-w:100% bg:#e2e8f0">
+         max-w:100% background-color:#e2e8f0">
   <div aria-hidden="true"
-    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+    class="abs bottom right top w:120px background-color:#c4b5fd"></div>
   <div id="target" role="img"
     aria-label="Blue foreground across two backdrops"
-    class="abs left:72px top:xl size:96px r:lg
-           bg:#2563eb mix-blend-mode:multiply
+    class="abs left:72px top-xl size:96px r-lg
+           background-color:#2563eb mix-blend-mode:multiply
            mix-blend-mode:normal@print"></div>
 </div>
 ```
@@ -71,13 +71,13 @@ Widen to `sm` to enable multiply. Print always uses normal blending.
 ```html
 <!-- Normal → multiply at sm -->
 <div class="rel isolate h:160px w:240px
-         max-w:100% bg:#e2e8f0">
+         max-w:100% background-color:#e2e8f0">
   <div aria-hidden="true"
-    class="abs bottom right top w:120px bg:#c4b5fd"></div>
+    class="abs bottom right top w:120px background-color:#c4b5fd"></div>
   <div id="target" role="img"
     aria-label="Blue foreground across two backdrops"
-    class="abs left:72px top:xl size:96px r:lg
-           bg:#2563eb mix-blend-mode:normal
+    class="abs left:72px top-xl size:96px r-lg
+           background-color:#2563eb mix-blend-mode:normal
            mix-blend-mode:normal@print
            mix-blend-mode:multiply@screen&sm"></div>
 </div>

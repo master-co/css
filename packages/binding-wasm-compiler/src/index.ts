@@ -5,6 +5,7 @@ interface GeneratedCompilerWasmModule {
     module_or_path: RequestInfo | URL | Response | BufferSource | WebAssembly.Module
   }): Promise<WebAssembly.Exports>
   bindingInfo(): unknown
+  migrateRC(request: unknown): unknown
   inspectCSS(source: string): unknown
   compileNativeCSS(source: string, options?: unknown): unknown
   compileCSSDirectives(source: string, options?: unknown): unknown
@@ -119,6 +120,7 @@ function compilerBindingInfo(module: GeneratedCompilerWasmModule) {
 
 export interface CompilerWasmSession {
   readonly info: unknown
+  migrateRC<T = unknown>(request: unknown): T
   inspectCSS<T = unknown>(source: string): T
   compileNativeCSS<T = unknown>(source: string, options?: unknown): T
   compileCSSDirectives<T = unknown>(source: string, options?: unknown): T
@@ -144,6 +146,7 @@ export async function createCompilerWasmSession(
   const module = await initCompilerWasm(options)
   return {
     info: compilerBindingInfo(module),
+    migrateRC: <T>(request: unknown) => module.migrateRC(request) as T,
     inspectCSS: <T>(source: string) => module.inspectCSS(source) as T,
     compileNativeCSS: <T>(source: string, compileOptions?: unknown) => module.compileNativeCSS(source, compileOptions) as T,
     compileCSSDirectives: <T>(source: string, compileOptions?: unknown) => module.compileCSSDirectives(source, compileOptions) as T,

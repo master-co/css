@@ -10,14 +10,14 @@ Increment a named counter on each heading. The article creates `section` at zero
 ```html
 <!-- Initial 0 · increment 1 -->
 <article class="counter-reset:section">
-  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 id="target" class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Overview</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Installation</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Configuration</h2>
 </article>
 ```
@@ -31,12 +31,12 @@ Use a negative step to count down. Starting `step` at 11 and subtracting one on 
 
 ```html
 <!-- Initial 11 · increment −1 -->
-<ol role="list" reversed start="10" class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|11">
-  <li id="target" class="mb:2xs counter-increment:step|-1 text:blue::before
+<ol role="list" reversed start="10" class="m:0 p:0 font-md leading-lg list-style:none counter-reset:step|11">
+  <li id="target" class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Prepare release notes</li>
-  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+  <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Run validation</li>
-  <li class="mb:2xs counter-increment:step|-1 text:blue::before
+  <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Publish the build</li>
 </ol>
 ```
@@ -51,16 +51,16 @@ Resize past `sm` to increase the step from one to two on screen. The same three 
 ```html
 <!-- Real viewport · increment 1 or 2 -->
 <article class="counter-reset:section">
-  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 id="target" class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before counter-increment:section@print
     counter-increment:section|2@screen&sm">Overview</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before counter-increment:section@print
     counter-increment:section|2@screen&sm">Installation</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before counter-increment:section@print
     counter-increment:section|2@screen&sm">Configuration</h2>
 </article>

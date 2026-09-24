@@ -6,10 +6,7 @@ export interface RawValuePolicyOptions {
 
 export interface CanonicalClassNameOptions {
   preferStaticUtilities?: boolean
-  preferThemeTokens?: boolean
   preferPropertyAliases?: boolean
-  preferVariableReferences?: boolean
-  preferMultiValueTokens?: boolean
   preferCompositionUtilities?: boolean
   preferConditionOrder?: boolean
   preferNativeDeclarationsInCompose?: boolean
@@ -18,10 +15,7 @@ export interface CanonicalClassNameOptions {
 
 export const defaultCanonicalClassNameOptions: Readonly<Required<CanonicalClassNameOptions>> = Object.freeze({
   preferStaticUtilities: true,
-  preferThemeTokens: true,
   preferPropertyAliases: true,
-  preferVariableReferences: true,
-  preferMultiValueTokens: true,
   preferCompositionUtilities: true,
   preferConditionOrder: true,
   preferNativeDeclarationsInCompose: true,

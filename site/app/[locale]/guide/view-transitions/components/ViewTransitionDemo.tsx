@@ -10,8 +10,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration:slow::view-transition-group(panel)',
-  'animation-duration:slow::view-transition-group(title)',
+  'animation-duration-slow::view-transition-group(panel)',
+  'animation-duration-slow::view-transition-group(title)',
 ].join(' ')
 
 const views = [
@@ -68,42 +68,42 @@ export default function ViewTransitionDemo() {
   }
 
   return (
-    <Demo className="container w:full">
+    <Demo className="container w:100%">
       <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
-      <div className="grid grid-cols:1 gap:lg w:full grid-cols:2@container(3xs)">
-        <div className="grid grid-cols:1 gap:sm">
+      <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container(3xs)">
+        <div className="grid grid-cols:1 gap-sm">
           {views.map((view) => {
             const activeButton = view.id === activeId
             return (
               <button
                 aria-pressed={activeButton}
                 className={clsx(
-                  'app-panel min-h:18x p:md text-left cursor:pointer',
-                  'b:1px|solid|base r:md',
-                  activeButton ? 'outline:2px|solid|accent surface:raised' : 'surface:raised:hover'
+                  'app-panel min-h:4.5rem p-md text-left cursor:pointer',
+                  'b:1px|solid|var(--color-line-base) r-md',
+                  activeButton ? 'outline:2px|solid|var(--color-accent) surface-raised' : 'surface-raised:hover'
                 )}
                 key={view.id}
                 onClick={() => selectView(view.id)}
                 type="button"
               >
-                <span className={clsx('inline-block size:2x mr:xs r:full', view.accent)} />
-                <span className="text:sm font:medium">{view.title}</span>
-                <span className="block mt:2xs text:xs text:body">{view.eyebrow}</span>
+                <span className={clsx('inline-block size:0.5rem mr-xs r:100%', view.accent)} />
+                <span className="text-sm font-medium">{view.title}</span>
+                <span className="block mt-2xs text-xs text-body">{view.eyebrow}</span>
               </button>
             )
           })}
         </div>
         <section className={clsx(
-          'app-panel rel overflow:hidden p:lg p:xl@container(3xs)',
+          'app-panel rel overflow:hidden p-lg p-xl@container(3xs)',
           'flex flex-col view-transition-name:panel',
           active.tint
         )}>
-          <p className="m:0 text:xs font:medium text:body">{active.eyebrow}</p>
-          <h3 className="mx:0 mb:0 mt:sm text:2xl font:semibold view-transition-name:title text:3xl@container(3xs)">
+          <p className="m:0 text-xs font-medium text-body">{active.eyebrow}</p>
+          <h3 className="mx:0 mb:0 mt-sm text-2xl font-semibold view-transition-name:title text-3xl@container(3xs)">
             {active.title}
           </h3>
-          <div className={clsx('h:1x w:2em mt:md rounded opacity:.8', active.accent)} />
-          <p className="max-w:full mx:0 mb:0 mt:md text:sm text:body">
+          <div className={clsx('h:0.25rem w:2em mt-md rounded opacity:.8', active.accent)} />
+          <p className="max-w:100% mx:0 mb:0 mt-md text-sm text-body">
             {active.body}
           </p>
         </section>

@@ -23,10 +23,10 @@ type WaterfallScenario = {
 }
 
 const toneClasses = {
-  document: 'bg:neutral fg:white',
-  stylesheet: 'bg:blue fg:white',
-  runtime: 'bg:orange fg:black',
-  manifest: 'bg:green fg:black'
+  document: 'bg-neutral fg-white',
+  stylesheet: 'bg-blue fg-white',
+  runtime: 'bg-orange fg-black',
+  manifest: 'bg-green fg-black'
 } as const
 
 const ticks = [0, 25, 50, 75, 100]
@@ -85,31 +85,31 @@ export default function ResourceWaterfall() {
     <figure>
       <Demo $px={0} $py={0}>
         <div
-          className="overflow-x:auto w:full"
+          className="overflow-x:auto w:100%"
           role="img"
           aria-label="Conceptual waterfall comparing late runtime discovery with preloaded runtime script and default manifest requests, with FCP markers"
         >
           <div style={{ boxSizing: 'border-box', minWidth: '32rem' }}>
-            <div className="grid-cols:1 gap:md">
+            <div className="grid-cols:1 gap-md">
               {scenarios.map((scenario) => (
-                <section key={scenario.title} className="p:md b:1px|solid|base r:lg surface:raised">
-                  <header className="mb:sm">
-                    <h3 className="m:0 font:semibold font:sm text:neutral">{scenario.title}</h3>
-                    <p className="mx:0 mb:0 mt:3xs font:2xs text:gray">{scenario.summary}</p>
+                <section key={scenario.title} className="p-md b:1px|solid|var(--color-line-base) r-lg surface-raised">
+                  <header className="mb-sm">
+                    <h3 className="m:0 font-semibold font-sm text-neutral">{scenario.title}</h3>
+                    <p className="mx:0 mb:0 mt-3xs font-2xs text-gray">{scenario.summary}</p>
                   </header>
-                  <div className="grid gap:2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
+                  <div className="grid gap-2xs" style={{ gridTemplateColumns: '8rem minmax(0, 1fr)' }}>
                     <div />
-                    <div className="rel font:2xs text:gray" style={{ height: '1.5rem' }} aria-hidden="true">
+                    <div className="rel font-2xs text-gray" style={{ height: '1.5rem' }} aria-hidden="true">
                       <span className="abs left:0 top:0">Earlier</span>
                       <span className="abs right:0 top:0">Later</span>
                       <MetricLine metric={scenario.metric} />
-                      <span className="abs bottom:0 left:0 right:0 h:1px bg:line-muted" />
+                      <span className="abs bottom:0 left:0 right:0 h:1px bg-line-muted" />
                     </div>
                     {scenario.rows.map((row) => (
                       <WaterfallRow key={row.resource} row={row} metric={scenario.metric} />
                     ))}
                     <div />
-                    <div className="rel font:2xs" style={{ height: '1.25rem' }}>
+                    <div className="rel font-2xs" style={{ height: '1.25rem' }}>
                       <MetricLabel metric={scenario.metric} />
                     </div>
                   </div>
@@ -129,14 +129,14 @@ export default function ResourceWaterfall() {
 function WaterfallRow({ row, metric }: { row: WaterfallRow, metric: WaterfallScenario['metric'] }) {
   return (
     <>
-      <div className="flex items-center min-w:0 font:2xs font:medium text:neutral">{row.resource}</div>
-      <div className="rel overflow:hidden surface:muted" style={{ height: '2rem' }}>
+      <div className="flex items-center min-w:0 font-2xs font-medium text-neutral">{row.resource}</div>
+      <div className="rel overflow:hidden surface-muted" style={{ height: '2rem' }}>
         <TimelineTicks />
         <MetricLine metric={metric} />
         {row.bars.map((bar) => (
           <div
             key={bar.label}
-            className={`abs top:50% px:2xs flex align-items:center font:2xs font:medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
+            className={`abs top:50% px-2xs flex align-items:center font-2xs font-medium line-height:1 white-space:nowrap overflow:hidden ${toneClasses[bar.tone]}`}
             style={{
               height: '1.25rem',
               left: `${bar.start}%`,
@@ -156,7 +156,7 @@ function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
   return (
     <span
       aria-hidden="true"
-      className="abs bottom:0 top:0 z:1 text:orange"
+      className="abs bottom:0 top:0 z:1 text-orange"
       style={{
         borderLeft: '1px dashed currentColor',
         left: `${metric.position}%`
@@ -168,7 +168,7 @@ function MetricLine({ metric }: { metric: WaterfallScenario['metric'] }) {
 function MetricLabel({ metric }: { metric: WaterfallScenario['metric'] }) {
   return (
     <span
-      className="abs font:2xs font:semibold text:orange"
+      className="abs font-2xs font-semibold text-orange"
       style={{
         left: `${metric.position}%`,
         transform: metric.position > 85 ? 'translateX(-100%)' : 'translateX(-50%)'
@@ -186,7 +186,7 @@ function TimelineTicks() {
         <span
           key={tick}
           aria-hidden="true"
-          className="abs bottom:0 top:0 w:1px bg:line-muted"
+          className="abs bottom:0 top:0 w:1px bg-line-muted"
           style={{ left: `${tick}%` }}
         />
       ))}

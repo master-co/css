@@ -27,29 +27,29 @@ export default function AuthorList({ children, className, size = 'md', isLink }:
           <Wrapper
             key={author.name}
             className={clsx('flex items-center', {
-              'gap:sm': size === 'md',
-              'gap:xs': size === 'sm' || size === 'xs',
+              'gap-sm': size === 'md',
+              'gap-xs': size === 'sm' || size === 'xs',
             })}
             {...(isLink ? { href: author?.url } : {})}
           >
             <Image
               className={clsx('round object-cover', {
-                'outline:1px|solid|subtle outline-offset:3xs': size === 'md'
+                'outline:1px|solid|var(--color-line-subtle) outline-offset-3xs': size === 'md'
               })}
               src={author.image}
               width={avatarSize}
               height={avatarSize}
               alt={author.name}
             />
-            <div className="flex flex-col gap:3xs">
+            <div className="flex flex-col gap-3xs">
               <div className={clsx('', {
-                'font-weight:460 font:sm text:strong': size === 'md',
-                'font:xs': size === 'sm' || size === 'xs',
+                'font-weight:460 font-sm text-strong': size === 'md',
+                'font-xs': size === 'sm' || size === 'xs',
               })}
               >
                 {author.name}
               </div>
-              {size === 'md' && <div className="font:2xs text:muted">{author.twitter}</div>}
+              {size === 'md' && <div className="font-2xs text-muted">{author.twitter}</div>}
             </div>
           </Wrapper>
         )

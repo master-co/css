@@ -7,7 +7,7 @@ const COLOR_PROXY = '#12345678'
 const HEX_PROXY = '123456'
 const ANGLE_PROXY = '45deg'
 const TIME_PROXY = '1s'
-const PLACEHOLDER_CLASS = 'text:muted italic mr:0.125rem:not(:last)'
+const PLACEHOLDER_CLASS = 'text-muted italic mr:0.125rem:not(:last)'
 
 export type SyntaxTrHastNode = {
   type?: string
@@ -30,7 +30,7 @@ export function createSyntaxTrPlaceholderContext() {
   }
   const createPlaceholderProxy = (placeholder: string, value: string, offset: number) => {
     const prefix = value.slice(0, offset)
-    if (prefix.endsWith('animate:') && placeholder === 'name') {
+    if (prefix.endsWith('animate-') && placeholder === 'name') {
       valueProxyMap.set('fade', '<name>')
       valueProxyMap.set('var(--animate-fade)', '<name>')
       return 'fade'

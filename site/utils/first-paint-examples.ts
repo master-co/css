@@ -28,10 +28,10 @@ export function resourceWaterfallsMarkdown() {
   return resourceWaterfalls.map(item => `**${item.title}.** ${item.description}\n\nResources shown: ${item.rows.map(row => row.label).join(', ')}. Illustrative order; no time scale.`).join('\n\n')
 }
 
-export const firstPaintHTML = `<article class="m:md p:lg r:lg b:1px|solid|base font:sans">
-  <p class="m:0 font:xs text:muted">PROJECT NOTES</p>
-  <h2 class="my:sm font:2xl font:semibold leading:sm text:strong">A clearer first view</h2>
-  <p class="m:0 leading:lg text:muted">The same content, with typography and spacing ready to read.</p>
+export const firstPaintHTML = `<article class="m-md p-lg r-lg b:1px|solid|var(--color-line-base) font-sans">
+  <p class="m:0 font-xs text-muted">PROJECT NOTES</p>
+  <h2 class="my-sm font-2xl font-semibold leading-sm text-strong">A clearer first view</h2>
+  <p class="m:0 leading-lg text-muted">The same content, with typography and spacing ready to read.</p>
 </article>`
 
 export function firstPaintCSS() {

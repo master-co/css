@@ -9,7 +9,7 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const tmpDir = join(packageDir, 'tmp')
 const expectedStaticCSS = [
   '.block{display:block}',
-  '.fg\\:primary{color:var(--color-primary)}'
+  '.fg-primary{color:var(--color-primary)}'
 ]
 
 const runningProcesses = new Set<ChildProcess>()
@@ -98,7 +98,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
       '<html>',
       '<head><title>Rspack fixture</title></head>',
       '<body>',
-      '    <main id="root" class="block fg:primary">Rspack fixture</main>',
+      '    <main id="root" class="block fg-primary">Rspack fixture</main>',
       '</body>',
       '</html>',
       ''
@@ -106,7 +106,7 @@ function createRspackFixture(mode: 'runtime' | 'static') {
     'src/main.js': [
       "import './app.css'",
       '',
-      'document.getElementById("root").className = "block fg:primary"',
+      'document.getElementById("root").className = "block fg-primary"',
       "document.getElementById('root').dataset.ready = 'true'",
       ''
     ].join('\n'),
@@ -165,7 +165,7 @@ function createRsbuildFixture(mode: 'runtime' | 'static') {
       "import './app.css'",
       '',
       'createRoot(document.getElementById("root")).render(',
-      '    <main className="block fg:primary">Rsbuild fixture</main>',
+      '    <main className="block fg-primary">Rsbuild fixture</main>',
       ')',
       ''
     ].join('\n'),
@@ -293,7 +293,7 @@ function createTanStackStartFixture() {
       '})',
       '',
       'function Home() {',
-      '    return <main className="block fg:primary">TanStack Start fixture</main>',
+      '    return <main className="block fg-primary">TanStack Start fixture</main>',
       '}',
       ''
     ].join('\n'),
@@ -528,7 +528,7 @@ describe('TanStack Start with @master/css-vite', () => {
       const ssrHTML = await readTanStackSSRHTML(root)
       if (ssrHTML) {
         expect(ssrHTML).toContain('TanStack Start fixture')
-        expect(ssrHTML).toContain('block fg:primary')
+        expect(ssrHTML).toContain('block fg-primary')
         expectNoDuplicateRuntimeHTML(ssrHTML)
       }
     } finally {

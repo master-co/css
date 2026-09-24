@@ -9,12 +9,12 @@ Compare ordinary wrapping with `text-balance` at the same width. Balancing redis
 
 ```html
 <!-- text-wrap -->
-<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap">Good tools make room for clear thinking.</h2>
+<h2 id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-wrap">Good tools make room for clear thinking.</h2>
 ```
 
 ```html
 <!-- text-balance -->
-<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-balance">Good tools make room for clear thinking.</h2>
+<h2 id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-balance">Good tools make room for clear thinking.</h2>
 ```
 
 <details>
@@ -31,12 +31,12 @@ Compare ordinary wrapping with `text-balance` at the same width. Balancing redis
 
 ```html
 <!-- text-wrap -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-wrap">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ```html
 <!-- text-pretty -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-pretty">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-pretty">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Prevent wrapping \{#prevent-wrapping\}
@@ -46,7 +46,7 @@ Compare ordinary wrapping with `text-balance` at the same width. Balancing redis
 
 ```html
 <!-- One line · explicit overflow handling -->
-<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-ellipsis text-nowrap">quarterly-roadmap-final-version.pdf</span>
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font-md leading:24px text-ellipsis text-nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 Keep the full label available in the surrounding UI when readers need it.
@@ -58,7 +58,7 @@ Resize the viewport to switch from normal wrapping to balance at `sm`, then pret
 
 ```html
 <!-- One heading · native viewport conditions -->
-<h2 id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-wrap text-wrap@print text-balance@screen&sm text-pretty@screen&lg">Good tools make room for clear thinking.</h2>
+<h2 id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-wrap text-wrap@print text-balance@screen&sm text-pretty@screen&lg">Good tools make room for clear thinking.</h2>
 ```
 
 Use [white-space](/reference/white-space) to control preserved spaces and explicit line breaks.

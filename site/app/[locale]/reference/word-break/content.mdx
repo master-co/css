@@ -10,7 +10,7 @@
 ```html
 <!-- Normal boundaries · unbroken word -->
 <div id="scrollport" role="region" aria-label="Normal word boundaries" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="w:200px m:0 font:md leading:24px word-break:normal">Inspect the word pneumonoultramicroscopicsilicovolcanoconiosis.</p>
+  <p id="target" class="w:200px m:0 font-md leading:24px word-break:normal">Inspect the word pneumonoultramicroscopicsilicovolcanoconiosis.</p>
 </div>
 ```
 
@@ -28,12 +28,12 @@
 
 ```html
 <!-- Emergency breaks only -->
-<p id="target" class="wrap-anywhere w:160px max-w:100% m:0 font:md leading:24px word-break:normal">Make room for collaboration</p>
+<p id="target" class="wrap-anywhere w:160px max-w:100% m:0 font-md leading:24px word-break:normal">Make room for collaboration</p>
 ```
 
 ```html
 <!-- Break all -->
-<p id="target" class="w:160px max-w:100% m:0 font:md leading:24px word-break:break-all">Make room for collaboration</p>
+<p id="target" class="w:160px max-w:100% m:0 font-md leading:24px word-break:break-all">Make room for collaboration</p>
 ```
 
 Prefer [overflow-wrap](/reference/overflow-wrap) when ordinary word boundaries should be retained whenever they fit.
@@ -46,14 +46,14 @@ Prefer [overflow-wrap](/reference/overflow-wrap) when ordinary word boundaries s
 ```html
 <!-- word-break:normal -->
 <div id="scrollport" role="region" aria-label="Chinese line breaking" tabindex="0" class="overflow:auto w:160px max-w:100%">
-  <p id="target" lang="zh-Hant" class="w:160px m:0 font:md leading:24px word-break:normal">清晰的設計讓每個想法都有空間</p>
+  <p id="target" lang="zh-Hant" class="w:160px m:0 font-md leading:24px word-break:normal">清晰的設計讓每個想法都有空間</p>
 </div>
 ```
 
 ```html
 <!-- word-break:keep-all -->
 <div id="scrollport" role="region" aria-label="Chinese line breaking" tabindex="0" class="overflow:auto w:160px max-w:100%">
-  <p id="target" lang="zh-Hant" class="w:160px m:0 font:md leading:24px word-break:keep-all">清晰的設計讓每個想法都有空間</p>
+  <p id="target" lang="zh-Hant" class="w:160px m:0 font-md leading:24px word-break:keep-all">清晰的設計讓每個想法都有空間</p>
 </div>
 ```
 
@@ -64,12 +64,12 @@ Prefer [overflow-wrap](/reference/overflow-wrap) when ordinary word boundaries s
 
 ```html
 <!-- break-word -->
-<p id="target" class="w:200px max-w:100% m:0 font:md leading:24px break-word">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+<p id="target" class="w:200px max-w:100% m:0 font-md leading:24px break-word">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 ```
 
 ```html
 <!-- word-break:normal wrap-anywhere -->
-<p id="target" class="wrap-anywhere w:200px max-w:100% m:0 font:md leading:24px word-break:normal">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+<p id="target" class="wrap-anywhere w:200px max-w:100% m:0 font-md leading:24px word-break:normal">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 ```
 
 The explicit form preserves ordinary word boundaries and uses emergency breaks for the long token.
@@ -82,6 +82,6 @@ The same unbroken word uses normal boundaries at the base viewport, then breaks 
 ```html
 <!-- Real breakpoint · unchanged text -->
 <div id="scrollport" role="region" aria-label="Responsive word breaking" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="w:200px m:0 font:md leading:24px word-break:normal word-break:normal@print word-break:break-all@screen&sm">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="w:200px m:0 font-md leading:24px word-break:normal word-break:normal@print word-break:break-all@screen&sm">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```

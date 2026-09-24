@@ -52,12 +52,16 @@ interface SemanticParityCorpus {
 }
 
 const semanticParityCorpus = JSON.parse(readFileSync(
-  new URL('../../../../parity/rust-semantic-corpus.json', import.meta.url),
+  new URL('../../../../parity/v2-language-corpus.json', import.meta.url),
   'utf8'
 )) as SemanticParityCorpus
 const selectorVariantClassName = '{flex;rel}_:is(h4,.app-nav)@default'
 const selectorVariantSelector = '.\\{flex\\;rel\\}_\\:is\\(h4\\,\\.app-nav\\)\\@default :is(h4,.app-nav)'
-const selectorVariantRuleText = `${selectorVariantSelector}{display:flex;position:relative}`
+const selectorVariantRuleTexts = [
+  `${selectorVariantSelector}{display:flex}`,
+  `${selectorVariantSelector}{position:relative}`
+]
+const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const inlineThemeManifest = {
   version: 1,
   settings: {
@@ -96,7 +100,7 @@ const inlineThemeManifest = {
     type: 0,
     variableAliasRefs: ['color-surface'],
     emit: { type: 'property', property: 'background-color' },
-    matchers: [{ type: 'variable', keys: ['surface'] }]
+    matchers: [{ type: 'token', prefix: 'surface-' }]
   }]
 } as unknown as MasterCSSManifest
 const inlineThemeCSS = [
@@ -105,7 +109,7 @@ const inlineThemeCSS = [
   ':root{--color-gray-90:oklch(23.5% 0 none)}',
   '.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}',
   '}',
-  '@layer utilities{.surface\\:raised{background-color:var(--color-surface-raised)}}'
+  '@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}'
 ].join('')
 
 const manifest: MasterCSSManifest = {
@@ -139,12 +143,12 @@ beforeAll(() => {
 })
 
 describe('Rust engine session', () => {
-  it('uses semantic engine corpus version 2', () => {
+  it('uses v2 language engine corpus version 2', () => {
     expect(semanticParityCorpus.version).toBe(2)
   })
 
   for (const parityCase of semanticParityCorpus.engineCases) {
-    it(`executes semantic engine corpus case ${parityCase.id} through native and Wasm sessions`, async () => {
+    it(`executes v2 language engine corpus case ${parityCase.id} through native and Wasm sessions`, async () => {
       const originalCSS = Object.getOwnPropertyDescriptor(globalThis, 'CSS')
       Object.defineProperty(globalThis, 'CSS', {
         configurable: true,
@@ -362,7 +366,7 @@ describe('Rust engine session', () => {
   it('registers emitted globals through native and Wasm engines', async () => {
     const native = createEngineSync({ manifest: typedDefaultManifest })
     const wasm = await createEngine({ manifest: typedDefaultManifest, binding: 'wasm' })
-    const classNames = ['fg:red-60', 'animation:fade|1s']
+    const classNames = ['fg-red-60', 'animation:fade|1s']
 
     try {
       native.ensureClassRules(classNames)
@@ -377,7 +381,7 @@ describe('Rust engine session', () => {
       expect(wasm.registerEmittedGlobals(emittedGlobals))
         .toEqual(native.registerEmittedGlobals(emittedGlobals))
       expect(wasm.snapshot()).toEqual(native.snapshot())
-      expect(native.snapshot().text).toContain('.fg\\:red-60')
+      expect(native.snapshot().text).toContain('.fg-red-60')
       expect(native.snapshot().text).toContain('.animation\\:fade\\|1s')
       expect(native.snapshot().text).not.toContain('--color-red-60:')
       expect(native.snapshot().text).not.toContain('@keyframes fade{')
@@ -393,18 +397,18 @@ describe('Rust engine session', () => {
     const engine = createEngineSync({ manifest: typedDefaultManifest })
     const transition = engine.ensureClassRules([
       'block',
-      'fg:red-60',
+      'fg-red-60',
       'w:calc(100%-2rem)',
-      'bg:blue-20:hover@sm',
-      '{color:black!;bb:2px|solid}'
+      'bg-blue-20:hover@sm',
+      '{color-black!;bb:2px|solid}'
     ])
     expect(transition.mutations.length).toBeGreaterThanOrEqual(5)
     expect(engine.snapshot().rules.map((rule) => rule.className)).toEqual(expect.arrayContaining([
       'block',
-      'fg:red-60',
+      'fg-red-60',
       'w:calc(100%-2rem)',
-      'bg:blue-20:hover@sm',
-      '{color:black!;bb:2px|solid}'
+      'bg-blue-20:hover@sm',
+      '{color-black!;bb:2px|solid}'
     ]))
     engine.dispose()
   })
@@ -417,13 +421,13 @@ describe('Rust engine session', () => {
       const nativeInspection = native.inspect(selectorVariantClassName)
       const wasmInspection = wasm.inspect(selectorVariantClassName)
 
-      expect(nativeInspection.rules).toHaveLength(1)
-      expect(nativeInspection.rules[0]).toMatchObject({
+      expect(nativeInspection.rules).toHaveLength(2)
+      for (const [index, rule] of nativeInspection.rules.entries()) expect(rule).toMatchObject({
         layer: 'defaults',
         priority: { selector: 0 },
         selectorText: selectorVariantSelector,
         sortTier: 1,
-        text: selectorVariantRuleText
+        text: selectorVariantRuleTexts[index]
       })
       expect(wasmInspection).toEqual(nativeInspection)
       expect(native.snapshot().text).toBe('')
@@ -447,8 +451,8 @@ describe('Rust engine session', () => {
     const wasm = await createEngine({ manifest: inlineThemeManifest, binding: 'wasm' })
 
     try {
-      const nativeTransition = native.ensureClassRules(['surface:raised'])
-      const wasmTransition = wasm.ensureClassRules(['surface:raised'])
+      const nativeTransition = native.ensureClassRules(['surface-raised'])
+      const wasmTransition = wasm.ensureClassRules(['surface-raised'])
 
       expect(wasmTransition).toEqual(nativeTransition)
       expect(native.snapshot().text).toBe(inlineThemeCSS)

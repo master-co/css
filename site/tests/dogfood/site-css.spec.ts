@@ -1,5 +1,24 @@
 import { expect, test, type Page } from '@playwright/test'
 
+test('v2 RC migration is discoverable and readable at both viewport sizes', async ({ page }, testInfo) => {
+  const failures = capturePageFailures(page)
+  await page.goto('/en/guide/migration#frameworks')
+  const cards = page.locator('.prose a[href*="/guide/migration/v2-rc"], .prose a[href$="/guide/migration/v1"]')
+  const destinations = await cards.evaluateAll(links => links.map(link => link.getAttribute('href')))
+  expect(destinations[0]).toContain('/guide/migration/v2-rc')
+  const entry = page.getByRole('link', { name: 'Master CSS v2 RC', exact: true }).last()
+  await entry.scrollIntoViewIfNeeded()
+  await expect(entry).toBeVisible()
+  await expectNoHorizontalOverflow(page)
+  await page.screenshot({ path: testInfo.outputPath('migration-frameworks.png') })
+  await entry.click()
+  await expect(page.locator('h1')).toHaveText('Migrating from Master CSS v2 RC')
+  await expect(page.locator('a[href$="/guide/migration#frameworks"]').first()).toBeVisible()
+  await expectNoHorizontalOverflow(page)
+  await page.screenshot({ path: testInfo.outputPath('migration-v2-rc.png') })
+  expect(failures).toEqual([])
+})
+
 test('guide uses the responsive prose cascade after hydration', async ({ page }, testInfo) => {
   const failures = capturePageFailures(page)
   await page.goto('/en/guide')
@@ -91,9 +110,10 @@ test('introduction sidebar keeps descendant selectors and vertical flow', async 
   }
 
   const styleText = (await readCssom(page)).text.replace(/\s/g, '')
-  expect(styleText).toContain(
-    ':is(h4,.app-nav){display:flex;min-height:2rem;position:relative;align-items:center;'
-  )
+  // Group members are separate rules so they share token/raw cascade priority.
+  for (const declaration of ['display:flex', 'min-height:2rem', 'position:relative', 'align-items:center']) {
+    expect(styleText).toContain(`:is(h4,.app-nav){${declaration};}`)
+  }
   await expectNoHorizontalOverflow(page)
   expect(failures).toEqual([])
 })
@@ -102,7 +122,7 @@ test('site semantic classes preserve cross-layer and variable alias behavior', a
   const failures = capturePageFailures(page)
 
   await page.goto('/en/guide/installation/vscode')
-  const vscodeIcon = page.locator('[class~="ml:-3xs"]').first()
+  const vscodeIcon = page.locator('[class~="-ml-3xs"]').first()
   await vscodeIcon.waitFor()
   await expect(vscodeIcon).toHaveCSS('margin-left', '-4px')
 

@@ -3,18 +3,18 @@
 
 ## Examples \{#examples\}
 ### Add the same gap on both axes \{#add-the-same-gap-on-both-axes\}
-`gap:md` leaves 16px between both rows and columns in this six-item grid. There is no extra gap at the outside edge, and the children have no margins. Track widths share the space left after the two column gaps.
+`gap-md` leaves 16px between both rows and columns in this six-item grid. There is no extra gap at the outside edge, and the children have no margins. Track widths share the space left after the two column gaps.
 
 <DemoExample page="gap" section="add-the-same-gap-on-both-axes" />
 
 ```html
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:md w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
-  <div id="item-5" class="p:sm">05</div>
-  <div id="item-6" class="p:sm">06</div>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap-md w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
+  <div id="item-5" class="p-sm">05</div>
+  <div id="item-6" class="p-sm">06</div>
 </div>
 ```
 
@@ -25,25 +25,25 @@
 
 ```html
 <!-- Separate row and column gaps -->
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px w:70x max-w:full gap-x:sm gap-y:lg" role="group" aria-label="Available space">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
-  <div id="item-5" class="p:sm">05</div>
-  <div id="item-6" class="p:sm">06</div>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px w:17.5rem max-w:100% gap-x-sm gap-y-lg" role="group" aria-label="Available space">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
+  <div id="item-5" class="p-sm">05</div>
+  <div id="item-6" class="p-sm">06</div>
 </div>
 ```
 
 ```html
 <!-- Two-value shorthand -->
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:lg|sm w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
-  <div id="item-5" class="p:sm">05</div>
-  <div id="item-6" class="p:sm">06</div>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:var(--spacing-lg)|var(--spacing-sm) w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
+  <div id="item-5" class="p-sm">05</div>
+  <div id="item-6" class="p-sm">06</div>
 </div>
 ```
 
@@ -55,8 +55,8 @@ Gap works on the actual component layout. This flex row places a 32px avatar bes
 <DemoExample page="gap" section="use-gap-for-component-internals" />
 
 ```html
-<div id="layout" class="flex items-center gap:sm w:70x max-w:full" role="group" aria-label="Available space">
-  <img id="target" class="block flex-shrink:0 size:8x round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="flex items-center gap-sm w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <img id="target" class="block flex-shrink:0 size:2rem round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
   <span id="peer">Aron · Design systems</span>
 </div>
 ```
@@ -67,12 +67,12 @@ Resize past `sm` to increase the grid’s gaps from 8px to 24px. The container s
 <DemoExample page="gap" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap:xs w:70x max-w:full gap:lg@sm" role="group" aria-label="Available space">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
-  <div id="item-5" class="p:sm">05</div>
-  <div id="item-6" class="p:sm">06</div>
+<div id="layout" class="grid-cols:3 grid-auto-rows:48px gap-xs w:17.5rem max-w:100% gap-lg@sm" role="group" aria-label="Available space">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
+  <div id="item-5" class="p-sm">05</div>
+  <div id="item-6" class="p-sm">06</div>
 </div>
 ```

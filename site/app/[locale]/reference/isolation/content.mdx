@@ -8,9 +8,9 @@
 <DemoExample page="isolation" section="create-a-stacking-context" />
 
 ```html
-<div class="p:md bg:blue-20">
+<div class="p-md bg-blue-20">
   <section class="isolate">
-    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Blend layer</div>
+    <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Blend layer</div>
   </section>
 </div>
 ```
@@ -28,9 +28,9 @@
 <DemoExample page="isolation" section="return-to-automatic-isolation" />
 
 ```html
-<div class="p:md bg:blue-20">
+<div class="p-md bg-blue-20">
   <section class="isolate isolation:auto@sm">
-    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Blend layer</div>
+    <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Blend layer</div>
   </section>
 </div>
 ```
@@ -41,7 +41,7 @@ Use isolation to keep negative z-index decoration inside its component. The blue
 <DemoExample page="isolation" section="protect-layered-components" />
 
 ```html
-<article class="rel isolate h:40x p:md">
+<article class="rel isolate h:10rem p-md">
   <div class="abs inset:0 z:-1" aria-hidden="true"></div>
   <p>Foreground content</p>
 </article>
@@ -53,9 +53,9 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="isolation" section="apply-conditionally" />
 
 ```html
-<div class="p:md bg:blue-20">
+<div class="p-md bg-blue-20">
   <section tabindex="0" class="isolation:auto isolate:focus-visible isolate@sm">
-    <div class="p:lg bg:violet-50 mix-blend-mode:multiply">Focus with Tab</div>
+    <div class="p-lg bg-violet-50 mix-blend-mode:multiply">Focus with Tab</div>
   </section>
 </div>
 ```

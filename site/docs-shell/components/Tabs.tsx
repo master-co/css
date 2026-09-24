@@ -6,9 +6,9 @@ import clsx from 'clsx'
 export default function Tabs(props: any) {
   return (
     <nav className={clsx('overflow-x:auto overflow-y:hidden hidden::scrollbar', props.className)}>
-      {/* w:fit min-w:full 用於觸發 ResizeObserver */}
+      {/* w:fit-content min-w:100% 用於觸發 ResizeObserver */}
       <div className={clsx(
-        'flex gap:xl w:fit min-w:full bb:1px|solid|subtle',
+        'flex gap-xl w:fit-content min-w:100% bb:1px|solid|var(--color-line-subtle)',
         props.contentClassName
       )}>
         {props.children}
@@ -24,19 +24,19 @@ export function Tab(props: any) {
       className={clsx(
         'flex items-center justify-center h:48px mb:-1px by:2px|transparent|solid font-weight:460 white-space:nowrap app-nav',
         {
-          'font:xs!': size === 'sm',
-          'font:sm!': !size
+          'font-xs!': size === 'sm',
+          'font-sm!': !size
         },
         props.className
       )}
-      activeClassName="fg:accent! bb:accent"
-      inactiveClassName="text:strong bb:major:hover">
+      activeClassName="fg-accent! bb-accent"
+      inactiveClassName="text-strong bb:major:hover">
       {children}
     </Link>
   )
 }
 
-export const TabBadge = styled.div(DocBadge)`ml:2x`
+export const TabBadge = styled.div(DocBadge)`ml:0.5rem`
 
 TabBadge.default = {
   color: 'primary',

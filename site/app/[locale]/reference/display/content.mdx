@@ -31,7 +31,7 @@ Use `flex` when direct children should share one row or column. The container it
 <DemoExample page="display" section="flex" />
 
 ```html
-<div class="flex items-center gap:sm">
+<div class="flex items-center gap-sm">
   <div>01</div>
   <div>02</div>
   <div>03</div>
@@ -45,7 +45,7 @@ Use `inline-flex` for a badge or compact control whose children need flex alignm
 
 ```html
 <p>
-  Status: <span class="inline-flex items-center gap:xs">
+  Status: <span class="inline-flex items-center gap-xs">
     <span aria-hidden="true">●</span><span>In progress</span>
   </span> while the next task is queued.
 </p>
@@ -57,7 +57,7 @@ Use `grid` to place direct children in rows and columns. Define tracks with [`gr
 <DemoExample page="display" section="grid" />
 
 ```html
-<div class="grid grid-template-columns:repeat(2,auto) gap:sm">
+<div class="grid grid-template-columns:repeat(2,auto) gap-sm">
   <div>01</div>
   <div>02</div>
   <div>03</div>
@@ -72,7 +72,7 @@ Use `inline-grid` when a small grid should sit within text or beside other inlin
 
 ```html
 <p>
-  Before <span class="inline-grid grid-template-columns:repeat(2,auto) gap:sm">
+  Before <span class="inline-grid grid-template-columns:repeat(2,auto) gap-sm">
     <span>01</span><span>02</span>
     <span>03</span><span>04</span>
   </span> after.
@@ -127,7 +127,7 @@ Use `contents` to omit a wrapper’s own layout box. Its children then participa
 <DemoExample page="display" section="contents" />
 
 ```html
-<div class="flex gap:5x">
+<div class="flex gap:1.25rem">
   <div class="flex:1">01</div>
   <div class="contents">
     <div class="flex:1">02</div>
@@ -144,7 +144,7 @@ Use `flow-root` on a wrapper that should contain its floated children. It establ
 
 ```html
 <div class="flow-root">
-  <img class="float:left w:32x mr:md" src="/demo/landscape.svg" alt="Landscape">
+  <img class="float:left w:8rem mr-md" src="/demo/landscape.svg" alt="Landscape">
   <p>The paragraph wraps around the floated image.</p>
 </div>
 ```
@@ -168,7 +168,7 @@ Use `hidden` to apply `display:none`. The element and its descendants produce no
 <DemoExample page="display" section="hidden" />
 
 ```html
-<div class="flex gap:5x">
+<div class="flex gap:1.25rem">
   <div>01</div>
   <div class="hidden">02</div>
   <div>03</div>
@@ -181,7 +181,7 @@ Switch the same items from a grid to a flex row on screens at `sm`, then use ord
 <DemoExample page="display" section="apply-conditionally" />
 
 ```html
-<div class="grid grid-cols:2 gap:sm block@print flex@screen&sm">
+<div class="grid grid-cols:2 gap-sm block@print flex@screen&sm">
   <div>01</div>
   <div>02</div>
   <div>03</div>

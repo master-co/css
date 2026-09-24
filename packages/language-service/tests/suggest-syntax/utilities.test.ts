@@ -14,8 +14,8 @@ it.concurrent('hints semantic utilities', () => {
   expect(hint('outline-t')?.find(({ label }) => label === 'outline-thick')).toMatchObject({ label: 'outline-thick' })
   expect(hint('outline-t')?.find(({ label }) => label === 'outline-thin')).toMatchObject({ label: 'outline-thin' })
   expect(hint('border-d')?.find(({ label }) => label === 'border-dashed')).toBeUndefined()
-  expect(hint('font-s')?.find(({ label }) => label === 'font-sm')).toBeUndefined()
-  expect(hint('m-m')?.find(({ label }) => label === 'm-md')).toBeUndefined()
+  expect(hint('font-s')?.find(({ label }) => label === 'font-sm')).toMatchObject({ label: 'font-sm' })
+  expect(hint('m-m')?.find(({ label }) => label === 'm-md')).toMatchObject({ label: 'm-md' })
 })
 test.concurrent('info', () => expect(hint('b')?.find(({ label }) => label === 'block')).toMatchObject({
   detail: 'display: block',

@@ -10,14 +10,14 @@
 ```html
 <!-- text-rendering:auto -->
 <svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
-  <text id="target" x="4" y="44" class="font:3xl text-rendering:auto fill:current">AV office</text>
+  <text id="target" x="4" y="44" class="font-3xl text-rendering:auto fill-current">AV office</text>
 </svg>
 ```
 
 ```html
 <!-- text-rendering:optimizeLegibility -->
 <svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
-  <text id="target" x="4" y="44" class="font:3xl text-rendering:optimizeLegibility fill:current">AV office</text>
+  <text id="target" x="4" y="44" class="font-3xl text-rendering:optimizeLegibility fill-current">AV office</text>
 </svg>
 ```
 
@@ -38,7 +38,7 @@ For explicit kerning or ligatures, use their dedicated font properties. Do not u
 ```html
 <!-- Native SVG rendering hint -->
 <svg role="img" aria-label="AV office typography specimen" viewBox="0 0 240 64" class="block w:240px max-w:100%">
-  <text id="target" x="4" y="44" class="font:3xl text-rendering:optimizeSpeed fill:current">AV office</text>
+  <text id="target" x="4" y="44" class="font-3xl text-rendering:optimizeSpeed fill-current">AV office</text>
 </svg>
 ```
 
@@ -50,7 +50,7 @@ For explicit kerning or ligatures, use their dedicated font properties. Do not u
 ```html
 <!-- Inherited hint · local auto reset -->
 <div class="text-rendering:optimizeLegibility">
-  <p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-rendering:auto">AV office — a readable interface.</p>
+  <p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-rendering:auto">AV office — a readable interface.</p>
 </div>
 ```
 
@@ -61,5 +61,5 @@ Hover or focus the button to request a different rendering strategy. The compute
 
 ```html
 <!-- Pointer and keyboard rendering hint -->
-<button id="target" type="button" tabindex="0" class="font:xl text-rendering:auto text-rendering:optimizeLegibility:hover text-rendering:optimizeLegibility:focus-visible">AV office</button>
+<button id="target" type="button" tabindex="0" class="font-xl text-rendering:auto text-rendering:optimizeLegibility:hover text-rendering:optimizeLegibility:focus-visible">AV office</button>
 ```

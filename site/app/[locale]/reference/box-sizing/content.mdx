@@ -3,13 +3,13 @@
 
 ## Examples \{#examples\}
 ### Include border and padding in size \{#include-border-and-padding-in-size\}
-Use `box-border` to include padding and border within the declared width and height. In this example, the outer width stays at `40x` (160px with the default base unit).
+Use `box-border` to include padding and border within the declared width and height. In this example, the outer width stays at `10rem` (160px with a 16px root font size).
 
 <DemoExample page="box-sizing" section="include-border-and-padding-in-size" />
 
 ```html
 <!-- @MARK box-border -->
-<div class="w:40x p:md b:1px|solid|gray-20 box-border">
+<div class="w:10rem p-md b:1px|solid|var(--color-gray-20) box-border">
   Border-box
 </div>
 ```
@@ -22,13 +22,13 @@ Use `box-border` to include padding and border within the declared width and hei
 </details>
 
 ### Size the content box only \{#size-the-content-box-only\}
-Use `box-content` when the declared size should describe the content alone. Here, `40x` of content, two 16px paddings and two 1px borders produce an outer width of 194px.
+Use `box-content` when the declared size should describe the content alone. Here, `10rem` of content, two 16px paddings and two 1px borders produce an outer width of 194px.
 
 <DemoExample page="box-sizing" section="size-the-content-box-only" />
 
 ```html
 <!-- @MARK box-content -->
-<div class="w:40x p:md b:1px|solid|gray-20 box-content">
+<div class="w:10rem p-md b:1px|solid|var(--color-gray-20) box-content">
   Content-box
 </div>
 ```
@@ -39,8 +39,8 @@ Keep one sizing model across the parts of a component so its dimensions remain p
 <DemoExample page="box-sizing" section="prefer-consistency-inside-components" />
 
 ```html
-<div class="w:40x p:md b:1px|solid|gray-20 box-border">Border-box</div>
-<div class="w:40x p:md b:1px|solid|gray-20 box-content">Content-box</div>
+<div class="w:10rem p-md b:1px|solid|var(--color-gray-20) box-border">Border-box</div>
+<div class="w:10rem p-md b:1px|solid|var(--color-gray-20) box-content">Content-box</div>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -49,5 +49,5 @@ The same width can produce a different outer size when a condition switches its 
 <DemoExample page="box-sizing" section="apply-conditionally" />
 
 ```html
-<div class="w:40x p:md b:1px|solid|gray-20 box-border box-content@sm">Content</div>
+<div class="w:10rem p-md b:1px|solid|var(--color-gray-20) box-border box-content@sm">Content</div>
 ```

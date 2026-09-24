@@ -12,8 +12,8 @@ Use `user-select:none` on a control label when dragging across it should not sta
 ```html
 <label id="target"
 
-class="inline-flex items-center gap:sm p:md
-       b:1px|solid|base r:sm user-select:none">
+class="inline-flex items-center gap-sm p-md
+       b:1px|solid|var(--color-line-base) r-sm user-select:none">
   <input type="checkbox"> Snap objects to the grid
 </label>
 ```
@@ -32,7 +32,7 @@ Use `user-select:all` for a short value that should be selected atomically. Try 
 
 ```html
 <code id="target"
-  class="block p:sm b:1px|solid|base r:sm font:mono
+  class="block p-sm b:1px|solid|var(--color-line-base) r-sm font-mono
          user-select:all">pnpm install @master/css</code>
 ```
 
@@ -44,8 +44,8 @@ An explicit `user-select:text` restores partial text selection within this other
 <DemoExample page="user-select" section="preserve-normal-reading-selection" />
 
 ```html
-<div class="p:md b:1px|solid|base r:sm user-select:none">
-  <p class="font:xs text:muted">Panel label · selection disabled</p>
+<div class="p-md b:1px|solid|var(--color-line-base) r-sm user-select:none">
+  <p class="font-xs text-muted">Panel label · selection disabled</p>
   <p id="target" class="mb:0 user-select:text">Select only a few words from this sentence.</p>
 </div>
 ```
@@ -59,7 +59,7 @@ Use a checkbox to protect the paragraph from ordinary text selection. The select
 
 ```html
 <div class="user-select:none:has(>label>input:checked)>p">
-  <label class="flex items-center gap:sm mb:md">
+  <label class="flex items-center gap-sm mb-md">
     <input type="checkbox"> Protect text from selection
   </label>
   <p id="target" class="mb:0 user-select:text">Select only a few words from this sentence.</p>

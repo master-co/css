@@ -16,8 +16,8 @@ type ViewTransitionDocument = Document & {
 }
 
 const rootTransitionClassName = [
-  'animation-duration:slower::view-transition-group(.article)',
-  'animation-timing-function:smooth::view-transition-group(.article)',
+  'animation-duration-slower::view-transition-group(.article)',
+  'animation-timing-function-smooth::view-transition-group(.article)',
 ].join(' ')
 
 const sharedTransitionClassName = 'view-transition-class:article'
@@ -93,31 +93,31 @@ export default function ArticleTransitionDemo() {
   }
 
   return (
-    <Demo className="container w:full">
+    <Demo className="container w:100%">
       <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
       {!selectedArticle &&
-        <div className="grid grid-cols:1 gap:lg w:full grid-cols:2@container(3xs)">
+        <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container(3xs)">
           {articles.map((article) => (
             <article className="app-panel flex overflow:hidden flex-col p:0" key={article.id}>
               <Image
                 alt={article.imageAlt}
-                className={clsx(article.imageTransition, sharedTransitionClassName, 'h:auto w:full aspect-ratio:16/10 object-cover')}
+                className={clsx(article.imageTransition, sharedTransitionClassName, 'h:auto w:100% aspect-ratio:16/10 object-cover')}
                 placeholder="blur"
                 sizes="(min-width: 480px) 50vw, 100vw"
                 src={article.image}
               />
-              <div className="flex flex-col flex:1 p:lg">
-                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block mb:xs text:xs text:body')}>
+              <div className="flex flex-col flex:1 p-lg">
+                <time className={clsx(article.dateTransition, sharedTransitionClassName, 'block mb-xs text-xs text-body')}>
                   {article.date}
                 </time>
-                <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'm:0 text:lg font:semibold leading:sm')}>
+                <h3 className={clsx(article.titleTransition, sharedTransitionClassName, 'm:0 text-lg font-semibold leading-sm')}>
                   {article.title}
                 </h3>
-                <p className="mx:0 mb:0 mt:sm text:sm text:body">
+                <p className="mx:0 mb:0 mt-sm text-sm text-body">
                   {article.description}
                 </p>
                 <button
-                  className="btn btn-sm yellow touch-yellow self-start mt:lg"
+                  className="btn btn-sm yellow touch-yellow self-start mt-lg"
                   onClick={() => transition(() => setSelectedId(article.id))}
                   type="button"
                 >
@@ -129,30 +129,30 @@ export default function ArticleTransitionDemo() {
         </div>
       }
       {selectedArticle &&
-        <article className="app-panel overflow:hidden w:full p:0">
+        <article className="app-panel overflow:hidden w:100% p:0">
           <Image
             alt={selectedArticle.imageAlt}
-            className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'h:auto w:full aspect-ratio:16/10 object-cover')}
+            className={clsx(selectedArticle.imageTransition, sharedTransitionClassName, 'h:auto w:100% aspect-ratio:16/10 object-cover')}
             placeholder="blur"
             sizes="100vw"
             src={selectedArticle.image}
           />
-          <div className="p:lg p:xl@container(3xs)">
-            <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block mb:sm text:sm text:body')}>
+          <div className="p-lg p-xl@container(3xs)">
+            <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block mb-sm text-sm text-body')}>
               {selectedArticle.date}
             </time>
-            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'm:0 text:2xl font:semibold text:3xl@container(3xs)')}>
+            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'm:0 text-2xl font-semibold text-3xl@container(3xs)')}>
               {selectedArticle.title}
             </h3>
-            <p className="mx:0 mb:0 mt:md text:md text:body">
+            <p className="mx:0 mb:0 mt-md text-md text-body">
               {selectedArticle.description} The image, title, and date keep the same transition names in both layouts, so the browser can move each snapshot into its new position while the rest of the interface cross-fades around it.
             </p>
             <button
-              className="btn btn-sm mt:lg p:0"
+              className="btn btn-sm mt-lg p:0"
               onClick={() => transition(() => setSelectedId(undefined))}
               type="button"
             >
-              <IconChevronLeft className="size:1em mr:2xs stroke:2" />
+              <IconChevronLeft className="size:1em mr-2xs stroke-width:2" />
               Back to list
             </button>
           </div>

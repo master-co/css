@@ -11,7 +11,7 @@ Combine an image, position, size and repetition in one `bg:*` class. Pipes separ
 ```html
 <!-- Centered cover · one shorthand -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100%
+  class="h:160px w-xs max-w:100%
          bg:url(/demo/landscape.svg)|center/cover|no-repeat"
 ></div>
 ```
@@ -33,25 +33,25 @@ Hover or focus each surface. The first changes only the background color, preser
 ```html
 <!-- Color longhand · keeps the image -->
 <div id="target" tabindex="0" role="img" aria-label="Change only the background color"
-  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg) bg:blue-20:hover@screen
-         bg:blue-20:focus-visible@screen"
+  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg) bg-blue-20:hover@screen
+         bg-blue-20:focus-visible@screen"
 ></div>
 ```
 
 ```html
 <!-- Full shorthand · resets the image -->
 <div id="target" tabindex="0" role="img" aria-label="Reset the complete background"
-  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)
+  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)
          background:var(--color-blue-20):hover@screen
          background:var(--color-blue-20):focus-visible@screen"
 ></div>
 ```
 
-`bg:blue-20` resolves to `background-color`; `background:var(--color-blue-20)` explicitly requests the native shorthand. Choose [color](/reference/background-color), [image](/reference/background-image), [position](/reference/background-position), [size](/reference/background-size) or [repeat](/reference/background-repeat) utilities when the other parts should stay intact.
+`bg-blue-20` resolves to `background-color`; `background:var(--color-blue-20)` explicitly requests the native shorthand. Choose [color](/reference/background-color), [image](/reference/background-image), [position](/reference/background-position), [size](/reference/background-size) or [repeat](/reference/background-repeat) utilities when the other parts should stay intact.
 
 ### Apply conditionally \{#apply-conditionally\}
 Widen the actual preview viewport to `sm` to apply the complete image shorthand. Narrow screens and print keep a plain surface.
@@ -61,7 +61,7 @@ Widen the actual preview viewport to `sm` to apply the complete image shorthand.
 ```html
 <!-- Plain surface → image at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg:surface-muted background:white@print
+  class="h:160px w-xs max-w:100% bg-surface-muted background:white@print
          bg:url(/demo/landscape.svg)|center/cover|no-repeat@screen&sm"
 ></div>
 ```

@@ -5,9 +5,9 @@ import { getThemeModeVariables } from '~/site/utils/theme-variables'
 const textColors = getThemeModeVariables('color-text', 'light').map(({ key }) => key)
 
 const syntaxes = [
-  ...baseColors.map(color => `fg:${color}`),
-  ...colors.map(color => `fg:${color}`),
-  ...textColors.map(color => `text:${color}`),
+  ...baseColors.map(color => color === 'transparent' ? 'fg:transparent' : `fg-${color}`),
+  ...colors.map(color => color === 'transparent' ? 'fg:transparent' : `fg-${color}`),
+  ...textColors.map(color => `text-${color}`),
   ['fg:`color`'],
 ]
 

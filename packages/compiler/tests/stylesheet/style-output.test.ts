@@ -154,7 +154,7 @@ describe('style CSS extraction helpers', () => {
         color: var(--color-primary);
       }
     `, { baseManifest: defaultManifest })
-    await scanner.scan(join(root, 'app/page.tsx'), '<main class="btn block main fg:red"></main>')
+    await scanner.scan(join(root, 'app/page.tsx'), '<main class="btn block main fg-red"></main>')
 
     const css = await createExtractedCSS({
       scanner,
@@ -174,7 +174,7 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('.btn')
     expect(css).toContain('display: grid')
     expect(css).toContain('.block{display:block}')
-    expect(css).toContain('.fg\\:red{color:var(--color-red)}')
+    expect(css).toContain('.fg-red{color:var(--color-red)}')
     expect(css).not.toContain('@master')
     expect(css).not.toContain('virtual:master-utilities.css')
     expect(css).not.toContain('@master/css')
@@ -288,7 +288,7 @@ describe('style CSS extraction helpers', () => {
         --color-primary: #ff0000;
       }
     `, { baseManifest: defaultManifest })
-    await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg:primary"></main>')
+    await scanner.scan(join(root, 'app/page.tsx'), '<main class="fg-primary"></main>')
 
     const result = await createExtractedCSSResult({
       scanner,
@@ -297,7 +297,7 @@ describe('style CSS extraction helpers', () => {
       projectDir: root
     })
 
-    expect(result.css).toContain('.fg\\:primary{color:red}')
+    expect(result.css).toContain('.fg-primary{color:red}')
     expect(result.css).not.toContain('--color-primary')
     expect(result.emittedGlobals.variables).toEqual({})
   })

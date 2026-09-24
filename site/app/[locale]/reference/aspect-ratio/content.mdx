@@ -8,8 +8,8 @@
 <DemoExample page="aspect-ratio" section="set-a-custom-ratio" />
 
 ```html
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <img id="target" class="block h:auto w:full aspect-ratio:4/3 object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:100% aspect-ratio:4/3 object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
@@ -22,15 +22,15 @@ The ratio helps reserve space before media loads. Keep at least one dimension au
 
 ```html
 <!-- Square · 1:1 -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <img id="target" class="block h:auto w:40x square object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:10rem square object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
 ```html
 <!-- Widescreen · 16:9 -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <img id="target" class="block h:auto w:40x video object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:10rem video object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
@@ -41,15 +41,15 @@ An automatic dimension lets the preferred ratio participate in sizing. Compare a
 
 ```html
 <!-- Automatic height · ratio applies -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:auto w:60x video p:sm">16:9</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:auto w:15rem video p-sm">16:9</div>
 </div>
 ```
 
 ```html
 <!-- Definite height · 80px -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:20x w:60x video p:sm">240 × 80</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:5rem w:15rem video p-sm">240 × 80</div>
 </div>
 ```
 
@@ -59,8 +59,8 @@ An automatic dimension lets the preferred ratio participate in sizing. Compare a
 <DemoExample page="aspect-ratio" section="use-the-video-shortcut" />
 
 ```html
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <figure id="target" class="w:full video m:0">
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <figure id="target" class="w:100% video m:0">
     <img id="peer" class="block full object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
   </figure>
 </div>
@@ -72,8 +72,8 @@ For a fixed 40px square control, [size](/reference/size) directly sets both dime
 <DemoExample page="aspect-ratio" section="choose-size-for-fixed-squares" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="grid place-items:center size:10x round p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:2.5rem round p:0 border-width:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
 </div>
 ```
 
@@ -83,7 +83,7 @@ Resize past `sm` to change a 240px-wide media box from 1:1 to 4:3. Its automatic
 <DemoExample page="aspect-ratio" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <img id="target" class="block h:auto w:full square object-cover aspect-ratio:4/3@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <img id="target" class="block h:auto w:100% square object-cover aspect-ratio:4/3@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```

@@ -143,13 +143,22 @@ test('loads the isolated compiler Wasm surface', async () => {
     dependencies: ['/entry.css', '/theme.css']
   })
   expect(compiler.filterCSSExtractionCandidates(
-    ['bg:red', 'fg:red'],
-    [{ source: '^bg:', flags: 'g' }]
-  )).toEqual(['fg:red'])
+    ['bg-red', 'fg-red'],
+    [{ source: '^bg-', flags: 'g' }]
+  )).toEqual(['fg-red'])
 
-  const presetSources = await Promise.all(['base.css', 'theme.css', 'variants.css', 'utilities.css']
-    .map((file) => readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')))
-  const presetDirectives = compiler.compileCSSDirectives(presetSources.join('\n')) as {
+  const files = Object.fromEntries(await Promise.all(
+    ['index.css', 'base.css', 'theme.css', 'colors.css', 'variants.css', 'utilities.css']
+      .map(async file => [`/${file}`, await readFile(new URL(`../../preset/src/${file}`, import.meta.url), 'utf8')])
+  ))
+  const graph = compiler.resolveCSSImportGraph({
+    entry: '/index.css', files,
+    edges: [
+      ...['base.css', 'theme.css', 'variants.css', 'utilities.css'].map(file => ({ from: '/index.css', specifier: `./${file}`, resolved: `/${file}` })),
+      { from: '/theme.css', specifier: './colors.css', resolved: '/colors.css' }
+    ]
+  }) as { source: string }
+  const presetDirectives = compiler.compileCSSDirectives(graph.source) as {
     manifestInput: unknown
     styleDefinitions?: unknown[]
   }

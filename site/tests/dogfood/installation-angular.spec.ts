@@ -37,7 +37,7 @@ for (const mode of ['runtime', 'static'] as const) test(`Angular application del
   await expect(page.locator('app-root')).toHaveAttribute('ng-version', /^22\./)
   expect(errors).toEqual([])
   if (mode === 'runtime') {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
     expect(errors).toEqual([])
     await page.route(runtime, route => route.abort())

@@ -45,9 +45,9 @@ export async function verifyDirectiveExamples() {
   await assert.rejects(stylesheetExampleCSS('@theme inline static { --color-brand: red; }'), /inline and static cannot be combined/)
 
   const settings = deliveryFences(directiveSection('project-settings'))[0].text
-  assert.match(configuredExampleCSS(settings, ['p:4x']), /#app[^{}]*\{padding:1rem/)
-  assert.match(configuredExampleCSS(settings.replace('root-size: 16', 'root-size: 20'), ['p:4x']), /padding:0\.8rem/)
-  assert.match(configuredExampleCSS(settings.replace('important: off', 'important: on'), ['p:4x']), /padding:1rem!important/)
+  assert.match(configuredExampleCSS(settings, ['p:1rem']), /#app[^{}]*\{padding:1rem/)
+  assert.match(configuredExampleCSS(settings.replace('root-size: 16', 'root-size: 20'), ['p:1rem']), /padding:1rem/)
+  assert.match(configuredExampleCSS(settings.replace('important: off', 'important: on'), ['p:1rem']), /padding:1rem!important/)
   const entries = deliveryFences(directiveSection('entry-markers')).slice(0, 2)
   for (const entry of entries) assert.equal(inspectCSSSync(entry.text).hasMasterEntry, true)
   assert.equal(inspectCSSSync(settings).hasMasterEntry, false)

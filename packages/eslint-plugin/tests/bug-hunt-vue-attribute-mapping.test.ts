@@ -64,13 +64,13 @@ const expressions = [
   `:class="&quot;fg:white&#32;bg:black&quot;"`,
   `:class='&quot;fg:white&#32;bg:black&quot;'`,
   `:class="&#39;fg:white&Tab;bg:black&#39;"`,
-  `:class="['fg:white&#32;bg:black', &quot;fg:black&#32;bg:white&quot;]"`,
-  `:class="'fg:white content:&quot;a&amp;b&quot; bg:black'"`,
-  `:class='"fg:white content:&#39;a&amp;b&#39; bg:black"'`,
-  ':class="`fg:white&NewLine;bg:black`"',
+  `:class="['fg:white&#32;bg-black', &quot;fg:black&#32;bg:white&quot;]"`,
+  `:class="'fg-white content:&quot;a&amp;b&quot; bg-black'"`,
+  `:class='"fg-white content:&#39;a&amp;b&#39; bg-black"'`,
+  ':class="`fg:white&NewLine;bg-black`"',
   ':class="`fg:white\r\nbg:black`"',
-  ':class="`fg:white content:\'\\${value}\'&#32;bg:black`"',
-  ':class="\'fg:white content:&quot;&amp;not=literal&quot; bg:black\'"'
+  ':class="`fg-white content:\'\\${value}\'&#32;bg-black`"',
+  ':class="\'fg-white content:&quot;&amp;not=literal&quot; bg:black\'"'
 ]
 it.each(expressions)('preserves AST class values, attribute boundaries and fix stability for %s', async expression => {
   const source = `<template><div ${expression} data-sentinel="unchanged"></div></template>`

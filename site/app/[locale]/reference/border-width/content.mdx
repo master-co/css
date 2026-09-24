@@ -12,8 +12,8 @@
 <!-- 2px border · fixed outer box -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:2px b:blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b-solid border-width:2px b-blue
+         font-md bg-surface-muted text-body
          box-border">
   Preview panel
 </div>
@@ -23,8 +23,8 @@
 <!-- 8px border · same outer box -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:8px b:blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b-solid border-width:8px b-blue
+         font-md bg-surface-muted text-body
          box-border">
   Preview panel
 </div>
@@ -33,7 +33,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b:2px']}
+    {['border-width:2px']}
   </Class2CSS>
 </details>
 
@@ -48,9 +48,9 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 <!-- Top edge · physical -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:blue bb:0
-         bl:0 br:0 bt:6px font:md bg:surface-muted
-         text:body box-border">
+         w:240px max-w:100% p-md b-solid b-blue border-bottom-width:0
+         border-left-width:0 border-right-width:0 border-top-width:6px font-md bg-surface-muted
+         text-body box-border">
   Top: 6px
 </div>
 ```
@@ -59,8 +59,8 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 <!-- Block edges · horizontal writing -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:0 b:blue
-         by:6px font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b-solid border-width:0 b-blue
+         border-block-width:6px font-md bg-surface-muted text-body
          box-border">
   Top and bottom: 6px
 </div>
@@ -70,8 +70,8 @@ Physical aliases such as `bt` always address the named edge. `by` changes the bl
 <!-- Block edges · vertical writing -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:0 b:blue
-         by:6px font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b-solid border-width:0 b-blue
+         border-block-width:6px font-md bg-surface-muted text-body
          box-border writing-mode:vertical-rl">
   Left and right: 6px
 </div>
@@ -88,9 +88,9 @@ Widen to `sm` to add a 6px border. The explicitly fixed border-box dimensions re
 <!-- 0 → 6px at sm · fixed outer geometry -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b-solid b:0 b:blue
-         font:md bg:surface-muted text:body
-         box-border b:0@print b:6px@screen&sm">
+         w:240px max-w:100% p-md b-solid border-width:0 b-blue
+         font-md bg-surface-muted text-body
+         box-border border-width:0@print border-width:6px@screen&sm">
   Preview panel
 </div>
 ```

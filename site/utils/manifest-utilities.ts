@@ -1,6 +1,6 @@
 import type { MasterCSSManifestUtility } from '@master/css-schema/manifest'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
+import { builtinKeyAliases, builtinTokenNamespaces } from '@master/css-tooling/builtins'
 
 export const manifestUtilities = defaultManifest.utilities || []
 
@@ -17,7 +17,7 @@ export function utilityUsesVariableNamespace(utility: MasterCSSManifestUtility, 
 
 export function getVariableNamespacePublicKeys(namespace: string) {
   return normalizePublicKeys([
-    ...getNativeValueNamespacePublicKeys(namespace),
+    ...getTokenNamespacePublicKeys(namespace),
     ...getManifestVariableNamespacePublicKeys(namespace)
   ])
 }
@@ -30,9 +30,9 @@ export function filterNamespaceKeys(group: { keys: string[], namespace?: string,
   return group.keys.filter(key => keys.has(key))
 }
 
-export function getNativeValueNamespacePublicKeys(namespace: string) {
+export function getTokenNamespacePublicKeys(namespace: string) {
   const properties = new Set<string>()
-  for (const eachNamespace of builtinNativeValueNamespaces) {
+  for (const eachNamespace of builtinTokenNamespaces) {
     if (!eachNamespace.variableAliasRefs.some((ref) => normalizeNamespaceRef(ref) === namespace)) continue
     for (const property of eachNamespace.properties) {
       if (property) properties.add(property)
@@ -71,6 +71,10 @@ function getManifestVariableNamespacePublicKeys(namespace: string) {
 function getUtilityMatcherKeys(utility: MasterCSSManifestUtility) {
   const keys = new Set<string>()
   for (const matcher of utility.matchers || []) {
+    if (matcher.type === 'token') {
+      keys.add(matcher.prefix.replace(/-$/, ''))
+      continue
+    }
     const matcherKeys = (matcher as { keys?: readonly string[] }).keys
     if (!matcherKeys) continue
     for (const key of matcherKeys) {

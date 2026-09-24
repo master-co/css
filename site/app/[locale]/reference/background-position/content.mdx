@@ -11,27 +11,27 @@ Use position shortcuts to align an image within its positioning area. This 160 �
 ```html
 <!-- Left · vertical center -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-left bg-no-repeat
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-left bg-no-repeat
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- Center · both axes -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- Right · vertical center -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-no-repeat bg-right
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-no-repeat bg-right
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -52,18 +52,18 @@ A two-value position supplies horizontal then vertical offsets. Percentages alig
 ```html
 <!-- 50% 25% · shares the free space -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-no-repeat background-position:50%|25%
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-no-repeat background-position:50%|25%
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- 24px 12px · measured offset -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-no-repeat background-position:lg|sm
-         background-size:160px|100px bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-no-repeat background-position:var(--spacing-lg)|var(--spacing-sm)
+         background-size:160px|100px bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -77,8 +77,8 @@ The image covers a deliberately shallow frame. Widen to `sm` to move its crop fr
 ```html
 <!-- Centered crop → top crop at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:120px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         bg:url(/demo/landscape.svg) bg-center@print bg-top@screen&sm"
+  class="h:120px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-image:url(/demo/landscape.svg) bg-center@print bg-top@screen&sm"
 ></div>
 ```
 

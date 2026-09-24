@@ -64,12 +64,12 @@ for (const route of installationRoutes) test(`complete installation guide ${rout
     const frame = await ready(demo)
     if (route === '/lit') {
       const button = frame.getByRole('button', { name: 'Hello Lit' })
-      await expect(button).toHaveAttribute('class', 'fg:white bg:control px:control-x py:control-y r:control')
+      await expect(button).toHaveAttribute('class', 'fg-white bg:control px:control-x py:control-y r:control')
       await expect(button).toHaveCSS('padding-top', '12px')
       expect(await button.evaluate(element => element.getRootNode() instanceof ShadowRoot)).toBe(true)
     } else {
       const heading = frame.getByRole('heading', { name: 'Hello World' })
-      await expect(heading).toHaveAttribute('class', 'm:md italic font:3xl font:heavy text:strong')
+      await expect(heading).toHaveAttribute('class', 'm-md italic font-3xl font-heavy text-strong')
       await expect(heading).toHaveCSS('font-style', 'italic')
       await expect(heading).toHaveCSS('margin-top', '16px')
       const actual = await heading.evaluate(element => element.outerHTML)

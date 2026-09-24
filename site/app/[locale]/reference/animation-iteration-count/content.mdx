@@ -9,10 +9,10 @@ Use infinite to repeat the two-second rotation until its animation is removed or
 
 ```html
 <!-- Continuous indicator -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue animation-duration:2s
+    class="text-blue animation-duration:2s
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
@@ -21,7 +21,7 @@ Use infinite to repeat the two-second rotation until its animation is removed or
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font:sm">Continuous indicator</span>
+  <span class="font-sm">Continuous indicator</span>
 </div>
 ```
 
@@ -49,13 +49,13 @@ Compare three complete cycles with two and a half cycles. Both use one-second li
 ```html
 <!-- Three cycles · ends at 96px -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-iteration-count:3
@@ -70,13 +70,13 @@ Compare three complete cycles with two and a half cycles. Both use one-second li
 ```html
 <!-- 2.5 cycles · ends at 60px -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-iteration-count:2.5
@@ -107,13 +107,13 @@ Use a finite count with forwards fill. With alternate direction, an even count e
 ```html
 <!-- Two alternate cycles · ends at 24px -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-direction:alternate
              animation-duration:1s
              animation-fill-mode:forwards
@@ -145,13 +145,13 @@ Resize before replaying to run one cycle below `sm` or three cycles at `sm`.
 ```html
 <!-- One → three cycles at sm -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-iteration-count:1

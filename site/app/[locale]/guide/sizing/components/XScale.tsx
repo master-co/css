@@ -58,7 +58,7 @@ const containerDescriptions: Record<string, string> = {
 
 function renderInlineCodes(values: string[]) {
   return (
-    <div className="flex flex-wrap gap:xs">
+    <div className="flex flex-wrap gap-xs">
       {values.map((value) => (
         <InlineCode key={value} className="white-space:nowrap">{value}</InlineCode>
       ))}
@@ -114,10 +114,10 @@ export function ContainerTokenTable() {
                   <InlineCode className="white-space:nowrap">{`--container-${key}`}</InlineCode>
                 </td>
                 <td>
-                  <InlineCode className="white-space:nowrap">{`w:${key}`}</InlineCode>
+                  <InlineCode className="white-space:nowrap">{`w-${key}`}</InlineCode>
                 </td>
                 <td>
-                  <InlineCode className="white-space:nowrap">{value}</InlineCode> {containerDescriptions[key]} Also works contextually with <InlineCode className="white-space:nowrap">{`max-w:${key}`}</InlineCode>, <InlineCode className="white-space:nowrap">{`size:${key}`}</InlineCode>, and <InlineCode className="white-space:nowrap">{`flex-basis:${key}`}</InlineCode>.
+                  <InlineCode className="white-space:nowrap">{value}</InlineCode> {containerDescriptions[key]} Also works contextually with <InlineCode className="white-space:nowrap">{`max-w-${key}`}</InlineCode>, <InlineCode className="white-space:nowrap">{`size:${key}`}</InlineCode>, and <InlineCode className="white-space:nowrap">{`flex-basis:${key}`}</InlineCode>.
                 </td>
               </tr>
             ))}

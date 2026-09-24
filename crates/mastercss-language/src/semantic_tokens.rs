@@ -102,7 +102,6 @@ pub(crate) fn push_value_semantic_tokens(
     tokens: &mut Vec<SemanticTokenInputIr>,
     value: &str,
     offset: u32,
-    variable_names: &HashSet<String>,
 ) {
     let mut byte_index = 0;
     while byte_index < value.len() {
@@ -224,7 +223,6 @@ pub(crate) fn push_value_semantic_tokens(
                             tokens,
                             content,
                             offset + utf16_len(&value[..content_start]),
-                            variable_names,
                         );
                     } else {
                         push_semantic_token(
@@ -256,7 +254,14 @@ pub(crate) fn push_value_semantic_tokens(
                     tokens,
                     start,
                     offset + utf16_len(&value[..end]),
-                    if variable_names.contains(name) {
+                    if name.starts_with("--")
+                        && value[..byte_index]
+                            .trim_end_matches(|character: char| {
+                                character.is_whitespace() || character == '|'
+                            })
+                            .to_ascii_lowercase()
+                            .ends_with("var(")
+                    {
                         "variable"
                     } else {
                         "enumMember"

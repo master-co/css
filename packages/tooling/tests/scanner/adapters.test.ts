@@ -25,8 +25,8 @@ describe('scanner source adapters', () => {
 
     await expect(scanner.collectCandidates('index.html', `
       <div class="block mx:auto"></div>
-      <script>const classes = 'fg:red'</script>
-    `)).resolves.toEqual(['block', 'mx:auto', 'fg:red'])
+      <script>const classes = 'fg-red'</script>
+    `)).resolves.toEqual(['block', 'mx:auto', 'fg-red'])
 
     await expect(scanner.collectCandidates('component.tsx', `
       const classes = 'inline-flex'
@@ -41,8 +41,8 @@ describe('scanner source adapters', () => {
 
     await expect(scanner.collectCandidates('index.html', `
       <div class="block mx:auto"></div>
-      <script>const classes = 'fg:red'</script>
-    `)).resolves.toEqual(['block', 'mx:auto', 'fg:red'])
+      <script>const classes = 'fg-red'</script>
+    `)).resolves.toEqual(['block', 'mx:auto', 'fg-red'])
 
     await expect(scanner.collectCandidates('component.tsx', `
       const classes = 'inline-flex'
@@ -57,13 +57,13 @@ describe('scanner source adapters', () => {
 
     await expect(scanner.collectCandidates('component.vue', `
       <template><div class="block"></div></template>
-      <script setup>const classes = 'fg:red'</script>
-    `)).resolves.toEqual(['block', 'fg:red'])
+      <script setup>const classes = 'fg-red'</script>
+    `)).resolves.toEqual(['block', 'fg-red'])
 
     await expect(scanner.collectCandidates('component.svelte', `
-      <script>const classes = 'p:4x'</script>
+      <script>const classes = 'p:1rem'</script>
       <div class="mx:auto"></div>
-    `)).resolves.toEqual(['p:4x', 'mx:auto'])
+    `)).resolves.toEqual(['p:1rem', 'mx:auto'])
 
     await expect(scanner.collectCandidates('page.astro', `---
 const classes = 'inline-flex'

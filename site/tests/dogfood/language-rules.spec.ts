@@ -69,7 +69,7 @@ test('structural aliases and CSS variable colors use the actual documented rules
   await specimen(page, snippets('selectors', 'first--last--odd--even')[0])
   const backgrounds = await page.locator('li').evaluateAll(nodes => nodes.map(e => getComputedStyle(e).backgroundColor))
   expect(backgrounds[0]).toBe(backgrounds[2]); expect(backgrounds[1]).not.toBe(backgrounds[0])
-  const oddCSS = configuredExampleCSS('', ['mt:sm:odd'])
+  const oddCSS = configuredExampleCSS('', ['mt-sm:odd'])
   expect(oddCSS).toContain(':nth-child(odd)')
   await specimen(page, snippets('declarations', 'variable-properties').find(html => html.includes('--button-bg'))!)
   const button = page.getByRole('button', { name: 'Save' })

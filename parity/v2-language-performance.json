@@ -1,0 +1,214 @@
+{
+  "date": "2026-09-24T10:18:20.055Z",
+  "platform": "darwin arm64 Apple M3 Max",
+  "node": "v24.20.0",
+  "baseline": "3f700887b",
+  "build": "native release; Wasm release via cargo xtask",
+  "classCount": 464,
+  "method": "4 warmups, 15 alternating paired samples; medians in ms; cached result is per batch of all classes (100 batches/sample); includes N-API and JSON serialization",
+  "timings": {
+    "create": {
+      "before": 12.384042,
+      "after": 15.879416
+    },
+    "insert": {
+      "before": 4.639167,
+      "after": 3.597875
+    },
+    "cached": {
+      "before": 0.03729541,
+      "after": 0.03752042
+    },
+    "deleteAndInsert": {
+      "before": 4.905541,
+      "after": 3.885583
+    }
+  },
+  "payload": [
+    {
+      "path": "packages/runtime/dist/global.min.js",
+      "before": {
+        "path": "packages/runtime/dist/global.min.js",
+        "bytes": 50629,
+        "gzip": 14214,
+        "brotli": 12730
+      },
+      "after": {
+        "bytes": 50629,
+        "gzip": 14214,
+        "brotli": 12731
+      }
+    },
+    {
+      "path": "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm",
+      "before": {
+        "path": "packages/runtime/artifacts/mastercss_binding_wasm_engine_bg.wasm",
+        "bytes": 968053,
+        "gzip": 295165,
+        "brotli": 224595
+      },
+      "after": {
+        "bytes": 1023362,
+        "gzip": 313656,
+        "brotli": 238144
+      }
+    },
+    {
+      "path": "packages/runtime/dist/default-manifest.json",
+      "before": {
+        "path": "packages/runtime/dist/default-manifest.json",
+        "bytes": 90882,
+        "gzip": 13041,
+        "brotli": 10265
+      },
+      "after": {
+        "bytes": 89014,
+        "gzip": 12901,
+        "brotli": 10146
+      }
+    }
+  ],
+  "measurements": {
+    "before": {
+      "create": [
+        12.255042,
+        12.273917,
+        12.384042,
+        12.101375,
+        12.747583,
+        13.21575,
+        12.921083,
+        13.005834,
+        12.476,
+        12.496875,
+        12.714417,
+        12.32325,
+        12.285,
+        12.351042,
+        12.307125
+      ],
+      "insert": [
+        4.6045,
+        4.595667,
+        4.579416,
+        4.553667,
+        4.806125,
+        5.076917,
+        5.14225,
+        4.709125,
+        4.902667,
+        4.821583,
+        4.639167,
+        4.729375,
+        4.504875,
+        4.587708,
+        4.572333
+      ],
+      "cached": [
+        0.03717583,
+        0.0370825,
+        0.03632375,
+        0.03621167,
+        0.03833708,
+        0.0383825,
+        0.039266670000000004,
+        0.03823792,
+        0.03729541,
+        0.03730208,
+        0.03761708,
+        0.03720917,
+        0.03718125,
+        0.03622458,
+        0.037450420000000005
+      ],
+      "deleteAndInsert": [
+        4.817792,
+        4.897625,
+        4.905541,
+        4.839,
+        5.422667,
+        5.305292,
+        5.35125,
+        5.24425,
+        4.943542,
+        4.96325,
+        4.992375,
+        4.883958,
+        4.847917,
+        4.83625,
+        4.901958
+      ]
+    },
+    "after": {
+      "create": [
+        15.86825,
+        15.864292,
+        15.879416,
+        15.779583,
+        15.931167,
+        16.876958,
+        16.979542,
+        16.379375,
+        16.3485,
+        16.223625,
+        16.29925,
+        15.823166,
+        15.822375,
+        15.716083,
+        15.732583
+      ],
+      "insert": [
+        3.458875,
+        3.643666,
+        3.533375,
+        3.3785,
+        3.64625,
+        3.773542,
+        3.821959,
+        3.82225,
+        3.653333,
+        3.619416,
+        3.597875,
+        3.386917,
+        3.520166,
+        3.457333,
+        3.432208
+      ],
+      "cached": [
+        0.03689,
+        0.03775917,
+        0.03681833,
+        0.03710625,
+        0.03695458,
+        0.03973625,
+        0.03910625,
+        0.03963333,
+        0.03945916,
+        0.03805625,
+        0.03752042,
+        0.03683708,
+        0.03722292,
+        0.037138330000000004,
+        0.039017909999999996
+      ],
+      "deleteAndInsert": [
+        3.837792,
+        3.773791,
+        3.729208,
+        3.809625,
+        4.080917,
+        4.107209,
+        4.003833,
+        4.146584,
+        3.9845,
+        4.1485,
+        3.742042,
+        3.90225,
+        3.842125,
+        3.722041,
+        3.885583
+      ]
+    }
+  },
+  "compression": "gzip level 6 and Node default Brotli; baseline gzip level verified against preserved default manifest"
+}

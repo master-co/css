@@ -10,8 +10,8 @@ A length such as `text-stroke:2px` controls the stroke width. Compare 0px, 1px a
 ```html
 <!-- Stroke width · 0 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:0 text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:0 text-stroke-blue-50"
 >
   Outline
 </p>
@@ -20,8 +20,8 @@ A length such as `text-stroke:2px` controls the stroke width. Compare 0px, 1px a
 ```html
 <!-- Stroke width · 1px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -30,8 +30,8 @@ A length such as `text-stroke:2px` controls the stroke width. Compare 0px, 1px a
 ```html
 <!-- Stroke width · 2px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:2px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:2px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -54,8 +54,8 @@ A stroke changes the glyph’s paint, not its font size. Heavy strokes can reduc
 ```html
 <!-- text-stroke:1px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -64,8 +64,8 @@ A stroke changes the glyph’s paint, not its font size. Heavy strokes can reduc
 ```html
 <!-- text-stroke-width:1px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke-width:1px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke-width:1px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -86,8 +86,8 @@ A stroke changes the glyph’s paint, not its font size. Heavy strokes can reduc
 ```html
 <!-- 1px screen stroke · 0px print stroke -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:blue-50
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-blue-50
          text-stroke:0@print"
 >
   Outline
@@ -104,8 +104,8 @@ Hover or focus to increase the edge from 1px to 2px. Print resets the width to z
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:3xl font:semibold leading:1.5 text-fill-color:current
-         text-stroke:1px text-stroke:blue-50 text-stroke:0@print
+  class="font-3xl font-semibold leading:1.5 text-fill-color-current
+         text-stroke:1px text-stroke-blue-50 text-stroke:0@print
          text-stroke:2px:hover@screen text-stroke:2px:focus-visible@screen"
 >
   Outline

@@ -3,13 +3,13 @@
 
 ## Examples \{#examples\}
 ### Add margin on every side \{#add-margin-on-every-side\}
-`m:md` adds 16px outside all four sides of the blue box. The outlined parent uses `flow-root` to keep the child’s vertical margins inside the parent’s extent; its own padding remains zero.
+`m-md` adds 16px outside all four sides of the blue box. The outlined parent uses `flow-root` to keep the child’s vertical margins inside the parent’s extent; its own padding remains zero.
 
 <DemoExample page="margin" section="add-margin-on-every-side" />
 
 ```html
-<div id="layout" class="flow-root w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:16x w:40x m:md p:sm">External space</div>
+<div id="layout" class="flow-root w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:4rem w:10rem m-md p-sm">External space</div>
 </div>
 ```
 
@@ -21,30 +21,30 @@ Margin is transparent and is not part of the element’s painted border box. In 
 <DemoExample page="margin" section="set-one-side" />
 
 ```html
-<div id="layout" class="flow-root w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:12x w:40x mb:lg ml:md p:sm">First block</div>
-  <div id="peer" class="h:12x w:40x mr:lg mt:sm p:sm">Second block</div>
+<div id="layout" class="flow-root w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:3rem w:10rem mb-lg ml-md p-sm">First block</div>
+  <div id="peer" class="h:3rem w:10rem mr-lg mt-sm p-sm">Second block</div>
 </div>
 ```
 
 The parent contains the children’s margins, but does not stop adjacent block siblings’ margins from collapsing with each other. Flex and Grid item margins do not collapse.
 
 ### Set inline or block margins \{#set-horizontal-or-vertical-margins\}
-`mx:*` sets inline margins; `my:*` sets block margins. These directions follow writing mode. The first box has 120px of free inline space, so `mx:auto` places 60px on each side. In the vertical example, `mx:md` maps to top/bottom and `my:sm` maps to right/left.
+`mx:*` sets inline margins; `my:*` sets block margins. These directions follow writing mode. The first box has 120px of free inline space, so `mx:auto` places 60px on each side. In the vertical example, `mx-md` maps to top/bottom and `my-sm` maps to right/left.
 
 <DemoExample page="margin" section="set-horizontal-or-vertical-margins" />
 
 ```html
 <!-- Automatic inline margins -->
-<div id="layout" class="flow-root w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:16x w:40x mx:auto my:sm p:sm">Centered</div>
+<div id="layout" class="flow-root w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:4rem w:10rem mx:auto my-sm p-sm">Centered</div>
 </div>
 ```
 
 ```html
 <!-- Vertical logical margins -->
-<div id="layout" class="flow-root size:40x writing-mode:vertical-rl" role="group" aria-label="Available space">
-  <div id="target" class="h:24x w:16x mx:md my:sm p:sm">Vertical</div>
+<div id="layout" class="flow-root size:10rem writing-mode:vertical-rl" role="group" aria-label="Available space">
+  <div id="target" class="h:6rem w:4rem mx-md my-sm p-sm">Vertical</div>
 </div>
 ```
 
@@ -56,9 +56,9 @@ Padding creates space inside a component; gap separates its flex or grid childre
 <DemoExample page="margin" section="avoid-margin-for-internal-spacing" />
 
 ```html
-<div id="layout" class="flex gap:sm w:70x max-w:full p:md" role="group" aria-label="Available space">
-  <button id="target" type="button" class="px:md py:sm b:0">Cancel</button>
-  <button id="peer" type="button" class="px:md py:sm b:0">Save</button>
+<div id="layout" class="flex gap-sm w:17.5rem max-w:100% p-md" role="group" aria-label="Available space">
+  <button id="target" type="button" class="px-md py-sm border-width:0">Cancel</button>
+  <button id="peer" type="button" class="px-md py-sm border-width:0">Save</button>
 </div>
 ```
 
@@ -70,7 +70,7 @@ Resize past `sm` to add 16px of external space around the same 160 × 64px box. 
 <DemoExample page="margin" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flow-root w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:16x w:40x m:0 p:sm m:md@sm">Same box</div>
+<div id="layout" class="flow-root w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:4rem w:10rem m:0 p-sm m-md@sm">Same box</div>
 </div>
 ```

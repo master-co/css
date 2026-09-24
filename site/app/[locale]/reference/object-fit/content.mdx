@@ -13,7 +13,7 @@ The same 320 × 200 source fills two explicit 220 × 220 image boxes. `object-co
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-cover object-right" />
+         bg-surface-base object-cover object-right" />
 ```
 
 ```html
@@ -22,7 +22,7 @@ The same 320 × 200 source fills two explicit 220 × 220 image boxes. `object-co
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-fill object-right" />
+         bg-surface-base object-fill object-right" />
 ```
 
 <details>
@@ -45,7 +45,7 @@ Right alignment keeps the sun in view. The sun stays round with cover and become
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-contain object-right" />
+         bg-surface-base object-contain object-right" />
 ```
 
 ```html
@@ -54,7 +54,7 @@ Right alignment keeps the sun in view. The sun stays round with cover and become
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-cover object-right" />
+         bg-surface-base object-cover object-right" />
 ```
 
 The unused bands show the image element’s own background. The image content is about 220 × 137.5 here, while its layout box remains 220 × 220. Use [object-position](/reference/object-position) to move the content within that box.
@@ -70,7 +70,7 @@ The unused bands show the image element’s own background. The image content is
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-right object-fit:none" />
+         bg-surface-base object-right object-fit:none" />
 ```
 
 ```html
@@ -79,7 +79,7 @@ The unused bands show the image element’s own background. The image content is
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-right object-scale-down" />
+         bg-surface-base object-right object-scale-down" />
 ```
 
 Both samples retain the same 220 × 220 layout box. Scale-down may shrink media but does not enlarge it beyond the none result. Explicit width and height are necessary to make this fitting comparison meaningful.
@@ -95,7 +95,7 @@ Widen the preview to `sm` to switch from cover to contain. Print also uses conta
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
   class="block size:220px max-w:100%
-         bg:surface-base object-cover object-right
+         bg-surface-base object-cover object-right
          object-contain@print
          object-contain@screen&sm" />
 ```

@@ -1,7 +1,7 @@
 use super::{
     COMPOSITION_RECIPES, CanonicalComposeSuggestionIr, CanonicalComposeSuggestionKind,
     CanonicalGroupEntry, ComposeBucket, ComposeNativeDeclaration, CompositionRecipe, HashMap,
-    HashSet, Value, split_top_level,
+    HashSet, split_top_level,
 };
 
 pub(crate) fn replace_first_compose_class(
@@ -244,49 +244,4 @@ pub(crate) fn push_index_value(map: &mut HashMap<String, Vec<String>>, key: &str
     if !values.iter().any(|existing| existing == value) {
         values.push(value.to_owned());
     }
-}
-
-pub(crate) fn manifest_utility_property_signatures(
-    utility: &serde_json::Map<String, Value>,
-) -> Vec<String> {
-    let Some(emit) = utility.get("emit").and_then(Value::as_object) else {
-        return Vec::new();
-    };
-    let mut signatures = Vec::new();
-    match emit.get("type").and_then(Value::as_str) {
-        Some("static") => {
-            for rule in emit
-                .get("rules")
-                .and_then(Value::as_array)
-                .into_iter()
-                .flatten()
-            {
-                if let Some(declarations) = rule.get("declarations").and_then(Value::as_object) {
-                    let mut properties = declarations.keys().cloned().collect::<Vec<_>>();
-                    properties.sort();
-                    let signature = properties.join("\0");
-                    if !signature.is_empty() && !signatures.contains(&signature) {
-                        signatures.push(signature);
-                    }
-                }
-            }
-        }
-        Some("property") => {
-            if let Some(property) = emit.get("property").and_then(Value::as_str) {
-                signatures.push(property.to_owned());
-            }
-        }
-        Some("template") => {
-            if let Some(declarations) = emit.get("declarations").and_then(Value::as_object) {
-                let mut properties = declarations.keys().cloned().collect::<Vec<_>>();
-                properties.sort();
-                let signature = properties.join("\0");
-                if !signature.is_empty() {
-                    signatures.push(signature);
-                }
-            }
-        }
-        _ => {}
-    }
-    signatures
 }

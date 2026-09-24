@@ -14,7 +14,7 @@ class MyComp {
     }
 
     button('toggle')
-      .class('toggle fg:blue-50:hover')
+      .class('toggle fg-blue-50:hover')
       .onClick(() => {
         this.night = !this.night
       })

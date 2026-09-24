@@ -179,7 +179,7 @@ describe('@master/css-mcp', () => {
       const migrationText = migrationPrompt.messages.map((message) => {
         return message.content.type === 'text' ? message.content.text : ''
       }).join('\n')
-      expect(migrationText).toContain('plan an incremental migration')
+      expect(migrationText).toContain('plan a migration')
       expect(migrationText).toContain('recommended rendering mode')
       expect(migrationText).toContain('Preserve CSS output')
 
@@ -307,7 +307,7 @@ describe('@master/css-mcp', () => {
 
   it('traces, extracts, queries, and compares Master CSS classes through MCP', async () => {
     const root = createTempDir('master-css-mcp-class-tools-')
-    writeFileSync(join(root, 'index.html'), '<div class="block fg:red"></div>')
+    writeFileSync(join(root, 'index.html'), '<div class="block fg-red"></div>')
 
     const connection = await connect(root)
     try {
@@ -346,7 +346,7 @@ describe('@master/css-mcp', () => {
       const extracted = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_extract_classes',
         arguments: {
-          content: '<div className="block fg:red"></div>',
+          content: '<div className="block fg-red"></div>',
           filePath: 'src/App.tsx'
         }
       }))
@@ -772,7 +772,7 @@ describe('@master/css-mcp', () => {
   it('previews and applies lint fixes only with a confirmation token', async () => {
     const root = createTempDir('master-css-mcp-fix-')
     const file = join(root, 'index.html')
-    writeFileSync(file, '<div class="fg:white m:2x"></div>')
+    writeFileSync(file, '<div class="fg-white m:0.5rem"></div>')
 
     const connection = await connect(root)
     try {
@@ -786,7 +786,7 @@ describe('@master/css-mcp', () => {
       expect(preview.mode).toBe('lint-fixes')
       expect(preview.preview.confirmToken).toEqual(expect.any(String))
       expect(preview.preview.changes).toHaveLength(1)
-      expect(readFileSync(file, 'utf8')).toBe('<div class="fg:white m:2x"></div>')
+      expect(readFileSync(file, 'utf8')).toBe('<div class="fg-white m:0.5rem"></div>')
 
       const applied = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_apply_preview',
@@ -795,7 +795,7 @@ describe('@master/css-mcp', () => {
         }
       }))
       expect(applied.applied).toBe(true)
-      expect(readFileSync(file, 'utf8')).not.toBe('<div class="fg:white m:2x"></div>')
+      expect(readFileSync(file, 'utf8')).not.toBe('<div class="fg-white m:0.5rem"></div>')
     } finally {
       await connection.close()
     }
@@ -803,7 +803,7 @@ describe('@master/css-mcp', () => {
 
   it('lints cjs files with the shared script language mapping', async () => {
     const root = createTempDir('master-css-mcp-cjs-')
-    writeFileSync(join(root, 'component.cjs'), 'const view = <div className="fg:white m:2x" />')
+    writeFileSync(join(root, 'component.cjs'), 'const view = <div className="fg-white m:0.5rem" />')
 
     const connection = await connect(root)
     try {
@@ -864,7 +864,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_lint_content',
         arguments: {
           filePath: 'src/Component.tsx',
-          content: 'export function Component() { return <div className="fg:white m:2x" /> }'
+          content: 'export function Component() { return <div className="fg-white m:0.5rem" /> }'
         }
       }))
 

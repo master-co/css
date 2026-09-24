@@ -11,24 +11,24 @@ Compare identical boxes with an 8px dashed border and 24px padding. Only the bac
 ```html
 <!-- Border box · paint beneath the border -->
 <div id="target" role="img" aria-label="Blue background clipped to border box"
-  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
-         bg-clip-border bg:blue-30"
+  class="h:176px w:280px max-w:100% p-lg b:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+         bg-clip-border bg-blue-30"
 ></div>
 ```
 
 ```html
 <!-- Padding box · border band stays clear -->
 <div id="target" role="img" aria-label="Blue background clipped to padding box"
-  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
-         bg-clip-padding bg:blue-30"
+  class="h:176px w:280px max-w:100% p-lg b:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+         bg-clip-padding bg-blue-30"
 ></div>
 ```
 
 ```html
 <!-- Content box · padding stays clear -->
 <div id="target" role="img" aria-label="Blue background clipped to content box"
-  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
-         bg-clip-content bg:blue-30"
+  class="h:176px w:280px max-w:100% p-lg b:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+         bg-clip-content bg-blue-30"
 ></div>
 ```
 
@@ -47,10 +47,10 @@ Clip a real gradient to the glyphs and make the glyph fill transparent only when
 ```html
 <!-- Supported screen paint · solid print fallback -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:lg
-         bg-clip-text text-fill-color:current
-         bg:linear-gradient(90deg,blue-50,violet-50)@supports(background-clip:text)@screen
-         text-fill-color:current@print
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading-lg
+         bg-clip-text text-fill-color-current
+         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports(background-clip:text)@screen
+         text-fill-color-current@print
          text-fill-color:transparent@supports(background-clip:text)@screen"
 >Clear type</p>
 ```
@@ -65,8 +65,8 @@ Widen to `sm` to move the painting edge from the border box to the content box. 
 ```html
 <!-- Border → content at sm -->
 <div id="target" role="img" aria-label="Responsive background painting area"
-  class="h:176px w:280px max-w:100% p:lg b:8px|dashed|violet-50/.5
-         bg-clip-border bg:blue-30 bg-clip-border@print
+  class="h:176px w:280px max-w:100% p-lg b:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
+         bg-clip-border bg-blue-30 bg-clip-border@print
          bg-clip-content@screen&sm"
 ></div>
 ```

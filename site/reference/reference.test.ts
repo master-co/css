@@ -140,8 +140,8 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.ok(modes.markdown.includes(variableNamespaceSourcesMarkdown()))
   // A registry-backed consumer may have no value in the preset: order was missing
   // when this index was incorrectly derived from the defined variable inventory.
-  assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order:'])
-  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-padding-inline-end:'))
+  assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order-'])
+  assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-padding-inline-end-'))
   assert.ok(variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.includes('@container(md)'))
   for (const row of variableNamespaceSources) for (const consumer of row.consumers) assert.ok(renderDocumentMarkdown(modes, catalog).includes(`\`${consumer}\``))
   const layers = catalog.documents.find(doc => doc.id === 'rules/layers')!
@@ -150,10 +150,10 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   assert.match(layers.markdown, /!important` reverses the order between layers/)
   const base = layers.examples.find(example => example.classes.includes('list-style:none_ul@base'))!
   assert.match(base.css, /@layer base\{.*list-style:none/)
-  const fonts = layers.examples.find(example => example.classes.includes('font:mono_:is(code,pre)@default'))!
+  const fonts = layers.examples.find(example => example.classes.includes('font-mono_:is(code,pre)@default'))!
   assert.match(fonts.css, /--font-family-mono:/)
   assert.match(fonts.css, /font-family:var\(--font-family-mono\)/)
-  assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p:card"><li class="p:card">One</li></ul>'), ['list-style:none', 'p:card'])
+  assert.deepEqual(configuredMarkupClasses('<ul class="list-style:none p-card"><li class="p-card">One</li></ul>'), ['list-style:none', 'p-card'])
   assert.throws(() => configuredExampleCSS('', ['list-style:10px']), /Invalid configured documentation class/)
 })
 
@@ -301,9 +301,9 @@ test('changing a configured token updates class output, extracted Markdown and s
     for (const value of ['1.5rem', '2rem']) {
       const source = `@theme { --spacing-card: ${value}; }`
       const file = path.join(directory, 'content.mdx')
-      await writeFile(file, `<ConfiguredExample source={${JSON.stringify(source)}} classes={['p:card']} />`)
+      await writeFile(file, `<ConfiguredExample source={${JSON.stringify(source)}} classes={['p-card']} />`)
       const extracted = await extractReferenceMdx(file)
-      const pageCSS = configuredExampleCSS(source, ['p:card'])
+      const pageCSS = configuredExampleCSS(source, ['p-card'])
       assert.match(pageCSS, new RegExp(`--spacing-card:${value.replace('.', '\\.')}`))
       assert.ok(extracted.markdown.includes(pageCSS))
       assert.ok(extractSearchNodesFromMdx(extracted.markdown).some(node => node.text.includes(`--spacing-card:${value}`)))
@@ -339,7 +339,7 @@ test('tool references preserve every public input, complete raw contracts and st
     assert.equal(raw.value, help)
     const rows = cliParameters(help)
     assert.ok(doc.markdown.includes(parametersMarkdown(rows)))
-    assert.equal(rows.length, help.split('\n').filter(line => /^ {2}(?:source paths|(?:-\w, )?--)/.test(line)).length)
+    assert.equal(rows.length, help.split('\n').filter(line => /^ {2}(?:source paths|paths|(?:-\w, )?--)/.test(line)).length)
     for (const example of cliEditorial[command].examples) assert.ok(doc.markdown.includes(example.command))
     for (const heading of previous[doc.id]) assert.ok(doc.headings.some(item => item.id === heading.id), `${doc.id}#${heading.id}`)
   }

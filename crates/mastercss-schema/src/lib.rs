@@ -1,5 +1,13 @@
 #![forbid(unsafe_code)]
 
+#[path = "native-properties.rs"]
+mod native_properties;
+pub use native_properties::NATIVE_CSS_PROPERTIES;
+
+pub fn is_native_css_property(property: &str) -> bool {
+    property.starts_with("--") || NATIVE_CSS_PROPERTIES.binary_search(&property).is_ok()
+}
+
 use std::collections::BTreeMap;
 
 use serde::{Deserialize, Serialize};
@@ -8,7 +16,7 @@ use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 1;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
-pub const BINDING_ABI_VERSION: u32 = 7;
+pub const BINDING_ABI_VERSION: u32 = 8;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
 pub const VALIDATOR_BATCH_VERSION: u32 = 1;
 pub const DIAGNOSTICS_REPORT_VERSION: u32 = 1;
@@ -77,6 +85,8 @@ pub struct ValidatorClassIr {
     pub class_name: String,
     pub matched: bool,
     pub rules: Vec<GeneratedRuleIr>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<Diagnostic>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

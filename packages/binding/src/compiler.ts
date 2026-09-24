@@ -46,6 +46,7 @@ export function loadNativeCompilerBinding(
           JSON.stringify(baseManifest),
           JSON.stringify(graphs)
         )),
+      migrateRC: (request) => parse(nativeBinding.migrateRcJson(JSON.stringify(request))),
       inspectCSS: (source) => parse(nativeBinding.inspectCssJson(source)),
       compileNativeCSS: (source, options) =>
         parse(nativeBinding.compileNativeCssJson(source, options === undefined ? undefined : JSON.stringify(options))),

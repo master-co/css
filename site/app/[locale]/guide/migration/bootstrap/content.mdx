@@ -69,7 +69,7 @@ $spacer: 1rem;
 ```
 
 ```html
-<section class="bg:white fg:body p:page r:control">
+<section class="bg-white fg-body p-page r-control">
   ...
 </section>
 ```
@@ -90,9 +90,9 @@ Instead of preserving Bootstrap class spelling, preserve layout intent:
 ```
 
 ```html
-<section class="w:full max-w:6xl mx:auto px:md py:2xl">
-  <div class="grid gap:lg grid-cols:3@md">
-    <article class="p:lg b:1px|solid|base r:lg bg:white">
+<section class="w:100% max-w-6xl mx:auto px-md py-2xl">
+  <div class="grid gap-lg grid-cols:3@md">
+    <article class="p-lg b:1px|solid|var(--color-line-base) r-lg bg-white">
       ...
     </article>
   </div>
@@ -121,13 +121,13 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 
 @components {
   btn-primary {
-    @compose inline-flex items-center justify-center gap:xs h:10x px:md bg:primary fg:white r:control;
-    &:hover { @compose bg:blue-70; }
+    @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md bg-primary fg-white r-control;
+    &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }
   }
 
   panel {
-    @compose p:lg b:1px|solid|base r:lg bg:white fg:body shadow:sm;
+    @compose p-lg b:1px|solid|var(--color-line-base) r-lg bg-white fg-body shadow-sm;
   }
 }
 ```
@@ -147,7 +147,7 @@ Bootstrap JavaScript components are not just CSS. They can manage focus, ARIA at
 Keep markup with `data-bs-*` attributes on Bootstrap until the replacement behavior has been implemented and tested. Convert only the surrounding layout or product-owned wrappers first.
 
 ```html
-<section class="grid gap:md">
+<section class="grid gap-md">
   <!-- Bootstrap modal trigger and modal markup can remain unchanged here. -->
 </section>
 ```
@@ -170,8 +170,8 @@ Keep the override as CSS when it targets Bootstrap internals:
 Move the override to Master CSS only after the markup is app-owned:
 
 ```html
-<nav class="flex items-center gap:md">
-  <div class="min-w:3xs">...</div>
+<nav class="flex items-center gap-md">
+  <div class="min-w-3xs">...</div>
 </nav>
 ```
 

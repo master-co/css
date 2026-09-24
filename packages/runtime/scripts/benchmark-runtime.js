@@ -428,7 +428,7 @@ try {
       browser,
       server.url,
       scriptURL,
-      '<div class="fg:red-60 animation:fade|1s"></div>',
+      '<div class="fg-red-60 animation:fade|1s"></div>',
       { preloadManifest: true }
     )
     try {
@@ -447,7 +447,7 @@ try {
       if (cssText.includes('--color-red-60:') || cssText.includes('@keyframes fade{')) {
         throw new Error('Late emitted globals were not removed from runtime CSS.')
       }
-      if (!cssText.includes('.fg\\:red-60') || !cssText.includes('.animation\\:fade\\|1s')) {
+      if (!cssText.includes('.fg-red-60') || !cssText.includes('.animation\\:fade\\|1s')) {
         throw new Error('Late emitted globals rebuild removed utility CSS.')
       }
       return elapsed

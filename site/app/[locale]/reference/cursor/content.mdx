@@ -12,8 +12,8 @@ Use `cursor:pointer` on a real disclosure control. Click or press Enter on the s
 ```html
 <details>
   <summary id="target"
-    class="p:sm b:1px|solid|base r:sm cursor:pointer">Canvas settings</summary>
-  <label class="flex items-center gap:sm mt:md">
+    class="p-sm b:1px|solid|var(--color-line-base) r-sm cursor:pointer">Canvas settings</summary>
+  <label class="flex items-center gap-sm mt-md">
     <input type="checkbox"> Show grid
   </label>
 </details>
@@ -32,9 +32,9 @@ Pair `cursor:not-allowed` with the native `disabled` attribute. The cursor is a 
 <DemoExample page="cursor" section="mark-disabled-actions" />
 
 ```html
-<form class="grid justify-items:start gap:md">
-  <label class="grid gap:xs w:240px max-w:full">
-    Project name <input type="text" value="Canvas" class="w:full">
+<form class="grid justify-items:start gap-md">
+  <label class="grid gap-xs w:240px max-w:100%">
+    Project name <input type="text" value="Canvas" class="w:100%">
   </label>
   <button id="target" type="reset" disabled
     class="opacity:.6 cursor:not-allowed">
@@ -54,9 +54,9 @@ Use `cursor:grab` with `cursor:grabbing:active` on content that really participa
 ```html
 <img id="target" src="/demo/landscape.svg" alt="Sun above layered mountains"
   width="240" height="144"
-  class="block h:auto w:240px max-w:full r:sm
+  class="block h:auto w:240px max-w:100% r-sm
          cursor:grab cursor:grabbing:active" draggable="true">
-<p class="mb:0 mt:sm font:xs text:muted">Drag the image, or <a href="/demo/landscape.svg" download>download the artwork</a>.</p>
+<p class="mb:0 mt-sm font-xs text-muted">Drag the image, or <a href="/demo/landscape.svg" download>download the artwork</a>.</p>
 ```
 
 The grabbing style applies while the element is active. Once native dragging begins, the operating system may show its own drag feedback. These classes do not implement reordering or a drop target.
@@ -70,9 +70,9 @@ Resize to request `cursor:pointer` at `sm` and `cursor:default` below it. The di
 <details>
   <summary id="target"
 
-  class="p:sm b:1px|solid|base r:sm cursor:default
+  class="p-sm b:1px|solid|var(--color-line-base) r-sm cursor:default
          cursor:auto@print cursor:pointer@screen&sm">Canvas settings</summary>
-  <label class="flex items-center gap:sm mt:md">
+  <label class="flex items-center gap-sm mt-md">
     <input type="checkbox"> Show grid
   </label>
 </details>

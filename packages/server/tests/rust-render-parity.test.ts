@@ -14,7 +14,7 @@ beforeAll(() => {
 
 it('matches the core render owner and native render protocol', () => {
   const html = [
-    '<html class="bg:white">',
+    '<html class="bg-white">',
     '<body><div class="text-center block:hover@sm text-center"></div></body>',
     '</html>'
   ].join('')

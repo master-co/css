@@ -115,7 +115,7 @@ export function SearchProvider({ children }: { children: React.ReactNode }) {
         <p className="documentation-search-status" role="status">{error ? (tw ? '搜尋暫時無法載入；重新開啟以重試。' : 'Search could not load. Reopen to retry.') : query ? `${results.length === 40 ? (tw ? '前 ' : 'Top ') : ''}${results.length} ${tw ? '筆結果' : results.length === 1 ? 'result' : 'results'}` : (tw ? '依名稱、別名或 CSS 屬性查找' : 'Find a name, alias or CSS property')}</p>
         {!query && !error && <div className="documentation-search-suggestions">
           <span>{tw ? '試試看' : 'Try searching'}</span>
-          {['padding', 'pxs:', 'fg:red:hover@sm'].map(value => <button key={value} onClick={() => selectQuery(value)}><code>{value}</code><IconCornerDownLeft size={14} aria-hidden="true" /></button>)}
+          {['padding', 'pxs:', 'fg-red:hover@sm'].map(value => <button key={value} onClick={() => selectQuery(value)}><code>{value}</code><IconCornerDownLeft size={14} aria-hidden="true" /></button>)}
         </div>}
         {query && !results.length && !error && <div className="documentation-search-empty"><IconSearch size={28} stroke={1.25} aria-hidden="true" /><strong>{tw ? '找不到相符的文件' : 'No matching documents'}</strong><p>{tw ? '試試屬性全名、較短的別名或其他關鍵字。' : 'Try a property name, a shorter alias or a different keyword.'}</p></div>}
         <ol id="documentation-search-results">

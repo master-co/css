@@ -8,7 +8,7 @@ const sourceIcons: Record<string, string> = {
 }
 
 export default function Backers({ backers }: any) {
-  return <div className="grid-cols:6 gap:xs grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
+  return <div className="grid-cols:6 gap-xs grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
     {backers.map((eachBacker: any, i: number) => {
       let href = eachBacker.websiteUrl || eachBacker.twitterUrl || eachBacker.githubUrl
       if (href && !href?.startsWith('http://') && !href?.startsWith('https://')) {
@@ -20,7 +20,7 @@ export default function Backers({ backers }: any) {
       const Avatar = () =>
         <>
           <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-          {sourceIcon && <div className="abs bottom:-3px right:-3px size:22px round p:4xs surface:raised">
+          {sourceIcon && <div className="abs bottom:-3px right:-3px size:22px round p-4xs surface-raised">
             <Image src={sourceIcon} alt="source" width="18" height="18" />
           </div>}
         </>

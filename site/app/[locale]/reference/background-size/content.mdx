@@ -11,16 +11,16 @@
 ```html
 <!-- Whole source · 8:5 aspect ratio -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="w:xs max-w:100% aspect-ratio:8/5 bg-center bg-contain bg-no-repeat
-         bg:url(/demo/landscape.svg)"
+  class="w-xs max-w:100% aspect-ratio:8/5 bg-center bg-contain bg-no-repeat
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- Cover · fill and crop -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         bg:surface-muted bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         bg-surface-muted background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -41,33 +41,33 @@ Use [position](/reference/background-position) to choose which part of the crop 
 ```html
 <!-- Contain · whole image with free space -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-contain bg-no-repeat
-         bg:surface-muted bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-contain bg-no-repeat
+         bg-surface-muted background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 Contain does not turn off repetition. This example explicitly uses `bg-no-repeat` and `bg-center`, so the unused area exposes the surface color.
 
 ### Use measured sizes \{#use-measured-sizes\}
-Use a width with `auto` to preserve the source ratio, or force both dimensions when distortion is intentional. The existing `x` unit is a quarter rem: `12x` equals `3rem`.
+Use a width with `auto` to preserve the source ratio, or force both dimensions when distortion is intentional. Use explicit native units such as `3rem` for lengths.
 
 <DemoExample page="background-size" section="use-measured-sizes" />
 
 ```html
 <!-- 160px auto · preserved ratio -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
-         background-size:160px|auto bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+         background-size:160px|auto bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- 12x 12x · forced square -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-no-repeat
-         background-size:12x|12x bg:surface-muted
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-no-repeat
+         background-size:3rem|3rem bg-surface-muted
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -81,8 +81,8 @@ Widen the actual preview viewport to `sm` to switch from contain to cover. The s
 ```html
 <!-- Contain → cover at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-contain bg-no-repeat
-         bg:surface-muted bg:url(/demo/landscape.svg) bg-contain@print
+  class="h:160px w-xs max-w:100% bg-center bg-contain bg-no-repeat
+         bg-surface-muted background-image:url(/demo/landscape.svg) bg-contain@print
          bg-cover@screen&sm"
 ></div>
 ```

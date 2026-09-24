@@ -43,31 +43,31 @@ Scroll this real region with touch or a pointer. Keyboard users can focus it and
 ```html
 <!-- Scrollable list · fixed lower fade -->
 <div class="w:240px max-w:100%">
-  <div class="outline:2px|solid|blue:focus-within
+  <div class="outline:2px|solid|var(--color-blue):focus-within
               outline-offset:3px:focus-within">
     <div id="target" role="region" tabindex="0"
       aria-label="Layer list"
       aria-describedby="scroll-help"
-      class="overflow:auto h:160px bg:surface-base
+      class="overflow:auto h:160px bg-surface-base
              mask-image:linear-gradient(to|bottom,black|60%,transparent)
              mask-mode:alpha outline:none:focus-visible">
-      <ol class="m:0 pb:3xl pl:lg pr:sm font:sm text:body">
-        <li id="first-layer" class="py:xs">Outline</li>
-        <li class="py:xs">Surface</li>
-        <li class="py:xs">Foreground</li>
-        <li class="py:xs">Accent</li>
-        <li class="py:xs">Annotation</li>
-        <li class="py:xs">Selection</li>
-        <li class="py:xs">Focus</li>
-        <li id="last-layer" class="py:xs">Export</li>
+      <ol class="m:0 pb-3xl pl-lg pr-sm font-sm text-body">
+        <li id="first-layer" class="py-xs">Outline</li>
+        <li class="py-xs">Surface</li>
+        <li class="py-xs">Foreground</li>
+        <li class="py-xs">Accent</li>
+        <li class="py-xs">Annotation</li>
+        <li class="py-xs">Selection</li>
+        <li class="py-xs">Focus</li>
+        <li id="last-layer" class="py-xs">Export</li>
       </ol>
     </div>
   </div>
-  <p id="scroll-help" class="mb:0 mt:sm font:sm text:body">
+  <p id="scroll-help" class="mb:0 mt-sm font-sm text-body">
     Eight layers. Scroll or follow the links below.
   </p>
   <nav aria-label="Layer navigation"
-    class="flex flex-wrap gap:md mt:sm font:sm">
+    class="flex flex-wrap gap-md mt-sm font-sm">
     <a href="#first-layer">First layer</a>
     <a href="#last-layer">Last layer</a>
   </nav>

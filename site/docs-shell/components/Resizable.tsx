@@ -131,7 +131,7 @@ export default function Resizable({
       {(resizing && showRuler || showRuler === 'always') &&
         <div className={clsx(
           ruleClassName,
-          'left z:1070 flex items-center justify-center h:32px w:full bb:1px|solid|subtle font:xs bg:surface-base text:strong',
+          'left z:1070 flex items-center justify-center h:32px w:100% bb:1px|solid|var(--color-line-subtle) font-xs bg-surface-base text-strong',
           rulerPlacement + ':0'
         )}>
           {
@@ -139,13 +139,13 @@ export default function Resizable({
               const last = i === sortedBreakpoints.length - 1
               const width = +currentWidth?.replace('px', '')
               return (
-                <div key={eachBreakpoint.name} className={clsx('abs bottom top flex items-center h:full m:auto bx:1px|solid|subtle',
+                <div key={eachBreakpoint.name} className={clsx('abs bottom top flex items-center h:100% m:auto bx:1px|solid|var(--color-line-subtle)',
                   (eachBreakpoint.value - 0.02 >= width && (last || width >= sortedBreakpoints[i + 1]?.value))
-                    ? 'bg:surface-base'
-                    : 'text:disabled'
+                    ? 'bg-surface-base'
+                    : 'text-disabled'
                 )} style={{ width: eachBreakpoint.value }}>
-                  <div className="abs left:xs">{eachBreakpoint.name}</div>
-                  <div className="abs right:xs">{eachBreakpoint.name}</div>
+                  <div className="abs left-xs">{eachBreakpoint.name}</div>
+                  <div className="abs right-xs">{eachBreakpoint.name}</div>
                 </div>
               )
             })
@@ -216,7 +216,7 @@ export default function Resizable({
             className={clsx(
               'bottom left right justify-center cursor:row-resize',
               {
-                'transform:translateY(100%) w:10x>svg transform:translateY(0%).active>svg transform:translateY(50%).active': !handlerStyle,
+                'transform:translateY(100%) w:2.5rem>svg transform:translateY(0%).active>svg transform:translateY(50%).active': !handlerStyle,
                 'transform:translateY(50%)': handlerStyle === 'hidden'
               }
             )}
@@ -225,7 +225,7 @@ export default function Resizable({
       </div>
       {resizing &&
         <Portal><div className={clsx('fixed left top z:1040 full animation:fade|.2s contain:strict', {
-          'bg:black/.5': overlay // prevent mouse move into iframe
+          'bg-black/.5': overlay // prevent mouse move into iframe
         })}></div></Portal>
       }
     </>
@@ -243,7 +243,7 @@ const Handler = (({ className, currentHandler, resizing, handlerStyle, setResizi
     <div className={clsx(`${className} abs flex margin:auto user-drag:none user-select:none z:1020`,
       {
         'p:0.625rem transition:transform|.2s': !handlerStyle,
-        'p:xs bg:line-subtle:hover': handlerStyle === 'hidden',
+        'p-xs bg-line-subtle:hover': handlerStyle === 'hidden',
         'active': resizing
       }
     )}
@@ -251,9 +251,9 @@ const Handler = (({ className, currentHandler, resizing, handlerStyle, setResizi
       onTouchStart={startResize}>
       {!handlerStyle &&
         <svg className={clsx(
-          'rounded bg:line-subtle',
+          'rounded bg-line-subtle',
           {
-            'bg:white!': overlay && resizing,
+            'bg-white!': overlay && resizing,
             'h:24px w:5px transition:transform|.2s,height|.2s': currentHandler === 'left' || currentHandler === 'right',
             'h:5px w:24px transition:transform|.2s,width|.2s': currentHandler === 'top' || currentHandler === 'bottom',
           }

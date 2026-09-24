@@ -25,19 +25,19 @@ const manifest = {
     },
     {
       id: 'color-red',
-      name: 'fg:red',
+      name: 'fg-red',
       type: 0,
       emit: {
         type: 'static',
         rules: [{ declarations: { color: 'red' } }]
       },
-      matchers: [{ type: 'static', name: 'fg:red' }]
+      matchers: [{ type: 'static', name: 'fg-red' }]
     }
   ]
 } as unknown as MasterCSSManifest
 
 test('Rust scanner cache/state matches the TypeScript scanner oracle slice', async () => {
-  const source = 'export const App = () => <div className="block unknown fg:red" />'
+  const source = 'export const App = () => <div className="block unknown fg-red" />'
   const oracle = await new MasterCSSScanner({ manifest }).init()
   using scanner = createToolingBindingSync().createScannerSession(manifest)
 
@@ -50,7 +50,7 @@ test('Rust scanner cache/state matches the TypeScript scanner oracle slice', asy
   }
   expect(rust).toMatchObject({
     changed: true,
-    candidates: ['block', 'unknown', 'fg:red'],
+    candidates: ['block', 'unknown', 'fg-red'],
     validClasses: [...oracle.validClasses],
     invalidClasses: [...oracle.invalidClasses]
   })

@@ -11,12 +11,14 @@ jsxTester.run('class matching main utilities', rule, {
     {
       code: 'const classes = "text-decoration:bad()"',
       settings: { '@master/css': { classDeclarations: ['classes'] } },
-      errors: [{ messageId: 'invalidClass' }]
+      errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }]
     },
     {
       code: 'const classes = { btn: ["text-decoration:bad()"] }',
       settings: { '@master/css': { classDeclarations: ['classes'] } },
-      errors: [{ messageId: 'invalidClass' }]
+      errors: [{ messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }]
     },
   ]
 })

@@ -31,7 +31,7 @@ analysis, and the dependency-light diagnostics bridge.
 - `./lexer`, `./source`, `./validator`, `./lint`, and `./language`, with explicit
   `./node` entries for native sync execution.
 - Node filesystem scanner under `./scanner/node`.
-- `./builtins` for Rust-generated key-alias and native-value namespace registries.
+- `./builtins` for Rust-generated key-alias and named-token namespace registries.
 
 Subpaths are responsibility boundaries inside one package, not independent packages.
 Avoid adding convenience re-export files unless they define a deliberate documented

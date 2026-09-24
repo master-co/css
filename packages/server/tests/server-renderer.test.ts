@@ -18,14 +18,14 @@ function expectHTMLParity(
 
 test('reuses a renderer without leaking rules between documents', () => {
   using renderer = createServerRenderer({ manifest: defaultManifest })
-  const firstHTML = '<main class="fg:red block"></main>'
-  const secondHTML = '<main class="fg:blue"></main>'
+  const firstHTML = '<main class="fg-red block"></main>'
+  const secondHTML = '<main class="fg-blue"></main>'
   const first = renderer.renderHTML(firstHTML)
   const second = renderer.renderHTML(secondHTML)
 
   expectHTMLParity(first, renderHTML(firstHTML, { manifest: defaultManifest }))
   expectHTMLParity(second, renderHTML(secondHTML, { manifest: defaultManifest }))
-  expect(second.cssText).not.toContain('.fg\\:red')
+  expect(second.cssText).not.toContain('.fg-red')
 })
 
 test('preserves native aliases that share a declaration across cached pages', () => {
@@ -46,10 +46,10 @@ test('preserves native aliases that share a declaration across cached pages', ()
     maxCachedClasses: Infinity
   })
   renderer.renderHTML('<div class="background:var(--stripe)"></div>')
-  const second = renderer.renderHTML('<div class="bg:stripe"></div>')
+  const second = renderer.renderHTML('<div class="bg:var(--stripe)"></div>')
 
-  expectHTMLParity(second, renderHTML('<div class="bg:stripe"></div>', { manifest }))
-  expect(second.cssText).toContain('.bg\\:stripe{background:var(--stripe)}')
+  expectHTMLParity(second, renderHTML('<div class="bg:var(--stripe)"></div>', { manifest }))
+  expect(second.cssText).toContain('.bg\\:var\\(--stripe\\){background:var(--stripe)}')
 })
 
 test('rebuilds bounded cache generations without changing output', () => {
@@ -58,9 +58,9 @@ test('rebuilds bounded cache generations without changing output', () => {
     maxCachedClasses: 2
   })
   const pages = [
-    '<div class="fg:red bg:blue"></div>',
+    '<div class="fg-red bg-blue"></div>',
     '<div class="block"></div>',
-    '<div class="fg:red"></div>'
+    '<div class="fg-red"></div>'
   ]
 
   for (const html of pages) {
@@ -76,7 +76,7 @@ test('renders oversized pages outside the bounded cache', () => {
     manifest: defaultManifest,
     maxCachedClasses: 1
   })
-  const html = '<div class="fg:red bg:blue"></div>'
+  const html = '<div class="fg-red bg-blue"></div>'
   expectHTMLParity(
     renderer.renderHTML(html),
     renderHTML(html, { manifest: defaultManifest })
@@ -99,11 +99,11 @@ test('validates cache bounds and preserves immutable results after disposal', ()
   unbounded.dispose()
 
   const renderer = createServerRenderer({ manifest: defaultManifest })
-  const result = renderer.renderHTML('<div class="fg:red"></div>')
+  const result = renderer.renderHTML('<div class="fg-red"></div>')
   renderer.dispose()
   renderer.dispose()
 
-  expect(result.cssText).toContain('.fg\\:red')
+  expect(result.cssText).toContain('.fg-red')
   expect(Object.isFrozen(result)).toBe(true)
   expect(() => renderer.renderHTML('<div></div>')).toThrow(
     'The Master CSS server renderer has been disposed.'
@@ -131,18 +131,18 @@ test('keeps streamed HTML and the final immutable result on the same complete sn
   using session = renderer.createHTMLRenderSession({ hydrationManifest: 'inject' })
 
   const first = session.write('<html><head><meta class="block"></head><body>')
-  const second = session.write('<div class="fg:red"></div>')
+  const second = session.write('<div class="fg-red"></div>')
   const ended = session.end('</body></html>')
   const streamedHTML = first + second + ended.chunk
   const expected = renderer.renderHTML(
-    '<html><head><meta class="block"></head><body><div class="fg:red"></div></body></html>',
+    '<html><head><meta class="block"></head><body><div class="fg-red"></div></body></html>',
     { hydrationManifest: 'inject' }
   )
 
   expect(streamedHTML).toBe(ended.result.html)
   expectHTMLParity(ended.result, expected)
-  expect(ended.result.classNames).toEqual(['block', 'fg:red'])
-  expect(ended.result.cssText).toContain('.fg\\:red')
+  expect(ended.result.classNames).toEqual(['block', 'fg-red'])
+  expect(ended.result.cssText).toContain('.fg-red')
 })
 
 test('returns a complete final chunk when no prefix can be emitted safely', () => {

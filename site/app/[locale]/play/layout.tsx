@@ -11,7 +11,7 @@ export default async function Layout({ children }: {
   children: React.ReactNode
 }) {
   return (
-    <Body className="bg:surface-base">
+    <Body className="bg-surface-base">
       {children}
     </Body>
   )

@@ -83,7 +83,7 @@ describe('playground', () => {
       manifest.variables?.[namespace]?.some((variable) => variable.key === key)
     )
 
-    expect(html).toContain('.fg\\:primary{color:var(--color-primary)}')
+    expect(html).toContain('.fg-primary{color:var(--color-primary)}')
     expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_next/static/master-css/hydration/`)
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0).toBe(0)
@@ -93,6 +93,6 @@ describe('playground', () => {
     expect(clientSource).not.toContain('#0070f3')
     expect(hasVariable('font-weight', 'bold')).toBe(true)
     expect(manifestJSONSource).toContain('#0070f3')
-    expect(hydrationManifestJSONSource).toContain('"className":"fg:primary"')
+    expect(hydrationManifestJSONSource).toContain('"className":"fg-primary"')
   })
 })

@@ -84,7 +84,7 @@ export async function buildToolContracts(repo: string): Promise<ReferenceDocumen
   }
   const cliBin = await publicBin(repo, 'cli', 'master-css')
   const cliDigest = hash(await readFile(cliBin, 'utf8'))
-  for (const command of ['generate', 'lint', 'inspect']) {
+  for (const command of ['generate', 'lint', 'inspect', 'migrate']) {
     const help = execFileSync(process.execPath, [cliBin, command, '--help'], { encoding: 'utf8', timeout: 15000 }).trim()
     const id = `tools/cli/${command}`
     const editorial = cliEditorial[command]

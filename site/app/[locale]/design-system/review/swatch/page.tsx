@@ -14,7 +14,7 @@ export const metadata = {
 const blue = getColor('blue', 60)
 
 function PreviousSwatch() {
-  return <div className={styles.swatchPrevious}><div className={`${styles.colorPrevious} bg:demo-blue`} /><span className="demo-label">Subject</span></div>
+  return <div className={styles.swatchPrevious}><div className={`${styles.colorPrevious} bg-demo-blue`} /><span className="demo-label">Subject</span></div>
 }
 
 export default function Page() {
@@ -40,7 +40,7 @@ export default function Page() {
           </article>
           <article className={styles.option}>
             <div className={styles.optionHeading}><span>03</span><div><h3>Adopted</h3><p>Shared inventory tile</p></div></div>
-            <Demo><div className={styles.swatchStage}><DemoSwatch label="Subject" value="--color-demo-blue" className="bg:demo-blue" /></div></Demo>
+            <Demo><div className={styles.swatchStage}><DemoSwatch label="Subject" value="--color-demo-blue" className="bg-demo-blue" /></div></Demo>
             <p className={styles.optionNote}>The token and semantic role share a restrained frame; the chip keeps a hairline edge.</p>
           </article>
         </div>
@@ -51,10 +51,10 @@ export default function Page() {
         <p className={styles.sectionCopy}>Pale surfaces need a boundary as much as saturated colors do. The labels remain text, never color alone.</p>
         <Demo>
           <div className={styles.roleGrid}>
-            <DemoSwatch label="Canvas" value="demo-canvas" className="bg:demo-canvas" />
-            <DemoSwatch label="Surface" value="demo-surface" className="bg:demo-surface" />
-            <DemoSwatch label="Subject" value="demo-blue" className="bg:demo-blue" />
-            <DemoSwatch label="Comparison" value="demo-violet" className="bg:demo-violet" />
+            <DemoSwatch label="Canvas" value="demo-canvas" className="bg-demo-canvas" />
+            <DemoSwatch label="Surface" value="demo-surface" className="bg-demo-surface" />
+            <DemoSwatch label="Subject" value="demo-blue" className="bg-demo-blue" />
+            <DemoSwatch label="Comparison" value="demo-violet" className="bg-demo-violet" />
           </div>
         </Demo>
         <p className={styles.optionNote}>The tile introduces no focus stop. For copying a color, retain the Guide palette or use a native button with an explicit name.</p>
@@ -67,7 +67,7 @@ export default function Page() {
         </div>
         <div className={styles.actualPair}>
           <div><span className={styles.pairLabel}>Guide palette</span><OriginalDemo><div className={styles.paletteStage}><div className={styles.stepHead}><span>40</span><span>50</span><span>60</span><span>70</span></div><div className={styles.originalRow}>{([40, 50, 60, 70] as const).map(level => <OriginalPaletteItem key={level} color={getColor('blue', level)} level={level} colorName="blue" />)}</div></div></OriginalDemo></div>
-          <div><span className={styles.pairLabel}>Shared role inventory</span><Demo><div className={styles.candidateRow}>{(['Canvas', 'Surface', 'Subject', 'Comparison'] as const).map((label, index) => <DemoSwatch key={label} label={label} className={['bg:demo-canvas', 'bg:demo-surface', 'bg:demo-blue', 'bg:demo-violet'][index]} />)}</div></Demo></div>
+          <div><span className={styles.pairLabel}>Shared role inventory</span><Demo><div className={styles.candidateRow}>{(['Canvas', 'Surface', 'Subject', 'Comparison'] as const).map((label, index) => <DemoSwatch key={label} label={label} className={['bg-demo-canvas', 'bg-demo-surface', 'bg-demo-blue', 'bg-demo-violet'][index]} />)}</div></Demo></div>
         </div>
         <p className={styles.optionNote}>These have different jobs: the Guide retains a copyable fixed palette, while the shared tile names roles in Design System and scenario explanations.</p>
       </section>

@@ -100,7 +100,7 @@ test.concurrent('box-shadow', async () => {
       range: getRange(target1, doc)
     },
     {
-      color: { red: 1, green: 0.9999999999999994, blue: 0.9999999999999999, alpha: 1 },
+      color: { red: 1, green: 1, blue: 1, alpha: 1 },
       range: getRange(target2, doc)
     }
   ])
@@ -118,7 +118,7 @@ test.concurrent('gradient', async () => {
       range: getRange(target1, doc)
     },
     {
-      color: { red: 1, green: 0.9999999999999994, blue: 0.9999999999999999, alpha: 1 },
+      color: { red: 1, green: 1, blue: 1, alpha: 1 },
       range: getRange(target2, doc)
     }
   ])
@@ -126,7 +126,7 @@ test.concurrent('gradient', async () => {
 
 test.concurrent('custom variable', async () => {
   const target = 'custom'
-  const content = `export default () => <div className='fg:${target}!'></div>`
+  const content = `export default () => <div className='fg-${target}!'></div>`
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
@@ -135,13 +135,13 @@ test.concurrent('custom variable', async () => {
   })
   expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
     color: { red: .2, green: .2, blue: .2, alpha: 1 },
-    range: getRange(target, doc)
+    range: getRange(`fg-${target}`, doc)
   }])
 })
 
 test.concurrent('custom variable/alpha', async () => {
   const target = 'custom/.5'
-  const content = `export default () => <div className='fg:${target}!'></div>`
+  const content = `export default () => <div className='fg-${target}!'></div>`
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
@@ -150,7 +150,7 @@ test.concurrent('custom variable/alpha', async () => {
   })
   expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
     color: { red: 0.2, green: 0.2, blue: 0.2, alpha: 0.5 },
-    range: getRange(target, doc)
+    range: getRange(`fg-${target}`, doc)
   }])
 })
 
@@ -167,12 +167,12 @@ test.concurrent('variable', async () => {
 
 test.concurrent('variable/opacity', async () => {
   const target = 'black/.5'
-  const content = `export default () => <div className='fg:${target}'></div>`
+  const content = `export default () => <div className='fg-${target}'></div>`
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService()
   expect(await languageService.renderSyntaxColors(doc)).toStrictEqual([{
     color: { red: 0, green: 0, blue: 0, alpha: .5 },
-    range: getRange(target, doc)
+    range: getRange(`fg-${target}`, doc)
   }])
 })
 
@@ -227,7 +227,7 @@ test('CSS color-mix() function', async () => {
   const polarDoc = createDoc('tsx', `<div class='fg:${polarTarget}'></div>`)
   expect(await createLanguageService().renderSyntaxColors(polarDoc)).toHaveLength(1)
 
-  const aliasTarget = 'color-mix(in|srgb,brand,#00f)'
+  const aliasTarget = 'color-mix(in|srgb,var(--color-brand),#00f)'
   const aliasDoc = createDoc('tsx', `<div class='fg:${aliasTarget}'></div>`)
   const [aliasResult] = await createLanguageService({
     manifest: createPresetManifest({
@@ -290,7 +290,7 @@ test('convert any color spaces to RGB and hint correctly', async () => {
 
 test.concurrent('maps out-of-gamut colors into the LSP channel range', async () => {
   const target = 'wide-gamut'
-  const content = `export default () => <div className='fg:${target}'></div>`
+  const content = `export default () => <div className='fg-${target}'></div>`
   const doc = createDoc('tsx', content)
   const languageService = createLanguageService({
     manifest: createPresetManifest({
@@ -300,7 +300,7 @@ test.concurrent('maps out-of-gamut colors into the LSP channel range', async () 
   const [result] = await languageService.renderSyntaxColors(doc) ?? []
   expect(result).toBeDefined()
   if (!result) throw new Error('Expected a rendered color.')
-  expect(result.range).toStrictEqual(getRange(target, doc))
+  expect(result.range).toStrictEqual(getRange(`fg-${target}`, doc))
   expect(Object.values(result.color).every((value) => value >= 0 && value <= 1)).toBe(true)
 })
 

@@ -292,14 +292,17 @@ mod tests {
         cached
             .ensure_classes(["background:var(--stripe)"], Some(&[true]))
             .unwrap();
-        cached.ensure_classes(["bg:stripe"], Some(&[true])).unwrap();
+        cached
+            .ensure_classes(["bg:var(--stripe)"], Some(&[true]))
+            .unwrap();
 
-        let cached_snapshot = cached.snapshot_for_classes(["bg:stripe"]).unwrap();
-        let fresh_snapshot = render_classes(&manifest, ["bg:stripe"], Some(&[true])).unwrap();
+        let cached_snapshot = cached.snapshot_for_classes(["bg:var(--stripe)"]).unwrap();
+        let fresh_snapshot =
+            render_classes(&manifest, ["bg:var(--stripe)"], Some(&[true])).unwrap();
         assert_eq!(cached_snapshot, fresh_snapshot);
         assert_eq!(
             cached_snapshot.snapshot.text,
-            "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.bg\\:stripe{background:var(--stripe)}}"
+            "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
         );
     }
 

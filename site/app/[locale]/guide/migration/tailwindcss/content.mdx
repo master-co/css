@@ -92,20 +92,20 @@ Tailwind v4 `@theme` variables create utility classes and variants. Master CSS `
 ```
 
 ```html
-<article class="r:card grid-cols:3@md bg:brand p:card">
+<article class="r-card grid-cols:3@md bg-brand p-card">
   ...
 </article>
 ```
 
-Master CSS resolves token names by namespace. A token like `--color-brand` becomes available to color utilities such as `bg:brand`, `fg:brand`, and border color utilities. A token like `--spacing-card` becomes available to spacing utilities such as `p:card`, `gap:card`, and `m:card`.
+Master CSS resolves token names by namespace. A token like `--color-brand` becomes available to color utilities such as `bg-brand`, `fg-brand`, and border color utilities. A token like `--spacing-card` becomes available to spacing utilities such as `p-card`, `gap-card`, and `m-card`.
 
 | Tailwind v4 theme concept | Master CSS equivalent | Notes |
 | --- | --- | --- |
-| `--color-*` | `--color-*` | Use color tokens with `bg:*`, `fg:*`, `text:*`, border, outline, shadow, and other color-aware utilities. |
-| `--spacing-*` or base spacing | `--spacing-*` and `@settings { base-unit: ...; }` | Use named spacing tokens for product decisions and multiplier units such as `4x` for base-unit spacing. |
+| `--color-*` | `--color-*` | Use color tokens with `bg:*`, `fg:*`, `text-*`, border, outline, shadow, and other color-aware utilities. |
+| `--spacing-*` or base spacing | `--spacing-*` | Use named spacing tokens for product decisions and explicit native units for direct values. |
 | `--radius-*` | `--radius-*` | Use with `r:*` and border-radius utilities. |
 | `--shadow-*` | `--shadow-*` | Use with `shadow:*` or `box-shadow:*`. |
-| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text:*` when the complete type treatment should be shared. |
+| `--font-*`, `--text-*`, `--leading-*`, `--tracking-*` | Font, text, leading, and tracking namespaces | Prefer `text-*` when the complete type treatment should be shared. |
 | `--breakpoint-*` | `--breakpoint-*` | Creates viewport suffixes such as `@md` or `@dashboard`. |
 | `@theme inline` | `@theme inline` | Use when a token is only a utility shorthand and should be written into generated declarations. |
 | `@theme static` | `@theme static` | Use when a token or managed keyframes should be emitted up front. |
@@ -131,7 +131,7 @@ Use `@theme light` and `@theme dark` when token values should change by mode.
 ```
 
 ```html
-<section class="text:body bg:panel">
+<section class="text-body bg-panel">
   ...
 </section>
 ```
@@ -145,14 +145,14 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 
 | Tailwind v4 pattern | Master CSS pattern | Notes |
 | --- | --- | --- |
-| `p-6`, `px-4`, `mt-8` | `p:6x`, `px:4x`, `mt:8x` | Multiplier units use the Master CSS `base-unit`. Use named tokens like `p:card` for product spacing. |
-| `-mt-4` | `mt:-4x` | The minus sign belongs to the value. |
-| `w-full`, `h-screen`, `min-w-0` | `w:full`, `h:100vh`, `min-w:0` | Use native values when they read better. |
-| `rounded-lg` | `r:lg` | Radius tokens come from the `radius` namespace. |
-| `bg-blue-600`, `text-white` | `bg:blue-60`, `fg:white` | Master CSS preset color steps differ from Tailwind's default palette. |
-| `text-lg`, `font-semibold`, `leading-7` | `font:lg`, `font:semibold`, `line-height:1.75rem` | Use `text:*` only when the full type treatment is intended. |
+| `p-6`, `px-4`, `mt-8` | `p:1.5rem`, `px:1rem`, `mt:2rem` | These values assume Tailwind’s default .25rem scale; check the original project configuration. Use a defined token such as `p-card` for product spacing. |
+| `-mt-4` | `mt:-1rem` | Use a negative raw value, or `-mt-card` for a defined numeric token. |
+| `w-full`, `h-screen`, `min-w-0` | `w:100%`, `h:100vh`, `min-w:0` | Use native values when they read better. |
+| `rounded-lg` | `r-lg` | Radius tokens come from the `radius` namespace. |
+| `bg-blue-600`, `text-white` | `bg-blue-60`, `fg-white` | Master CSS preset color steps differ from Tailwind's default palette. |
+| `text-lg`, `font-semibold`, `leading-7` | `font-lg`, `font-semibold`, `line-height:1.75rem` | Use `text-*` only when the full type treatment is intended. |
 | `flex`, `items-center`, `justify-between` | `flex`, `align-items:center`, `justify-between` | Use built-in semantic utilities or native declaration syntax. |
-| `grid-cols-3`, `gap-4` | `grid-cols:3`, `gap:4x` | Grid column helpers and gap utilities are built in. |
+| `grid-cols-3`, `gap-4` | `grid-cols:3`, `gap:1rem` | Grid column helpers and gap utilities are built in. |
 | Arbitrary value such as `w-[min(100%,72rem)]` | `w:min(100%,72rem)` | Write native CSS function values directly. |
 | Arbitrary property such as `[scroll-margin-top:4rem]` | `scroll-margin-top:4rem` | Master CSS accepts native declaration syntax as a class. |
 | Important modifier such as `!mt-0` | `mt:0!` | The important marker goes at the end of the value. |
@@ -160,10 +160,10 @@ Start with explicit Master CSS declarations, then shorten them where the local v
 Example conversion:
 
 ```html
-<section class="grid gap:lg w:full max-w:5xl mx:auto px:md py:2xl grid-cols:3@md">
-  <article class="p:lg r:lg bg:white shadow:sm">
-    <h2 class="m:0 font:2xl font:semibold text:neutral">Account</h2>
-    <p class="mt:xs text:muted">Review profile settings.</p>
+<section class="grid gap-lg w:100% max-w-5xl mx:auto px-md py-2xl grid-cols:3@md">
+  <article class="p-lg r-lg bg-white shadow-sm">
+    <h2 class="m:0 font-2xl font-semibold text-neutral">Account</h2>
+    <p class="mt-xs text-muted">Review profile settings.</p>
   </article>
 </section>
 ```
@@ -185,18 +185,18 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 
 | Tailwind v4 pattern | Master CSS pattern | Notes |
 | --- | --- | --- |
-| `hover:bg-blue-700` | `bg:blue-70:hover` | Selector states follow the value. |
-| `focus-visible:outline-2` | `outline:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
+| `hover:bg-blue-700` | `bg-blue-70:hover` | Selector states follow the value. |
+| `focus-visible:outline-2` | `outline-width:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
 | `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols:3@md` | Breakpoint and condition suffixes use `@`. |
-| `dark:bg-slate-950` | `bg:slate-95@dark` | Output depends on `mode-trigger`. |
-| `motion-safe:animate-spin` | `animation:rotate|slowest|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
+| `dark:bg-slate-950` | `bg-slate-95@dark` | Output depends on `mode-trigger`. |
+| `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
 | `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports(backdrop-filter(0px))` | Use raw `@supports()` for local conditions. |
-| `data-[state=open]:...` | `bg:blue-5[data-state=open]` | Native attribute selectors are appended directly. |
-| `has-[:checked]:...` | `bg:blue-5:has(:checked)` | Native `:has()` is supported. |
+| `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |
+| `has-[:checked]:...` | `bg-blue-5:has(:checked)` | Native `:has()` is supported. |
 
 ```html
-<button class="inline-flex items-center h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+<button class="inline-flex items-center h:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```
@@ -216,7 +216,7 @@ Use `@custom-variant` when a Tailwind custom variant represents shared condition
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variants are defined in the adjacent CSS example */}
 ```html
-<button class="bg:blue-70:hover px:sm@compact">
+<button class="bg-blue-70:hover px-sm@compact">
   Save
 </button>
 ```
@@ -225,8 +225,8 @@ Use `@custom-variant` when a Tailwind custom variant represents shared condition
 For Tailwind `group-*` and `peer-*` patterns, prefer native selectors when possible. Master CSS can target descendants, children, siblings, attributes, `:has()`, and `:of()`, but it does not implement Tailwind's group and peer variant naming.
 
 ```html
-<article class="bg:blue-5:hover_h2">
-  <h2 class="text:neutral">Project</h2>
+<article class="bg-blue-5:hover_h2">
+  <h2 class="text-neutral">Project</h2>
 </article>
 ```
 
@@ -245,7 +245,7 @@ Tailwind `@apply` inlines Tailwind utilities into a CSS rule. Master CSS uses `@
 @import "@master/css";
 
 .btn {
-  @compose inline-flex align-items:center gap:xs r:md bg:blue-60 px:md py:xs fg:white shadow:sm;
+  @compose inline-flex align-items:center gap-xs r-md bg-blue-60 px-md py-xs fg-white shadow-sm;
 }
 ```
 
@@ -253,7 +253,7 @@ Use native declarations when the value is clearer than a class:
 
 ```css name=app.css
 .form-panel {
-  @compose p:lg r:lg bg:white shadow:sm;
+  @compose p-lg r-lg bg-white shadow-sm;
   border: 1px solid color-mix(in oklab, currentColor 12%, transparent);
 }
 ```
@@ -264,7 +264,7 @@ Use `@reference` in CSS Modules and framework style blocks when the local styles
 @reference "../app.css";
 
 .button {
-  @compose inline-flex align-items:center px:md h:10x r:md bg:blue-60 fg:white;
+  @compose inline-flex align-items:center px-md h:2.5rem r-md bg-blue-60 fg-white;
 }
 ```
 
@@ -304,15 +304,15 @@ Use `@components` when the name describes a product UI role rather than a low-le
 ```css name=app.css
 @components {
   btn {
-    @compose inline-flex align-items:center justify-content:center gap:xs px:md py:xs r:md font:sm font:medium;
-    @compose bg:blue-60 fg:white;
+    @compose inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-md font-sm font-medium;
+    @compose bg-blue-60 fg-white;
 
     &:disabled {
       @compose opacity:.5 pointer-events:none;
     }
 
     @variant md {
-      @compose px:lg;
+      @compose px-lg;
     }
   }
 }
@@ -341,9 +341,9 @@ const className = 'bg:' + tone
 
 ```ts
 const toneClasses = {
-  neutral: 'bg:white text:neutral',
-  success: 'bg:green-60 fg:white',
-  danger: 'bg:red-60 fg:white'
+  neutral: 'bg-white text-neutral',
+  success: 'bg-green-60 fg-white',
+  danger: 'bg-red-60 fg-white'
 }
 ```
 
@@ -352,9 +352,9 @@ When only the value is dynamic, keep the class static and pass the runtime value
 ```tsx
 function Progress({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:4x r:full bg:gray-10">
+    <div className="overflow:hidden h:1rem r:100% bg-gray-10">
       <div
-        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+        className="h:100% w:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--progress': `${value}%` } as React.CSSProperties}
       />
     </div>
@@ -377,7 +377,7 @@ Use `@safelist` for bounded classes that do not exist in scanned source, and `@b
 ```css name=app.css
 @import "@master/css";
 
-@safelist "bg:blue-60 bg:red-60@dark";
+@safelist "bg-blue-60 bg-red-60@dark";
 @blocklist "debug-*";
 ```
 
@@ -433,6 +433,6 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |
 | Exact Tailwind Preflight | Master CSS base styles are not Tailwind Preflight. | Compare UI and add native CSS where the project relies on Tailwind reset details. |
 | Official plugin outputs such as typography or forms | Master CSS does not automatically recreate Tailwind plugin CSS. | Keep plugin CSS temporarily or author product-specific components and utilities. |
-| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:full max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
+| Tailwind `container` utility semantics | Master CSS `container` creates a container-query boundary. | Use `w:100% max-w:* mx:auto px:*` for page wrappers and `container` only for container queries. |
 | Tailwind ring utility model | Master CSS does not provide the same ring utility family. | Use `outline:*`, `outline-offset:*`, `box-shadow:*`, or custom utilities. |
 | Tailwind group and peer variant syntax | Master CSS does not implement `group-*` or `peer-*` variants. | Use native selectors, `:has()`, `:of()`, and combinators. |

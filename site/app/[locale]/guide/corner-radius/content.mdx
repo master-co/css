@@ -7,7 +7,7 @@ import CreateIconButton from '../../reference/border-radius/components/CreateIco
 ## Overview [sr-only]
 Corner radius defines the shape language of surfaces, controls, media, and badges. It tells users whether an element is dense and precise, soft and spacious, pill-shaped, or circular.
 
-Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r:sm`, `r:lg`, and `r:2xl` for shared UI curvature instead of repeating raw values across markup. Use `rounded` and `round` when the shape itself is the decision.
+Master CSS maps repeated shape decisions to the `radius` namespace. Use tokens such as `r-sm`, `r-lg`, and `r-2xl` for shared UI curvature instead of repeating raw values across markup. Use `rounded` and `round` when the shape itself is the decision.
 
 <BorderRadiusBasicUsage />
 
@@ -26,22 +26,22 @@ Use related tokens for related surfaces. A card, its nested media, and an action
 Use `r:<token>` for all corners. The utility resolves values from `radius-*` tokens and emits a stable `border-radius: var(--radius-*)` declaration.
 
 ```html
-<!-- @MARK r:md -->
-<input class="r:md" />
+<!-- @MARK r-md -->
+<input class="r-md" />
 
-<!-- @MARK r:lg -->
-<article class="r:lg">
+<!-- @MARK r-lg -->
+<article class="r-lg">
   ...
 </article>
 
-<!-- @MARK r:2xl -->
-<img class="r:2xl" alt="" />
+<!-- @MARK r-2xl -->
+<img class="r-2xl" alt="" />
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['r:md', 'r:lg', 'r:2xl']}
+    {['r-md', 'r-lg', 'r-2xl']}
   </Class2CSS>
 </details>
 
@@ -79,13 +79,13 @@ Use shape shortcuts for semantic shapes. Use `r:*` when the element should stay 
 Use corner shorthands when only part of a surface should be rounded. This is useful for grouped controls, attached panels, split media, and directional layouts.
 
 ```html
-<!-- @MARK rtl:lg --><!-- @MARK rtr:lg -->
-<section class="rtl:lg rtr:lg">
+<!-- @MARK rtl-lg --><!-- @MARK rtr-lg -->
+<section class="rtl-lg rtr-lg">
   Rounded top
 </section>
 
-<!-- @MARK rtr:md --><!-- @MARK rbl:sm -->
-<div class="rbl:sm rtr:md">
+<!-- @MARK rtr-md --><!-- @MARK rbl-sm -->
+<div class="rbl-sm rtr-md">
   Offset corners
 </div>
 ```
@@ -93,7 +93,7 @@ Use corner shorthands when only part of a surface should be rounded. This is use
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['rtl:lg', 'rtr:lg', 'rtr:md', 'rbl:sm']}
+    {['rtl-lg', 'rtr-lg', 'rtr-md', 'rbl-sm']}
   </Class2CSS>
 </details>
 
@@ -113,13 +113,13 @@ Override radius variables when your product needs sharper controls, softer panel
 ```
 
 ```html
-<!-- @MARK r:crisp --><!-- @MARK r:card --><!-- @MARK r:panel -->
-<button class="r:crisp">Save</button>
-<article class="r:card">...</article>
-<section class="r:panel">...</section>
+<!-- @MARK r-crisp --><!-- @MARK r-card --><!-- @MARK r-panel -->
+<button class="r-crisp">Save</button>
+<article class="r-card">...</article>
+<section class="r-panel">...</section>
 ```
 
-Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `r:1px` or `r:2x` until it becomes a reusable shape.
+Promote repeated raw values into the radius scale. Keep one-off measured geometry as raw values such as `r:1px` or `r:0.5rem` until it becomes a reusable shape.
 
 ---
 
@@ -127,18 +127,18 @@ Promote repeated raw values into the radius scale. Keep one-off measured geometr
 (x) Every nested surface uses a larger radius than its parent.
 
 ```html
-<article class="r:lg">
-  <img class="r:2xl" alt="" />
-  <button class="r:4xl">Open</button>
+<article class="r-lg">
+  <img class="r-2xl" alt="" />
+  <button class="r-4xl">Open</button>
 </article>
 ```
 
 (o) Nested surfaces share the parent radius or step down.
 
 ```html
-<article class="r:lg">
-  <img class="r:lg" alt="" />
-  <button class="r:md">Open</button>
+<article class="r-lg">
+  <img class="r-lg" alt="" />
+  <button class="r-md">Open</button>
 </article>
 ```
 

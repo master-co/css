@@ -9,12 +9,12 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
 
 ```html
 <!-- No shape margin · text near the circle -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
            shape-margin:0
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
@@ -31,13 +31,13 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
 
 ```html
 <!-- Margin md · expanded wrap boundary -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-margin:md
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-margin-md
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
@@ -54,26 +54,26 @@ Shape-margin expands the shape’s wrap boundary without resizing its paint. Bot
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shape-margin:md']}
+    {['shape-margin-md']}
   </Class2CSS>
 </details>
 
 The SVG and its normal 32px right/bottom margins stay unchanged. The border-box reference keeps the circle centered in the SVG. Shape-margin adds distance around that circle rather than ordinary spacing around the rectangular element.
 
 ### Reserve room for a larger shape margin \{#increase-margin-for-large-media\}
-Compare 16px and 32px shape margins while preserving the artwork. The larger wrap boundary needs room inside the float’s margin box, so both examples explicitly reserve `mr:xl mb:xl`.
+Compare 16px and 32px shape margins while preserving the artwork. The larger wrap boundary needs room inside the float’s margin box, so both examples explicitly reserve `mr-xl mb-xl`.
 
 <DemoExample page="shape-margin" section="increase-margin-for-large-media" />
 
 ```html
 <!-- Margin md · 16px around the circle -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-margin:md
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-margin-md
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
@@ -89,13 +89,13 @@ Compare 16px and 32px shape margins while preserving the artwork. The larger wra
 
 ```html
 <!-- Margin xl · 32px around the circle -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-margin:xl
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-margin-xl
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
@@ -118,13 +118,13 @@ Shape-margin needs a shape on a float. Compare the same 16px value with shape-no
 
 ```html
 <!-- No shape · ordinary float margin box -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-none shape-margin:md">
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-none shape-margin-md">
     <circle cx="60" cy="60" r="40" />
   </svg>
   <p class="m:0">
@@ -139,13 +139,13 @@ Shape-margin needs a shape on a float. Compare the same 16px value with shape-no
 
 ```html
 <!-- Circle · shape margin changes wrapping -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-margin:md
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-margin-md
            shape-outside:circle(40px)|border-box">
     <circle cx="60" cy="60" r="40" />
   </svg>
@@ -168,16 +168,16 @@ Widen to `sm` to increase the shape margin from `md` to `xl`. Print uses no addi
 
 ```html
 <!-- Margin md → xl at sm -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <svg id="target" role="img" aria-label="Blue circle"
     width="120" height="120" viewBox="0 0 120 120"
-    class="float:left mb:xl mr:xl
-           outline:1px|solid|muted fill:blue-60
-           shape-margin:md
+    class="float:left mb-xl mr-xl
+           outline:1px|solid|var(--color-line-muted) fill-blue-60
+           shape-margin-md
            shape-outside:circle(40px)|border-box
            shape-margin:0@print
-           shape-margin:xl@screen&sm">
+           shape-margin-xl@screen&sm">
     <circle cx="60" cy="60" r="40" />
   </svg>
   <p class="m:0">

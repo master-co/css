@@ -83,7 +83,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
     expect(nativeKeyword).toBeDefined()
     expect(themeMode).toBeDefined()
 
-    const compose = highlighter.codeToTokens('@components { btn { @compose fg:red:hover@md; } }', options).tokens[0]
+    const compose = highlighter.codeToTokens('@components { btn { @compose fg-red:hover@md; } }', options).tokens[0]
     const query = compose.find((token) => token.content === '@md')
     expect(query).toBeDefined()
     expect(hasScope(query, 'keyword.control.at-rule.master-css.query')).toBe(true)
@@ -132,9 +132,9 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 
   try {
     for (const [lang, source] of [
-      ['css', '@components { btn { @compose fg:red@md; } }'],
-      ['html', '<div class="fg:red@md"></div>'],
-      ['tsx', '<div className="fg:red@md" />']
+      ['css', '@components { btn { @compose fg-red@md; } }'],
+      ['html', '<div class="fg-red@md"></div>'],
+      ['tsx', '<div className="fg-red@md" />']
     ] as const) {
       const hast = highlighter.codeToHast(source, {
         ...options,
@@ -150,7 +150,7 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 })
 
 test('ignores unrelated explanations when probing semantic scope colors', () => {
-  const source = '<div class="fg:red@md"></div>'
+  const source = '<div class="fg-red@md"></div>'
   const explanation = [
     { content: '@', scopes: [{ scopeName: 'punctuation.definition.keyword.master-css' }] },
     { content: 'theme', scopes: [{ scopeName: 'keyword.control.at-rule.master-css' }] }

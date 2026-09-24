@@ -24,10 +24,10 @@ function ReferenceExample({ previous }: { previous: boolean }) {
   const Surface = previous ? PreviousSurface : DemoSurface
   return (
     <Demo title="Column span" caption="The surface contains real columns. Padding and columns belong to the lesson.">
-      <Surface className="p:md font:sm">
-        <div className="gap:md columns:2">
-          <DemoText className="mx:0 mb:sm mt:0">Start with the collection overview and its key details.</DemoText>
-          <DemoItem tone="blue" className="my:sm p:sm font:medium">Collection notes</DemoItem>
+      <Surface className="p-md font-sm">
+        <div className="gap-md columns:2">
+          <DemoText className="mx:0 mb-sm mt:0">Start with the collection overview and its key details.</DemoText>
+          <DemoItem tone="blue" className="my-sm p-sm font-medium">Collection notes</DemoItem>
           <DemoText className="m:0">Continue through each column in reading order, then move to the next section.</DemoText>
         </div>
       </Surface>
@@ -48,17 +48,17 @@ export default function Page() {
         <div className={styles.comparison}>
           <article className={styles.option}>
             <div className={styles.optionHeading}><span>01</span><div><h3>Original Guide</h3><p><code>app-panel</code></p></div></div>
-            <OriginalDemo><div className={styles.surfaceStage}><OriginalDemoPanel $p={0} className="p:md">{content()}</OriginalDemoPanel></div></OriginalDemo>
+            <OriginalDemo><div className={styles.surfaceStage}><OriginalDemoPanel $p={0} className="p-md">{content()}</OriginalDemoPanel></div></OriginalDemo>
             <p className={styles.optionNote}>Raised fill and soft shadow; padding here is supplied by the specimen.</p>
           </article>
           <article className={styles.option}>
             <div className={styles.optionHeading}><span>02</span><div><h3>Previous</h3><p>Earlier shared <code>DemoSurface</code></p></div></div>
-            <Demo><div className={styles.surfaceStage}><PreviousSurface className="p:md">{content()}</PreviousSurface></div></Demo>
+            <Demo><div className={styles.surfaceStage}><PreviousSurface className="p-md">{content()}</PreviousSurface></div></Demo>
             <p className={styles.optionNote}>Raised fill with a subtle edge, but no layered option.</p>
           </article>
           <article className={styles.option}>
             <div className={styles.optionHeading}><span>03</span><div><h3>Adopted</h3><p>Shared <code>DemoSurface</code></p></div></div>
-            <Demo><div className={styles.surfaceStage}><DemoSurface elevation="raised" className="p:md">{content()}</DemoSurface></div></Demo>
+            <Demo><div className={styles.surfaceStage}><DemoSurface elevation="raised" className="p-md">{content()}</DemoSurface></div></Demo>
             <p className={styles.optionNote}>A precise edge, compact radius and opt-in shadow for a genuinely raised layer.</p>
           </article>
         </div>
@@ -69,8 +69,8 @@ export default function Page() {
         <p className={styles.sectionCopy}>The two treatments share the same dimensions. Elevation is used only where stacking is part of the explanation.</p>
         <Demo>
           <div className={styles.treatmentGrid}>
-            <div><span className={styles.pairLabel}>Default · no elevation</span><DemoSurface className="p:md"><div className={styles.cardTitle}>Layout surface</div><p className={styles.cardCopy}>Keeps an example legible without implying a floating layer.</p></DemoSurface></div>
-            <div><span className={styles.pairLabel}>Raised · explicit elevation</span><DemoSurface elevation="raised" className="p:md"><div className={styles.cardTitle}>Floating layer</div><p className={styles.cardCopy}>Shows a stacked panel when depth is actually relevant.</p></DemoSurface></div>
+            <div><span className={styles.pairLabel}>Default · no elevation</span><DemoSurface className="p-md"><div className={styles.cardTitle}>Layout surface</div><p className={styles.cardCopy}>Keeps an example legible without implying a floating layer.</p></DemoSurface></div>
+            <div><span className={styles.pairLabel}>Raised · explicit elevation</span><DemoSurface elevation="raised" className="p-md"><div className={styles.cardTitle}>Floating layer</div><p className={styles.cardCopy}>Shows a stacked panel when depth is actually relevant.</p></DemoSurface></div>
           </div>
         </Demo>
         <p className={styles.optionNote}>Use explicit classes for padding, flex/grid, dimensions, position and overflow. The raised treatment adds visual shadow only.</p>

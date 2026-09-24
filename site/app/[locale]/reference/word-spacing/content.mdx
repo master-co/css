@@ -10,12 +10,12 @@
 
 ```html
 <!-- word-spacing:0 -->
-<p id="target" class="inline-block m:0 font:md leading:md word-spacing:0">Make room for ideas.</p>
+<p id="target" class="inline-block m:0 font-md leading-md word-spacing:0">Make room for ideas.</p>
 ```
 
 ```html
 <!-- word-spacing:.25em -->
-<p id="target" class="inline-block m:0 font:md leading:md word-spacing:.25em">Make room for ideas.</p>
+<p id="target" class="inline-block m:0 font-md leading-md word-spacing:.25em">Make room for ideas.</p>
 ```
 
 {/* eslint-disable @master/css/prefer-canonical-classes -- This comparison deliberately teaches fixed word-spacing lengths. */}
@@ -26,13 +26,13 @@ A length adds the same amount to each word separator regardless of type size. Th
 <DemoExample page="word-spacing" section="use-fixed-spacing-when-needed" />
 
 ```html
-<!-- font:sm · +4px per space -->
-<p id="target" class="inline-block m:0 font:sm leading:md word-spacing:4px">Make room for ideas.</p>
+<!-- font-sm · +4px per space -->
+<p id="target" class="inline-block m:0 font-sm leading-md word-spacing:4px">Make room for ideas.</p>
 ```
 
 ```html
-<!-- font:xl · +4px per space -->
-<p id="target" class="inline-block m:0 font:xl leading:md word-spacing:4px">Make room for ideas.</p>
+<!-- font-xl · +4px per space -->
+<p id="target" class="inline-block m:0 font-xl leading-md word-spacing:4px">Make room for ideas.</p>
 ```
 
 {/* eslint-enable @master/css/prefer-canonical-classes */}
@@ -44,12 +44,12 @@ Large word gaps can break the visual continuity of a paragraph. Compare the same
 
 ```html
 <!-- word-spacing:0 -->
-<p id="target" class="max-w:24ch m:0 font:md leading:md word-spacing:0">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="max-w:24ch m:0 font-md leading-md word-spacing:0">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ```html
 <!-- word-spacing:.5em -->
-<p id="target" class="max-w:24ch m:0 font:md leading:md word-spacing:.5em">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="max-w:24ch m:0 font-md leading-md word-spacing:.5em">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 `word-spacing:0` keeps the font’s normal spaces; it does not remove whitespace from the text.
@@ -61,5 +61,5 @@ Hover or keyboard-focus the button to add word spacing. The content and letter s
 
 ```html
 <!-- Pointer and keyboard states -->
-<button type="button" id="target" class="font:md word-spacing:0 word-spacing:.25em:hover word-spacing:.25em:focus-visible">Make room for ideas.</button>
+<button type="button" id="target" class="font-md word-spacing:0 word-spacing:.25em:hover word-spacing:.25em:focus-visible">Make room for ideas.</button>
 ```

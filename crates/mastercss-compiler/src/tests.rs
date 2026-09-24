@@ -291,7 +291,6 @@ fn lowers_settings_into_the_canonical_manifest_input() {
     let result = compile_css_directives(
         "@settings {\n\
                root-size: 16;\n\
-               base-unit: 1;\n\
                default-mode: light;\n\
                mode-trigger: class;\n\
                important: on;\n\
@@ -305,7 +304,6 @@ fn lowers_settings_into_the_canonical_manifest_input() {
         serde_json::to_value(result.manifest_input).unwrap(),
         serde_json::json!({
             "rootSize": 16.0,
-            "baseUnit": 1.0,
             "defaultMode": "light",
             "scope": ".app",
             "important": true,

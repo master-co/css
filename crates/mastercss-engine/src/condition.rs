@@ -486,39 +486,9 @@ pub(crate) fn render_condition_node(id: &str, node: &Value, operator: Option<&st
     value
 }
 
-pub(crate) fn normalize_dynamic_value(value: &str, settings: &EngineSettings) -> String {
-    if value.as_bytes().first() == Some(&b'.')
-        && value.as_bytes().get(1).is_some_and(u8::is_ascii_digit)
-    {
-        return format!("0{value}");
-    }
-    if value.as_bytes().starts_with(b"-.")
-        && value.as_bytes().get(2).is_some_and(u8::is_ascii_digit)
-    {
-        return format!("-0{}", &value[1..]);
-    }
-    let Some(number) = value.strip_suffix('x') else {
-        return value.to_owned();
-    };
-    if number.is_empty()
-        || !number
-            .chars()
-            .all(|character| character.is_ascii_digit() || matches!(character, '+' | '-' | '.'))
-    {
-        return value.to_owned();
-    }
-    number
-        .parse::<f64>()
-        .map(|number| {
-            let value = format_standard_number(number * settings.base_unit / settings.root_size);
-            format!(
-                "{}rem",
-                value
-                    .strip_prefix("-0.")
-                    .map_or(value.clone(), |fraction| { format!("-.{fraction}") })
-            )
-        })
-        .unwrap_or_else(|_| value.to_owned())
+pub(crate) fn normalize_dynamic_value(value: &str, _settings: &EngineSettings) -> String {
+    // CSS owns dimensions, including the native resolution unit `x`.
+    value.to_owned()
 }
 
 pub(crate) fn format_standard_number(value: f64) -> String {

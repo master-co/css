@@ -36,12 +36,12 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   const $ = useTranslation()
   const localeName = i18n.nameOfLocale[locale] ?? locale
   return (
-    <div {...props} className={clsx('py:2xl bt:1px|solid|muted', className)}>
-      <div className='container max-w:breakpoint-2xl mx:auto'>
-        <div className="grid-cols:2 flex:1 justify-between gap:10x font:sm text:muted grid-cols:4@container(2xs) grid-cols:5@container(md)">
+    <div {...props} className={clsx('py-2xl bt:1px|solid|var(--color-line-muted)', className)}>
+      <div className='container max-w:var(--breakpoint-2xl) mx:auto'>
+        <div className="grid-cols:2 flex:1 justify-between gap:2.5rem font-sm text-muted grid-cols:4@container(2xs) grid-cols:5@container(md)">
           {navGroups.map((group) => (
-            <ul className='flex flex-col gap:lg' key={group.name}>
-              <li><h4 className='text:strong'>{$(group.name)}</h4></li>
+            <ul className='flex flex-col gap-lg' key={group.name}>
+              <li><h4 className='text-strong'>{$(group.name)}</h4></li>
               {group.links.map((link) => (
                 <li key={link.href || link.name}>
                   <Link href={link.href} disabled={link.disabled}>{$(link.name)}</Link>
@@ -50,28 +50,28 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
             </ul>
           ))}
           <div className='hidden@container(<md)'>
-            <SearchButton className="flex items-center h:36px w:full px:md r:lg font:sm bg:surface-base text:disabled" />
+            <SearchButton className="flex items-center h:36px w:100% px-md r-lg font-sm bg-surface-base text-disabled" />
           </div>
         </div>
       </div>
       <hr className='hr' />
-      <div className="flex gap:md max-w:breakpoint-2xl mx:auto font:xs text:muted">
+      <div className="flex gap-md max-w:var(--breakpoint-2xl) mx:auto font-xs text-muted">
         {copyright ?? <>© {new Date().getFullYear()} Aoyue Design LLC.</>}
         {legalLinks.map((link, index) => (
           <Fragment key={link.href || link.name}>
             <Link href={link.href} className={clsx(index === 0 && 'ml:auto')}>{$(link.name)}</Link>
-            {index < legalLinks.length - 1 && <div className='bl:1px|solid|muted'></div>}
+            {index < legalLinks.length - 1 && <div className='bl:1px|solid|var(--color-line-muted)'></div>}
           </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='bl:1px|solid|muted hidden@<md'></div>}
+        {legalLinks.length > 0 && <div className='bl:1px|solid|var(--color-line-muted) hidden@<md'></div>}
         <label className='rel hidden@<md'>
-          <span className='pr:xs capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
+          <span className='pr-xs capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
           <ThemeSelect />
           <IconChevronDown className='inline-block size:1em vertical-align:middle' />
         </label>
-        <div className='bl:1px|solid|muted hidden@<md'></div>
+        <div className='bl:1px|solid|var(--color-line-muted) hidden@<md'></div>
         <label className='rel hidden@<md'>
-          <span className='pr:xs capitalize'>{$('Language')}: {localeName}</span>
+          <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />
           <IconChevronDown className='inline-block size:1em vertical-align:middle' />
         </label>

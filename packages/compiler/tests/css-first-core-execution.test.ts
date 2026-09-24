@@ -160,7 +160,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       ${base}
-    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg:emphasis')
+    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
     expect(lightDefault.themeLayer.text).toContain('.light,:root{color-scheme:light;--color-emphasis:#000}')
     expect(lightDefault.themeLayer.text).toContain('.dark{color-scheme:dark;--color-emphasis:#fff}')
 
@@ -170,7 +170,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
 
       ${base}
-    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg:emphasis')
+    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
     expect(noDefault.themeLayer.text).toContain('.light{color-scheme:light;--color-emphasis:#000}')
     expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
   })
@@ -200,15 +200,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-primary: --alpha(var(--color-black) / 50%);
       }
     `, { baseManifest: defaultManifest })
-    const css = createTestCSS(manifest).ensureClassRules('bg:primary', 'bg:primary/.5', 'bg:alias')
+    const css = createTestCSS(manifest).ensureClassRules('bg-primary', 'bg-primary/.5', 'bg-alias')
 
     expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
     expect(css.themeLayer.text).toContain('.light{color-scheme:light;--color-primary:#969696}')
     expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
     expect(css.themeLayer.text).toContain('.chrisma{--color-primary:color-mix(in oklab,var(--color-black) 50%,transparent)}')
-    expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:var(--color-primary)}')
-    expect(css.utilitiesLayer.text).toContain('.bg\\:primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
-    expect(css.utilitiesLayer.text).toContain('.bg\\:alias{background-color:var(--color-alias)}')
+    expect(css.utilitiesLayer.text).toContain('.bg-primary{background-color:var(--color-primary)}')
+    expect(css.utilitiesLayer.text).toContain('.bg-primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
+    expect(css.utilitiesLayer.text).toContain('.bg-alias{background-color:var(--color-alias)}')
   })
 
   test('lowers stylesheet --alpha() in theme, managed declarations, and native CSS', () => {
@@ -230,7 +230,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(result.manifest)
 
-    css.ensureClassRules('btn', 'bg:muted')
+    css.ensureClassRules('btn', 'bg-muted')
     expect(css.themeLayer.text).toContain('--color-muted:color-mix(in oklab,var(--color-primary) 50%,transparent)')
     expect(css.componentsLayer.text).toContain('.btn{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
     expect(result.nativeCSS).toContain('color: color-mix(in oklab,var(--color-muted) var(--opacity-muted),transparent);')
@@ -278,7 +278,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       @defaults {
         demo {
-          @compose content:stripe;
+          @compose content-stripe;
         }
       }
     `, { baseManifest: defaultManifest })
@@ -318,17 +318,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     }))
 
     const css = createTestCSS(manifest)
-    expect(css.createRule('content:stripe')?.text).toBe('.content\\:stripe{content:var(--content-stripe)}')
-    expect(css.createRule('shadow:panel')?.text).toBe('.shadow\\:panel{box-shadow:var(--shadow-panel)}')
-    expect(css.createRule('p:card')?.text).toBe('.p\\:card{padding:var(--spacing-card)}')
-    expect(css.createRule('gap:card')?.text).toBe('.gap\\:card{gap:var(--spacing-card)}')
-    expect(css.createRule('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
-    expect(css.createRule('leading:body')?.text).toBe('.leading\\:body{line-height:var(--leading-body)}')
-    expect(css.createRule('line-height:body')?.text).toBe('.line-height\\:body{line-height:var(--leading-body)}')
-    expect(css.createRule('b:brand')?.text).toBe('.b\\:brand{border-color:var(--color-line-brand)}')
-    expect(css.createRule('bg:brand')?.text).toBe('.bg\\:brand{background-color:var(--color-brand)}')
-    expect(css.createRule('bg:primary')?.text).toBe('.bg\\:primary{background-color:var(--color-primary)}')
-    expect(css.createRule('shadow:sm')?.text).toBe('.shadow\\:sm{box-shadow:var(--shadow-sm)}')
+    expect(css.createRule('content-stripe')?.text).toBe('.content-stripe{content:var(--content-stripe)}')
+    expect(css.createRule('shadow-panel')?.text).toBe('.shadow-panel{box-shadow:var(--shadow-panel)}')
+    expect(css.createRule('p-card')?.text).toBe('.p-card{padding:var(--spacing-card)}')
+    expect(css.createRule('gap-card')?.text).toBe('.gap-card{gap:var(--spacing-card)}')
+    expect(css.createRule('m-card')?.text).toBe('.m-card{margin:var(--spacing-card)}')
+    expect(css.createRule('leading-body')?.text).toBe('.leading-body{line-height:var(--leading-body)}')
+    expect(css.createRule('line-height-body')?.text).toBe('.line-height-body{line-height:var(--leading-body)}')
+    expect(css.createRule('b-brand')?.text).toBe('.b-brand{border-color:var(--color-line-brand)}')
+    expect(css.createRule('bg-brand')?.text).toBe('.bg-brand{background-color:var(--color-brand)}')
+    expect(css.createRule('bg-primary')?.text).toBe('.bg-primary{background-color:var(--color-primary)}')
+    expect(css.createRule('shadow-sm')?.text).toBe('.shadow-sm{box-shadow:var(--shadow-sm)}')
 
     css.ensureClassRules('demo')
     expect(css.defaultsLayer.text).toContain('.demo{content:var(--content-stripe)}')
@@ -343,7 +343,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
       @components {
         card {
-          @compose inline-flex bg:primary/.9 opacity:.7 translate:-5px;
+          @compose inline-flex bg-primary/.9 opacity:.7 translate:-5px;
         }
       }
 
@@ -358,7 +358,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(result.directives.styleDefinitions).toEqual(expect.arrayContaining([
       expect.objectContaining({
         type: 'compose',
-        className: 'bg:primary/.9'
+        className: 'bg-primary/.9'
       }),
       expect.objectContaining({
         type: 'compose',
@@ -376,7 +376,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.text).toContain('.card')
     expect(css.text).toContain('display:inline-flex')
     expect(css.text).toContain('background-color:color-mix(in oklab,var(--color-primary) 90%,transparent)')
-    expect(css.text).toContain('opacity:0.7')
+    expect(css.text).toContain('opacity:.7')
     expect(css.text).toContain('translate:-5px')
     expect(result.css).toContain('.list>li{text-align:center}')
   })
@@ -521,15 +521,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest)
 
-    expect(css.createRule('m:x1')?.text).toBe('.m\\:x1{margin:var(--spacing-x1)}')
+    expect(css.createRule('m-x1')?.text).toBe('.m-x1{margin:var(--spacing-x1)}')
     expect(css.createRule('m:var(--spacing-x1)')?.text).toBe('.m\\:var\\(--spacing-x1\\){margin:var(--spacing-x1)}')
     expect(css.createRule('m:$(spacing-x1)')).toBeUndefined()
-    expect(css.createRule('line-height:x1')?.text).toBe('.line-height\\:x1{line-height:var(--leading-x1)}')
-    expect(css.createRule('w:-custom')?.text).toBe('.w\\:-custom{width:calc(var(--container-custom) * -1)}')
+    expect(css.createRule('line-height-x1')?.text).toBe('.line-height-x1{line-height:var(--leading-x1)}')
+    expect(css.createRule('-w-custom')).toBeUndefined() // Width rejects negative tokens.
     expect(css.createRule('w:calc(-2px+var(--spacing-x1))')?.text).toBe('.w\\:calc\\(-2px\\+var\\(--spacing-x1\\)\\){width:calc(-2px + var(--spacing-x1))}')
     expect(css.createRule('w:calc(-2px+$(spacing-x1))')).toBeUndefined()
 
-    css.ensureClassRules('m:x1', 'm:-x1', 'line-height:x1')
+    css.ensureClassRules('m-x1', '-m-x1', 'line-height-x1')
     expect(css.themeLayer.text).toContain(':root{')
     expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
     expect(css.themeLayer.text).not.toContain('---spacing-x1')
@@ -568,9 +568,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       id: 'container',
       nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
     })
-    expect(css.createRule('m:card')?.text).toBe('.m\\:card{margin:var(--spacing-card)}')
-    expect(css.createRule('m:-card')?.text).toBe('.m\\:-card{margin:calc(var(--spacing-card) * -1)}')
-    expect(css.createRule('r:card')?.text).toBe('.r\\:card{border-radius:var(--radius-card)}')
+    expect(css.createRule('m-card')?.text).toBe('.m-card{margin:var(--spacing-card)}')
+    expect(css.createRule('-m-card')?.text).toBe('.-m-card{margin:calc(var(--spacing-card) * -1)}')
+    expect(css.createRule('r-card')?.text).toBe('.r-card{border-radius:var(--radius-card)}')
     expect(css.createRule('block@card')?.text).toContain('@media (width>=48rem)')
   })
 
@@ -589,11 +589,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest)
 
-    css.ensureClassRules('bg:primary', 'fg:brand', 'm:card', 'fg:inline-regular')
-    expect(css.utilitiesLayer.text).toContain('.bg\\:primary{background-color:#123}')
-    expect(css.utilitiesLayer.text).toContain('.fg\\:brand{color:#123}')
-    expect(css.utilitiesLayer.text).toContain('.m\\:card{margin:1rem}')
-    expect(css.utilitiesLayer.text).toContain('.fg\\:inline-regular{color:var(--color-inline-regular)}')
+    css.ensureClassRules('bg-primary', 'fg-brand', 'm-card', 'fg-inline-regular')
+    expect(css.utilitiesLayer.text).toContain('.bg-primary{background-color:#123}')
+    expect(css.utilitiesLayer.text).toContain('.fg-brand{color:#123}')
+    expect(css.utilitiesLayer.text).toContain('.m-card{margin:1rem}')
+    expect(css.utilitiesLayer.text).toContain('.fg-inline-regular{color:var(--color-inline-regular)}')
     expect(css.themeLayer.text).toContain(':root{--color-inline-regular:var(--color-regular);--color-regular:#456}')
     expect(css.themeLayer.text).not.toContain('--color-primary:#123')
     expect(css.themeLayer.text).not.toContain('--spacing-card:1rem')
@@ -748,18 +748,18 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(manifest)
 
     css.ensureClassRules(
-      'bg:rgb',
-      'bg:hsl-modern',
-      'bg:hsl-legacy',
-      'bg:hwb',
-      'bg:lab',
-      'bg:lch',
-      'bg:oklab-demo',
-      'bg:display-p3',
-      'bg:color-srgb',
-      'bg:color-rec2020',
-      'bg:soft',
-      'bg:mix-demo'
+      'bg-rgb',
+      'bg-hsl-modern',
+      'bg-hsl-legacy',
+      'bg-hwb',
+      'bg-lab',
+      'bg-lch',
+      'bg-oklab-demo',
+      'bg-display-p3',
+      'bg-color-srgb',
+      'bg-color-rec2020',
+      'bg-soft',
+      'bg-mix-demo'
     )
     expect(css.themeLayer.text).toContain('--color-rgb:#0080ff')
     expect(css.themeLayer.text).toContain('--color-hsl-modern:#0080ff')
@@ -774,6 +774,6 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.themeLayer.text).toContain('--color-soft:color-mix(in oklab,var(--color-oklch-primary) 30%,transparent)')
     expect(css.themeLayer.text).toContain('--color-oklch-primary:oklch(50% .15 240)')
     expect(css.themeLayer.text).toContain('--color-mix-demo:oklch(')
-    expect(css.utilitiesLayer.text).toContain('.bg\\:soft{background-color:var(--color-soft)}')
+    expect(css.utilitiesLayer.text).toContain('.bg-soft{background-color:var(--color-soft)}')
   })
 })

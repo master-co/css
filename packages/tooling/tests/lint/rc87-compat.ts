@@ -339,7 +339,7 @@ export function createCanonicalClassesReport(
 ) {
   return only(report(classList, css, {
     ...options,
-    canonicalOptions: options
+    canonicalOptions: Object.fromEntries(Object.entries(options).filter(([key]) => key in defaultCanonicalClassNameOptions))
   }), 'prefer-canonical-classes')
 }
 
@@ -370,7 +370,7 @@ export function createClassListLintReport(
           allowedPatterns: options.allowedPatterns
         }
       : undefined,
-    canonicalOptions: options
+    canonicalOptions: Object.fromEntries(Object.entries(options).filter(([key]) => key in defaultCanonicalClassNameOptions))
   })
   return {
     diagnostics: value.diagnostics

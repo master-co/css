@@ -264,6 +264,46 @@ pub(super) fn utility_type_from_rules(rules: &[Value]) -> i64 {
     }
 }
 
+/// A CSS property keeps its native declaration semantics even when a managed
+/// definition supplies vendor compatibility declarations.
+fn validate_native_pattern(key: &str, rules: &[Value]) -> Result<(), CompilerError> {
+    use lightningcss::properties::PropertyId;
+    let key = mastercss_engine::builtin_key_aliases()
+        .iter()
+        .find_map(|(alias, property)| (*alias == key).then_some(*property))
+        .unwrap_or(key);
+    let native = mastercss_schema::is_native_css_property(key)
+        || !matches!(PropertyId::from(key), PropertyId::Custom(_))
+        || NATIVE_CSS_SHORTHANDS.contains(&key);
+    if !native {
+        return Ok(());
+    }
+    let valid = rules.len() == 1
+        && rules.iter().all(|rule| {
+            !rule.as_object().is_some_and(|rule| {
+                rule.contains_key("selector") || rule.contains_key("conditions")
+            }) && rule
+                .get("declarations")
+                .and_then(Value::as_object)
+                .is_some_and(|declarations| {
+                    declarations.get(key).is_some_and(Value::is_null)
+                        && declarations.iter().all(|(property, value)| {
+                            let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
+                                .iter()
+                                .find_map(|prefix| property.strip_prefix(prefix))
+                                .unwrap_or(property);
+                            value.is_null() && (property == key || unprefixed == key)
+                        })
+                })
+        });
+    if !valid {
+        return Err(manifest_error(format!(
+            "Native property {key}: must emit {key}: --value() without changing its intent; use a distinct utility name for subproperties or combined styles"
+        )));
+    }
+    Ok(())
+}
+
 pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value, CompilerError> {
     let definition = object(definition)?;
     let source_name = definition
@@ -278,6 +318,31 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
         .get("layer")
         .and_then(Value::as_str)
         .unwrap_or("utilities");
+    if definition_type == "token" {
+        let token = definition
+            .get("token")
+            .and_then(Value::as_object)
+            .ok_or_else(|| manifest_error("Named token definition requires a token pattern"))?;
+        let prefix = token
+            .get("prefix")
+            .and_then(Value::as_str)
+            .filter(|prefix| prefix.ends_with('-') && prefix.len() > 1)
+            .ok_or_else(|| manifest_error("Named token prefix must end with a hyphen"))?;
+        let references = string_array(token.get("variableAliasRefs"));
+        if references.is_empty() {
+            return Err(manifest_error(
+                "Named token definition requires namespace references",
+            ));
+        }
+        let rules = utility_rules(definition, true)?;
+        return Ok(json!({
+            "id": source_name, "name": source_name,
+            "type": utility_type_from_rules(&rules), "order": order, "layer": layer,
+            "variableAliasRefs": references,
+            "emit": { "type": "static", "rules": rules },
+            "matchers": [{ "type": "token", "prefix": prefix }]
+        }));
+    }
     if definition_type == "pattern" {
         let pattern = definition
             .get("pattern")
@@ -286,6 +351,31 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
                 manifest_error("Managed enum pattern definition is missing a pattern")
             })?;
         let rules = utility_rules(definition, true)?;
+        if let Some(key) = pattern
+            .get("prefix")
+            .and_then(Value::as_str)
+            .and_then(|prefix| prefix.strip_suffix(':'))
+        {
+            validate_native_pattern(key, &rules)?;
+            let property = mastercss_engine::builtin_key_aliases()
+                .iter()
+                .find_map(|(alias, property)| (*alias == key).then_some(*property))
+                .unwrap_or(key);
+            if mastercss_schema::is_native_css_property(property)
+                && pattern
+                    .get("valueMap")
+                    .and_then(Value::as_object)
+                    .is_some_and(|values| {
+                        values
+                            .iter()
+                            .any(|(key, value)| value.as_str() != Some(key))
+                    })
+            {
+                return Err(manifest_error(format!(
+                    "Native property {property}: cannot remap raw enum values"
+                )));
+            }
+        }
         let mut matcher = Map::new();
         matcher.insert("type".into(), Value::String("pattern".into()));
         matcher.insert(
@@ -328,12 +418,15 @@ pub(super) fn compile_utility(definition: &Value, order: usize) -> Result<Value,
             .ok_or_else(|| manifest_error("Managed dynamic utility requires a key"))?;
         let rules = utility_rules(definition, true)?;
         let references = string_array(dynamic.get("variableAliasRefs"));
+        validate_native_pattern(key, &rules)?;
         let values = string_array(dynamic.get("values"));
         let kind = dynamic.get("kind").and_then(Value::as_str);
         let arbitrary = dynamic.get("arbitrary").and_then(Value::as_bool) == Some(true);
         let mut matchers = Vec::new();
         if !references.is_empty() {
-            matchers.push(json!({ "type": "variable", "keys": [key] }));
+            return Err(manifest_error(
+                "Colon utilities cannot resolve token namespaces; use a named token pattern",
+            ));
         }
         if kind.is_some() {
             matchers.push(json!({ "type": "value", "keys": [key] }));

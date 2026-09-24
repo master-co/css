@@ -44,10 +44,10 @@ describe('Rust-owned default preset', () => {
     try {
       engine.ensureClassRules([
         'block',
-        'fg:red-60',
-        'surface:base',
+        'fg-red-60',
+        'surface-base',
         'grid-cols:3',
-        'text:2xl'
+        'text-2xl'
       ])
       const snapshot = engine.snapshot()
       expect(snapshot.text).toContain('display:block')

@@ -29,6 +29,14 @@ pub enum SchemaError {
     InvalidJson(#[from] serde_json::Error),
     #[error("Invalid MasterCSSManifest. Expected an object.")]
     InvalidManifest,
+    #[error(
+        "Master length x units and settings.baseUnit were removed; migrate to CSS units or named tokens."
+    )]
+    RemovedBaseUnit,
+    #[error(
+        "The variable matcher was removed; migrate colon token patterns to a token matcher with a hyphen prefix."
+    )]
+    RemovedVariableMatcher,
 }
 
 impl SchemaError {
@@ -38,7 +46,9 @@ impl SchemaError {
             Self::UnsupportedVariablesFormat
             | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
-            | Self::InvalidManifest => ErrorCode::InvalidManifest,
+            | Self::InvalidManifest
+            | Self::RemovedBaseUnit
+            | Self::RemovedVariableMatcher => ErrorCode::InvalidManifest,
         }
     }
 }
@@ -67,6 +77,29 @@ impl MasterCssManifest {
         }
         if object.contains_key("utilityBuckets") {
             return Err(SchemaError::UnsupportedUtilityBuckets);
+        }
+        if object
+            .get("settings")
+            .and_then(Value::as_object)
+            .is_some_and(|settings| settings.contains_key("baseUnit"))
+        {
+            return Err(SchemaError::RemovedBaseUnit);
+        }
+        if object
+            .get("utilities")
+            .and_then(Value::as_array)
+            .into_iter()
+            .flatten()
+            .flat_map(|utility| {
+                utility
+                    .get("matchers")
+                    .and_then(Value::as_array)
+                    .into_iter()
+                    .flatten()
+            })
+            .any(|matcher| matcher.get("type").and_then(Value::as_str) == Some("variable"))
+        {
+            return Err(SchemaError::RemovedVariableMatcher);
         }
         Ok(Self(value))
     }

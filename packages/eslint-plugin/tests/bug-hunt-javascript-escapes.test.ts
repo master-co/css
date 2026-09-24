@@ -59,12 +59,12 @@ it('recognizes legacy octal escapes when the JavaScript parser accepts them', as
   expect(result.messages).toEqual([])
 })
 it.each([
-  String.raw`clsx("fg:white \u0062g:black")`,
+  String.raw`clsx("fg-white \u0062g:black")`,
   String.raw`clsx("fg:white\u0020bg:black")`,
-  String.raw`clsx('fg:white content:\'a\\b\' bg:black')`,
-  'clsx(`fg:white content:\'\\${value}\' bg:black`)',
+  String.raw`clsx('fg-white content:\'a\\b\' bg-black')`,
+  'clsx(`fg-white content:\'\\${value}\' bg-black`)',
   'clsx(`\n fg:white\n bg:black\n`)',
-  'clsx("fg:white\\\n bg:black")'
+  'clsx("fg:white\\\n bg-black")'
 ])('sorts escaped strings with valid syntax, equivalent classes and stable fixes: %s', async source => {
   const eslint = linter({ 'sort-classes': 'error' }, true)
   const [result] = await eslint.lintText(source, { filePath: 'escape.js' })
@@ -79,9 +79,9 @@ it.each([
 
 it('maps conflict removal and canonical replacement through escaped separators', async () => {
   const eslint = linter({ 'sort-classes': 'error', 'no-conflicting-classes': 'error', 'prefer-canonical-classes': 'error' }, true)
-  const [result] = await eslint.lintText(String.raw`clsx('size:md\u0020w:md h:md \u0062lock')`, { filePath: 'escape.js' })
+  const [result] = await eslint.lintText(String.raw`clsx('padding-md\u0020p:8px \u0062lock')`, { filePath: 'escape.js' })
   expect(result.messages).toEqual([])
-  expect(cooked(result.output!)).toBe('block size:md')
+  expect(cooked(result.output!)).toBe('block p:8px')
   const [again] = await eslint.lintText(result.output!, { filePath: 'escape.js' })
   expect(again.output).toBeUndefined()
 })

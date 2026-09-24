@@ -32,8 +32,8 @@ fn static_chain_counts_survive_repeated_class_lifetimes() {
     let expected = vec!["color-base", "color-brand", "color-mid"];
     assert_eq!(names(&engine), expected);
     for _ in 0..3 {
-        engine.ensure_class_rules(["fg:brand", "bg:mid"]).unwrap();
-        engine.delete_class_rules(["fg:brand", "bg:mid"]).unwrap();
+        engine.ensure_class_rules(["fg-brand", "bg:mid"]).unwrap();
+        engine.delete_class_rules(["fg-brand", "bg:mid"]).unwrap();
         assert_eq!(names(&engine), expected);
         assert!(
             engine
@@ -117,8 +117,8 @@ fn inline_intermediate_is_not_emitted_but_its_dependencies_are_retained() {
             .text
             .contains("--color-brand:var(--color-base)")
     );
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
-    engine.delete_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
+    engine.delete_class_rules(["fg-brand"]).unwrap();
     assert_eq!(names(&engine), ["color-base", "color-brand"]);
 }
 
@@ -137,8 +137,8 @@ fn externally_emitted_root_still_keeps_missing_dependencies() {
     let globals = json!({"variables":{"color-brand":1},"animations":{}}).to_string();
     let mut engine = EngineSession::create_with_emitted_globals(&graph(), Some(&globals)).unwrap();
     assert_eq!(names(&engine), ["color-base", "color-mid"]);
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
-    engine.delete_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
+    engine.delete_class_rules(["fg-brand"]).unwrap();
     assert_eq!(names(&engine), ["color-base", "color-mid"]);
 }
 
@@ -148,8 +148,8 @@ fn full_external_graph_is_not_duplicated_and_refresh_keeps_suppression() {
         json!({"variables":{"color-brand":1,"color-mid":1,"color-base":1},"animations":{}})
             .to_string();
     let mut engine = EngineSession::create_with_emitted_globals(&graph(), Some(&globals)).unwrap();
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
-    engine.delete_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
+    engine.delete_class_rules(["fg-brand"]).unwrap();
     engine.refresh(&graph()).unwrap();
     assert!(names(&engine).is_empty());
     assert_eq!(
@@ -197,20 +197,20 @@ fn dynamic_inline_dependency_graph_is_fully_released() {
         {"key":"base","value":"red"}
     ]));
     let mut engine = EngineSession::create(&source).unwrap();
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
     assert_eq!(names(&engine), ["color-base", "color-brand"]);
-    engine.delete_class_rules(["fg:brand"]).unwrap();
+    engine.delete_class_rules(["fg-brand"]).unwrap();
     assert!(names(&engine).is_empty());
 }
 
 #[test]
 fn refresh_from_static_to_dynamic_removes_the_permanent_reference() {
     let mut engine = EngineSession::create(&graph()).unwrap();
-    engine.ensure_class_rules(["fg:brand"]).unwrap();
+    engine.ensure_class_rules(["fg-brand"]).unwrap();
     let source = graph().replace("\"static\":true", "\"static\":false");
     engine.refresh(&source).unwrap();
     assert_eq!(names(&engine), ["color-base", "color-brand", "color-mid"]);
-    engine.delete_class_rules(["fg:brand"]).unwrap();
+    engine.delete_class_rules(["fg-brand"]).unwrap();
     assert!(names(&engine).is_empty());
 }
 

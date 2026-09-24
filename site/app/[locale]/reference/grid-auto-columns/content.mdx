@@ -8,10 +8,10 @@
 <DemoExample page="grid-auto-columns" section="size-implicit-columns" />
 
 ```html
-<div id="layout" class="grid grid-auto-columns:72px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap:md w:70x max-w:full">
-  <div id="peer" class="p:sm">80px</div>
-  <div id="target" class="p:sm">72px</div>
-  <div id="item-3" class="p:sm">72px</div>
+<div id="layout" class="grid grid-auto-columns:72px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap-md w:17.5rem max-w:100%">
+  <div id="peer" class="p-sm">80px</div>
+  <div id="target" class="p-sm">72px</div>
+  <div id="item-3" class="p-sm">72px</div>
 </div>
 ```
 
@@ -23,9 +23,9 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-auto-columns" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-auto-columns:56px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap:md w:70x max-w:full grid-auto-columns:80px@sm">
-  <div id="peer" class="p:sm">Fixed</div>
-  <div id="target" class="p:sm">01</div>
-  <div id="item-3" class="p:sm">02</div>
+<div id="layout" class="grid grid-auto-columns:56px grid-auto-flow:column grid-template-columns:80px grid-template-rows:64px gap-md w:17.5rem max-w:100% grid-auto-columns:80px@sm">
+  <div id="peer" class="p-sm">Fixed</div>
+  <div id="target" class="p-sm">01</div>
+  <div id="item-3" class="p-sm">02</div>
 </div>
 ```

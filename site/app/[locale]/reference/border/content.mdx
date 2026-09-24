@@ -12,8 +12,8 @@ Use `b:<size>|<style>|<color>` for the native border shorthand. This panel suppl
 <!-- 2px · solid · blue -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md b:2px|solid|blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md b:2px|solid|var(--color-blue)
+         font-md bg-surface-muted text-body
          box-border">
   Preview panel
 </div>
@@ -22,7 +22,7 @@ Use `b:<size>|<style>|<color>` for the native border shorthand. This panel suppl
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['b:2px|solid|blue']}
+    {['b:2px|solid|var(--color-blue)']}
   </Class2CSS>
 </details>
 
@@ -37,8 +37,8 @@ The shorthand resets omitted border width, style and color components. The all-s
 <!-- Physical bottom · horizontal writing -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md bb:3px|solid|blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md bb:3px|solid|var(--color-blue)
+         font-md bg-surface-muted text-body
          box-border">
   Bottom edge
 </div>
@@ -48,8 +48,8 @@ The shorthand resets omitted border width, style and color components. The all-s
 <!-- Inline edges · horizontal writing -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md bx:3px|solid|blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
+         font-md bg-surface-muted text-body
          box-border">
   Left and right
 </div>
@@ -59,8 +59,8 @@ The shorthand resets omitted border width, style and color components. The all-s
 <!-- Inline edges · vertical writing -->
 <div id="target"
   class="flex items-center justify-center h:96px
-         w:240px max-w:100% p:md bx:3px|solid|blue
-         font:md bg:surface-muted text:body
+         w:240px max-w:100% p-md bx:3px|solid|var(--color-blue)
+         font-md bg-surface-muted text-body
          box-border writing-mode:vertical-rl">
   Top and bottom
 </div>
@@ -77,12 +77,12 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
 <!-- Width longhand · preserves style and color -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:2px|dashed|blue r:sm font:md
-         bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible
-         b:6px:hover@screen
-         b:6px:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:2px|dashed|var(--color-blue) r-sm font-md
+         bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible
+         border-width:6px:hover@screen
+         border-width:6px:focus-visible@screen">
   Preview details
 </button>
 ```
@@ -91,10 +91,10 @@ Hover or keyboard-focus each panel. The first changes only width and keeps its d
 <!-- Full shorthand · resets omitted components -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:2px|dashed|blue r:sm font:md
-         bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible
+         min-h:44px max-w:100% px-md py-sm
+         b:2px|dashed|var(--color-blue) r-sm font-md
+         bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible
          b:solid:hover@screen
          b:solid:focus-visible@screen">
   Preview details
@@ -112,12 +112,12 @@ Hover or keyboard-focus the button to change its complete border from a subtle s
 <!-- Solid → dashed on interaction -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm font:md
-         bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible b:0@print
-         b:2px|dashed|blue:hover@screen
-         b:2px|dashed|blue:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm font-md
+         bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible border-width:0@print
+         b:2px|dashed|var(--color-blue):hover@screen
+         b:2px|dashed|var(--color-blue):focus-visible@screen">
   Preview details
 </button>
 ```

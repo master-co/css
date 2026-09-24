@@ -9,7 +9,7 @@
 
 ```html
 <!-- A constrained single line -->
-<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font:md leading:24px text-ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
+<span id="target" class="block overflow:hidden w:200px max-w:100% m:0 font-md leading:24px text-ellipsis white-space:nowrap">quarterly-roadmap-final-version.pdf</span>
 ```
 
 <details>
@@ -26,13 +26,13 @@
 
 ```html
 <!-- white-space:normal -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px white-space:normal">First    line
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px white-space:normal">First    line
 Second    line</p>
 ```
 
 ```html
 <!-- white-space:pre-line -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px white-space:pre-line">First    line
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px white-space:pre-line">First    line
 Second    line</p>
 ```
 
@@ -43,12 +43,12 @@ Both values preserve spaces and allow wrapping. With `break-spaces`, preserved s
 
 ```html
 <!-- white-space:pre-wrap -->
-<code id="target" class="block w:8ch max-w:100% m:0 font:md leading:24px white-space:pre-wrap">token        value</code>
+<code id="target" class="block w:8ch max-w:100% m:0 font-md leading:24px white-space:pre-wrap">token        value</code>
 ```
 
 ```html
 <!-- break-spaces -->
-<code id="target" class="block w:8ch max-w:100% m:0 font:md leading:24px break-spaces">token        value</code>
+<code id="target" class="block w:8ch max-w:100% m:0 font-md leading:24px break-spaces">token        value</code>
 ```
 
 The eight spaces in the source are intentional. No decoration is inserted into the text node.
@@ -60,7 +60,7 @@ At the base viewport, normal whitespace collapses the newline. At `sm` the text 
 
 ```html
 <!-- Preserved source · real conditions -->
-<p id="target" tabindex="0" role="region" aria-label="Whitespace preview" class="overflow:auto w:240px max-w:100% m:0 font:md leading:24px white-space:normal break-spaces@print white-space:nowrap@screen&sm">First    line
+<p id="target" tabindex="0" role="region" aria-label="Whitespace preview" class="overflow:auto w:240px max-w:100% m:0 font-md leading:24px white-space:normal break-spaces@print white-space:nowrap@screen&sm">First    line
 Second    line</p>
 ```
 

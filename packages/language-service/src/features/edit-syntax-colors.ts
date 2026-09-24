@@ -19,6 +19,7 @@ export default function editSyntaxColors(
 ) {
   const selectedColorToken = document.getText(range)
   const rustPresentation = this.session.colorPresentation(selectedColorToken)
+  if (!rustPresentation.editable) return []
   const formats = rustPresentation.sourceFormat
     ? [rustPresentation.sourceFormat, ...commonFormats]
     : [...commonFormats]
@@ -35,7 +36,7 @@ export default function editSyntaxColors(
       tokens.add(targetColorToken)
       colorPresentations.push({
         label: targetColorToken,
-        textEdit: { range, newText: targetColorToken }
+        textEdit: { range, newText: (rustPresentation.replacementPrefix || '') + targetColorToken }
       })
     } catch { }
   }

@@ -179,7 +179,7 @@ impl ErrorCode {
 /// values. This lets schema/codegen stabilize the cross-language contract without
 /// coupling the directive parser to engine implementation details.
 #[derive(Debug, Clone, Default, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub variants: Option<Vec<Value>>,
@@ -189,8 +189,6 @@ pub struct CssDirectiveManifestInput {
     pub utilities: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub root_size: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub base_unit: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub default_mode: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]

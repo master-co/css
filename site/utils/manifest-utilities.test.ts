@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
-import { getNativeValueNamespacePublicKeys, getVariableNamespacePublicKeys } from './manifest-utilities'
+import { getTokenNamespacePublicKeys, getVariableNamespacePublicKeys } from './manifest-utilities'
 
-test('spacing native namespace public keys include aliases and native properties', () => {
-  const keys = getNativeValueNamespacePublicKeys('spacing')
+test('spacing token namespace public keys include aliases and native properties', () => {
+  const keys = getTokenNamespacePublicKeys('spacing')
 
   for (const expected of ['m', 'mt', 'p', 'px', 'gap', 'gap-x', 'inset', 'scroll-mt', 'text-underline-offset']) {
     assert.ok(keys.includes(expected), expected)

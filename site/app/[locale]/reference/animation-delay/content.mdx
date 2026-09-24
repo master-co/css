@@ -19,13 +19,13 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 ```html
 <!-- No delay -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:0ms animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -39,13 +39,13 @@ Compare no delay with a 600ms wait before the same one-second movement. Press Re
 ```html
 <!-- 600ms delay -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -70,10 +70,10 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
 
 ```html
 <!-- No offset -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue animation-delay:0ms
+    class="text-blue animation-delay:0ms
            animation-duration:2s
            animation-iteration-count:infinite
            animation-name:rotate
@@ -83,16 +83,16 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font:sm">No offset</span>
+  <span class="font-sm">No offset</span>
 </div>
 ```
 
 ```html
 <!-- 500ms ahead -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue animation-delay:-500ms
+    class="text-blue animation-delay:-500ms
            animation-duration:2s
            animation-iteration-count:infinite
            animation-name:rotate
@@ -102,7 +102,7 @@ Use a negative delay to begin partway through an animation. Both hands have a tw
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font:sm">500ms ahead</span>
+  <span class="font-sm">500ms ahead</span>
 </div>
 ```
 
@@ -115,30 +115,30 @@ Give each decorative child its own animation and delay. The 200ms offsets overla
 
 ```html
 <!-- Three independent entrance timelines -->
-<ul class="grid gap:sm m:0 p:sm list-style:none">
-  <li class="flex items-center gap:sm font:sm">
+<ul class="grid gap-sm m:0 p-sm list-style:none">
+  <li class="flex items-center gap-sm font-sm">
     <span aria-hidden="true"
       class="inline-block h:32px w:64px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             animation:fade|slowest|linear|both
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             animation:fade|var(--duration-slowest)|linear|both
              animation-delay:0ms animation:none@print
              animation-play-state:paused@reduce-motion"></span>
     <span>Item 1 · 0ms</span>
   </li>
-  <li class="flex items-center gap:sm font:sm">
+  <li class="flex items-center gap-sm font-sm">
     <span aria-hidden="true"
       class="inline-block h:32px w:64px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             animation:fade|slowest|linear|both
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             animation:fade|var(--duration-slowest)|linear|both
              animation-delay:200ms animation:none@print
              animation-play-state:paused@reduce-motion"></span>
     <span>Item 2 · 200ms</span>
   </li>
-  <li class="flex items-center gap:sm font:sm">
+  <li class="flex items-center gap-sm font-sm">
     <span id="target" aria-hidden="true"
       class="inline-block h:32px w:64px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             animation:fade|slowest|linear|both
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             animation:fade|var(--duration-slowest)|linear|both
              animation-delay:400ms animation:none@print
              animation-play-state:paused@reduce-motion"></span>
     <span>Item 3 · 400ms</span>
@@ -161,16 +161,16 @@ Define a duration token for a shared waiting interval. This example resolves `st
 
 ```html
 <!-- 120ms delayed marker -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <span id="target" aria-hidden="true"
-    class="block h:40px w:64px b:1px|solid|blue-60 r:sm
-           bg:blue-10 opacity:1 animation-duration:1s
+    class="block h:40px w:64px b:1px|solid|var(--color-blue-60) r-sm
+           bg-blue-10 opacity:1 animation-duration:1s
            animation-fill-mode:both animation-name:fade
-           animation-timing-function:smooth
+           animation-timing-function-smooth
            animation:none@print
            animation-play-state:paused@reduce-motion
-           animation-delay:stagger"></span>
-  <span class="font:sm">120ms delayed marker</span>
+           animation-delay-stagger"></span>
+  <span class="font-sm">120ms delayed marker</span>
 </div>
 ```
 
@@ -193,13 +193,13 @@ Resize before replaying. The marker waits 600ms below `sm` and starts immediatel
 ```html
 <!-- 600ms → no delay at sm -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-delay:600ms animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide

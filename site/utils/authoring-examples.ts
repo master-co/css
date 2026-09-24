@@ -22,11 +22,11 @@ export const authoringSource = `@theme {
 
 @components {
   btn {
-    @compose inline-flex gap:xs items-center justify-center;
-    @compose px:action-x py:xs r:action font:medium font:sm bg:brand fg:white;
+    @compose inline-flex gap-xs items-center justify-center;
+    @compose px-action-x py-xs r-action font-medium font-sm bg-brand fg-white;
 
     &:hover {
-      @compose bg:brand/.85;
+      @compose bg-brand/.85;
     }
 
     &:focus-visible {
@@ -36,10 +36,10 @@ export const authoringSource = `@theme {
   }
 }`
 
-export const authoringHTML = `<article class="p:lg b:1px|solid|base r:lg content-auto">
-  <h2 class="m:0 font:lg font:semibold">Project settings</h2>
-  <p class="my:md text:muted">Shared tokens keep actions consistent across apps.</p>
-  <button type="button" class="btn transition:background-color|fast|smooth@motion-safe">Save changes</button>
+export const authoringHTML = `<article class="p-lg b:1px|solid|var(--color-line-base) r-lg content-auto">
+  <h2 class="m:0 font-lg font-semibold">Project settings</h2>
+  <p class="my-md text-muted">Shared tokens keep actions consistent across apps.</p>
+  <button type="button" class="btn transition:background-color|var(--duration-fast)|var(--easing-smooth)@motion-safe">Save changes</button>
 </article>`
 
 export function authoringCSS() {

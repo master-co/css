@@ -1,7 +1,7 @@
 use super::{
     CompiledVariable, CompiledVariableMode, EngineError, EngineVariableIr, HashMap,
     ManifestProjection, Map, MasterCssManifest, ThemeBucket, UtilityLayerName, UtilityMatcher,
-    Value, append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,
+    Value, append_builtin_native_declaration_utilities, append_builtin_token_utilities,
     compile_utility_variables, split_top_level, transform_css_variable_references,
 };
 
@@ -62,6 +62,9 @@ pub(crate) fn compile_manifest(
             "unsupported projection version".into(),
         ));
     }
+    for utility in &projection.utilities {
+        validate_native_utility(utility)?;
+    }
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
     projection.compiled_variable_order = compiled_variable_order;
@@ -69,7 +72,7 @@ pub(crate) fn compile_manifest(
         &mut projection.compiled_variables,
         &projection.compiled_variable_order,
     )?;
-    append_builtin_native_value_utilities(&mut projection.utilities);
+    append_builtin_token_utilities(&mut projection.utilities);
     append_builtin_native_declaration_utilities(&mut projection.utilities);
     let count = projection.utilities.len() as i32;
     projection.utilities = projection
@@ -97,7 +100,95 @@ pub(crate) fn compile_manifest(
             .iter()
             .any(|matcher| matches!(matcher, UtilityMatcher::Static { .. }))) as u8
     });
+    for (index, utility) in projection.utilities.iter().enumerate() {
+        if utility.matchers.iter().any(|matcher| {
+            matches!(
+                matcher,
+                UtilityMatcher::Static { .. } | UtilityMatcher::Pattern { .. }
+            )
+        }) {
+            projection.reserved_utilities.push(index);
+        }
+        for matcher in &utility.matchers {
+            match matcher {
+                UtilityMatcher::Token { prefix } => {
+                    projection
+                        .token_utilities
+                        .entry(prefix.clone())
+                        .or_default()
+                        .push(index);
+                }
+                UtilityMatcher::Key { keys } | UtilityMatcher::Value { keys, .. } => {
+                    projection.declaration_keys.extend(keys.iter().cloned());
+                }
+                _ => {}
+            }
+        }
+    }
     Ok(projection)
+}
+
+fn validate_native_utility(utility: &super::UtilityDefinition) -> Result<(), EngineError> {
+    for matcher in &utility.matchers {
+        if let UtilityMatcher::Static { name } = matcher
+            && let Some((key, _)) = name.split_once(':')
+            && mastercss_schema::is_native_css_property(
+                super::builtin_key_alias(key).unwrap_or(key),
+            )
+        {
+            return Err(EngineError::InvalidManifest(format!(
+                "Native property {key}: cannot be reserved by a static class; use a distinct named utility"
+            )));
+        }
+        let keys: Vec<&str> = match matcher {
+            UtilityMatcher::Key { keys } | UtilityMatcher::Value { keys, .. } => {
+                keys.iter().map(String::as_str).collect()
+            }
+            UtilityMatcher::Pattern { prefix, .. } => {
+                prefix.strip_suffix(':').into_iter().collect()
+            }
+            _ => Vec::new(),
+        };
+        for key in keys {
+            let property = super::builtin_key_alias(key).unwrap_or(key);
+            if !mastercss_schema::is_native_css_property(property) {
+                continue;
+            }
+            if let UtilityMatcher::Pattern { value_map, .. } = matcher
+                && value_map.iter().any(|(key, value)| key != value)
+            {
+                return Err(EngineError::InvalidManifest(format!(
+                    "Native property {property}: cannot remap raw enum values"
+                )));
+            }
+            let rules = super::emit_declarations(utility, Some("var(--migration-value)"), false);
+            let valid = rules.len() == 1
+                && rules.iter().all(|(_, declarations, selector, conditions)| {
+                    selector.is_none()
+                        && conditions.is_empty()
+                        && declarations.split(';').any(|declaration| {
+                            declaration == format!("{property}:var(--migration-value)")
+                        })
+                        && declarations.split(';').all(|declaration| {
+                            declaration.split_once(':').is_some_and(|(key, value)| {
+                                let unprefixed = ["-webkit-", "-moz-", "-ms-", "-o-"]
+                                    .iter()
+                                    .find_map(|prefix| key.strip_prefix(prefix))
+                                    .unwrap_or(key);
+                                value == "var(--migration-value)"
+                                    && (key == property || unprefixed == property)
+                            })
+                        })
+                });
+            if !valid {
+                return Err(EngineError::InvalidManifest(format!(
+                    "Native property {property}: must preserve its property and value; rename managed utility {} to express another intent",
+                    utility.id
+                )));
+            }
+        }
+    }
+    Ok(())
 }
 
 pub(crate) fn compile_variables(
@@ -504,7 +595,7 @@ pub(crate) const BORDER_COLOR_PROPERTIES: &[&str] = &[
     "outline-color",
 ];
 
-pub(crate) const BUILTIN_NATIVE_VALUE_NAMESPACES: &[(&[&str], &[&str])] = &[
+pub(crate) const BUILTIN_TOKEN_NAMESPACES: &[(&[&str], &[&str])] = &[
     (SPACING_PROPERTIES, &["~spacing"]),
     (SPACING_UNITLESS_PROPERTIES, &["~spacing"]),
     (CONTAINER_PROPERTIES, &["~container"]),
@@ -549,6 +640,12 @@ pub(crate) const BUILTIN_NATIVE_VALUE_NAMESPACES: &[(&[&str], &[&str])] = &[
 ];
 
 pub(crate) const BUILTIN_NATIVE_DECLARATION_PROPERTIES: &[&str] = &[
+    "background",
+    "background-image",
+    "font",
+    "line-clamp",
+    "outline-width",
+    "stroke-width",
     "border-block-end-style",
     "border-block-end-width",
     "border-block-start-style",
@@ -660,7 +757,6 @@ pub(crate) const BUILTIN_KEY_ALIASES: &[(&str, &str)] = &[
     ("shadow", "box-shadow"),
     ("size-x", "inline-size"),
     ("size-y", "block-size"),
-    ("line-clamp", "-webkit-line-clamp"),
     ("text-fill-color", "-webkit-text-fill-color"),
     ("text-stroke-color", "-webkit-text-stroke-color"),
     ("text-stroke-width", "-webkit-text-stroke-width"),
@@ -675,26 +771,12 @@ pub fn builtin_key_aliases() -> &'static [(&'static str, &'static str)] {
     BUILTIN_KEY_ALIASES
 }
 
-/// Returns the canonical built-in native-value namespace registry.
+/// Returns the canonical built-in named-token namespace registry.
 ///
 /// Build tooling uses this read-only projection to generate TypeScript tooling data
 /// without introducing a second semantic source of truth.
-pub fn builtin_native_value_namespaces()
--> &'static [(&'static [&'static str], &'static [&'static str])] {
-    BUILTIN_NATIVE_VALUE_NAMESPACES
-}
-
-/// Returns the built-in properties that accept manifest variable values.
-pub fn builtin_native_value_properties() -> Vec<&'static str> {
-    let mut properties = Vec::new();
-    for (namespace_properties, _) in BUILTIN_NATIVE_VALUE_NAMESPACES {
-        for property in *namespace_properties {
-            if !properties.contains(property) {
-                properties.push(*property);
-            }
-        }
-    }
-    properties
+pub fn builtin_token_namespaces() -> &'static [(&'static [&'static str], &'static [&'static str])] {
+    BUILTIN_TOKEN_NAMESPACES
 }
 
 pub(crate) fn add_unique_string(target: &mut Vec<String>, value: &str) {

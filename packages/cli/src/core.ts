@@ -17,6 +17,17 @@ export default async function runProgram(argv: string[] = process.argv) {
     .description(pkg.description)
     .version(pkg.version || '0.0.0')
   program
+    .command('migrate')
+    .description('Preview migration from the saved Master CSS v2 RC manifest.')
+    .argument('[paths...]', 'Source files, directories, or glob patterns')
+    .option('--manifest <path>', 'Original resolved RC manifest, saved before upgrading.', 'master.rc.manifest.json')
+    .option('--target-manifest <path>', 'Compiled migrated project manifest for custom utilities.')
+    .option('--write', 'Apply safe edits only when the selected files have no review diagnostics.')
+    .action(async (sourcePaths: string[], options: import('./migrate').MigrateOptions) => {
+      const { default: runMigrate } = await import('./migrate')
+      runMigrate(sourcePaths, options)
+    })
+  program
     .command('generate')
     .description('Generate CSS from project source files.')
     .argument('[source paths...]', 'The glob pattern paths to scan sources')

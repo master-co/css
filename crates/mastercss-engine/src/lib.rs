@@ -84,6 +84,12 @@ struct ManifestProjection {
     compiled_variables: HashMap<String, CompiledVariable>,
     #[serde(skip)]
     compiled_variable_order: Vec<String>,
+    #[serde(skip)]
+    token_utilities: HashMap<String, Vec<usize>>,
+    #[serde(skip)]
+    reserved_utilities: Vec<usize>,
+    #[serde(skip)]
+    declaration_keys: HashSet<String>,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -91,8 +97,6 @@ struct ManifestProjection {
 struct EngineSettings {
     #[serde(default = "default_root_size")]
     root_size: f64,
-    #[serde(default = "default_base_unit")]
-    base_unit: f64,
     #[serde(default)]
     scope: Option<String>,
     #[serde(default)]
@@ -109,7 +113,6 @@ impl Default for EngineSettings {
     fn default() -> Self {
         Self {
             root_size: default_root_size(),
-            base_unit: default_base_unit(),
             scope: None,
             important: false,
             default_mode: default_mode(),
@@ -121,10 +124,6 @@ impl Default for EngineSettings {
 
 fn default_root_size() -> f64 {
     16.0
-}
-
-fn default_base_unit() -> f64 {
-    4.0
 }
 
 fn default_mode() -> String {
@@ -213,6 +212,8 @@ struct UtilityDefinition {
     variable_entries: Vec<(String, String)>,
     #[serde(skip)]
     native_fallback: bool,
+    #[serde(skip)]
+    builtin_token: bool,
     emit: UtilityEmit,
     #[serde(default)]
     matchers: Vec<UtilityMatcher>,
@@ -233,10 +234,8 @@ enum UtilityMatcher {
     Key {
         keys: Vec<String>,
     },
-    Variable {
-        keys: Vec<String>,
-        #[serde(default)]
-        segments: Option<String>,
+    Token {
+        prefix: String,
     },
     Value {
         keys: Vec<String>,
@@ -280,6 +279,7 @@ pub enum ClassSemanticKind {
     Component,
     Semantic,
     Pattern,
+    Token,
     Declaration,
 }
 
@@ -289,7 +289,7 @@ pub enum UtilityMatcherType {
     Static,
     Pattern,
     Key,
-    Variable,
+    Token,
     Value,
 }
 
@@ -474,6 +474,7 @@ mod condition;
 mod execution_state;
 mod generation;
 mod manifest;
+mod named;
 mod render;
 mod resources;
 mod session;
@@ -490,7 +491,7 @@ pub(crate) use condition::{
     render_condition_token, render_manifest_condition, resolve_layer_condition,
 };
 pub(crate) use manifest::{
-    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_NATIVE_VALUE_NAMESPACES,
+    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
     add_unique_string, compile_manifest, engine_variable_ir, layer_name, push_theme_declaration,
     serialize_literal_value, single_native_declaration, theme_bucket_rank,
 };
@@ -509,19 +510,17 @@ pub(crate) use stylesheet_resources::{
     collect_animation_names, collect_stylesheet_animation_names, is_css_identifier_character,
 };
 pub(crate) use utility::{
-    append_builtin_native_declaration_utilities, append_builtin_native_value_utilities,
-    builtin_key_alias, canonicalize_class_name, compare_stored_rules, compile_utility_variables,
-    layer_index, match_utility, resolve_value_components, split_dynamic_value_state,
+    append_builtin_native_declaration_utilities, append_builtin_token_utilities, builtin_key_alias,
+    canonicalize_class_name, compare_stored_rules, compile_utility_variables, layer_index,
+    resolve_value_components, split_dynamic_value_state,
 };
 pub(crate) use value_syntax::{
     find_matching_parenthesis, is_native_shorthand_property, is_valid_native_property,
     normalize_css_math_functions,
 };
 
-pub use manifest::{
-    builtin_key_aliases, builtin_native_value_namespaces, builtin_native_value_properties,
-};
-pub use utility::natural_compare;
+pub use manifest::{builtin_key_aliases, builtin_token_namespaces};
+pub use utility::{compare_rule_priority, natural_compare};
 
 #[cfg(test)]
 mod tests;

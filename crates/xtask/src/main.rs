@@ -52,6 +52,8 @@ struct SemanticParityCorpus {
     semantic_baseline: String,
     public_baseline: String,
     #[serde(default)]
+    historical_sha256: Option<String>,
+    #[serde(default)]
     parser_cases: Vec<ParserParityCase>,
     engine_cases: Vec<EngineParityCase>,
     compiler_cases: Vec<CompilerParityCase>,

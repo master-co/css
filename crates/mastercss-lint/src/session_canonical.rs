@@ -1,12 +1,10 @@
 use super::{
     CanonicalClassGroupSuggestionIr, CanonicalClassNameOptions, CanonicalGroupEntry,
-    CompositionRecipe, EngineError, HashSet, LintSession, MatchingVariableKeys,
-    RawValueCandidateIr, UtilityLayerName, canonical_class_parts, canonical_condition_suffix,
-    canonical_variable_candidate_keys, collect_rule_declarations, css_variable_reference_name,
-    declaration_property_signature, declarations_match_after_variable_resolution,
+    CompositionRecipe, EngineError, HashSet, LintSession, RawValueCandidateIr, UtilityLayerName,
+    canonical_class_parts, canonical_condition_suffix, collect_rule_declarations,
     has_same_canonical_rule_shape, matching_composition_recipe, merge_group_declarations,
-    normalize_composition_declarations, numeric_values_match, push_canonical_candidate,
-    rules_declaration_signature, split_top_level,
+    normalize_composition_declarations, push_canonical_candidate, rules_declaration_signature,
+    split_top_level,
 };
 
 impl LintSession {
@@ -153,6 +151,11 @@ impl LintSession {
                 .into_iter()
                 .flatten()
             {
+                // Static rules retain spelling-based ordering. Equal declarations
+                // alone cannot prove that renaming preserves surrounding winners.
+                if candidate_base != &parts.base {
+                    continue;
+                }
                 push_canonical_candidate(
                     &mut candidates,
                     candidate_base,
@@ -163,57 +166,35 @@ impl LintSession {
             }
         }
 
-        if let (Some(source_key), Some(source_value)) = (&parts.key, &parts.value) {
-            if options.prefer_theme_tokens {
-                let variable_match =
-                    self.matching_multi_value_keys(source_key, source_value, options)?;
-                if let Some(variable_match) = variable_match {
-                    for source_rule in &source.rules {
-                        let signature = declaration_property_signature(source_rule);
-                        let candidate_keys = canonical_variable_candidate_keys(
-                            &self.canonical_index,
-                            &signature,
-                            source_key,
-                            &variable_match,
-                            options.prefer_property_aliases,
-                        );
-                        for candidate_key in candidate_keys {
-                            for variable_key in &variable_match.keys {
-                                push_canonical_candidate(
-                                    &mut candidates,
-                                    &format!("{candidate_key}:{variable_key}"),
-                                    &parts,
-                                    &canonical_suffix,
-                                    1,
-                                );
-                            }
-                        }
-                    }
+        if let (Some(source_key), Some(source_value)) = (&parts.key, &parts.value)
+            && options.prefer_property_aliases
+            && let Some(source_rule) = source.rules.first()
+        {
+            for (property, _) in collect_rule_declarations(&source_rule.text) {
+                if source_key != &property {
+                    continue;
                 }
-            }
-
-            if options.prefer_property_aliases
-                && let Some(source_rule) = source.rules.first()
-            {
-                for (property, _) in collect_rule_declarations(&source_rule.text) {
-                    if source_key != &property {
-                        continue;
-                    }
-                    for alias in self
-                        .canonical_index
-                        .preferred_aliases_by_property
-                        .get(&property)
-                        .into_iter()
-                        .flatten()
-                    {
-                        push_canonical_candidate(
-                            &mut candidates,
-                            &format!("{alias}:{source_value}"),
-                            &parts,
-                            &canonical_suffix,
-                            2,
-                        );
-                    }
+                for alias in self
+                    .canonical_index
+                    .preferred_aliases_by_property
+                    .get(&property)
+                    .into_iter()
+                    .flatten()
+                {
+                    push_canonical_candidate(
+                        &mut candidates,
+                        &if semantics.kind == mastercss_engine::ClassSemanticKind::Token {
+                            format!(
+                                "{}{alias}-{source_value}",
+                                if parts.base.starts_with('-') { "-" } else { "" }
+                            )
+                        } else {
+                            format!("{alias}:{source_value}")
+                        },
+                        &parts,
+                        &canonical_suffix,
+                        2,
+                    );
                 }
             }
         }
@@ -241,103 +222,6 @@ impl LintSession {
         Ok(None)
     }
 
-    pub(crate) fn matching_multi_value_keys(
-        &self,
-        source_key: &str,
-        source_value: &str,
-        options: &CanonicalClassNameOptions,
-    ) -> Result<Option<MatchingVariableKeys>, EngineError> {
-        let segments = split_top_level(source_value, '|');
-        if segments.len() <= 1 {
-            return self.matching_variable_keys(source_key, source_value, options);
-        }
-        if !options.prefer_multi_value_tokens || segments.iter().any(|segment| segment.is_empty()) {
-            return Ok(None);
-        }
-        let mut keys = Vec::new();
-        let mut numeric = false;
-        for segment in segments {
-            let Some(matched) = self.matching_variable_keys(source_key, segment, options)? else {
-                return Ok(None);
-            };
-            let Some(key) = matched.keys.first() else {
-                return Ok(None);
-            };
-            keys.push(key.clone());
-            numeric |= matched.numeric;
-        }
-        Ok(Some(MatchingVariableKeys {
-            keys: vec![keys.join("|")],
-            numeric,
-        }))
-    }
-
-    pub(crate) fn matching_variable_keys(
-        &self,
-        source_key: &str,
-        source_value: &str,
-        options: &CanonicalClassNameOptions,
-    ) -> Result<Option<MatchingVariableKeys>, EngineError> {
-        let variable_reference = css_variable_reference_name(source_value);
-        if variable_reference.is_some() && !options.prefer_variable_references {
-            return Ok(None);
-        }
-        let source_class = format!("{source_key}:{source_value}");
-        let source_rules = self.engine.inspect(&source_class)?.rules;
-        if source_rules.is_empty() {
-            return Ok(None);
-        }
-        let mut variable_keys = self.engine.class_variable_keys(&source_class)?;
-        variable_keys
-            .sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
-        variable_keys.dedup();
-        let mut token_keys = Vec::new();
-        let mut numeric_keys = Vec::new();
-        for variable_key in variable_keys {
-            let candidate = self
-                .engine
-                .inspect(&format!("{source_key}:{variable_key}"))?;
-            if candidate.rules.is_empty() {
-                continue;
-            }
-            if variable_key == source_value
-                || variable_reference.is_some_and(|name| {
-                    candidate
-                        .rules
-                        .iter()
-                        .any(|rule| rule.variable_names.iter().any(|variable| variable == name))
-                })
-            {
-                token_keys.push(variable_key);
-            } else if candidate.rules.iter().any(|rule| {
-                rule.variable_names.iter().any(|variable_name| {
-                    self.variable_values
-                        .get(variable_name)
-                        .is_some_and(|value| {
-                            numeric_values_match(
-                                source_value,
-                                value,
-                                self.canonical_index.root_size,
-                                self.canonical_index.base_unit,
-                            )
-                        })
-                })
-            }) || declarations_match_after_variable_resolution(
-                &source_rules,
-                &candidate.rules,
-                &self.variable_values,
-            ) {
-                numeric_keys.push(variable_key);
-            }
-        }
-        let (keys, numeric) = if token_keys.is_empty() {
-            (numeric_keys, true)
-        } else {
-            (token_keys, false)
-        };
-        Ok((!keys.is_empty()).then_some(MatchingVariableKeys { keys, numeric }))
-    }
-
     pub(crate) fn collect_raw_value_candidates(
         &self,
         class_names: &[String],
@@ -349,17 +233,22 @@ impl LintSession {
                 continue;
             }
             let semantics = self.engine.inspect_class_semantics(class_name)?;
+            if semantics.kind != mastercss_engine::ClassSemanticKind::Declaration {
+                continue;
+            }
             let (Some(key_token), Some(value)) = (semantics.key_token, semantics.value_token)
             else {
                 continue;
             };
-            let variable_keys = self.engine.class_variable_keys(class_name)?;
-            if variable_keys.is_empty() {
+            if !self
+                .engine
+                .has_named_tokens_for_key(key_token.trim_end_matches(':'))
+            {
                 continue;
             }
             let segments = split_top_level(&value, '|')
                 .into_iter()
-                .filter(|segment| !variable_keys.iter().any(|key| key == segment))
+                .filter(|segment| !(segment.starts_with("var(--") && segment.ends_with(')')))
                 .map(str::to_owned)
                 .collect::<Vec<_>>();
             if segments.is_empty() {

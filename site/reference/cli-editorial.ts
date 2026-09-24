@@ -25,7 +25,17 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     examples: [
       { description: 'Inspect class-order proposals in one existing source file:', command: "master-css lint \"src/button.html\" \\\n  --rules sort-classes \\\n  --fix-dry-run" },
       { description: 'Apply those class-order fixes after reviewing the proposals:', command: "master-css lint \"src/button.html\" \\\n  --rules sort-classes \\\n  --fix" },
-      { description: 'Inspect a source buffer on stdin without modifying its virtual file:', command: "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p:md flex\">\n  Save\n</button>\nHTML" }
+      { description: 'Inspect a source buffer on stdin without modifying its virtual file:', command: "master-css lint --stdin \\\n  --stdin-filepath src/button.html \\\n  --rules sort-classes <<'HTML'\n<button class=\"p-md flex\">\n  Save\n</button>\nHTML" }
+    ]
+  },
+  migrate: {
+    introduction: 'Upgrade a project from the v2 RC language to named tokens and native declarations. Save the resolved original manifest before upgrading; RC versions can differ. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).',
+    effects: 'The default operation only proposes edits. `--write` applies verified edits only when the entire selected batch has no review diagnostics. Dynamic classes, selector references, ambiguous names, and uncertain cascade changes require manual review. Missing or invalid original configuration stops the command before writing.',
+    output: 'JSON stdout contains `version: 1`, `mode`, `manifest`, and per-file `edits`, `review`, and `written` results. Read all review diagnostics. `--manifest` selects the saved RC manifest; `--target-manifest` supplies a migrated manifest for custom utilities. Without a target file, the new preset is combined with original project token resources for equivalence checking.',
+    examples: [
+      { description: 'Preview an upgrade using the saved original manifest:', command: 'master-css migrate src --manifest master.rc.manifest.json' },
+      { description: 'Apply a reviewed batch with no unresolved diagnostics:', command: 'master-css migrate src --manifest master.rc.manifest.json --write' },
+      { description: 'Verify custom definitions against their migrated manifest:', command: 'master-css migrate src --manifest master.rc.manifest.json --target-manifest master.v2.manifest.json' }
     ]
   },
   inspect: {
@@ -33,8 +43,8 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     effects: 'This command reads sources and composes an inspection report without publishing CSS or rewriting source files. `--classes` requests checks against the scan output; it does not add those classes to source or safelist them. `--include-css` adds the generated text to the report.\n\nInspect the returned stylesheet entries and diagnostics for project configuration. In the current standalone path, entry discovery and inspection have limitations with package-backed entries; an empty result does not prove that no CSS is needed. See [Authoring Packages](/guide/authoring-packages#use-the-package) for the documented boundary.',
     output: reports + '\n\nThe JSON report includes `cwd`, `inputs`, `files`, `scanner`, `stylesheets`, `css`, `missingCSS`, `diagnostics`, and `summary`. Check `missingCSS.present` and `missingCSS.missing` alongside the actual entries and diagnostics. `css.text` is included only when requested.',
     examples: [
-      { description: 'Check a class used by an existing source file and include generated CSS:', command: "master-css inspect \\\n  \"src/button.html\" \\\n  --classes \"p:md\" \\\n  --include-css" },
-      { description: 'Read a human-readable report on stderr:', command: "master-css inspect \\\n  --classes \"p:md\" \\\n  --format stylish" },
+      { description: 'Check a class used by an existing source file and include generated CSS:', command: "master-css inspect \\\n  \"src/button.html\" \\\n  --classes \"p-md\" \\\n  --include-css" },
+      { description: 'Read a human-readable report on stderr:', command: "master-css inspect \\\n  --classes \"p-md\" \\\n  --format stylish" },
       { description: 'Save JSON for automation while retaining diagnostic-based exit status:', command: "master-css inspect \\\n  --include-css > inspection.json" }
     ]
   }

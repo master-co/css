@@ -8,10 +8,10 @@ test('extracts built-in source formats through the native Rust session', () => {
   expect(extractor.extractSource({
     files: [{
       source: 'index.html',
-      content: '<div class="block fg:red"></div>',
+      content: '<div class="block fg-red"></div>',
       kind: 'html'
     }]
-  }).files[0].candidates).toEqual(['block', 'fg:red'])
+  }).files[0].candidates).toEqual(['block', 'fg-red'])
   expect(extractor.extractSource({
     files: [{
       source: 'index.tsx',
@@ -40,21 +40,21 @@ test('extracts static classes from JavaScript and TypeScript syntax with Oxc', (
         kind: 'oxc',
         content: `
           const classes = 'block mx:auto'
-          const active = clsx('fg:red', { 'p:4x': ok })
+          const active = clsx('fg-red', { 'p:1rem': ok })
           element.classList.add('flex')
           export function App() {
-            return <div className="hidden m:2x" />
+            return <div className="hidden m:0.5rem" />
           }
         `
       }]
     }).files[0].candidates).toEqual([
       'block',
       'mx:auto',
-      'fg:red',
-      'p:4x',
+      'fg-red',
+      'p:1rem',
       'flex',
       'hidden',
-      'm:2x'
+      'm:0.5rem'
     ])
   } finally {
     extractor.dispose()

@@ -112,21 +112,21 @@ function Link({ children, className, activeClassName = '', inactiveClassName = '
   }, [ref])
 
   const resolvedClassName = useMemo(() => clsx(className, {
-    '{font:50%;leading:0;vertical-align:super;white-space:break-spaces}:after': indicate && (target.current === '_blank' || isHash),
-    'content:hash:after': indicate && isHash,
-    'content:external:after': indicate && target.current === '_blank',
-    'text:disabled': props.disabled
+    '{font-size:50%;leading:0;vertical-align:super;white-space:break-spaces}:after': indicate && (target.current === '_blank' || isHash),
+    'content-hash:after': indicate && isHash,
+    'content-external:after': indicate && target.current === '_blank',
+    'text-disabled': props.disabled
   }, !props.disabled && (pathnameActive ? activeClassName : inactiveClassName).trim()) || undefined,
     [className, indicate, isHash, props.disabled, pathnameActive, activeClassName, inactiveClassName])
 
   return (props.href && !props.disabled)
     ? <NextLink ref={handleRef} {...props} scroll={scroll} href={href} rel={rel.current} target={target.current} onClick={onClick}
       className={resolvedClassName}>
-      {children}{unfinished && <span className='ml:2xs font:.5em'>🚧</span>}
+      {children}{unfinished && <span className='ml-2xs font-size:.5em'>🚧</span>}
     </NextLink>
     : <button ref={handleRef} {...props} onClick={onClick}
       className={resolvedClassName}>
-      {children}{unfinished && <span className='ml:2xs font:.5em'>🚧</span>}
+      {children}{unfinished && <span className='ml-2xs font-size:.5em'>🚧</span>}
     </button>
 }
 

@@ -13,14 +13,14 @@ Compare `touch-action:none` with `auto` on identical scrollable regions. A touch
 <!-- None · native touch panning blocked -->
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
-class="overflow:auto h:160px w:240px max-w:full
-       b:1px|solid|base r:sm touch-action:none">
+class="overflow:auto h:160px w:240px max-w:100%
+       b:1px|solid|var(--color-line-base) r-sm touch-action:none">
   <div
 
   class="flex flex-col justify-between h:360px
-         w:480px p:md bg:surface-raised">
+         w:480px p-md bg-surface-raised">
     <p class="m:0">Start · swipe vertically or horizontally</p>
-    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+    <p class="self-end m:0 text-blue">End · 480 × 360px content</p>
   </div>
 </div>
 ```
@@ -29,14 +29,14 @@ class="overflow:auto h:160px w:240px max-w:full
 <!-- Auto · native touch panning allowed -->
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
-class="overflow:auto h:160px w:240px max-w:full
-       b:1px|solid|base r:sm touch-action:auto">
+class="overflow:auto h:160px w:240px max-w:100%
+       b:1px|solid|var(--color-line-base) r-sm touch-action:auto">
   <div
 
   class="flex flex-col justify-between h:360px
-         w:480px p:md bg:surface-raised">
+         w:480px p-md bg-surface-raised">
     <p class="m:0">Start · swipe vertically or horizontally</p>
-    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+    <p class="self-end m:0 text-blue">End · 480 × 360px content</p>
   </div>
 </div>
 ```
@@ -57,14 +57,14 @@ Use `touch-action:pan-y` to allow vertical native panning while excluding horizo
 <!-- Vertical touch panning only -->
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
-class="overflow:auto h:160px w:240px max-w:full
-       b:1px|solid|base r:sm touch-action:pan-y">
+class="overflow:auto h:160px w:240px max-w:100%
+       b:1px|solid|var(--color-line-base) r-sm touch-action:pan-y">
   <div
 
   class="flex flex-col justify-between h:360px
-         w:480px p:md bg:surface-raised">
+         w:480px p-md bg-surface-raised">
     <p class="m:0">Start · swipe vertically or horizontally</p>
-    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+    <p class="self-end m:0 text-blue">End · 480 × 360px content</p>
   </div>
 </div>
 ```
@@ -79,8 +79,8 @@ Use `touch-action:manipulation` on a real tap target. This native checkbox toggl
 ```html
 <label id="target"
 
-class="inline-flex items-center gap:sm p:md
-       b:1px|solid|base r:sm
+class="inline-flex items-center gap-sm p-md
+       b:1px|solid|var(--color-line-base) r-sm
        touch-action:manipulation">
   <input type="checkbox"> Show grid
 </label>
@@ -97,15 +97,15 @@ Resize before starting a new gesture. Below `sm`, the region allows automatic ge
 <!-- Auto → pan-y and pinch zoom at sm -->
 <div id="target" role="region" aria-label="Gesture test" tabindex="0"
 
-class="overflow:auto h:160px w:240px max-w:full
-       b:1px|solid|base r:sm touch-action:auto
+class="overflow:auto h:160px w:240px max-w:100%
+       b:1px|solid|var(--color-line-base) r-sm touch-action:auto
        touch-action:pan-y|pinch-zoom@screen&sm">
   <div
 
   class="flex flex-col justify-between h:360px
-         w:480px p:md bg:surface-raised">
+         w:480px p-md bg-surface-raised">
     <p class="m:0">Start · swipe vertically or horizontally</p>
-    <p class="self-end m:0 text:blue">End · 480 × 360px content</p>
+    <p class="self-end m:0 text-blue">End · 480 × 360px content</p>
   </div>
 </div>
 ```

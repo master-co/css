@@ -1,5 +1,5 @@
 const syntaxes = [
-  'text-stroke-color:current',
+  'text-stroke-color:currentColor',
   'text-stroke-color:transparent',
   ['text-stroke-color:`color`'],
 ]

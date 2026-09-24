@@ -3,21 +3,21 @@
 
 ## Examples \{#examples\}
 ### Set a fixed or fluid width \{#set-a-fixed-or-fluid-width\}
-`w:*` sets the physical width. Compare a fixed `w:48x` (192px with the default 4px unit) with `w:full` inside the same 280px containing block. Percentages follow the parent; a fixed width does not.
+`w:*` sets the physical width. Compare a fixed `w:12rem` (192px with the default 4px unit) with `w:100%` inside the same 280px containing block. Percentages follow the parent; a fixed width does not.
 
 <DemoExample page="width" section="set-a-fixed-or-fluid-width" />
 
 ```html
 <!-- Fixed · 192px -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:48x p:sm">Fixed width</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:12rem p-sm">Fixed width</div>
 </div>
 ```
 
 ```html
 <!-- Fluid · 100% -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:full p:sm">Full width</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:100% p-sm">Full width</div>
 </div>
 ```
 
@@ -30,54 +30,54 @@ Widths use the configured [sizing scale](/guide/sizing), container tokens, nativ
 
 ```html
 <!-- Parent · 280px -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:50% p:sm">50%</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:50% p-sm">50%</div>
 </div>
 ```
 
 ```html
 <!-- Parent · 200px -->
-<div id="layout" class="w:50x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:50% p:sm">50%</div>
+<div id="layout" class="w:12.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:50% p-sm">50%</div>
 </div>
 ```
 
 ### Use intrinsic width keywords \{#use-intrinsic-width-keywords\}
-`w:min` uses the narrowest width allowed by the content’s normal wrap opportunities. `w:max` keeps the text on one unwrapped line. `w:fit` uses available space between those bounds. Compare the same words inside 112px parents.
+`w:min-content` uses the narrowest width allowed by the content’s normal wrap opportunities. `w:max-content` keeps the text on one unwrapped line. `w:fit-content` uses available space between those bounds. Compare the same words inside 112px parents.
 
 <DemoExample page="width" section="use-intrinsic-width-keywords" />
 
 ```html
 <!-- Minimum content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:min p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:min-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
 ```html
 <!-- Fit content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:fit p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:fit-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
 ```html
 <!-- Maximum content -->
-<div id="layout" class="w:28x" role="group" aria-label="Available space">
-  <div id="target" class="w:max p:sm font:md font:mono leading:24px">Design systems</div>
+<div id="layout" class="w:7rem" role="group" aria-label="Available space">
+  <div id="target" class="w:max-content p-sm font-md font-mono leading:24px">Design systems</div>
 </div>
 ```
 
 An intrinsic width can exceed its parent when even the smallest unbreakable piece is too wide. Wrapping, clipping and scrolling are separate decisions.
 
 ### Use container widths for wrappers \{#use-container-widths-for-wrappers\}
-Combine `w:full` with a container-token maximum and automatic inline margins. This wrapper fills the available space until `max-w:3xs` caps it at 256px in the default theme; `mx:auto` divides any remaining inline space equally.
+Combine `w:100%` with a container-token maximum and automatic inline margins. This wrapper fills the available space until `max-w-3xs` caps it at 256px in the default theme; `mx:auto` divides any remaining inline space equally.
 
 <DemoExample page="width" section="use-container-widths-for-wrappers" />
 
 ```html
-<div id="layout" class="w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:full max-w:3xs mx:auto p:sm">Centered wrapper</div>
+<div id="layout" class="w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:100% max-w-3xs mx:auto p-sm">Centered wrapper</div>
 </div>
 ```
 
@@ -89,8 +89,8 @@ Use [conditional queries](/reference/rules/conditions) to change the preferred w
 <DemoExample page="width" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="w:full p:sm w:50%@sm">Responsive panel</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="w:100% p-sm w:50%@sm">Responsive panel</div>
 </div>
 ```
 

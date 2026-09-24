@@ -1,0 +1,127 @@
+{
+  "baselineCommit": "3f700887b",
+  "purpose": "Historical RC migration evidence; never load the RC manifest in the production engine.",
+  "cases": [
+    {
+      "rc": "font:mono",
+      "v2": "font-mono",
+      "rcDeclarations": "font-family:var(--font-family-mono)",
+      "v2Declarations": "font-family:var(--font-family-mono)"
+    },
+    {
+      "rc": "font:bold",
+      "v2": "font-bold",
+      "rcDeclarations": "font-weight:var(--font-weight-bold)",
+      "v2Declarations": "font-weight:var(--font-weight-bold)"
+    },
+    {
+      "rc": "font:sm",
+      "v2": "font-sm",
+      "rcDeclarations": "font-size:var(--font-size-sm)",
+      "v2Declarations": "font-size:var(--font-size-sm)"
+    },
+    {
+      "rc": "font:16px",
+      "v2": "font-size:16px",
+      "rcDeclarations": "font-size:16px",
+      "v2Declarations": "font-size:16px"
+    },
+    {
+      "rc": "text:sm",
+      "v2": "text-sm",
+      "rcDeclarations": "font-size:var(--font-size-sm);line-height:max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));letter-spacing:clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em)",
+      "v2Declarations": "font-size:var(--font-size-sm);line-height:max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));letter-spacing:clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em)"
+    },
+    {
+      "rc": "fg:red",
+      "v2": "fg-red",
+      "rcDeclarations": "color:var(--color-red)",
+      "v2Declarations": "color:var(--color-red)"
+    },
+    {
+      "rc": "bg:red",
+      "v2": "bg-red",
+      "rcDeclarations": "background-color:var(--color-red)",
+      "v2Declarations": "background-color:var(--color-red)"
+    },
+    {
+      "rc": "p:md",
+      "v2": "p-md",
+      "rcDeclarations": "padding:var(--spacing-md)",
+      "v2Declarations": "padding:var(--spacing-md)"
+    },
+    {
+      "rc": "m:-sm",
+      "v2": "-m-sm",
+      "rcDeclarations": "margin:calc(var(--spacing-sm) * -1)",
+      "v2Declarations": "margin:calc(var(--spacing-sm) * -1)"
+    },
+    {
+      "rc": "fg:red/0.5",
+      "v2": "fg-red/0.5",
+      "rcDeclarations": "color:color-mix(in oklab,var(--color-red) 50%,transparent)",
+      "v2Declarations": "color:color-mix(in oklab,var(--color-red) 50%,transparent)"
+    },
+    {
+      "rc": "p:4x",
+      "v2": "p:1rem",
+      "rcDeclarations": "padding:1rem",
+      "v2Declarations": "padding:1rem"
+    },
+    {
+      "rc": "bg:#fff",
+      "v2": "background-color:#fff",
+      "rcDeclarations": "background-color:#fff",
+      "v2Declarations": "background-color:#fff"
+    },
+    {
+      "rc": "b:2px",
+      "v2": "border-width:2px",
+      "rcDeclarations": "border-width:2px",
+      "v2Declarations": "border-width:2px"
+    },
+    {
+      "rc": "outline:2px",
+      "v2": "outline-width:2px",
+      "rcDeclarations": "outline-width:2px",
+      "v2Declarations": "outline-width:2px"
+    },
+    {
+      "rc": "stroke:2px",
+      "v2": "stroke-width:2px",
+      "rcDeclarations": "stroke-width:2px",
+      "v2Declarations": "stroke-width:2px"
+    },
+    {
+      "rc": "line-clamp:3",
+      "v2": "clamp-lines:3",
+      "rcDeclarations": "display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;overflow-wrap:break-word;text-overflow:ellipsis",
+      "v2Declarations": "display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;overflow-wrap:break-word;text-overflow:ellipsis"
+    },
+    {
+      "rc": "grid-cols:3",
+      "v2": "grid-cols:3",
+      "rcDeclarations": "display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))",
+      "v2Declarations": "display:grid;grid-template-columns:repeat(3, minmax(0, 1fr))"
+    },
+    {
+      "rc": "size:20px",
+      "v2": "size:20px",
+      "rcDeclarations": "width:20px;height:20px",
+      "v2Declarations": "width:20px;height:20px"
+    },
+    {
+      "rc": "bg-cover",
+      "v2": "bg-cover",
+      "rcDeclarations": "background-size:cover",
+      "v2Declarations": "background-size:cover"
+    },
+    {
+      "rc": "background-image:image-set(url(a.png)|1x,url(b.png)|2x)",
+      "v2": "background-image:image-set(url(a.png)|1x,url(b.png)|2x)",
+      "rcDeclarations": "",
+      "v2Declarations": "background-image:image-set(url(a.png) 1x,url(b.png) 2x)",
+      "intentionalChange": "Preserve native resolution x; the RC length conversion corrupted image-set descriptors."
+    }
+  ]
+}

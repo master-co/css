@@ -64,7 +64,7 @@ pub(super) fn collect_namespaces(
             continue;
         };
         for reference in utility
-            .get("dynamic")
+            .get("token")
             .and_then(Value::as_object)
             .and_then(|dynamic| dynamic.get("variableAliasRefs"))
             .and_then(Value::as_array)

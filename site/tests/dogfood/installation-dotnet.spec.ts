@@ -42,13 +42,13 @@ for (const route of dotnetInstallationRoutes) test(`authored .NET assets render 
     else await expect(initial).not.toHaveCSS('font-style', 'italic')
   } finally { await context.close() }
   if (!route.endsWith('/static-rendering')) {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
     // A real DOM replacement checks observation, not Blazor enhanced navigation.
     await heading.evaluate(element => {
       const replacement = document.createElement('h2')
       replacement.textContent = 'Updated content'
-      replacement.className = 'p:lg italic'
+      replacement.className = 'p-lg italic'
       element.replaceWith(replacement)
     })
     await expect(page.getByRole('heading', { name: 'Updated content' })).toHaveCSS('padding-top', '24px')

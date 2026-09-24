@@ -16,7 +16,7 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
   const { items, unit, valueFormatter, className } = props
 
   return (
-    <div className={clsx('grid gap:lg benchmark-bars benchmark-stacks', className)}>
+    <div className={clsx('grid gap-lg benchmark-bars benchmark-stacks', className)}>
       {items.map((item, index) => {
         const labelId = `${labelPrefix}-label-${index}`
         const valueId = `${labelPrefix}-value-${index}`
@@ -24,18 +24,18 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
         const totalLabel = valueFormatter ? valueFormatter(total) : formatMetricValue(total, unit)
 
         return (
-          <div key={item.id} className="grid gap:sm">
-            <div className="flex items-baseline justify-between gap:sm">
-              <div className="flex items-center gap:xs min-w:0">
+          <div key={item.id} className="grid gap-sm">
+            <div className="flex items-baseline justify-between gap-sm">
+              <div className="flex items-center gap-xs min-w:0">
                 {item.icon}
-                <span id={labelId} className="min-w:0 font-weight:460 font:sm text:strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-w:0 font-weight:460 font-sm text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="flex items-baseline gap:xs white-space:nowrap">
-                <strong id={valueId} className="font-weight:460 font:sm text:strong">{totalLabel}</strong>
-                {item.detail && <span className="font:xs text:muted"><Translate>{item.detail}</Translate></span>}
+              <div className="flex items-baseline gap-xs white-space:nowrap">
+                <strong id={valueId} className="font-weight:460 font-sm text-strong">{totalLabel}</strong>
+                {item.detail && <span className="font-xs text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
-            <div className="flex overflow:hidden h:12px r:xs bg:surface-muted" role="img" aria-labelledby={`${labelId} ${valueId}`}>
+            <div className="flex overflow:hidden h:12px r-xs bg-surface-muted" role="img" aria-labelledby={`${labelId} ${valueId}`}>
               {item.segments.map((segment, index) => {
                 const percent = clampPercent(segment.value, total)
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
@@ -54,17 +54,17 @@ export default function BenchmarkStackedBars(props: BenchmarkStackedBarsProps) {
                 )
               })}
             </div>
-            <div className="flex flex-wrap gap:xs|sm" role="group" aria-label={`${item.label} breakdown`}>
+            <div className="flex flex-wrap gap:var(--spacing-xs)|var(--spacing-sm)" role="group" aria-label={`${item.label} breakdown`}>
               {item.segments.map((segment, index) => {
                 const color = segment.color ?? benchmarkColors[index % benchmarkColors.length]
                 const colorClasses = benchmarkColorClasses[color]
                 const valueLabel = segment.valueLabel ?? (valueFormatter ? valueFormatter(segment.value) : formatMetricValue(segment.value, unit))
 
                 return (
-                  <div key={segment.id} className="inline-flex items-center gap:2xs font:xs text:muted">
-                    <span className={clsx('inline-block size:0.625rem r:xs', colorClasses.background)} />
+                  <div key={segment.id} className="inline-flex items-center gap-2xs font-xs text-muted">
+                    <span className={clsx('inline-block size:0.625rem r-xs', colorClasses.background)} />
                     <span><Translate>{segment.label}</Translate></span>
-                    <span className="text:strong">{valueLabel}</span>
+                    <span className="text-strong">{valueLabel}</span>
                   </div>
                 )
               })}

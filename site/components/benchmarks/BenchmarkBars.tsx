@@ -18,7 +18,7 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
   const resolvedMax = max ?? Math.max(0, ...items.map((item) => item.max ?? item.value))
 
   return (
-    <div className={clsx('grid gap:md benchmark-bars', className)}>
+    <div className={clsx('grid gap-md benchmark-bars', className)}>
       {items.map((item, index) => {
         const labelId = `${labelPrefix}-label-${index}`
         const valueId = `${labelPrefix}-value-${index}`
@@ -29,15 +29,15 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
         const colorClasses = benchmarkColorClasses[color]
 
         return (
-          <div key={item.id} className="grid gap:sm">
-            <div className="flex items-baseline justify-between gap:sm">
-              <div className="flex items-center gap:xs min-w:0">
+          <div key={item.id} className="grid gap-sm">
+            <div className="flex items-baseline justify-between gap-sm">
+              <div className="flex items-center gap-xs min-w:0">
                 {item.icon}
-                <span id={labelId} className="min-w:0 font-weight:460 font:sm text:strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
+                <span id={labelId} className="min-w:0 font-weight:460 font-sm text-strong benchmark-bar-label"><Translate>{item.label}</Translate></span>
               </div>
-              <div className="flex items-baseline gap:xs white-space:nowrap">
-                <strong id={valueId} className="font-weight:460 font:sm text:strong">{valueLabel}</strong>
-                {item.detail && <span className="font:xs text:muted"><Translate>{item.detail}</Translate></span>}
+              <div className="flex items-baseline gap-xs white-space:nowrap">
+                <strong id={valueId} className="font-weight:460 font-sm text-strong">{valueLabel}</strong>
+                {item.detail && <span className="font-xs text-muted"><Translate>{item.detail}</Translate></span>}
               </div>
             </div>
             <div
@@ -45,10 +45,10 @@ export default function BenchmarkBars(props: BenchmarkBarsProps) {
               aria-valuemax={itemMax}
               aria-valuemin={0}
               aria-valuenow={item.value}
-              className="overflow:hidden h:10px r:xs bg:surface-muted"
+              className="overflow:hidden h:10px r-xs bg-surface-muted"
               role="meter">
               <div
-                className={clsx('h:full r:xs', colorClasses.background)}
+                className={clsx('h:100% r-xs', colorClasses.background)}
                 style={{
                   width: `${percent}%`
                 }} />

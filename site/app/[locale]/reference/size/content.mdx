@@ -3,24 +3,24 @@
 
 ## Examples \{#examples\}
 ### Set width and height together \{#set-width-and-height-together\}
-`size:*` applies the same preferred value to physical width and height. `size:10x` creates this 40px square button. Its centered icon is decorative; the button’s accessible name describes its action.
+`size:*` applies the same preferred value to physical width and height. `size:2.5rem` creates this 40px square button. Its centered icon is decorative; the button’s accessible name describes its action.
 
 <DemoExample page="size" section="set-width-and-height-together" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="grid place-items:center size:10x p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:2.5rem p:0 border-width:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
 </div>
 ```
 
 ### Build square media and controls \{#build-square-media-and-controls\}
-Use a definite paired size for avatars, swatches or compact media. The source image is 320 × 200px; `size:16x` gives it a 64px square box and `object-cover` crops the image to fill it.
+Use a definite paired size for avatars, swatches or compact media. The source image is 320 × 200px; `size:4rem` gives it a 64px square box and `object-cover` crops the image to fill it.
 
 <DemoExample page="size" section="build-square-media-and-controls" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <img id="target" class="block size:16x round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <img id="target" class="block size:4rem round object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
@@ -33,36 +33,36 @@ Width and height HTML attributes provide the source dimensions. The CSS size ove
 
 ```html
 <!-- Horizontal writing -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="p:sm size-x:40x size-y:20x">Inline →</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="p-sm size-x:10rem size-y:5rem">Inline →</div>
 </div>
 ```
 
 ```html
 <!-- Vertical writing -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="p:sm size-x:40x size-y:20x writing-mode:vertical-rl">Inline →</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="p-sm size-x:10rem size-y:5rem writing-mode:vertical-rl">Inline →</div>
 </div>
 ```
 
 Use physical [width](/reference/width) and [height](/reference/height) when a dimension must keep the same physical direction across writing modes.
 
 ### Use the `full` static utility \{#use-the-full-static-utility\}
-`full` sets both width and height to 100%. In this definite 240 × 120px parent it fills both axes. `w:full` fills only the width, leaving the height to the content.
+`full` sets both width and height to 100%. In this definite 240 × 120px parent it fills both axes. `w:100%` fills only the width, leaving the height to the content.
 
 <DemoExample page="size" section="use-the-full-static-utility" />
 
 ```html
 <!-- Both axes -->
-<div id="layout" class="h:30x w:60x" role="group" aria-label="Available space">
-  <div id="target" class="full p:sm leading:20px">Full</div>
+<div id="layout" class="h:7.5rem w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="full p-sm leading:20px">Full</div>
 </div>
 ```
 
 ```html
 <!-- Width only -->
-<div id="layout" class="h:30x w:60x" role="group" aria-label="Available space">
-  <div id="target" class="w:full p:sm leading:20px">Width only</div>
+<div id="layout" class="h:7.5rem w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="w:100% p-sm leading:20px">Width only</div>
 </div>
 ```
 
@@ -75,15 +75,15 @@ The percentage height needs a definite reference here. An automatic-height paren
 
 ```html
 <!-- Compact content -->
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <div id="target" class="fit p:sm leading:20px">Compact action</div>
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="fit p-sm leading:20px">Compact action</div>
 </div>
 ```
 
 ```html
 <!-- Wrapping content -->
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <div id="target" class="fit p:sm leading:20px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <div id="target" class="fit p-sm leading:20px">Design systems give teams a shared language. Consistent spacing makes each relationship easier to understand and helps readers find the next action.</div>
 </div>
 ```
 
@@ -93,7 +93,7 @@ Resize past `sm` to change the same media box from 48px square to 80px square. B
 <DemoExample page="size" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <img id="target" class="block size:12x object-cover size:20x@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <img id="target" class="block size:3rem object-cover size:5rem@sm" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```

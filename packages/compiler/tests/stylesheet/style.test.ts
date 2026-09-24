@@ -393,7 +393,7 @@ describe('style CSS extraction helpers', () => {
       @reference "./globals.css";
 
       .home-section {
-        @compose py:5xl;
+        @compose py-5xl;
       }
     `, {
       baseManifest: defaultManifest,
@@ -426,7 +426,7 @@ describe('style CSS extraction helpers', () => {
       @reference "./globals.css";
 
       .home-section {
-        @compose py:5xl;
+        @compose py-5xl;
       }
     `, {
       baseManifest: defaultManifest,

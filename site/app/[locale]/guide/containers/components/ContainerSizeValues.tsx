@@ -24,7 +24,7 @@ export default () => {
                 <th className="white-space:nowrap"><InlineCode>{entry.key}</InlineCode></th>
                 <td className="white-space:nowrap"><InlineCode>{`container-${entry.key}`}</InlineCode></td>
                 <td className="white-space:nowrap"><InlineCode>{formatValue(entry)}</InlineCode></td>
-                <td><InlineCode>{`max-w:${entry.key}`}</InlineCode></td>
+                <td><InlineCode>{`max-w-${entry.key}`}</InlineCode></td>
               </tr>
             ))
           }

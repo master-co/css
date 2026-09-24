@@ -21,10 +21,62 @@ pub(crate) fn validate_semantic_parity_corpus(
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
     if corpus.version != 2
-        || corpus.semantic_baseline != "ef1a7c851"
-        || corpus.public_baseline != "v2.0.0-rc.87"
+        || corpus.semantic_baseline != "v2-named-token-contract"
+        || corpus.public_baseline != "Master CSS v2"
     {
-        return Err("Semantic parity corpus has an unsupported version or baseline.".into());
+        return Err("Language corpus has an unsupported version or contract.".into());
+    }
+    // Preserve the frozen RC oracle. The new corpus records the intentional
+    // breaking contract without claiming historical byte-for-byte parity.
+    const RC_SHA256: &str = "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9";
+    let historical_bytes = fs::read(root.join("parity/rust-semantic-corpus.json"))
+        .map_err(|error| error.to_string())?;
+    if Sha256::digest(&historical_bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>()
+        != RC_SHA256
+        || corpus.historical_sha256.as_deref() != Some(RC_SHA256)
+    {
+        return Err("Frozen RC semantic evidence changed.".into());
+    }
+    let historical: SemanticParityCorpus =
+        serde_json::from_slice(&historical_bytes).map_err(|error| error.to_string())?;
+    if historical
+        .engine_cases
+        .iter()
+        .map(|case| &case.id)
+        .collect::<Vec<_>>()
+        != corpus
+            .engine_cases
+            .iter()
+            .map(|case| &case.id)
+            .collect::<Vec<_>>()
+        || historical
+            .compiler_cases
+            .iter()
+            .map(|case| &case.id)
+            .collect::<Vec<_>>()
+            != corpus
+                .compiler_cases
+                .iter()
+                .map(|case| &case.id)
+                .collect::<Vec<_>>()
+        || historical
+            .parser_cases
+            .iter()
+            .map(|case| (&case.id, &case.input, &case.expected_canonical))
+            .collect::<Vec<_>>()
+            != corpus
+                .parser_cases
+                .iter()
+                .map(|case| (&case.id, &case.input, &case.expected_canonical))
+                .collect::<Vec<_>>()
+    {
+        return Err(
+            "V2 language corpus must retain every historical case and unchanged parser evidence."
+                .into(),
+        );
     }
     let mut ids = HashSet::new();
     for case in &corpus.parser_cases {
@@ -498,7 +550,7 @@ pub(crate) fn validate_parity() -> Result<(), String> {
         }
         let _ = (exception.old, exception.new);
     }
-    let corpus: SemanticParityCorpus = read_json(&root.join("parity/rust-semantic-corpus.json"))?;
+    let corpus: SemanticParityCorpus = read_json(&root.join("parity/v2-language-corpus.json"))?;
     let corpus_ids = validate_semantic_parity_corpus(&root, &corpus)?;
     let ledger: RustTakeoverLedger = read_json(&root.join("parity/rust-takeover-ledger.json"))?;
     validate_rust_takeover_ledger(&root, &ledger, &corpus_ids, &ids)

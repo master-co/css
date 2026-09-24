@@ -11,14 +11,14 @@ Append `/alpha` to a color to make its paint translucent. Compare the same blue 
 ```html
 <!-- Opaque foreground -->
 <p id="target"
-  class="m:0 font:2xl leading:lg text:blue"
+  class="m:0 font-2xl leading-lg text-blue"
 >A shared design language.</p>
 ```
 
 ```html
 <!-- 40% foreground alpha -->
 <p id="target"
-  class="m:0 font:2xl leading:lg text:blue/.4"
+  class="m:0 font-2xl leading-lg text-blue/.4"
 >A shared design language.</p>
 ```
 
@@ -32,8 +32,8 @@ Hover or focus this button to change its foreground. Switch the preview theme to
 ```html
 <!-- Pointer, keyboard and theme -->
 <button id="target" type="button"
-  class="font:md text:body fg:black@print text:violet@screen@dark
-         text:blue:hover@screen text:blue:focus-visible@screen"
+  class="font-md text-body fg-black@print text-violet@screen@dark
+         text-blue:hover@screen text-blue:focus-visible@screen"
 >Preview details</button>
 ```
 
@@ -56,16 +56,16 @@ Define a semantic name in `color-text`, then compile the theme with the class th
 ```html
 <!-- Configured text namespace -->
 <p id="target"
-  class="m:0 font:2xl leading:lg text:primary"
+  class="m:0 font-2xl leading-lg text-primary"
 >A shared design language.</p>
 ```
 
 ```html
 <!-- Explicit variable reference -->
 <p id="target"
-  class="m:0 font:2xl leading:lg
+  class="m:0 font-2xl leading-lg
          fg:var(--color-text-primary,var(--color-text-blue))"
 >A shared design language.</p>
 ```
 
-The current preset exposes this namespace through <TextHeirs />. These consumers are derived from public native namespaces, aliases and manifest utilities. `text:primary` selects the contextual text token; `fg:var(--color-text-primary,var(--color-text-blue))` requests the variable explicitly and supplies a fallback if the custom token is absent. Use [text fill color](/reference/text-fill-color) for the separate WebKit glyph-fill property.
+The current preset exposes this namespace through <TextHeirs />. These consumers are derived from public native namespaces, aliases and manifest utilities. `text-primary` selects the contextual text token; `fg:var(--color-text-primary,var(--color-text-blue))` requests the variable explicitly and supplies a fallback if the custom token is absent. Use [text fill color](/reference/text-fill-color) for the separate WebKit glyph-fill property.

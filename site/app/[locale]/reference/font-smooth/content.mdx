@@ -10,12 +10,12 @@
 
 ```html
 <!-- font-subpixel-antialiased -->
-<p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased">Design with clarity.</p>
+<p id="target" class="m:0 font-xl leading-md font-subpixel-antialiased">Design with clarity.</p>
 ```
 
 ```html
 <!-- font-antialiased -->
-<p id="target" class="m:0 font:xl leading:md font-antialiased">Design with clarity.</p>
+<p id="target" class="m:0 font-xl leading-md font-antialiased">Design with clarity.</p>
 ```
 
 Compare the actual text on your target platform. An accepted declaration does not guarantee a visible rasterization difference.
@@ -27,7 +27,7 @@ Compare the actual text on your target platform. An accepted declaration does no
 
 ```html
 <!-- An inherited request with a local reset -->
-<div class="font-antialiased"><p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased">Design with clarity.</p></div>
+<div class="font-antialiased"><p id="target" class="m:0 font-xl leading-md font-subpixel-antialiased">Design with clarity.</p></div>
 ```
 
 ### Use sparingly \{#use-sparingly\}
@@ -37,12 +37,12 @@ Check text on the surfaces where it will appear. Neither smoothing mode is unive
 
 ```html
 <!-- Light surface -->
-<p id="target" class="m:0 p:md r:sm font:xl leading:md bg:white fg:gray-90 font-antialiased">Design with clarity.</p>
+<p id="target" class="m:0 p-md r-sm font-xl leading-md bg-white fg-gray-90 font-antialiased">Design with clarity.</p>
 ```
 
 ```html
 <!-- Dark surface -->
-<p id="target" class="m:0 p:md r:sm font:xl leading:md bg:gray-90 fg:white font-antialiased">Design with clarity.</p>
+<p id="target" class="m:0 p-md r-sm font-xl leading-md bg-gray-90 fg-white font-antialiased">Design with clarity.</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -52,5 +52,5 @@ Use the Theme control to request grayscale antialiasing in dark mode. The readou
 
 ```html
 <!-- A theme-specific rendering request -->
-<p id="target" class="m:0 font:xl leading:md font-subpixel-antialiased font-antialiased@dark">Design with clarity.</p>
+<p id="target" class="m:0 font-xl leading-md font-subpixel-antialiased font-antialiased@dark">Design with clarity.</p>
 ```

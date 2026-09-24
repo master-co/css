@@ -71,3 +71,28 @@ selected Manifest v1 utility records, validates the ledger count and references,
 then validates approved exceptions. Native/Wasm wrapper parity remains useful, but it
 does not replace this historical semantic oracle because both wrappers execute the
 same Rust implementation.
+
+## Master CSS 2.0 language contract
+
+`rust-semantic-corpus.json` remains frozen RC evidence. The explicitly requested
+2.0 breaking language contract is exercised by `v2-language-corpus.json`, which
+retains every engine/compiler case id and the unchanged parser corpus. `cargo
+xtask parity` verifies the frozen source hash and case lineage before executing
+the new cases. Native and Wasm tests execute this same new corpus.
+
+The new corpus records named-token selectors and priority metadata, explicit
+longhands for RC shorthand inference, explicit variable references, removal of
+length `x`, decimal spelling preservation, and independently ordered group
+items. Compare the corresponding case and step in both files to review exact
+old/new CSS bytes. This is new-contract validation, not a claim that the two
+language versions produce identical CSS. RC takeover ledgers remain historical
+records; their approvals are not repurposed as approval of this language change.
+
+The independent contract and migration assertions live in
+`crates/mastercss-compiler/tests/named_token_contract.rs` and `rc_migration.rs`.
+Do not regenerate expected output simply to silence a failure; first identify the
+contract and retain the historical input and output evidence.
+
+See [v2-language-validation.md](v2-language-validation.md) for the implementation
+validation, browser QA, measured tradeoffs, and outstanding baseline/environment
+failures. Measurements are retained in `v2-language-performance.json`.

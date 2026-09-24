@@ -29,7 +29,7 @@ for (const mode of storybookModes) test(`authored story preview renders ${mode}`
   await expect(heading).toHaveCSS('margin-top', '16px')
   expect(await page.evaluate(() => document.styleSheets.length)).toBe(0)
   if (mode !== 'app-static') {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
   }
   expect(errors).toEqual([])

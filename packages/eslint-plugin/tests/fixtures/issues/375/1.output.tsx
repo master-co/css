@@ -4,9 +4,9 @@ export default function Componennt() {
   return (
     <div className={`
       block
-      font:1rem
+      font-size:1rem
       text-center
-      fg:blue
+      fg-blue
     `}></div>
   )
 }

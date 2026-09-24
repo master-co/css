@@ -64,7 +64,7 @@ describe('stylesheet CSS directives', () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/page.tsx'), '<div class="block"></div>')
     writeFileSync(join(root, 'app/skip.test.tsx'), '<div class="text-center"></div>')
-    writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg:red"></div>')
+    writeFileSync(join(root, 'app/forced.test.tsx'), '<div class="fg-red"></div>')
 
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
@@ -73,7 +73,7 @@ describe('stylesheet CSS directives', () => {
       @master entry;
       @source './**/*.tsx';
       @source not './**/*.test.tsx';
-      @safelist 'font:semibold legacy-token';
+      @safelist 'font-semibold legacy-token';
       @blocklist 'legacy-*';
     `, { baseManifest: scanner.css.manifest })
     const css = await createExtractedCSS({
@@ -84,8 +84,8 @@ describe('stylesheet CSS directives', () => {
     })
 
     expect(css).toContain('.block{display:block}')
-    expect(css).toContain('.font\\:semibold{font-weight:var(--font-weight-semibold)}')
-    expect(css).not.toContain('.fg\\:red')
+    expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
+    expect(css).not.toContain('.fg-red')
     expect(css).not.toContain('.text\\:center')
     expect(css).not.toContain('legacy-token')
   })
@@ -95,7 +95,7 @@ describe('stylesheet CSS directives', () => {
     mkdirSync(join(root, 'app/templates'), { recursive: true })
     writeFileSync(join(root, 'app/templates/product.liquid'), '<h1 class="block"></h1>')
     writeFileSync(join(root, 'app/templates/index.cshtml'), '<h1 class="m:0"></h1>')
-    writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font:semibold"></h1>')
+    writeFileSync(join(root, 'app/templates/show.erb'), '<h1 class="font-semibold"></h1>')
 
     const scanner = new MasterCSSScanner({}, root)
     await scanner.init()
@@ -113,14 +113,14 @@ describe('stylesheet CSS directives', () => {
 
     expect(css).toContain('.block{display:block}')
     expect(css).toContain('.m\\:0{margin:0}')
-    expect(css).toContain('.font\\:semibold{font-weight:var(--font-weight-semibold)}')
+    expect(css).toContain('.font-semibold{font-weight:var(--font-weight-semibold)}')
   })
 
   it('unions source directives and subtracts source not directives', async () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/a/page.tsx'), '<div class="block"></div>')
     writeFileSync(join(root, 'app/b/page.tsx'), '<div class="m:0"></div>')
-    writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg:red"></div>')
+    writeFileSync(join(root, 'app/a/skip.tsx'), '<div class="fg-red"></div>')
     writeFileSync(join(root, 'app/b/skip.tsx'), '<div class="text:center"></div>')
 
     const scanner = new MasterCSSScanner({}, root)
@@ -142,7 +142,7 @@ describe('stylesheet CSS directives', () => {
 
     expect(css).toContain('.block{display:block}')
     expect(css).toContain('.m\\:0{margin:0}')
-    expect(css).not.toContain('.fg\\:red')
+    expect(css).not.toContain('.fg-red')
     expect(css).not.toContain('.text\\:center')
   })
 

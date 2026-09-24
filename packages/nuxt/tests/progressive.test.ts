@@ -24,7 +24,7 @@ it('matches generated CSS snapshot', async () => {
   expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
   expect(html).not.toMatch(/<link\b(?=[^>]*\brel="modulepreload")(?=[^>]*\bas="json")(?=[^>]*master-css-manifest)/i)
-  expect(html).toContain('.fg\\:host')
+  expect(html).toContain('.fg-host')
   expect(html).not.toContain('--color-host:')
   const css = await fetchDeliveredStylesheet(href)
   expect(css).toContain('.box')

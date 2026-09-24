@@ -2,6 +2,8 @@
 
 mod lower;
 mod manifest;
+mod migration;
+pub use migration::{RcClassMigration, RcMigrationRequest, RcMigrationResult, migrate_rc};
 
 pub use lower::{
     LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,

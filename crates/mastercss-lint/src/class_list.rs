@@ -226,7 +226,7 @@ fn create_diagnostics(
         let removed_plural = removed.len() != 1;
         let kept_plural = kept.len() != 1;
         let message = format!(
-            "Remove {} {}; {} overridden by later {} {}.",
+            "Remove {} {}; {} overridden by {} {} in generated CSS.",
             if removed_plural { "classes" } else { "class" },
             format_class_list(&removed),
             if removed_plural { "they are" } else { "it is" },
@@ -263,7 +263,7 @@ fn create_diagnostics(
     }
     for conflict in &analysis.partial_conflicts {
         let message = format!(
-            "Replace {} with {}; later class {} overrides part of {}.",
+            "Replace {} with {}; class {} overrides part of {} in generated CSS.",
             quote_diagnostic_value(&conflict.class_name),
             quote_diagnostic_value(&conflict.replacement),
             quote_diagnostic_value(&conflict.conflict),

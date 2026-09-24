@@ -27,22 +27,22 @@ it('extract latent classes from js raw', () => {
 test('basic js object', () => {
     expect(extractClassCandidates(`
     const test = {
-        'font:1.5rem': true
+        'font-size:1.5rem': true
     }
     `)).toEqual([
         'const',
         'test',
-        'font:1.5rem',
+        'font-size:1.5rem',
         'true',
     ])
 })
 
 test('basic html', () => {
-    expect(extractClassCandidates(`<div class="font:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
+    expect(extractClassCandidates(`<div class="font-size:1rem filter:blur(2px) animation:shake|1s|infinite>li"></div>`)).toEqual(['font-size:1rem', 'filter:blur(2px)', 'animation:shake|1s|infinite>li'])
 })
 
 test('utility sign and symbol key syntax is not extracted', () => {
-    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration:fast transition-duration:fast')).toEqual(['animation-duration:fast', 'transition-duration:fast'])
+    expect(extractClassCandidates('@fade|1s ~opacity|.2s @duration:fast @direction:normal ~duration:fast ~property:opacity animation-duration-fast transition-duration:var(--duration-fast)')).toEqual(['animation-duration-fast', 'transition-duration:var(--duration-fast)'])
 })
 
 test('content', () => {
@@ -62,9 +62,9 @@ test('url', () => {
 
 test('comment', () => {
     expect(extractClassCandidates(`<!-- comment -->
-    /* bg:black */
+    /* bg-black */
     /*
-        font:1rem
+        font-size:1rem
     */
     `)).toEqual([])
 })
@@ -84,31 +84,31 @@ test('=', () => {
 
 test('media', () => {
     expect(extractClassCandidates(`
-    bg:black@xl
-    font:1.5rem@media(min-width:1024px)
-    font:1rem@<789
-    font:1rem@<=789
-    font:1rem@>=789
-    font:1rem@>789
+    bg-black@xl
+    font-size:1.5rem@media(min-width:1024px)
+    font-size:1rem@<789
+    font-size:1rem@<=789
+    font-size:1rem@>=789
+    font-size:1rem@>789
     `)).toEqual([
-        'bg:black@xl',
-        'font:1.5rem@media(min-width:1024px)',
-        'font:1rem@<789',
-        'font:1rem@<=789',
-        'font:1rem@>=789',
-        'font:1rem@>789',
+        'bg-black@xl',
+        'font-size:1.5rem@media(min-width:1024px)',
+        'font-size:1rem@<789',
+        'font-size:1rem@<=789',
+        'font-size:1rem@>=789',
+        'font-size:1rem@>789',
     ])
 })
 
 test('wxh', () => {
     expect(extractClassCandidates(`
-        min:10x
+        min:2.5rem
         calc(100vw-3.75rem)x20rem
         15pxxcalc(100vh-100px)
         calc(100vw-3.75rem)xcalc(100vh-100px)
         class="logo"
     `)).toEqual([
-        'min:10x',
+        'min:2.5rem',
         'calc(100vw-3.75rem)x20rem',
         '15pxxcalc(100vh-100px)',
         'calc(100vw-3.75rem)xcalc(100vh-100px)',
@@ -123,14 +123,14 @@ test('group', () => {
     {data_0}
     {}
     {/if}
-    {bg:black;font:1rem}_div@dark
-    .something{bg:white}
+    {bg-black;font-size:1rem}_div@dark
+    .something{bg-white}
     `))
         .toEqual([
             '{form}',
             '{data_0}',
-            '{bg:black;font:1rem}_div@dark',
-            '.something{bg:white}',
+            '{bg-black;font-size:1rem}_div@dark',
+            '.something{bg-white}',
         ])
 })
 

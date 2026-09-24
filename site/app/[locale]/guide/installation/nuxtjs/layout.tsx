@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'nuxtjs',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/nuxtjs'>{$('Progressive Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
       <Tab href='/guide/installation/nuxtjs/runtime-rendering'>{$('Runtime Rendering')}</Tab>
       <Tab href='/guide/installation/nuxtjs/static-rendering'>{$('Static Rendering')}</Tab>

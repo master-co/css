@@ -112,9 +112,9 @@ export function DemoControls({ label = 'Demo controls', variant = 'plain', class
 }
 
 export function DemoPanel({ className, ...props }: DivProps) {
-  return <DemoSurface {...props} className={clsx('w:full p:md p:lg@sm', className)} />
+  return <DemoSurface {...props} className={clsx('w:100% p-md p-lg@sm', className)} />
 }
 
 export function DemoP({ className, ...props }: HTMLAttributes<HTMLParagraphElement>) {
-  return <DemoText {...props} className={clsx('font:xl text:strong', className)} />
+  return <DemoText {...props} className={clsx('font-xl text-strong', className)} />
 }

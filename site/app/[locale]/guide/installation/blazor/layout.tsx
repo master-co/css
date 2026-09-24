@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'blazor',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/blazor'>{$('Runtime Rendering')}</Tab>
       <Tab href='/guide/installation/blazor/static-rendering'>{$('Static Rendering')}</Tab>
     </Tabs>,

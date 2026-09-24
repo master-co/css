@@ -167,10 +167,10 @@ function TraceMetricGroup(props: {
   items: BenchmarkBarItem[]
 }) {
   return (
-    <div className="grid gap:sm">
-      <div className="flex items-baseline justify-between gap:md">
-        <h4 className="m:0 font-weight:460 font:sm text:strong">{props.title}</h4>
-        <span className="font:xs text:muted">Warm-cache median</span>
+    <div className="grid gap-sm">
+      <div className="flex items-baseline justify-between gap-md">
+        <h4 className="m:0 font-weight:460 font-sm text-strong">{props.title}</h4>
+        <span className="font-xs text-muted">Warm-cache median</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />
     </div>
@@ -183,7 +183,7 @@ export function BrowserCSSCostSummary() {
 
 export function BrowserCSSVolumeTraceChart() {
   return (
-    <div className="grid gap:lg">
+    <div className="grid gap-lg">
       {Object.entries(traceMetricLabels).map(([metricId, label]) => (
         <TraceMetricGroup
           key={metricId}
@@ -196,7 +196,7 @@ export function BrowserCSSVolumeTraceChart() {
 
 export function BrowserDOMScalingTraceChart() {
   return (
-    <div className="grid gap:lg">
+    <div className="grid gap-lg">
       {Object.entries(traceMetricLabels).map(([metricId, label]) => (
         <TraceMetricGroup
           key={metricId}

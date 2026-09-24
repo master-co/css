@@ -461,7 +461,7 @@ export default function Play({ shareId }: PlayProps = {}) {
           <Link href={'/'}>
             {<app.Logotype width={168} height={20} />}
           </Link>
-          <div className='app-header-nav rel gap:0.313rem ml:auto font:medium ml:1.875rem@md'>
+          <div className='app-header-nav rel gap:0.313rem ml:auto font-medium ml:1.875rem@md'>
             v{template.version}
           </div>
           {app.navs?.map(({ fullName, Icon, ...eachLink }: any, index) =>
@@ -472,18 +472,18 @@ export default function Play({ shareId }: PlayProps = {}) {
           {(shareable || copied) &&
             <button className={clsx('hidden@<md', sharing ? 'app-header-nav' : 'app-header-icon')} onClick={shareCurrentFiles} disabled={sharing} aria-label={shareButtonTitle} title={shareButtonTitle}>
               {copied && !shareable && !sharing
-                ? <CheckIcon className="stroke:accent" />
-                : <ShareIcon className={clsx('stroke:current', sharing && 'opacity:.5', shareError && 'stroke:danger')} />
+                ? <CheckIcon className="stroke-accent" />
+                : <ShareIcon className={clsx('stroke-current', sharing && 'opacity:.5', shareError && 'stroke-danger')} />
               }
               {sharing && <span className="ml:0.625rem">{$('Sharing ...')}</span>}
             </button>}
           <span className='hidden'>{shareError}</span>
-          {(shareable || copied) && <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>}
+          {(shareable || copied) && <div className='h:1em w:1px mx-md bg-line-base hidden@<md'></div>}
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout ? '' : '2')}>
-            <svg className={clsx({ 'stroke:accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <svg className={clsx({ 'stroke-accent': !layout || layout === '2' })} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path className={clsx(
                 'transition:transform|.2s',
-                (!layout || layout === '2') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
+                (!layout || layout === '2') ? 'fill-accent/.15' : 'fill-text-disabled/.2',
                 { 'transform:translate(12px,4px)': !layout }
               )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -492,10 +492,10 @@ export default function Play({ shareId }: PlayProps = {}) {
             </svg>
           </button>
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', layout === '3' ? '4' : '3')}>
-            <svg className={clsx({ 'stroke:accent': layout === '3' || layout === '4' }, 'rotate:90')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <svg className={clsx({ 'stroke-accent': layout === '3' || layout === '4' }, 'rotate:90')} xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" strokeWidth="1.2" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path className={clsx(
                 'transition:transform|.2s',
-                (layout === '3' || layout === '4') ? 'fill:accent/.15' : 'fill:text-disabled/.2',
+                (layout === '3' || layout === '4') ? 'fill-accent/.15' : 'fill-text-disabled/.2',
                 { 'transform:translate(12px,4px)': layout === '3' }
               )} stroke="none" d="M1,0H8A0,0,0,0,1,8,0V16a0,0,0,0,1,0,0H0a0,0,0,0,1,0,0V1A1,1,0,0,1,1,0Z" transform='translate(4 4)' />
               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
@@ -504,37 +504,37 @@ export default function Play({ shareId }: PlayProps = {}) {
             </svg>
           </button>
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('layout', '5')}>
-            <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke:accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <svg xmlns="http://www.w3.org/2000/svg" className={clsx(layout === '5' && 'stroke-accent')} width="22" height="22" strokeWidth="1.2" viewBox="0 0 24 24" stroke="currentColor" fill="none" strokeLinecap="round" strokeLinejoin="round">
               <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
               <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
               <path d="M4 9l16 0"></path>
-              <rect className={layout === '5' ? 'fill:accent/.15' : 'fill:text-disabled/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
+              <rect className={layout === '5' ? 'fill-accent/.15' : 'fill-text-disabled/.2'} width="16" height="11" stroke='none' transform="translate(4 9)" />
             </svg>
           </button>
           <span className='hidden'>{layout}</span>
-          <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>
+          <div className='h:1em w:1px mx-md bg-line-base hidden@<md'></div>
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', '')}>
             <IconDeviceDesktop width="22" height="22" className={clsx(
-              'stroke:1.3',
-              !preview ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
+              'stroke-width:1.3',
+              !preview ? 'fill-accent/.15 stroke-accent' : 'fill-text-disabled/.2 stroke-current'
             )} />
           </button>
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'responsive')}>
             <IconDeviceMobile width="22" height="22" className={clsx(
-              'stroke:1.3',
-              responsive ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
+              'stroke-width:1.3',
+              responsive ? 'fill-accent/.15 stroke-accent' : 'fill-text-disabled/.2 stroke-current'
             )} />
           </button>
           <button className="app-header-icon hidden@<md" onClick={() => pushShallowURL('preview', 'css')}>
             <IconBrandCss3 width="22" height="22" className={clsx(
-              'stroke:1.3',
-              preview === 'css' ? 'fill:accent/.15 stroke:accent' : 'fill:text-disabled/.2 stroke:current'
+              'stroke-width:1.3',
+              preview === 'css' ? 'fill-accent/.15 stroke-accent' : 'fill-text-disabled/.2 stroke-current'
             )} />
           </button>
           <span className='hidden'>{preview}</span>
-          <div className='h:1em w:1px mx:md bg:line-base hidden@<md'></div>
+          <div className='h:1em w:1px mx-md bg-line-base hidden@<md'></div>
           <LanguageButton className="app-header-icon hidden@<md" />
-          <ThemeButton className="app-header-icon mr:-3x hidden@<md"
+          <ThemeButton className="app-header-icon mr:-0.75rem hidden@<md"
             onChange={(theme: string) => {
               previewIframeRef.current?.contentWindow?.postMessage({
                 type: 'preview:theme',
@@ -542,12 +542,12 @@ export default function Play({ shareId }: PlayProps = {}) {
               }, window.location.origin)
             }}
           />
-          <DocMenuButton className="app-header-icon mr:-3x hidden@md" />
+          <DocMenuButton className="app-header-icon mr:-0.75rem hidden@md" />
         </HeaderContent>
       </Header >
       <div
         className={clsx(
-          'flex overflow:hidden flex:1 full bg:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-col!@<md',
+          'flex overflow:hidden flex:1 full background-color:transparent_:is(.monaco-editor,.monaco-editor-background,.monaco-editor_.margin) flex-col!@<md',
           {
             'flex-row': !layout,
             'flex-row-reverse': layout === '2',
@@ -566,17 +566,17 @@ export default function Play({ shareId }: PlayProps = {}) {
             layout === '5' && 'hidden!@md',
             {
               'full!@<md': tab !== 'Preview',
-              'br:1px|solid|muted': !layout,
-              'bl:1px|solid|muted': layout === '2',
-              'bb:1px|solid|muted': layout === '3',
-              'bt:1px|solid|muted': layout === '4'
+              'br:1px|solid|var(--color-line-muted)': !layout,
+              'bl:1px|solid|var(--color-line-muted)': layout === '2',
+              'bb:1px|solid|var(--color-line-muted)': layout === '3',
+              'bt:1px|solid|var(--color-line-muted)': layout === '4'
             }
           )}
           width={tab === 'Preview' ? '' : width}
           height={tab === 'Preview' ? '' : height}
           showHeight={true}
         >
-          <Tabs className="flex:0|0|auto" contentClassName="px:5x px:10x@sm">
+          <Tabs className="flex:0|0|auto" contentClassName="px:1.25rem px:2.5rem@sm">
             {files.map((file, index) => (
               <Tab onClick={() => pushShallowURL('tab', index === 0 ? '' : file.title)} size="sm" key={file.id} active={tab === file.title}>
                 {file.title || ''}
@@ -615,10 +615,10 @@ export default function Play({ shareId }: PlayProps = {}) {
             />
           </div>
         </Resizable>
-        <div className={clsx('rel overflow:hidden flex:1|1|auto bg:surface-base', {
-          'flex justify-center p:xl': responsive,
-          'pt:3xl': responsive && layout !== '3',
-          'pb:3xl': responsive && layout === '3',
+        <div className={clsx('rel overflow:hidden flex:1|1|auto bg-surface-base', {
+          'flex justify-center p-xl': responsive,
+          'pt-3xl': responsive && layout !== '3',
+          'pb-3xl': responsive && layout === '3',
           'hidden@<md': tab !== 'Preview'
         })}>
           <Resizable
@@ -630,8 +630,8 @@ export default function Play({ shareId }: PlayProps = {}) {
             overlay={false}
             originX={'center'}
             showHandler={responsive ? [false, true, true] : false}
-            className={clsx('full outline:1px|solid|base.resizing', {
-              'max-size:100% outline:1px|solid|muted': responsive
+            className={clsx('full outline:1px|solid|var(--color-line-base).resizing', {
+              'max-size:100% outline:1px|solid|var(--color-line-muted)': responsive
             })}
             showHeight={true}
           >
@@ -644,10 +644,10 @@ export default function Play({ shareId }: PlayProps = {}) {
               srcDoc={previewHTML}
               onLoad={postReadyPreviewUpdate}
             />
-            <div className={clsx('flex flex-col h:full', { 'hidden!': preview !== 'css' })}>
-              <div className='flex flex:0|0|auto items-center justify-between h:48px px:5x bb:1px|solid|subtle font:xs px:10x@sm'>
+            <div className={clsx('flex flex-col h:100%', { 'hidden!': preview !== 'css' })}>
+              <div className='flex flex:0|0|auto items-center justify-between h:48px px:1.25rem bb:1px|solid|var(--color-line-subtle) font-xs px:2.5rem@sm'>
                 <div>{compiling ? $('Compiling CSS') : $('Generated CSS')}</div>
-                <div className="text:muted">{compileWarnings.length ? `${compileWarnings.length} ${$('warnings')}` : generatedCSSSize}</div>
+                <div className="text-muted">{compileWarnings.length ? `${compileWarnings.length} ${$('warnings')}` : generatedCSSSize}</div>
               </div>
               <Editor
                 height="100%"
@@ -664,12 +664,12 @@ export default function Play({ shareId }: PlayProps = {}) {
               />
             </div>
             {previewErrorEvent &&
-              <div className="abs inset:0 full p:2xl text:danger bg:red-5@light bg:red-95@dark">
-                <h2 className="font:xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
-                <div className="my:5x p:0.938rem|5x r:5px font:medium font:sm white-space:pre-wrap bg:black/.2@dark bg:red-90@light">
+              <div className="abs inset:0 full p-2xl text-danger bg-red-5@light bg-red-95@dark">
+                <h2 className="font-xl">{$('Error at line')} {previewErrorEvent.lineno === 1 ? 1 : previewErrorEvent.lineno - 1}</h2>
+                <div className="my:1.25rem p:0.938rem|1.25rem r:5px font-medium font-sm white-space:pre-wrap bg-black/.2@dark bg-red-90@light">
                   {previewErrorEvent.message}
                 </div>
-                <div className="font:xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
+                <div className="font-xs">{previewErrorEvent.datetime.toLocaleTimeString()} {previewErrorEvent.datetime.toDateString()}, {previewErrorEvent.filename}</div>
               </div>
             }
           </Resizable>

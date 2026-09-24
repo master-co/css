@@ -128,6 +128,39 @@ impl LintSession {
                 raw_value_policy: policy.raw_value_policy,
             },
         );
+        for item in mastercss_lexer::collect_class_list_token_ranges(class_list) {
+            let inspection = self.engine.inspect(&item.token)?;
+            for diagnostic in inspection.diagnostics {
+                // Unregistered names can belong to author CSS. Keep the existing
+                // unknown-class policy; actual token ambiguities remain errors.
+                let unknown_token = diagnostic
+                    .message
+                    .starts_with("Unknown or unsupported token");
+                if unknown_token && !policy.disallow_unknown_class {
+                    continue;
+                }
+                result.diagnostics.retain(|existing| {
+                    existing.range != item.range || existing.code != "unknown-class"
+                });
+                result.diagnostics.push(crate::LintDiagnosticIr {
+                    rule_id: "no-invalid-classes".into(),
+                    code: if unknown_token {
+                        "unknown-token"
+                    } else {
+                        "ambiguous-token"
+                    }
+                    .into(),
+                    message: diagnostic.message,
+                    range: item.range.clone(),
+                    data: serde_json::Map::from_iter([
+                        ("className".into(), Value::String(item.token.clone())),
+                        ("kind".into(), Value::String("syntax".into())),
+                        ("alternatives".into(), serde_json::json!(diagnostic.notes)),
+                    ]),
+                    fix: None,
+                });
+            }
+        }
         if let Some(options) = policy.canonical_options {
             if policy.compose_directive {
                 let compose =

@@ -28,7 +28,7 @@ for (const route of bundlerInstallationRoutes) test(`authored bundler build rend
   const heading = page.getByRole('heading', { name: 'Hello World' })
   // Production HTML minimizers may sort attributes' class tokens.
   expect(await heading.evaluate(element => [...element.classList].sort())).toEqual(
-    ['m:md', 'italic', 'font:3xl', 'font:heavy', 'text:strong'].sort(),
+    ['m-md', 'italic', 'font-3xl', 'font-heavy', 'text-strong'].sort(),
   )
   await expect(heading).toHaveCSS('font-style', 'italic')
   await expect(heading).toHaveCSS('margin-top', '16px')

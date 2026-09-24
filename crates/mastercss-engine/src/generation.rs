@@ -1,8 +1,8 @@
 use super::{
-    EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet, Map,
-    RulePriorityIr, StoredRule, Value, apply_forced_mode, canonicalize_class_name,
+    EngineCompositionRuleIr, EngineSession, GeneratedRuleIr, GeneratedRuleNodeIr, HashSet,
+    RulePriorityIr, StoredRule, apply_forced_mode, canonicalize_class_name,
     collect_animation_names, collect_css_variable_names, composition_conditions,
-    composition_selector, create_selector_text, emit_declarations, find_group_close, match_utility,
+    composition_selector, create_selector_text, emit_declarations, find_group_close,
     normalize_dynamic_value, parse_serialized_declarations, resolve_state_branches,
     selector_priority, single_native_declaration, split_top_level, wrap_raw_conditions,
     wrap_state_conditions,
@@ -17,25 +17,41 @@ impl EngineSession {
         &self,
         class_name: &str,
     ) -> Vec<EngineCompositionRuleIr> {
+        if let Some((items, state)) = group_items(class_name) {
+            if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
+                return Vec::new();
+            }
+            return items
+                .iter()
+                .enumerate()
+                .flat_map(|(index, item)| {
+                    let nested = format!("{item}{state}");
+                    self.generate_composition_rules(&nested)
+                        .into_iter()
+                        .map(move |mut rule| {
+                            rule.key = format!("{class_name}\0group:{index}\0{}", rule.key);
+                            rule.class_name = class_name.into();
+                            rule
+                        })
+                })
+                .collect();
+        }
         let mut generated = Vec::new();
         let mut seen = HashSet::new();
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let mut matching_class_names = vec![semantic_class_name.to_owned()];
-        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
-            matching_class_names.push(canonical);
-        }
+        let matching_class_names = [canonicalize_class_name(semantic_class_name)
+            .unwrap_or_else(|| semantic_class_name.to_owned())];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
-            for utility in &self.compiled.utilities {
+            for (utility_index, matched) in
+                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            {
+                let utility = &self.compiled.utilities[utility_index];
                 if utility.native_fallback && generated.len() > generated_before_candidate {
                     break;
                 }
-                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
-                else {
-                    continue;
-                };
                 let resolved_value = matched.value.as_deref().map(|value| {
                     if matched.value_normalized {
                         value.to_owned()
@@ -84,6 +100,13 @@ impl EngineSession {
                         0
                     };
                     let priority = RulePriorityIr {
+                        value_priority: if matched.matcher_type == super::UtilityMatcherType::Token
+                        {
+                            -1
+                        } else {
+                            0
+                        },
+                        sort_key: super::named::sort_key(utility, &matched),
                         features: branch.features.clone(),
                         selector: selector_priority(branch.selector_template.as_deref()),
                     };
@@ -131,20 +154,17 @@ impl EngineSession {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let mut matching_class_names = vec![semantic_class_name.to_owned()];
-        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
-            matching_class_names.push(canonical);
-        }
+        let matching_class_names = [canonicalize_class_name(semantic_class_name)
+            .unwrap_or_else(|| semantic_class_name.to_owned())];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
-            for utility in &self.compiled.utilities {
+            for (utility_index, matched) in
+                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            {
+                let utility = &self.compiled.utilities[utility_index];
                 if utility.native_fallback && generated.len() > generated_before_candidate {
                     break;
                 }
-                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
-                else {
-                    continue;
-                };
                 let mut state_branches =
                     resolve_state_branches(&matched.state_token, important, &self.compiled);
                 apply_forced_mode(&mut state_branches, mode, &self.compiled);
@@ -228,6 +248,14 @@ impl EngineSession {
                             utility_type: utility.utility_type,
                             sort_tier,
                             priority: RulePriorityIr {
+                                value_priority: if matched.matcher_type
+                                    == super::UtilityMatcherType::Token
+                                {
+                                    -1
+                                } else {
+                                    0
+                                },
+                                sort_key: super::named::sort_key(utility, &matched),
                                 features: branch.features.clone(),
                                 selector: selector_priority(branch.selector_template.as_deref()),
                             },
@@ -264,93 +292,39 @@ impl EngineSession {
         class_name: &str,
         mode: Option<&str>,
     ) -> Option<Vec<StoredRule>> {
-        let body = class_name.strip_prefix('{')?;
-        let close = find_group_close(body)?;
-        let declarations_source = &body[..close];
-        let state_token = &body[close + 1..];
-        let mut declarations = Map::<String, Value>::new();
-        let mut variable_names = Vec::new();
-        let mut animation_names = Vec::new();
-        for nested_class in split_top_level(declarations_source, ';') {
-            if nested_class.is_empty() {
-                continue;
-            }
-            for nested_rule in self.generate_class_rules_with_mode(&nested_class, mode) {
-                for declaration in split_top_level(&nested_rule.declarations, ';') {
-                    let Some((property, value)) = declaration.split_once(':') else {
-                        continue;
-                    };
-                    declarations.insert(property.to_owned(), Value::String(value.to_owned()));
-                }
-                for name in nested_rule.ir.variable_names {
-                    if !variable_names.contains(&name) {
-                        variable_names.push(name);
-                    }
-                }
-                for name in nested_rule.ir.animation_names {
-                    if !animation_names.contains(&name) {
-                        animation_names.push(name);
-                    }
-                }
-            }
-        }
-        if declarations.is_empty() {
+        let (items, state) = group_items(class_name)?;
+        if !super::named::diagnostics(class_name, &self.compiled).is_empty() {
             return Some(Vec::new());
         }
-        let declarations = declarations
-            .iter()
-            .map(|(property, value)| format!("{property}:{}", value.as_str().unwrap_or_default()))
-            .collect::<Vec<_>>()
-            .join(";");
-        let mut branches = resolve_state_branches(state_token, false, &self.compiled);
-        apply_forced_mode(&mut branches, mode, &self.compiled);
-        Some(
-            branches
-                .into_iter()
-                .enumerate()
-                .map(|(branch_index, branch)| {
-                    let selector_text =
-                        create_selector_text(class_name, None, &branch, &self.compiled);
-                    let mut text = format!("{selector_text}{{{declarations}}}");
-                    text = wrap_state_conditions(text, &branch.condition_wrappers);
-                    let layer = branch.layer.unwrap_or_default();
-                    StoredRule {
-                        ir: GeneratedRuleIr {
-                            class_name: class_name.to_owned(),
-                            key: if branch_index == 0 && branch.key.is_empty() {
-                                class_name.to_owned()
-                            } else {
-                                format!("{class_name}\0{}", branch.key)
-                            },
-                            layer,
-                            utility_type: -1,
-                            sort_tier: if !branch.condition_wrappers.is_empty() {
-                                3
-                            } else if branch.mode.is_some() {
-                                2
-                            } else if branch.selector_template.is_some() {
-                                1
-                            } else {
-                                0
-                            },
-                            priority: RulePriorityIr {
-                                features: branch.features.clone(),
-                                selector: selector_priority(branch.selector_template.as_deref()),
-                            },
-                            text,
-                            nodes: Vec::new(),
-                            selector_text: Some(selector_text),
-                            variable_names: variable_names.clone(),
-                            animation_names: animation_names.clone(),
-                        },
-                        manifest_order: 0,
-                        declarations: declarations.clone(),
-                        native_fallback: false,
-                        matcher_type: None,
-                        state_token: state_token.to_owned(),
-                    }
-                })
-                .collect(),
-        )
+        let group_selector = format!(".{}", super::css_escape(class_name));
+        let mut generated = Vec::new();
+        for (index, item) in items.iter().enumerate() {
+            let nested = format!("{item}{state}");
+            let nested_selector = format!(".{}", super::css_escape(&nested));
+            for mut rule in self.generate_class_rules_with_mode(&nested, mode) {
+                rule.ir.class_name = class_name.into();
+                rule.ir.key = format!("{class_name}\0group:{index}\0{}", rule.ir.key);
+                rule.ir.text = rule.ir.text.replace(&nested_selector, &group_selector);
+                rule.ir.selector_text = rule
+                    .ir
+                    .selector_text
+                    .map(|selector| selector.replace(&nested_selector, &group_selector));
+                for node in &mut rule.ir.nodes {
+                    node.text = node.text.replace(&nested_selector, &group_selector);
+                }
+                generated.push(rule);
+            }
+        }
+        Some(generated)
     }
+}
+
+fn group_items(class_name: &str) -> Option<(Vec<String>, &str)> {
+    let body = class_name.strip_prefix('{')?;
+    let close = find_group_close(body)?;
+    let items = split_top_level(&body[..close], ';')
+        .into_iter()
+        .filter(|item| !item.is_empty())
+        .collect();
+    Some((items, &body[close + 1..]))
 }

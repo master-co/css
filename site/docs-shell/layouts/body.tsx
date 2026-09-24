@@ -8,8 +8,8 @@ export default function Body({ children, className }: {
   return (
     <body className={clsx(
       className,
-      'bg:slate-50/.2_:is(::selection)',
-      'text:body'
+      'bg-slate-50/.2_:is(::selection)',
+      'text-body'
     )}>
       <CodeTabsBootstrap />
       {children}

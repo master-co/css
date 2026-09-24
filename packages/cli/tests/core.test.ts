@@ -45,10 +45,10 @@ describe('root command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-generate-'))
     try {
       fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@theme { --color-brand: red; }')
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg:brand"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block fg-brand"></div>')
       const output = runCLI(['generate', '--no-export'], { cwd })
       expect(output).toContain('.block{display:block}')
-      expect(output).toContain('.fg\\:brand{color:var(--color-brand)}')
+      expect(output).toContain('.fg-brand{color:var(--color-brand)}')
       expect(fs.existsSync(resolve(cwd, 'master.css'))).toBe(false)
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
@@ -187,7 +187,7 @@ describe('lint command', () => {
   it('prints machine-readable diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="fg:white m:2x text-decoration:bad()"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="fg-white m:0.5rem text-decoration:bad()"></div>')
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
@@ -217,7 +217,7 @@ describe('lint command', () => {
         'never'
       ], {
         cwd,
-        input: '<div className="fg:white m:2x"></div>'
+        input: '<div className="fg-white m:0.5rem"></div>'
       })
       const report = JSON.parse(output)
       expect(report.files).toHaveLength(1)
@@ -237,7 +237,8 @@ describe('lint command', () => {
       expect(report.files).toHaveLength(1)
       expect(report.files[0].sourceKind).toBe('stylesheet')
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
-        code: 'prefer-canonical-class',
+        code: 'prefer-native-declaration',
+        data: expect.objectContaining({ actual: 'text-align:center', recommended: 'text-align: center' }),
         sourceKind: 'compose-directive'
       }))
       expect(report.files[0].diagnostics).toContainEqual(expect.objectContaining({
@@ -274,9 +275,9 @@ describe('lint command', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-fix-'))
     try {
       const file = resolve(cwd, 'index.html')
-      fs.writeFileSync(file, '<div class="fg:white m:2x"></div>')
+      fs.writeFileSync(file, '<div class="fg-white m:0.5rem"></div>')
       runCLI(['lint', '--fix', 'index.html'], { cwd })
-      expect(fs.readFileSync(file, 'utf8')).toBe('<div class="m:xs fg:white"></div>')
+      expect(fs.readFileSync(file, 'utf8')).toBe('<div class="m:0.5rem fg-white"></div>')
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
     }

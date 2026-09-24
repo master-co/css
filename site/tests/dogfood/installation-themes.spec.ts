@@ -29,7 +29,7 @@ for (const route of themeInstallationRoutes) test(`authored theme assets render 
   await serve(page, fixture)
   const heading = page.getByRole('heading', { name: 'Hello World' })
   expect(await heading.evaluate(element => [...element.classList].sort())).toEqual(
-    ['m:md', 'italic', 'font:3xl', 'font:heavy', 'text:strong'].sort(),
+    ['m-md', 'italic', 'font-3xl', 'font-heavy', 'text-strong'].sort(),
   )
   await expect(heading).toHaveCSS('font-style', 'italic')
   await expect(heading).toHaveCSS('margin-top', '16px')
@@ -45,7 +45,7 @@ for (const route of themeInstallationRoutes) test(`authored theme assets render 
     } else await expect(initial).not.toHaveCSS('font-style', 'italic')
   } finally { await context.close() }
   if (fixture.runtime) {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
   }
   expect(errors).toEqual([])

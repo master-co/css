@@ -21,28 +21,28 @@ export default function PageContent({ metadata }: any) {
   const $ = useTranslation()
 
   return (
-    <aside ref={ref} className="sticky top overflow-y:auto flex:0|0|auto h:100dvh w:calc(252/16*1rem) pb:2xl pt:35x b:subtle:not(.top) hidden@print hidden@<lg bl:1px|solid|transparent@<lg surface:raised/.8@<lg backdrop-filter:blur(25px)@<lg scrollbar scrollbar-concealed">
-      <div className="flex items-center mb:md">
+    <aside ref={ref} className="sticky top overflow-y:auto flex:0|0|auto h:100dvh w:calc(252/16*1rem) pb-2xl pt:8.75rem b-subtle:not(.top) hidden@print hidden@<lg bl:1px|solid|transparent@<lg surface-raised/.8@<lg backdrop-filter:blur(25px)@<lg scrollbar scrollbar-concealed">
+      <div className="flex items-center mb-md">
         <ContentsSvg width="14" height="14" className="my:-1px ml:-0.125rem" fill="currentColor" />
-        <span className=" ml:3xs font:xs">{$('On this page')}</span>
+        <span className=" ml-3xs font-xs">{$('On this page')}</span>
       </div>
       {(metadata.canIUseLink || metadata.mdnLink) &&
-        <div className='flex gap:0.625rem mb:md'>
+        <div className='flex gap:0.625rem mb-md'>
           {
             metadata.canIUseLink &&
-            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="inline-flex overflow:hidden r:xs content:none::after">
+            <Link href={metadata.canIUseLink} rel="noreferrer noopener" target="_blank" className="inline-flex overflow:hidden r-xs content:none::after">
               <Image src={canIUseImg} loading='eager' width={24} height={24} alt={$('Can I use ?')} />
             </Link>
           }
           {
             metadata.mdnLink &&
-            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="inline-flex overflow:hidden r:xs content:none::after">
+            <Link href={metadata.mdnLink} rel="noreferrer noopener" target="_blank" className="inline-flex overflow:hidden r-xs content:none::after">
               <Image src={mdnImg} loading='eager' width={24} height={24} alt={$('MDN Web Docs')} />
             </Link>
           }
         </div>
       }
-      <ul className='pl:md bl:1px|solid|muted'>
+      <ul className='pl-md bl:1px|solid|var(--color-line-muted)'>
         {
           pageContent.map((eachPageContentNav: any) => {
             return <li key={eachPageContentNav.id}>
@@ -53,14 +53,14 @@ export default function PageContent({ metadata }: any) {
           })
         }
       </ul>
-      <ul className='mt:sm'>
+      <ul className='mt-sm'>
         <li>
-          <Link className="block py:4xs text:xs! text:muted app-nav" href={`https://github.com/master-co/css/tree/rc/${pageContentPath}`} indicate>
+          <Link className="block py-4xs text-xs! text-muted app-nav" href={`https://github.com/master-co/css/tree/rc/${pageContentPath}`} indicate>
             {$('Edit this page')}
           </Link>
         </li>
         <li>
-          <Link className="block py:4xs text:xs! text:muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
+          <Link className="block py-4xs text-xs! text-muted app-nav" href={`https://github.com/master-co/css/issues/new?assignees=&labels=documentation&template=docs_request.yml&labels=docs&title=📄+${metadata.title.absolute || metadata.title}:+`} indicate>
             {$('Issue on this page')}
           </Link>
         </li>
@@ -100,18 +100,18 @@ function PageContentNav({ children, id, level, activeTransitionsReady, currentId
     }
   }, [$, children])
 
-  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} suppressHydrationWarning className={clsx('flex items-center text:muted contain:content will-change:color app-nav fg:accent!.active fill:accent.active_svg', {
+  return <Link ref={ref} href={'#' + id} aria-current={active ? 'location' : undefined} data-page-content-nav-id={id} suppressHydrationWarning className={clsx('flex items-center text-muted contain:content will-change:color app-nav fg-accent.active! fill-accent.active_svg', {
     'transition:color|.15s': activeTransitionsReady,
     'active': active || currentParentId === id,
     'min-h:32px': level === 2,
-    'min-h:24px font:xs': level === 3,
+    'min-h:24px font-xs': level === 3,
   })}
     onClick={(event: any) => {
       event.preventDefault()
       anchor(id, { offset: 109 })
     }}>
     <div className={clsx({
-      'min-h:32px py:4xs': level === 2,
+      'min-h:32px py-4xs': level === 2,
       'ml:1em py:1px pl:1em text-indent:-1em': level === 3
     })}>
       {Text}

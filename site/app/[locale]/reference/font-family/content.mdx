@@ -17,18 +17,18 @@ Use `font-family:*` for a native family value. Generic families such as `cursive
 
 ```html
 <!-- A platform-selected cursive face -->
-<p id="target" class="m:0 font-family:cursive font:xl leading:md">Design with clarity.</p>
+<p id="target" class="m:0 font-family:cursive font-xl leading-md">Design with clarity.</p>
 ```
 
 ### Apply fonts globally \{#apply-fonts-globally\}
-Set `font:sans` on `<body>` to establish the inherited family. These nested paragraphs do not declare their own font family.
+Set `font-sans` on `<body>` to establish the inherited family. These nested paragraphs do not declare their own font family.
 
 <DemoExample page="font-family" section="apply-fonts-globally" />
 
 ```html
 <!-- The actual preview body owns the family -->
-<body class="font:sans">
-  <main class="font:xl leading:md">
+<body class="font-sans">
+  <main class="font-xl leading-md">
     <p id="target" class="m:0">A shared reading voice.</p>
     <section><p class="m:0">Inherited through another element.</p></section>
   </main>
@@ -42,20 +42,20 @@ Hover or keyboard-focus the button to switch from the sans stack to the mono sta
 
 ```html
 <!-- A family change on a real state -->
-<button type="button" id="target" class="font:md font:sans font:mono:hover font:mono:focus-visible">Focus or hover to compare</button>
+<button type="button" id="target" class="font-md font-sans font-mono:hover font-mono:focus-visible">Focus or hover to compare</button>
 ```
 
 ### Apply fonts to specified elements \{#apply-fonts-to-specified-elements\}
-The descendant selector `_:is(code,pre)` applies `font:mono` to matching elements below the body. Regular paragraphs keep the inherited sans family.
+The descendant selector `_:is(code,pre)` applies `font-mono` to matching elements below the body. Regular paragraphs keep the inherited sans family.
 
 <DemoExample page="font-family" section="apply-fonts-to-specified-elements" />
 
 ```html
 <!-- Sans prose · mono code -->
-<body class="font:sans font:mono_:is(code,pre)">
-  <main class="font:md leading:md">
+<body class="font-sans font-mono_:is(code,pre)">
+  <main class="font-md leading-md">
     <p id="target" class="m:0">Prepare a clear canvas.</p>
-    <pre class="mx:0 mb:0 mt:sm"><code id="code">const ready = true</code></pre>
+    <pre class="mx:0 mb:0 mt-sm"><code id="code">const ready = true</code></pre>
   </main>
 </body>
 ```
@@ -79,7 +79,7 @@ Spaces separate classes in HTML. For a literal family name, the CSS escape `\000
 
 ```html
 <!-- An escaped family name -->
-<p id="target" class="m:0 font-family:'IBM\000020Plex\000020Mono' font:xl leading:md">Design with clarity.</p>
+<p id="target" class="m:0 font-family:'IBM\000020Plex\000020Mono' font-xl leading-md">Design with clarity.</p>
 ```
 
 ```css name=index.css
@@ -90,7 +90,7 @@ Spaces separate classes in HTML. For a literal family name, the CSS escape `\000
 
 ```html
 <!-- The same face through a readable token -->
-<p id="target" class="m:0 font:xl leading:md font:code">Design with clarity.</p>
+<p id="target" class="m:0 font-xl leading-md font-code">Design with clarity.</p>
 ```
 
 Prefer a token for repeated use. Defining a family token does not download the font file.
@@ -132,10 +132,10 @@ Override the preset sans and mono stacks using `--font-sans` and `--font-mono`. 
 
 ```html
 <!-- Loaded custom faces · inherited and selected -->
-<body class="font:sans font:mono_:is(code,pre)">
-  <main class="font:xl leading:md">
+<body class="font-sans font-mono_:is(code,pre)">
+  <main class="font-xl leading-md">
     <p id="target" class="m:0">Design with clarity.</p>
-    <pre class="mx:0 mb:0 mt:sm"><code id="code">const ready = true</code></pre>
+    <pre class="mx:0 mb:0 mt-sm"><code id="code">const ready = true</code></pre>
   </main>
 </body>
 ```
@@ -155,7 +155,7 @@ A hosted stylesheet declares the font faces; a family class then applies them. T
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&amp;display=swap">
 </head>
 <body>
-  <p id="target" class="m:0 font-family:Roboto,sans-serif font:xl leading:md">Design with clarity.</p>
+  <p id="target" class="m:0 font-family:Roboto,sans-serif font-xl leading-md">Design with clarity.</p>
 </body>
 </html>
 ```
@@ -185,7 +185,7 @@ Declare a face with `@font-face`, using the path of your own font file. The vari
 
 ```html
 <!-- A locally hosted variable face -->
-<p id="target" class="m:0 font-weight:550 font:xl leading:md font:interface">Design with clarity.</p>
+<p id="target" class="m:0 font-weight:550 font-xl leading-md font-interface">Design with clarity.</p>
 ```
 
 Keep the declared range consistent with the actual file. Feature availability also depends on that file, not just the family name.

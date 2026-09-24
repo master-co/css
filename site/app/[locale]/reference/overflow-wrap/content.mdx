@@ -10,14 +10,14 @@
 ```html
 <!-- wrap-normal -->
 <div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="wrap-normal w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="wrap-normal w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
 ```html
 <!-- wrap-break-word -->
 <div id="scrollport" role="region" aria-label="Emergency wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-  <p id="target" class="wrap-break-word w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+  <p id="target" class="wrap-break-word w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
 </div>
 ```
 
@@ -35,12 +35,12 @@
 
 ```html
 <!-- wrap-break-word -->
-<code id="target" class="block wrap-break-word w:min-content m:0 font:md leading:24px">PREVIEW</code>
+<code id="target" class="block wrap-break-word w:min-content m:0 font-md leading:24px">PREVIEW</code>
 ```
 
 ```html
 <!-- wrap-anywhere -->
-<code id="target" class="block wrap-anywhere w:min-content m:0 font:md leading:24px">PREVIEW</code>
+<code id="target" class="block wrap-anywhere w:min-content m:0 font-md leading:24px">PREVIEW</code>
 ```
 
 These boxes deliberately use `w:min-content`. Compare the measured widths as well as the visible wrapping.
@@ -54,7 +54,7 @@ These boxes deliberately use `w:min-content`. Compare the measured widths as wel
 <!-- Inherited anywhere · local normal reset -->
 <div class="wrap-anywhere">
   <div id="scrollport" role="region" aria-label="Reset wrapping" tabindex="0" class="overflow:auto w:200px max-w:100%">
-    <p id="target" class="wrap-normal w:200px m:0 font:md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
+    <p id="target" class="wrap-normal w:200px m:0 font-md leading:24px">pneumonoultramicroscopicsilicovolcanoconiosis</p>
   </div>
 </div>
 ```
@@ -68,7 +68,7 @@ Resize the viewport to change the intrinsic width of the same min-content box. I
 
 ```html
 <!-- One token · native intrinsic sizing -->
-<code id="target" class="block wrap-break-word w:min-content m:0 font:md leading:24px wrap-normal@print wrap-anywhere@screen&sm">PREVIEW</code>
+<code id="target" class="block wrap-break-word w:min-content m:0 font-md leading:24px wrap-normal@print wrap-anywhere@screen&sm">PREVIEW</code>
 ```
 
 Print restores normal wrapping. Use [text-overflow](/reference/text-overflow) when the design needs clipping instead of wrapping.

@@ -25,10 +25,10 @@ Define tokens in the project CSS entry with `@theme`, then use short contextual 
 ```
 
 ```html
-<!-- @MARK p:lg --><!-- @MARK r:lg --><!-- @MARK bg:surface-card --><!-- @MARK grid-cols:2@md --><!-- @MARK bg:brand --><!-- @MARK text:action -->
-<section class="p:lg r:lg grid-cols:2@md bg:surface-card">
-  <button class="px:md py:xs r:md fg:white bg:brand">Save</button>
-  <a class="text:action" href="/settings">Settings</a>
+<!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK bg-surface-card --><!-- @MARK grid-cols:2@md --><!-- @MARK bg-brand --><!-- @MARK text-action -->
+<section class="p-lg r-lg grid-cols:2@md bg-surface-card">
+  <button class="px-md py-xs r-md fg-white bg-brand">Save</button>
+  <a class="text-action" href="/settings">Settings</a>
 </section>
 ```
 
@@ -82,13 +82,13 @@ Use token names that describe the shared decision, not the first component that 
 ---
 
 ## Use tokens
-Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p:lg`, radius in `r:lg`, a container width in `max-w:md`, or a breakpoint in `@md`.
+Utilities resolve token values from the namespace they use. The same short key can mean spacing in `p-lg`, radius in `r-lg`, a container width in `max-w-md`, or a breakpoint in `@md`.
 
 ```html
-<!-- @MARK bg:surface-card --><!-- @MARK p:lg --><!-- @MARK r:lg --><!-- @MARK font:sans --><!-- @MARK shadow:card -->
-<article class="p:lg r:lg font:sans bg:surface-card shadow:card">
+<!-- @MARK bg-surface-card --><!-- @MARK p-lg --><!-- @MARK r-lg --><!-- @MARK font-sans --><!-- @MARK shadow-card -->
+<article class="p-lg r-lg font-sans bg-surface-card shadow-card">
   <h2>Dashboard</h2>
-  <a class="text:blue" href="/settings">Settings</a>
+  <a class="text-blue" href="/settings">Settings</a>
 </article>
 ```
 
@@ -137,8 +137,8 @@ Use mode-specific `@theme` blocks when the same token should resolve differently
 ```
 
 ```html
-<!-- @MARK bg:surface-card --><!-- @MARK text:card --><!-- @MARK shadow:card -->
-<article class="bg:surface-card shadow:card text:card">...</article>
+<!-- @MARK bg-surface-card --><!-- @MARK text-card --><!-- @MARK shadow-card -->
+<article class="bg-surface-card shadow-card text-card">...</article>
 ```
 
 Keep the token name mode-neutral. Markup should say `surface-card` or `text-card`, not `dark-card`.
@@ -158,12 +158,12 @@ Use `@theme inline` when a token is only a utility shorthand and should not emit
 ```
 
 ```html
-<article class="bg:brand p:feature">...</article>
+<article class="bg-brand p-feature">...</article>
 ```
 
 ```css
-.bg\:brand { background-color: #4f46e5; }
-.p\:feature { padding: 1.5rem; }
+.bg-brand { background-color: #4f46e5; }
+.p-feature { padding: 1.5rem; }
 ```
 
 Inline tokens can reference other inline tokens. If an inline token references a regular theme token, Master CSS keeps the regular `var(--*)` reference and emits that regular token when needed. Inline tokens cannot be mode-specific; use normal `@theme light` and `@theme dark` blocks when a value must change by mode.
@@ -194,12 +194,12 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 ```
 
 ```html
-<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w:lg --><!-- @MARK grid-cols:2@container(md) -->
-<div class="grid-cols:1 gap:md grid-cols:2@md grid-cols:3@lg">
+<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w-lg --><!-- @MARK grid-cols:2@container(md) -->
+<div class="grid-cols:1 gap-md grid-cols:2@md grid-cols:3@lg">
   ...
 </div>
 
-<aside class="container max-w:lg">
+<aside class="container max-w-lg">
   <article class="grid-cols:1 grid-cols:2@container(md)">
     ...
   </article>
@@ -227,8 +227,8 @@ Motion values can be tokens too. Put reusable animation recipes, durations, easi
 ```
 
 ```html
-<!-- @MARK animate:dialog-in -->
-<dialog class="animate:dialog-in"></dialog>
+<!-- @MARK animate-dialog-in -->
+<dialog class="animate-dialog-in"></dialog>
 ```
 
 Keyframes are emitted outside cascade layers, while animation utilities still generate in the utilities layer. For motion naming and usage, see [Motion](/guide/motion) and [Animation](/reference/animation).

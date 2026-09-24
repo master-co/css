@@ -9,15 +9,15 @@ Hover or keyboard-focus the button to increase its opacity. The shorthand keeps 
 
 ```html
 <!-- Opacity · 150ms ease-out -->
-<div class="p:sm">
+<div class="p-sm">
   <button id="target" type="button"
     class="inline-grid place-items:center h:64px
-           w:160px p:sm b:1px|solid|blue-60 r:sm
-           font:sm bg:blue-10 fg:blue-80 opacity:.72
-           outline:2px|solid|blue:focus-visible
+           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+           font-sm bg-blue-10 fg-blue-80 opacity:.72
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
            opacity:1@print transition:none@print
-           transition:opacity|fast|ease-out@screen&motion
+           transition:opacity|var(--duration-fast)|ease-out@screen&motion
            opacity:1:is(:hover,:focus-visible)@screen">
     Preview changes
   </button>
@@ -27,7 +27,7 @@ Hover or keyboard-focus the button to increase its opacity. The shorthand keeps 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition:opacity|fast|ease-out@screen&motion']}
+    {['transition:opacity|var(--duration-fast)|ease-out@screen&motion']}
   </Class2CSS>
 </details>
 
@@ -40,20 +40,20 @@ Focus or hover the real link to lift it by 8px. Only transform interpolates, whi
 
 ```html
 <!-- Transform · named link with a real destination -->
-<div class="p:sm">
+<div class="p-sm">
   <a id="target" href="#report"
     class="inline-grid place-items:center h:64px
-           w:160px p:sm b:1px|solid|blue-60 r:sm
-           font:sm bg:blue-10 fg:blue-80 transform:none
-           outline:2px|solid|blue:focus-visible
+           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+           font-sm bg-blue-10 fg-blue-80 transform:none
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
            transform:none@print transition:none@print
-           transition:transform|normal|smooth@screen&motion
+           transition:transform|var(--duration-normal)|var(--easing-smooth)@screen&motion
            transform:translateY(-8px):is(:hover,:focus-visible)@screen">
     View report
   </a>
 </div>
-<p id="report" tabindex="-1" class="mt:md font:sm">Report destination</p>
+<p id="report" tabindex="-1" class="mt-md font-sm">Report destination</p>
 ```
 
 Naming the property prevents unrelated color, border or size changes from joining the transition. Activate the link to reach the in-frame report destination; its movement does not change that action.
@@ -65,18 +65,18 @@ The longhands below keep opacity and ease-out fixed while enabling a 150ms durat
 
 ```html
 <!-- Independent duration · hover or focus -->
-<div class="p:sm">
+<div class="p-sm">
   <button id="target" type="button"
     class="inline-grid place-items:center h:64px
-           w:160px p:sm b:1px|solid|blue-60 r:sm
-           font:sm bg:blue-10 fg:blue-80 opacity:.72
+           w:160px p-sm b:1px|solid|var(--color-blue-60) r-sm
+           font-sm bg-blue-10 fg-blue-80 opacity:.72
            transition-property:opacity
            transition-timing-function:ease-out
-           outline:2px|solid|blue:focus-visible
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
            opacity:1@print
            transition-duration:0ms@print
-           transition-duration:fast@screen&motion
+           transition-duration-fast@screen&motion
            opacity:1:is(:hover,:focus-visible)@screen">
     Preview emphasis
   </button>
@@ -92,22 +92,22 @@ Use the native checkbox to change opacity. Below `sm` the change is immediate; a
 
 ```html
 <!-- Immediate → eased at sm -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          opacity:.72:has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Fade layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Fade layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition:none transition:none@print
-             transition:opacity|fast|smooth@screen&motion&sm">
+             transition:opacity|var(--duration-fast)|var(--easing-smooth)@screen&motion&sm">
       Layer 01
     </span>
   </span>

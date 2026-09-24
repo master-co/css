@@ -86,7 +86,7 @@ function foundationComponent(slug: string, name: string, attributes: Record<stri
   if (name === 'BreakpointQueries') return queryScale('breakpoint')
   if (name === 'ContainerQueries') return queryScale('container')
   if (name === 'ContainerSizeValues') return getThemeNumericVariableEntries('container').map(entry =>
-    `- ${code(entry.key)} / ${code(`container-${entry.key}`)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; example ${code(`max-w:${entry.key}`)}.`
+    `- ${code(entry.key)} / ${code(`container-${entry.key}`)}: ${length(entry.px, 'px')} / ${length(entry.rem, 'rem')}; example ${code(`max-w-${entry.key}`)}.`
   ).join('\n')
   if (name === 'DemoPalette' || name === 'ColorPalette') return getThemeVariables('color').filter(variable => /^color-.+-\d+$/.test(variable.name ?? '')).map(variable =>
     `- ${code(`--${variable.name}`)}: ${code(String(variable.value))}.`

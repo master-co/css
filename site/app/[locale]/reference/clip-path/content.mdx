@@ -9,8 +9,8 @@ A circular clip hides paint outside its boundary. The outer outline marks the un
 
 ```html
 <!-- No clip · complete square -->
-<div class="size:160px outline:1px|solid|muted
-         bg:surface-base">
+<div class="size:160px outline:1px|solid|var(--color-line-muted)
+         bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
@@ -21,8 +21,8 @@ A circular clip hides paint outside its boundary. The outer outline marks the un
 
 ```html
 <!-- Circle · 60px radius -->
-<div class="size:160px outline:1px|solid|muted
-         bg:surface-base">
+<div class="size:160px outline:1px|solid|var(--color-line-muted)
+         bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
@@ -49,11 +49,11 @@ Inset values cut inward from the reference box. This example removes 8px at top 
 <!-- Unclipped · original border -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|muted bg:surface-base">
+         outline:1px|solid|var(--color-line-muted) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
-           max-w:100% b:2px|solid|blue-60 font:md
-           bg:blue-10 fg:blue-80 clip-none">
+           max-w:100% b:2px|solid|var(--color-blue-60) font-md
+           bg-blue-10 fg-blue-80 clip-none">
     Clipped panel
   </div>
 </div>
@@ -63,11 +63,11 @@ Inset values cut inward from the reference box. This example removes 8px at top 
 <!-- Inset · rounded paint boundary -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|muted bg:surface-base">
+         outline:1px|solid|var(--color-line-muted) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
-           max-w:100% b:2px|solid|blue-60 font:md
-           bg:blue-10 fg:blue-80
+           max-w:100% b:2px|solid|var(--color-blue-60) font-md
+           bg-blue-10 fg-blue-80
            clip-path:inset(8px|24px|round|12px)">
     Clipped panel
   </div>
@@ -83,8 +83,8 @@ Widen to `sm` to restore the complete image with `clip-none`. Print also shows t
 
 ```html
 <!-- Circle → full image at sm -->
-<div class="size:160px outline:1px|solid|muted
-         bg:surface-base">
+<div class="size:160px outline:1px|solid|var(--color-line-muted)
+         bg-surface-base">
   <img id="target" src="/demo/landscape.svg"
   width="320" height="200"
   alt="Blue and violet mountains beneath a yellow sun"
@@ -105,11 +105,11 @@ Widen the real preview viewport to `sm` to inset the panel. Print removes the cl
 <!-- Full panel → inset at sm -->
 <div
   class="h:120px w:240px max-w:100%
-         outline:1px|solid|muted bg:surface-base">
+         outline:1px|solid|var(--color-line-muted) bg-surface-base">
   <div id="target"
     class="grid place-items:center h:120px w:240px
-           max-w:100% b:2px|solid|blue-60 font:md
-           bg:blue-10 fg:blue-80 clip-none
+           max-w:100% b:2px|solid|var(--color-blue-60) font-md
+           bg-blue-10 fg-blue-80 clip-none
            clip-none@print
            clip-path:inset(8px|24px|round|12px)@screen&sm">
     Clipped panel

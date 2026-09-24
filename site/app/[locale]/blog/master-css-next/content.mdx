@@ -25,8 +25,8 @@ Master CSS is markup-driven. The class string is the styling source of truth:
 ```tsx
 export default function Page() {
   return (
-    <main className="min-h:100vh p:10x bg:surface-base text:neutral">
-      <h1 className="font:6xl font:heavy tracking:tight">
+    <main className="min-h:100vh p:2.5rem bg-surface-base text-neutral">
+      <h1 className="font-6xl font-heavy tracking-tight">
         Master CSS pre-rendered by Next.js
       </h1>
     </main>
@@ -58,7 +58,7 @@ For a minimal page:
 
 ```tsx name=app/page.tsx
 export default function Page() {
-  return <h1 className="font:6xl">Hello</h1>
+  return <h1 className="font-6xl">Hello</h1>
 }
 ```
 
@@ -68,15 +68,15 @@ Progressive Rendering produces HTML shaped like this:
 <!doctype html>
 <html>
 <head>
-  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font\:48px{font-size:48px}}</style>
+  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font-size\:48px{font-size:48px}}</style>
 </head>
 <body>
-  <h1 class="font:6xl">Hello</h1>
+  <h1 class="font-6xl">Hello</h1>
 </body>
 </html>
 ```
 
-The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, maps the native CSS rule back to `font:48px`, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
+The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, maps the native CSS rule back to `font-size:48px`, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
 
 This page hydration manifest is separate from the project manifest and from the `buildReport` option in `@master/css-next`. When enabled, `buildReport` writes `.next/master-css-build-report.json` with details about rendered files; it is not the route-level JSON used to hydrate `style#master-css` in the browser.
 
@@ -235,7 +235,7 @@ export function Badge({ tone }: {
   tone: 'blue' | 'neutral'
 }) {
   return (
-    <span className={`px:xs py:3xs r:sm bg:${tone}/.1 text:${tone}`}>
+    <span className={`px-xs py-3xs r-sm bg-${tone}/.1 text-${tone}`}>
       New
     </span>
   )
@@ -245,7 +245,7 @@ export function Badge({ tone }: {
 If a pre-rendered route outputs this HTML:
 
 ```html
-<span class="px:xs py:3xs r:sm bg:blue/.1 text:blue">New</span>
+<span class="px-xs py-3xs r-sm bg-blue/.1 text-blue">New</span>
 ```
 
 `@master/css-next` reads that final class list from the generated document and injects the matching CSS for the first response. The runtime can then continue covering client-only and dynamic UI after hydration.

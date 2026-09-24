@@ -13,7 +13,7 @@ export default async function Layout({ children }: {
   children: React.ReactNode
 }) {
   return (
-    <Body className="bg:surface-base">
+    <Body className="bg-surface-base">
       <DocHeader contained />
       <DocWrapper>
         <DocSidebar pageCategories={pageCategories} />

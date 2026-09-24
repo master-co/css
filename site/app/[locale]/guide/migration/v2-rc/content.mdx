@@ -1,0 +1,222 @@
+This guide upgrades projects from **Master CSS v2 RC before the named-token breaking change** to the new v2 contract. Check the exact installed RC versions and the project's resolved manifest before applying any mapping. RC releases did not all have identical behavior.
+
+Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
+
+[Back to migration frameworks](/guide/migration#frameworks).
+
+---
+
+## 1. Inventory and save the RC baseline
+
+- Record the installed versions of core, preset, compiler, runtime, server, framework integrations, language tooling, ESLint, and custom bindings.
+- Save the **resolved RC manifest**, its source CSS entries and imports, and the effective `base-unit` and `root-size` settings. A failed settings lookup is not permission to assume defaults.
+- List custom tokens, inline tokens, modes, namespace fallbacks, managed utilities, variants, and component definitions.
+- Find classes in templates, class builders, `@compose`, safelists, blocklists, test fixtures, and selectors in CSS or JavaScript. Include classes supplied by dependencies and generated content.
+- Record static, server, runtime, and progressive rendering paths, including hydration manifests, CSS asset URLs, and cached pages.
+- Save generated declarations and representative screenshots or computed styles at relevant breakpoints and themes. Include font metrics, background layers, border styles, outlines, and SVG strokes.
+
+Keep the original baseline available throughout migration. Rebuilding an RC manifest with the new engine cannot reconstruct the old overload decisions.
+
+---
+
+## 2. Separate names from direct values
+
+**A hyphen selects a named token or utility. A colon passes a CSS value.** Aliases replace property names; they do not infer another property from a value.
+
+The RC column below is historical reference text, not executable new syntax. `brand`, `md`, and similar names refer to tokens from the original project; retain their identities rather than substituting whichever token happens to have the same current value.
+
+| RC reference | New syntax | Generated declaration or semantic change |
+| --- | --- | --- |
+| `font:mono` | `font-mono` | `font-family:var(--font-family-mono)` |
+| `font:bold` | `font-bold` | `font-weight:var(--font-weight-bold)` |
+| `font:sm` | `font-sm` | `font-size:var(--font-size-sm)` |
+| `text:sm` | `text-sm` | Retains font size, calculated line height, and letter spacing. |
+| `fg:brand` | `fg-brand` | `color:var(--color-brand)` |
+| `bg:brand` | `bg-brand` | `background-color:var(--color-brand)` |
+| `p:md` | `p-md` | `padding:var(--spacing-md)` |
+| `m:-sm` | `-m-sm` | `margin:calc(var(--spacing-sm) * -1)` |
+| `fg:red/0.5` | `fg-red/0.5` | `color:color-mix(in oklab,var(--color-red) 50%,transparent)` |
+| `font:16px` | `font-size:16px` | Keeps the old font-size-only intent. |
+| `bg:#fff` with color-only intent | `background-color:#fff` | Keeps other background longhands. New `bg:#fff` means `background:#fff`. |
+| `b:2px` with width-only intent | `border-width:2px` | Keeps border style and color. New `b:2px` means `border:2px`. |
+| `outline:2px` with width-only intent | `outline-width:2px` | Native `outline:2px` resets the other outline longhands. |
+| `stroke:2px` with width-only intent | `stroke-width:2px` | Native `stroke` specifies SVG paint, not stroke width. |
+| `line-clamp:3` with combined truncation intent | `clamp-lines:3` | Retains the legacy multi-property truncation utility. `line-clamp:3` emits the native declaration. |
+| `p:4x` with RC defaults | `p:1rem` | Converts the old length multiplier; verify the original settings first. |
+| `fg:$color-brand` | `fg:var(--color-brand)` | Explicit native custom-property reference. |
+| `m:sm\|md` | `m:var(--spacing-sm)\|var(--spacing-md)` | Explicit references in a multi-value declaration. |
+| `grid-cols:3`, `size:20px` | Unchanged | Explicit Master parameter utilities remain available. |
+
+The examples above show variable-backed tokens. A token declared with `@theme inline` substitutes its declared value instead of a `var()` reference.
+
+CSS keywords keep native meaning. `color:red` and `fg:red` mean the CSS color `red`; `color-red` and `fg-red` select the project's color token. `font-family:mono` specifies a font named `mono` and does not resolve `--font-family-mono`.
+
+There is no implicit token lookup inside a colon value, including functions, fallbacks, and multi-value declarations. For example, use `border:1px|solid|var(--color-line-base)` and `transition:opacity|var(--duration-normal)|var(--easing-standard)` when those variables exist.
+
+### Preserve selectors and conditions
+
+Keep state suffixes, responsive conditions, important markers, grouping, and `|` space encoding. Change each affected item inside a group independently.
+
+```text name="RC reference — not executed"
+font:mono:hover@sm!
+{p:md;fg:brand}:hover
+```
+
+For this new example, define the project color token explicitly:
+
+```css
+@theme { --color-brand: #4f46e5; }
+```
+
+```text name="New v2 syntax"
+font-mono:hover@sm!
+{p-md;fg-brand}:hover
+```
+
+Named tokens do not introduce a numeric multiplier scale. `p-4` only works if the project defines the corresponding spacing token. Use a real CSS length for a literal.
+
+---
+
+## 3. Review resets, names, and cascade order
+
+### Native shorthand resets
+
+Choose the property that expresses the original intent. A native shorthand resets omitted longhands, even when its value looks like a single color or width. For example, `background:#fff` resets background images, positioning, repeat, and sizing; `background-color:#fff` does not. `border:2px` also resets border style, whose initial value does not draw a border.
+
+`font:16px` is not a valid standalone native font shorthand. Use `font-size:16px` when changing only the size. Use a complete native `font` value only when its shorthand behavior is intended.
+
+Validate the resulting CSS in a browser. A syntax match is distinct from CSS value validity and from visual equivalence.
+
+### Reserved names and ambiguity
+
+Static and enum names keep their existing meanings. `bg-cover` still emits `background-size:cover`, even if `--color-cover` exists; use `background-color-cover` for that token.
+
+Use full prefixes to resolve collisions. If both `--font-family-brand` and `--font-size-brand` exist, `font-brand` is ambiguous. Choose `font-family-brand` or `font-size-brand`. Different utilities cannot resolve ambiguity through registration order.
+
+Resolution uses the longest registered prefix. A missing `font-family-sm` does not fall back to `font-sm`. Hyphens inside token names remain part of the token: `p-card-body` selects `--spacing-card-body`.
+
+A single utility's explicit namespace fallback order remains meaningful. Negative names apply only to numeric tokens on properties that accept negative values; opacity suffixes apply only to color tokens and use the range `0..1`.
+
+### Direct values override tokens within the same scope
+
+Both `p-md p:8px` and `p:8px p-md` put the token rule before the direct-value rule, so the direct padding wins. HTML class order does not control this result.
+
+Layers, conditions, selector priority, shorthand/longhand tiers, and CSS importance still matter. A padding longhand can override a padding shorthand; an important token can override a normal direct value. Review combinations that relied on RC ordering instead of assuming that every renamed class preserves the previous winner.
+
+---
+
+## 4. Replace length `x`, `base-unit`, and `$name`
+
+Master's custom length multiplier is removed. Convert each old length using the original project's effective settings:
+
+```text
+rem value = old x value × old base-unit ÷ old root-size
+```
+
+| Original settings | RC length | Equivalent CSS length |
+| --- | --- | --- |
+| `base-unit:4`, `root-size:16` | `4x` | `1rem` |
+| `base-unit:6`, `root-size:20` | `4x` | `1.2rem` |
+| `base-unit:6`, `root-size:20` | `-2.5x` | `-0.75rem` |
+
+After converting all affected lengths, remove `base-unit` from CSS settings and `baseUnit` from manifest inputs. They are rejected by the new compiler and engine. `root-size` remains available for conditions and tooling; it no longer converts declaration values or changes the document's root font size.
+
+Preserve native resolution units. CSS uses `x` as a resolution unit in `image-set()` and resolution queries. This is valid new syntax and must retain `1x` and `2x`:
+
+```text name="New v2 class"
+background-image:image-set(url(a.png)|1x,url(b.png)|2x)
+```
+
+```css name="Generated declaration"
+background-image: image-set(url(a.png) 1x, url(b.png) 2x);
+```
+
+Do not globally replace every numeric `x`: URLs, strings, resolution descriptors, and custom-property token streams need contextual handling. Inspect arithmetic and nested function values. If the migration tool cannot establish whether a dimension represents a length or resolution, review it manually.
+
+Replace a registered `$name` reference with `var(--name)`. Preserve any original alpha modifier with an explicit color expression or a named color token. Quoted text containing a dollar sign remains text.
+
+These changes reduce special language rules. They are not a claim that AI generation accuracy has improved; that requires separate model evaluation.
+
+---
+
+## 5. Update directives, manifests, and custom hosts
+
+Separate token and raw parameter sources in managed patterns:
+
+```css name="New v2 utilities"
+@utilities {
+  font-<~font-family> {
+    font-family: --value();
+  }
+
+  size-<~container> {
+    width: --value();
+    height: --value();
+  }
+
+  size:<number|*> {
+    width: --value();
+    height: --value();
+  }
+}
+```
+
+`prefix-<~namespace>` and `prefix-<=namespace>` accept token sources only. Raw kinds and `*` belong in colon patterns. `key:<color>` accepts raw colors and does not imply a color namespace. Enum patterns and full-value `--value()` substitution remain supported.
+
+A managed definition using a native property name must preserve that property's intent and value. Matching vendor-prefixed declarations may accompany it; changing to a subproperty or adding a separate style effect requires a distinct utility name. For example, migrate the old combined line-clamp definition to `clamp-lines`.
+
+Regenerate artifacts from their source definitions. Manifest and hydration envelopes remain v1, but the supported field contract changes:
+
+- Token matchers use `{ "type": "token", "prefix": "font-" }` with namespace references on their utility; the old `variable` matcher is rejected.
+- Directive IR has a `token` pattern distinct from `dynamic` raw parameters.
+- Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
+- Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
+- Update native and Wasm providers together to **binding ABI 8**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
+- Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
+
+See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
+
+---
+
+## 6. Preview and apply migration proposals
+
+Save the resolved original manifest as `master.rc.manifest.json` before upgrading. Run the migration command from the project root; `--manifest` selects that saved file. Missing, unreadable, or invalid configuration stops migration before any writes:
+
+```sh
+master-css migrate src --manifest master.rc.manifest.json
+```
+
+The default operation proposes changes without writing source files. Inspect the proposal and its diagnostics before applying safe edits:
+
+```sh
+master-css migrate src --manifest master.rc.manifest.json --write
+```
+
+Automatic changes must preserve the token identity, declaration intent, state, and conditions. Length conversion uses the RC settings rather than the new defaults. Equal current numbers do not justify replacing literals with tokens or converting unrelated `px` values to `rem`. Remove the retired canonical lint options `preferThemeTokens`, `preferVariableReferences`, and `preferMultiValueTokens`; token migration now uses this explicit command.
+
+Review these cases manually:
+
+- Dynamically concatenated class fragments, including prefixes and values assembled at runtime.
+- Names that match multiple token utilities, or custom utility behavior whose equivalence cannot be proven.
+- Class combinations whose winner changes under the new ordering.
+- CSS selectors, `querySelector`, test locators, and generated selector strings that reference escaped old names.
+- Missing or unreadable RC configuration, unknown source versions, and dimensions with uncertain context.
+
+`--write` does not override these uncertainties. If any selected file has review diagnostics, the entire selected batch remains unwritten because class and selector dependencies can cross file boundaries. Resolve the diagnostics and preview the batch again. Supply `--target-manifest path/to/migrated.json` when a migrated project manifest is needed to verify custom definitions. Preserve diagnostics in the upgrade review and resolve them before relying on new build output. Run migration again afterward: already migrated source should produce no additional edits.
+
+Update `@compose`, safelists, blocklists, dependency-provided classes, and generated-source producers as well as ordinary markup. Update a generator's source before regenerating its output.
+
+---
+
+## 7. Verify the coordinated upgrade
+
+- Run the project's build, lint, type-check, and focused application tests with the upgraded package set.
+- Compare generated declarations against the saved RC baseline. Explain every difference, including intentionally restored native shorthand semantics and native resolution units.
+- Test both orders of token/literal combinations, plus longhands, important values, state selectors, responsive conditions, and themes.
+- Check fonts, line heights, letter spacing, backgrounds, borders, outlines, SVG paint and width, and truncation in a browser.
+- Compare static, server, runtime, and progressive results wherever the project uses them. Inspect initial hydration and subsequent DOM class updates.
+- Check resource retention for tokens referenced by explicit `var()`, functions, compositions, modes, and managed animations.
+- Verify completion, hover, validation, conflict diagnostics, and autofix on representative new classes. Ambiguous names should report explicit alternatives.
+- Confirm that official source paths and executable examples no longer rely on RC token syntax, `$name`, `base-unit`, or Master length `x`.
+
+Keep the saved baseline and manual-review decisions with the upgrade change. Remove obsolete RC artifacts only after all rendering paths and important screens validate.

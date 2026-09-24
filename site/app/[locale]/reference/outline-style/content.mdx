@@ -12,11 +12,11 @@ Use `outline-solid` or `outline-dashed` to change only `outline-style`. These de
 <!-- Solid · dedicated style utility -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -25,11 +25,11 @@ Use `outline-solid` or `outline-dashed` to change only `outline-style`. These de
 <!-- Dashed · same width and color -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-dashed
-         outline-offset:3xs outline:3px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-dashed
+         outline-offset-3xs outline-width:3px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -52,18 +52,18 @@ Use Tab to focus the real skip link, then Enter to move to its destination. Its 
 <!-- Native skip link · keyboard destination -->
 <a id="target" href="#destination"
   class="inline-block outline-dashed
-         outline-offset:3xs outline:3px
-         outline:transparent
-         text-decoration:underline text:blue
-         outline:blue:focus-visible">
+         outline-offset-3xs outline-width:3px
+         outline-color:transparent
+         text-decoration:underline text-blue
+         outline-blue:focus-visible">
   Skip to content
 </a>
 <section id="destination" tabindex="-1"
-  class="mt:xl p:md bg:surface-muted text:body">
-  <h4 class="m:0 font:lg">
+  class="mt-xl p-md bg-surface-muted text-body">
+  <h4 class="m:0 font-lg">
     Preview content
   </h4>
-  <p class="mx:0 mb:0 mt:sm">
+  <p class="mx:0 mb:0 mt-sm">
     The link moves keyboard focus here.
   </p>
 </section>
@@ -80,11 +80,11 @@ The button has a solid resting outline. Keyboard focus changes only its style to
 <!-- Solid → dotted on keyboard focus -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible
          outline-none@print
          outline-dotted:focus-visible@screen">
   Preview details

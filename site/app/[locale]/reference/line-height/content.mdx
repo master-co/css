@@ -13,19 +13,19 @@ Line height contributes to the line box; it is not the visible height of the gly
 [`text:*`](/reference/text-size) combines size with size-dependent leading and tracking. Its treatment uses formulas rather than a fixed golden ratio.
 
 ### Set line height with font size \{#set-line-height-with-font-size\}
-Choose the size and leading independently. At the default 16px root size, `font:md leading:lg` produces 16px type with a 28.8px line height.
+Choose the size and leading independently. At the default 16px root size, `font-md leading-lg` produces 16px type with a 28.8px line height.
 
 <DemoExample page="line-height" section="set-line-height-with-font-size" />
 
 ```html
 <!-- 16px type · 1.8 line-height multiplier -->
-<p id="target" class="max-w:24ch m:0 font:md leading:lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="max-w:24ch m:0 font-md leading-lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['font:md', 'leading:lg']}
+    {['font-md', 'leading-lg']}
   </Class2CSS>
 </details>
 
@@ -36,7 +36,7 @@ Compact leading can bring the lines of a large heading together. `leading:1` mak
 
 ```html
 <!-- Two explicit lines · 40px each -->
-<h2 id="target" class="m:0 font:5xl font:medium leading:1">Make room<br>for ideas.</h2>
+<h2 id="target" class="m:0 font-5xl font-medium leading:1">Make room<br>for ideas.</h2>
 ```
 
 ### Use explicit values \{#use-explicit-values\}
@@ -46,17 +46,17 @@ A unitless value is inherited as a multiplier, so it adapts to the child’s fon
 
 ```html
 <!-- Unitless · 1.5 -->
-<div id="context" class="font:md leading:1.5">
+<div id="context" class="font-md leading:1.5">
   <p class="m:0">Parent at 16px</p>
-  <p id="target" class="m:0 font:2xl">Child at 24px<br>Second line</p>
+  <p id="target" class="m:0 font-2xl">Child at 24px<br>Second line</p>
 </div>
 ```
 
 ```html
 <!-- Fixed length · 24px -->
-<div id="context" class="font:md leading:24px">
+<div id="context" class="font-md leading:24px">
   <p class="m:0">Parent at 16px</p>
-  <p id="target" class="m:0 font:2xl">Child at 24px<br>Second line</p>
+  <p id="target" class="m:0 font-2xl">Child at 24px<br>Second line</p>
 </div>
 ```
 
@@ -69,5 +69,5 @@ The paragraph uses compact leading below `sm`, regular leading at `sm`, and rela
 
 ```html
 <!-- Responsive reading rhythm -->
-<p id="target" class="max-w:24ch m:0 font:md leading:sm leading:lg@print leading:md@screen&sm">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="max-w:24ch m:0 font-md leading-sm leading-lg@print leading-md@screen&sm">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```

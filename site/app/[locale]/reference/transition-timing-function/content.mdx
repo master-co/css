@@ -9,24 +9,24 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 
 ```html
 <!-- Linear · constant progress -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:linear
              transition:none@print
-             transition-duration:slowest@screen&motion">
+             transition-duration-slowest@screen&motion">
       Layer 01
     </span>
   </span>
@@ -35,24 +35,24 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 
 ```html
 <!-- Ease in · slower at the beginning -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:ease-in
              transition:none@print
-             transition-duration:slowest@screen&motion">
+             transition-duration-slowest@screen&motion">
       Layer 01
     </span>
   </span>
@@ -61,24 +61,24 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
 
 ```html
 <!-- Ease out · slower at the end -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition-property:transform
              transition-timing-function:ease-out
              transition:none@print
-             transition-duration:slowest@screen&motion">
+             transition-duration-slowest@screen&motion">
       Layer 01
     </span>
   </span>
@@ -101,20 +101,20 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
 
 ```html
 <!-- Linear · continuous progress -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition:none@print
              transition:transform|1s|linear@screen&motion">
       Layer 01
@@ -125,20 +125,20 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
 
 ```html
 <!-- Four steps · 24px per step -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition:none@print
              transition:transform|1s|steps(4,end)@screen&motion">
       Layer 01
@@ -157,23 +157,23 @@ Check to move the layer out with ease-out. After it arrives, uncheck to return w
 ```html
 <!-- Ease out → ease in on return -->
 <label
-  class="block w:280px max-w:100% font:sm
+  class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen
          transition-timing-function:ease-out:has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|slowest|ease-in@screen&motion">
+             transition:transform|var(--duration-slowest)|ease-in@screen&motion">
       Layer 01
     </span>
   </span>
@@ -189,22 +189,22 @@ Resize before toggling. Below `sm`, the layer uses ease-out; at `sm`, it uses li
 
 ```html
 <!-- Ease out → linear at sm -->
-<label class="block w:280px max-w:100% font:sm
+<label class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen">
   <input type="checkbox" aria-label="Move layer"
-    class="mr:xs accent-color:blue
-           outline:2px|solid|blue:focus-visible
+    class="mr-xs accent-color-blue
+           outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible">
   Move layer
   <span aria-hidden="true"
-    class="block h:64px mt:md p:xs
-           outline:1px|dashed|muted">
+    class="block h:64px mt-md p-xs
+           outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:48px w:128px
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|slowest|ease-out@screen&motion
+             transition:transform|var(--duration-slowest)|ease-out@screen&motion
              transition-timing-function:linear@screen&sm">
       Layer 01
     </span>

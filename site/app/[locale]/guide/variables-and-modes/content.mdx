@@ -4,7 +4,7 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 CSS custom properties let multiple declarations share a value. A Master CSS theme makes those values available to token-aware classes. Start with one spacing token and the class that consumes it:
 
-<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p:card']} />
+<ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
 This example compiles the theme with the current preset before generating the class. Change the theme value when every consumer should change together; choose a local value when the change belongs to one element.
 

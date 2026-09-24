@@ -1,10 +1,8 @@
 use super::{
     CanonicalCandidate, CanonicalClassNameOptions, CanonicalClassParts,
     CanonicalRecommendationIndex, ClassSemanticInspection, EngineError, EngineSession,
-    GeneratedRuleIr, HashMap, HashSet, MatchingVariableKeys, UtilityLayerName, Value,
-    builtin_key_aliases, builtin_native_value_properties, collect_rule_declarations,
-    manifest_utility_property_signatures, normalize_css_variable_value, push_index_value,
-    split_top_level,
+    GeneratedRuleIr, HashSet, UtilityLayerName, Value, builtin_key_aliases,
+    collect_rule_declarations, push_index_value, split_top_level,
 };
 
 pub(crate) fn build_canonical_recommendation_index(
@@ -18,26 +16,6 @@ pub(crate) fn build_canonical_recommendation_index(
     for aliases in index.preferred_aliases_by_property.values_mut() {
         aliases.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
     }
-    for property in builtin_native_value_properties() {
-        for alias in index
-            .preferred_aliases_by_property
-            .get(property)
-            .cloned()
-            .unwrap_or_default()
-        {
-            push_index_value(
-                &mut index.variable_keys_by_property_signature,
-                property,
-                &alias,
-            );
-        }
-        push_index_value(
-            &mut index.variable_keys_by_property_signature,
-            property,
-            property,
-        );
-    }
-
     for utility in manifest
         .get("utilities")
         .and_then(Value::as_array)
@@ -45,7 +23,6 @@ pub(crate) fn build_canonical_recommendation_index(
         .flatten()
         .filter_map(Value::as_object)
     {
-        let property_signatures = manifest_utility_property_signatures(utility);
         for matcher in utility
             .get("matchers")
             .and_then(Value::as_array)
@@ -54,24 +31,6 @@ pub(crate) fn build_canonical_recommendation_index(
             .filter_map(Value::as_object)
         {
             let matcher_type = matcher.get("type").and_then(Value::as_str);
-            if matcher_type == Some("variable") {
-                for key in matcher
-                    .get("keys")
-                    .and_then(Value::as_array)
-                    .into_iter()
-                    .flatten()
-                    .filter_map(Value::as_str)
-                {
-                    for signature in &property_signatures {
-                        push_index_value(
-                            &mut index.variable_keys_by_property_signature,
-                            signature,
-                            key,
-                        );
-                    }
-                }
-            }
-
             if utility.get("type").and_then(Value::as_i64) != Some(-2)
                 || utility
                     .get("layer")
@@ -127,21 +86,6 @@ pub(crate) fn build_canonical_recommendation_index(
     for values in index.static_candidates_by_signature.values_mut() {
         values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
     }
-    for values in index.variable_keys_by_property_signature.values_mut() {
-        values.sort_by(|left, right| left.len().cmp(&right.len()).then_with(|| left.cmp(right)));
-    }
-
-    index.root_size = manifest
-        .get("settings")
-        .and_then(|settings| settings.get("rootSize"))
-        .and_then(Value::as_f64)
-        .unwrap_or(16.0);
-    index.base_unit = manifest
-        .get("settings")
-        .and_then(|settings| settings.get("baseUnit"))
-        .and_then(Value::as_f64)
-        .unwrap_or(4.0);
-
     index.modes.extend(
         manifest
             .get("settings")
@@ -190,10 +134,13 @@ pub(crate) fn canonical_class_parts(
     class_name: &str,
     semantics: &ClassSemanticInspection,
 ) -> CanonicalClassParts {
-    let key = semantics
-        .key_token
-        .as_deref()
-        .map(|key| key.trim_end_matches(':').to_owned());
+    let key = semantics.key_token.as_deref().map(|key| {
+        if semantics.kind == mastercss_engine::ClassSemanticKind::Token {
+            key.trim_end_matches('-').trim_start_matches('-').to_owned()
+        } else {
+            key.trim_end_matches(':').to_owned()
+        }
+    });
     let value = semantics.value_token.clone();
     let base_end = if let (Some(key_token), Some(value_token)) =
         (&semantics.key_token, &semantics.value_token)
@@ -323,125 +270,6 @@ pub(crate) fn push_canonical_candidate(
     candidates.push(CanonicalCandidate { class_name, order });
 }
 
-pub(crate) fn canonical_variable_candidate_keys(
-    index: &CanonicalRecommendationIndex,
-    signature: &str,
-    source_key: &str,
-    matched: &MatchingVariableKeys,
-    prefer_property_aliases: bool,
-) -> Vec<String> {
-    let mut keys = vec![source_key.to_owned()];
-    for key in index
-        .variable_keys_by_property_signature
-        .get(signature)
-        .into_iter()
-        .flatten()
-    {
-        if !keys.contains(key) {
-            keys.push(key.clone());
-        }
-    }
-    if !prefer_property_aliases {
-        let aliases = index
-            .preferred_aliases_by_property
-            .get(signature)
-            .cloned()
-            .unwrap_or_default();
-        keys.retain(|key| key == source_key || !aliases.contains(key));
-    }
-    if !matched.numeric {
-        keys.retain(|key| key == source_key || signature == source_key);
-    }
-    keys
-}
-
-pub(crate) fn css_variable_reference_name(value: &str) -> Option<&str> {
-    value
-        .strip_prefix("var(--")
-        .and_then(|value| value.strip_suffix(')'))
-        .filter(|name| {
-            !name.is_empty()
-                && name.chars().all(|character| {
-                    character.is_ascii_alphanumeric() || matches!(character, '_' | '-')
-                })
-        })
-}
-
-pub(crate) fn normalized_numeric_value(
-    value: &str,
-    root_size: f64,
-    base_unit: f64,
-) -> Option<(bool, f64)> {
-    let split = value
-        .char_indices()
-        .find(|(_, character)| character.is_ascii_alphabetic() || *character == '%')
-        .map_or(value.len(), |(index, _)| index);
-    let number = value[..split].parse::<f64>().ok()?;
-    match value[split..].to_ascii_lowercase().as_str() {
-        "" => Some((false, number)),
-        "rem" => Some((true, number)),
-        "px" if root_size != 0.0 => Some((true, number / root_size)),
-        "x" if root_size != 0.0 => Some((true, number * base_unit / root_size)),
-        _ => None,
-    }
-}
-
-pub(crate) fn numeric_values_match(
-    left: &str,
-    right: &str,
-    root_size: f64,
-    base_unit: f64,
-) -> bool {
-    let (Some(left), Some(right)) = (
-        normalized_numeric_value(left, root_size, base_unit),
-        normalized_numeric_value(right, root_size, base_unit),
-    ) else {
-        return false;
-    };
-    left.0 == right.0 && (left.1 - right.1).abs() < 0.000001
-}
-
-pub(crate) fn resolved_rule_declarations(
-    rule: &GeneratedRuleIr,
-    variable_values: &HashMap<String, String>,
-) -> Vec<(String, String)> {
-    collect_rule_declarations(&rule.text)
-        .into_iter()
-        .map(|(property, mut value)| {
-            for variable_name in &rule.variable_names {
-                if let Some(variable_value) = variable_values.get(variable_name) {
-                    value = value.replace(
-                        &format!("var(--{variable_name})"),
-                        &normalize_css_variable_value(variable_value),
-                    );
-                }
-            }
-            (property, normalize_css_variable_value(&value))
-        })
-        .collect()
-}
-
-pub(crate) fn declarations_match_after_variable_resolution(
-    source: &[GeneratedRuleIr],
-    candidate: &[GeneratedRuleIr],
-    variable_values: &HashMap<String, String>,
-) -> bool {
-    if source.len() != candidate.len() {
-        return false;
-    }
-    let mut source = source
-        .iter()
-        .map(|rule| resolved_rule_declarations(rule, variable_values))
-        .collect::<Vec<_>>();
-    let mut candidate = candidate
-        .iter()
-        .map(|rule| resolved_rule_declarations(rule, variable_values))
-        .collect::<Vec<_>>();
-    source.sort();
-    candidate.sort();
-    source == candidate
-}
-
 pub(crate) fn has_same_canonical_rule_shape(
     source: &[GeneratedRuleIr],
     candidate: &[GeneratedRuleIr],
@@ -454,6 +282,11 @@ pub(crate) fn has_same_canonical_rule_shape(
         let source_signature = declaration_property_signature(source_rule);
         let Some(index) = remaining.iter().position(|candidate_rule| {
             candidate_rule.layer == source_rule.layer
+                && candidate_rule.utility_type == source_rule.utility_type
+                && candidate_rule.sort_tier == source_rule.sort_tier
+                && candidate_rule.variable_names == source_rule.variable_names
+                && collect_rule_declarations(&candidate_rule.text)
+                    == collect_rule_declarations(&source_rule.text)
                 && candidate_rule.priority == source_rule.priority
                 && declaration_property_signature(candidate_rule) == source_signature
         }) else {

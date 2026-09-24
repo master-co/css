@@ -9,11 +9,11 @@ Point `list-style-image` at an image asset. This local SVG has an intrinsic size
 
 ```html
 <!-- 12 × 12 SVG · native marker -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:square|outside list-style-image:url(/demo/marker.svg)">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 
@@ -33,12 +33,12 @@ A CSS gradient can be the marker image. Reference the preset color variables exp
 
 ```html
 <!-- Generated image · blue to violet -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:disc|outside
     list-style-image:linear-gradient(var(--color-blue-50),var(--color-violet-50))">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 
@@ -51,12 +51,12 @@ Set only the image to `none` when the type and position should survive. Open pri
 
 ```html
 <!-- Screen SVG · print square -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:square|outside list-style-image:url(/demo/marker.svg)
     list-style-image:none@print">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```
 
@@ -69,12 +69,12 @@ Resize past `sm` to add the image on screen. The square type remains the fallbac
 
 ```html
 <!-- Real viewport · square to SVG -->
-<ul id="target" class="w:260px max-w:100% m:0 pl:lg font:md leading:lg
+<ul id="target" class="w:260px max-w:100% m:0 pl-lg font-md leading-lg
     list-style:square|outside list-style-image:none
     list-style-image:none@print
     list-style-image:url(/demo/marker.svg)@screen&sm">
-  <li class="mb:2xs">Collect references</li>
-  <li class="mb:2xs">Compare the spacing across every screen size.</li>
-  <li class="mb:2xs">Review the composition</li>
+  <li class="mb-2xs">Collect references</li>
+  <li class="mb-2xs">Compare the spacing across every screen size.</li>
+  <li class="mb-2xs">Review the composition</li>
 </ul>
 ```

@@ -196,12 +196,12 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   const utilitiesDirective = [
     '@utilities {',
     '    text-<left|right> {',
-    '        @compose block fg:red;',
+    '        @compose block fg-red;',
     '        text-align: --value();',
     '    }',
     '}'
   ].join('\n')
-  const safelistDirective = '@safelist "hidden fg:blue";'
+  const safelistDirective = '@safelist "hidden fg-blue";'
   const content = [
     nativeBefore,
     themeDirective,
@@ -213,7 +213,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokens(doc)
   const tokens = decodeSemanticTokenRanges(doc, semanticTokens?.data ?? [])
-  const classListRanges = ['hidden fg:blue', 'block fg:red'].map((classList) => {
+  const classListRanges = ['hidden fg-blue', 'block fg-red'].map((classList) => {
     const start = content.indexOf(classList)
     return { start, end: start + classList.length }
   })
@@ -277,7 +277,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
     @source not "src/**/*.{ts,tsx}";
     @reference "./tokens.css";
     @blocklist "debug-*";
-    @safelist "block fg:red:hover@md";
+    @safelist "block fg-red:hover@md";
 
     @theme static brand {
       --color-primary: --alpha(var(--color-blue-60) / 80%);
@@ -288,7 +288,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
 
     @components {
       btn {
-        @compose inline-flex align-items:center fg:primary:hover@md;
+        @compose inline-flex align-items:center fg-primary:hover@md;
 
         @variant h>=sm&h<lg {
           @compose block;
@@ -296,28 +296,28 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
 
         ::scrollbar-thumb:hover {
           @dark {
-            @compose fg:primary;
+            @compose fg-primary;
           }
         }
       }
     }
 
     @utilities {
-      text-decoration:<~color|*> {
+      text-decoration-<~color> {
         text-decoration: --value();
       }
     }
-  `, 'css')
+  `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
   expectToken(tokens, 'inline-flex', 'enumMember')
   expectToken(tokens, 'align-items', 'property')
   expectToken(tokens, 'center', 'enumMember')
-  expectToken(tokens, 'primary', 'enumMember')
+  expectToken(tokens, 'primary', 'variable')
   expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
@@ -378,58 +378,58 @@ test.concurrent('does not synthesize a closing directive brace for incomplete CS
 })
 
 test.concurrent('shares class position detection with semantic token spans', () => {
-  const doc = createDoc('tsx', 'const x = clsx("fg:red", condition && `block`)')
+  const doc = createDoc('tsx', 'const x = clsx("fg-red", condition && `block`)')
   const languageService = new CSSLanguageService()
 
   expect(languageService.getClassPositions(doc).map((classPosition) => classPosition.token)).toEqual([
-    'fg:red',
+    'fg-red',
     'block'
   ])
 })
 
 test.concurrent('renders active semantic tokens for the class context at a position', () => {
-  const content = '<div className="fg:red block:hover"></div>'
+  const content = '<div className="fg-red block:hover"></div>'
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
 })
 
 test.concurrent('renders active semantic tokens for a class context when the cursor is on whitespace', () => {
-  const content = '<div className="fg:red block:hover p:md"></div>'
+  const content = '<div className="fg-red block:hover p-md"></div>'
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf(' block')))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, 'p', 'property')
-  expectToken(tokens, 'md', 'enumMember')
+  expectToken(tokens, 'md', 'variable')
 })
 
 test.concurrent('renders active semantic tokens only for the current class string context', () => {
-  const content = 'const x = clsx("fg:red block", condition && "p:md flex")'
+  const content = 'const x = clsx("fg-red block", condition && "p-md flex")'
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('flex') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
   expectToken(tokens, 'p', 'property')
-  expectToken(tokens, 'md', 'enumMember')
+  expectToken(tokens, 'md', 'variable')
   expectToken(tokens, 'flex', 'enumMember')
   expect(tokens.some(({ text }) => text === 'fg' || text === 'red' || text === 'block')).toBe(false)
 })
 
 test.concurrent('skips full embedded semantic tokens in active mode', () => {
-  const content = '<div className="fg:red block:hover"></div>'
+  const content = '<div className="fg-red block:hover"></div>'
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'active' })
 
@@ -447,14 +447,14 @@ test.concurrent('does not render active semantic tokens for CSS directive syntax
 })
 
 test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
-  const content = '@components { btn { @compose fg:red block:hover; } }'
+  const content = '@components { btn { @compose fg-red block:hover; } }'
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
   expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'enumMember')
+  expectToken(tokens, 'red', 'variable')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
@@ -484,7 +484,7 @@ test.concurrent('does not render active semantic tokens for custom variant block
 })
 
 test.concurrent('skips embedded semantic tokens when syntax highlighting is off', () => {
-  const content = '<div className="fg:red block:hover"></div>'
+  const content = '<div className="fg-red block:hover"></div>'
   const doc = createDoc('tsx', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
 

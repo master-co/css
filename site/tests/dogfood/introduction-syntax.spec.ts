@@ -32,7 +32,7 @@ test('introduction pairs the literal first panel with its code and preserves car
   await expect(preview).toHaveAttribute('data-ready', 'true')
   const frame = preview.contentFrame()
   const panel = frame.locator('section')
-  await expect(panel).toHaveAttribute('class', 'grid gap:md p:lg r:lg bg:blue-60 fg:white')
+  await expect(panel).toHaveAttribute('class', 'grid gap-md p-lg r-lg bg-blue-60 fg-white')
   await expect(panel).toHaveCSS('display', 'grid')
   await expect(panel).toHaveCSS('gap', spacing.md)
   await expect(panel).toHaveCSS('padding', spacing.lg)
@@ -69,7 +69,7 @@ test('syntax specimens apply real breakpoint, hover, focus and project-token rul
     const button = iframe.contentFrame().getByRole('button', { name: 'Save', exact: true })
     await expect(button).toHaveAttribute('type', 'button')
     await expect(button).toHaveCSS('padding', spacing.md)
-    if (title === 'The complete Save button') await expect(button).toHaveAttribute('class', /p:action/)
+    if (title === 'The complete Save button') await expect(button).toHaveAttribute('class', /p-action/)
     const base = await button.evaluate(element => getComputedStyle(element).color)
     if (title !== 'Padding around the label') {
       await page.keyboard.press('Tab')
@@ -115,7 +115,7 @@ test('syntax specimens apply real breakpoint, hover, focus and project-token rul
   await source.focus()
   await source.press('Enter')
   await expect(page.locator('details[open]')).toContainText('--spacing-action: 1rem')
-  await expect(page.locator('details[open]')).toContainText('p:action')
+  await expect(page.locator('details[open]')).toContainText('p-action')
   expect(errors).toEqual([])
 })
 

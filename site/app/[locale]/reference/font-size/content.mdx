@@ -16,13 +16,13 @@ Pair `font:*` with [`leading:*`](/reference/line-height) to control size and lin
 <DemoExample page="font-size" section="with-line-height" />
 
 ```html
-<!-- leading:xs -->
-<p id="target" class="max-w:24ch m:0 font:md leading:xs">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<!-- leading-xs -->
+<p id="target" class="max-w:24ch m:0 font-md leading-xs">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ```html
-<!-- leading:lg -->
-<p id="target" class="max-w:24ch m:0 font:md leading:lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<!-- leading-lg -->
+<p id="target" class="max-w:24ch m:0 font-md leading-lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 Use [`text:*`](/reference/text-size) when you want the combined size, leading and tracking treatment.
@@ -34,17 +34,17 @@ A `clamp()` formula can respond to the viewport while keeping a minimum and maxi
 
 ```html
 <!-- 20px minimum · 2vw preferred · 32px maximum -->
-<h2 id="target" class="m:0 font-size:clamp(1.25rem,2vw,2rem) font:medium leading:xs">A clearer canvas</h2>
+<h2 id="target" class="m:0 font-size:clamp(1.25rem,2vw,2rem) font-medium leading-xs">A clearer canvas</h2>
 ```
 
 Prefer a named token when a value is reused across the interface.
 
 ### Apply conditionally \{#apply-conditionally\}
-Resize the viewport to cross the `sm` and `lg` breakpoints. The print rule returns the type to `font:sm`; use Print preview to inspect the actual print layout.
+Resize the viewport to cross the `sm` and `lg` breakpoints. The print rule returns the type to `font-sm`; use Print preview to inspect the actual print layout.
 
 <DemoExample page="font-size" section="apply-conditionally" />
 
 ```html
 <!-- Responsive supporting text -->
-<p id="target" class="m:0 font:sm leading:md font:sm@print font:md@screen&sm font:lg@screen&lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="m:0 font-sm leading-md font-sm@print font-md@screen&sm font-lg@screen&lg">Clear type gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```

@@ -8,9 +8,9 @@
 <DemoExample page="place-items" section="align-grid-items-on-both-axes" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:center gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">Alpha</div>
-  <div id="peer" class="p:sm">Beta</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:center gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">Alpha</div>
+  <div id="peer" class="p-sm">Beta</div>
 </div>
 ```
 
@@ -29,9 +29,9 @@ For different values, put block-axis alignment first and inline-axis alignment s
 <DemoExample page="place-items" section="stretch-items" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">Auto size</div>
-  <div id="peer" class="h:16x w:20x p:sm">80 × 64</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">Auto size</div>
+  <div id="peer" class="h:4rem w:5rem p-sm">80 × 64</div>
 </div>
 ```
 
@@ -43,9 +43,9 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="place-items" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap:md w:70x max-w:full place-items:center@sm">
-  <div id="target" class="p:sm">Alpha</div>
-  <div id="peer" class="p:sm">Beta</div>
+<div id="layout" class="grid grid-cols:2 grid-template-rows:160px place-items:stretch gap-md w:17.5rem max-w:100% place-items:center@sm">
+  <div id="target" class="p-sm">Alpha</div>
+  <div id="peer" class="p-sm">Beta</div>
 </div>
 ```
 

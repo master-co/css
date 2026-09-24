@@ -13,12 +13,12 @@ Preset `shadow:*` tokens define common elevation levels. Switch the preview them
 ```html
 <!-- Small elevation -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body shadow:sm box-border">
-  <h4 class="m:0 font:lg">
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body shadow-sm box-border">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -27,12 +27,12 @@ Preset `shadow:*` tokens define common elevation levels. Switch the preview them
 ```html
 <!-- Large elevation -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body shadow:lg box-border">
-  <h4 class="m:0 font:lg">
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body shadow-lg box-border">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -41,7 +41,7 @@ Preset `shadow:*` tokens define common elevation levels. Switch the preview them
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow:sm', 'shadow:lg']}
+    {['shadow-sm', 'shadow-lg']}
   </Class2CSS>
 </details>
 
@@ -55,14 +55,14 @@ Use literal shadow layers for a specific effect. The first listed layer paints a
 ```html
 <!-- Two raw layers · literal color -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body
-         shadow:0|2px|4px|blue-50/.2,0|8px|16px|blue-50/.12
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body
+         shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent),0|8px|16px|color-mix(in|oklab,var(--color-blue-50)|12%,transparent)
          box-border">
-  <h4 class="m:0 font:lg">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -78,13 +78,13 @@ Raw values do not automatically acquire a separate dark-mode design. Compare aga
 ```html
 <!-- Outer shadow -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body shadow:0|4px|12px|blue-50/.2
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body shadow:0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
          box-border">
-  <h4 class="m:0 font:lg">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -93,13 +93,13 @@ Raw values do not automatically acquire a separate dark-mode design. Compare aga
 ```html
 <!-- Inset shadow -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body shadow:inset|0|4px|12px|blue-50/.2
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body shadow:inset|0|4px|12px|color-mix(in|oklab,var(--color-blue-50)|20%,transparent)
          box-border">
-  <h4 class="m:0 font:lg">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>
@@ -116,12 +116,12 @@ Hover or keyboard-focus the button to move from a small to a large shadow token.
 <!-- Small → large elevation on interaction -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm font:md
-         bg:surface-base text:body shadow:sm
-         box-border bg:surface-muted:focus-visible
-         shadow:none@print shadow:lg:hover@screen
-         shadow:lg:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm font-md
+         bg-surface-base text-body shadow-sm
+         box-border bg-surface-muted:focus-visible
+         shadow:none@print shadow-lg:hover@screen
+         shadow-lg:focus-visible@screen">
   Open library
 </button>
 ```
@@ -148,12 +148,12 @@ Override a shared shadow token separately in light and dark themes. The live pre
 ```html
 <!-- Configured small shadow · two theme definitions -->
 <article id="target"
-  class="w:240px max-w:100% p:lg r:md bg:surface-base
-         text:body shadow:sm box-border">
-  <h4 class="m:0 font:lg">
+  class="w:240px max-w:100% p-lg r-md bg-surface-base
+         text-body shadow-sm box-border">
+  <h4 class="m:0 font-lg">
     Workspace library
   </h4>
-  <p class="mx:0 mb:0 mt:sm font:sm">
+  <p class="mx:0 mb:0 mt-sm font-sm">
     Shared assets and components.
   </p>
 </article>

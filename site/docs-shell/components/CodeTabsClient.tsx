@@ -95,7 +95,7 @@ function CodeTabsFrame(props: CodeTabsClientProps & {
   const currentIndex = props.children.indexOf(current)
   return (
     <div
-      className={clsx('flex flex-col mt:5x codeTabs', props.className)}
+      className={clsx('flex flex-col mt:1.25rem codeTabs', props.className)}
       data-code-tabs-current-name={current.name}
       data-code-tabs-storage-key={props.localStorageKey}
       suppressHydrationWarning={Boolean(props.localStorageKey)}

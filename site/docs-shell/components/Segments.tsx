@@ -8,7 +8,7 @@ export default function Segments({ children: segments }: any) {
   return (
     <>
       {/* 5px = 4px + 1px outline */}
-      <div className='w:fit mb:sm segments'>
+      <div className='w:fit-content mb-sm segments'>
         {segments.map((segment: any) => {
           return (
             <button key={segment.name}

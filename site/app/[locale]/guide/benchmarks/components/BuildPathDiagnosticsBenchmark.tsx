@@ -180,10 +180,10 @@ function MetricChart(props: {
   items: BenchmarkBarItem[]
 }) {
   return (
-    <div className="grid gap:sm">
-      <div className="flex items-baseline justify-between gap:md">
-        <h4 className="m:0 font-weight:460 font:sm text:strong">{props.title}</h4>
-        <span className="font:xs text:muted">{props.detail}</span>
+    <div className="grid gap-sm">
+      <div className="flex items-baseline justify-between gap-md">
+        <h4 className="m:0 font-weight:460 font-sm text-strong">{props.title}</h4>
+        <span className="font-xs text-muted">{props.detail}</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />
     </div>
@@ -196,7 +196,7 @@ export function BuildPathDiagnosticsSummary() {
 
 export function BuildPathDiagnosticsCharts() {
   return (
-    <div className="grid gap:lg">
+    <div className="grid gap-lg">
       <MetricChart
         title="CLI path"
         detail="Docs fixture medians"

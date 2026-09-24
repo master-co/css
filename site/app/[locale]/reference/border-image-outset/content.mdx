@@ -11,14 +11,14 @@ Outset moves image paint outside the border box without adding layout space. Com
 <!-- Zero outset · border-box edge -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:220px max-w:100% m:lg p:md
-         b:12px|solid|blue-60 border-image-outset:0
+         w:220px max-w:100% m-lg p-md
+         b:12px|solid|var(--color-blue-60) border-image-outset:0
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -28,14 +28,14 @@ Outset moves image paint outside the border box without adding layout space. Com
 <!-- Outset 1 · 12px outside -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:220px max-w:100% m:lg p:md
-         b:12px|solid|blue-60 border-image-outset:1
+         w:220px max-w:100% m-lg p-md
+         b:12px|solid|var(--color-blue-60) border-image-outset:1
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -59,15 +59,15 @@ Two values apply to top/bottom, then left/right. This example extends 8px vertic
 <!-- 8px vertical · 16px horizontal -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:220px max-w:100% m:lg p:md
-         b:12px|solid|blue-60
+         w:220px max-w:100% m-lg p-md
+         b:12px|solid|var(--color-blue-60)
          border-image-outset:8px|16px
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -84,16 +84,16 @@ At `sm`, move the painted edge 12px outward. Print returns the image to the bord
 <!-- Zero → 12px outset at sm -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:220px max-w:100% m:lg p:md
-         b:12px|solid|blue-60 border-image-outset:0
+         w:220px max-w:100% m-lg p-md
+         b:12px|solid|var(--color-blue-60) border-image-outset:0
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border
          border-image-outset:0@print
          border-image-outset:12px@screen&sm">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>

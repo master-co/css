@@ -34,7 +34,6 @@ type RuntimeManifestVariable = MasterCSSManifestVariable
 
 type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities'>> & {
   rootSize?: number
-  baseUnit?: number
   defaultMode?: string
   modeTrigger?: NonNullable<MasterCSSManifest['settings']>['modeTrigger']
   modes?: string[]
@@ -151,7 +150,7 @@ function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: nu
 
 function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
   const defaultUtilities = defaultManifest.utilities || []
-  const { rootSize, baseUnit, defaultMode, modeTrigger, modes, ...rest } = manifest
+  const { rootSize, defaultMode, modeTrigger, modes, ...rest } = manifest
   const variables = createRuntimeVariables(flattenMasterCSSManifestVariables(defaultManifest.variables), rest.variables)
   const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
   return {
@@ -162,7 +161,6 @@ function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
       ...defaultManifest.settings,
       ...rest.settings,
       ...(rootSize !== undefined ? { rootSize } : {}),
-      ...(baseUnit !== undefined ? { baseUnit } : {}),
       ...(defaultMode !== undefined ? { defaultMode } : {}),
       ...(modeTrigger !== undefined ? { modeTrigger } : {}),
       ...(modes !== undefined ? { modes } : {})

@@ -11,13 +11,13 @@ Image width controls inward paint independently of the regular border. These ide
 <!-- Width 1 · 12px paint -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -27,13 +27,13 @@ Image width controls inward paint independently of the regular border. These ide
 <!-- Width 2 · 24px paint -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:2 font:md bg:surface-base
-         text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:2 font-md bg-surface-base
+         text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -43,13 +43,13 @@ Image width controls inward paint independently of the regular border. These ide
 <!-- Width 16px · explicit length -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:16px font:md
-         bg:surface-base text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:16px font-md
+         bg-surface-base text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -73,13 +73,13 @@ For this intrinsic 96 × 96 source, `auto` uses the natural 24-unit slices as 24
 <!-- Auto · natural 24px slices -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:auto font:md
-         bg:surface-base text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:auto font-md
+         bg-surface-base text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -89,13 +89,13 @@ For this intrinsic 96 × 96 source, `auto` uses the natural 24-unit slices as 24
 <!-- 24px · explicit comparison -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:24px font:md
-         bg:surface-base text:body box-border">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+         border-image-width:24px font-md
+         bg-surface-base text-body box-border">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>
@@ -112,15 +112,15 @@ Widen to `sm` to double the image width from 12px to 24px. Print returns to the 
 <!-- Width 1 → 2 at sm -->
 <div id="target"
   class="flex items-center justify-center h:130px
-         w:250px max-w:100% p:md b:12px|solid|blue-60
+         w:250px max-w:100% p-md b:12px|solid|var(--color-blue-60)
          border-image-repeat:stretch
          border-image-slice:24
          border-image-source:url('/demo/border-grid.svg')
-         border-image-width:1 font:md bg:surface-base
-         text:body box-border
+         border-image-width:1 font-md bg-surface-base
+         text-body box-border
          border-image-width:1@print
          border-image-width:2@screen&sm">
-  <span class="px:xs py:3xs bg:surface-base text:body">
+  <span class="px-xs py-3xs bg-surface-base text-body">
     Edge sample
   </span>
 </div>

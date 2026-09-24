@@ -8,18 +8,18 @@
 <DemoExample page="order" section="change-visual-order" />
 
 ```html
-<div id="layout" class="flex gap:sm">
-  <div id="target" class="flex:none order:1 h:16x w:20x p:sm">01</div>
-  <div id="peer" class="flex:none order:1 h:16x w:20x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:20x p:sm">03</div>
+<div id="layout" class="flex gap-sm">
+  <div id="target" class="flex:none order:1 h:4rem w:5rem p-sm">01</div>
+  <div id="peer" class="flex:none order:1 h:4rem w:5rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:5rem p-sm">03</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:3 gap:sm">
-  <div id="target" class="order:1 h:16x min-w:0 p:sm">01</div>
-  <div id="peer" class="order:1 h:16x min-w:0 p:sm">02</div>
-  <div id="item-3" class="h:16x min-w:0 p:sm">03</div>
+<div id="layout" class="grid grid-cols:3 gap-sm">
+  <div id="target" class="order:1 h:4rem min-w:0 p-sm">01</div>
+  <div id="peer" class="order:1 h:4rem min-w:0 p-sm">02</div>
+  <div id="item-3" class="h:4rem min-w:0 p-sm">03</div>
 </div>
 ```
 
@@ -38,10 +38,10 @@ CSS order changes the visual arrangement without changing the DOM. Focus Source 
 <DemoExample page="order" section="keep-source-order-meaningful" />
 
 ```html
-<div id="layout" class="flex gap:sm">
-  <button id="target" type="button" tabindex="0" class="flex:none order:2 h:16x w:20x p:xs">Source 1</button>
-  <button id="peer" type="button" tabindex="0" class="flex:none order:1 h:16x w:20x p:xs">Source 2</button>
-  <button id="item-3" type="button" tabindex="0" class="flex:none h:16x w:20x p:xs">Source 3</button>
+<div id="layout" class="flex gap-sm">
+  <button id="target" type="button" tabindex="0" class="flex:none order:2 h:4rem w:5rem p-xs">Source 1</button>
+  <button id="peer" type="button" tabindex="0" class="flex:none order:1 h:4rem w:5rem p-xs">Source 2</button>
+  <button id="item-3" type="button" tabindex="0" class="flex:none h:4rem w:5rem p-xs">Source 3</button>
 </div>
 ```
 
@@ -53,10 +53,10 @@ Use [conditional queries](/reference/rules/conditions) to change the blue itemâ€
 <DemoExample page="order" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex gap:sm">
-  <div id="target" class="flex:none order:2 h:16x w:20x p:sm order:0@sm">01</div>
-  <div id="peer" class="flex:none h:16x w:20x p:sm">02</div>
-  <div id="item-3" class="flex:none h:16x w:20x p:sm">03</div>
+<div id="layout" class="flex gap-sm">
+  <div id="target" class="flex:none order:2 h:4rem w:5rem p-sm order:0@sm">01</div>
+  <div id="peer" class="flex:none h:4rem w:5rem p-sm">02</div>
+  <div id="item-3" class="flex:none h:4rem w:5rem p-sm">03</div>
 </div>
 ```
 

@@ -3,37 +3,37 @@
 
 ## Examples \{#examples\}
 ### Clamp long summaries \{#clamp-long-summaries\}
-`line-clamp:3` provides the legacy box display, vertical orientation, three-line limit and overflow handling together. Compare a complete paragraph with its three-line preview.
+`clamp-lines:3` provides the legacy box display, vertical orientation, three-line limit and overflow handling together. Compare a complete paragraph with its three-line preview.
 
 <DemoExample page="line-clamp" section="clamp-long-summaries" />
 
 ```html
 <!-- line-clamp:none -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px line-clamp:none">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px line-clamp:none">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```
 
 ```html
-<!-- line-clamp:3 -->
-<p id="target" class="line-clamp:3 w:240px max-w:100% m:0 font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<!-- clamp-lines:3 -->
+<p id="target" class="clamp-lines:3 w:240px max-w:100% m:0 font-md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['line-clamp:3']}
+    {['clamp-lines:3']}
   </Class2CSS>
 </details>
 
 The utility also sets emergency wrapping and an ellipsis. Keep padding outside the clamped text box.
 
 ### Remove a clamp \{#remove-a-clamp\}
-`line-clamp:none` resets only the line limit. It does not undo the other declarations supplied by `line-clamp:2`, such as box display and hidden overflow.
+`line-clamp:none` resets only the line limit. It does not undo the other declarations supplied by `clamp-lines:2`, such as box display and hidden overflow.
 
 <DemoExample page="line-clamp" section="remove-a-clamp" />
 
 ```html
 <!-- Two lines · reveal at sm -->
-<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px line-clamp:none@sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<p id="target" class="clamp-lines:2 w:240px max-w:100% m:0 font-md leading:24px line-clamp:none@sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```
 
 Resize the viewport past `sm` to read the complete paragraph at the same line width.
@@ -45,10 +45,10 @@ Provide an explicit way to read a truncated description. This native disclosure 
 
 ```html
 <!-- Preview with a complete reading path -->
-<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
-<details class="w:240px max-w:100% mt:md">
-  <summary class="font:md cursor:pointer">Read the full project description</summary>
-  <p class="mb:0 mt:sm font:md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<p id="target" class="clamp-lines:2 w:240px max-w:100% m:0 font-md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<details class="w:240px max-w:100% mt-md">
+  <summary class="font-md cursor:pointer">Read the full project description</summary>
+  <p class="mb:0 mt-sm font-md leading:24px">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 </details>
 ```
 
@@ -61,5 +61,5 @@ Use two preview lines initially and three at `sm` on screen. Print removes the l
 
 ```html
 <!-- Responsive preview · full print content -->
-<p id="target" class="line-clamp:2 w:240px max-w:100% m:0 font:md leading:24px line-clamp:none@print line-clamp:3@screen&sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
+<p id="target" class="clamp-lines:2 w:240px max-w:100% m:0 font-md leading:24px line-clamp:none@print clamp-lines:3@screen&sm">Explore the shared canvas, review the project’s reference materials and agree on the next steps. Keep the complete description available so everyone can understand the decisions, constraints and details behind the work.</p>
 ```

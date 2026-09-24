@@ -35,7 +35,7 @@ function getRadiusRows() {
     return [{
       key,
       token: `--radius-${key}`,
-      utility: `r:${key}`,
+      utility: `r-${key}`,
       role
     }]
   })

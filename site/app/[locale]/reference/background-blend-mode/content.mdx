@@ -11,18 +11,18 @@ Compare the same image and blue background color with normal and multiply blendi
 ```html
 <!-- Normal · opaque image covers color -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-blend-mode:normal bg:blue-30
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:normal bg-blue-30
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 ```html
 <!-- Multiply · image × blue color -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-blend-mode:multiply bg:blue-30
-         bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:multiply bg-blue-30
+         background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -43,9 +43,9 @@ Hover or focus the image to restore normal blending. The image and blue color st
 ```html
 <!-- Multiply → normal on interaction -->
 <div id="target" tabindex="0" role="img" aria-label="Compare original image colors"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-blend-mode:multiply bg:blue-30
-         bg:url(/demo/landscape.svg)
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:multiply bg-blue-30
+         background-image:url(/demo/landscape.svg)
          background-blend-mode:normal:hover@screen
          background-blend-mode:normal:focus-visible@screen"
 ></div>
@@ -61,9 +61,9 @@ Resize the actual viewport to `sm` to apply multiply blending. Smaller screens a
 ```html
 <!-- Normal → multiply at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-blend-mode:normal bg:blue-30
-         bg:url(/demo/landscape.svg) background-blend-mode:normal@print
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-blend-mode:normal bg-blue-30
+         background-image:url(/demo/landscape.svg) background-blend-mode:normal@print
          background-blend-mode:multiply@screen&sm"
 ></div>
 ```

@@ -15,7 +15,7 @@ test('lints markup and standalone stylesheets', async () => {
   const eslint = new ESLint({ cwd: __dirname })
   const [markup] = await eslint.lintFiles('./index.html')
   expect(markup.errorCount).toBe(0)
-  expect(markup.warningCount).toBe(9)
+  expect(markup.warningCount).toBe(2)
 
   const stylesheetESLint = new ESLint({
     cwd: __dirname,
@@ -34,18 +34,11 @@ test('ESLint Configuration is valid', async () => {
   const eslint = new ESLint({ cwd: __dirname })
   const result = await eslint.lintFiles('./index.html')
   expect(result[0].errorCount).toBe(0)
-  expect(result[0].warningCount).toBe(9)
+  expect(result[0].warningCount).toBe(2)
   expect(result[0].messages.map((eachMessage) => eachMessage.message)).toEqual(
     [
-      'Sort classes into the expected order: "m:0.625rem m:1.875rem m:5x m:3.125rem@sm m:10x@sm".',
-      'Remove classes "m:0.625rem m:5x m:10x@sm"; they are overridden by later classes "m:1.875rem m:3.125rem@sm".',
-      'Sort classes into the expected order: "block m:8x mb:12x font:.75rem font:1.5rem@sm font:2rem@md".',
-      'Use canonical class "font:xs" instead of "font:.75rem".',
-      'Use canonical class "font:2xl@sm" instead of "font:1.5rem@sm".',
-      'Replace "m:8x" with "mx:8x mt:8x"; later class "mb:12x" overrides part of "m:8x".',
-      'Use canonical class "m:xl" instead of "m:8x".',
-      'Use canonical class "font:3xl@md" instead of "font:2rem@md".',
-      'Use canonical class "mb:2xl" instead of "mb:12x".',
+      'Remove classes "m:0.625rem m:1.25rem m:2.5rem@sm"; they are overridden by classes "m:1.875rem m:3.125rem@sm" in generated CSS.',
+      'Sort classes into the expected order: "block m:2rem mb:3rem font-size:.75rem font-size:1.5rem@sm font-size:2rem@md".',
     ]
   )
 })

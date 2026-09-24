@@ -4,12 +4,10 @@ use crate::color::{color_expression, color_source_format};
 impl LanguageSession {
     pub fn create(manifest_json: &str) -> Result<Self, LanguageError> {
         let engine = EngineSession::create(manifest_json)?;
-        let variable_names = engine.variable_names()?.into_iter().collect();
         Ok(Self {
             engine,
             manifest_json: manifest_json.to_owned(),
             native_support_by_class: HashMap::new(),
-            variable_names,
             prepared_document: None,
             next_document_id: 0,
         })
@@ -196,9 +194,9 @@ impl LanguageSession {
             ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
                 push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
             }
-            ClassSemanticKind::Declaration => {
+            ClassSemanticKind::Declaration | ClassSemanticKind::Token => {
                 if let Some(key) = semantics.key_token.as_deref() {
-                    let key_length = utf16_len(key.trim_end_matches(':'));
+                    let key_length = utf16_len(key.trim_end_matches([':', '-']));
                     push_semantic_token(
                         tokens,
                         token_start,
@@ -206,7 +204,7 @@ impl LanguageSession {
                         "property",
                         &[],
                     );
-                    if key.ends_with(':') {
+                    if key.ends_with([':', '-']) {
                         push_semantic_token(
                             tokens,
                             token_start + key_length,
@@ -217,12 +215,31 @@ impl LanguageSession {
                     }
                     if let Some(value) = semantics.value_token.as_deref() {
                         let value_start = token_start + utf16_len(key);
-                        push_value_semantic_tokens(
-                            tokens,
-                            value,
-                            value_start,
-                            &self.variable_names,
-                        );
+                        if semantics.kind == ClassSemanticKind::Token {
+                            let (name, opacity) = value
+                                .split_once('/')
+                                .map_or((value, None), |(name, alpha)| (name, Some(alpha)));
+                            push_semantic_token(
+                                tokens,
+                                value_start,
+                                value_start + utf16_len(name),
+                                "variable",
+                                &[],
+                            );
+                            if let Some(alpha) = opacity {
+                                let start = value_start + utf16_len(name);
+                                push_semantic_token(tokens, start, start + 1, "operator", &[]);
+                                push_semantic_token(
+                                    tokens,
+                                    start + 1,
+                                    start + 1 + utf16_len(alpha),
+                                    "number",
+                                    &[],
+                                );
+                            }
+                        } else {
+                            push_value_semantic_tokens(tokens, value, value_start);
+                        }
                     }
                 }
             }
@@ -358,7 +375,7 @@ impl LanguageSession {
             let key_value = semantics
                 .key_token
                 .as_deref()
-                .and_then(|key| key.strip_suffix(':'))
+                .and_then(|key| key.strip_suffix(':').or_else(|| key.strip_suffix('-')))
                 .zip(semantics.value_token.as_deref());
             let (key, value) = key_value
                 .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
@@ -367,6 +384,17 @@ impl LanguageSession {
         } else {
             (fallback_base, fallback_suffix, fallback_key, fallback_value)
         };
+        let mut variables = engine.class_variable_entries(class_name)?;
+        if semantics.kind == ClassSemanticKind::Token {
+            let token_key = semantics
+                .value_token
+                .as_deref()
+                .unwrap_or_default()
+                .split('/')
+                .next()
+                .unwrap_or_default();
+            variables.retain(|entry| entry.key == token_key);
+        }
         let text = engine.render_class_name_isolated_with_mode(class_name, mode)?;
         Ok(LanguageInspectionIr {
             version: LANGUAGE_BATCH_VERSION,
@@ -382,8 +410,9 @@ impl LanguageSession {
             state_token: semantics.state_token,
             important: semantics.important,
             matcher_types: semantics.matcher_types,
-            variables: engine.class_variable_entries(class_name)?,
+            variables,
             rules: inspection.rules,
+            diagnostics: inspection.diagnostics,
             text,
         })
     }
@@ -430,8 +459,19 @@ impl LanguageSession {
         &self,
         color_token: &str,
     ) -> Result<LanguageColorPresentationIr, LanguageError> {
+        let semantic = self.engine.inspect_class_semantics(color_token)?;
+        let named = semantic.kind == mastercss_engine::ClassSemanticKind::Token;
+        let rules = if named {
+            self.engine.composition_rules(color_token)?
+        } else {
+            Vec::new()
+        };
+        let replacement_prefix = (rules.len() == 1 && rules[0].declarations.len() == 1)
+            .then(|| format!("{}:", rules[0].declarations.keys().next().unwrap()));
         Ok(LanguageColorPresentationIr {
             version: LANGUAGE_BATCH_VERSION,
+            editable: !named || replacement_prefix.is_some(),
+            replacement_prefix,
             color_token: color_token.to_owned(),
             source_format: color_source_format(&self.engine, color_token)?,
         })

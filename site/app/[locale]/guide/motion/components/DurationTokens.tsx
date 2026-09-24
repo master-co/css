@@ -17,7 +17,7 @@ export function DurationTokenTable() {
     return {
       key: name,
       token: `--duration-${name}`,
-      utility: `animation-duration:${name}`,
+      utility: `animation-duration-${name}`,
       value: String(value),
       description: durationDescriptions[name]
     }

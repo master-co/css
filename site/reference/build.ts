@@ -5,7 +5,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { documentHeadings } from './headings'
 import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
-import { builtinKeyAliases, builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
+import { builtinKeyAliases, builtinTokenNamespaces } from '@master/css-tooling/builtins'
 import { flattenMasterCSSManifestVariables, type MasterCSSManifest } from '@master/css-schema/manifest'
 import preset from '../utils/preset-manifest'
 import { getVariableNamespacePublicKeys } from '../utils/manifest-utilities'
@@ -64,12 +64,12 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     doc.terms = rule.terms ?? []
     doc.related = ['rules/declarations', 'rules/selectors', 'rules/conditions', 'rules/modes', 'rules/layers'].filter(id => id !== rule.id)
     if (rule.id === 'rules/conditions') {
-      const classes = ['fg:red:hover@sm']
+      const classes = ['fg-red:hover@sm']
       const css = generatePresetCSS(classes)
       const example = { id: 'composition', title: 'Combine a state, breakpoint and color token', classes, css }
       doc.examples.unshift(example)
       doc.aliases = classes
-      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg:red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg:red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Custom project settings can change tokens, conditions and modes.\n\n### Complete generated CSS\n\n${fence('css', css)}\n\n${doc.markdown}`
+      doc.markdown = `## Composition\n\n${fence('html', '<div class="fg-red:hover@sm">Hover at sm and above</div>')}\n\nWith the current preset, \`fg:red\` uses \`--color-red\`, \`:hover\` selects the hovered element, and \`@sm\` applies \`${generatePresetCSS(['opacity:1@sm']).match(/@media\s*([^{}]+)/)?.[1]?.trim()}\`. The color token changes with the active mode; the breakpoint determines when the rule applies. The final result also depends on the CSS cascade.\n\nLoad the base stylesheet (normally through \`@import '@master/css'\`) to establish \`@layer theme, base, defaults, components, utilities;\`. The generated rules below include theme dependencies; they do not add the base layer statement. Custom project settings can change tokens, conditions and modes.\n\n### Complete generated CSS\n\n${fence('css', css)}\n\n${doc.markdown}`
     }
     doc.headings = documentHeadings(doc.markdown)
     documents.push(doc)
@@ -83,7 +83,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
       return `### ${variable.key}\n\nCSS variable: \`--${variable.name}\`.\n\n${values.map(value => fence('text', value)).join('\n\n')}`
     }).join('\n\n')
     const context = tokenEditorial[namespace]
-    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Mode-specific entries are labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}:\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
+    const markdown = `## Scope\n\nThese values come from the current preset. Project theme declarations can override them. Mode-specific entries are labeled separately.${context ? `\n\n${context.context}` : ''}\n\n## Values\n\n${text}\n\n## Consumers\n\n${consumers.map(key => `\`${key}-\``).join(', ') || 'Use an explicit CSS variable reference.'}\n\n## Customize\n\nSee [variables and modes](/reference/rules/modes) and [theme directives](/reference/directives/theme).${context ? ` For usage and examples, see [${context.label}](${context.guide}).` : ''}`
     const headings = documentHeadings(markdown)
     const anchors = new Map(headings.filter(heading => heading.depth === 3).map(heading => [heading.title, heading.id]))
     const identifierAnchors = Object.fromEntries(entries.flatMap(variable => [variable.key, variable.name, `--${variable.name}`].map(name => [name, anchors.get(variable.key)!])))
@@ -131,7 +131,7 @@ export async function buildReferenceCatalog(siteRoot: string): Promise<Reference
     sourceState = execFileSync('git', ['status', '--porcelain', '--', 'site', 'packages'], { cwd: path.dirname(siteRoot), encoding: 'utf8' }).trim() ? 'working-tree' : 'revision'
   } catch { /* source archives have no git metadata */ }
   const version = process.env.NEXT_PUBLIC_VERSION ?? JSON.parse(await readFile(path.join(siteRoot, '.generated/public-env.json'), 'utf8').catch(() => '{}')).NEXT_PUBLIC_VERSION ?? `workspace-${revision.slice(0, 7)}`
-  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, builtinKeyAliases, builtinNativeValueNamespaces })), documents }
+  return { schemaVersion: 1, version, revision, sourceState, semanticDigest: digest(JSON.stringify({ preset, builtinKeyAliases, builtinTokenNamespaces })), documents }
 }
 
 export function renderDocumentMarkdown(doc: ReferenceDocument, catalog: ReferenceCatalog, locale = 'en') {

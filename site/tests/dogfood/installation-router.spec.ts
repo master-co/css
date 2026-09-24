@@ -13,7 +13,7 @@ for (const mode of routerInstallationModes) test(`React Router SSR adapter deliv
   await expect(heading).toHaveCSS('font-style', 'italic')
   await expect(heading).toHaveCSS('margin-top', '16px')
   if (mode !== 'static') {
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
   }
   const context = await browser.newContext({ javaScriptEnabled: false, viewport: page.viewportSize()! })

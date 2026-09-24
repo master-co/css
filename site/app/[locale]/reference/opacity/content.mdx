@@ -11,11 +11,11 @@ Opacity fades the element as a group, including its text and background. Both na
 <!-- Opaque · complete group -->
 <details class="w:240px max-w:100%">
   <summary id="target"
-    class="p:md r:sm font:md bg:blue-60 fg:white
+    class="p-md r-sm font-md bg-blue-60 fg-white
            opacity:1 cursor:pointer">
     Preview details
   </summary>
-  <p class="mb:0 mt:sm font:sm text:body">
+  <p class="mb:0 mt-sm font-sm text-body">
     The layer is ready for review.
   </p>
 </details>
@@ -25,11 +25,11 @@ Opacity fades the element as a group, including its text and background. Both na
 <!-- Half opacity · same interaction -->
 <details class="w:240px max-w:100%">
   <summary id="target"
-    class="p:md r:sm font:md bg:blue-60 fg:white
+    class="p-md r-sm font-md bg-blue-60 fg-white
            opacity:.5 cursor:pointer">
     Preview details
   </summary>
-  <p class="mb:0 mt:sm font:sm text:body">
+  <p class="mb:0 mt-sm font-sm text-body">
     The layer is ready for review.
   </p>
 </details>
@@ -52,8 +52,8 @@ Compare whole-element opacity with alpha on just the background. Both begin with
 ```html
 <!-- Group opacity · text also fades -->
 <div id="target"
-  class="w:240px max-w:100% p:md r:sm font:md
-         bg:blue-5 fg:black opacity:.5">
+  class="w:240px max-w:100% p-md r-sm font-md
+         bg-blue-5 fg-black opacity:.5">
   Ready for review
 </div>
 ```
@@ -61,8 +61,8 @@ Compare whole-element opacity with alpha on just the background. Both begin with
 ```html
 <!-- Background alpha · text stays opaque -->
 <div id="target"
-  class="w:240px max-w:100% p:md r:sm font:md
-         bg:blue-5/.5 fg:black">
+  class="w:240px max-w:100% p-md r-sm font-md
+         bg-blue-5/.5 fg-black">
   Ready for review
 </div>
 ```
@@ -77,9 +77,9 @@ Hover the label or focus its checkbox to reduce opacity. Space still toggles the
 ```html
 <!-- Hover or focus · native checkbox remains active -->
 <label id="target"
-  class="inline-flex items-center gap:xs p:md
-         b:1px|solid|base r:sm font:md
-         bg:surface-base text:body opacity:1
+  class="inline-flex items-center gap-xs p-md
+         b:1px|solid|var(--color-line-base) r-sm font-md
+         bg-surface-base text-body opacity:1
          opacity:.72:focus-within@screen
          opacity:1@print opacity:.72:hover@screen">
   <input type="checkbox" name="preview" class="size:16px" />

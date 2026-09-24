@@ -8,18 +8,18 @@
 <DemoExample page="grid" section="set-the-native-grid-shorthand" />
 
 ```html
-<div id="layout" class="grid grid-template:48px|48px/80px|1fr grid-auto-flow:column gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
+<div id="layout" class="grid grid-template:48px|48px/80px|1fr grid-auto-flow:column gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid:none gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
+<div id="layout" class="grid grid:none gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
 </div>
 ```
 
@@ -38,20 +38,20 @@ Use `|` for spaces and `/` between rows and columns. Before the slash, `auto-flo
 <DemoExample page="grid" section="define-rows-columns-and-auto-flow-together" />
 
 ```html
-<div id="layout" class="grid grid:auto-flow|56px/1fr|1fr gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid:auto-flow|56px/1fr|1fr gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid:56px|56px/auto-flow|1fr gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid:56px|56px/auto-flow|1fr gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```
 
@@ -63,10 +63,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid:auto-flow|48px/1fr gap:md w:70x max-w:full grid:auto-flow|48px/1fr|1fr@sm">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid:auto-flow|48px/1fr gap-md w:17.5rem max-w:100% grid:auto-flow|48px/1fr|1fr@sm">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```

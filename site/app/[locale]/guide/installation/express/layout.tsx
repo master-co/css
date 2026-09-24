@@ -16,7 +16,7 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   categoryLink: '/guide/installation/integrations',
   icon: 'express',
   content: ({ $ }) =>
-    <Tabs className="mb:xl">
+    <Tabs className="mb-xl">
       <Tab href='/guide/installation/express'>{$('Progressive Rendering')}</Tab>
       <Tab href='/guide/installation/express/static-rendering'>{$('Static Rendering')}</Tab>
     </Tabs>,

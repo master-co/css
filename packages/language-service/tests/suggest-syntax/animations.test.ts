@@ -16,7 +16,7 @@ const settings = {
 } satisfies Settings
 
 test.concurrent('@', () => expect(hint('@', settings)?.map(({ label }) => label)).not.toContain('fade|1s'))
-test.concurrent('animate:', () => expect(hint('animate:', settings)?.map(({ label }) => label)).toContain('fade'))
+test.concurrent('animate-', () => expect(hint('animate-', settings)?.map(({ label }) => label)).toContain('animate-fade'))
 test.concurrent('animation:fade|', () => expect(hint('animation:fade|', settings)?.map(({ label }) => label)).toContain('alternate'))
 test.concurrent('animation:', () => expect(hint('animation:', settings)?.map(({ label }) => label)).toContain('fade'))
 test.concurrent('animation-name:', () => expect(hint('animation-name:', settings)?.map(({ label }) => label)).toContain('fade'))

@@ -4,7 +4,7 @@ import { createTestToolingSession } from '../helpers/create-tooling-session'
 
 test('audit control: source fixes converge and preserve Unicode surrounding markup', () => {
   using session = createTestToolingSession()
-  for (const classList of ['fg:red block block', 'font:16px w:md h:md', 'fg:blue fg:red block']) {
+  for (const classList of ['fg-red block block', 'font-size:16px w-md h-md', 'fg-blue fg-red block']) {
     const prefix = '<!-- 😀 中 -->\r\n<div data-note="keep" class="'
     const suffix = '">keep</div>\r\n'
     let content = prefix + classList + suffix

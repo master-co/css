@@ -57,8 +57,8 @@ export default function ThemeNumberVariableTable(props: ThemeNumberVariableTable
 
 function renderSpacingRepresentation(value: string, index: number, count: number) {
   return (
-    <div aria-hidden="true" className="inline-flex w:fit outline:1px|solid|muted outline-offset:-1px bg:stripe-pink v:middle" style={{ gap: value }}>
-      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em surface:raised"></div>)}
+    <div aria-hidden="true" className="inline-flex w:fit-content outline:1px|solid|var(--color-line-muted) outline-offset:-1px background-color:var(--stripe-pink) v:middle" style={{ gap: value }}>
+      {Array.from({ length: count + 2 - index }, (_, index) => <div key={index} className="inline-block size:1.5em surface-raised"></div>)}
     </div>
   )
 }

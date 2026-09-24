@@ -4,13 +4,13 @@ import InlineCode from './InlineCode'
 
 export default function DocFn({ children }: any) {
   return (
-    <div className="text:xs_code vertical-align:middle_td doc-table">
+    <div className="text-xs_code vertical-align:middle_td doc-table">
       <table>
         <thead>
           <tr>
-            <th className="w:0 text:xs white-space:nowrap">Argument</th>
-            <th className="text:xs">Type</th>
-            <th className="w:full text:xs">Default</th>
+            <th className="w:0 text-xs white-space:nowrap">Argument</th>
+            <th className="text-xs">Type</th>
+            <th className="w:100% text-xs">Default</th>
           </tr>
         </thead>
         <tbody>
@@ -30,7 +30,7 @@ export default function DocFn({ children }: any) {
                   ? <DocDefaultValue className="vertical-align:middle">
                     <InlineCode lang="ts">{arg.defaultValue}</InlineCode>
                   </DocDefaultValue>
-                  : <code className="text:disabled!">-</code>
+                  : <code className="text-disabled!">-</code>
                 }
               </td>
             </tr>

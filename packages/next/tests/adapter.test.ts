@@ -113,7 +113,7 @@ describe('renderNextBuildOutputs', () => {
     const projectDir = createFixtureDir()
     const htmlFile = join(projectDir, '.next/server/app/index.html')
     mkdirSync(join(projectDir, '.next/server/app'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-red">Hello</h1></body></html>')
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
@@ -127,8 +127,8 @@ describe('renderNextBuildOutputs', () => {
     const firstFile = join(distDir, 'server/app/first.html')
     const secondFile = join(distDir, 'server/app/second.html')
     mkdirSync(join(distDir, 'server/app'), { recursive: true })
-    writeFileSync(firstFile, '<!doctype html><html><head></head><body><h1 class="fg:red">First</h1></body></html>')
-    writeFileSync(secondFile, '<!doctype html><html><head></head><body><h1 class="fg:blue">Second</h1></body></html>')
+    writeFileSync(firstFile, '<!doctype html><html><head></head><body><h1 class="fg-red">First</h1></body></html>')
+    writeFileSync(secondFile, '<!doctype html><html><head></head><body><h1 class="fg-blue">Second</h1></body></html>')
     const context = createBuildContext(projectDir, firstFile)
     context.outputs.staticFiles.push({
       id: 'second',
@@ -143,7 +143,7 @@ describe('renderNextBuildOutputs', () => {
     vi.spyOn(MasterCSSServerRenderer.prototype, 'renderHTML').mockImplementation(function (this: MasterCSSServerRenderer, ...args) {
       if (renderedPages++) {
         const firstHTML = readFileSync(firstFile, 'utf-8')
-        expect(readMasterStyle(firstHTML)).toContain('.fg\\:red')
+        expect(readMasterStyle(firstHTML)).toContain('.fg-red')
         const asset = readHydrationManifestSource(firstHTML)
         expect(asset).toBeDefined()
         expect(existsSync(join(distDir, asset!.replace('/_next/', '')))).toBe(true)
@@ -155,10 +155,10 @@ describe('renderNextBuildOutputs', () => {
 
     const firstHTML = readFileSync(firstFile, 'utf-8')
     const secondHTML = readFileSync(secondFile, 'utf-8')
-    expect(readMasterStyle(firstHTML)).toContain('.fg\\:red')
-    expect(readMasterStyle(firstHTML)).not.toContain('.fg\\:blue')
-    expect(readMasterStyle(secondHTML)).toContain('.fg\\:blue')
-    expect(readMasterStyle(secondHTML)).not.toContain('.fg\\:red')
+    expect(readMasterStyle(firstHTML)).toContain('.fg-red')
+    expect(readMasterStyle(firstHTML)).not.toContain('.fg-blue')
+    expect(readMasterStyle(secondHTML)).toContain('.fg-blue')
+    expect(readMasterStyle(secondHTML)).not.toContain('.fg-red')
     expect(dispose).toHaveBeenCalledOnce()
   })
 
@@ -179,7 +179,7 @@ describe('renderNextBuildOutputs', () => {
     const distDir = join(projectDir, '.next')
     const htmlFile = join(distDir, 'server/app/index.html')
     mkdirSync(join(distDir, 'server/app'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="font:40px fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="font-size:40px fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile),
@@ -188,7 +188,7 @@ describe('renderNextBuildOutputs', () => {
     const html = readFileSync(htmlFile, 'utf-8')
 
     expect(outputs).toHaveLength(1)
-    expect(outputs[0].classes).toEqual(['font:40px', 'fg:red'])
+    expect(outputs[0].classes).toEqual(['font-size:40px', 'fg-red'])
     expect(outputs[0].rendered).toBe(true)
     expect(outputs[0].hydrationManifestBytes).toBeGreaterThan(0)
     const hydrationManifestFile = outputs[0].hydrationManifestFile
@@ -198,12 +198,12 @@ describe('renderNextBuildOutputs', () => {
     expect(readHydrationManifestSource(html)).toMatch(/^\/_next\/static\/master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(countHydrationManifestScripts(html)).toBe(0)
-    expect(html).toContain('.font\\:40px')
-    expect(html).toContain('.fg\\:red')
+    expect(html).toContain('.font-size\\:40px')
+    expect(html).toContain('.fg-red')
     expect(existsSync(join(distDir, 'master-css-build-report.json'))).toBe(true)
     expect(existsSync(hydrationManifestFile)).toBe(true)
     const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
-    expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font:40px', 'fg:red']))
+    expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font-size:40px', 'fg-red']))
     expect(hydrationManifest.rules).toHaveLength(2)
   })
 
@@ -218,12 +218,12 @@ describe('renderNextBuildOutputs', () => {
       '@theme { --color-primary: #123456; }',
       '.host { color: var(--color-primary); }'
     ].join('\n'))
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:primary">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-primary">Hello</h1></body></html>')
 
     await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
 
     const style = readMasterStyle(readFileSync(htmlFile, 'utf-8'))
-    expect(style).toContain('.fg\\:primary{color:var(--color-primary)}')
+    expect(style).toContain('.fg-primary{color:var(--color-primary)}')
     expect(style).not.toContain('--color-primary:')
   })
 
@@ -232,7 +232,7 @@ describe('renderNextBuildOutputs', () => {
     const exportDir = join(projectDir, 'out')
     const htmlFile = join(exportDir, 'guides/getting-started.html')
     mkdirSync(join(exportDir, 'guides'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile, {
@@ -256,7 +256,7 @@ describe('renderNextBuildOutputs', () => {
     const exportDir = join(projectDir, 'custom-export')
     const htmlFile = join(exportDir, 'nested/index.html')
     mkdirSync(join(exportDir, 'nested'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile, {
@@ -276,7 +276,7 @@ describe('renderNextBuildOutputs', () => {
     const projectDir = createFixtureDir()
     const htmlFile = join(projectDir, 'out/index.html')
     mkdirSync(join(projectDir, 'out'), { recursive: true })
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="fg-red">Hello</h1></body></html>')
 
     await expect(renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile, {
@@ -372,14 +372,14 @@ describe('renderNextBuildOutputs', () => {
       '    color: #789;',
       '}'
     ].join('\n'))
-    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="root-native fg:red">Hello</h1></body></html>')
+    writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="root-native fg-red">Hello</h1></body></html>')
 
     const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
     const html = readFileSync(htmlFile, 'utf-8')
     const masterStyle = readMasterStyle(html)
 
     expect(outputs[0].rendered).toBe(true)
-    expect(masterStyle).toContain('.fg\\:red')
+    expect(masterStyle).toContain('.fg-red')
     expect(masterStyle).not.toContain('.root-native')
     expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_next/static/master-css/hydration/`)
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)

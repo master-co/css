@@ -429,6 +429,8 @@ function extractExampleCandidates(file: string, content: string): ExampleCandida
   const fencedRanges: [number, number][] = []
   for (const example of extractFencedExamples(content)) {
     fencedRanges.push(example.range)
+    if (relativeSitePath(file) === 'app/[locale]/guide/migration/v2-rc/content.mdx'
+      && example.info.includes('RC reference — not executed')) continue
     candidates.push(...extractCandidatesFromSnippet({
       content,
       file,
@@ -670,7 +672,6 @@ function isAllowedInvalidCandidate(eachCandidate: ExampleCandidate): boolean {
   if (/^[:@]/.test(candidate)) return true
   if (candidate.includes('`') || candidate.includes('…') || /[<>]/.test(candidate)) return true
   if (candidate === 'light' || candidate === 'dark') return true
-  if (/:\$[A-Za-z_][\w-]*(?=[:@!]|$)/.test(candidate)) return true
   if (isMigrationVendorClass(eachCandidate)) return true
   if (isExpectedDiagnostic(candidate, eachCandidate.file)) return true
   if (isExpectedBareSelectorTarget(candidate, eachCandidate.file)) return true
@@ -726,10 +727,12 @@ function usesLocallyDefinedVariant(candidate: string, context: string): boolean 
 }
 
 function usesLocallyDefinedToken(candidate: string, context: string): boolean {
-  const localTokens = collectLocalTokenNames(context)
-  if (!localTokens.size) return false
-  const candidateTokens = collectCandidateTokenNames(candidate)
-  return candidateTokens.some((eachToken) => localTokens.has(eachToken))
+  const declarations = [...context.matchAll(/--[a-z][\w-]*\s*:\s*[^;{}]+;/g)].map(match => match[0])
+  if (!declarations.length) return false
+  try {
+    configuredExampleCSS(`@theme { ${declarations.join(' ')} }`, [candidate])
+    return true
+  } catch { return false }
 }
 
 function usesLocallyDefinedBreakpoint(candidate: string, context: string): boolean {
@@ -747,56 +750,11 @@ function usesLocallyDefinedBreakpoint(candidate: string, context: string): boole
   } catch { return false }
 }
 
-const siteThemeRoleTokenNames = new Set([
-  'surface',
-  'surface-base',
-  'surface-muted',
-  'surface-raised',
-  'surface-overlay',
-  'line',
-  'line-muted',
-  'line-subtle',
-  'line-strong',
-  'strong',
-  'muted',
-  'subtle',
-  'disabled'
-])
-
 function usesSiteThemeRoleToken(candidate: string): boolean {
-  if (!/^(?:bg|fg|text|b|bt|br|bb|bl|bx|by|border(?:-[\w-]+)?|outline|background-color):/.test(candidate)) return false
-  return collectCandidateTokenNames(candidate).some((eachToken) => siteThemeRoleTokenNames.has(eachToken))
-}
-
-function collectLocalTokenNames(context: string): Set<string> {
-  const names = new Set<string>()
-  for (const match of context.matchAll(/--([a-z][\w-]*)\s*:/g)) {
-    const parts = match[1].split('-')
-    for (let index = 0; index < parts.length; index++) {
-      names.add(parts.slice(index).join('-'))
-    }
-  }
-  return names
-}
-
-function collectCandidateTokenNames(candidate: string): string[] {
-  const headlessCandidate = candidate
-    .replace(/!.*/, '')
-    .replace(/@[a-z0-9_()<>=!&|:-]+/gi, '')
-  const valueIndex = headlessCandidate.indexOf(':')
-  if (valueIndex === -1) return []
-  const value = headlessCandidate
-    .slice(valueIndex + 1)
-    .split(':')[0]
-    .replace(/\$([a-z][\w-]*)/gi, '$1')
-  const names = new Set<string>()
-  for (const part of value.split(/[|/(),\s]+/)) {
-    const normalized = part.replace(/^[-+]?\d*\.?\d+[a-z%]*$/i, '').replace(/[^a-z0-9-]/gi, '')
-    if (!normalized || ['none', 'solid', 'auto', 'normal', 'inherit', 'initial'].includes(normalized)) continue
-    names.add(normalized)
-    names.add(normalized.replace(/-\d+$/, ''))
-  }
-  return [...names]
+  try {
+    configuredExampleCSS('', [candidate])
+    return true
+  } catch { return false }
 }
 
 function contextFor(content: string, index: number, length: number): string {

@@ -101,11 +101,27 @@ pub(crate) fn compare_descriptors(left: &ClassDescriptor, right: &ClassDescripto
         .then_with(|| (left.group, left.property_order).cmp(&(right.group, right.property_order)))
         .then_with(|| left.type_order.cmp(&right.type_order))
         .then_with(|| left_rule.utility_type.cmp(&right_rule.utility_type))
+        .then_with(|| {
+            left_rule
+                .priority
+                .value_priority
+                .cmp(&right_rule.priority.value_priority)
+        })
+        .then_with(|| natural_compare(&left_rule.priority.sort_key, &right_rule.priority.sort_key))
         .then_with(|| natural_compare(&left_rule.key, &right_rule.key))
         .then_with(|| left.class_name.cmp(&right.class_name))
 }
 
 pub(crate) fn find_conflicts(descriptors: &[ClassDescriptor]) -> Vec<ClassConflictIr> {
+    // HTML class order does not select the CSS winner. Keep display sorting
+    // separate from engine cascade order and report the actually shadowed rule.
+    let mut descriptors = descriptors.iter().collect::<Vec<_>>();
+    descriptors.sort_by(|left, right| match (&left.rule, &right.rule) {
+        (Some(left), Some(right)) => mastercss_engine::compare_rule_priority(left, right),
+        (None, None) => left.class_name.cmp(&right.class_name),
+        (None, Some(_)) => Ordering::Greater,
+        (Some(_), None) => Ordering::Less,
+    });
     let mut conflicts = Vec::new();
     for (index, descriptor) in descriptors.iter().enumerate() {
         if !descriptor.valid_for_conflicts {
@@ -142,7 +158,8 @@ pub(crate) fn equal_variant_scope(left: &GeneratedRuleIr, right: &GeneratedRuleI
     left.layer == right.layer
         && branch_key(&left.key) == branch_key(&right.key)
         && left.sort_tier == right.sort_tier
-        && left.priority == right.priority
+        && left.priority.features == right.priority.features
+        && left.priority.selector == right.priority.selector
 }
 
 pub(crate) fn branch_key(key: &str) -> &str {

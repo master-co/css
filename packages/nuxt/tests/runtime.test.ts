@@ -43,7 +43,7 @@ it('lets runtime utilities override global component layer CSS', async () => {
     const runtimeCSS = await page.locator('style#master-css').evaluate((style) => {
       return Array.from((style as HTMLStyleElement).sheet?.cssRules || [], (rule) => rule.cssText).join('\n')
     })
-    expect(runtimeCSS).toContain('.fg\\:host')
+    expect(runtimeCSS).toContain('.fg-host')
     expect(runtimeCSS).not.toContain('--color-host:')
   } finally {
     await page.close()

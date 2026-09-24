@@ -12,11 +12,11 @@
 <!-- Blue outline · 3px solid -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px outline:blue
-         font:md bg:surface-base text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px outline-blue
+         font-md bg-surface-base text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -25,12 +25,12 @@
 <!-- Violet outline · same width -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px
-         outline:violet font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px
+         outline-violet font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -38,12 +38,12 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:blue']}
+    {['outline-blue']}
   </Class2CSS>
 </details>
 
 ### Inherit the text color \{#inherit-the-text-color\}
-`outline:current` follows the element’s own computed foreground. Hover or keyboard-focus the button to change both its label and outline through one text-color rule.
+`outline-current` follows the element’s own computed foreground. Hover or keyboard-focus the button to change both its label and outline through one text-color rule.
 
 <DemoExample page="outline-color" section="inherit-the-text-color" />
 
@@ -51,14 +51,14 @@
 <!-- Current color · follows this label -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px
-         outline:current font:md bg:surface-base
-         text:blue box-border
-         bg:surface-muted:focus-visible
-         text:violet:hover@screen
-         text:violet:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px
+         outline-current font-md bg-surface-base
+         text-blue box-border
+         bg-surface-muted:focus-visible
+         text-violet:hover@screen
+         text-violet:focus-visible@screen">
   Current color
 </button>
 ```
@@ -74,14 +74,14 @@ Keyboard focus changes the outline from transparent to blue. Print uses the curr
 <!-- Transparent → blue on keyboard focus -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline-solid
-         outline-offset:3xs outline:3px
-         outline:transparent font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible
-         outline:current@print
-         outline:blue:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline-solid
+         outline-offset-3xs outline-width:3px
+         outline-color:transparent font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible
+         outline-current@print
+         outline-blue:focus-visible@screen">
   Preview details
 </button>
 ```

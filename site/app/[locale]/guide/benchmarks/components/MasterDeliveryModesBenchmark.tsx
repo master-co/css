@@ -262,10 +262,10 @@ function TimingMetricGroup(props: {
   items: BenchmarkBarItem[]
 }) {
   return (
-    <div className="grid gap:sm">
-      <div className="flex items-baseline justify-between gap:md">
-        <h4 className="m:0 font-weight:460 font:sm text:strong">{props.title}</h4>
-        <span className="font:xs text:muted">Median</span>
+    <div className="grid gap-sm">
+      <div className="flex items-baseline justify-between gap-md">
+        <h4 className="m:0 font-weight:460 font-sm text-strong">{props.title}</h4>
+        <span className="font-xs text-muted">Median</span>
       </div>
       <BenchmarkBars items={props.items} unit="ms" />
     </div>
@@ -282,7 +282,7 @@ export function MasterDeliveryPayloadChart() {
 
 export function MasterDeliveryLoadChart() {
   return (
-    <div className="grid gap:lg">
+    <div className="grid gap-lg">
       {(['navigationReadyMs', 'styleRecalculationMs', 'layoutMs', 'paintMs'] satisfies TimingMetricId[]).map((metricId) => (
         <TimingMetricGroup
           key={metricId}
@@ -297,7 +297,7 @@ export function MasterDeliveryRuntimeChart() {
   const runtimeModeIds = ['master-runtime', 'master-progressive'] satisfies ModeId[]
 
   return (
-    <div className="grid gap:lg">
+    <div className="grid gap-lg">
       {(['runtimeBootstrapMs', 'runtimeObserveMs'] satisfies TimingMetricId[]).map((metricId) => (
         <TimingMetricGroup
           key={metricId}

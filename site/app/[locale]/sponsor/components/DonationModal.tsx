@@ -87,11 +87,11 @@ export default function DonationModal() {
     }
   }, [searchParams])
 
-  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:20x|1.875rem|1.875rem|1.875rem">
-    <div className="abs inset:0 size:128px round mx:auto surface:raised transform:translateY(-50%)">
-      <Image className="rel top:4xs round mx:auto object-contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
+  return donationOrder && <Modal backdropClick={() => setDonationOrder(null)} contentClass="max-w:320px p:5rem|1.875rem|1.875rem|1.875rem">
+    <div className="abs inset:0 size:128px round mx:auto surface-raised transform:translateY(-50%)">
+      <Image className="rel top-4xs round mx:auto object-contain" width="124" height="124" src={donationOrder.avatar} alt="sponsor" />
     </div>
-    <div className="font:2xl font:bold text-center">{donationOrder.name || 'Unknown'}</div>
+    <div className="font-2xl font-bold text-center">{donationOrder.name || 'Unknown'}</div>
     <p className="text-center">{$('Thanks for your donation 🥳')}</p>
 
     <ul>

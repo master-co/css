@@ -48,8 +48,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
   )).toEqual(['block', 'mx:auto'])
   expect(tooling.extractHTMLClasses(
     'index.html',
-    '<main class="grid"><script>const classes = "fg:red"</script></main>'
-  )).toEqual(['grid', 'fg:red'])
+    '<main class="grid"><script>const classes = "fg-red"</script></main>'
+  )).toEqual(['grid', 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
     version: 1,
@@ -129,23 +129,23 @@ test('loads the isolated source tooling Wasm surface', async () => {
         type: -1,
         emit: {
           type: 'template',
-          declarations: { 'margin-right': null, 'margin-left': null }
+          declarations: { 'margin-inline': null }
         },
         matchers: [{ type: 'key', keys: ['mx'] }]
       },
       {
-        id: 'margin-left',
-        name: 'ml:',
+        id: 'margin-inline-start',
+        name: 'mxs:',
         type: -1,
-        emit: { type: 'property', property: 'margin-left' },
-        matchers: [{ type: 'key', keys: ['ml'] }]
+        emit: { type: 'property', property: 'margin-inline-start' },
+        matchers: [{ type: 'key', keys: ['mxs'] }]
       },
       {
-        id: 'margin-right',
-        name: 'mr:',
+        id: 'margin-inline-end',
+        name: 'mxe:',
         type: -1,
-        emit: { type: 'property', property: 'margin-right' },
-        matchers: [{ type: 'key', keys: ['mr'] }]
+        emit: { type: 'property', property: 'margin-inline-end' },
+        matchers: [{ type: 'key', keys: ['mxe'] }]
       }
     ]
   }))
@@ -155,19 +155,19 @@ test('loads the isolated source tooling Wasm surface', async () => {
     conflicts: [{ className: 'm:2px', conflicts: ['m:3px'] }],
     partialConflicts: []
   })
-  expect(lint.analyze(['mx:2px', 'ml:3px'], undefined, [])).toEqual({
+  expect(lint.analyze(['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
     version: 1,
-    sortedClassNames: ['ml:3px', 'mx:2px'],
+    sortedClassNames: ['mx:2px', 'mxs:3px'],
     conflicts: [],
-    partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
+    partialConflicts: []
   })
-  expect(lint.canonicalClassNames(['margin:md'], [true], undefined)).toEqual({
+  expect(lint.canonicalClassNames(['margin-md'], [true], undefined)).toEqual({
     version: 1,
-    suggestions: [{ className: 'margin:md', recommended: 'm:md' }]
+    suggestions: [{ className: 'margin-md', recommended: 'm-md' }]
   })
-  expect(lint.canonicalClassGroups(['ml:md', 'mr:md'], undefined, undefined)).toEqual({
+  expect(lint.canonicalClassGroups(['mxs-md', 'mxe-md'], undefined, undefined)).toEqual({
     version: 1,
-    suggestions: [{ classNames: ['ml:md', 'mr:md'], recommended: 'mx:md' }]
+    suggestions: []
   })
   expect(lint.canonicalComposeDirective(['contain:content'], [true], undefined)).toEqual({
     version: 1,
@@ -180,41 +180,17 @@ test('loads the isolated source tooling Wasm surface', async () => {
     structuralChange: true,
     replacement: 'contain: content;'
   })
-  expect(lint.rawValueCandidates(['m:md|17px'], undefined, [])).toEqual({
+  expect(lint.rawValueCandidates(['m:var(--spacing-md)|17px'], undefined, [])).toEqual({
     version: 1,
     candidates: [
-      { className: 'm:md|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
+      { className: 'm:var(--spacing-md)|17px', key: 'm', segments: ['17px'], properties: ['margin'] }
     ]
   })
-  expect(lint.analyzeClassList('mx:2px  ml:3px', ['mx:2px', 'ml:3px'], undefined, [])).toEqual({
+  // Decomposing a shorthand would change its cascade tier, so no partial autofix.
+  expect(lint.analyzeClassList('mx:2px  mxs:3px', ['mx:2px', 'mxs:3px'], undefined, [])).toEqual({
     version: 1,
-    analysis: {
-      version: 1,
-      sortedClassNames: ['ml:3px', 'mx:2px'],
-      conflicts: [],
-      partialConflicts: [{ className: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' }]
-    },
-    diagnostics: [
-      {
-        ruleId: 'sort-classes',
-        code: 'invalid-class-order',
-        message: 'Sort classes into the expected order: "ml:3px mx:2px".',
-        range: { start: 0, end: 14 },
-        data: { actual: 'mx:2px ml:3px', expected: 'ml:3px mx:2px' },
-        fix: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px', scope: 'class-list' }
-      },
-      {
-        ruleId: 'no-conflicting-classes',
-        code: 'partially-conflicting-class',
-        message: 'Replace "mx:2px" with "mr:2px"; later class "ml:3px" overrides part of "mx:2px".',
-        range: { start: 0, end: 6 },
-        data: { actual: 'mx:2px', replacement: 'mr:2px', conflict: 'ml:3px' },
-        fix: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px', scope: 'class-list' }
-      }
-    ],
-    sortEdit: { range: { start: 0, end: 14 }, text: 'ml:3px  mx:2px', scope: 'class-list' },
-    conflictEdit: { range: { start: 0, end: 14 }, text: 'mr:2px  ml:3px', scope: 'class-list' },
-    conflictRange: { start: 0, end: 6 }
+    analysis: { version: 1, sortedClassNames: ['mx:2px', 'mxs:3px'], conflicts: [], partialConflicts: [] },
+    diagnostics: []
   })
   const policy = lint.analyzeClassListPolicy(JSON.stringify({
     version: 1,
@@ -240,8 +216,8 @@ test('loads the isolated source tooling Wasm surface', async () => {
   ])
   const rawPolicy = lint.analyzeClassListPolicy(JSON.stringify({
     version: 1,
-    classList: '😀 m:md|17px',
-    classNames: ['😀', 'm:md|17px'],
+    classList: '😀 m:var(--spacing-md)|17px',
+    classNames: ['😀', 'm:var(--spacing-md)|17px'],
     rawValuePolicy: {
       allowedPatterns: []
     }
@@ -249,10 +225,10 @@ test('loads the isolated source tooling Wasm surface', async () => {
   expect(rawPolicy.diagnostics).toContainEqual({
     ruleId: 'no-unapproved-raw-values',
     code: 'unapproved-raw-value',
-    message: 'Raw value "17px" is not approved for class "m:md|17px". Use a token or allow the value explicitly.',
-    range: { start: 3, end: 12 },
+    message: 'Raw value "17px" is not approved for class "m:var(--spacing-md)|17px". Use a token or allow the value explicitly.',
+    range: { start: 3, end: 27 },
     data: {
-      className: 'm:md|17px',
+      className: 'm:var(--spacing-md)|17px',
       value: '17px',
       key: 'm',
       properties: ['margin']
@@ -294,6 +270,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
     version: 2,
     colorToken: 'rgba(0|0|0/.5)',
+    editable: true,
     sourceFormat: { syntax: 'rgb' }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({

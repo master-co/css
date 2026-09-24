@@ -11,7 +11,7 @@
 ```html
 <!-- Underline offset · 2px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
          text-decoration-thickness:2px text-underline-offset:2px"
 >
   Typography
@@ -21,7 +21,7 @@
 ```html
 <!-- Underline offset · 6px -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
          text-decoration-thickness:2px text-underline-offset:6px"
 >
   Typography
@@ -45,8 +45,8 @@ Choose the line weight and offset independently. This pair uses the same 4px off
 ```html
 <!-- 4px offset · 1px thickness -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:1px text-underline:3xs"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:1px text-underline-3xs"
 >
   Typography
 </p>
@@ -55,14 +55,14 @@ Choose the line weight and offset independently. This pair uses the same 4px off
 ```html
 <!-- 4px offset · 3px thickness -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
-         text-decoration-thickness:3px text-underline:3xs"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
+         text-decoration-thickness:3px text-underline-3xs"
 >
   Typography
 </p>
 ```
 
-`text-underline:3xs` uses the preset’s 0.25rem spacing token. At the default 16px root size that is 4px.
+`text-underline-3xs` uses the preset’s 0.25rem spacing token. At the default 16px root size that is 4px.
 
 ### Reset in compact contexts \{#reset-in-compact-contexts\}
 Resize past `sm` to reset this underline’s offset from 6px to zero. The line box stays the same size; only the underline position changes.
@@ -72,7 +72,7 @@ Resize past `sm` to reset this underline’s offset from 6px to zero. The line b
 ```html
 <!-- 6px offset · zero at sm -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline
          text-decoration-thickness:2px text-underline-offset:6px
          text-underline-offset:0@sm"
 >
@@ -90,7 +90,7 @@ Hover or focus to move the underline from 2px to 6px. Print returns to 2px. The 
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:2xl leading:xl underline text-decoration-thickness:2px
+  class="font-2xl leading-xl underline text-decoration-thickness:2px
          text-underline-offset:2px text-underline-offset:2px@print
          text-underline-offset:6px:hover@screen
          text-underline-offset:6px:focus-visible@screen"

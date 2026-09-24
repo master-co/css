@@ -5,7 +5,7 @@
 ## Examples \{#examples\}
 
 ### Move an outline away from the element \{#move-an-outline-away-from-the-element\}
-A positive `outline-offset` leaves a gap outside the element’s border edge. Compare zero offset with `2x`, which resolves to `0.5rem` (8px at this preview’s root size).
+A positive `outline-offset` leaves a gap outside the element’s border edge. Compare zero offset with `0.5rem` (8px at this preview’s root size).
 
 <DemoExample page="outline-offset" section="move-an-outline-away-from-the-element" />
 
@@ -13,11 +13,11 @@ A positive `outline-offset` leaves a gap outside the element’s border edge. Co
 <!-- Zero offset · at the border edge -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:2px|solid|blue
-         outline-offset:0 font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:2px|solid|var(--color-blue)
+         outline-offset:0 font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -26,11 +26,11 @@ A positive `outline-offset` leaves a gap outside the element’s border edge. Co
 <!-- 2x offset · 8px gap -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:2px|solid|blue
-         outline-offset:2x font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:2px|solid|var(--color-blue)
+         outline-offset:0.5rem font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -38,7 +38,7 @@ A positive `outline-offset` leaves a gap outside the element’s border edge. Co
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline-offset:2x']}
+    {['outline-offset:0.5rem']}
   </Class2CSS>
 </details>
 
@@ -53,11 +53,11 @@ A negative offset moves the ring inside the border edge. Compare zero with −4p
 <!-- Zero offset -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:2px|solid|blue
-         outline-offset:0 font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:2px|solid|var(--color-blue)
+         outline-offset:0 font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -66,11 +66,11 @@ A negative offset moves the ring inside the border edge. Compare zero with −4p
 <!-- −4px offset · inside the edge -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:2px|solid|blue
-         outline-offset:-4px font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:2px|solid|var(--color-blue)
+         outline-offset:-4px font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -78,7 +78,7 @@ A negative offset moves the ring inside the border edge. Compare zero with −4p
 Keep the inward ring away from text and icons. Negative offsets do not reserve extra content space.
 
 ### Apply conditionally \{#apply-conditionally\}
-Keyboard focus moves the blue outline outward by `2x`. Print returns the offset to zero; the outline itself remains visible.
+Keyboard focus moves the blue outline outward by `0.5rem`. Print returns the offset to zero; the outline itself remains visible.
 
 <DemoExample page="outline-offset" section="apply-conditionally" />
 
@@ -86,13 +86,13 @@ Keyboard focus moves the blue outline outward by `2x`. Print returns the offset 
 <!-- Zero → 2x on keyboard focus -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:2px|solid|blue
-         outline-offset:0 font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:2px|solid|var(--color-blue)
+         outline-offset:0 font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible
          outline-offset:0@print
-         outline-offset:2x:focus-visible@screen">
+         outline-offset:0.5rem:focus-visible@screen">
   Preview details
 </button>
 ```

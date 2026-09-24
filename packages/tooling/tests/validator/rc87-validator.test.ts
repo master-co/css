@@ -42,14 +42,14 @@ it('validate an invalid CSS property value', () => {
 
 it('validate valid classes', () => {
   expectClassWithoutErrors('text-center')
-  expectClassWithoutErrors('font:.75rem@media(print)')
+  expectClassWithoutErrors('font-size:.75rem@media(print)')
   expectClassWithoutErrors('mt:var(--top)')
   expectClassWithoutErrors('right:max(0px,calc(50%-45.3125rem))')
   expectClassWithoutErrors('{text-wrap:pretty}')
   expectClassWithoutErrors('{content:\'\';block}::after@light')
-  expect(validate('bg:light-dark(#333b3c,#efefec)').errors).toEqual([])
+  expect(validate('background-color:light-dark(#333b3c,#efefec)').errors).toEqual([])
   expectClassValid('text-center')
-  expectClassValid('font:.75rem@media(print)')
+  expectClassValid('font-size:.75rem@media(print)')
   expectClassValid('mt:var(--top)')
   expectClassValid('right:max(0px,calc(50%-45.3125rem))')
   expectClassValid('{text-wrap:pretty}')

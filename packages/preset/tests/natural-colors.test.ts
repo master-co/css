@@ -48,8 +48,8 @@ describe('natural material colors', () => {
 
   test('fixed colors, text aliases, borders, gradients and alpha use the Rust engine', () => {
     const css = createTestCSS(manifest).ensureClassRules(
-      'bg:sand-5', 'fg:taupe-70', 'text:terracotta', 'b:1px|solid|moss-30',
-      'bg:petrol-60/.5', 'bg:linear-gradient(sand-5,copper-30)'
+      'bg-sand-5', 'fg-taupe-70', 'text-terracotta', 'b:1px|solid|var(--color-moss-30)',
+      'bg-petrol-60/.5', 'background-image:linear-gradient(var(--color-sand-5),var(--color-copper-30))'
     )
     expect(css.text).toContain('background-color:var(--color-sand-5)')
     expect(css.text).toContain('color:var(--color-taupe-70)')
@@ -67,7 +67,7 @@ describe('natural material colors', () => {
   test('every fixed shade is emitted on demand, including both endpoints', () => {
     for (const family of Object.keys(families)) {
       for (const level of levels) {
-        const css = createTestCSS(manifest).ensureClassRules(`fg:${family}-${level}`)
+        const css = createTestCSS(manifest).ensureClassRules(`fg-${family}-${level}`)
         const name = `color-${family}-${level}`
         expect(css.text).toContain(`--${name}:${variables.find(variable => variable.name === name)!.value}`)
         expect(css.text).toContain(`color:var(--${name})`)
@@ -77,12 +77,12 @@ describe('natural material colors', () => {
   })
 
   test('olive follows the preset while a literal retains the native CSS olive color', () => {
-    const css = createTestCSS(manifest).ensureClassRules('fg:olive', 'bg:olive', 'fg:#808000')
+    const css = createTestCSS(manifest).ensureClassRules('fg-olive', 'bg-olive', 'fg:#808000', 'fg:olive')
     expect(css.text).toContain('color:var(--color-olive)')
     expect(css.text).toContain('background-color:var(--color-olive)')
     expect(css.text).toContain('--color-olive:var(--color-olive-50)')
     expect(css.text).toContain('--color-olive:var(--color-olive-40)')
     expect(css.text).toContain('color:#808000')
-    expect(css.text).not.toContain('color:olive')
+    expect(css.text).toContain('.fg\\:olive{color:olive}')
   })
 })

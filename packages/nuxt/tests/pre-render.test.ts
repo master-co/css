@@ -29,7 +29,7 @@ it('matches generated CSS', async () => {
   if (!href) throw new Error('Expected Nuxt pre-render stylesheet link to include an href.')
   expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
-  expect(html).toContain('.fg\\:host')
+  expect(html).toContain('.fg-host')
   expect(html).not.toContain('--color-host:')
   const css = await fetchDeliveredStylesheet(href)
   expect(css).toContain('.box')

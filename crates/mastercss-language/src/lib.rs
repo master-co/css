@@ -130,6 +130,8 @@ pub struct LanguageInspectionIr {
     pub matcher_types: Vec<UtilityMatcherType>,
     pub variables: Vec<EngineClassVariableIr>,
     pub rules: Vec<GeneratedRuleIr>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub diagnostics: Vec<mastercss_schema::Diagnostic>,
     pub text: String,
 }
 
@@ -307,30 +309,6 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
         }
     }
 
-    let positive_entries = entries.clone();
-    for entry in positive_entries {
-        if !matches!(
-            entry.kind,
-            LanguageCompletionKind::Value | LanguageCompletionKind::Function
-        ) || !entry.sort_text.as_deref().is_some_and(|sort_text| {
-            sort_text.starts_with("aaaa-") && !sort_text.starts_with("aaaa-color-")
-        }) {
-            continue;
-        }
-        let Some((key, value)) = entry.label.split_once(':') else {
-            continue;
-        };
-        if value.starts_with('-') {
-            continue;
-        }
-        let label = format!("{key}:-{value}");
-        if by_label.contains_key(&label) {
-            continue;
-        }
-        by_label.insert(label.clone(), entries.len());
-        entries.push(LanguageCompletionEntryIr { label, ..entry });
-    }
-
     entries.retain(|entry| !matches!(entry.label.as_str(), "text:capitalize" | "text:center"));
 }
 
@@ -338,6 +316,9 @@ fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
 #[serde(rename_all = "camelCase")]
 pub struct LanguageColorPresentationIr {
     pub version: u32,
+    pub editable: bool,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub replacement_prefix: Option<String>,
     pub color_token: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_format: Option<LanguageColorFormatIr>,
@@ -397,7 +378,6 @@ pub struct LanguageSession {
     engine: EngineSession,
     manifest_json: String,
     native_support_by_class: HashMap<String, bool>,
-    variable_names: HashSet<String>,
     prepared_document: Option<analysis::PreparedDocument>,
     next_document_id: u32,
 }

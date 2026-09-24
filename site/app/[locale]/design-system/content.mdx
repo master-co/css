@@ -69,13 +69,13 @@ Use the preset spacing, radius and typography scales. Demo-specific roles live i
 
 `Demo` uses the site's neutral fine diagonal stripe by default, matching the established Guide canvas. The shell supplies a border and responsive breathing room, while the example supplies its own layout and geometry. A title, description, controls, and caption appear only when the lesson needs them; controls remain outside the demonstrated layout.
 
-<Demo><div className="flex flex-wrap gap:sm"><DemoItem className="p:md">01</DemoItem><DemoItem className="p:md">02</DemoItem><DemoItem className="p:md">03</DemoItem></div></Demo>
+<Demo><div className="flex flex-wrap gap-sm"><DemoItem className="p-md">01</DemoItem><DemoItem className="p-md">02</DemoItem><DemoItem className="p-md">03</DemoItem></div></Demo>
 
 ```tsx
 <Demo>
-  <div className="flex gap:sm">
-    <DemoItem className="p:md">01</DemoItem>
-    <DemoItem className="p:md">02</DemoItem>
+  <div className="flex gap-sm">
+    <DemoItem className="p-md">01</DemoItem>
+    <DemoItem className="p-md">02</DemoItem>
   </div>
 </Demo>
 ```
@@ -92,8 +92,8 @@ Compose small, predictable pieces. An item supplies its appearance; the example 
 `DemoSurface` keeps content legible on the striped canvas with a fine border, a compact radius and the site's raised surface color. It adds no padding, dimensions, layout, clipping or shadow by default. Use `elevation="raised"` only when the lesson needs to show a floating layer; it adds the preset's small shadow without changing the content box.
 
 ```tsx
-<DemoSurface className="p:md">A quiet content surface.</DemoSurface>
-<DemoSurface elevation="raised" className="p:md">A floating layer.</DemoSurface>
+<DemoSurface className="p-md">A quiet content surface.</DemoSurface>
+<DemoSurface elevation="raised" className="p-md">A floating layer.</DemoSurface>
 ```
 
 The [column span reference](/reference/column-span) keeps columns and padding inside the default surface; the [float reference](/reference/float) supplies its own `flow-root` boundary. The [original Guide panel](/guide/spacing) remains in its established examples. Place any label or control outside a measured flex, grid or float layout unless it is part of the lesson.
@@ -104,9 +104,9 @@ The [column span reference](/reference/column-span) keeps columns and padding in
 
 ```tsx
 <Demo>
-  <div className="flex gap:sm">
-    <DemoItem className="p:md">Context</DemoItem>
-    <DemoItem tone="blue" className="p:md">Subject</DemoItem>
+  <div className="flex gap-sm">
+    <DemoItem className="p-md">Context</DemoItem>
+    <DemoItem tone="blue" className="p-md">Subject</DemoItem>
   </div>
 </Demo>
 ```
@@ -127,10 +127,10 @@ Utilities on `className` can override these paint and typography defaults when t
 
 ### Demo media \{#demo-media\}
 
-`DemoMedia` renders a refined SVG specimen when no source is supplied. Its quiet contour artwork follows `currentColor` so a complete utility such as `fg:demo-violet` can mark a comparison. With `src` and required `alt`, it renders the supplied image instead. Both forms have a fine visual edge that takes no layout space.
+`DemoMedia` renders a refined SVG specimen when no source is supplied. Its quiet contour artwork follows `currentColor` so a complete utility such as `fg-demo-violet` can mark a comparison. With `src` and required `alt`, it renders the supplied image instead. Both forms have a fine visual edge that takes no layout space.
 
 ```tsx
-<DemoMedia className="w:full r:sm" aria-label="Sun above two mountain ridges" />
+<DemoMedia className="w:100% r-sm" aria-label="Sun above two mountain ridges" />
 <DemoMedia src="/demo/landscape.svg" alt="Sun above layered mountains" width={320} height={200} />
 ```
 
@@ -141,7 +141,7 @@ The caller sets width, height, crop, float and spacing. The [float reference](/r
 `DemoSwatch` is a static inventory tile for semantic color roles. Its restrained frame keeps pale canvas and surface colors visible next to saturated subject and comparison colors. `label` is required; optional `value` names the token or value in a compact monospace line. An explicit utility class or `style` supplies the actual color.
 
 ```tsx
-<DemoSwatch label="Subject" value="demo-blue" className="bg:demo-blue" />
+<DemoSwatch label="Subject" value="demo-blue" className="bg-demo-blue" />
 ```
 
 The color patch is decorative when it has no children, while the visible label carries the meaning. This tile has no copy action or focus stop. The [colors guide](/guide/colors#default-color-palette) retains its original interactive palette for browsing and copying fixed color steps.
@@ -153,17 +153,17 @@ The color patch is decorative when it has no children, while the visible label c
 ```tsx
 <Demo>
   <DemoComparison>
-    <DemoSurface className="p:md">Before</DemoSurface>
-    <DemoSurface elevation="raised" className="p:md">After</DemoSurface>
+    <DemoSurface className="p-md">Before</DemoSurface>
+    <DemoSurface elevation="raised" className="p-md">After</DemoSurface>
   </DemoComparison>
 </Demo>
 ```
 
 The “Content specimens” and “Comparison” examples above use this layout. The [elevation guide](/guide/elevation) retains its original spacious comparison grid, while the [comparison review](/design-system/review/comparison) shows that grid beside the previous and adopted shared treatments. Place comparison labels outside any measured flex, grid or float scene.
 
-<Demo title="Badge sizes"><div className="flex flex-wrap items-center gap:md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
+<Demo title="Badge sizes"><div className="flex flex-wrap items-center gap-md"><DemoBadge size="xs" tone="blue">XS</DemoBadge><DemoBadge size="sm" tone="blue">S</DemoBadge><DemoBadge tone="blue">M</DemoBadge><DemoBadge size="lg" tone="blue">L</DemoBadge></div></Demo>
 
-<Demo title="Badge treatments"><div className="flex flex-wrap items-center gap:md"><DemoBadge>Draft</DemoBadge><DemoBadge tone="blue" variant="solid">Selected</DemoBadge><DemoBadge tone="violet" variant="outline">Comparison</DemoBadge><DemoBadge tone="amber" variant="ghost">Note</DemoBadge></div></Demo>
+<Demo title="Badge treatments"><div className="flex flex-wrap items-center gap-md"><DemoBadge>Draft</DemoBadge><DemoBadge tone="blue" variant="solid">Selected</DemoBadge><DemoBadge tone="violet" variant="outline">Comparison</DemoBadge><DemoBadge tone="amber" variant="ghost">Note</DemoBadge></div></Demo>
 
 `DemoBadge` labels a state or category. It renders a native span with four sizes
 (`xs`, `sm`, `md`, `lg`), the shared tones and the same paint variants as `DemoItem`.
@@ -178,9 +178,9 @@ The [badge review](/design-system/review/badge) compares the Guide label, earlie
 
 ```tsx
 <Demo title="Alignment" background="grid">
-  <div className="flex items-center gap:sm">
-    <DemoItem className="p:md">01</DemoItem>
-    <DemoItem tone="violet" className="p:md">02</DemoItem>
+  <div className="flex items-center gap-sm">
+    <DemoItem className="p-md">01</DemoItem>
+    <DemoItem tone="violet" className="p-md">02</DemoItem>
   </div>
 </Demo>
 ```
@@ -217,8 +217,8 @@ Name the subject, reveal a boundary, or expose an axis. Keep annotations outside
 
 ```tsx
 <div>
-  <DemoLabel>shadow:sm</DemoLabel>
-  <DemoSurface className="mt:xs p:md">Standard surface</DemoSurface>
+  <DemoLabel>shadow-sm</DemoLabel>
+  <DemoSurface className="mt-xs p-md">Standard surface</DemoSurface>
 </div>
 ```
 
@@ -245,7 +245,7 @@ Include only roles visible in the scene. The [border color reference](/reference
 
 ```tsx
 <DemoMeasure label="Content bounds">
-  <DemoSurface className="p:md">Measured content</DemoSurface>
+  <DemoSurface className="p-md">Measured content</DemoSurface>
 </DemoMeasure>
 ```
 
@@ -257,7 +257,7 @@ Place the measurement wrapper outside the flex, grid or float parent being taugh
 
 ```tsx
 <DemoAxes aria-label="Row layout: main axis rightward, cross axis downward">
-  <div className="flex gap:sm">{/* layout items */}</div>
+  <div className="flex gap-sm">{/* layout items */}</div>
 </DemoAxes>
 ```
 
@@ -287,7 +287,7 @@ The [controls review](/design-system/review/controls) compares both shared appea
 `DemoScrollArea` establishes native overflow and a keyboard focus stop. Its adopted fine border, compact radius and quiet surface make the scroll boundary visible against the diagonal canvas. The component caps its height at 16rem; set an explicit width or smaller height for the lesson. It does not add a child or change how content is laid out inside the scrollport.
 
 ```tsx
-<DemoScrollArea role="region" aria-label="Layer collection" className="h:40x">
+<DemoScrollArea role="region" aria-label="Layer collection" className="h:10rem">
   {/* Overflowing content */}
 </DemoScrollArea>
 ```
@@ -316,8 +316,8 @@ Derive breakpoint widths from the active preset; the numbers above illustrate th
 
 ```tsx
 <DemoMotion>
-  <div className="grid place-items:center h:40x">
-    <DemoItem className="size:16x animation:rotate|2s|linear|infinite">↗</DemoItem>
+  <div className="grid place-items:center h:10rem">
+    <DemoItem className="size:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
   </div>
 </DemoMotion>
 ```
@@ -741,8 +741,8 @@ Keep these document lists outside measured specimens. Each entry owns one term a
 <DocumentCodeExample
   title="A stable class order"
   language="mcss"
-  source="p:md flex"
-  result="flex p:md"
+  source="p-md flex"
+  result="flex p-md"
   sourceLabel="Before sorting"
   resultLabel="After sorting"
 />
@@ -818,12 +818,12 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <div data-stylesheet-gallery>
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg:brand;\n}"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
 />
 
 <StylesheetExample
   title="An inline token"
-  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg:brand;\n}"}
+  source={"@theme inline {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
 />
 
 <StylesheetExample
@@ -841,7 +841,7 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 <StylesheetExample
   title="An inline color token"
   source={`@theme inline { --color-brand: #4f46e5; }
-.card { @compose bg:brand; }`}
+.card { @compose bg-brand; }`}
 />
 ```
 
@@ -881,7 +881,7 @@ Charts and summaries render on the server and do not animate or change measureme
 ## Code
 ### Block code
 ```html
-<h1 class="block font:6xl tracking:.2em text-center">
+<h1 class="block font-6xl tracking:.2em text-center">
   Hello, world!
 </h1>
 ```
@@ -942,8 +942,8 @@ For a new lesson, supply its actual configuration and complete HTML:
 ```jsx
 <DemoConfiguredExample name="project-spacing" title="A project spacing token"
   source="@theme { --spacing-card: 1.5rem; }"
-  html={'<article class="p:card">Collection details</article>'}
-  caption="p:card references --spacing-card." />
+  html={'<article class="p-card">Collection details</article>'}
+  caption="p-card references --spacing-card." />
 ```
 
 `theme` adds a real document-class switch; define `mode-trigger: class` in the
@@ -959,13 +959,13 @@ it does not load a framework or test runtime lifecycle. Keep that distinction in
 caption and document runtime setup in the linked lesson.
 
 <DemoConfiguredExample name="shadow-root-gallery" title="A shadow-root specimen"
-  source="" html={'<button type="button" class="px:md py:sm r:sm bg:blue fg:white">Hello Lit</button>'}
+  source="" html={'<button type="button" class="px-md py-sm r-sm bg-blue fg-white">Hello Lit</button>'}
   caption="Generated utility CSS in an open shadow root; no framework runs in this preview."
   shadow />
 
 ```jsx
 <DemoConfiguredExample name="shadow-button" title="Shadow-root styling"
-  source="" html={'<button class="px:md py:sm bg:blue fg:white">Hello</button>'}
+  source="" html={'<button class="px-md py-sm bg-blue fg-white">Hello</button>'}
   caption="Generated CSS inside a shadow root." shadow />
 ```
 
@@ -1054,7 +1054,7 @@ Both use real mode variables. Content sizing keeps normal-flow content visible; 
 <DemoThemeComparison
   name="surface-card"
   title="A shared surface"
-  html='<article class="p:md surface:raised text:body">Notes</article>'
+  html='<article class="p-md surface-raised text-body">Notes</article>'
 />
 ```
 
@@ -1077,11 +1077,11 @@ The [copy control review](/design-system/review/copy) compares the Guide swatch,
 its role or value. Rows may include a decorative preview. Keep inventory tables outside
 the measured scene and derive their values from preset data.
 
-<DemoTokenTable rows={[{ token: '--shadow-sm', utilities: ['shadow:sm'], description: 'A small raised surface.' }]} />
+<DemoTokenTable rows={[{ token: '--shadow-sm', utilities: ['shadow-sm'], description: 'A small raised surface.' }]} />
 
 ```jsx
 <DemoTokenTable rows={[
-  { token: '--shadow-sm', utilities: ['shadow:sm'],
+  { token: '--shadow-sm', utilities: ['shadow-sm'],
     description: 'A small raised surface.' }
 ]} />
 ```
@@ -1333,23 +1333,23 @@ A trusted site example page in a real, scrollable viewport.
 Every specimen below is available directly in MDX. The surrounding example owns geometry; these small compositions show where annotations and controls belong.
 
 ```tsx
-<DemoSurface className="p:md">
+<DemoSurface className="p-md">
   <DemoLabel>Layer</DemoLabel>
   <DemoText>Form follows function.</DemoText>
 </DemoSurface>
 
 <DemoComparison>
-  <DemoItem tone="neutral" className="p:md">Before</DemoItem>
-  <DemoItem tone="violet" variant="outline" className="p:md">After</DemoItem>
+  <DemoItem tone="neutral" className="p-md">Before</DemoItem>
+  <DemoItem tone="violet" variant="outline" className="p-md">After</DemoItem>
 </DemoComparison>
 
-<DemoMedia className="w:full" />
+<DemoMedia className="w:100%" />
 <DemoMedia src="/demo/landscape.svg" alt="Sun above mountains" />
-<DemoSwatch label="Subject" className="bg:demo-blue" />
+<DemoSwatch label="Subject" className="bg-demo-blue" />
 
 <DemoAxes>
   <DemoMeasure label="Container">
-    <div className="flex gap:sm">{/* measured layout */}</div>
+    <div className="flex gap-sm">{/* measured layout */}</div>
   </DemoMeasure>
 </DemoAxes>
 <DemoLegend items={[{ tone: 'blue', label: 'Subject' }]} />
@@ -1357,11 +1357,11 @@ Every specimen below is available directly in MDX. The surrounding example owns 
 <DemoControls label="Alignment">
   <button type="button" className="demo-button">Start</button>
 </DemoControls>
-<DemoScrollArea aria-label="Layers" className="h:40x">
+<DemoScrollArea aria-label="Layers" className="h:10rem">
   {/* overflowing content */}
 </DemoScrollArea>
 <DemoMotion>
-  <DemoItem className="size:16x animation:rotate|2s|linear|infinite" />
+  <DemoItem className="size:4rem animation:rotate|2s|linear|infinite" />
 </DemoMotion>
 <DemoViewport title="Responsive layout" document={htmlDocument} responsive />
 ```

@@ -57,6 +57,7 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
     baseManifest: MasterCSSManifest,
     graphs: readonly MasterCSSProjectEntryGraph[]
   ): MasterCSSProjectManifest
+  migrateRC(request: import('./protocol').MasterCSSRCMigrationRequest): import('./protocol').MasterCSSRCMigrationResult
   inspectCSS(source: string): MasterCSSCompilerInspection
   compileNativeCSS(
     source: string,

@@ -9,12 +9,12 @@ Set `step` to 9 on the second item. A counter is reset, incremented, then set on
 
 ```html
 <!-- Sequence · 1, 9, 10 -->
-<ol role="list" class="m:0 p:0 font:md leading:lg list-style:none counter-reset:step|0">
-  <li class="mb:2xs counter-increment:step|1 text:blue::before
+<ol role="list" class="m:0 p:0 font-md leading-lg list-style:none counter-reset:step|0">
+  <li class="mb-2xs counter-increment:step|1 text-blue::before
     content:counter(step)'.\00a0'::before">Install dependencies</li>
-  <li id="target" value="9" class="mb:2xs counter-increment:step|1 counter-set:step|9
-    text:blue::before content:counter(step)'.\00a0'::before">Deployment checklist</li>
-  <li class="mb:2xs counter-increment:step|1 text:blue::before
+  <li id="target" value="9" class="mb-2xs counter-increment:step|1 counter-set:step|9
+    text-blue::before content:counter(step)'.\00a0'::before">Deployment checklist</li>
+  <li class="mb-2xs counter-increment:step|1 text-blue::before
     content:counter(step)'.\00a0'::before">Verify production</li>
 </ol>
 ```
@@ -28,8 +28,8 @@ Separate names and integer values with `|`. This heading sets both `chapter` and
 
 ```html
 <!-- Two names · one declaration -->
-<h2 id="target" class="m:0 font:md font:medium leading:lg
-    counter-set:chapter|2|section|4 text:blue::before
+<h2 id="target" class="m:0 font-md font-medium leading-lg
+    counter-set:chapter|2|section|4 text-blue::before
     content:'Chapter\00a0'counter(chapter)',\00a0section\00a0'counter(section)':\00a0'::before">Resume point</h2>
 ```
 
@@ -43,15 +43,15 @@ Resize past `sm` to set the second section to 9 on screen. The headings change f
 ```html
 <!-- Real viewport · conditional jump -->
 <article class="counter-reset:section">
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Overview</h2>
-  <h2 id="target" class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 id="target" class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before counter-set:none@print
     counter-set:section|9@screen&sm">Installation</h2>
-  <h2 class="mx:0 mb:2xs mt:0 font:md font:medium leading:lg
-    counter-increment:section text:blue::before
+  <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
+    counter-increment:section text-blue::before
     content:counter(section)'.\00a0'::before">Configuration</h2>
 </article>
 ```

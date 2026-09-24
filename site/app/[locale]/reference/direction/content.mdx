@@ -10,7 +10,7 @@
 ```html
 <!-- RTL parent · LTR paragraph -->
 <section dir="rtl">
-  <p id="target" lang="en" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:ltr">Invoice #1048</p>
+  <p id="target" lang="en" class="w:240px max-w:100% m:0 font-md leading:24px text-start direction:ltr">Invoice #1048</p>
 </section>
 ```
 
@@ -28,7 +28,7 @@
 
 ```html
 <!-- A local right-to-left paragraph -->
-<p id="target" lang="ar" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:rtl">مرحبًا بكم في مساحة التصميم</p>
+<p id="target" lang="ar" class="w:240px max-w:100% m:0 font-md leading:24px text-start direction:rtl">مرحبًا بكم في مساحة التصميم</p>
 ```
 
 For content whose direction is known, express that meaning with the HTML `dir` attribute.
@@ -41,8 +41,8 @@ Use HTML `dir` for document and user-content direction. This RTL section contain
 ```html
 <!-- Semantic RTL content · local code exception -->
 <section dir="rtl" lang="ar">
-  <p class="font:md leading:24px">ثبّت الحزمة لبدء المشروع.</p>
-  <code id="target" lang="en" class="block font:mono font:sm leading:24px text-start direction:ltr">npm install @master/css</code>
+  <p class="font-md leading:24px">ثبّت الحزمة لبدء المشروع.</p>
+  <code id="target" lang="en" class="block font-mono font-sm leading:24px text-start direction:ltr">npm install @master/css</code>
 </section>
 ```
 
@@ -55,7 +55,7 @@ This diagnostic comparison switches the same mixed-direction line from LTR to RT
 
 ```html
 <!-- Mixed scripts · actual base direction -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-start direction:ltr direction:ltr@print direction:rtl@screen&sm">Design · <span lang="ar">مرحبًا</span> · 2026</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-start direction:ltr direction:ltr@print direction:rtl@screen&sm">Design · <span lang="ar">مرحبًا</span> · 2026</p>
 ```
 
 Print restores LTR for this comparison. Use semantic `dir` for language-dependent content in production.

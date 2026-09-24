@@ -10,7 +10,7 @@ export default function SearchButton({ className, iconSize, hideIcon, children }
       {children
         ? children
         : <>
-          {!hideIcon && <SearchSvg className="ml:-0.125rem mr:xs fill:text-disabled" width={iconSize || 20} height={iconSize || 20} />}
+          {!hideIcon && <SearchSvg className="ml:-0.125rem mr-xs fill-text-disabled" width={iconSize || 20} height={iconSize || 20} />}
           {searchPlaceholder}
         </>
       }

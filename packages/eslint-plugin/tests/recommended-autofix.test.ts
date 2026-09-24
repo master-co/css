@@ -27,11 +27,11 @@ test('recommended config autofixes cross-rule class lists to a stable result', a
   })
 
   const [canonicalResult] = await preferCanonicalOnly.lintText(
-    `clsx('size:md w:md h:md block')`,
+    `clsx('padding-md p:8px block')`,
     { filePath: 'fixture.js' }
   )
   const canonicalOutput = canonicalResult.output
-  expect(canonicalOutput).toBe(`clsx('size:md size:md block')`)
+  expect(canonicalOutput).toBe(`clsx('p-md p:8px block')`)
   if (!canonicalOutput) throw new Error('Expected canonical output')
   expect(canonicalResult.messages.map((message) => message.ruleId)).toEqual([
     '@master/css/sort-classes',
@@ -40,7 +40,7 @@ test('recommended config autofixes cross-rule class lists to a stable result', a
 
   const [fixedResult] = await recommendedFix.lintText(canonicalOutput, { filePath: 'fixture.js' })
   const fixedOutput = fixedResult.output
-  expect(fixedOutput).toBe(`clsx('block size:md')`)
+  expect(fixedOutput).toBe(`clsx('block p:8px')`)
   if (!fixedOutput) throw new Error('Expected fixed output')
   expect(fixedResult.messages).toEqual([])
 
@@ -73,7 +73,7 @@ test('recommended config autofixes mdx fenced examples', async () => {
   })
   const source = [
     '```html',
-    '<button class="inline-flex align-items:center gap:2x px:md py:xs r:md fg:white bg:blue-60">',
+    '<button class="inline-flex align-items:center gap:0.5rem px-md py-xs r-md fg-white bg-blue-60">',
     '    Save',
     '</button>',
     '```'
@@ -82,7 +82,7 @@ test('recommended config autofixes mdx fenced examples', async () => {
   const [fixedResult] = await recommendedFix.lintText(source, { filePath: 'fixture.mdx' })
   expect(fixedResult.output).toBe([
     '```html',
-    '<button class="inline-flex items-center gap:xs px:md py:xs r:md bg:blue-60 fg:white">',
+    '<button class="inline-flex align-items:center gap:0.5rem py-xs px-md r-md bg-blue-60 fg-white">',
     '    Save',
     '</button>',
     '```'
@@ -91,7 +91,7 @@ test('recommended config autofixes mdx fenced examples', async () => {
   const disabledSource = [
     '{/* eslint-disable @master/css/sort-classes -- intentional example */}',
     '```html',
-    '<button class="fg:white bg:blue-60">Save</button>',
+    '<button class="fg-white bg-blue-60">Save</button>',
     '```',
     '{/* eslint-enable @master/css/sort-classes */}'
   ].join('\n')

@@ -1,23 +1,23 @@
 @components {
   scrollbar {
     &::scrollbar {
-      @compose size:1x rounded bg:line-subtle;
+      @compose size:0.25rem rounded bg-line-subtle;
     }
 
     &::-webkit-scrollbar-corner {
-      @compose bg:transparent;
+      @compose background-color:transparent;
     }
 
     &::scrollbar-thumb {
-      @compose rounded bg:line-subtle;
+      @compose rounded bg-line-subtle;
     }
 
     &::scrollbar-thumb:hover {
-      @compose bg:line-muted;
+      @compose bg-line-muted;
     }
 
     &::scrollbar-thumb:active {
-      @compose bg:line-base;
+      @compose bg-line-base;
     }
 
     @supports (-moz-appearance: none) {
@@ -35,7 +35,7 @@
     }
 
     &::scrollbar {
-      @compose bg:transparent!;
+      @compose background-color:transparent!;
     }
   }
 }

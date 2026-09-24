@@ -14,7 +14,7 @@ export const metadata = {
 function Specimen({ Label }: { Label: typeof DemoLabel }) {
   return <div className={styles.specimens}>
     <div>
-      <Label>shadow:sm</Label>
+      <Label>shadow-sm</Label>
       <DemoSurface className={styles.card}>
         <strong>Standard surface</strong>
         <p>One utility, one visible effect.</p>
@@ -39,7 +39,7 @@ function Specimen({ Label }: { Label: typeof DemoLabel }) {
 
 function OriginalSpecimen() {
   return <div className={styles.specimens}>
-    <div><OriginalDemoLabel>shadow:sm</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Standard surface</strong><p>One utility, one visible effect.</p></DemoSurface></div>
+    <div><OriginalDemoLabel>shadow-sm</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Standard surface</strong><p>One utility, one visible effect.</p></DemoSurface></div>
     <div><OriginalDemoLabel>Collection / 024</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Asset library</strong><p>Descriptive metadata stays readable.</p></DemoSurface></div>
     <div><OriginalDemoLabel>width:100% min-width:0 @container(md)</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Long class string</strong><p>The annotation wraps inside a narrow document column.</p></DemoSurface></div>
   </div>

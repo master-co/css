@@ -65,8 +65,8 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
 
     const server = makeServer({
       modules: [
-        ['/a.tsx', { transformResult: { code: '<div class="bg:white">a</div>' }, file: '/a.tsx' }],
-        ['/b.tsx', { transformResult: { code: '<div class="fg:black">b</div>' }, file: '/b.tsx' }],
+        ['/a.tsx', { transformResult: { code: '<div class="bg-white">a</div>' }, file: '/a.tsx' }],
+        ['/b.tsx', { transformResult: { code: '<div class="fg-black">b</div>' }, file: '/b.tsx' }],
         ['\0plugin-virtual', { transformResult: { code: '' }, file: undefined }], // must be filtered out
       ],
     })
@@ -76,7 +76,7 @@ describe('StyleEntryHMRPlugin (C3+C4 race fixes)', () => {
     ;(plugin as any).buildStart.call({})
 
     // Drive a transformIndexHtml first so the second arm of handleReset has work to do
-    await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:1x"></html>', { filename: '/index.html' })
+    await (plugin as any).transformIndexHtml.handler.call({}, '<html class="p:0.25rem"></html>', { filename: '/index.html' })
 
     const updateSendCallsBefore = server.ws.send.mock.calls.length
     scanner.emit('reset')

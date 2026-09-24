@@ -24,7 +24,7 @@ export function sizing(section: ReferenceDemoSection): DemoScene {
     const contentReading = page === 'padding' ? `<span>Content <output data-size-readout="${content}">—</output></span><span>Content inset <output data-position-readout="${content}" data-position-origin="${target}">—</output></span>` : ''
     const scroll = page === 'max-height' && source.includes('tabindex="0"') ? `<span>Scroll <output data-scroll-readout="${target}">—</output></span>` : ''
     const position = page === 'margin' ? `<span>Blue offset <output data-position-readout="${target}" data-position-origin="${layout}">—</output></span>` : ''
-    const readingSpace = page === 'min-height' && id === 'let-content-define-the-final-size' && index === 0 ? ' class="mt:xl"' : ''
+    const readingSpace = page === 'min-height' && id === 'let-content-define-the-final-size' && index === 0 ? ' class="mt-xl"' : ''
     return `<section data-ui="layout-example">${title ? label(title) : ''}${paintLayout(source, prefix, index === 0 ? page === 'gap' ? 'layout' : 'target' : '')}<div data-ui="layout-readings"${readingSpace}><span>Parent <output data-size-readout="${layout}">—</output></span><span>Blue box <output data-size-readout="${target}">—</output></span>${style}${contentReading}${position}${scroll}</div></section>`
   }).join('')
   const captions: Record<string, string> = {

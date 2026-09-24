@@ -41,7 +41,7 @@ export const agentPrompts = {
   },
   "migration": {
     "title": "Plan a migration",
-    "text": "Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.\n\nInspect the styling inventory, framework, CSS entries, tokens, source discovery, and available checks.\n\nReturn an incremental plan with the rendering mode, first migration batch, CSS output risks, validation commands, and visual checks. Keep this step read-only."
+    "text": "Use the Master CSS MCP prompt migrate-to-mastercss for this workspace.\n\nInspect the styling inventory, framework, CSS entries, tokens, source discovery, and available checks.\n\nFor an existing Master CSS v2 RC project, read /guide/migration/v2-rc, record the exact RC versions, and save its resolved manifest and original base-unit/root-size before upgrading. Preview master-css migrate with that manifest; do not run old and new runtimes together.\n\nReturn a plan with the rendering mode, first migration batch, CSS output risks, validation commands, and visual checks. Keep this step read-only."
   }
 } satisfies Record<string, DocumentPromptProps>
 
@@ -72,6 +72,6 @@ export const agentFixExample = {
   language: 'html',
   sourceLabel: 'src/button.html — before',
   resultLabel: 'Proposed content',
-  source: '<button class="bg:blue-60 p:md flex gap:sm">Save</button>',
-  result: '<button class="flex gap:sm p:md bg:blue-60">Save</button>'
+  source: '<button class="bg-blue-60 p-md flex gap-sm">Save</button>',
+  result: '<button class="flex gap-sm p-md bg-blue-60">Save</button>'
 } satisfies DocumentCodeExampleProps

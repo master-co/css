@@ -25,7 +25,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns document formatting edits for CSS directives', async ({ expect }) => {
-    const textDocument = context.createDocument('.btn { @compose bg:transparent ! fg:red !@sm; }', { lang: 'css' })
+    const textDocument = context.createDocument('.btn { @compose background-color:transparent ! fg-red !@sm; }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const edits = await context.clientConnection.sendRequest<TextEdit[]>(DocumentFormattingRequest.method, {
       textDocument: {
@@ -37,12 +37,12 @@ withFixture('basic', async (context) => {
       }
     })
 
-    expect(applyTextEdits(textDocument, edits)).toBe('.btn { @compose bg:transparent! fg:red!@sm; }')
+    expect(applyTextEdits(textDocument, edits)).toBe('.btn { @compose background-color:transparent! fg-red!@sm; }')
     await context.server.onDidClose({ document: textDocument })
   })
 
   test('returns range formatting edits for CSS directives', async ({ expect }) => {
-    const source = '.a { @compose bg:red !; }\n.b { @compose bg:blue !; }'
+    const source = '.a { @compose bg-red !; }\n.b { @compose bg-blue !; }'
     const textDocument = context.createDocument(source, { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const edits = await context.clientConnection.sendRequest<TextEdit[]>(DocumentRangeFormattingRequest.method, {
@@ -50,7 +50,7 @@ withFixture('basic', async (context) => {
         uri: textDocument.uri
       },
       range: {
-        start: textDocument.positionAt(source.indexOf('@compose bg:blue')),
+        start: textDocument.positionAt(source.indexOf('@compose bg-blue')),
         end: textDocument.positionAt(source.length)
       },
       options: {
@@ -59,7 +59,7 @@ withFixture('basic', async (context) => {
       }
     })
 
-    expect(applyTextEdits(textDocument, edits)).toBe('.a { @compose bg:red !; }\n.b { @compose bg:blue!; }')
+    expect(applyTextEdits(textDocument, edits)).toBe('.a { @compose bg-red !; }\n.b { @compose bg-blue!; }')
     await context.server.onDidClose({ document: textDocument })
   })
 })
@@ -75,7 +75,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns no formatting edits when disabled', async ({ expect }) => {
-    const textDocument = context.createDocument('.btn { @compose bg:transparent !; }', { lang: 'css' })
+    const textDocument = context.createDocument('.btn { @compose background-color:transparent !; }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const edits = await context.server.onDocumentFormatting({
       textDocument: {

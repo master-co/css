@@ -80,6 +80,13 @@ pub fn load_project_manifest_prepared_json(
 }
 
 #[napi]
+pub fn migrate_rc_json(request_json: String) -> Result<String> {
+    let request = serde_json::from_str::<mastercss_compiler::RcMigrationRequest>(&request_json)
+        .map_err(|error| Error::new(Status::InvalidArg, error.to_string()))?;
+    to_json(&mastercss_compiler::migrate_rc(&request).map_err(compiler_to_napi_error)?)
+}
+
+#[napi]
 pub fn inspect_css_json(source: String) -> Result<String> {
     to_json(&mastercss_compiler::inspect_css(&source))
 }

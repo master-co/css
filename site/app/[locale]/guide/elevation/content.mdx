@@ -15,7 +15,7 @@ Start with the surface relationship, then choose the lowest token that makes tha
 
 <ShadowTokenTable />
 
-The role of each token should stay stable across modes. Custom light and dark recipes can vary geometry as well as color, but `shadow:sm` should still mean a standard raised surface in both modes.
+The role of each token should stay stable across modes. Custom light and dark recipes can vary geometry as well as color, but `shadow-sm` should still mean a standard raised surface in both modes.
 
 ---
 
@@ -25,10 +25,10 @@ Elevation needs a visible ground. Pair shadows with `surface:*`, `text:*`, and r
 <SurfaceElevationDemo />
 
 ```html
-<!-- @MARK shadow:lg -->
-<article class="r:lg surface:raised shadow:lg">
-  <h2 class="text:strong">Raised surface</h2>
-  <p class="text:muted">Cards need a clear surface before they need a large shadow.</p>
+<!-- @MARK shadow-lg -->
+<article class="r-lg surface-raised shadow-lg">
+  <h2 class="text-strong">Raised surface</h2>
+  <p class="text-muted">Cards need a clear surface before they need a large shadow.</p>
 </article>
 ```
 
@@ -40,13 +40,13 @@ Use surface roles for the ground and shadows for separation. A strong shadow on 
 Use `shadow:<token>` for common elevation levels. The utility resolves values from `shadow-*` tokens and emits a stable `box-shadow: var(--shadow-*)` declaration; the active mode changes the variable value.
 
 ```html
-<!-- @MARK shadow:sm -->
-<article class="r:lg surface:raised shadow:sm">
+<!-- @MARK shadow-sm -->
+<article class="r-lg surface-raised shadow-sm">
   ...
 </article>
 
-<!-- @MARK shadow:lg -->
-<div class="r:lg surface:overlay shadow:lg">
+<!-- @MARK shadow-lg -->
+<div class="r-lg surface-overlay shadow-lg">
   ...
 </div>
 ```
@@ -54,7 +54,7 @@ Use `shadow:<token>` for common elevation levels. The utility resolves values fr
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow:sm', 'shadow:lg']}
+    {['shadow-sm', 'shadow-lg']}
   </Class2CSS>
 </details>
 
@@ -75,8 +75,8 @@ This lets elevation utilities use `sm`, `lg`, or project token names without rep
 State elevation should communicate interaction, not decoration. A hover shadow can make a card feel liftable; a focus shadow should not replace an accessible focus indicator.
 
 ```html
-<!-- @MARK shadow:sm --><!-- @MARK shadow:md:hover --><!-- @MARK shadow:none@print -->
-<article class="shadow:sm shadow:md:hover shadow:none@print">
+<!-- @MARK shadow-sm --><!-- @MARK shadow-md:hover --><!-- @MARK shadow:none@print -->
+<article class="shadow-sm shadow-md:hover shadow:none@print">
   ...
 </article>
 ```
@@ -84,11 +84,11 @@ State elevation should communicate interaction, not decoration. A hover shadow c
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['shadow:sm', 'shadow:md:hover', 'shadow:none@print']}
+    {['shadow-sm', 'shadow-md:hover', 'shadow:none@print']}
   </Class2CSS>
 </details>
 
-Keep state changes small. Moving from `shadow:sm` to `shadow:md` is usually enough for hover. Jumping from `shadow:sm` to `shadow:2xl` makes a normal card feel like a modal.
+Keep state changes small. Moving from `shadow-sm` to `shadow-md` is usually enough for hover. Jumping from `shadow-sm` to `shadow-2xl` makes a normal card feel like a modal.
 
 ---
 
@@ -108,9 +108,9 @@ Override the same `shadow-*` keys in `@theme light` and `@theme dark` when your 
 ```
 
 ```html
-<!-- @MARK shadow:sm --><!-- @MARK shadow:lg -->
-<article class="shadow:sm">...</article>
-<div class="shadow:lg">...</div>
+<!-- @MARK shadow-sm --><!-- @MARK shadow-lg -->
+<article class="shadow-sm">...</article>
+<div class="shadow-lg">...</div>
 ```
 
 Promote repeated raw shadows into the scale. Keep one-off art direction in local markup or component CSS until it proves reusable. If a one-off shadow must differ by mode, prefer promoting it to a token instead of duplicating conditional raw values in markup.
@@ -121,9 +121,9 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 (x) Every panel competes for depth.
 
 ```html
-<main class="shadow:lg">
-  <section class="shadow:xl">
-    <article class="shadow:2xl">...</article>
+<main class="shadow-lg">
+  <section class="shadow-xl">
+    <article class="shadow-2xl">...</article>
   </section>
 </main>
 ```
@@ -131,9 +131,9 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 (o) Only the surfaces that need separation are elevated.
 
 ```html
-<main class="bg:surface-base">
-  <section class="bg:surface-base">
-    <article class="surface:raised shadow:sm">...</article>
+<main class="bg-surface-base">
+  <section class="bg-surface-base">
+    <article class="surface-raised shadow-sm">...</article>
   </section>
 </main>
 ```
@@ -141,8 +141,8 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 (x) Raw shadows become repeated product decisions without a name.
 
 ```html
-<article class="shadow:0|4px|12px|black/.12">...</article>
-<aside class="shadow:0|4px|12px|black/.12">...</aside>
+<article class="shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</article>
+<aside class="shadow:0|4px|12px|color-mix(in|oklab,oklch(0%|0|none)|12%,transparent)">...</aside>
 ```
 
 (o) Repeated decisions override a shadow scale token.
@@ -158,5 +158,5 @@ Promote repeated raw shadows into the scale. Keep one-off art direction in local
 ```
 
 ```html
-<aside class="shadow:sm">...</aside>
+<aside class="shadow-sm">...</aside>
 ```

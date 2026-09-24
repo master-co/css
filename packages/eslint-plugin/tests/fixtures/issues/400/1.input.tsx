@@ -33,7 +33,7 @@ export default function Select({ value, setValue, options: _options, width, heig
         }
       }}>
       <AntdSelect
-        className={clsx(borderColor ? `border:${borderColor}!_.ant-select-selector` : 'border:#000000!_.ant-select-selector', width ? `w:${width}` : 'w:100%', className)}
+        className={clsx(borderColor ? `border:${borderColor}!_.ant-select-selector` : 'border:#000000_.ant-select-selector!', width ? `w:${width}` : 'w:100%', className)}
         options={options}
         defaultValue={value}
         suffixIcon={<IconChevronDown size={16} stroke={3} color={'#001818'}/>}

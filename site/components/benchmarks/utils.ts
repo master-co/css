@@ -3,20 +3,20 @@ import type { BenchmarkColor, BenchmarkTone } from './types'
 export const benchmarkColors: BenchmarkColor[] = ['blue', 'green', 'yellow', 'cyan', 'red']
 
 export const benchmarkColorClasses: Record<BenchmarkColor, { background: string; text: string }> = {
-  yellow: { background: 'bg:yellow', text: 'text:yellow' },
-  green: { background: 'bg:green', text: 'text:green' },
-  cyan: { background: 'bg:cyan', text: 'text:cyan' },
-  blue: { background: 'bg:blue', text: 'text:blue' },
-  red: { background: 'bg:red', text: 'text:red' },
-  violet: { background: 'bg:violet', text: 'fg:violet' },
-  neutral: { background: 'bg:neutral', text: 'fg:neutral' }
+  yellow: { background: 'bg-yellow', text: 'text-yellow' },
+  green: { background: 'bg-green', text: 'text-green' },
+  cyan: { background: 'bg-cyan', text: 'text-cyan' },
+  blue: { background: 'bg-blue', text: 'text-blue' },
+  red: { background: 'bg-red', text: 'text-red' },
+  violet: { background: 'bg-violet', text: 'fg-violet' },
+  neutral: { background: 'bg-neutral', text: 'fg-neutral' }
 }
 
 export const benchmarkToneTextClasses: Record<BenchmarkTone, string> = {
-  neutral: 'text:muted',
-  good: 'text:green',
-  warn: 'text:yellow',
-  bad: 'text:red'
+  neutral: 'text-muted',
+  good: 'text-green',
+  warn: 'text-yellow',
+  bad: 'text-red'
 }
 
 export function clampPercent(value: number, max: number) {

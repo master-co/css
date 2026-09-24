@@ -94,7 +94,7 @@ import { createServerRenderer } from '@master/css-server'
 
 const renderer = createServerRenderer({ manifest })
 const first = renderer.renderHTML('<div class="text:center"></div>')
-const second = renderer.renderHTML('<div class="fg:red"></div>')
+const second = renderer.renderHTML('<div class="fg-red"></div>')
 
 renderer.dispose()
 ```

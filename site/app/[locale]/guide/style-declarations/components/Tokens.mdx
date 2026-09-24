@@ -1,35 +1,28 @@
-export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional native-value token comparison source */ `
-  <!-- @MARK fit-content --><!-- @MARK border-box --><!-- @MARK column -->
-  <p class="width:fit-content box-sizing:border-box flex-direction:column">
-`
-export const code2 =`
-  <!-- @MARK w:fit --><!-- @MARK border-box --><!-- @MARK flex-col -->
-  <p class="width:fit border-box flex-col">
-`
-/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
+Named tokens use a hyphen: `p-md`, `font-mono`, and `fg-red`. Direct values use a colon: `p:1rem`, `font-family:mono`, and `fg:red`.
 
-Some native values are descriptive but long in markup, especially when they appear in every component.
-<Code lang="html">
-  {code1}
-</Code>
+These forms have different identities. `fg:red` uses CSS red, while `fg-red` selects the configured color token. `font-family:mono` names the native font family `mono`; it does not look up a token. Direct declarations do not resolve token names inside functions or compound values either.
 
-(o) Use variable aliases and [ambiguous shorthands](#ambiguous-shorthands) to keep the same meaning with fewer characters. <Dropped p1={code1} p2={code2} target="class" />
-<Code lang="html">
-  {code2}
-</Code>
-
-Master CSS ships with predefined theme tokens for common primitive values. You can also define [theme tokens](/guide/theme) for your own design system, then use semantic values instead of repeating raw CSS values.
+Define project tokens in CSS:
 
 ```css name=index.css
 @theme {
-  --spacing-sm: 0.625rem;
+  --spacing-card: 0.625rem;
   --color-primary: #000000;
 }
 ```
 
-Apply custom tokens using contextual shorthand:
+Then use their names:
 
 ```html
-<!-- @MARK m:sm --><!-- @MARK bg:primary -->
-<div class="m:sm bg:primary">...</div>
+<div class="m-card bg-primary">...</div>
 ```
+
+Use `var(--name)` to combine tokens in a direct value:
+
+```html
+<div class="m:var(--spacing-sm)|var(--spacing-md)">...</div>
+```
+
+There is no implicit numeric scale such as `p-4`: it works only if the project defines a matching token. State, query, important, and group syntax apply to both forms.
+
+Within the same layer, condition, selector, and property priority, a direct value follows a token rule. Both `p-md p:8px` and `p:8px p-md` therefore use `8px`. Shorthand/longhand and important priorities still apply; HTML class order does not decide the winner.

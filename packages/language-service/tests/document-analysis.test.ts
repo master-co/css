@@ -9,10 +9,10 @@ test('document features share analysis until the document or effective settings 
   const session = createToolingSessionSync({ manifest: defaultManifestJSON as unknown as MasterCSSManifest })
   const service = new MasterCSSLanguageService({ embeddedSyntaxHighlighting: 'always', classAttributes: ['data-css'] }, { session })
   const analyze = vi.spyOn(session, 'analyzeDocument')
-  const document = TextDocument.create('file:///cache.html', 'html', 1, '<div class="fg:red" data-next="block"/>')
+  const document = TextDocument.create('file:///cache.html', 'html', 1, '<div class="fg-red" data-next="block"/>')
   const position = document.positionAt(14)
   try {
-    expect(service.getClassPosition(document, position)?.token).toBe('fg:red')
+    expect(service.getClassPosition(document, position)?.token).toBe('fg-red')
     service.getClassContextPositions(document, position)
     service.renderSemanticTokens(document)
     service.renderSemanticTokensAtPosition(document, position)

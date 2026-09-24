@@ -8,8 +8,8 @@
 <DemoExample page="max-height" section="cap-a-vertical-region" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="overflow-y:auto max-h:24x" tabindex="0" role="region" aria-label="Layer notes"><div id="item-3" class="h:36x p:sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.<br />Scroll to see the final line.<br />End of the example.</div></div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="overflow-y:auto max-h:6rem" tabindex="0" role="region" aria-label="Layer notes"><div id="item-3" class="h:9rem p-sm leading:20px">Keep room for content.<br />Let each line stay readable.<br />A minimum can grow.<br />Content decides the height.<br />Scroll to see the final line.<br />End of the example.</div></div>
 </div>
 ```
 
@@ -22,15 +22,15 @@ The image box is 240px wide with a preferred 160px height and a 96px cap. `objec
 
 ```html
 <!-- Contain the complete image -->
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <img id="target" class="block h:40x w:full max-h:24x object-contain" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <img id="target" class="block h:10rem w:100% max-h:6rem object-contain" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
 ```html
 <!-- Cover the box with a crop -->
-<div id="layout" class="w:60x" role="group" aria-label="Available space">
-  <img id="target" class="block h:40x w:full max-h:24x object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
+<div id="layout" class="w:15rem" role="group" aria-label="Available space">
+  <img id="target" class="block h:10rem w:100% max-h:6rem object-cover" src="/demo/landscape.svg" width="320" height="200" alt="Sun above blue and violet mountains" />
 </div>
 ```
 
@@ -42,8 +42,8 @@ Object fitting affects the pixels inside a replaced element. It does not change 
 <DemoExample page="max-height" section="use-viewport-caps" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="overflow:auto max-h:50dvh" tabindex="0" role="region" aria-label="Viewport-capped notes"><div id="item-3" class="flex flex-col justify-between h:70x p:sm"><span>Start of content</span><span>End of content</span></div></div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="overflow:auto max-h:50dvh" tabindex="0" role="region" aria-label="Viewport-capped notes"><div id="item-3" class="flex flex-col justify-between h:17.5rem p-sm"><span>Start of content</span><span>End of content</span></div></div>
 </div>
 ```
 
@@ -55,7 +55,7 @@ Resize past `sm` to raise the scrolling region’s maximum from 80px to 128px. T
 <DemoExample page="max-height" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="overflow-y:auto max-h:20x max-h:32x@sm" tabindex="0" role="region" aria-label="Responsive layer list"><div id="item-3" class="flex flex-col justify-between h:40x p:sm"><span>First layer</span><span>Last layer</span></div></div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="overflow-y:auto max-h:5rem max-h:8rem@sm" tabindex="0" role="region" aria-label="Responsive layer list"><div id="item-3" class="flex flex-col justify-between h:10rem p-sm"><span>First layer</span><span>Last layer</span></div></div>
 </div>
 ```

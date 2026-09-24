@@ -130,18 +130,23 @@ export interface CSSDirectiveUtilityPatternDefinition {
 
 export interface CSSDirectiveUtilityDynamicDefinition {
   key: string
-  variableAliasRefs?: string[]
   kind?: MasterCSSManifestUtilityKind
   values?: string[]
   arbitrary?: boolean
 }
 
+export interface CSSDirectiveUtilityTokenDefinition {
+  prefix: string
+  variableAliasRefs: string[]
+}
+
 export interface CSSDirectiveUtilityDefinition {
   name: string
-  type?: 'static' | 'pattern' | 'dynamic'
+  type?: 'static' | 'pattern' | 'dynamic' | 'token'
   layer?: CSSDirectiveLayerName
   pattern?: CSSDirectiveUtilityPatternDefinition
   dynamic?: CSSDirectiveUtilityDynamicDefinition
+  token?: CSSDirectiveUtilityTokenDefinition
   declarations?: CSSDirectiveDeclarations
   conditions?: string[]
   conditionPath?: CSSDirectiveConditionPathEntry[]
@@ -153,7 +158,6 @@ export interface CSSDirectiveManifestInput {
   variables?: CSSDirectiveVariableDefinition[]
   utilities?: CSSDirectiveUtilityDefinition[]
   rootSize?: number
-  baseUnit?: number
   defaultMode?: CSSDirectiveDefaultMode
   scope?: string
   important?: boolean

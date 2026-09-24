@@ -59,7 +59,7 @@ export default function Header({ top, stickable, fixed = true, ...props }: any) 
 
   return (
     <nav ref={ref}
-      className={clsx('z:1040 w:full white-space:nowrap contain:layout|style bb:1px|solid|subtle:not(.at-top) bg:surface-base/.9:not(.at-top) backdrop-filter:blur(25px):not(.at-top) hidden@print app-wrapper pt:env(safe-area-inset-top)',
+      className={clsx('z:1040 w:100% white-space:nowrap contain:layout|style bb:1px|solid|var(--color-line-subtle):not(.at-top) bg-surface-base/.9:not(.at-top) backdrop-filter:blur(25px):not(.at-top) hidden@print app-wrapper pt:env(safe-area-inset-top)',
         props.className,
         {
           'transition:transform|.2s,height|.2s,padding|.2s,backdrop-filter|.2s,background-color|.2s': stickable,

@@ -8,16 +8,16 @@ Use `justify-between` to place the first and last flex items at the main-axis ed
 <DemoExample page="justify-content" section="align-items-on-the-main-axis" />
 
 ```html
-<div id="layout" class="flex justify-between w:70x max-w:full">
-  <div id="target" class="flex:none h:12x w:20x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:20x p:sm">02</div>
+<div id="layout" class="flex justify-between w:17.5rem max-w:100%">
+  <div id="target" class="flex:none h:3rem w:5rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:5rem p-sm">02</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-template-columns:20x|20x grid-template-rows:48px justify-between w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
+<div id="layout" class="grid grid-template-columns:5rem|5rem grid-template-rows:48px justify-between w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
 </div>
 ```
 
@@ -36,30 +36,30 @@ In horizontal writing, a row flexbox and Grid both distribute these boxes horizo
 <DemoExample page="justify-content" section="start-center-or-end-a-group" />
 
 ```html
-<div id="layout" class="flex justify-start gap:md w:70x max-w:full">
-  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+<div id="layout" class="flex justify-start gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none h:3rem w:4rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:4rem p-sm">02</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex justify-center gap:md w:70x max-w:full">
-  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+<div id="layout" class="flex justify-center gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none h:3rem w:4rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:4rem p-sm">02</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex justify-end gap:md w:70x max-w:full">
-  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+<div id="layout" class="flex justify-end gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none h:3rem w:4rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:4rem p-sm">02</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex flex-col justify-center gap:md h:56x w:70x max-w:full">
-  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+<div id="layout" class="flex flex-col justify-center gap-md h:14rem w:17.5rem max-w:100%">
+  <div id="target" class="flex:none h:3rem w:4rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:4rem p-sm">02</div>
 </div>
 ```
 
@@ -69,30 +69,30 @@ Compare `justify-between`, `justify-around` and `justify-evenly` with three fixe
 <DemoExample page="justify-content" section="distribute-extra-space" />
 
 ```html
-<div id="layout" class="flex justify-between gap:md w:70x max-w:full">
-  <div id="target" class="flex:none size:12x p:sm">01</div>
-  <div id="peer" class="flex:none size:12x p:sm">02</div>
-  <div id="item-3" class="flex:none size:12x p:sm">03</div>
+<div id="layout" class="flex justify-between gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none size:3rem p-sm">01</div>
+  <div id="peer" class="flex:none size:3rem p-sm">02</div>
+  <div id="item-3" class="flex:none size:3rem p-sm">03</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex justify-around gap:md w:70x max-w:full">
-  <div id="target" class="flex:none size:12x p:sm">01</div>
-  <div id="peer" class="flex:none size:12x p:sm">02</div>
-  <div id="item-3" class="flex:none size:12x p:sm">03</div>
+<div id="layout" class="flex justify-around gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none size:3rem p-sm">01</div>
+  <div id="peer" class="flex:none size:3rem p-sm">02</div>
+  <div id="item-3" class="flex:none size:3rem p-sm">03</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex justify-evenly gap:md w:70x max-w:full">
-  <div id="target" class="flex:none size:12x p:sm">01</div>
-  <div id="peer" class="flex:none size:12x p:sm">02</div>
-  <div id="item-3" class="flex:none size:12x p:sm">03</div>
+<div id="layout" class="flex justify-evenly gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex:none size:3rem p-sm">01</div>
+  <div id="peer" class="flex:none size:3rem p-sm">02</div>
+  <div id="item-3" class="flex:none size:3rem p-sm">03</div>
 </div>
 ```
 
-The authored 16px `gap:md` is a minimum gap. Distributed space is added between the items, so with a nonzero gap even `justify-evenly` has larger inner gaps than outer edges. Flexible growth or automatic margins can consume the free space before this alignment runs.
+The authored 16px `gap-md` is a minimum gap. Distributed space is added between the items, so with a nonzero gap even `justify-evenly` has larger inner gaps than outer edges. Flexible growth or automatic margins can consume the free space before this alignment runs.
 
 ### Keep overflowing content reachable \{#use-explicit-css-values\}
 Pass a native multiword value with pipes: `justify-content:safe|center` centers content when it fits and falls back to the start when it would overflow. Compare a 280px item inside a 240px scrollport with explicit unsafe centering, then a 192px item that fits.
@@ -100,20 +100,20 @@ Pass a native multiword value with pipes: `justify-content:safe|center` centers 
 <DemoExample page="justify-content" section="use-explicit-css-values" />
 
 ```html
-<div id="layout" class="flex overflow:auto justify-content:safe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Safe centered overflow">
-  <div id="target" class="flex flex:none justify-between h:16x w:70x p:xs"><span>Start</span><span>End</span></div>
+<div id="layout" class="flex overflow:auto justify-content:safe|center w:15rem max-w:100%" tabindex="0" role="region" aria-label="Safe centered overflow">
+  <div id="target" class="flex flex:none justify-between h:4rem w:17.5rem p-xs"><span>Start</span><span>End</span></div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex overflow:auto justify-content:unsafe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Unsafe centered overflow">
-  <div id="target" class="flex flex:none justify-between h:16x w:70x p:xs"><span>Start</span><span>End</span></div>
+<div id="layout" class="flex overflow:auto justify-content:unsafe|center w:15rem max-w:100%" tabindex="0" role="region" aria-label="Unsafe centered overflow">
+  <div id="target" class="flex flex:none justify-between h:4rem w:17.5rem p-xs"><span>Start</span><span>End</span></div>
 </div>
 ```
 
 ```html
-<div id="layout" class="flex overflow:auto justify-content:safe|center w:60x max-w:full" tabindex="0" role="region" aria-label="Safe centered fitting content">
-  <div id="target" class="flex flex:none justify-between h:16x w:48x p:xs"><span>Start</span><span>End</span></div>
+<div id="layout" class="flex overflow:auto justify-content:safe|center w:15rem max-w:100%" tabindex="0" role="region" aria-label="Safe centered fitting content">
+  <div id="target" class="flex flex:none justify-between h:4rem w:12rem p-xs"><span>Start</span><span>End</span></div>
 </div>
 ```
 
@@ -125,8 +125,8 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="justify-content" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex justify-start gap:md w:70x max-w:full justify-center@sm justify-between@lg">
-  <div id="target" class="flex:none h:12x w:16x p:sm">01</div>
-  <div id="peer" class="flex:none h:12x w:16x p:sm">02</div>
+<div id="layout" class="flex justify-start gap-md w:17.5rem max-w:100% justify-center@sm justify-between@lg">
+  <div id="target" class="flex:none h:3rem w:4rem p-sm">01</div>
+  <div id="peer" class="flex:none h:3rem w:4rem p-sm">02</div>
 </div>
 ```

@@ -450,7 +450,7 @@ pub(crate) fn canonicalize_partial_value(
     parsed: &ParsedClassParts,
     engine: &EngineSession,
     variable_keys: &[String],
-    variable_values: &HashMap<String, String>,
+    _variable_values: &HashMap<String, String>,
 ) -> Result<(), EngineError> {
     if entry.family.is_preferred_key(parsed.key.as_deref())
         || (parsed.key.is_none() && entry.family == PartialConflictFamily::BorderStyle)
@@ -469,54 +469,15 @@ pub(crate) fn canonicalize_partial_value(
         let candidate_rule = &inspection.rules[0];
         if candidate_rule.layer == UtilityLayerName::Utilities
             && equal_variant_scope(&entry.rule, candidate_rule)
-            && (collect_rule_declarations(&candidate_rule.text) == entry.declarations
-                || candidate_resolves_to_declarations(
-                    candidate_rule,
-                    &entry.declarations,
-                    variable_values,
-                ))
+            && candidate_rule.utility_type == entry.rule.utility_type
+            && candidate_rule.priority.value_priority == entry.rule.priority.value_priority
+            && collect_rule_declarations(&candidate_rule.text) == entry.declarations
         {
             entry.value = value.clone();
             return Ok(());
         }
     }
     Ok(())
-}
-
-pub(crate) fn normalize_css_variable_value(value: &str) -> String {
-    if let Some(value) = value.strip_prefix("-.") {
-        format!("-0.{value}")
-    } else if let Some(value) = value.strip_prefix('.') {
-        format!("0.{value}")
-    } else {
-        value.to_owned()
-    }
-}
-
-pub(crate) fn candidate_resolves_to_declarations(
-    candidate_rule: &GeneratedRuleIr,
-    source_declarations: &[(String, String)],
-    variable_values: &HashMap<String, String>,
-) -> bool {
-    let candidate_declarations = collect_rule_declarations(&candidate_rule.text);
-    if candidate_declarations.len() != source_declarations.len()
-        || candidate_declarations
-            .iter()
-            .map(|(property, _)| property)
-            .ne(source_declarations.iter().map(|(property, _)| property))
-    {
-        return false;
-    }
-    let Some(variable_name) = candidate_rule.variable_names.first() else {
-        return false;
-    };
-    let Some(variable_value) = variable_values.get(variable_name) else {
-        return false;
-    };
-    let variable_value = normalize_css_variable_value(variable_value);
-    source_declarations
-        .iter()
-        .all(|(_, value)| normalize_css_variable_value(value) == variable_value)
 }
 
 pub(crate) fn get_replacement_class_names(
@@ -572,11 +533,20 @@ pub(crate) fn validate_partial_replacement(
     source: &PartialConflictEntry,
     engine: &EngineSession,
 ) -> Result<bool, EngineError> {
+    // Static enum rules use their class names as the cascade tie-breaker.
+    // Splitting one into several names changes that position even when the
+    // declarations match. There is no semantic sort key proving equivalence.
+    if source.rule.priority.sort_key.is_empty() {
+        return Ok(false);
+    }
     for class_name in class_names {
         let inspection = engine.inspect(class_name)?;
         if inspection.rules.len() != 1
             || inspection.rules[0].layer != UtilityLayerName::Utilities
             || !equal_variant_scope(&source.rule, &inspection.rules[0])
+            || source.rule.utility_type != inspection.rules[0].utility_type
+            || source.rule.priority.value_priority != inspection.rules[0].priority.value_priority
+            || source.rule.priority.sort_key != inspection.rules[0].priority.sort_key
         {
             return Ok(false);
         }

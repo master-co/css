@@ -12,8 +12,8 @@ Stroke paints along a shape’s path. Give it a visible color and width, and use
 <svg id="target" role="img"
   aria-label="Triangle"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fg:blue-60 fill:none stroke:current
-         stroke:1.5">
+  class="block fg-blue-60 fill:none stroke-current
+         stroke-width:1.5">
   <path d="M12 4 20 20H4Z" />
 </svg>
 ```
@@ -23,7 +23,7 @@ Stroke paints along a shape’s path. Give it a visible color and width, and use
 <svg id="target" role="img"
   aria-label="Triangle"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:blue-60 stroke:none stroke:1.5">
+  class="block fill-blue-60 stroke:none stroke-width:1.5">
   <path d="M12 4 20 20H4Z" />
 </svg>
 ```
@@ -31,11 +31,11 @@ Stroke paints along a shape’s path. Give it a visible color and width, and use
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['stroke:current', 'stroke:none']}
+    {['stroke-current', 'stroke:none']}
   </Class2CSS>
 </details>
 
-`stroke:current` follows the shape’s computed color. The properties declared on each SVG are inherited by its path. The second example keeps fill visible so removing stroke does not hide the entire shape.
+`stroke-current` follows the shape’s computed color. The properties declared on each SVG are inherited by its path. The second example keeps fill visible so removing stroke does not hide the entire shape.
 
 ### Use theme colors \{#use-theme-colors\}
 Compare the mode-aware `blue` alias with the fixed `blue-60` palette step. Both examples keep the same paths, round caps and 1.5-unit stroke width.
@@ -47,8 +47,8 @@ Compare the mode-aware `blue` alias with the fixed `blue-60` palette step. Both 
 <svg id="target" role="img"
   aria-label="Three blue horizontal strokes"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:none stroke:blue stroke-linecap:round
-         stroke:1.5">
+  class="block fill:none stroke-blue stroke-linecap:round
+         stroke-width:1.5">
   <path d="M4 7h16M4 12h12M4 17h16" />
 </svg>
 ```
@@ -58,8 +58,8 @@ Compare the mode-aware `blue` alias with the fixed `blue-60` palette step. Both 
 <svg id="target" role="img"
   aria-label="Three blue horizontal strokes"
   width="96" height="96" viewBox="0 0 24 24"
-  class="block fill:none stroke:blue-60 stroke-linecap:round
-         stroke:1.5">
+  class="block fill:none stroke-blue-60 stroke-linecap:round
+         stroke-width:1.5">
   <path d="M4 7h16M4 12h12M4 17h16" />
 </svg>
 ```
@@ -74,16 +74,16 @@ Hover or keyboard-focus the button to change its icon stroke. Print restores the
 ```html
 <!-- Hover or focus · inherited icon stroke -->
 <button id="target" type="button"
-  class="inline-flex items-center gap:xs px:md py:sm
-         b:1px|solid|base r:sm font:md
-         bg:surface-base text:body stroke:current
-         stroke:current@print
-         stroke:blue-60:hover@screen
-         stroke:blue-60:focus-visible@screen">
+  class="inline-flex items-center gap-xs px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm font-md
+         bg-surface-base text-body stroke-current
+         stroke-current@print
+         stroke-blue-60:hover@screen
+         stroke-blue-60:focus-visible@screen">
   <svg width="32" height="32" viewBox="0 0 24 24"
     aria-hidden="true"
     class="block fill:none stroke-linecap:round
-         stroke:2">
+         stroke-width:2">
     <path d="m4 8 8-4 8 4-8 4Zm0 5 8 4 8-4M4 18l8 4 8-4" />
   </svg>
   <span>Open layers</span>

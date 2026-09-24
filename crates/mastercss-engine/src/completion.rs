@@ -1,9 +1,9 @@
 use super::{
-    BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_VALUE_NAMESPACES, CompiledVariable,
+    BUILTIN_KEY_ALIASES, BUILTIN_TOKEN_NAMESPACES, CompiledVariable,
     EngineClassCompletionCandidate, EngineClassCompletionKind, EngineColorToken, EngineError,
     EngineSession, HashSet, ManifestProjection, UtilityDefinition, UtilityEmit, UtilityLayerName,
-    UtilityMatcher, Value, add_unique_string, canonicalize_class_name, find_matching_parenthesis,
-    match_utility, selector_token_to_template, split_dynamic_value_state, utf16_len,
+    UtilityMatcher, Value, add_unique_string, find_matching_parenthesis,
+    selector_token_to_template, split_dynamic_value_state, utf16_len,
 };
 
 pub(crate) fn utility_completion_metadata(
@@ -18,17 +18,16 @@ pub(crate) fn utility_completion_metadata(
                     add_unique_string(&mut keys, key);
                 }
             }
-            UtilityMatcher::Variable {
-                keys: matcher_keys, ..
-            }
-            | UtilityMatcher::Value {
+            UtilityMatcher::Value {
                 keys: matcher_keys, ..
             } => {
                 for key in matcher_keys {
                     add_unique_string(&mut alias_groups, key);
                 }
             }
-            UtilityMatcher::Static { .. } | UtilityMatcher::Pattern { .. } => {}
+            UtilityMatcher::Static { .. }
+            | UtilityMatcher::Pattern { .. }
+            | UtilityMatcher::Token { .. } => {}
         }
     }
     (keys, alias_groups)
@@ -151,31 +150,54 @@ pub(crate) fn push_utility_value_completion_candidates(
     utility: &UtilityDefinition,
     keys: &[String],
 ) {
+    let prefixes = utility
+        .matchers
+        .iter()
+        .filter_map(|matcher| match matcher {
+            UtilityMatcher::Token { prefix } => Some(prefix.as_str()),
+            _ => None,
+        })
+        .collect::<Vec<_>>();
     for (value_key, variable_name) in &utility.variable_entries {
         let Some(variable) = manifest.compiled_variables.get(variable_name) else {
             continue;
         };
-        for key in keys {
-            let label = format!("{key}:{value_key}");
-            push_class_completion_candidate(
-                candidates,
-                labels,
-                EngineClassCompletionCandidate {
-                    label: label.clone(),
-                    kind: EngineClassCompletionKind::Value,
-                    detail: Some(format!(
-                        "(scope) {}",
-                        variable.value.as_deref().unwrap_or(variable.name.as_str())
-                    )),
-                    documentation_class_name: Some(label),
-                    sort_text: Some(variable_completion_sort_text(
-                        variable,
-                        value_key,
-                        manifest.settings.root_size,
-                    )),
-                    trigger_suggest: false,
-                },
-            );
+        for prefix in &prefixes {
+            let positive = format!("{prefix}{value_key}");
+            let mut named_labels = vec![positive.clone()];
+            if variable.variable_type == "number" && super::named::allows_negative_token(utility) {
+                named_labels.push(format!("-{positive}"));
+            }
+            for label in named_labels {
+                if super::named::matching_utilities(&label, manifest).is_empty() {
+                    continue;
+                }
+                push_class_completion_candidate(
+                    candidates,
+                    labels,
+                    EngineClassCompletionCandidate {
+                        label: label.clone(),
+                        kind: EngineClassCompletionKind::Value,
+                        detail: Some(format!(
+                            "(token --{}) {}",
+                            variable.name,
+                            variable.value.as_deref().unwrap_or(variable.name.as_str())
+                        )),
+                        documentation_class_name: Some(label),
+                        // Keep static names and property entrypoints discoverable
+                        // before the much larger named-token catalog.
+                        sort_text: Some(format!(
+                            "zzzz-token-{}",
+                            variable_completion_sort_text(
+                                variable,
+                                value_key,
+                                manifest.settings.root_size,
+                            )
+                        )),
+                        trigger_suggest: false,
+                    },
+                );
+            }
         }
     }
     let animation_property = match &utility.emit {
@@ -249,7 +271,7 @@ pub(crate) fn collect_class_completion_candidates(
                         }
                     }
                     UtilityMatcher::Key { .. }
-                    | UtilityMatcher::Variable { .. }
+                    | UtilityMatcher::Token { .. }
                     | UtilityMatcher::Value { .. } => {}
                 }
             }
@@ -313,7 +335,7 @@ pub(crate) fn collect_class_completion_candidates(
             Some((*canonical_key).to_owned()),
         );
     }
-    for (properties, _) in BUILTIN_NATIVE_VALUE_NAMESPACES {
+    for (properties, _) in BUILTIN_TOKEN_NAMESPACES {
         for property in *properties {
             push_property_completion_candidate(&mut candidates, &mut labels, property, None);
         }
@@ -380,7 +402,7 @@ pub(crate) fn collect_class_completion_candidates(
         );
     }
     for animation_name in manifest.animations.keys() {
-        for key in ["animate", "animation", "animation-name"] {
+        for key in ["animation", "animation-name"] {
             let label = format!("{key}:{animation_name}");
             push_class_completion_candidate(
                 &mut candidates,
@@ -404,35 +426,20 @@ pub(crate) fn resolve_color_token_value(
     class_name: Option<&str>,
     manifest: &ManifestProjection,
 ) -> Option<String> {
-    let raw_variable_token = color_token
-        .split_once('/')
-        .map_or(color_token, |(key, _)| key);
-    let variable_token = raw_variable_token
-        .strip_prefix('$')
-        .unwrap_or(raw_variable_token);
+    if class_name.is_none()
+        && let Some(prefix) = super::named::token_prefix(color_token, manifest)
+    {
+        let raw = color_token.strip_prefix(prefix)?;
+        let (value, _) = split_dynamic_value_state(raw);
+        return resolve_color_variable_value(&value, color_token, manifest);
+    }
     if let Some(class_name) = class_name
-        && let Some(value) = resolve_color_variable_value(variable_token, class_name, manifest)
+        && let Some(value) = resolve_color_variable_value(color_token, class_name, manifest)
     {
         return Some(value);
     }
-    let variable_name = manifest
-        .utilities
-        .iter()
-        .filter(|utility| {
-            utility.matchers.iter().any(|matcher| {
-                matches!(matcher, UtilityMatcher::Key { keys } if keys.iter().any(|key| key == "color"))
-            })
-        })
-        .find_map(|utility| utility.variables.get(variable_token))
-        .map(String::as_str)
-        .or_else(|| {
-            manifest
-                .compiled_variables
-                .contains_key(variable_token)
-                .then_some(variable_token)
-        })?;
-    let variable = manifest.compiled_variables.get(variable_name)?;
-    variable.value.clone()
+    let name = color_token.strip_prefix("var(--")?.strip_suffix(')')?;
+    resolved_color_variable(name, manifest)
 }
 
 impl EngineSession {
@@ -477,35 +484,37 @@ pub(crate) fn resolve_color_variable_value(
     class_name: &str,
     manifest: &ManifestProjection,
 ) -> Option<String> {
-    let canonical_class_name = canonicalize_class_name(class_name);
-    let variable_name = manifest
-        .utilities
-        .iter()
-        .filter(|utility| {
-            match_utility(class_name, utility, manifest).is_some()
-                || canonical_class_name.as_deref().is_some_and(|class_name| {
-                    match_utility(class_name, utility, manifest).is_some()
-                })
-        })
-        .find_map(|utility| utility.variables.get(token))?;
-    let mut variable = manifest.compiled_variables.get(variable_name)?;
+    if let Some(name) = token
+        .strip_prefix("var(--")
+        .and_then(|name| name.strip_suffix(')'))
+    {
+        return resolved_color_variable(name, manifest);
+    }
+    let source = class_name.strip_suffix('!').unwrap_or(class_name);
+    let token = token.split_once('/').map_or(token, |(name, _)| name);
+    let matches = super::named::matching_utilities(source, manifest);
+    let (index, matched) = matches.first()?;
+    if matched.matcher_type != super::UtilityMatcherType::Token {
+        return None;
+    }
+    let variable_name = manifest.utilities[*index].variables.get(token)?;
+    resolved_color_variable(variable_name, manifest)
+}
+
+fn resolved_color_variable(name: &str, manifest: &ManifestProjection) -> Option<String> {
+    let mut variable = manifest.compiled_variables.get(name)?;
     if !variable.namespace.starts_with("color") {
         return None;
     }
     for _ in 0..8 {
         let value = variable.value.as_deref()?;
-        let alias_name = value
-            .strip_prefix('$')
-            .map(|value| value.split_once('/').map_or(value, |(name, _)| name))
-            .or_else(|| {
-                value
-                    .strip_prefix("var(--")
-                    .and_then(|value| value.strip_suffix(')'))
-            });
-        let Some(alias_name) = alias_name else {
+        let alias = value
+            .strip_prefix("var(--")
+            .and_then(|value| value.strip_suffix(')'));
+        let Some(alias) = alias else {
             return Some(value.to_owned());
         };
-        variable = manifest.compiled_variables.get(alias_name)?;
+        variable = manifest.compiled_variables.get(alias)?;
     }
     None
 }
@@ -587,6 +596,19 @@ pub(crate) fn scan_color_value(
                         value: value[start..end].replace('|', " "),
                         alpha: None,
                     });
+                } else if identifier == "var" {
+                    if let Some(resolved) = resolve_color_token_value(
+                        &value[start..=closing],
+                        Some(class_name),
+                        manifest,
+                    ) {
+                        tokens.push(EngineColorToken {
+                            start: utf16_len(&class_name[..value_offset + start]),
+                            end: utf16_len(&class_name[..value_offset + closing + 1]),
+                            value: resolved,
+                            alpha: None,
+                        });
+                    }
                 } else {
                     scan_color_value(
                         &value[opening + 1..closing],
@@ -600,36 +622,14 @@ pub(crate) fn scan_color_value(
                 continue;
             }
 
-            let variable_token = identifier.strip_prefix('$').unwrap_or(identifier);
-            let mut end = cursor;
-            let mut alpha = None;
-            if value[cursor..].starts_with('/') {
-                let alpha_start = cursor + 1;
-                let mut alpha_end = alpha_start;
-                while alpha_end < value.len()
-                    && value[alpha_end..]
-                        .chars()
-                        .next()
-                        .is_some_and(|character| character.is_ascii_digit() || character == '.')
-                {
-                    alpha_end += 1;
-                }
-                if alpha_end > alpha_start {
-                    alpha = value[alpha_start..alpha_end].parse::<f64>().ok();
-                    end = alpha_end;
-                }
-            }
-            if let Some(resolved) =
-                resolve_color_variable_value(variable_token, class_name, manifest)
-            {
-                tokens.push(EngineColorToken {
-                    start: utf16_len(&class_name[..value_offset + start]),
-                    end: utf16_len(&class_name[..value_offset + end]),
-                    value: resolved,
-                    alpha,
-                });
-            }
-            cursor = end;
+            // Native identifiers are color candidates, never theme aliases.
+            // The host color parser decides whether an identifier is a CSS color.
+            tokens.push(EngineColorToken {
+                start: utf16_len(&class_name[..value_offset + start]),
+                end: utf16_len(&class_name[..value_offset + cursor]),
+                value: identifier.to_owned(),
+                alpha: None,
+            });
             continue;
         }
         cursor += character.len_utf8();
@@ -641,6 +641,27 @@ pub(crate) fn collect_engine_color_tokens(
     manifest: &ManifestProjection,
 ) -> Vec<EngineColorToken> {
     let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
+    if let Some(prefix) = super::named::token_prefix(semantic_class_name, manifest) {
+        let Some(raw) = semantic_class_name.strip_prefix(prefix) else {
+            return Vec::new();
+        };
+        let (value, _) = split_dynamic_value_state(raw);
+        let Some(resolved) = resolve_color_variable_value(&value, semantic_class_name, manifest)
+        else {
+            return Vec::new();
+        };
+        let alpha = value
+            .split_once('/')
+            .and_then(|(_, alpha)| alpha.parse().ok());
+        return vec![EngineColorToken {
+            // A color edit replaces the named class base with an explicit
+            // property:value. Keep selectors/conditions outside the edit range.
+            start: 0,
+            end: utf16_len(prefix) + utf16_len(&value),
+            value: resolved,
+            alpha,
+        }];
+    }
     let Some(colon) = semantic_class_name.find(':') else {
         return Vec::new();
     };

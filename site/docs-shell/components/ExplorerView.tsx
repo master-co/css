@@ -12,10 +12,10 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
       ? option.name.split('.').pop()
       : ''
     return (
-      <div className='flex flex-col w:full'>
+      <div className='flex flex-col w:100%'>
         <div className='flex items-center'>
-          {ext && <FileIcon name={option.name} ext={ext} className="size:1.2em mr:3xs" />}
-          {!ext && <FolderSvg className="size:1.2em mr:3xs" />}
+          {ext && <FileIcon name={option.name} ext={ext} className="size:1.2em mr-3xs" />}
+          {!ext && <FolderSvg className="size:1.2em mr-3xs" />}
           {option.name}
         </div>
         {option.children?.length &&
@@ -28,7 +28,7 @@ export default function ExplorerView({ children }: { children: ExplorerViewItemO
   }
   return (
     <div className='code-wrapper'>
-      <div className="px:5x text:strong code-block">
+      <div className="px:1.25rem text-strong code-block">
         {children.map((option, index) => (
           <Item {...option} key={option.name + index} />
         ))}

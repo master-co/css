@@ -44,17 +44,17 @@ describe('rc.87 Svelte server hook renderer', () => {
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
         '<html><head><meta class="block">',
-        '</head><body><div class="fg:red"></div></body></html>'
+        '</head><body><div class="fg-red"></div></body></html>'
       ]
     )
 
     expect(html).toContain('<style id="master-css">')
     expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).toContain('"className":"block"')
-    expect(html).toContain('"className":"fg:red"')
+    expect(html).toContain('"className":"fg-red"')
     expect(countManifestScripts(html)).toBe(1)
     expect(html).toContain('.block')
-    expect(html).toContain('.fg\\:red')
+    expect(html).toContain('.fg-red')
     expect(html).toContain('</script></head>')
   })
 
@@ -63,13 +63,13 @@ describe('rc.87 Svelte server hook renderer', () => {
       createMasterCSSHandle({ manifest: defaultManifest }),
       [
         '<html><head><meta class="block"></head>',
-        '<body><div class="fg:red"></div></body></html>'
+        '<body><div class="fg-red"></div></body></html>'
       ]
     )
 
     expect(html).toContain('.block')
-    expect(html).toContain('.fg\\:red')
-    expect(html).toContain('<body><div class="fg:red"></div>')
+    expect(html).toContain('.fg-red')
+    expect(html).toContain('<body><div class="fg-red"></div>')
   })
 
   test('supports an external hydration manifest writer', async () => {
@@ -112,11 +112,11 @@ describe('rc.87 Svelte server hook renderer', () => {
         }
       }
     }), [
-      '<html><head></head><body><div class="bg:red-60 animate:fade"></div></body></html>'
+      '<html><head></head><body><div class="bg-red-60 animate-fade"></div></body></html>'
     ])
 
-    expect(html).toContain('.bg\\:red-60{background-color:var(--color-red-60)}')
-    expect(html).toContain('.animate\\:fade{animation:var(--animate-fade)}')
+    expect(html).toContain('.bg-red-60{background-color:var(--color-red-60)}')
+    expect(html).toContain('.animate-fade{animation:var(--animate-fade)}')
     expect(html).not.toContain('--color-red-60:')
     expect(html).not.toContain('--animate-fade:')
     expect(html).not.toContain('@keyframes fade')

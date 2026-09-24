@@ -11,8 +11,8 @@ export default () => (
         priority={true}
         alt="hello world"
       />
-      <div className="abs inset:0 h:fit m:auto mix-blend-mode:overlay animation:flash|3s|infinite">
-        <h1 className="m:0 font:7vw font:heavy text-center fg:white font:5xl@xs">
+      <div className="abs inset:0 h:fit-content m:auto mix-blend-mode:overlay animation:flash|3s|infinite">
+        <h1 className="m:0 font-size:7vw font-heavy text-center fg-white font-5xl@xs">
           Hello, World!
         </h1>
       </div>

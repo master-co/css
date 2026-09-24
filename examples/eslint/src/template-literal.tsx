@@ -3,8 +3,8 @@ export default function Componennt() {
     <div className={`
       block
       text-center
-      fg:blue
-      font:16px
+      fg-blue
+      font-size:16px
     `}></div>
   )
 }

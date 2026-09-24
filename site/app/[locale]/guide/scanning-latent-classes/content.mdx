@@ -3,7 +3,7 @@
 Static scanning reads source text; it does not run your application. When a component selects a status color, put each complete class in the source:
 
 ```js
-const className = error ? 'bg:red-60' : 'bg:green-60'
+const className = error ? 'bg-red-60' : 'bg-green-60'
 ```
 
 Avoid assembling the utility from separate `bg:` and color fragments. The [complete-class contract](/reference/rules/extraction#complete-classes) explains why the scanner cannot infer that result.

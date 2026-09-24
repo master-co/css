@@ -8,10 +8,10 @@
 <DemoExample page="grid-template-columns" section="define-explicit-columns" />
 
 ```html
-<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:64px|1fr|48px gap:md w:70x max-w:full">
-  <div id="peer" class="p:sm">A</div>
-  <div id="target" class="p:sm">1fr</div>
-  <div id="item-3" class="p:sm">C</div>
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:64px|1fr|48px gap-md w:17.5rem max-w:100%">
+  <div id="peer" class="p-sm">A</div>
+  <div id="target" class="p-sm">1fr</div>
+  <div id="item-3" class="p-sm">C</div>
 </div>
 ```
 
@@ -23,16 +23,16 @@ The track list alone does not enable Grid; include `grid` on the parent. Additio
 <DemoExample page="grid-template-columns" section="use-minmax" />
 
 ```html
-<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:1fr|2fr gap:md w:70x max-w:full">
-  <div id="target" class="overflow:clip p:sm"><span class="block w:48x">192px content</span></div>
-  <div id="peer" class="p:sm">2</div>
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:1fr|2fr gap-md w:17.5rem max-w:100%">
+  <div id="target" class="overflow:clip p-sm"><span class="block w:12rem">192px content</span></div>
+  <div id="peer" class="p-sm">2</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:minmax(0,1fr)|2fr gap:md w:70x max-w:full">
-  <div id="target" class="overflow:clip p:sm"><span class="block w:48x">192px content</span></div>
-  <div id="peer" class="p:sm">2</div>
+<div id="layout" class="grid grid-auto-rows:64px grid-template-columns:minmax(0,1fr)|2fr gap-md w:17.5rem max-w:100%">
+  <div id="target" class="overflow:clip p-sm"><span class="block w:12rem">192px content</span></div>
+  <div id="peer" class="p-sm">2</div>
 </div>
 ```
 
@@ -44,10 +44,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-template-columns" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-auto-rows:48px grid-template-columns:1fr|1fr gap:md w:70x max-w:full grid-template-columns:80px|1fr@sm">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid-auto-rows:48px grid-template-columns:1fr|1fr gap-md w:17.5rem max-w:100% grid-template-columns:80px|1fr@sm">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```

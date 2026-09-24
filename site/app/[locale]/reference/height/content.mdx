@@ -3,55 +3,55 @@
 
 ## Examples \{#examples\}
 ### Set a fixed height \{#set-a-fixed-height\}
-`h:*` sets the physical height. Here `h:12x` makes the border box 48px tall, including its padding. Use a fixed height when the amount of visible content is intentionally bounded.
+`h:*` sets the physical height. Here `h:3rem` makes the border box 48px tall, including its padding. Use a fixed height when the amount of visible content is intentionally bounded.
 
 <DemoExample page="height" section="set-a-fixed-height" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:12x p:sm">48px tall</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:3rem p-sm">48px tall</div>
 </div>
 ```
 
 A fixed height does not clip excess content by itself. Use [min-height](/reference/min-height) when the region should grow, or choose an explicit [overflow](/reference/overflow) policy.
 
 ### Fill a parent height \{#fill-a-parent-height\}
-`h:full` is `height:100%`. In ordinary block flow, it fills a definite parent height. Compare a 160px parent with an automatic-height parent: the latter child follows its content instead of inventing a 160px reference.
+`h:100%` is `height:100%`. In ordinary block flow, it fills a definite parent height. Compare a 160px parent with an automatic-height parent: the latter child follows its content instead of inventing a 160px reference.
 
 <DemoExample page="height" section="fill-a-parent-height" />
 
 ```html
 <!-- Definite parent · 160px -->
-<div id="layout" class="h:40x w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:full p:sm leading:20px">One line</div>
+<div id="layout" class="h:10rem w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:100% p-sm leading:20px">One line</div>
 </div>
 ```
 
 ```html
 <!-- Automatic parent -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:full p:sm leading:20px">One line</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:100% p-sm leading:20px">One line</div>
 </div>
 ```
 
 Percentage heights depend on the containing block and layout mode. A parent’s content-driven height is not a definite percentage reference in this normal-flow example.
 
 ### Use viewport and intrinsic values \{#use-viewport-and-intrinsic-values\}
-Viewport units refer to the actual browsing context. This iframe is 320px tall, so `h:50dvh` produces 160px. The second panel uses `h:fit` and follows two lines of content instead.
+Viewport units refer to the actual browsing context. This iframe is 320px tall, so `h:50dvh` produces 160px. The second panel uses `h:fit-content` and follows two lines of content instead.
 
 <DemoExample page="height" section="use-viewport-and-intrinsic-values" />
 
 ```html
 <!-- Half the real viewport -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:50dvh p:sm">50dvh</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:50dvh p-sm">50dvh</div>
 </div>
 ```
 
 ```html
 <!-- Content height -->
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:fit p:sm leading:20px">First line<br />Second line</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:fit-content p-sm leading:20px">First line<br />Second line</div>
 </div>
 ```
 
@@ -63,8 +63,8 @@ For a fixed square control, [size](/reference/size) sets width and height togeth
 <DemoExample page="height" section="size-both-axes-together" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <button id="target" class="grid place-items:center size:10x round p:0 b:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <button id="target" class="grid place-items:center size:2.5rem round p:0 border-width:0" type="button" aria-label="Add layer"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg></button>
 </div>
 ```
 
@@ -74,7 +74,7 @@ Resize past `sm` to change the panel from 48px to 80px high. Its width and conte
 <DemoExample page="height" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="w:70x max-w:full" role="group" aria-label="Available space">
-  <div id="target" class="h:12x p:sm h:20x@sm">Responsive height</div>
+<div id="layout" class="w:17.5rem max-w:100%" role="group" aria-label="Available space">
+  <div id="target" class="h:3rem p-sm h:5rem@sm">Responsive height</div>
 </div>
 ```

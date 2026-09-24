@@ -162,6 +162,7 @@ export interface NativeBinding {
   prepareCssStylesheetBundleJson(requestJSON: string): string
   renderCssStylesheetBundleJson(requestJSON: string): string
   compileCssStylesheetGraphJson(requestJSON: string): string
+  migrateRcJson(requestJSON: string): string
   inspectCssJson(source: string): string
   createInspectionReportJson(inputJSON: string): string
   LanguageSession: new (manifestJSON: string) => NativeLanguageSession

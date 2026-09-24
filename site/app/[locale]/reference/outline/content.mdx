@@ -12,11 +12,11 @@ Combine width, style and color in one outline shorthand. Compare an explicit 4px
 <!-- Full shorthand · explicit components -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:4px|solid|blue
-         outline-offset:3xs font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:4px|solid|var(--color-blue)
+         outline-offset-3xs font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -25,11 +25,11 @@ Combine width, style and color in one outline shorthand. Compare an explicit 4px
 <!-- Style-only shorthand · other components reset -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:solid
-         outline-offset:3xs font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:solid
+         outline-offset-3xs font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible">
   Preview details
 </button>
 ```
@@ -37,7 +37,7 @@ Combine width, style and color in one outline shorthand. Compare an explicit 4px
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['outline:4px|solid|blue', 'outline:solid']}
+    {['outline:4px|solid|var(--color-blue)', 'outline:solid']}
   </Class2CSS>
 </details>
 
@@ -52,13 +52,13 @@ Use Tab to focus this button. Its transparent resting outline becomes blue on ke
 <!-- Keyboard focus · visible blue ring -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm
          outline:2px|solid|transparent
-         outline-offset:3xs font:md bg:surface-base
-         text:body box-border
-         outline:blue:focus-visible
-         bg:surface-muted:focus-visible">
+         outline-offset-3xs font-md bg-surface-base
+         text-body box-border
+         outline-blue:focus-visible
+         bg-surface-muted:focus-visible">
   Save changes
 </button>
 ```
@@ -74,13 +74,13 @@ Keyboard focus draws a 3px blue outline on screen. Print removes its width. The 
 <!-- Keyboard focus on screen · no printed ring -->
 <button id="target" type="button"
   class="inline-flex items-center justify-center
-         min-h:44px max-w:100% px:md py:sm
-         b:1px|solid|base r:sm outline:0|solid|blue
-         outline-offset:3xs font:md bg:surface-base
-         text:body box-border
-         bg:surface-muted:focus-visible
-         outline:0@print
-         outline:3px|solid|blue:focus-visible@screen">
+         min-h:44px max-w:100% px-md py-sm
+         b:1px|solid|var(--color-line-base) r-sm outline:0|solid|var(--color-blue)
+         outline-offset-3xs font-md bg-surface-base
+         text-body box-border
+         bg-surface-muted:focus-visible
+         outline-width:0@print
+         outline:3px|solid|var(--color-blue):focus-visible@screen">
   Preview details
 </button>
 ```

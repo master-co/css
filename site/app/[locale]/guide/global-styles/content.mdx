@@ -99,7 +99,7 @@ Treat the app typeface as global vocabulary. Put reusable font families and Open
 
 The base layer resolves `--font-sans` through `--font-family-sans` and applies it to `body` and shadow hosts. It resolves `--font-mono` through `--font-family-mono` and applies it to `code`, `kbd`, `samp`, and `pre`. Define `--font-feature-sans` and `--font-feature-mono` when those stacks need shared OpenType features; otherwise the base layer falls back to `normal`. Form controls inherit the surrounding font and feature settings.
 
-Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font:mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
+Load the matching font files with normal `@font-face` rules or a provider stylesheet before depending on those family names. Keep one-off typeface changes in markup utilities such as `font-mono`; reserve the global typeface tokens for typography that should be inherited by the whole app.
 
 ---
 
@@ -118,7 +118,7 @@ Use this order:
 Start with utilities when the style belongs to one element or one usage site:
 
 ```html
-<button class="inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm bg:blue fg:white">
+<button class="inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm bg-blue fg-white">
   Save changes
 </button>
 ```
@@ -135,7 +135,7 @@ When the repeated part is a value, make it a token instead of a class:
 ```
 
 ```html
-<button class="r:lg fg:white bg:brand px:action-x">
+<button class="r-lg fg-white bg-brand px-action-x">
   Submit
 </button>
 ```
@@ -146,7 +146,7 @@ Write native CSS when the selector itself is global output you always ship:
 
 ```css name=app.css
 .skip-link {
-  @compose fixed left:0 top:0 z:1 px:md py:xs bg:blue fg:white;
+  @compose fixed left:0 top:0 z:1 px-md py-xs bg-blue fg-white;
   transform: translateY(-100%);
 }
 
@@ -165,8 +165,8 @@ Use component classes when a repeated UI role should behave like a generated Mas
 ```css name=app.css
 @components {
   btn {
-    @compose inline-flex items-center justify-center gap:xs px:md py:xs r:lg font:medium font:sm;
-    @compose bg:blue fg:white;
+    @compose inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm;
+    @compose bg-blue fg-white;
   }
 }
 ```
@@ -182,19 +182,19 @@ Keep component classes small enough to combine:
 ```css name=app.css
 @components {
   btn {
-    @compose inline-flex items-center justify-center font:medium;
+    @compose inline-flex items-center justify-center font-medium;
   }
 
   btn-sm {
-    @compose h:8x px:sm r:md font:xs;
+    @compose h:2rem px-sm r-md font-xs;
   }
 
   btn-md {
-    @compose h:10x px:md r:md font:sm;
+    @compose h:2.5rem px-md r-md font-sm;
   }
 
   btn-primary {
-    @compose bg:blue fg:white;
+    @compose bg-blue fg-white;
   }
 }
 ```
@@ -208,14 +208,14 @@ Put state behavior inside the component only when it belongs to every usage:
 ```css name=app.css
 @components {
   btn-primary {
-    @compose bg:blue fg:white;
+    @compose bg-blue fg-white;
 
     &:hover {
-      @compose bg:blue-60;
+      @compose bg-blue-60;
     }
 
     &:focus-visible {
-      @compose outline:2px|solid|blue outline-offset:4xs;
+      @compose outline:2px|solid|var(--color-blue) outline-offset-4xs;
     }
   }
 }
@@ -231,7 +231,7 @@ Use custom utilities for reusable primitives that are lower-level than product c
 ```css name=app.css
 @utilities {
   flow {
-    @compose grid gap:md;
+    @compose grid gap-md;
   }
 
   content-auto {
@@ -278,11 +278,11 @@ styles/
 ```css name=styles/buttons.css
 @components {
   btn {
-    @compose inline-flex items-center justify-center font:medium;
+    @compose inline-flex items-center justify-center font-medium;
   }
 
   btn-primary {
-    @compose bg:blue fg:white;
+    @compose bg-blue fg-white;
   }
 }
 ```

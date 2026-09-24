@@ -37,18 +37,18 @@ test('expects the animate token output', async ({ page }) => {
   await page.evaluate(() => {
     const p = document.createElement('p')
     p.id = 'mp'
-    p.classList.add('animate:fade')
+    p.classList.add('animate-fade')
     document.body.append(p)
   })
   await waitForRuntimeRuleFlush(page)
 
   const cssText = await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.text)
   expect(cssText).toContain('--animate-fade:fade 1s infinite')
-  expect(cssText).toContain('.animate\\:fade{animation:var(--animate-fade)}')
+  expect(cssText).toContain('.animate-fade{animation:var(--animate-fade)}')
   expectAnimation(cssText, 'fade', ['opacity:0', 'opacity:1'])
 
   await page.evaluate(() => {
-    document.getElementById('mp')?.classList.remove('animate:fade')
+    document.getElementById('mp')?.classList.remove('animate-fade')
   })
   await expectNoAnimation(page, 'fade')
 })

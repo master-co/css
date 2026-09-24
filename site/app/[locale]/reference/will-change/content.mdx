@@ -9,17 +9,17 @@ This visible native button declares an upcoming transform. Press and hold it, or
 
 ```html
 <!-- Transform hint · press to move -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:none
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:none
              will-change:transform
-             outline:2px|solid|blue:focus-visible
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              transform:none@print
-             transition:transform|fast|ease-out@motion
+             transition:transform|var(--duration-fast)|ease-out@motion
              will-change:auto@print
              transform:translateY(-8px):active@screen">
       Move preview
@@ -44,16 +44,16 @@ Press this visible button to lower its opacity. The hint names opacity; a separa
 
 ```html
 <!-- Opacity hint · press to fade -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 will-change:opacity
-             outline:2px|solid|blue:focus-visible
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 will-change:opacity
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              opacity:1@print
-             transition:opacity|fast|ease-out@motion
+             transition:opacity|var(--duration-fast)|ease-out@motion
              will-change:auto@print
              opacity:.64:active@screen">
       Preview overlay
@@ -71,16 +71,16 @@ Hover or focus to prepare a transform hint before pressing. Move away and remove
 
 ```html
 <!-- Auto → prepare → press → auto -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 transform:none will-change:auto
-             outline:2px|solid|blue:focus-visible
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 transform:none will-change:auto
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              transform:none@print
-             transition:transform|fast|ease-out@motion
+             transition:transform|var(--duration-fast)|ease-out@motion
              will-change:auto@print
              will-change:transform:hover@screen
              will-change:transform:focus-visible@screen
@@ -100,16 +100,16 @@ Widen the actual viewport to `sm` to declare an opacity hint. Pressing the nativ
 
 ```html
 <!-- Auto → opacity hint at sm -->
-<div class="p:lg">
-  <div class="rel h:96px w:160px outline:1px|dashed|muted">
+<div class="p-lg">
+  <div class="rel h:96px w:160px outline:1px|dashed|var(--color-line-muted)">
     <button id="target" type="button"
-      class="grid place-items:center h:96px w:160px p:sm
-             b:1px|solid|blue-60 r:sm font:sm bg:blue-10
-             fg:blue-80 opacity:1 will-change:auto
-             outline:2px|solid|blue:focus-visible
+      class="grid place-items:center h:96px w:160px p-sm
+             b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
+             fg-blue-80 opacity:1 will-change:auto
+             outline:2px|solid|var(--color-blue):focus-visible
              outline-offset:3px:focus-visible
              opacity:1@print
-             transition:opacity|fast|ease-out@motion
+             transition:opacity|var(--duration-fast)|ease-out@motion
              will-change:auto@print
              opacity:.64:active@screen
              will-change:opacity@screen&sm">

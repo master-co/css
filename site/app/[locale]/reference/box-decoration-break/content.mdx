@@ -9,10 +9,10 @@ A wrapped inline element is painted as one box, then sliced across its line frag
 
 ```html
 <!-- Slice · one continuous decoration -->
-<div class="w:220px max-w:100% font:lg leading:2.2">
+<div class="w:220px max-w:100% font-lg leading:2.2">
   <span id="target"
-    class="px:xs py:3xs b:1px|solid|blue r:sm
-         bg:blue-10 fg:blue-80
+    class="px-xs py-3xs b:1px|solid|var(--color-blue) r-sm
+         bg-blue-10 fg-blue-80
          box-decoration-break:slice">
     Clear thinking needs room to take shape.
   </span>
@@ -35,10 +35,10 @@ Clone paints each inline fragment independently. Compare the same text and width
 
 ```html
 <!-- Slice · shared decoration -->
-<div class="w:220px max-w:100% font:lg leading:2.2">
+<div class="w:220px max-w:100% font-lg leading:2.2">
   <span id="target"
-    class="px:xs py:3xs b:1px|solid|blue r:sm
-         bg:blue-10 fg:blue-80
+    class="px-xs py-3xs b:1px|solid|var(--color-blue) r-sm
+         bg-blue-10 fg-blue-80
          box-decoration-break:slice">
     Clear thinking needs room to take shape.
   </span>
@@ -47,10 +47,10 @@ Clone paints each inline fragment independently. Compare the same text and width
 
 ```html
 <!-- Clone · each fragment decorated -->
-<div class="w:220px max-w:100% font:lg leading:2.2">
+<div class="w:220px max-w:100% font-lg leading:2.2">
   <span id="target"
-    class="px:xs py:3xs b:1px|solid|blue r:sm
-         bg:blue-10 fg:blue-80
+    class="px-xs py-3xs b:1px|solid|var(--color-blue) r-sm
+         bg-blue-10 fg-blue-80
          box-decoration-break:clone">
     Clear thinking needs room to take shape.
   </span>
@@ -66,15 +66,15 @@ A real inline link can wrap while keeping a continuous accessible name. Focus th
 
 ```html
 <!-- Wrapped link · one accessible name -->
-<div class="w:220px max-w:100% font:lg leading:2.2">
+<div class="w:220px max-w:100% font-lg leading:2.2">
   <a id="target" href="#notes"
-    class="px:xs py:3xs b:1px|solid|blue r:sm
-         bg:blue-10 fg:blue-80
+    class="px-xs py-3xs b:1px|solid|var(--color-blue) r-sm
+         bg-blue-10 fg-blue-80
          box-decoration-break:clone">
     Read the full selection notes and source details.
   </a>
   <p id="notes" tabindex="-1"
-    class="mb:0 mt:lg font:sm text:body">
+    class="mb:0 mt-lg font-sm text-body">
     Selection notes and source details.
   </p>
 </div>
@@ -89,10 +89,10 @@ Widen to `sm` to switch from slice to clone. Print uses slice. The container wid
 
 ```html
 <!-- Slice → clone at sm -->
-<div class="w:full max-w:360px font:lg leading:2.2">
+<div class="w:100% max-w:360px font-lg leading:2.2">
   <span id="target"
-    class="px:xs py:3xs b:1px|solid|blue r:sm
-         bg:blue-10 fg:blue-80
+    class="px-xs py-3xs b:1px|solid|var(--color-blue) r-sm
+         bg-blue-10 fg-blue-80
          box-decoration-break:slice
          box-decoration-break:slice@print
          box-decoration-break:clone@screen&sm">

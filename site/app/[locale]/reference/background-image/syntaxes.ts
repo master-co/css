@@ -1,5 +1,5 @@
 const syntaxes = [
-  ['bg:url(`…`)'],
+  ['background-image:url(`…`)'],
   ['bg:linear-gradient(`…`)'],
   ['bg:radial-gradient(`…`)'],
   ['bg:repeating-linear-gradient(`…`)'],

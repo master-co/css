@@ -2,8 +2,8 @@ Syntax: <code><span className="language-mcss mcss token value"><span className="
 
 Use native [CSS units](https://developer.mozilla.org/en-US/docs/Learn/CSS/Building_blocks/Values_and_units) whenever the value should stay explicit: `px`, `em`, `%`, `ex`, `ch`, `rem`, `vw`, `vh`, `vmin`, `vmax`, `cm`, `mm`, `in`, `pt`, `pc`, `ms`, `s`, `deg`, and more.
 ```html
-<!-- @MARK w:50% --><!-- @MARK font:10vw -->
-<div class="w:50% font:10vw">
+<!-- @MARK w:50% --><!-- @MARK font-size:10vw -->
+<div class="w:50% font-size:10vw">
 ```
 
-If you omit the unit, the number is emitted as written. Use explicit native units, theme tokens, or the `x` multiplier unit when the CSS value needs a length, angle, time, or other unit.
+If you omit the unit, the number is emitted as written. Use explicit native units or named theme tokens when the CSS value needs a length, angle, time, or other unit.

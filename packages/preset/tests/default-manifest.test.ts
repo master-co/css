@@ -54,7 +54,7 @@ const retainedMatcherAliases = new Set([
   'font',
   'grid-col-span',
   'grid-cols',
-  'line-clamp',
+  'clamp-lines',
   'text'
 ])
 
@@ -198,6 +198,7 @@ function collectMatcherKeys(manifest: MasterCSSManifest) {
   const keys = new Set<string>()
   for (const utility of manifest.utilities || []) {
     for (const matcher of utility.matchers || []) {
+      if (matcher.type === 'token') keys.add(matcher.prefix.slice(0, -1))
       if ('keys' in matcher) {
         matcher.keys.forEach((key) => keys.add(key))
       }
@@ -223,7 +224,7 @@ describe('@master/css-preset defaultManifest', () => {
     const manifest = getCompiledDefaultManifest()
     const utilities = manifest.utilities || []
 
-    expect(utilities).toHaveLength(177)
+    expect(utilities).toHaveLength(172)
     expect(utilities.some((utility) => 'order' in utility)).toBe(false)
     expect(utilities.some((utility) => utility.layer === 'utilities')).toBe(false)
     expect(utilities.some((utility) => utility.name === utility.id)).toBe(false)
@@ -231,7 +232,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'group')).toBe(false)
     expect(utilities.some((utility) => utility.matchers.some((matcher) => (matcher as { type: string }).type === 'group'))).toBe(false)
     expect(utilities.some((utility) => utility.id === 'animation')).toBe(false)
-    expect(utilities.some((utility) => utility.id === 'animate:<~animate>')).toBe(true)
+    expect(utilities.some((utility) => utility.id === 'animate-<~animate>')).toBe(true)
     expect(utilities.some((utility) => utility.id === 'font:<~font-family|=font|~font-weight|~font-size|*>')).toBe(false)
     expect(utilities.some((utility) => 'transform' in utility)).toBe(false)
     expect(utilities.some((utility) => (utility.emit as { type: string }).type === 'pair')).toBe(false)
@@ -289,9 +290,9 @@ describe('@master/css-preset defaultManifest', () => {
     const css = createTestCSS(defaultManifest)
 
     expect(defaultManifest.settings).toBeUndefined()
-    expect(css.createRule('m:1x')?.text).toBe('.m\\:1x{margin:0.25rem}')
-    expect(css.createRule('fg:blue-60@dark')?.text).toBe(
-      '@media (prefers-color-scheme:dark){.fg\\:blue-60\\@dark{color:var(--color-blue-60)}}'
+    expect(css.createRule('m:0.25rem')?.text).toBe('.m\\:0\\.25rem{margin:0.25rem}')
+    expect(css.createRule('fg-blue-60@dark')?.text).toBe(
+      '@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}'
     )
   })
 
@@ -315,13 +316,13 @@ describe('@master/css-preset defaultManifest', () => {
     })
     const text = [
       css.createRule('inline-flex')?.text,
-      css.createRule('bg:linear-gradient(#000,#fff)')?.text,
-      css.createRule('bg:blue')?.text,
-      css.createRule('bg:surface-base')?.text,
-      css.createRule('surface:base')?.text,
+      css.createRule('background-image:linear-gradient(#000,#fff)')?.text,
+      css.createRule('bg-blue')?.text,
+      css.createRule('bg-surface-base')?.text,
+      css.createRule('surface-base')?.text,
       css.createRule('grid-cols:3')?.text,
-      css.createRule('line-clamp:3')?.text,
-      css.createRule('text:2xl')?.text
+      css.createRule('clamp-lines:3')?.text,
+      css.createRule('text-2xl')?.text
     ].join('')
     expect(text).toContain('display:inline-flex')
     expect(text).toContain('background-image:linear-gradient(#000,#fff)')
@@ -364,18 +365,18 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('outline-medium')?.text).toBe('.outline-medium{outline-width:medium}')
     expect(css.createRule('outline-thick')?.text).toBe('.outline-thick{outline-width:thick}')
     expect(css.createRule('outline-thin')?.text).toBe('.outline-thin{outline-width:thin}')
-    expect(css.createRule('text-fill-color:red')?.text).toBe('.text-fill-color\\:red{-webkit-text-fill-color:var(--color-text-red)}')
-    expect(css.createRule('text-decoration-color:red')?.text).toBe('.text-decoration-color\\:red{text-decoration-color:var(--color-text-red)}')
-    expect(css.createRule('text-stroke-color:red')?.text).toBe('.text-stroke-color\\:red{-webkit-text-stroke-color:var(--color-red)}')
+    expect(css.createRule('text-fill-color-red')?.text).toBe('.text-fill-color-red{-webkit-text-fill-color:var(--color-text-red)}')
+    expect(css.createRule('text-decoration-color-red')?.text).toBe('.text-decoration-color-red{text-decoration-color:var(--color-text-red)}')
+    expect(css.createRule('text-stroke-color-red')?.text).toBe('.text-stroke-color-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule('text-stroke:1px')?.text).toBe('.text-stroke\\:1px{-webkit-text-stroke-width:1px}')
     expect(css.createRule('text-decoration-thickness:2px')?.text).toBe('.text-decoration-thickness\\:2px{text-decoration-thickness:2px}')
     expect(css.createRule('user-select:none')?.text).toBe('.user-select\\:none{-webkit-user-select:none;user-select:none}')
     expect(css.createRule('user-drag:none')?.text).toBe('.user-drag\\:none{-webkit-user-drag:none;user-drag:none}')
     expect(css.createRule('box-decoration-break:clone')?.text).toBe('.box-decoration-break\\:clone{-webkit-box-decoration-break:clone;box-decoration-break:clone}')
-    expect(css.createRule('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
-    expect(css.createRule('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
-    expect(css.createRule('font-sm')).toBeUndefined()
-    expect(css.createRule('m-md')).toBeUndefined()
+    expect(css.createRule('font-feature-settings-tabular')?.text).toBe('.font-feature-settings-tabular{font-feature-settings:var(--font-feature-tabular)}')
+    expect(css.createRule('content-empty')?.text).toBe('.content-empty{content:var(--content-empty)}')
+    expect(css.createRule('font-sm')?.text).toContain('font-size:var(--font-size-sm)')
+    expect(css.createRule('m-md')?.text).toContain('margin:var(--spacing-md)')
     expect(css.createRule('sr-only')?.text).toContain('position:absolute')
     expect(css.createRule('sr-only')?.text).toContain('clip:rect(0, 0, 0, 0)')
 
@@ -425,18 +426,8 @@ describe('@master/css-preset defaultManifest', () => {
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'text-truncate')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'border-image-source')).toBe(false)
     expect(defaultManifest.utilities?.some((utility) => utility.id === 'list-style-image')).toBe(false)
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'stroke:<number>')).toMatchObject({
-      kind: 'number',
-      emit: {
-        type: 'static',
-        rules: [{
-          declarations: {
-            'stroke-width': null
-          }
-        }]
-      }
-    })
-    expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-underline:<~spacing>')).toMatchObject({
+    expect(defaultManifest.utilities?.some((utility) => utility.id === 'stroke:<number>')).toBe(false)
+    expect(defaultManifest.utilities?.find((utility) => utility.id === 'text-underline-<~spacing>')).toMatchObject({
       variableAliasRefs: ['~spacing'],
       emit: {
         type: 'static',
@@ -463,7 +454,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(nativeAlignItemsCenter?.type).toBeGreaterThan(semanticItemsCenter?.type ?? 0)
   })
 
-  it('removes fixed keyword value aliases while preserving raw ambiguous matches', () => {
+  it('keeps named tokens separate from native declaration values', () => {
     const css = createTestCSS(defaultManifest)
     const noNativeCSS = createTestCSS(defaultManifest, {
       nativeDeclarationMatcher: () => false
@@ -477,118 +468,118 @@ describe('@master/css-preset defaultManifest', () => {
     expect(noNativeCSS.createRule('border-l-solid')).toBeUndefined()
     expect(noNativeCSS.createRule('rt:4x')).toBeUndefined()
     expect(noNativeCSS.createRule('border-top-radius:4x')).toBeUndefined()
-    expect(css.createRule('bg:#fff')?.text).toBe('.bg\\:\\#fff{background-color:#fff}')
-    expect(css.createRule('b:1px')?.text).toBe('.b\\:1px{border-width:1px}')
+    expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
+    expect(css.createRule('border-width:1px')?.text).toBe('.border-width\\:1px{border-width:1px}')
     expect(css.createRule('b:line')?.text).toBe('.b\\:line{border:line}')
-    expect(css.createRule('b:base')?.text).toBe('.b\\:base{border-color:var(--color-line-base)}')
-    expect(css.createRule('bt:1px')?.text).toBe('.bt\\:1px{border-top-width:1px}')
+    expect(css.createRule('b-base')?.text).toBe('.b-base{border-color:var(--color-line-base)}')
+    expect(css.createRule('border-top-width:1px')?.text).toBe('.border-top-width\\:1px{border-top-width:1px}')
     expect(css.createRule('bl:line')?.text).toBe('.bl\\:line{border-left:line}')
-    expect(css.createRule('bx:1px')?.text).toBe('.bx\\:1px{border-inline-width:1px}')
+    expect(css.createRule('border-inline-width:1px')?.text).toBe('.border-inline-width\\:1px{border-inline-width:1px}')
     expect(css.createRule('by:line')?.text).toBe('.by\\:line{border-block:line}')
     expect(css.createRule('b:1px|solid|line')?.text).toBe('.b\\:1px\\|solid\\|line{border:1px solid line}')
     expect(css.createRule('bt:1px|solid|line')?.text).toBe('.bt\\:1px\\|solid\\|line{border-top:1px solid line}')
     expect(css.createRule('b:1px|line')?.text).toBe('.b\\:1px\\|line{border:1px line}')
-    expect(css.createRule('b:1px|solid|base')?.text).toBe('.b\\:1px\\|solid\\|base{border:1px solid var(--color-line-base)}')
-    expect(css.createRule('bt:1px|solid|base')?.text).toBe('.bt\\:1px\\|solid\\|base{border-top:1px solid var(--color-line-base)}')
-    expect(css.createRule('b:1px|base')?.text).toBe('.b\\:1px\\|base{border:1px var(--color-line-base)}')
-    expect(css.createRule('b:gray-20')?.text).toBe('.b\\:gray-20{border-color:var(--color-gray-20)}')
-    expect(css.createRule('bl:gray-20')?.text).toBe('.bl\\:gray-20{border-left-color:var(--color-gray-20)}')
-    expect(css.createRule('by:gray-20')?.text).toBe('.by\\:gray-20{border-block-color:var(--color-gray-20)}')
-    expect(css.createRule('b:1px|solid|gray-20')?.text).toBe('.b\\:1px\\|solid\\|gray-20{border:1px solid var(--color-gray-20)}')
-    expect(css.createRule('bt:1px|solid|gray-20')?.text).toBe('.bt\\:1px\\|solid\\|gray-20{border-top:1px solid var(--color-gray-20)}')
-    expect(css.createRule('b:1px|gray-20')?.text).toBe('.b\\:1px\\|gray-20{border:1px var(--color-gray-20)}')
+    expect(css.createRule('b:1px|solid|var(--color-line-base)')?.text).toBe('.b\\:1px\\|solid\\|var\\(--color-line-base\\){border:1px solid var(--color-line-base)}')
+    expect(css.createRule('bt:1px|solid|var(--color-line-base)')?.text).toBe('.bt\\:1px\\|solid\\|var\\(--color-line-base\\){border-top:1px solid var(--color-line-base)}')
+    expect(css.createRule('b:1px|var(--color-line-base)')?.text).toBe('.b\\:1px\\|var\\(--color-line-base\\){border:1px var(--color-line-base)}')
+    expect(css.createRule('b-gray-20')?.text).toBe('.b-gray-20{border-color:var(--color-gray-20)}')
+    expect(css.createRule('bl-gray-20')?.text).toBe('.bl-gray-20{border-left-color:var(--color-gray-20)}')
+    expect(css.createRule('by-gray-20')?.text).toBe('.by-gray-20{border-block-color:var(--color-gray-20)}')
+    expect(css.createRule('b:1px|solid|var(--color-gray-20)')?.text).toBe('.b\\:1px\\|solid\\|var\\(--color-gray-20\\){border:1px solid var(--color-gray-20)}')
+    expect(css.createRule('bt:1px|solid|var(--color-gray-20)')?.text).toBe('.bt\\:1px\\|solid\\|var\\(--color-gray-20\\){border-top:1px solid var(--color-gray-20)}')
+    expect(css.createRule('b:1px|var(--color-gray-20)')?.text).toBe('.b\\:1px\\|var\\(--color-gray-20\\){border:1px var(--color-gray-20)}')
     expect(css.createRule('b:1px|solid')?.text).toBe('.b\\:1px\\|solid{border:1px solid}')
     expect(css.createRule('border:transparent')?.text).toBe('.border\\:transparent{border:transparent}')
     expect(css.createRule('outline:medium')?.text).toBe('.outline\\:medium{outline:medium}')
-    expect(css.createRule('font:sm')?.text).toBe('.font\\:sm{font-size:var(--font-size-sm)}')
-    expect(css.createRule('font:1rem')?.text).toBe('.font\\:1rem{font-size:1rem}')
-    expect(css.createRule('mxs:4x')?.text).toBe('.mxs\\:4x{margin-inline-start:1rem}')
-    expect(css.createRule('pye:4x')?.text).toBe('.pye\\:4x{padding-block-end:1rem}')
-    expect(css.createRule('ixs:4x')?.text).toBe('.ixs\\:4x{inset-inline-start:1rem}')
-    expect(css.createRule('size-x:md')?.text).toBe('.size-x\\:md{inline-size:var(--container-md)}')
+    expect(css.createRule('font-sm')?.text).toBe('.font-sm{font-size:var(--font-size-sm)}')
+    expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
+    expect(css.createRule('mxs:1rem')?.text).toBe('.mxs\\:1rem{margin-inline-start:1rem}')
+    expect(css.createRule('pye:1rem')?.text).toBe('.pye\\:1rem{padding-block-end:1rem}')
+    expect(css.createRule('ixs:1rem')?.text).toBe('.ixs\\:1rem{inset-inline-start:1rem}')
+    expect(css.createRule('size-x-md')?.text).toBe('.size-x-md{inline-size:var(--container-md)}')
     expect(noNativeCSS.createRule('mi:4x')).toBeUndefined()
     expect(noNativeCSS.createRule('pbe:4x')).toBeUndefined()
     expect(noNativeCSS.createRule('iis:4x')).toBeUndefined()
     expect(noNativeCSS.createRule('bs:md')).toBeUndefined()
-    expect(css.createRule('text:red')?.text).toBe('.text\\:red{color:var(--color-text-red)}')
-    expect(css.createRule('text:blue')?.text).toBe('.text\\:blue{color:var(--color-text-blue)}')
-    expect(css.createRule('fg:blue-60')?.text).toBe('.fg\\:blue-60{color:var(--color-blue-60)}')
+    expect(css.createRule('text-red')?.text).toBe('.text-red{color:var(--color-text-red)}')
+    expect(css.createRule('text-blue')?.text).toBe('.text-blue{color:var(--color-text-blue)}')
+    expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
     expect(noNativeCSS.createRule('text:blue-60')).toBeUndefined()
     expect(noNativeCSS.createRule('text:#fff')).toBeUndefined()
     expect(noNativeCSS.createRule('text:transparent')).toBeUndefined()
-    expect(css.createRule('text:body')?.text).toBe('.text\\:body{color:var(--color-text-body)}')
-    expect(css.createRule('text:inverse')?.text).toBe('.text\\:inverse{color:var(--color-text-inverse)}')
-    expect(css.createRule('text:muted')?.text).toBe('.text\\:muted{color:var(--color-text-muted)}')
-    expect(css.createRule('text:link')?.text).toBe('.text\\:link{color:var(--color-text-link)}')
-    expect(css.createRule('text:link-hover')?.text).toBe('.text\\:link-hover{color:var(--color-text-link-hover)}')
-    expect(css.createRule('fg:muted')?.text).toBe('.fg\\:muted{color:var(--color-text-muted)}')
-    expect(css.createRule('text-decoration:red')?.text).toBe('.text-decoration\\:red{text-decoration-color:var(--color-text-red)}')
-    expect(css.createRule('text-stroke:red')?.text).toBe('.text-stroke\\:red{-webkit-text-stroke-color:var(--color-red)}')
+    expect(css.createRule('text-body')?.text).toBe('.text-body{color:var(--color-text-body)}')
+    expect(css.createRule('text-inverse')?.text).toBe('.text-inverse{color:var(--color-text-inverse)}')
+    expect(css.createRule('text-muted')?.text).toBe('.text-muted{color:var(--color-text-muted)}')
+    expect(css.createRule('text-link')?.text).toBe('.text-link{color:var(--color-text-link)}')
+    expect(css.createRule('text-link-hover')?.text).toBe('.text-link-hover{color:var(--color-text-link-hover)}')
+    expect(css.createRule('fg-muted')?.text).toBe('.fg-muted{color:var(--color-text-muted)}')
+    expect(css.createRule('text-decoration-red')?.text).toBe('.text-decoration-red{text-decoration-color:var(--color-text-red)}')
+    expect(css.createRule('text-stroke-red')?.text).toBe('.text-stroke-red{-webkit-text-stroke-color:var(--color-red)}')
     expect(css.createRule('text-decoration-thickness:px')?.text).toBe('.text-decoration-thickness\\:px{text-decoration-thickness:px}')
     expect(css.createRule('text-decoration-thickness:var(--thickness)')?.text).toBe('.text-decoration-thickness\\:var\\(--thickness\\){text-decoration-thickness:var(--thickness)}')
-    expect(css.createRule('background-color:red')?.text).toBe('.background-color\\:red{background-color:var(--color-red)}')
+    expect(css.createRule('background-color-red')?.text).toBe('.background-color-red{background-color:var(--color-red)}')
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
     expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
     expect(noNativeCSS.createRule('bg:surface')).toBeUndefined()
-    expect(css.createRule('surface:base')?.text).toBe('.surface\\:base{background-color:var(--color-surface-base)}')
-    expect(css.createRule('surface:overlay/.9')?.text).toBe('.surface\\:overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
+    expect(css.createRule('surface-base')?.text).toBe('.surface-base{background-color:var(--color-surface-base)}')
+    expect(css.createRule('surface-overlay/.9')?.text).toBe('.surface-overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
     expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
     expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
-    expect(css.createRule('font-size:sm')?.text).toBe('.font-size\\:sm{font-size:var(--font-size-sm)}')
+    expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
-    expect(css.createRule('font-family:sans')?.text).toBe('.font-family\\:sans{font-family:var(--font-family-sans)}')
-    expect(css.createRule('font-weight:bold')?.text).toBe('.font-weight\\:bold{font-weight:var(--font-weight-bold)}')
+    expect(css.createRule('font-family-sans')?.text).toBe('.font-family-sans{font-family:var(--font-family-sans)}')
+    expect(css.createRule('font-weight-bold')?.text).toBe('.font-weight-bold{font-weight:var(--font-weight-bold)}')
     expect(noNativeCSS.createRule('font:var(--font-size-x)')).toBeUndefined()
-    expect(css.createRule('size:5x')?.text).toBe('.size\\:5x{width:1.25rem;height:1.25rem}')
-    expect(css.createRule('size:md')?.text).toBe('.size\\:md{width:var(--container-md);height:var(--container-md)}')
+    expect(css.createRule('size:1.25rem')?.text).toBe('.size\\:1\\.25rem{width:1.25rem;height:1.25rem}')
+    expect(css.createRule('size-md')?.text).toBe('.size-md{width:var(--container-md);height:var(--container-md)}')
     expect(css.createRule('size:var(--radius-4xl)')?.text).toBe('.size\\:var\\(--radius-4xl\\){width:var(--radius-4xl);height:var(--radius-4xl)}')
-    expect(css.createRule('min-size:5x')?.text).toBe('.min-size\\:5x{min-width:1.25rem;min-height:1.25rem}')
+    expect(css.createRule('min-size:1.25rem')?.text).toBe('.min-size\\:1\\.25rem{min-width:1.25rem;min-height:1.25rem}')
     expect(css.createRule('min-size:var(--radius-4xl)')?.text).toBe('.min-size\\:var\\(--radius-4xl\\){min-width:var(--radius-4xl);min-height:var(--radius-4xl)}')
-    expect(css.createRule('max-size:5x')?.text).toBe('.max-size\\:5x{max-width:1.25rem;max-height:1.25rem}')
+    expect(css.createRule('max-size:1.25rem')?.text).toBe('.max-size\\:1\\.25rem{max-width:1.25rem;max-height:1.25rem}')
     expect(css.createRule('max-size:var(--radius-4xl)')?.text).toBe('.max-size\\:var\\(--radius-4xl\\){max-width:var(--radius-4xl);max-height:var(--radius-4xl)}')
-    expect(css.createRule('min:5x')?.text).toBe('.min\\:5x{min-width:1.25rem;min-height:1.25rem}')
-    expect(css.createRule('max:5x')?.text).toBe('.max\\:5x{max-width:1.25rem;max-height:1.25rem}')
-    expect(css.createRule('size:5x|6x')?.text).toBe('.size\\:5x\\|6x{width:1.25rem 1.5rem;height:1.25rem 1.5rem}')
-    expect(css.createRule('min:5x|6x')?.text).toBe('.min\\:5x\\|6x{min-width:1.25rem 1.5rem;min-height:1.25rem 1.5rem}')
-    expect(css.createRule('max:5x|6x')?.text).toBe('.max\\:5x\\|6x{max-width:1.25rem 1.5rem;max-height:1.25rem 1.5rem}')
+    expect(css.createRule('min:1.25rem')?.text).toBe('.min\\:1\\.25rem{min-width:1.25rem;min-height:1.25rem}')
+    expect(css.createRule('max:1.25rem')?.text).toBe('.max\\:1\\.25rem{max-width:1.25rem;max-height:1.25rem}')
+    expect(css.createRule('size:1.25rem|1.5rem')?.text).toBe('.size\\:1\\.25rem\\|1\\.5rem{width:1.25rem 1.5rem;height:1.25rem 1.5rem}')
+    expect(css.createRule('min:1.25rem|1.5rem')?.text).toBe('.min\\:1\\.25rem\\|1\\.5rem{min-width:1.25rem 1.5rem;min-height:1.25rem 1.5rem}')
+    expect(css.createRule('max:1.25rem|1.5rem')?.text).toBe('.max\\:1\\.25rem\\|1\\.5rem{max-width:1.25rem 1.5rem;max-height:1.25rem 1.5rem}')
     expect(css.createRule('size:auto')?.text).toBe('.size\\:auto{width:auto;height:auto}')
-    expect(css.createRule('size:min')?.text).toBe('.size\\:min{width:min-content;height:min-content}')
-    expect(css.createRule('size:max')?.text).toBe('.size\\:max{width:max-content;height:max-content}')
-    expect(css.createRule('flex-basis:sm')?.text).toBe('.flex-basis\\:sm{flex-basis:var(--container-sm)}')
-    expect(css.createRule('flex-basis:2x')?.text).toBe('.flex-basis\\:2x{flex-basis:0.5rem}')
+    expect(css.createRule('size:min-content')?.text).toBe('.size\\:min-content{width:min-content;height:min-content}')
+    expect(css.createRule('size:max-content')?.text).toBe('.size\\:max-content{width:max-content;height:max-content}')
+    expect(css.createRule('flex-basis-sm')?.text).toBe('.flex-basis-sm{flex-basis:var(--container-sm)}')
+    expect(css.createRule('flex-basis:0.5rem')?.text).toBe('.flex-basis\\:0\\.5rem{flex-basis:0.5rem}')
     expect(noNativeCSS.createRule('outline-width:1px')).toBeUndefined()
     expect(noNativeCSS.createRule('outline-width:2px')).toBeUndefined()
     expect(css.createRule('shape-margin:1px')?.text).toBe('.shape-margin\\:1px{shape-margin:1px}')
-    expect(css.createRule('shape-margin:2x')?.text).toBe('.shape-margin\\:2x{shape-margin:0.5rem}')
+    expect(css.createRule('shape-margin:0.5rem')?.text).toBe('.shape-margin\\:0\\.5rem{shape-margin:0.5rem}')
     expect(css.createRule('word-spacing:1px')?.text).toBe('.word-spacing\\:1px{word-spacing:1px}')
-    expect(css.createRule('word-spacing:2x')?.text).toBe('.word-spacing\\:2x{word-spacing:0.5rem}')
-    expect(css.createRule('stroke:red')?.text).toBe('.stroke\\:red{stroke:var(--color-red)}')
-    expect(css.createRule('stroke:.75')?.text).toBe('.stroke\\:\\.75{stroke-width:0.75}')
+    expect(css.createRule('word-spacing:0.5rem')?.text).toBe('.word-spacing\\:0\\.5rem{word-spacing:0.5rem}')
+    expect(css.createRule('stroke-red')?.text).toBe('.stroke-red{stroke:var(--color-red)}')
+    expect(css.createRule('stroke-width:.75')?.text).toBe('.stroke-width\\:\\.75{stroke-width:.75}')
     expect(noNativeCSS.createRule('stroke-width:1px')).toBeUndefined()
-    expect(css.createRule('text-underline:sm')?.text).toBe('.text-underline\\:sm{text-underline-offset:var(--spacing-sm)}')
-    expect(css.createRule('text-underline-offset:2x')?.text).toBe('.text-underline-offset\\:2x{text-underline-offset:0.5rem}')
-    expect(css.createRule('text-indent:sm')?.text).toBe('.text-indent\\:sm{text-indent:var(--spacing-sm)}')
-    expect(css.createRule('background-size:sm')?.text).toBe('.background-size\\:sm{background-size:var(--container-sm)}')
-    expect(css.createRule('background-position:2x|center')?.text).toBe('.background-position\\:2x\\|center{background-position:0.5rem center}')
-    expect(css.createRule('mask-position:2x|center')?.text).toBe('.mask-position\\:2x\\|center{mask-position:0.5rem center}')
-    expect(css.createRule('mask-size:sm')?.text).toBe('.mask-size\\:sm{mask-size:var(--container-sm)}')
-    expect(css.createRule('perspective:4x')?.text).toBe('.perspective\\:4x{perspective:1rem}')
-    expect(css.createRule('perspective-origin:2x|center')?.text).toBe('.perspective-origin\\:2x\\|center{perspective-origin:0.5rem center}')
-    expect(css.createRule('transform-origin:2x|center')?.text).toBe('.transform-origin\\:2x\\|center{transform-origin:0.5rem center}')
+    expect(css.createRule('text-underline-sm')?.text).toBe('.text-underline-sm{text-underline-offset:var(--spacing-sm)}')
+    expect(css.createRule('text-underline-offset:0.5rem')?.text).toBe('.text-underline-offset\\:0\\.5rem{text-underline-offset:0.5rem}')
+    expect(css.createRule('text-indent-sm')?.text).toBe('.text-indent-sm{text-indent:var(--spacing-sm)}')
+    expect(css.createRule('background-size-sm')?.text).toBe('.background-size-sm{background-size:var(--container-sm)}')
+    expect(css.createRule('background-position:0.5rem|center')?.text).toBe('.background-position\\:0\\.5rem\\|center{background-position:0.5rem center}')
+    expect(css.createRule('mask-position:0.5rem|center')?.text).toBe('.mask-position\\:0\\.5rem\\|center{mask-position:0.5rem center}')
+    expect(css.createRule('mask-size-sm')?.text).toBe('.mask-size-sm{mask-size:var(--container-sm)}')
+    expect(css.createRule('perspective:1rem')?.text).toBe('.perspective\\:1rem{perspective:1rem}')
+    expect(css.createRule('perspective-origin:0.5rem|center')?.text).toBe('.perspective-origin\\:0\\.5rem\\|center{perspective-origin:0.5rem center}')
+    expect(css.createRule('transform-origin:0.5rem|center')?.text).toBe('.transform-origin\\:0\\.5rem\\|center{transform-origin:0.5rem center}')
     expect(noNativeCSS.createRule('text-stroke-width:1px')).toBeUndefined()
     expect(noNativeCSS.createRule('text-stroke-width:thin')).toBeUndefined()
-    expect(css.createRule('animation-delay:fast')?.text).toBe('.animation-delay\\:fast{animation-delay:var(--duration-fast)}')
-    expect(css.createRule('transition-delay:fast')?.text).toBe('.transition-delay\\:fast{transition-delay:var(--duration-fast)}')
-    expect(css.createRule('font-feature-settings:tabular')?.text).toBe('.font-feature-settings\\:tabular{font-feature-settings:var(--font-feature-tabular)}')
-    expect(css.createRule('content:empty')?.text).toBe('.content\\:empty{content:var(--content-empty)}')
+    expect(css.createRule('animation-delay-fast')?.text).toBe('.animation-delay-fast{animation-delay:var(--duration-fast)}')
+    expect(css.createRule('transition-delay-fast')?.text).toBe('.transition-delay-fast{transition-delay:var(--duration-fast)}')
+    expect(css.createRule('font-feature-settings-tabular')?.text).toBe('.font-feature-settings-tabular{font-feature-settings:var(--font-feature-tabular)}')
+    expect(css.createRule('content-empty')?.text).toBe('.content-empty{content:var(--content-empty)}')
     expect(css.createRule("content:'x'")?.text).toBe(".content\\:\\'x\\'{content:'x'}")
     expect(noNativeCSS.createRule('border-width:1px')).toBeUndefined()
     expect(noNativeCSS.createRule('background:red')).toBeUndefined()
     expect(noNativeCSS.createRule('background:sm')).toBeUndefined()
-    expect(noNativeCSS.createRule('bg:2x')).toBeUndefined()
-    expect(noNativeCSS.createRule('transform:2x')).toBeUndefined()
-    expect(css.createRule('animate:fade')?.text).toBe('.animate\\:fade{animation:var(--animate-fade)}')
+    expect(noNativeCSS.createRule('bg:0.5rem')).toBeUndefined()
+    expect(noNativeCSS.createRule('transform:0.5rem')).toBeUndefined()
+    expect(css.createRule('animate-fade')?.text).toBe('.animate-fade{animation:var(--animate-fade)}')
     expect(css.createRule('animation:fade')?.text).toBe('.animation\\:fade{animation:fade}')
     expect(css.createRule('animation:fade')?.text).not.toContain('var(--animate-fade)')
     expect(noNativeCSS.createRule('animation-name:fade')).toBeUndefined()
@@ -597,9 +588,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('flex:md')?.text).not.toContain('flex-basis')
     expect(css.createRule('m:1px')?.text).toBe('.m\\:1px{margin:1px}')
     expect(css.createRule('outline:1px|solid')?.text).toBe('.outline\\:1px\\|solid{outline:1px solid}')
-    expect(css.createRule('m:sm|md')?.text).toBe('.m\\:sm\\|md{margin:var(--spacing-sm) var(--spacing-md)}')
-    expect(css.createRule('m:sm|-md')?.text).toBe('.m\\:sm\\|-md{margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
-    expect(css.createRule('text:2xl')?.text).toContain('font-size:var(--font-size-2xl)')
+    expect(css.createRule('m:var(--spacing-sm)|var(--spacing-md)')?.text).toBe('.m\\:var\\(--spacing-sm\\)\\|var\\(--spacing-md\\){margin:var(--spacing-sm) var(--spacing-md)}')
+    expect(css.createRule('m:var(--spacing-sm)|calc(var(--spacing-md)|*|-1)')?.text).toBe('.m\\:var\\(--spacing-sm\\)\\|calc\\(var\\(--spacing-md\\)\\|\\*\\|-1\\){margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
+    expect(css.createRule('text-2xl')?.text).toContain('font-size:var(--font-size-2xl)')
     expect(noNativeCSS.createRule('text-size:2xl')).toBeUndefined()
     expect(noNativeCSS.createRule('text-size:1rem')).toBeUndefined()
     expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
@@ -636,7 +627,7 @@ describe('@master/css-preset defaultManifest', () => {
         || property === 'background'
         || property === 'animation'
         || property === 'animation-name'
-        || property === '-webkit-line-clamp'
+        || property === 'line-clamp'
         || property === 'font'
         || property === 'container'
         || property === 'flex'
@@ -659,10 +650,10 @@ describe('@master/css-preset defaultManifest', () => {
     expect(nativeCSS.createRule('scroll-mxs:1px')?.text).toBe('.scroll-mxs\\:1px{scroll-margin-inline-start:1px}')
     expect(nativeCSS.createRule('scroll-pye:1px')?.text).toBe('.scroll-pye\\:1px{scroll-padding-block-end:1px}')
     expect(nativeCSS.createRule('background:red')?.text).toBe('.background\\:red{background:red}')
-    expect(nativeCSS.createRule('animation:fade|fast|smooth')?.text).toBe('.animation\\:fade\\|fast\\|smooth{animation:fade var(--duration-fast) var(--easing-smooth)}')
+    expect(nativeCSS.createRule('animation:fade|var(--duration-fast)|var(--easing-smooth)')?.text).toBe('.animation\\:fade\\|var\\(--duration-fast\\)\\|var\\(--easing-smooth\\){animation:fade var(--duration-fast) var(--easing-smooth)}')
     expect(nativeCSS.createRule('animation-name:fade')?.text).toBe('.animation-name\\:fade{animation-name:fade}')
     expect(nativeCSS.createRule('font:var(--font-size-x)')?.text).toBe('.font\\:var\\(--font-size-x\\){font:var(--font-size-x)}')
-    expect(nativeCSS.createRule('line-clamp:none')?.text).toBe('.line-clamp\\:none{-webkit-line-clamp:none}')
+    expect(nativeCSS.createRule('line-clamp:none')?.text).toBe('.line-clamp\\:none{line-clamp:none}')
     expect(nativeCSS.createRule('container:inline-size')?.text).toBe('.container\\:inline-size{container:inline-size}')
     expect(nativeCSS.createRule('flex:0|0|auto')?.text).toBe('.flex\\:0\\|0\\|auto{flex:0 0 auto}')
     expect(nativeCSS.createRule('border-image-source:url(/border.png)')?.text).toBe('.border-image-source\\:url\\(\\/border\\.png\\){border-image-source:url(/border.png)}')
@@ -684,7 +675,7 @@ describe('@master/css-preset defaultManifest', () => {
     }
     for (const utility of defaultManifest.utilities || []) {
       if (utility.variableAliasRefs?.length) continue
-      expect(utility.matchers.some((matcher) => matcher.type === 'variable'), utility.id).toBe(false)
+      expect(utility.matchers.some((matcher) => matcher.type === 'token'), utility.id).toBe(false)
     }
 
     const nativeCSS = createTestCSS(defaultManifest, {
@@ -711,7 +702,7 @@ describe('@master/css-preset defaultManifest', () => {
       nativeDeclarationMatcher: () => true
     })
     for (const [alias, property] of Object.entries(retainedRadiusKeyAliases)) {
-      expect(nativeCSS.createRule(`${alias}:4x`)?.text, alias)
+      expect(nativeCSS.createRule(`${alias}:1rem`)?.text, alias)
         .toContain(`${property}:1rem`)
     }
   })
@@ -727,6 +718,6 @@ describe('@master/css-preset defaultManifest', () => {
 
     expect([...ids].filter(([, indexes]) => indexes.length > 1)).toEqual([])
     expect('utilityBuckets' in defaultManifest).toBe(false)
-    expect(utilities).toHaveLength(177)
+    expect(utilities).toHaveLength(172)
   })
 })

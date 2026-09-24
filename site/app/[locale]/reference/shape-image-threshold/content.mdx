@@ -9,12 +9,12 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .2 · includes the outer ring -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
-    class="float:left outline:1px|solid|muted
+    class="float:left outline:1px|solid|var(--color-line-muted)
            shape-image-threshold:.2
            shape-outside:url(/demo/mask.svg)" />
   <p class="m:0">
@@ -29,12 +29,12 @@ Image shapes use pixels whose alpha is greater than the threshold. This same-ori
 
 ```html
 <!-- Threshold .5 · follows the opaque center -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
-    class="float:left outline:1px|solid|muted
+    class="float:left outline:1px|solid|var(--color-line-muted)
            shape-image-threshold:.5
            shape-outside:url(/demo/mask.svg)" />
   <p class="m:0">
@@ -63,16 +63,16 @@ A continuous alpha gradient makes threshold differences visible along the float�
 
 ```html
 <!-- Threshold .2 · includes more of the fade -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
     class="float:left size:120px
-           outline:1px|solid|muted
-           bg:linear-gradient(to|bottom,blue-20,transparent)
+           outline:1px|solid|var(--color-line-muted)
+           background-image:linear-gradient(to|bottom,var(--color-blue-20),transparent)
            shape-image-threshold:.2
            shape-outside:linear-gradient(to|bottom,black,transparent)
-           bg:linear-gradient(to|bottom,blue-80,transparent)@dark"></div>
+           background-image:linear-gradient(to|bottom,var(--color-blue-80),transparent)@dark"></div>
   <p class="m:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
@@ -85,16 +85,16 @@ A continuous alpha gradient makes threshold differences visible along the float�
 
 ```html
 <!-- Threshold .8 · includes only the opaque end -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <div id="target" role="img"
     aria-label="Blue fading from opaque to transparent"
     class="float:left size:120px
-           outline:1px|solid|muted
-           bg:linear-gradient(to|bottom,blue-20,transparent)
+           outline:1px|solid|var(--color-line-muted)
+           background-image:linear-gradient(to|bottom,var(--color-blue-20),transparent)
            shape-image-threshold:.8
            shape-outside:linear-gradient(to|bottom,black,transparent)
-           bg:linear-gradient(to|bottom,blue-80,transparent)@dark"></div>
+           background-image:linear-gradient(to|bottom,var(--color-blue-80),transparent)@dark"></div>
   <p class="m:0">
     A clear layout leaves room for both artwork and words.
     Follow the first lines as they pass the blue shape.
@@ -114,12 +114,12 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Image shape · threshold selects the center -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
-    class="float:left outline:1px|solid|muted
+    class="float:left outline:1px|solid|var(--color-line-muted)
            shape-image-threshold:.5
            shape-outside:url(/demo/mask.svg)" />
   <p class="m:0">
@@ -134,12 +134,12 @@ Threshold applies to image-based shapes, including URLs and gradients. A basic g
 
 ```html
 <!-- Basic circle · threshold has no effect -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
-    class="float:left outline:1px|solid|muted
+    class="float:left outline:1px|solid|var(--color-line-muted)
            shape-image-threshold:.8
            shape-outside:circle(36px)|border-box" />
   <p class="m:0">
@@ -161,12 +161,12 @@ Widen to `sm` to lower the threshold from .5 to .2, including the translucent ri
 
 ```html
 <!-- Opaque center → outer ring at sm -->
-<article class="flow-root w:280px max-w:100% font:sm
-         leading:24px text:body">
+<article class="flow-root w:280px max-w:100% font-sm
+         leading:24px text-body">
   <img id="target" src="/demo/mask.svg"
     width="120" height="120"
     alt="Opaque blue center with a translucent outer ring"
-    class="float:left outline:1px|solid|muted
+    class="float:left outline:1px|solid|var(--color-line-muted)
            shape-image-threshold:.5
            shape-outside:url(/demo/mask.svg)
            shape-image-threshold:.5@print

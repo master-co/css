@@ -29,6 +29,6 @@ export function DemoIFrame({ showHeader = true, title, className, scrolling = 'n
 export function DemoHelloWorld({ url = 'localhost:8080' }: { url?: string }) {
   return <Demo padding="none">
     <DemoBrowserHeader url={url} />
-    <div className="p:lg p:2xl@sm"><h1 className="m:0 italic font:4xl font:heavy text-center text:strong font:5xl@sm">Hello World</h1></div>
+    <div className="p-lg p-2xl@sm"><h1 className="m:0 italic font-4xl font-heavy text-center text-strong font-5xl@sm">Hello World</h1></div>
   </Demo>
 }

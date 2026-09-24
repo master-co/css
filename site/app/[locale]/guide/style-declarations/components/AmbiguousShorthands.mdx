@@ -1,32 +1,18 @@
-export const code1 = /* eslint-disable @master/css/prefer-canonical-classes, @master/css/sort-classes -- intentional shorthand comparison source */ `
-  <!-- @MARK text-align:center --><!-- @MARK font-size:16px --><!-- @MARK font-weight:bold --><!-- @MARK border-style:solid -->
-  <p class="text-align:center font-size:16px font-weight:bold border-style:solid">
-`
-export const code2 = `
-  <!-- @MARK text-center --><!-- @MARK font:16px --><!-- @MARK font:bold --><!-- @MARK b-solid -->
-  <p class="text-center font:16px font:bold b-solid">
-`
-/* eslint-enable @master/css/prefer-canonical-classes, @master/css/sort-classes */
+Named styles and direct declarations have separate spellings:
 
-Syntax: <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property-name</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code> -> <code><span className="language-mcss mcss token value"><span className="mcss token"><span className="Mkey token">property</span><span className="Mvalueroot token"><span className="Mcolon token">:</span><span className="Mvalue token"><span className="Mnumber_unit token"><span className="Mnumber token">value</span></span></span></span></span></span></code>
+| Intent | Class | Generated declaration |
+| --- | --- | --- |
+| Named font family | `font-mono` | `font-family: var(--font-mono)` |
+| Named font weight | `font-bold` | `font-weight: 700` |
+| Direct font size | `font-size:16px` | `font-size: 16px` |
+| Native font shorthand | `font:italic|16px|serif` | `font: italic 16px serif` |
+| Background color only | `background-color:#fff` | `background-color: #fff` |
+| Native background shorthand | `bg:#fff` | `background: #fff` |
+| Border width only | `border-width:2px` | `border-width: 2px` |
+| Native border shorthand | `b:2px` | `border: 2px` |
 
-Native CSS shorthands usually combine several longhand properties. Master CSS also has shorter names for single declarations when the property and value together make the target property clear.
-<Code lang="html">
-  {code1}
-</Code>
+A property abbreviation replaces only the property name. Values never select a different subproperty: `font:16px` remains a native `font` declaration and is not a valid complete font shorthand.
 
-(o) Use context-aware shorthands and semantic static utilities. <Dropped p1={code1} p2={code2} target="class" />
-<Code lang="html">
-  {code2}
-</Code>
+CSS shorthands reset omitted subproperties. Choose an explicit longhand when that reset is not intended. `outline:2px`, `stroke:2px`, and `line-clamp:3` also retain their native properties. Use `outline-width:2px`, `stroke-width:2px`, or the composite utility `clamp-lines:3` for those distinct intentions.
 
-From the example above:
-
-- `mcss text-center` is the semantic utility for `mcss text-align:center`.
-- `mcss font:16px` resolves to `mcss font-size:16px` because numeric font values are treated as font sizes.
-- `mcss font:bold` resolves to `mcss font-weight:bold` because `bold` is a font weight value.
-- `mcss b-solid` is the semantic utility for `mcss border-style:solid`.
-
-This keeps classes short while still generating explicit CSS properties. It also avoids accidental resets from native shorthand behavior, where omitted subproperties can be reset to their initial values.
-
-For example, `font:16px` is not translated to the native `font` shorthand. It generates `font-size`, which is usually what the class author intended.
+Static names such as `text-center` and `bg-cover` remain reserved. If a project defines both a font family and a font size named `brand`, `font-brand` is ambiguous: use `font-family-brand` or `font-size-brand`. Qualified names use the longest registered prefix and never fall back to a shorter prefix when the token is missing.

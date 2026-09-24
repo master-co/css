@@ -3,15 +3,15 @@
 
 ## Examples \{#examples\}
 ### Set text stroke color \{#set-text-stroke-color\}
-A color value such as `text-stroke:blue-50` changes only the stroke color. Both specimens supply the same 1px width and solid fill.
+A color value such as `text-stroke-blue-50` changes only the stroke color. Both specimens supply the same 1px width and solid fill.
 
 <DemoExample page="text-stroke-color" section="set-text-stroke-color" />
 
 ```html
 <!-- 1px stroke · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -20,8 +20,8 @@ A color value such as `text-stroke:blue-50` changes only the stroke color. Both 
 ```html
 <!-- 1px stroke · violet-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:violet-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-violet-50"
 >
   Outline
 </p>
@@ -30,21 +30,21 @@ A color value such as `text-stroke:blue-50` changes only the stroke color. Both 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-stroke:blue-50']}
+    {['text-stroke-blue-50']}
   </Class2CSS>
 </details>
 
 ### Use the current color \{#use-the-current-color\}
-`text-stroke:current` follows the foreground color. Transparent fill makes the independent outline easy to inspect; the stroke width remains 1px.
+`text-stroke-current` follows the foreground color. Transparent fill makes the independent outline easy to inspect; the stroke width remains 1px.
 
 <DemoExample page="text-stroke-color" section="use-the-current-color" />
 
 ```html
 <!-- Foreground · blue-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         fg:blue-50 text-fill-color:transparent text-stroke:1px
-         text-stroke:current"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         fg-blue-50 text-fill-color:transparent text-stroke:1px
+         text-stroke-current"
 >
   Outline
 </p>
@@ -53,9 +53,9 @@ A color value such as `text-stroke:blue-50` changes only the stroke color. Both 
 ```html
 <!-- Foreground · violet-50 -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         fg:violet-50 text-fill-color:transparent text-stroke:1px
-         text-stroke:current"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         fg-violet-50 text-fill-color:transparent text-stroke:1px
+         text-stroke-current"
 >
   Outline
 </p>
@@ -69,8 +69,8 @@ A color value such as `text-stroke:blue-50` changes only the stroke color. Both 
 ```html
 <!-- 1px width · blue-50 edge -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke-blue-50"
 >
   Outline
 </p>
@@ -79,8 +79,8 @@ A color value such as `text-stroke:blue-50` changes only the stroke color. Both 
 ```html
 <!-- 1px width · transparent edge -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px text-stroke:transparent"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px text-stroke:transparent"
 >
   Outline
 </p>
@@ -94,10 +94,10 @@ Hover or focus to switch the stroke from blue to violet. Print makes only the st
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:3xl font:semibold leading:1.5 text-fill-color:current
-         text-stroke:1px text-stroke:blue-50 text-stroke:transparent@print
-         text-stroke:violet-50:hover@screen
-         text-stroke:violet-50:focus-visible@screen"
+  class="font-3xl font-semibold leading:1.5 text-fill-color-current
+         text-stroke:1px text-stroke-blue-50 text-stroke:transparent@print
+         text-stroke-violet-50:hover@screen
+         text-stroke-violet-50:focus-visible@screen"
 >
   Outline
 </button>

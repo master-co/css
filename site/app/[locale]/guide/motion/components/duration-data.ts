@@ -12,7 +12,7 @@ const durationDescriptions: Record<string, string> = {
 
 export function getDurationRows() {
   return getThemeVariables('duration').map(({ key, name, value }) => ({
-    token: `--${name}`, utilities: [`animation-duration:${key}`], value: String(value),
+    token: `--${name}`, utilities: [`animation-duration-${key}`], value: String(value),
     description: durationDescriptions[key]
   }))
 }

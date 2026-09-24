@@ -3,14 +3,14 @@
 
 ## Examples \{#examples\}
 ### Set stroke width and color together \{#set-stroke-width-and-color-together\}
-`text-stroke:1px|blue-50` sets `-webkit-text-stroke` width and color together. Compare the same filled glyphs with no stroke and a 1px blue edge.
+`text-stroke:1px|var(--color-blue-50)` sets `-webkit-text-stroke` width and color together. Compare the same filled glyphs with no stroke and a 1px blue edge.
 
 <DemoExample page="text-stroke" section="set-stroke-width-and-color-together" />
 
 ```html
 <!-- No stroke -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
          text-stroke:0"
 >
   Outline
@@ -20,8 +20,8 @@
 ```html
 <!-- 1px · blue stroke -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-stroke:1px|blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-stroke:1px|var(--color-blue-50)"
 >
   Outline
 </p>
@@ -30,7 +30,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-stroke:1px|blue-50']}
+    {['text-stroke:1px|var(--color-blue-50)']}
   </Class2CSS>
 </details>
 
@@ -44,8 +44,8 @@ Keep a visible stroke when making the glyph fill transparent. The outline follow
 ```html
 <!-- Filled glyph · 1px stroke -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px|currentColor"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px|currentColor"
 >
   Outline
 </p>
@@ -54,7 +54,7 @@ Keep a visible stroke when making the glyph fill transparent. The outline follow
 ```html
 <!-- Transparent glyph · 1px stroke -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
          text-fill-color:transparent text-stroke:1px|currentColor"
 >
   Outline
@@ -71,8 +71,8 @@ Use a width and color utility separately when only the edge color should change.
 ```html
 <!-- 1px width · change only color -->
 <button id="target" type="button"
-  class="font:3xl font:semibold leading:1.5 text-fill-color:current
-         text-stroke:1px text-stroke:blue-50 text-stroke:transparent:hover
+  class="font-3xl font-semibold leading:1.5 text-fill-color-current
+         text-stroke:1px text-stroke-blue-50 text-stroke:transparent:hover
          text-stroke:transparent:focus-visible"
 >
   Outline
@@ -87,8 +87,8 @@ Resize to change a 1px stroke to 2px at `sm` on screen. Print removes the stroke
 ```html
 <!-- Responsive stroke · solid fill -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-fill-color:current text-stroke:1px|blue-50 text-stroke:0@print
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-fill-color-current text-stroke:1px|var(--color-blue-50) text-stroke:0@print
          text-stroke:2px@screen&sm"
 >
   Outline

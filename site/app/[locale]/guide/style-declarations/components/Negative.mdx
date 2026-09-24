@@ -1,7 +1,7 @@
-Put `-` before the value when a property accepts negative values.
+Place a minus sign before a direct value, or before the complete named token class:
+
 ```html
-<!-- @MARK -32 -->
-<div class="mt:-8x">
+<div class="mt:-2rem -ml-sm"></div>
 ```
 
-The property still controls whether the value is valid. Negative spacing is useful for offsets, but not every CSS property accepts negative input.
+Negative token syntax requires a numeric token and a property that accepts negative values. For example, `-m-sm` is supported, while `-p-sm` is rejected because padding cannot be negative. Direct values retain native CSS validity rules.

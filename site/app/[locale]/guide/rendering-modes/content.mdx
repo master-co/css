@@ -67,17 +67,17 @@ The following continuous DOM manipulation takes you to understand the behavior o
   <Step>
     #### <StepNum />Added Master CSS class names to elements in links
     ```js
-    // @MARK font:6xl
-    h1.classList.add('font:6xl')
+    // @MARK font-6xl
+    h1.classList.add('font-6xl')
     ```
-    Add class name `font:6xl` to `html <h1>`
+    Add class name `font-6xl` to `html <h1>`
     ```html
-    <!-- @MARK font:6xl -->
-    <h1 class="font:6xl text-center">Hello World</h1>
+    <!-- @MARK font-6xl -->
+    <h1 class="font-6xl text-center">Hello World</h1>
     ```
-    The runtime engine observes that `html <h1>` adds the new class name `font:6xl` and ensures the corresponding CSS rule:
+    The runtime engine observes that `html <h1>` adds the new class name `font-6xl` and ensures the corresponding CSS rule:
     ```css
-    .font\:6xl { /* [!code ++] */
+    .font-6xl { /* [!code ++] */
       font-size: 3rem /* [!code ++] */
     } /* [!code ++] */
 
@@ -94,11 +94,11 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```
     Remove class name `text-center` from `html <h1>`
     ```html
-    <h1 class="font:6xl text-center">Hello World</h1>
+    <h1 class="font-6xl text-center">Hello World</h1>
     ```
     The runtime engine observes that the class name `text-center` is removed from `html <h1>` and updates active usage immediately. Mutation-driven cleanup may retain the generated rule briefly so a fast remove/re-add does not churn the browser CSSOM. After retained-rule cleanup, the unused rule can be deleted:
     ```css
-    .font\:6xl {
+    .font-6xl {
       font-size: 3rem
     }
 
@@ -112,20 +112,20 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```js
     h1.remove()
     ```
-    Remove the `html <h1>` with class `font:6xl`
+    Remove the `html <h1>` with class `font-6xl`
     ```html
-    <h1 class="font:6xl">Hello World</h1> <!-- [!code ++] -->
+    <h1 class="font-6xl">Hello World</h1> <!-- [!code ++] -->
     ```
-    The runtime engine observes that the `html <h1>` element with the class name `font:6xl` is removed and updates active usage immediately. If no connected element still uses `font:6xl`, the generated rule can be retained until idle cleanup removes it:
+    The runtime engine observes that the `html <h1>` element with the class name `font-6xl` is removed and updates active usage immediately. If no connected element still uses `font-6xl`, the generated rule can be retained until idle cleanup removes it:
     ```css
-    .font\:6xl { /* [!code --] */
+    .font-6xl { /* [!code --] */
       font-size: 3rem /* [!code --] */
     } /* [!code --] */
     ```
   </Step>
   <Step>
     #### <StepNum />All active DOM class counts have been removed
-    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font:6xl'])` still remove rules synchronously.
+    At this point the DOM no longer uses those Master CSS classes. Runtime CSSOM cleanup is allowed to happen later for MutationObserver-driven removals, while direct calls such as `deleteClassRules(['font-6xl'])` still remove rules synchronously.
   </Step>
 </StepSection>
 Due to its runtime execution nature, you can modify the class name directly in the browser by inspecting the element and seeing its changes.
@@ -189,7 +189,7 @@ Runtime and progressive rendering work best when the classes used during interac
 For highly interactive UI such as editors, builders, data grids, virtualized lists, drag surfaces, or dashboards with many per-item values, prefer a mixed strategy:
 
 - Keep stable layout, typography, state, and component classes in Master CSS.
-- Warm predictable runtime classes with `ensureClassRules(['grid', 'gap:md'])` before inserting a large dynamic view.
+- Warm predictable runtime classes with `ensureClassRules(['grid', 'gap-md'])` before inserting a large dynamic view.
 - Use inline styles or CSS variables for volatile per-element values such as coordinates, dimensions, transforms, or user-generated colors.
 - Use top-level native CSS or component-authored CSS for large repeated interaction states that are easier to model as selectors than as many runtime-generated utilities.
 
@@ -247,7 +247,7 @@ For example, the following HTML:
   <script type="module" src="/main.js"></script>
 </head>
 <body>
-  <h1 class="font:5xl font:heavy">Hello World</h1>
+  <h1 class="font-5xl font-heavy">Hello World</h1>
 </body>
 ```
 Render the HTML:
@@ -278,14 +278,14 @@ The manifest-scoped server renderer reuses generated class rules across pages wh
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <script type="module" src="/main.js"></script>
   <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json"> /* [!code ++] */
-    .font\:5xl { /* [!code ++] */
+    .font-5xl { /* [!code ++] */
       font-size: 2.5rem /* [!code ++] */
     } /* [!code ++] */
   </style> <!-- [!code ++] -->
 </head>
 <body>
-  <!-- @MARK font:5xl -->
-  <h1 class="font:5xl">Hello World</h1>
+  <!-- @MARK font-5xl -->
+  <h1 class="font-5xl">Hello World</h1>
 </body>
 ```
 What benefits does this bring? The server renderer generates the initial page CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
@@ -346,7 +346,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     ```css name=index.css
     @components {
       btn {
-        @compose inline-flex px:md;
+        @compose inline-flex px-md;
       }
     }
     ```
@@ -419,11 +419,11 @@ const className = 'bg:' + (error ? 'red': 'green')
 ```
 (o) Map states to complete class names.
 ```tsx
-const className = error ? 'bg:red' : 'bg:green'
+const className = error ? 'bg-red' : 'bg-green'
 ```
 (o) Pass dynamic values through CSS variables while keeping the class static.
 ```tsx
-<div className="font-size:$size@sm" style={{ '--size': size }}></div>
+<div className="font-size:var(--size)@sm" style={{ '--size': size }}></div>
 ```
 
 For the full source scanning model, see [Scanning latent classes](/guide/scanning-latent-classes). For native CSS pruning, see [Native CSS pruning](/guide/native-css-pruning).
@@ -458,7 +458,7 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 @components {
   btn {
-    @compose inline-flex items-center px:md py:xs r:md;
+    @compose inline-flex items-center px-md py-xs r-md;
     background: var(--color-primary);
   }
 }
@@ -517,4 +517,4 @@ Classes follow the requested order, including repeated names. Unknown classes an
 
 A host must synchronize resource state even when a transition contains no CSS mutations. Theme updates are coalesced at the outermost engine batch: a changed theme produces at most one delete and one insert at the beginning of the transition. An unchanged theme produces neither. Utility and keyframe mutations retain their relative order and indexes. Manifest v1, hydration v1 and transition v1 keep their existing shapes.
 
-Custom engine or binding implementations must add this query when upgrading to [binding ABI 7](/guide/migration#custom-engine-and-binding-migration).
+Custom engine or binding implementations must add this query when upgrading to [binding ABI 8](/guide/migration#custom-engine-and-binding-migration).

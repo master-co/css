@@ -1,5 +1,5 @@
 const syntaxes = [
-  ['stroke:`size`']
+  ['stroke-width:`size`']
 ]
 
 export default syntaxes

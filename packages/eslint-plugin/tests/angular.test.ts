@@ -7,21 +7,21 @@ jsxTester.run('sort classes', rule, {
     {
       code: `
           <div class="
-            m:2x
-            bg:black
-            p:2x
-            font:1.5rem
-            fg:white
+            m:0.5rem
+            bg-black
+            p:0.5rem
+            font-size:1.5rem
+            fg-white
           ">
             :)
           </div>`,
       output: `
           <div class="
-            m:2x
-            p:2x
-            font:1.5rem
-            bg:black
-            fg:white
+            m:0.5rem
+            p:0.5rem
+            font-size:1.5rem
+            bg-black
+            fg-white
           ">
             :)
           </div>`,

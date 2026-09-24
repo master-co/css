@@ -3,7 +3,7 @@
     @compose hidden;
 
     &:checked + svg {
-      @compose bg:#30d158;
+      @compose background-color:#30d158;
     }
 
     &[disabled] + svg {
@@ -29,11 +29,11 @@
   }
 
   switch-toggle {
-    @compose rounded transition:background|.3s bg:slate-90 h:32px w:51px;
+    @compose rounded transition:background|.3s bg-slate-90 h:32px w:51px;
     cursor: pointer;
 
     @dark {
-      @compose bg:gray-20;
+      @compose bg-gray-20;
     }
   }
 

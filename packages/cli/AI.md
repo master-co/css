@@ -3,7 +3,7 @@
 ## Responsibility
 
 `@master/css-cli` exposes the `master-css` binary with explicit `generate`, `lint`,
-and `inspect` commands.
+`inspect`, and explicit RC `migrate` commands.
 
 ## Owns
 
@@ -21,7 +21,7 @@ and `inspect` commands.
 ## Public Surface
 
 - Binary: `master-css`.
-- Commands: `generate`, `lint`, and `inspect`.
+- Commands: `generate`, `lint`, `inspect`, and `migrate`.
 - Internal command runner from `src/core.ts`.
 - No public `extract`, `scan`, `render`, `mcss`, or `mastercss` aliases.
 
@@ -37,6 +37,7 @@ and `inspect` commands.
 
 - `generate --watch` event lifecycle.
 - Manifest path loading.
+- RC migration requires a saved original manifest; never replace failed reads with defaults. Rust compiler owns proposals; preview is default and only proven safe edits may be written.
 - Cross-platform glob behavior.
 - Respecting `--no-export` when output paths are configured.
 

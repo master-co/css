@@ -59,10 +59,10 @@ describe('binding loader', () => {
       }
     }, { binding: 'native' })
     try {
-      nativeDeclarationSession.ensureClassRules(['bg:stripe'])
+      nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
       expect(nativeDeclarationSession.snapshot().text).toBe(
         '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
-        + '@layer utilities{.bg\\:stripe{background:var(--stripe)}}'
+        + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
       )
     } finally {
       nativeDeclarationSession.dispose()

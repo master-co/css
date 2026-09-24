@@ -3,8 +3,7 @@
 mod class_list;
 
 use mastercss_engine::{
-    ClassSemanticInspection, EngineError, EngineSession, builtin_key_aliases,
-    builtin_native_value_properties, natural_compare,
+    ClassSemanticInspection, EngineError, EngineSession, builtin_key_aliases, natural_compare,
 };
 use mastercss_schema::{
     GeneratedRuleIr, LINT_BATCH_VERSION, NativeDeclarationCandidateIr, SourceRange,
@@ -140,18 +139,12 @@ pub fn classify_host_rule_validation(
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct CanonicalClassNameOptions {
     #[serde(default = "default_true")]
     pub prefer_static_utilities: bool,
     #[serde(default = "default_true")]
-    pub prefer_theme_tokens: bool,
-    #[serde(default = "default_true")]
     pub prefer_property_aliases: bool,
-    #[serde(default = "default_true")]
-    pub prefer_variable_references: bool,
-    #[serde(default = "default_true")]
-    pub prefer_multi_value_tokens: bool,
     #[serde(default = "default_true")]
     pub prefer_composition_utilities: bool,
     #[serde(default = "default_true")]
@@ -166,10 +159,7 @@ impl Default for CanonicalClassNameOptions {
     fn default() -> Self {
         Self {
             prefer_static_utilities: true,
-            prefer_theme_tokens: true,
             prefer_property_aliases: true,
-            prefer_variable_references: true,
-            prefer_multi_value_tokens: true,
             prefer_composition_utilities: true,
             prefer_condition_order: true,
             prefer_native_declarations_in_compose: true,
@@ -293,11 +283,8 @@ pub struct LintSession {
 struct CanonicalRecommendationIndex {
     static_candidates_by_signature: HashMap<String, Vec<String>>,
     preferred_aliases_by_property: HashMap<String, Vec<String>>,
-    variable_keys_by_property_signature: HashMap<String, Vec<String>>,
     modes: HashSet<String>,
     breakpoints: HashSet<String>,
-    root_size: f64,
-    base_unit: f64,
 }
 
 #[derive(Debug)]
@@ -312,12 +299,6 @@ struct CanonicalClassParts {
 struct CanonicalCandidate {
     class_name: String,
     order: u8,
-}
-
-#[derive(Debug)]
-struct MatchingVariableKeys {
-    keys: Vec<String>,
-    numeric: bool,
 }
 
 #[derive(Debug)]
@@ -420,24 +401,19 @@ mod session_compose;
 
 pub(crate) use compose::{
     compose_variant_block_text, has_duplicate_compose_declaration_properties,
-    is_safe_compose_variant_token, manifest_utility_property_signatures,
-    matching_composition_recipe, merge_group_declarations, normalize_composition_declarations,
-    process_compose_leaf, push_index_value, replace_compose_class_group,
-    replace_first_compose_class, serialize_compose_bucket,
+    is_safe_compose_variant_token, matching_composition_recipe, merge_group_declarations,
+    normalize_composition_declarations, process_compose_leaf, push_index_value,
+    replace_compose_class_group, replace_first_compose_class, serialize_compose_bucket,
 };
 pub(crate) use conflicts::{
     collect_rule_declarations, equal_variant_scope, find_conflicts, sort_descriptors,
     split_top_level,
 };
 pub(crate) use order::{compare_condition_features, get_property_order};
-pub(crate) use partial_conflicts::{
-    collect_manifest_variables, find_partial_conflicts, normalize_css_variable_value,
-};
+pub(crate) use partial_conflicts::{collect_manifest_variables, find_partial_conflicts};
 pub(crate) use recommendation::{
     build_canonical_recommendation_index, canonical_class_parts, canonical_condition_suffix,
-    canonical_variable_candidate_keys, css_variable_reference_name, declaration_property_signature,
-    declarations_match_after_variable_resolution, has_same_canonical_rule_shape,
-    numeric_values_match, push_canonical_candidate, rules_declaration_signature,
+    has_same_canonical_rule_shape, push_canonical_candidate, rules_declaration_signature,
 };
 
 #[cfg(test)]

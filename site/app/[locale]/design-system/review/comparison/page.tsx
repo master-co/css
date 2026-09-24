@@ -11,13 +11,13 @@ export const metadata = {
 }
 
 const specimens = [
-  { key: 'sm', utility: 'shadow:sm', role: 'Standard surface', description: 'Cards, reusable panels, and quiet product surfaces.' },
-  { key: 'lg', utility: 'shadow:lg', role: 'Detached overlay', description: 'Dropdowns, popovers, toasts, and menus.' }
+  { key: 'sm', utility: 'shadow-sm', role: 'Standard surface', description: 'Cards, reusable panels, and quiet product surfaces.' },
+  { key: 'lg', utility: 'shadow-lg', role: 'Detached overlay', description: 'Dropdowns, popovers, toasts, and menus.' }
 ] as const
 
 function ShadowSpecimens() {
   return specimens.map(({ key, utility, role, description }) => (
-    <div className={`${styles.specimen} surface:raised r:lg p:lg ${key === 'sm' ? 'shadow:sm' : 'shadow:lg'}`} key={key}>
+    <div className={`${styles.specimen} surface-raised r-lg p-lg ${key === 'sm' ? 'shadow-sm' : 'shadow-lg'}`} key={key}>
       <code className={styles.utility}>{utility}</code>
       <div className={styles.role}>{role}</div>
       <p className={styles.description}>{description}</p>
@@ -26,7 +26,7 @@ function ShadowSpecimens() {
 }
 
 function OriginalComparison() {
-  return <div className="container w:full"><div className="grid-cols:1 gap:xl w:full grid-cols:2@container(2xs)"><ShadowSpecimens /></div></div>
+  return <div className="container w:100%"><div className="grid-cols:1 gap-xl w:100% grid-cols:2@container(2xs)"><ShadowSpecimens /></div></div>
 }
 
 const options = [
@@ -56,7 +56,7 @@ export default function Page() {
 
     <section aria-labelledby="comparison-options">
       <h2 id="comparison-options">Two elevation specimens</h2>
-      <p className={styles.sectionCopy}>The same <code>shadow:sm</code> and <code>shadow:lg</code> cards appear in each treatment. Resize the page to see when the pair stacks.</p>
+      <p className={styles.sectionCopy}>The same <code>shadow-sm</code> and <code>shadow-lg</code> cards appear in each treatment. Resize the page to see when the pair stacks.</p>
       <div className={styles.options}>
         {options.map(({ number, title, detail, note, preview }) => <article className={styles.option} key={number}>
           <div className={styles.optionHeading}><span>{number}</span><div><h3>{title}</h3><p>{detail}</p></div></div>

@@ -4,22 +4,22 @@
 ## Examples \{#examples\}
 
 ### Add a background image \{#add-a-background-image\}
-`bg:url(...)` changes only `background-image`. Supply a real asset, visible box dimensions and the other longhands needed for its composition.
+`background-image:url(...)` changes only `background-image`. Supply a real asset, visible box dimensions and the other longhands needed for its composition.
 
 <DemoExample page="background-image" section="add-a-background-image" />
 
 ```html
 <!-- Local SVG · centered cover -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         bg:surface-muted bg:url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         bg-surface-muted background-image:url(/demo/landscape.svg)"
 ></div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['bg:url(/demo/landscape.svg)']}
+    {['background-image:url(/demo/landscape.svg)']}
   </Class2CSS>
 </details>
 
@@ -33,16 +33,16 @@ Use native gradient functions as background images. Commas inside the function s
 ```html
 <!-- One gradient layer -->
 <div id="target" role="img" aria-label="Blue to violet gradient"
-  class="h:160px w:xs max-w:100%
-         bg:linear-gradient(90deg,blue-50,violet-50)"
+  class="h:160px w-xs max-w:100%
+         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))"
 ></div>
 ```
 
 ```html
 <!-- Transparent gradient over artwork -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         bg:linear-gradient(90deg,transparent,blue-50),url(/demo/landscape.svg)"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-image:linear-gradient(90deg,transparent,var(--color-blue-50)),url(/demo/landscape.svg)"
 ></div>
 ```
 
@@ -56,9 +56,9 @@ Widen the preview viewport to `sm` to add the image. The frame, surface color an
 ```html
 <!-- Image appears at sm -->
 <div id="target" role="img" aria-label="Geometric landscape"
-  class="h:160px w:xs max-w:100% bg-center bg-cover bg-no-repeat
-         background-image:none bg:surface-muted background-image:none@print
-         bg:url(/demo/landscape.svg)@screen&sm"
+  class="h:160px w-xs max-w:100% bg-center bg-cover bg-no-repeat
+         background-image:none bg-surface-muted background-image:none@print
+         background-image:url(/demo/landscape.svg)@screen&sm"
 ></div>
 ```
 

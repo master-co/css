@@ -9,12 +9,12 @@
 
 ```html
 <!-- writing-mode:vertical-rl -->
-<p id="target" lang="zh-Hant" class="h:128px w:120px m:0 font:md leading:24px writing-mode:vertical-rl">清晰設計讓每個想法都有空間</p>
+<p id="target" lang="zh-Hant" class="h:128px w:120px m:0 font-md leading:24px writing-mode:vertical-rl">清晰設計讓每個想法都有空間</p>
 ```
 
 ```html
 <!-- writing-mode:vertical-lr -->
-<p id="target" lang="zh-Hant" class="h:128px w:120px m:0 font:md leading:24px writing-mode:vertical-lr">清晰設計讓每個想法都有空間</p>
+<p id="target" lang="zh-Hant" class="h:128px w:120px m:0 font-md leading:24px writing-mode:vertical-lr">清晰設計讓每個想法都有空間</p>
 ```
 
 <details>
@@ -33,9 +33,9 @@ A nested block with `writing-mode:horizontal-tb` establishes its own horizontal 
 
 ```html
 <!-- Vertical parent · horizontal block -->
-<div id="context" class="h:160px font:md leading:24px writing-mode:vertical-rl">
+<div id="context" class="h:160px font-md leading:24px writing-mode:vertical-rl">
   <p lang="zh-Hant" class="m:0">設計筆記</p>
-  <p id="target" class="w:160px max-w:100% m:0 font:md leading:24px writing-mode:horizontal-tb">A horizontal note inside vertical flow.</p>
+  <p id="target" class="w:160px max-w:100% m:0 font-md leading:24px writing-mode:horizontal-tb">A horizontal note inside vertical flow.</p>
 </div>
 ```
 
@@ -48,12 +48,12 @@ Writing mode sets the flow, while [text-orientation](/reference/text-orientation
 
 ```html
 <!-- writing-mode:vertical-rl text-orientation:mixed -->
-<p id="target" class="h:128px m:0 font:md leading:24px text-orientation:mixed writing-mode:vertical-rl">2026</p>
+<p id="target" class="h:128px m:0 font-md leading:24px text-orientation:mixed writing-mode:vertical-rl">2026</p>
 ```
 
 ```html
 <!-- writing-mode:vertical-rl text-orientation:upright -->
-<p id="target" class="h:128px m:0 font:md leading:24px text-orientation:upright writing-mode:vertical-rl">2026</p>
+<p id="target" class="h:128px m:0 font-md leading:24px text-orientation:upright writing-mode:vertical-rl">2026</p>
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -63,5 +63,5 @@ The compact label starts in vertical flow and becomes horizontal at `sm` on scre
 
 ```html
 <!-- Vertical label · horizontal at sm -->
-<p id="target" class="size:160px m:0 font:md leading:24px writing-mode:vertical-rl writing-mode:horizontal-tb@print writing-mode:horizontal-tb@screen&sm">Design 2026</p>
+<p id="target" class="size:160px m:0 font-md leading:24px writing-mode:vertical-rl writing-mode:horizontal-tb@print writing-mode:horizontal-tb@screen&sm">Design 2026</p>
 ```

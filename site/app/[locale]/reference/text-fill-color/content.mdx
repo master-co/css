@@ -3,15 +3,15 @@
 
 ## Examples \{#examples\}
 ### Fill text with a color \{#fill-text-with-a-color\}
-`text-fill-color:blue-50` sets `-webkit-text-fill-color`. Compare the same foreground color with its ordinary fill and a separately specified blue fill.
+`text-fill-color-blue-50` sets `-webkit-text-fill-color`. Compare the same foreground color with its ordinary fill and a separately specified blue fill.
 
 <DemoExample page="text-fill-color" section="fill-text-with-a-color" />
 
 ```html
 <!-- Fill follows foreground -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         fg:violet-50 text-fill-color:current"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         fg-violet-50 text-fill-color-current"
 >
   Clear type
 </p>
@@ -20,8 +20,8 @@
 ```html
 <!-- Independent blue fill -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         fg:violet-50 text-fill-color:blue-50"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         fg-violet-50 text-fill-color-blue-50"
 >
   Clear type
 </p>
@@ -30,7 +30,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-fill-color:blue-50']}
+    {['text-fill-color-blue-50']}
   </Class2CSS>
 </details>
 
@@ -44,10 +44,10 @@ Transparent fill reveals this real background gradient clipped to the glyphs. Th
 ```html
 <!-- Gradient clipped to glyphs -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         bg-clip-text text-fill-color:current
-         bg:linear-gradient(90deg,blue-50,violet-50)@supports(background-clip:text)@screen
-         text-fill-color:current@print
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         bg-clip-text text-fill-color-current
+         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports(background-clip:text)@screen
+         text-fill-color-current@print
          text-fill-color:transparent@supports(background-clip:text)@screen"
 >
   Clear type
@@ -57,14 +57,14 @@ Transparent fill reveals this real background gradient clipped to the glyphs. Th
 The gradient and transparent fill apply only on screen when the browser supports text clipping. The base fill stays solid otherwise. Open print preview to see the readable solid-color version without the background image.
 
 ### Use the current color \{#use-the-current-color\}
-`text-fill-color:current` follows the element’s foreground. This child resets an inherited blue fill while the surrounding text keeps it.
+`text-fill-color-current` follows the element’s foreground. This child resets an inherited blue fill while the surrounding text keeps it.
 
 <DemoExample page="text-fill-color" section="use-the-current-color" />
 
 ```html
 <!-- Inherited blue fill · local foreground reset -->
-<div class="font:2xl leading:xl fg:violet-50 text-fill-color:blue-50">
-  Parent <span id="target" class="text-fill-color:current">and child</span>
+<div class="font-2xl leading-xl fg-violet-50 text-fill-color-blue-50">
+  Parent <span id="target" class="text-fill-color-current">and child</span>
 </div>
 ```
 
@@ -78,9 +78,9 @@ Hover or focus to change the glyph fill independently of the button’s foregrou
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:2xl leading:xl text-fill-color:current
-         text-fill-color:current@print text-fill-color:blue-50:hover@screen
-         text-fill-color:blue-50:focus-visible@screen"
+  class="font-2xl leading-xl text-fill-color-current
+         text-fill-color-current@print text-fill-color-blue-50:hover@screen
+         text-fill-color-blue-50:focus-visible@screen"
 >
   Clear type
 </button>

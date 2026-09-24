@@ -174,27 +174,27 @@ fn groups_multi_node_utilities_into_one_hydration_rule() {
 fn tracks_variable_resources_across_aliases_and_deletion() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
     engine
-        .ensure_class_rules(["fg:red-60", "bg:red-60", "m:md"])
+        .ensure_class_rules(["fg-red-60", "bg-red-60", "m-md"])
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--color-red-60:#d00;--spacing-md:1rem}}@layer utilities{.m\\:md{margin:var(--spacing-md)}.bg\\:red-60{background-color:var(--color-red-60)}.fg\\:red-60{color:var(--color-red-60)}}"
+        "@layer theme{:root{--color-red-60:#d00;--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
     );
-    engine.delete_class_rules(["fg:red-60"]).unwrap();
+    engine.delete_class_rules(["fg-red-60"]).unwrap();
     assert!(engine.css_text().contains("--color-red-60:#d00"));
-    engine.delete_class_rules(["bg:red-60"]).unwrap();
+    engine.delete_class_rules(["bg-red-60"]).unwrap();
     assert!(!engine.css_text().contains("--color-red-60:#d00"));
-    engine.delete_class_rules(["m:md"]).unwrap();
+    engine.delete_class_rules(["m-md"]).unwrap();
     assert!(!engine.css_text().contains("@layer theme"));
 }
 
 #[test]
 fn preserves_custom_property_names_inside_generated_math() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    engine.ensure_class_rules(["m:-3xs"]).unwrap();
+    engine.ensure_class_rules(["-m-3xs"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.m\\:-3xs{margin:calc(var(--spacing-3xs) * -1)}}"
+        "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}}"
     );
 }
 
@@ -205,19 +205,19 @@ fn suppresses_variables_already_emitted_by_the_host() {
         Some(r#"{"variables":{"color-red-60":1}}"#),
     )
     .unwrap();
-    engine.ensure_class_rules(["fg:red-60"]).unwrap();
+    engine.ensure_class_rules(["fg-red-60"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        "@layer utilities{.fg-red-60{color:var(--color-red-60)}}"
     );
-    engine.delete_class_rules(["fg:red-60"]).unwrap();
+    engine.delete_class_rules(["fg-red-60"]).unwrap();
     assert_eq!(engine.css_text(), "");
 }
 
 #[test]
 fn registers_host_globals_transactionally_after_classes_are_ensured() {
     let mut engine = EngineSession::create(MANIFEST).unwrap();
-    engine.ensure_class_rules(["fg:red-60"]).unwrap();
+    engine.ensure_class_rules(["fg-red-60"]).unwrap();
     let before = engine.css_text();
     assert!(before.contains("--color-red-60:#d00"));
 
@@ -239,10 +239,10 @@ fn registers_host_globals_transactionally_after_classes_are_ensured() {
     )));
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        "@layer utilities{.fg-red-60{color:var(--color-red-60)}}"
     );
 
-    engine.delete_class_rules(["fg:red-60"]).unwrap();
+    engine.delete_class_rules(["fg-red-60"]).unwrap();
     assert_eq!(engine.css_text(), "");
     let globals = engine.emitted_globals_snapshot().unwrap();
     assert_eq!(globals.variable_count("color-red-60"), 1);
@@ -293,12 +293,12 @@ fn validates_and_saturates_host_globals_before_classes_are_ensured() {
         u32::MAX
     );
 
-    engine.ensure_class_rules(["fg:red-60"]).unwrap();
+    engine.ensure_class_rules(["fg-red-60"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}"
+        "@layer utilities{.fg-red-60{color:var(--color-red-60)}}"
     );
-    engine.delete_class_rules(["fg:red-60"]).unwrap();
+    engine.delete_class_rules(["fg-red-60"]).unwrap();
     assert_eq!(engine.css_text(), "");
     assert_eq!(
         engine
@@ -420,24 +420,23 @@ fn validates_native_value_namespaces_before_committing_rules() {
     ))
     .unwrap();
     let token_candidates = token_engine
-        .native_declaration_candidates(["fg:red-60"])
+        .native_declaration_candidates(["fg-red-60"])
         .unwrap();
-    assert_eq!(token_candidates.len(), 1);
-    assert_eq!(token_candidates[0].property, "color");
-    assert_eq!(token_candidates[0].value, "var(--color-red-60)");
+    assert!(token_candidates.is_empty());
+    assert!(token_engine.inspect("fg-red-60").unwrap().valid);
 }
 
 #[test]
-fn normalizes_base_units_inside_css_math_functions() {
+fn preserves_unsupported_units_for_host_validation_inside_css_math_functions() {
     let engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
     let candidates = engine
         .native_declaration_candidates(["pl:calc(5x-2px)"])
         .unwrap();
     assert_eq!(candidates.len(), 1);
     assert_eq!(candidates[0].property, "padding-left");
-    assert_eq!(candidates[0].value, "calc(1.25rem - 2px)");
+    assert_eq!(candidates[0].value, "calc(5x - 2px)");
     assert_eq!(
         engine.inspect("pl:calc(5x-2px)").unwrap().rules[0].text,
-        ".pl\\:calc\\(5x-2px\\){padding-left:calc(1.25rem - 2px)}"
+        ".pl\\:calc\\(5x-2px\\){padding-left:calc(5x - 2px)}"
     );
 }

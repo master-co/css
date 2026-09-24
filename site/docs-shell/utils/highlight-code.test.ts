@@ -10,7 +10,7 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
     '    --color-primary: var(--color-blue-60);',
     '}',
     '@components {',
-    '    btn { @compose inline-flex text:red:hover@md; }',
+    '    btn { @compose inline-flex text-red:hover@md; }',
     '}'
   ].join('\n'), { lang: 'css' })
 
@@ -26,7 +26,7 @@ test('highlightCode keeps directive and query colors aligned with native CSS in 
   const source = [
     '@import "base.css";',
     '@theme light { --color-brand: red; }',
-    '@components { btn { @compose fg:red@md; @variant <sm { color: red; } } }',
+    '@components { btn { @compose fg-red@md; @variant <sm { color: red; } } }',
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
   ].join('\n')
   const hast = await highlightCode(source, { lang: 'css' })
@@ -68,11 +68,11 @@ test('highlightCode leaves guide theme native values to TextMate without marking
 })
 
 test('highlightCode renders Master CSS semantic spans in HTML class attributes', async () => {
-  const hast = await highlightCode('<div class="text:red:hover@md block"></div>', { lang: 'html' })
+  const hast = await highlightCode('<div class="text-red:hover@md block"></div>', { lang: 'html' })
   const hostWrapper = collectElementsByClass(hast, 'mcss-host-role-class-attribute-value')[0]
 
   assert.ok(hostWrapper)
-  assert.equal(getTextContent(hostWrapper), 'text:red:hover@md block')
+  assert.equal(getTextContent(hostWrapper), 'text-red:hover@md block')
   assert.equal(hostWrapper.properties?.['data-master-css-host-role'], 'class-attribute-value')
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-value-keyword'))
@@ -82,7 +82,7 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
 })
 
 test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
-  const hast = await highlightCode('<div className="text:red:hover@md block" />', { lang: 'tsx' })
+  const hast = await highlightCode('<div className="text-red:hover@md block" />', { lang: 'tsx' })
 
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-value-keyword'))
@@ -90,7 +90,7 @@ test('highlightCode renders Master CSS semantic spans in TSX class attributes', 
 })
 
 test('highlightCode treats mcss snippets as plaintext with class-list semantic overlay', async () => {
-  const hast = await highlightCode('text:red:hover@md {bg:blue;fg:white}', {
+  const hast = await highlightCode('text-red:hover@md {bg-blue;fg-white}', {
     lang: 'mcss',
     inline: true
   })
@@ -153,8 +153,8 @@ test('copy text follows rendered indentation, formatting, and removed mark direc
   const formatted = await highlightCode('a{color:red}', { lang: 'css', beautify: true })
   assert.equal(highlightedCodeText(formatted), 'a {\n  color: red\n}')
 
-  const marked = await highlightCode('<!-- @MARK text:red -->\n<div class="text:red">Text</div>', { lang: 'html' })
-  assert.equal(highlightedCodeText(marked), '<div class="text:red">Text</div>')
+  const marked = await highlightCode('<!-- @MARK text-red -->\n<div class="text-red">Text</div>', { lang: 'html' })
+  assert.equal(highlightedCodeText(marked), '<div class="text-red">Text</div>')
 
   const diff = await highlightCode('color: red; /* [!code ++] */', { lang: 'css' })
   assert.equal(highlightedCodeText(diff), 'color: red;')

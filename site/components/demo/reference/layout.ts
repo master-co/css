@@ -6,8 +6,8 @@ export function flow(section: ReferenceDemoSection): DemoScene {
   const target = lists[0] ?? ''
   if (page === 'clear') {
     const cleared = lists.find(value => value.includes('clear:')) ?? 'clear:both'
-    const left = lists.find(value => value.includes('float:left')) ?? 'float:left w:34% h:18x'
-    const right = lists.find(value => value.includes('float:right')) ?? 'float:right w:34% h:34x'
+    const left = lists.find(value => value.includes('float:left')) ?? 'float:left w:34% h:4.5rem'
+    const right = lists.find(value => value.includes('float:right')) ?? 'float:right w:34% h:8.5rem'
     const conditional = id === 'apply-conditionally'
     return {
       html: `<div data-ui="float-context">${tile('Left float', left, 'neutral').replace(' data-target', '')}${tile('Right float', right, 'violet').replace(' data-target', '')}${tile(conditional ? 'Focus with Tab' : 'Clear target', cleared, 'blue', 'width:58%;min-height:56px', conditional ? 'tabindex="0"' : '')}</div>`,
@@ -38,7 +38,7 @@ export function flow(section: ReferenceDemoSection): DemoScene {
     }
   }
   if (page.startsWith('break-')) {
-    const parent = lists.find(value => value.includes('columns:')) ?? 'columns:2 h:50x column-fill:auto'
+    const parent = lists.find(value => value.includes('columns:')) ?? 'columns:2 h:12.5rem column-fill:auto'
     const values = lists.length > 1 ? lists.slice(1, 5) : ['h:130px', target, 'h:60px', 'h:40px']
     const preview = (baseline: boolean) => `<div data-ui="columns" data-scenario="fragmentation" class="${classValue(parent)}">${values.map((value, index) => tile(index === 1 ? '02 · Target' : `0${index + 1}`, value, index === 1 ? 'blue' : 'neutral', baseline && index === 1 ? `${page}:auto` : '').replace(baseline || index !== 1 ? ' data-target' : ' data-unused', '')).join('')}</div>`
     const caption = page === 'break-inside' ? 'Both column sets are 200px tall. The blue block can split in the automatic flow; avoid keeps it together when the condition applies.' : `Both column sets are 200px tall. The forced break moves content to the next column ${page === 'break-before' ? 'before' : 'after'} the blue block when the condition applies.`

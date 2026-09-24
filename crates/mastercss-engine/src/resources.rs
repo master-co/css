@@ -219,6 +219,11 @@ impl EngineSession {
         class_name: &str,
     ) -> Option<NativeDeclarationCandidate> {
         let semantic_class_name = class_name.strip_suffix('!').unwrap_or(class_name);
+        if super::named::token_prefix(semantic_class_name, &self.compiled).is_some_and(|prefix| {
+            !super::named::token_candidates(semantic_class_name, prefix, &self.compiled).is_empty()
+        }) {
+            return None;
+        }
         let colon = semantic_class_name.find(':')?;
         let source_property = &semantic_class_name[..colon];
         if !is_valid_native_property(source_property) {
@@ -297,6 +302,7 @@ impl EngineSession {
             variables: HashMap::new(),
             variable_entries: Vec::new(),
             native_fallback: true,
+            builtin_token: false,
             emit: UtilityEmit::Static {
                 rules: vec![StaticUtilityRule {
                     declarations,

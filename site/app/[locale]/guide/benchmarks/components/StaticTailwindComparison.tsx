@@ -105,7 +105,7 @@ function createComparedLabel(label: string, ratioLabel: string | undefined) {
   return (
     <>
       {label}
-      <span className="ml:xs font:xs text:muted">{ratioLabel}</span>
+      <span className="ml-xs font-xs text-muted">{ratioLabel}</span>
     </>
   )
 }

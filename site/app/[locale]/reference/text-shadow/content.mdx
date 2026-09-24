@@ -3,14 +3,14 @@
 
 ## Examples \{#examples\}
 ### Add a text shadow \{#add-a-text-shadow\}
-`text-shadow:0|2px|4px|blue-50/.4` sets the horizontal offset, vertical offset, blur radius and color. Compare the same glyphs with and without the shadow.
+`text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)` sets the horizontal offset, vertical offset, blur radius and color. Compare the same glyphs with and without the shadow.
 
 <DemoExample page="text-shadow" section="add-a-text-shadow" />
 
 ```html
 <!-- No shadow -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
          text-shadow:none"
 >
   Clear type
@@ -20,8 +20,8 @@
 ```html
 <!-- 0px x · 2px y · 4px blur -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
-         text-shadow:0|2px|4px|blue-50/.4"
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
+         text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)"
 >
   Clear type
 </p>
@@ -30,7 +30,7 @@
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-shadow:0|2px|4px|blue-50/.4']}
+    {['text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)']}
   </Class2CSS>
 </details>
 
@@ -43,9 +43,9 @@ Give overlay text a readable background before adding a shadow. Both examples be
 
 ```html
 <!-- Dark surface · without shadow -->
-<div class="p:md r:sm bg:slate-80">
+<div class="p-md r-sm bg-slate-80">
   <h2 id="target"
-    class="m:0 font:3xl leading:1.5 text-shadow:none fg:white"
+    class="m:0 font-3xl leading:1.5 text-shadow:none fg-white"
   >
     Open the canvas
   </h2>
@@ -54,9 +54,9 @@ Give overlay text a readable background before adding a shadow. Both examples be
 
 ```html
 <!-- Dark surface · with shadow -->
-<div class="p:md r:sm bg:slate-80">
+<div class="p-md r-sm bg-slate-80">
   <h2 id="target"
-    class="m:0 font:3xl leading:1.5 text-shadow:0|2px|4px|black/.4 fg:white"
+    class="m:0 font-3xl leading:1.5 text-shadow:0|2px|4px|color-mix(in|oklab,oklch(0%|0|none)|40%,transparent) fg-white"
   >
     Open the canvas
   </h2>
@@ -73,9 +73,9 @@ Resize past `sm` to add a shadow on screen. Print removes the shadow while keepi
 ```html
 <!-- Screen shadow · plain print -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:4xl font:semibold leading:1.5
+  class="inline-block max-w:100% m:0 font-4xl font-semibold leading:1.5
          text-shadow:none text-shadow:none@print
-         text-shadow:0|2px|4px|blue-50/.4@screen&sm"
+         text-shadow:0|2px|4px|color-mix(in|oklab,var(--color-blue-50)|40%,transparent)@screen&sm"
 >
   Clear type
 </p>

@@ -3,15 +3,15 @@
 
 ## Examples \{#examples\}
 ### Set a complete decoration \{#set-a-complete-decoration\}
-Declare the line, color, style and thickness together with `text-decoration:underline|blue-50|wavy|2px`. The line belongs to the text; it does not draw a border around the element.
+Declare the line, color, style and thickness together with `text-decoration:underline|var(--color-blue-50)|wavy|2px`. The line belongs to the text; it does not draw a border around the element.
 
 <DemoExample page="text-decoration" section="set-a-complete-decoration" />
 
 ```html
 <!-- Four parts · one shorthand -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl
-         text-decoration:underline|blue-50|wavy|2px"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl
+         text-decoration:underline|var(--color-blue-50)|wavy|2px"
 >
   Design together
 </p>
@@ -20,7 +20,7 @@ Declare the line, color, style and thickness together with `text-decoration:unde
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['text-decoration:underline|blue-50|wavy|2px']}
+    {['text-decoration:underline|var(--color-blue-50)|wavy|2px']}
   </Class2CSS>
 </details>
 
@@ -34,7 +34,7 @@ A shorthand resets its omitted parts. Use the dedicated longhands when a state s
 ```html
 <!-- underline -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline"
 >
   Design together
 </p>
@@ -43,7 +43,7 @@ A shorthand resets its omitted parts. Use the dedicated longhands when a state s
 ```html
 <!-- line-through -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl line-through"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl line-through"
 >
   Design together
 </p>
@@ -52,7 +52,7 @@ A shorthand resets its omitted parts. Use the dedicated longhands when a state s
 ```html
 <!-- overline -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl overline"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl overline"
 >
   Design together
 </p>
@@ -68,7 +68,7 @@ Remove a decoration on the element that draws it. Setting `text-decoration:none`
 ```html
 <!-- Child none · parent still decorated -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl underline"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl underline"
 >
   Parent <span id="child" class="text-decoration:none">and child</span>
 </p>
@@ -77,7 +77,7 @@ Remove a decoration on the element that draws it. Setting `text-decoration:none`
 ```html
 <!-- Origin none · line removed -->
 <p id="target"
-  class="inline-block max-w:100% m:0 font:2xl leading:xl text-decoration:none"
+  class="inline-block max-w:100% m:0 font-2xl leading-xl text-decoration:none"
 >
   Parent <span id="child" class="text-decoration:none">and child</span>
 </p>
@@ -93,7 +93,7 @@ Hover or focus this button to add an underline. The base state has no decoration
 ```html
 <!-- Pointer and keyboard states -->
 <button id="target" type="button"
-  class="font:2xl leading:xl text-decoration:none text-decoration:none@print
+  class="font-2xl leading-xl text-decoration:none text-decoration:none@print
          underline:hover@screen underline:focus-visible@screen"
 >
   Design together

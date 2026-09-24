@@ -81,7 +81,7 @@ fn executes_rc87_language_lexer_parity_corpus() {
             ),
             "rc87-51f771f5b7ef1697" => {
                 let mut tokens = Vec::new();
-                push_value_semantic_tokens(&mut tokens, &case.input, 0, &HashSet::new());
+                push_value_semantic_tokens(&mut tokens, &case.input, 0);
                 assert_eq!(
                     token_views(&case.input, &tokens)
                         .into_iter()
@@ -111,7 +111,7 @@ fn executes_rc87_language_lexer_parity_corpus() {
             }
             "rc87-1e55f6831835ae55" => {
                 let mut tokens = Vec::new();
-                push_value_semantic_tokens(&mut tokens, &case.input, 0, &HashSet::new());
+                push_value_semantic_tokens(&mut tokens, &case.input, 0);
                 assert_eq!(
                     token_views(&case.input, &tokens)
                         .into_iter()
@@ -288,7 +288,7 @@ fn keeps_class_positions_and_semantic_tokens_in_utf16() {
 
 #[test]
 fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
-    let class_list = "fg:brand:hover@sm {bg:blue;fg:white}";
+    let class_list = "fg-brand:hover@sm {bg:blue;fg:white}";
     let contexts = collect_document_contexts(
         class_list,
         "plaintext",
@@ -300,7 +300,7 @@ fn treats_plaintext_as_a_class_list_and_skips_markup_comments() {
             .iter()
             .map(|position| position.token.as_str())
             .collect::<Vec<_>>(),
-        ["fg:brand:hover@sm", "{bg:blue;fg:white}"]
+        ["fg-brand:hover@sm", "{bg:blue;fg:white}"]
     );
 
     let html = "<!-- <div class=\"fg:red\"></div> --><div class=\"fg:blue\"></div>";
@@ -469,7 +469,7 @@ fn batches_manifest_driven_class_semantics() {
         )
         .unwrap();
     let batch = session
-        .classify_class_names(["card:hover", "w:10px", "w:md", "unknown"], None)
+        .classify_class_names(["card:hover", "w:10px", "w-md", "unknown"], None)
         .unwrap();
     assert_eq!(batch.version, LANGUAGE_BATCH_VERSION);
     assert_eq!(
@@ -514,7 +514,8 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
             && entry.detail.as_deref() == Some("display: block")
             && entry.sort_text.as_deref() == Some("cccccblock")
     }));
-    assert!(entries.iter().any(|entry| entry.label == "w:-md"));
+    assert!(entries.iter().any(|entry| entry.label == "-m-md"));
+    assert!(!entries.iter().any(|entry| entry.label == "-w-md"));
 }
 
 #[test]
@@ -571,7 +572,7 @@ fn renders_isolated_hover_inspection_css() {
                   "type":0,
                   "variableAliases":[["brand","color-brand"]],
                   "emit":{"type":"property","property":"color"},
-                  "matchers":[{"type":"variable","keys":["fg"]}]
+                  "matchers":[{"type":"token","prefix":"fg-"}]
                 }
               ]
             }"#,
@@ -599,9 +600,9 @@ fn renders_isolated_hover_inspection_css() {
         "@layer components{.dark .card{display:block}}"
     );
     let variable = session
-        .inspect_class_name("fg:brand:hover", None, None)
+        .inspect_class_name("fg-brand:hover", None, None)
         .unwrap();
-    assert_eq!(variable.base, "fg:brand");
+    assert_eq!(variable.base, "fg-brand");
     assert_eq!(variable.suffix, ":hover");
     assert_eq!(variable.key.as_deref(), Some("fg"));
     assert_eq!(variable.value.as_deref(), Some("brand"));
@@ -638,7 +639,7 @@ fn renders_isolated_hover_inspection_css() {
     );
     assert_eq!(
         session
-            .color_presentation("brand/.5")
+            .color_presentation("fg-brand/.5")
             .unwrap()
             .source_format,
         Some(LanguageColorFormatIr {
@@ -646,14 +647,20 @@ fn renders_isolated_hover_inspection_css() {
             space: None,
         })
     );
+    let named_presentation = session.color_presentation("fg-brand/.5").unwrap();
+    assert!(named_presentation.editable);
+    assert_eq!(
+        named_presentation.replacement_prefix.as_deref(),
+        Some("color:")
+    );
     let color_tokens = session
         .color_tokens(&[
             LanguageColorCandidateInputIr {
-                class_name: "fg:brand/.5".into(),
+                class_name: "fg-brand/.5".into(),
                 start: 2,
             },
             LanguageColorCandidateInputIr {
-                class_name: "fg:linear-gradient(#000,brand)".into(),
+                class_name: "fg:linear-gradient(#000,var(--color-brand))".into(),
                 start: 20,
             },
         ])
@@ -663,7 +670,7 @@ fn renders_isolated_hover_inspection_css() {
         color_tokens.tokens,
         vec![
             LanguageColorTokenIr {
-                range: SourceRange { start: 5, end: 13 },
+                range: SourceRange { start: 2, end: 13 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "oklch(50% .1 20)".into(),
                     alpha: Some(0.5),
@@ -677,7 +684,7 @@ fn renders_isolated_hover_inspection_css() {
                 },
             },
             LanguageColorTokenIr {
-                range: SourceRange { start: 44, end: 49 },
+                range: SourceRange { start: 44, end: 62 },
                 expression: LanguageColorExpressionIr::Literal {
                     value: "oklch(50% .1 20)".into(),
                     alpha: None,
@@ -691,4 +698,26 @@ fn renders_isolated_hover_inspection_css() {
             && entry.detail.as_deref() == Some("color")
             && entry.trigger_suggest
     }));
+}
+
+#[test]
+fn raw_value_semantics_mark_only_explicit_variable_references() {
+    let value = "color-mix(in|srgb,var(--color-red)|50%,red) var(--external,blue) mono";
+    let mut tokens = Vec::new();
+    push_value_semantic_tokens(&mut tokens, value, 0);
+    let views = token_views(value, &tokens);
+    for name in ["--color-red", "--external"] {
+        assert!(
+            views
+                .iter()
+                .any(|(text, kind, _)| text == name && kind == "variable")
+        );
+    }
+    for name in ["red", "blue", "mono"] {
+        assert!(
+            views
+                .iter()
+                .any(|(text, kind, _)| text == name && kind == "enumMember")
+        );
+    }
 }

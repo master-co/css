@@ -1,9 +1,7 @@
 import { expect, test } from 'vitest'
 import { createHighlighter } from 'shiki'
-import sharedTextMateGrammar from '../syntaxes/master-css.tmLanguage.json' with { type: 'json' }
 
 import {
-  MASTER_CSS_TEXTMATE_GRAMMAR,
   createMasterCSSShikiDecorations,
   getMasterCSSShikiLanguageId,
   isMasterCSSClassListLanguage,
@@ -15,7 +13,7 @@ import type { MasterCSSShikiOptions } from '../src/shiki'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
-  variables: [{ key: 'brand', value: '#123456' }],
+  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }, { namespace: 'color', key: 'primary', value: '#4f46e5' }],
   utilities: [
     {
       name: 'btn',
@@ -74,16 +72,6 @@ interface ShikiContentToken {
   content: string
 }
 
-interface TextMatePattern {
-  include?: string
-  begin?: string
-  match?: string
-  name?: string
-  patterns?: TextMatePattern[]
-  beginCaptures?: Record<string, { name?: string }>
-  captures?: Record<string, { name?: string }>
-}
-
 function expectTokensPreserveSource(tokens: ShikiContentToken[][], code: string) {
   expect(tokens.map((lineTokens) => lineTokens.map((token) => token.content).join(''))).toEqual(code.split('\n'))
 }
@@ -115,169 +103,6 @@ function getHastText(node: any): string {
 function collectHastElementsByClass(node: any, className: string) {
   return collectHastElements(node).filter((element) => hasHastClass(element, className))
 }
-
-function grammarEntry(key: string) {
-  const entry = MASTER_CSS_TEXTMATE_GRAMMAR.repository[key] as { patterns?: TextMatePattern[] } | undefined
-  expect(entry?.patterns).toBeDefined()
-  return entry as { patterns: TextMatePattern[] }
-}
-
-function findGrammarPattern(entry: { patterns: TextMatePattern[] }, predicate: (pattern: TextMatePattern) => boolean) {
-  const pattern = entry.patterns.find(predicate)
-  expect(pattern).toBeDefined()
-  return pattern as TextMatePattern
-}
-
-function expectGrammarIncludes(entry: { patterns: TextMatePattern[] }, includes: string[]) {
-  expect(entry.patterns).toEqual(expect.arrayContaining(
-    includes.map((include) => expect.objectContaining({ include }))
-  ))
-}
-
-test.concurrent('exports the Shiki language registration as a named value', async () => {
-  const shikiModule = await import('../src/shiki')
-  expect(shikiModule.masterCSSShikiLanguage).toBe(masterCSSShikiLanguage)
-  expect('default' in shikiModule).toBe(false)
-})
-
-test.concurrent('defines deterministic TextMate grammar scopes for CSS directives', () => {
-  expect(MASTER_CSS_TEXTMATE_GRAMMAR).toBe(sharedTextMateGrammar)
-  expect(masterCSSShikiLanguage.scopeName).toBe(sharedTextMateGrammar.scopeName)
-  expect(masterCSSShikiLanguage.injectTo).toEqual([
-    'source.css',
-    'source.css.scss',
-    'source.css.less',
-    'source.css.postcss'
-  ])
-
-  const directive = grammarEntry('master-directive')
-  const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
-  const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(defaults|components|utilities)\\b')
-  const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
-
-  expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(composeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(directive.patterns.every((pattern) => pattern.beginCaptures?.['0']?.name === 'keyword.control.at-rule.master-css')).toBe(true)
-  expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
-  expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
-  expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])
-
-  const themeBlock = grammarEntry('master-theme-block')
-  expectGrammarIncludes({ patterns: themeBlock.patterns[0]?.patterns ?? [] }, [
-    '#master-theme-declaration',
-    '#master-keyframes',
-    '#master-directive'
-  ])
-
-  const themeValue = grammarEntry('master-theme-value')
-  expect(themeValue.patterns).not.toContainEqual(expect.objectContaining({
-    match: '\\$[_a-zA-Z-][_a-zA-Z0-9-]*',
-    name: 'variable.other.master-css'
-  }))
-  findGrammarPattern(themeValue, (pattern) => pattern.match === '--alpha(?=\\()' && pattern.name === 'support.function.misc.master-css')
-
-  const composePrelude = grammarEntry('master-compose-prelude')
-  expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
-
-  const variantPrelude = grammarEntry('master-variant-prelude')
-  findGrammarPattern(variantPrelude, (pattern) => pattern.name === 'support.constant.property-value.master-css.query')
-  const query = grammarEntry('master-query')
-  findGrammarPattern(query, (pattern) => pattern.name === 'keyword.control.at-rule.master-css.query')
-
-  for (const block of ['master-block', 'master-managed-block']) {
-    expectGrammarIncludes({ patterns: grammarEntry(block).patterns[0]?.patterns ?? [] }, ['source.css#at-rules'])
-  }
-
-  const classFragment = grammarEntry('master-class-fragment')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'support.constant.property-value.master-css')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'entity.other.attribute-name.class.master-css')
-  findGrammarPattern(classFragment, (pattern) => pattern.name === 'keyword.control.at-rule.master-css.query')
-  const propertyFragment = findGrammarPattern(classFragment, (pattern) => pattern.captures?.['1']?.name === 'support.type.property-name.master-css')
-  expect(propertyFragment.captures?.['2']?.name).toBe('keyword.operator.master-css')
-})
-
-test('supports Shiki dynamic language imports', async () => {
-  const masterCSSShikiLanguageImport = import('../src/shiki').then((module) => ({
-    default: [module.masterCSSShikiLanguage]
-  }))
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['css', masterCSSShikiLanguageImport]
-  })
-
-  try {
-    expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
-
-    const code = '@theme { --color-primary: var(--value); }'
-    const result = highlighter.codeToTokens(code, {
-      lang: 'css',
-      theme: shikiSmokeTheme
-    })
-
-    expectTokensPreserveSource(result.tokens, code)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
-
-test('registers a real Shiki TextMate injection grammar for CSS directives', async () => {
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['css', masterCSSShikiLanguage]
-  })
-
-  try {
-    expect(highlighter.getLoadedLanguages()).toEqual(expect.arrayContaining(['css', masterCSSShikiLanguage.name]))
-
-    const code = [
-      '@theme {',
-      '    --color-primary: var(--color-blue-60);',
-      '}',
-      '@components {',
-      '    btn {',
-      '        @compose inline-flex fg:primary:hover@md;',
-      '    }',
-      '}',
-      '@keyframes fade {',
-      '    from { opacity: 0; }',
-      '    to { opacity: 1; }',
-      '}'
-    ].join('\n')
-    const result = highlighter.codeToTokens(code, {
-      lang: 'css',
-      theme: shikiSmokeTheme
-    })
-
-    expectTokensPreserveSource(result.tokens, code)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
-
-test('keeps guide theme snippets correct with TextMate only', async () => {
-  const highlighter = await createHighlighter({
-    themes: [shikiSmokeTheme],
-    langs: ['css', masterCSSShikiLanguage]
-  })
-
-  try {
-    const code = [
-      '@theme light {',
-      '    /* Font families */',
-      '    --tracking-tightest: -0.072em;',
-      '}'
-    ].join('\n')
-    const result = highlighter.codeToTokens(code, {
-      lang: 'css',
-      theme: shikiSmokeTheme
-    })
-
-    expectTokensPreserveSource(result.tokens, code)
-  } finally {
-    await highlighter.dispose?.()
-  }
-})
 
 test.concurrent('does not attach semantic metadata to guide theme CSS directive syntax', () => {
   const code = [
@@ -342,7 +167,7 @@ test.concurrent('normalizes Shiki language ids separately from class-list langua
 })
 
 test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () => {
-  const code = '<div className="fg:brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
+  const code = '<div className="fg-brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'tsx',
     manifest
@@ -403,7 +228,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
   const code = [
-    '@safelist "block fg:red";',
+    '@safelist "block fg-red";',
     '@utilities {',
     '    text-<left|center|right> {',
     '        text-align: --value();',
@@ -419,7 +244,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '}',
     '@components {',
     '    btn {',
-    '        @compose inline-flex fg:brand:hover@sm;',
+    '        @compose inline-flex fg-brand:hover@sm;',
     '    }',
     '}'
   ].join('\n')
@@ -449,9 +274,9 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     }),
     expect.objectContaining({
       text: 'red',
-      type: 'enumMember',
+      type: 'variable',
       modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic-role-value-keyword'])
+      classNames: expect.arrayContaining(['mcss-semantic-role-value-variable'])
     }),
     expect.objectContaining({
       text: 'inline-flex',
@@ -487,7 +312,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
 })
 
 test.concurrent('creates Shiki decorations for raw Master CSS class lists', () => {
-  const code = 'fg:brand:hover@sm {bg:blue;fg:white}'
+  const code = 'fg-brand:hover@sm {bg-blue;fg-white}'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'mcss',
     classList: true,
@@ -511,7 +336,7 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
 })
 
 test.concurrent('skips semantic token decorations inside host comments', () => {
-  const code = '<!-- <div class="fg:red"></div> -->\n<div class="fg:blue"></div>'
+  const code = '<!-- <div class="fg-red"></div> -->\n<div class="fg-blue"></div>'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'html'
   })
@@ -559,7 +384,7 @@ test('wraps host class attribute values around Master CSS semantic spans', async
     themes: [shikiSmokeTheme],
     langs: ['html']
   })
-  const code = '<button class="text:amber" data-foo="bar">Save</button>'
+  const code = '<button class="text-amber" data-foo="bar">Save</button>'
 
   try {
     const originalHast = highlighter.codeToHast(code, {
@@ -569,7 +394,7 @@ test('wraps host class attribute values around Master CSS semantic spans', async
     const originalClassValueElement = collectHastElements(originalHast).find((element) => (
       element.tagName === 'span'
       && typeof element.properties?.style === 'string'
-      && getHastText(element).includes('text:amber')
+      && getHastText(element).includes('text-amber')
     ))
     const hast = highlighter.codeToHast(code, {
       lang: 'html',
@@ -582,13 +407,13 @@ test('wraps host class attribute values around Master CSS semantic spans', async
 
     expect(originalClassValueElement).toBeDefined()
     expect(wrappers).toHaveLength(1)
-    expect(getHastText(wrapper)).toBe('text:amber')
+    expect(getHastText(wrapper)).toBe('text-amber')
     expect(hasHastClass(wrapper, 'mcss-host')).toBe(true)
     expect(wrapper.properties?.['data-master-css-host-role']).toBe('class-attribute-value')
     expect(wrapper.properties?.style).toBe(originalClassValueElement?.properties?.style)
     expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-declaration-property'))).toBe(true)
     expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-declaration-separator'))).toBe(true)
-    expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-value-keyword'))).toBe(true)
+    expect(wrapperChildren.some((element) => hasHastClass(element, 'mcss-semantic-role-value-variable'))).toBe(true)
     expect(collectHastElements(hast).filter((element) => getHastText(element) === 'bar' && hasHastClass(element, 'mcss-host'))).toHaveLength(0)
   } finally {
     await highlighter.dispose?.()
@@ -602,7 +427,7 @@ test('can disable host class attribute value wrappers', async () => {
   })
 
   try {
-    const hast = highlighter.codeToHast('<button class="text:amber">Save</button>', {
+    const hast = highlighter.codeToHast('<button class="text-amber">Save</button>', {
       lang: 'html',
       theme: shikiSmokeTheme,
       transformers: [transformerMasterCSS({
@@ -612,7 +437,7 @@ test('can disable host class attribute value wrappers', async () => {
     })
 
     expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')).toHaveLength(0)
-    expect(collectHastElementsByClass(hast, 'mcss-semantic-role-value-keyword')).toHaveLength(1)
+    expect(collectHastElementsByClass(hast, 'mcss-semantic-role-value-variable')).toHaveLength(1)
   } finally {
     await highlighter.dispose?.()
   }
@@ -627,7 +452,7 @@ test('wraps each visible line of multiline class values without changing code te
   try {
     for (const [lang, attribute] of [['html', 'class'], ['tsx', 'className']] as const) {
       for (const newline of ['\n', '\r\n']) {
-        const code = `<div ${attribute}="fg:red${newline}  block"></div>`
+        const code = `<div ${attribute}="fg-red${newline}  block"></div>`
         const hast = highlighter.codeToHast(code, {
           lang,
           theme: shikiSmokeTheme,
@@ -637,7 +462,7 @@ test('wraps each visible line of multiline class values without changing code te
         const lines = collectHastElementsByClass(hast, 'line')
 
         expect(lines.map(getHastText)).toEqual(code.split(/\r?\n/))
-        expect(wrappers.map(getHastText)).toEqual(['fg:red', '  block'])
+        expect(wrappers.map(getHastText)).toEqual(['fg-red', '  block'])
         expect(wrappers.every((wrapper) => wrapper.properties?.style)).toBe(true)
         expect(wrappers.every((wrapper) => wrapper.properties?.['data-master-css-host-role'] === 'class-attribute-value')).toBe(true)
         expect(collectHastElementsByClass(wrappers[0], 'mcss-semantic-role-declaration-property')).toHaveLength(1)
@@ -651,7 +476,7 @@ test('wraps each visible line of multiline class values without changing code te
 
 test('keeps caller decoration overlap behavior for multiline class values', async () => {
   const highlighter = await createHighlighter({ themes: [shikiSmokeTheme], langs: ['html'] })
-  const code = '<div class="fg:red\n  block"></div>'
+  const code = '<div class="fg-red\n  block"></div>'
 
   try {
     const hast = highlighter.codeToHast(code, {
@@ -670,7 +495,7 @@ test('keeps caller decoration overlap behavior for multiline class values', asyn
 
 test('keeps host wrappers aligned when an earlier transformer removes source lines', async () => {
   const highlighter = await createHighlighter({ themes: [shikiSmokeTheme], langs: ['html'] })
-  const code = '<!-- marker -->\n<div class="fg:red"></div>'
+  const code = '<!-- marker -->\n<div class="fg-red"></div>'
 
   try {
     const hast = highlighter.codeToHast(code, {
@@ -682,8 +507,8 @@ test('keeps host wrappers aligned when an earlier transformer removes source lin
       ]
     })
 
-    expect(collectHastElementsByClass(hast, 'line').map(getHastText)).toEqual(['<div class="fg:red"></div>'])
-    expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value').map(getHastText)).toEqual(['fg:red'])
+    expect(collectHastElementsByClass(hast, 'line').map(getHastText)).toEqual(['<div class="fg-red"></div>'])
+    expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value').map(getHastText)).toEqual(['fg-red'])
   } finally {
     await highlighter.dispose?.()
   }
@@ -738,7 +563,7 @@ test('handles caller Shiki decorations around host class attribute value wrapper
     themes: [shikiSmokeTheme],
     langs: ['html']
   })
-  const code = '<button class="text:amber">Save</button>'
+  const code = '<button class="text-amber">Save</button>'
 
   try {
     const partialOverlapHast = highlighter.codeToHast(code, {
@@ -763,7 +588,7 @@ test('handles caller Shiki decorations around host class attribute value wrapper
     const wrappers = collectHastElementsByClass(containedHast, 'mcss-host-role-class-attribute-value')
 
     expect(wrappers).toHaveLength(1)
-    expect(getHastText(wrappers[0])).toBe('text:amber')
+    expect(getHastText(wrappers[0])).toBe('text-amber')
     expect(collectHastElementsByClass(wrappers[0], 'caller-decoration')).toHaveLength(1)
   } finally {
     await highlighter.dispose?.()
@@ -771,7 +596,7 @@ test('handles caller Shiki decorations around host class attribute value wrapper
 })
 
 test.concurrent('does not create host wrappers for raw class-list highlighting', () => {
-  const code = 'text:amber'
+  const code = 'text-amber'
   const options = {
     lang: 'mcss',
     decorations: [] as any[]
@@ -879,7 +704,7 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
 })
 
 test.concurrent('uses semantic token scope styles for documentation Master CSS tokens', () => {
-  const htmlCode = '<section class="bg:blue block grid-cols:2@md fg:primary:hover"></section>'
+  const htmlCode = '<section class="bg-blue block grid-cols:2@md fg-primary:hover"></section>'
   const htmlOptions = {
     lang: 'html'
   }
@@ -889,7 +714,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     '  --spacing-card: 24;',
     '}',
     '@components {',
-    '  card { @compose bg:blue fg:brand:hover; }',
+    '  card { @compose bg-blue fg-brand:hover; }',
     '}'
   ].join('\n')
   const cssOptions = {
@@ -929,14 +754,14 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
       className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
     },
     {
-      content: ':',
+      content: '-',
       htmlStyle: { color: 'operator' },
       className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-declaration-separator'
     },
     {
       content: 'blue',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'block',
@@ -967,8 +792,8 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     },
     {
       content: 'blue',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'brand',
@@ -990,7 +815,7 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
     '@components {',
     '    card {',
-    '        @compose p:md r:xl;',
+    '        @compose p-md r-xl;',
     '        @variant <sm {',
     '            @compose block;',
     '        }',
@@ -1019,8 +844,8 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     },
     {
       content: 'md',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'r',
@@ -1029,8 +854,8 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     },
     {
       content: 'xl',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'block',

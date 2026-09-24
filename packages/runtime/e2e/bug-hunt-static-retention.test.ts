@@ -14,15 +14,15 @@ for (const inline of [false, true]) {
     const probe = page.locator('.probe')
     await expect(probe).toHaveCSS('color', 'rgb(255, 0, 0)')
     for (let round = 0; round < 3; round++) {
-      await probe.evaluate(element => element.classList.add('fg:brand'))
-      await expect.poll(() => page.evaluate(() => Object.hasOwn(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules, 'fg:brand'))).toBe(true)
-      await probe.evaluate(element => element.classList.remove('fg:brand'))
-      await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('fg:brand'))).toBe(false)
+      await probe.evaluate(element => element.classList.add('fg-brand'))
+      await expect.poll(() => page.evaluate(() => Object.hasOwn(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules, 'fg-brand'))).toBe(true)
+      await probe.evaluate(element => element.classList.remove('fg-brand'))
+      await expect.poll(() => page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.classCounts.has('fg-brand'))).toBe(false)
       await expect(probe).toHaveCSS('color', 'rgb(255, 0, 0)')
       // DOM removals may retain unused rules until idle cleanup. Exercise the
       // public deletion boundary explicitly after the observer has updated counts.
-      await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['fg:brand']))
-      await expect.poll(() => page.evaluate(() => Object.hasOwn(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules, 'fg:brand'))).toBe(false)
+      await page.evaluate(() => globalThis.masterCSSRuntime.deleteClassRules(['fg-brand']))
+      await expect.poll(() => page.evaluate(() => Object.hasOwn(globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().classRules, 'fg-brand'))).toBe(false)
       await expect(probe).toHaveCSS('color', 'rgb(255, 0, 0)')
     }
   })

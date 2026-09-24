@@ -9,7 +9,7 @@ export const metadata = {
   description: 'Original Guide viewport controls, previous shared fieldset and the adopted segmented variant.'
 }
 
-const original = <OriginalDemo><ButtonPreview responsive classes={['p:md', 'p:lg@sm', 'fg:blue-60:hover', 'fg:blue-60:focus-visible']} /></OriginalDemo>
+const original = <OriginalDemo><ButtonPreview responsive classes={['p-md', 'p-lg@sm', 'fg-blue-60:hover', 'fg-blue-60:focus-visible']} /></OriginalDemo>
 
 const options = [
   {

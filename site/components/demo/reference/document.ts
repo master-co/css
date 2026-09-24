@@ -34,7 +34,7 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
   const engine = createRenderSessionSync({ manifest: compiled?.manifest ?? shared, supportsNativeDeclaration })
   try {
     const classNames = [...new Set([...`${scene.html}<body class="${scene.bodyClass ?? ''}">`.matchAll(/\bclass="([\s\S]*?)"/g)].flatMap(match => match[1].replaceAll('&quot;', '"').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').split(/\s+/)).filter(Boolean))]
-    const tokenClasses = ['bg:demo-canvas', 'bg:demo-surface', 'fg:demo-text', 'fg:demo-muted', 'fg:demo-blue', 'fg:demo-violet', 'fg:demo-amber', 'fg:demo-neutral', 'b:demo-line', 'bg:demo-grid', 'font:sans', 'font:mono']
+    const tokenClasses = ['bg-demo-canvas', 'bg-demo-surface', 'fg-demo-text', 'fg-demo-muted', 'fg-demo-blue', 'fg-demo-violet', 'fg-demo-amber', 'fg-demo-neutral', 'b-demo-line', 'bg-demo-grid', 'font-sans', 'font-mono']
     const rendered = engine.ensureClassRules([...classNames, ...tokenClasses])
     const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value))
     if (invalid.length) throw new Error(`${section.page}#${section.id}: invalid demo classes ${invalid.join(', ')}`)

@@ -64,7 +64,7 @@ export async function verifyDeliveryExamples() {
   // Execute only the authored example with its filesystem writes captured in memory.
   new Function('require', 'exports', output.outputText)(controlledRequire, {})
   const rendered = files.get('./dist/index.html')!
-  assert.match(rendered, /class="font:5xl font:heavy"/)
+  assert.match(rendered, /class="font-5xl font-heavy"/)
   const url = rendered.match(/data-master-css-hydration-manifest="([^"]+)"/)![1]
   const manifest = JSON.parse(files.get('./dist' + url)!)
   assert.equal(manifest.version, 1)

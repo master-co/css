@@ -7,7 +7,7 @@ import { UtilityType } from '@master/css-schema/utility-type'
 jsxTester.run('invalid', rule, {
   valid: [
     {
-      code: `<div class="m:2x p:2x bg:black fg:white font:1.5rem">Simple, basic</div>`,
+      code: `<div class="m:0.5rem p:0.5rem bg-black fg-white font-size:1.5rem">Simple, basic</div>`,
     },
     {
       code: `<div class={\`f:\${ fontSize }px\`}>TemplateLiteral</div>`,
@@ -18,12 +18,18 @@ jsxTester.run('invalid', rule, {
   ],
   invalid: [
     {
-      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      code: `<div class="bg-black text-decoration:bad() rrr">Simple, basic</div>`,
       errors: [
         {
           messageId: 'invalidClass',
           data: {
-            message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration-color` property.'
+            message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `-webkit-text-decoration` property.'
+          }
+        },
+{
+          messageId: 'invalidClass',
+          data: {
+            message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration` property.'
           }
         },
         {
@@ -40,9 +46,10 @@ jsxTester.run('invalid', rule, {
       ] as any
     },
     {
-      code: `<div class="bg:black text-decoration:bad() rrr">Simple, basic</div>`,
+      code: `<div class="bg-black text-decoration:bad() rrr">Simple, basic</div>`,
       errors: [
         { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' },
       ]
     },
     {
@@ -52,7 +59,8 @@ jsxTester.run('invalid', rule, {
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {
@@ -63,7 +71,8 @@ jsxTester.run('invalid', rule, {
     {
       code: `<div class="a c d hello:world text-decoration:bad() mt:0 mt:0@sm">Error class</div>`,
       errors: [
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ]
     },
   ]
@@ -90,10 +99,11 @@ createTester({
   valid: [],
   invalid: [
     {
-      code: `<div class="btn rrr bg:black text-decoration:bad()">Simple, basic</div>`,
+      code: `<div class="btn rrr bg-black text-decoration:bad()">Simple, basic</div>`,
       errors: [
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {
@@ -108,7 +118,8 @@ createTester({
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
         { messageId: 'disallowUnknownClass' },
-        { messageId: 'invalidClass' }
+        { messageId: 'invalidClass' },
+{ messageId: 'invalidClass' }
       ],
       options: [
         {

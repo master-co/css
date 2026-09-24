@@ -29,18 +29,18 @@
   }
 
   code-wrapper {
-    @compose rel flex:1|1|auto overflow:auto p:4x|0 r:lg surface:muted leading:20px white-space:nowrap;
+    @compose rel flex:1|1|auto overflow:auto p:1rem|0 r-lg surface-muted leading:20px white-space:nowrap;
     counter-reset: line;
     hyphens: none;
     font-size: 13px;
 
     &:before {
-      @compose abs left top h:full;
+      @compose abs left top h:100%;
       content: '';
     }
 
     .silence {
-      @compose text:muted!;
+      @compose text-muted!;
       contain: strict;
     }
 
@@ -49,12 +49,12 @@
     }
 
     .silence * {
-      @compose text:muted!;
+      @compose text-muted!;
     }
   }
 
   code-block {
-    @compose block font-size:inherit font:regular leading:inherit min-w:100% w:max white-space:pre word-spacing:normal;
+    @compose block font-size:inherit font-regular leading:inherit min-w:100% w:max-content white-space:pre word-spacing:normal;
     word-break: normal;
 
     &::before,
@@ -64,46 +64,46 @@
   }
 
   code-bar {
-    @compose flex surface:muted font:xs;
+    @compose flex surface-muted font-xs;
   }
 
   code-line-add {
-    @compose block bl:2px pl:calc(5x-2px) text:success;
+    @compose block border-left-width:2px pl:calc(1.25rem-2px) text-success;
 
     &:not(:only-child):before {
       content: '+' !important;
     }
 
     &::before {
-      @compose text:success!;
+      @compose text-success!;
     }
 
     @light {
-      @compose bg:beryl-0;
+      @compose bg-beryl-0;
     }
 
     @dark {
-      @compose bg:beryl-50/.1;
+      @compose bg-beryl-50/.1;
     }
   }
 
   code-line-remove {
-    @compose block bl:2px pl:calc(5x-2px) text:danger;
+    @compose block border-left-width:2px pl:calc(1.25rem-2px) text-danger;
 
     &:not(:only-child):before {
       content: '-' !important;
     }
 
     &::before {
-      @compose text:danger!;
+      @compose text-danger!;
     }
 
     @light {
-      @compose bg:crimson-0;
+      @compose bg-crimson-0;
     }
 
     @dark {
-      @compose bg:crimson-50/.1;
+      @compose bg-crimson-50/.1;
     }
   }
 
@@ -111,26 +111,26 @@
     @compose block;
 
     @dark {
-      @compose bg:gray-80;
+      @compose bg-gray-80;
     }
 
     @light {
-      @compose bg:neutral-5;
+      @compose bg-neutral-5;
     }
   }
 
   line {
-    @compose block px:5x;
+    @compose block px:1.25rem;
 
     &:not(:only-child):before {
-      @compose inline-block pr:md text-right ml:-5px text:disabled w:30px font:80%;
+      @compose inline-block pr-md text-right ml:-5px text-disabled w:30px font-size:80%;
       content: counter(line);
       counter-increment: line;
     }
   }
 
   mark {
-    @compose box-decoration-break:clone m:-2px|0 p:2px|0 r:sm;
+    @compose box-decoration-break:clone m:-2px|0 p:2px|0 r-sm;
 
     &:has(+ .mark) {
       @compose rtr:0px rbr:0px;
@@ -145,20 +145,20 @@
     }
 
     @light {
-      @compose fg:var(--shiki-light) bg:neutral-10;
+      @compose fg:var(--shiki-light) bg-neutral-10;
     }
   }
 
   code-mark-warn {
-    @compose bg:transparent! text-decoration:underline|yellow|wavy|1px text-underline-offset:2px;
+    @compose background-color:transparent! text-decoration:underline|var(--color-text-yellow)|wavy|1px text-underline-offset:2px;
   }
 
   code-mark-error {
-    @compose bg:transparent! text-decoration:underline|red|wavy|1px text-underline-offset:2px;
+    @compose background-color:transparent! text-decoration:underline|var(--color-text-red)|wavy|1px text-underline-offset:2px;
   }
 
   flash {
-    @compose animation:flash|1s|forwards|ease-in m:-2px|-3px outline:1px|solid|transparent p:2px|3px r:sm;
+    @compose animation:flash|1s|forwards|ease-in m:-2px|-3px outline:1px|solid|transparent p:2px|3px r-sm;
     contain: strict;
   }
 }

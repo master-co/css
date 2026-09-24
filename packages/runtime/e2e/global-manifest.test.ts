@@ -54,13 +54,13 @@ test('uses split bundled preset manifest', async ({ page }) => {
   await startGlobalRuntime(page)
 
   const snapshot = await page.evaluate(() => {
-    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold', 'fg:white'])
+    globalThis.masterCSSRuntime!.ensureClassRules(['font-bold', 'fg-white'])
     return globalThis.masterCSSRuntime!.snapshot()
   })
   expect(snapshot.cssText).toContain('--font-weight-bold:700')
-  expect(snapshot.cssText).toContain('.fg\\:white{color:oklch(100% 0 none)}')
-  expect(snapshot.classRules['font:bold']?.rules).not.toHaveLength(0)
-  expect(snapshot.classRules['fg:white']?.rules).not.toHaveLength(0)
+  expect(snapshot.cssText).toContain('.fg-white{color:oklch(100% 0 none)}')
+  expect(snapshot.classRules['font-bold']?.rules).not.toHaveLength(0)
+  expect(snapshot.classRules['fg-white']?.rules).not.toHaveLength(0)
 })
 
 test('uses modulepreloaded default manifest', async ({ page }) => {
@@ -97,7 +97,7 @@ test('uses modulepreloaded default manifest', async ({ page }) => {
   expect(defaultManifestRequests).toBe(1)
   expect(consoleMessages).toEqual([])
   expect(await page.evaluate(() => {
-    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold'])
+    globalThis.masterCSSRuntime!.ensureClassRules(['font-bold'])
     return globalThis.masterCSSRuntime!.snapshot().cssText
   })).toContain('--font-weight-bold:700')
 })
@@ -115,7 +115,7 @@ test('ignores global manifest override', async ({ page }) => {
   await startGlobalRuntime(page)
 
   const snapshot = await page.evaluate(() => {
-    globalThis.masterCSSRuntime!.ensureClassRules(['font:bold'])
+    globalThis.masterCSSRuntime!.ensureClassRules(['font-bold'])
     return globalThis.masterCSSRuntime!.snapshot()
   })
   expect(snapshot.cssText).toContain('--font-weight-bold:700')

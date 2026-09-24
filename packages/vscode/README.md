@@ -36,7 +36,7 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 }
 
 .button {
-  @compose inline-flex items:center gap:2x fg:primary;
+  @compose inline-flex items:center gap:0.5rem fg-primary;
 }
 ```
 
@@ -49,7 +49,7 @@ For project-aware tokens, create a CSS entry that imports `@master/css`, or decl
 - **Color support**: Shows VS Code color decorators for supported Master CSS color syntax and lets the VS Code color picker edit those values.
 - **Directive diagnostics**: Reports Master CSS directive errors in CSS, SCSS, LESS, and style blocks inside Vue, Svelte, and Astro files.
 - **Manifest diagnostics**: Reports project manifest loading errors without taking over ESLint class policy warnings.
-- **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `bg:transparent !` to `bg:transparent!`.
+- **Directive formatting**: Formats Master CSS directives and keeps class important markers attached, such as `background-color:transparent !` to `background-color:transparent!`.
 - **Workspace-aware manifests**: Loads project manifests from the closest detected Master CSS workspace so completions and tokens reflect custom variables, components, utilities, and modes.
 - **Restart command**: Provides `Master CSS: Restart Language Server` for reloading the language server after dependency, manifest, or workspace changes.
 

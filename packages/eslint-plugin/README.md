@@ -163,7 +163,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule can fix `text-align:center` to `text-center`, `font:16px` to `font:md`, `margin:md` to `m:md`, `m:1rem|1.5rem` to `m:md|lg`, `fg:var(--color-red-60)` to `fg:red-60`, `w:md h:md` to `size:md`, `mt:md mb:md` to `my:md`, and `block@dark@sm` to `block@sm@dark`.
+For example, this rule can fix `text-align:center` to `text-center`, `font-size:16px` to `font-md`, `margin-md` to `m-md`, `m:1rem|1.5rem` to `m:var(--spacing-md)|var(--spacing-lg)`, `fg:var(--color-red-60)` to `fg-red-60`, `w-md h-md` to `size-md`, `mt-md mb-md` to `my-md`, and `block@dark@sm` to `block@sm@dark`.
 
 The same canonicalization applies to unquoted `@compose` class lists. In CSS, declaration-like classes are moved to native declarations and suffixes are moved to `@variant`, `@dark`, or `@light` blocks when the rewrite is safe.
 
@@ -188,10 +188,7 @@ export default defineConfig([
     rules: {
       '@master/css/prefer-canonical-classes': ['warn', {
         preferStaticUtilities: true,
-        preferThemeTokens: true,
         preferPropertyAliases: true,
-        preferVariableReferences: true,
-        preferMultiValueTokens: true,
         preferCompositionUtilities: true,
         preferConditionOrder: true,
         preferNativeDeclarationsInCompose: true,
@@ -218,7 +215,7 @@ export default defineConfig([
 ])
 ```
 
-When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx:md ml:lg` to `mr:md ml:lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
+When two classes conflict, the later class is treated as the effective one and the fix removes the earlier class. For partially overlapping spacing, physical inset, radius, and border width/color/style shorthands, the fix preserves the surviving declarations by splitting the earlier class, such as `mx-md ml-lg` to `mr-md ml-lg` or `b-solid bt-dashed` to `br-solid bb-solid bl-solid bt-dashed`.
 
 ### `@master/css/no-unapproved-raw-values`
 
@@ -239,7 +236,7 @@ export default defineConfig([
 ])
 ```
 
-For example, this rule reports `font:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
+For example, this rule reports `font-size:15px`, `m:17px`, and `fg:#123456` when those values are not theme tokens. It does not autofix because there may be no safe token replacement.
 
 ## Settings
 

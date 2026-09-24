@@ -25,7 +25,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns active semantic tokens for the class at a position', async ({ expect }) => {
-    const text = '<div class="fg:red block:hover"></div>'
+    const text = '<div class="fg-red block:hover"></div>'
     const textDocument = context.createDocument(text)
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(ACTIVE_SEMANTIC_TOKENS_REQUEST, {
@@ -46,7 +46,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
-    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose fg:red block; } }', { lang: 'css' })
+    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose fg-red block; } }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
@@ -58,7 +58,7 @@ withFixture('basic', async (context) => {
     expect(hasTokenType(semanticTokens.data, 'property')).toBe(true)
     expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
     expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(false)
-    expect(hasTokenType(semanticTokens.data, 'variable')).toBe(false)
+    expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
     expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
     await context.server.onDidClose({ document: textDocument })
   })
@@ -152,7 +152,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns full semantic tokens for opened documents', async ({ expect }) => {
-    const textDocument = context.createDocument('<div class="{fg:red;block}>li:hover@sm"></div>')
+    const textDocument = context.createDocument('<div class="{fg-red;block}>li:hover@sm"></div>')
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.server.onSemanticTokens({
       textDocument: {

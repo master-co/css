@@ -85,15 +85,15 @@ test('progressive hydration without a manifest rebuilds with runtime CSS', async
 })
 
 test('progressive hydration with a mismatched manifest rebuilds with runtime CSS', async ({ page }) => {
-  const { hydrationManifest } = renderHydration('fg:red-60', 'bg:red-60')
-  const prerenderedCSS = renderHydration('fg:red-60')
+  const { hydrationManifest } = renderHydration('fg-red-60', 'bg-red-60')
+  const prerenderedCSS = renderHydration('fg-red-60')
   const consoleWarnings: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'warning') consoleWarnings.push(message.text())
   })
 
   await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
+    document.body.innerHTML = '<p class="fg-red-60"></p>'
   })
   await init(page, prerenderedCSS.text, undefined, hydrationManifest)
 
@@ -105,9 +105,9 @@ test('progressive hydration with a mismatched manifest rebuilds with runtime CSS
 
   expect(consoleWarnings.some((message) => message.includes('hydration manifest'))).toBe(true)
   expect(result.progressive).toBe(false)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
-  expect(result.text).toContain('.fg\\:red-60')
-  expect(result.text).not.toContain('.bg\\:red-60')
+  expect(result.utilityRules).toEqual(['fg-red-60'])
+  expect(result.text).toContain('.fg-red-60')
+  expect(result.text).not.toContain('.bg-red-60')
 })
 
 test('progressive hydration with an empty manifest rebuilds with runtime CSS', async ({ page }) => {
@@ -140,17 +140,17 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
 })
 
 test('progressive hydration uses hydration manifest and retains removed hydrated classes', async ({ page }) => {
-  const { text, hydrationManifest } = renderHydration('fg:red-60')
+  const { text, hydrationManifest } = renderHydration('fg-red-60')
 
   await page.evaluate(() => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p>'
   })
   await init(page, text, undefined, hydrationManifest)
 
   const hydrated = await page.evaluate(() => {
-    const rule = globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg:red-60') as any
+    const rule = globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.find((eachRule) => eachRule.name === 'fg-red-60') as any
     return {
-      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg:red-60'),
+      hasClassUtility: globalThis.__MASTER_CSS_RUNTIME_TEST__.classUtilities.has('fg-red-60'),
       hasRegisteredUtility: Boolean(rule?.registeredUtility),
       counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.tokenCounts),
       utilityRules: globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.map(({ name }) => name)
@@ -162,11 +162,11 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
     counts: {
       'color-red-60': 1
     },
-    utilityRules: ['fg:red-60']
+    utilityRules: ['fg-red-60']
   })
 
   const removed = await page.evaluate(async () => {
-    document.getElementById('target')?.classList.remove('fg:red-60')
+    document.getElementById('target')?.classList.remove('fg-red-60')
     await new Promise(resolve => setTimeout(resolve, 0))
     return {
       text: globalThis.__MASTER_CSS_RUNTIME_TEST__.text,
@@ -174,7 +174,7 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
       utilityRules: globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.map(({ name }) => name)
     }
   })
-  expect(removed.utilityRules).toEqual(['fg:red-60'])
+  expect(removed.utilityRules).toEqual(['fg-red-60'])
 
   await waitForRuntimeRemovalFlush(page)
   const afterFlush = await page.evaluate(() => ({
@@ -184,12 +184,12 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
     utilityRules: globalThis.__MASTER_CSS_RUNTIME_TEST__.utilitiesLayer.rules.map(({ name }) => name)
   }))
   expect(afterFlush).toEqual({
-    text: expect.stringContaining('.fg\\:red-60'),
+    text: expect.stringContaining('.fg-red-60'),
     counts: {
       'color-red-60': 1
     },
-    retainedClassNames: ['fg:red-60'],
-    utilityRules: ['fg:red-60']
+    retainedClassNames: ['fg-red-60'],
+    utilityRules: ['fg-red-60']
   })
 
   const afterForcedCleanup = await page.evaluate(() => ({
@@ -209,7 +209,7 @@ test('progressive hydration uses hydration manifest and retains removed hydrated
 })
 
 test('progressive hydration imports an external style hydration manifest', async ({ page }) => {
-  const { text, hydrationManifest } = renderHydration('fg:red-60')
+  const { text, hydrationManifest } = renderHydration('fg-red-60')
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/external.json', loaderURL).href
 
@@ -223,7 +223,7 @@ test('progressive hydration imports an external style hydration manifest', async
     body: serializeMasterCSSHydrationManifest(hydrationManifest)
   }))
   await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
+    document.body.innerHTML = '<p class="fg-red-60"></p>'
     const style = document.createElement('style')
     style.id = runtimeStyleId
     style.textContent = text
@@ -244,12 +244,12 @@ test('progressive hydration imports an external style hydration manifest', async
   }))
 
   expect(result.progressive).toBe(true)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
-  expect(result.text).toContain('.fg\\:red-60')
+  expect(result.utilityRules).toEqual(['fg-red-60'])
+  expect(result.text).toContain('.fg-red-60')
 })
 
 test('progressive hydration uses JSON modules without constructing a loader or calling fetch', async ({ page }) => {
-  const { text, hydrationManifest } = renderHydration('fg:red-60')
+  const { text, hydrationManifest } = renderHydration('fg-red-60')
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/syntax-fallback.json', loaderURL).href
 
@@ -260,7 +260,7 @@ test('progressive hydration uses JSON modules without constructing a loader or c
     body: serializeMasterCSSHydrationManifest(hydrationManifest)
   }))
   await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
+    document.body.innerHTML = '<p class="fg-red-60"></p>'
     const style = document.createElement('style')
     style.id = runtimeStyleId
     style.textContent = text
@@ -568,7 +568,7 @@ test('progressive hydration rejects an invalid external hydration manifest paylo
 })
 
 test('explicit hydration manifest wins over external DOM discovery', async ({ page }) => {
-  const { text, hydrationManifest } = renderHydration('fg:red-60')
+  const { text, hydrationManifest } = renderHydration('fg-red-60')
   let requests = 0
   const loaderURL = await getRuntimeLoaderURL()
   const source = new URL('/_master-css/hydration/ignored.json', loaderURL).href
@@ -582,7 +582,7 @@ test('explicit hydration manifest wins over external DOM discovery', async ({ pa
     })
   })
   await page.evaluate(({ attr, runtimeStyleId, source, text }) => {
-    document.body.innerHTML = '<p class="fg:red-60"></p>'
+    document.body.innerHTML = '<p class="fg-red-60"></p>'
     const style = document.createElement('style')
     style.id = runtimeStyleId
     style.textContent = text
@@ -603,18 +603,18 @@ test('explicit hydration manifest wins over external DOM discovery', async ({ pa
 
   expect(requests).toBe(0)
   expect(result.progressive).toBe(true)
-  expect(result.utilityRules).toEqual(['fg:red-60'])
+  expect(result.utilityRules).toEqual(['fg-red-60'])
 })
 
 test('progressive hydration matches bucketed theme variables', async ({ page }) => {
-  const { text, hydrationManifest } = renderHydration('fg:red-60', 'bg:blue-60')
+  const { text, hydrationManifest } = renderHydration('fg-red-60', 'bg-blue-60')
   const consoleWarnings: string[] = []
   page.on('console', (message) => {
     if (message.type() === 'warning') consoleWarnings.push(message.text())
   })
 
   await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:red-60 bg:blue-60"></p>'
+    document.body.innerHTML = '<p class="fg-red-60 bg-blue-60"></p>'
   })
   await init(page, text, undefined, hydrationManifest)
 
@@ -643,11 +643,11 @@ test('progressive hydration rejects reordered theme variable buckets', async ({ 
   })
 
   await page.evaluate(() => {
-    document.body.innerHTML = '<p class="fg:primary"></p>'
+    document.body.innerHTML = '<p class="fg-primary"></p>'
   })
   await init(
     page,
-    '@layer theme{.dark{color-scheme:dark;--color-primary:#ffffff}.light,:root{color-scheme:light;--color-primary:#000000}}@layer utilities{.fg\\:primary{color:var(--color-primary)}}',
+    '@layer theme{.dark{color-scheme:dark;--color-primary:#ffffff}.light,:root{color-scheme:light;--color-primary:#000000}}@layer utilities{.fg-primary{color:var(--color-primary)}}',
     {
       variables: [
         { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
@@ -686,7 +686,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
 
   await page.evaluate(() => {
     const el = document.createElement('p')
-    el.classList.add('fg:brand', 'color:brand')
+    el.classList.add('fg:var(--brand)', 'color:var(--brand)')
     document.body.append(el)
   })
   await waitForRuntimeRuleFlush(page)
@@ -703,7 +703,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
   })
 
   await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove('fg:brand')
+    document.querySelector('p')?.classList.remove('fg:var(--brand)')
   })
   await waitForRuntimeRemovalFlush(page)
   const afterOneRemoval = await page.evaluate(() => ({
@@ -717,11 +717,11 @@ test('removes shared alias variable dependencies when classes disappear', async 
       brand: 2,
       surface: 2
     },
-    retainedClassNames: ['fg:brand']
+    retainedClassNames: ['fg:var(--brand)']
   })
 
   await page.evaluate(() => {
-    document.querySelector('p')?.classList.remove('color:brand')
+    document.querySelector('p')?.classList.remove('color:var(--brand)')
   })
   await waitForRuntimeRemovalFlush(page)
   const afterAllRemoved = await page.evaluate(() => ({
@@ -736,7 +736,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
       brand: 2,
       surface: 2
     },
-    retainedClassNames: ['fg:brand', 'color:brand'],
+    retainedClassNames: ['fg:var(--brand)', 'color:var(--brand)'],
     nativeAttached: true
   })
 
@@ -764,7 +764,7 @@ test('inlines variables without runtime theme counts', async ({ page }) => {
   })
 
   const result = await page.evaluate(async () => {
-    document.body.innerHTML = '<p class="fg:brand"></p>'
+    document.body.innerHTML = '<p class="fg-brand"></p>'
     await new Promise<void>((resolve) => {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => resolve())
@@ -777,7 +777,7 @@ test('inlines variables without runtime theme counts', async ({ page }) => {
   })
 
   expect(result).toEqual({
-    text: '@layer utilities{.fg\\:brand{color:#123456}}',
+    text: '@layer utilities{.fg-brand{color:#123456}}',
     counts: {}
   })
 })

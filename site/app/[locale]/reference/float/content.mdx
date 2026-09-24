@@ -9,7 +9,7 @@ Use `float:left` for an image or callout that text should wrap around. Give the 
 
 ```html
 <!-- @MARK float:left -->
-<img class="float:left w:32x mr:md" src="/demo/landscape.svg" alt="Sun above layered mountains">
+<img class="float:left w:8rem mr-md" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```
 
 <details>
@@ -26,7 +26,7 @@ Use `float:right` to place a pull quote, image, or callout on the right side of 
 
 ```html
 <!-- @MARK float:right -->
-<aside class="float:right w:32x ml:md">
+<aside class="float:right w:8rem ml-md">
   Good tools make room for clear thinking.
 </aside>
 ```
@@ -38,7 +38,7 @@ Use `float:none` to return the object to normal flow. This example removes the f
 
 ```html
 <!-- @MARK float:none -->
-<img class="float:left w:32x mr:md float:none@print" src="/demo/landscape.svg" alt="Sun above layered mountains">
+<img class="float:left w:8rem mr-md float:none@print" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```
 
 ### Apply conditionally \{#apply-conditionally\}
@@ -47,5 +47,5 @@ Keep the image in normal flow on narrow screens and float it to the right on scr
 <DemoExample page="float" section="apply-conditionally" />
 
 ```html
-<img class="float:none w:32x ml:md float:none@print float:right@screen&sm" src="/demo/landscape.svg" alt="Sun above layered mountains">
+<img class="float:none w:8rem ml-md float:none@print float:right@screen&sm" src="/demo/landscape.svg" alt="Sun above layered mountains">
 ```

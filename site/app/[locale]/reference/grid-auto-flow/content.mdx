@@ -8,20 +8,20 @@
 <DemoExample page="grid-auto-flow" section="fill-by-column" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-auto-flow:column grid-template-rows:56px|56px gap:md w:70x max-w:full">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:column grid-template-rows:56px|56px gap-md w:17.5rem max-w:100%">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```
 
@@ -33,20 +33,20 @@ Define the rows that column flow should fill. After those rows are occupied, add
 <DemoExample page="grid-auto-flow" section="fill-gaps-densely" />
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-flow:row grid-auto-rows:48px gap:md w:70x max-w:full">
-  <button id="target" class="grid-col-span:2 p:sm" type="button" tabindex="0">01</button>
-  <button id="peer" class="grid-col-span:2 p:sm" type="button" tabindex="0">02</button>
-  <button id="item-3" class="p:sm" type="button" tabindex="0">03</button>
-  <button id="item-4" class="p:sm" type="button" tabindex="0">04</button>
+<div id="layout" class="grid grid-cols:3 grid-auto-flow:row grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+  <button id="target" class="grid-col-span:2 p-sm" type="button" tabindex="0">01</button>
+  <button id="peer" class="grid-col-span:2 p-sm" type="button" tabindex="0">02</button>
+  <button id="item-3" class="p-sm" type="button" tabindex="0">03</button>
+  <button id="item-4" class="p-sm" type="button" tabindex="0">04</button>
 </div>
 ```
 
 ```html
-<div id="layout" class="grid grid-cols:3 grid-auto-flow:row|dense grid-auto-rows:48px gap:md w:70x max-w:full">
-  <button id="target" class="grid-col-span:2 p:sm" type="button" tabindex="0">01</button>
-  <button id="peer" class="grid-col-span:2 p:sm" type="button" tabindex="0">02</button>
-  <button id="item-3" class="p:sm" type="button" tabindex="0">03</button>
-  <button id="item-4" class="p:sm" type="button" tabindex="0">04</button>
+<div id="layout" class="grid grid-cols:3 grid-auto-flow:row|dense grid-auto-rows:48px gap-md w:17.5rem max-w:100%">
+  <button id="target" class="grid-col-span:2 p-sm" type="button" tabindex="0">01</button>
+  <button id="peer" class="grid-col-span:2 p-sm" type="button" tabindex="0">02</button>
+  <button id="item-3" class="p-sm" type="button" tabindex="0">03</button>
+  <button id="item-4" class="p-sm" type="button" tabindex="0">04</button>
 </div>
 ```
 
@@ -58,10 +58,10 @@ Use [conditional queries](/reference/rules/conditions) to change the layout at a
 <DemoExample page="grid-auto-flow" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap:md w:70x max-w:full grid-auto-flow:column@sm">
-  <div id="target" class="p:sm">01</div>
-  <div id="peer" class="p:sm">02</div>
-  <div id="item-3" class="p:sm">03</div>
-  <div id="item-4" class="p:sm">04</div>
+<div id="layout" class="grid grid-cols:2 grid-auto-flow:row grid-template-rows:56px|56px gap-md w:17.5rem max-w:100% grid-auto-flow:column@sm">
+  <div id="target" class="p-sm">01</div>
+  <div id="peer" class="p-sm">02</div>
+  <div id="item-3" class="p-sm">03</div>
+  <div id="item-4" class="p-sm">04</div>
 </div>
 ```

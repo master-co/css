@@ -16,9 +16,9 @@ export default function DemoTokenTable({ rows, descriptionTitle = 'Role' }: { ro
     <tbody>{rows.map(({ token, utilities, value, description, preview }) => <tr key={token}>
       <td>
         <div className="white-space:nowrap">{preview}<InlineCode className="white-space:nowrap">{token}</InlineCode></div>
-        <div className="flex flex-wrap gap:xs mt:xs">{utilities.map(utility => <InlineCode key={utility} className="white-space:nowrap">{utility}</InlineCode>)}</div>
+        <div className="flex flex-wrap gap-xs mt-xs">{utilities.map(utility => <InlineCode key={utility} className="white-space:nowrap">{utility}</InlineCode>)}</div>
       </td>
-      <td>{value && <div className="mb:xs"><InlineCode>{value}</InlineCode></div>}{description}</td>
+      <td>{value && <div className="mb-xs"><InlineCode>{value}</InlineCode></div>}{description}</td>
     </tr>)}</tbody>
   </table></div></figure>
 }

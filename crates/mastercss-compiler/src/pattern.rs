@@ -8,6 +8,11 @@ use crate::source_index::SourceIndex;
 
 #[derive(Debug, Clone)]
 pub(crate) enum ParsedManagedPattern {
+    Token {
+        name: String,
+        prefix: String,
+        variable_alias_refs: Vec<String>,
+    },
     Pattern {
         name: String,
         prefix: String,
@@ -28,6 +33,25 @@ impl ParsedManagedPattern {
     pub(crate) fn definition(&self, layer: UtilityLayerName) -> serde_json::Map<String, Value> {
         let mut definition = serde_json::Map::new();
         match self {
+            Self::Token {
+                name,
+                prefix,
+                variable_alias_refs,
+            } => {
+                definition.insert("name".into(), Value::String(name.clone()));
+                definition.insert("type".into(), Value::String("token".into()));
+                definition.insert(
+                    "layer".into(),
+                    serde_json::to_value(layer).expect("layer serializes"),
+                );
+                definition.insert(
+                    "token".into(),
+                    serde_json::json!({
+                        "prefix": prefix,
+                        "variableAliasRefs": variable_alias_refs,
+                    }),
+                );
+            }
             Self::Pattern {
                 name,
                 prefix,
@@ -207,7 +231,6 @@ pub(crate) fn parse_managed_dynamic_pattern(pattern: &str) -> Result<ParsedManag
     if entries.iter().any(|value| value.is_empty()) {
         return Err("Managed dynamic utility source list cannot contain empty entries".into());
     }
-    let mut aliases = Vec::new();
     let mut canonical = Vec::new();
     let mut literal_values = Vec::new();
     let mut kind: Option<String> = None;
@@ -218,16 +241,10 @@ pub(crate) fn parse_managed_dynamic_pattern(pattern: &str) -> Result<ParsedManag
         }
     };
     for value in entries {
-        if value.starts_with('~') || value.starts_with('=') {
-            let namespace = &value[1..];
-            if !valid_pattern_token(namespace, false) || namespace.starts_with('-') {
-                return Err(format!(
-                    "Invalid managed dynamic utility namespace: {value}"
-                ));
-            }
-            add_unique(&mut aliases, value);
-            add_unique(&mut canonical, value);
-            continue;
+        if value.starts_with(['~', '=']) {
+            return Err(format!(
+                "Token namespaces require named patterns: use {key}-<{value}> instead of {key}:<{value}>"
+            ));
         }
         if matches!(value, "number" | "color" | "image") {
             if kind.as_deref().is_some_and(|existing| existing != value) {
@@ -236,13 +253,6 @@ pub(crate) fn parse_managed_dynamic_pattern(pattern: &str) -> Result<ParsedManag
                 );
             }
             kind = Some(value.to_owned());
-            if value == "color" {
-                add_unique(&mut aliases, "~color");
-                // The implicit color namespace is part of the canonical managed
-                // pattern name as well as its matcher metadata. Keep it before
-                // the raw `color` source to match JavaScript insertion order.
-                add_unique(&mut canonical, "~color");
-            }
             add_unique(&mut canonical, value);
             continue;
         }
@@ -263,20 +273,16 @@ pub(crate) fn parse_managed_dynamic_pattern(pattern: &str) -> Result<ParsedManag
     if arbitrary && !literal_values.is_empty() {
         return Err("Managed dynamic utility wildcard cannot be combined with enum values".into());
     }
-    if !literal_values.is_empty() {
-        if !aliases.is_empty() {
-            return Err(
-                "Managed dynamic utility enum values cannot be combined with namespaces".into(),
-            );
-        }
-        if kind.is_none() && literal_values.len() < 2 {
-            return Err("Managed dynamic utility enum source requires at least two values separated by \"|\"".into());
-        }
+    if !literal_values.is_empty() && kind.is_none() && literal_values.len() < 2 {
+        return Err(
+            "Managed dynamic utility enum source requires at least two values separated by \"|\""
+                .into(),
+        );
     }
     Ok(ParsedManagedPattern::Dynamic {
         name: format!("{key}:<{}>", canonical.join("|")),
         key: key.to_owned(),
-        variable_alias_refs: aliases,
+        variable_alias_refs: Vec::new(),
         kind,
         values: literal_values,
         arbitrary,
@@ -288,9 +294,36 @@ pub(crate) fn parse_managed_pattern(pattern: &str) -> Result<ParsedManagedPatter
     if pattern.is_empty() {
         return Err("Managed pattern requires a name".into());
     }
-    let (prefix, _, _) = managed_pattern_parts(pattern)?;
+    let (prefix, sources, suffix) = managed_pattern_parts(pattern)?;
     if prefix.ends_with(':') {
         parse_managed_dynamic_pattern(pattern)
+    } else if sources
+        .split('|')
+        .any(|source| source.trim().starts_with(['~', '=']))
+    {
+        if !prefix.ends_with('-')
+            || !suffix.is_empty()
+            || !valid_pattern_token(&prefix[..prefix.len() - 1], false)
+        {
+            return Err("Named token patterns require prefix-<~namespace> syntax".into());
+        }
+        let mut references = Vec::new();
+        for source in sources.split('|').map(str::trim) {
+            if !source.starts_with(['~', '='])
+                || !valid_pattern_token(&source[1..], false)
+                || source[1..].starts_with('-')
+            {
+                return Err("Named token patterns accept only namespace references; define raw values in a separate key:<...> entry".into());
+            }
+            if !references.iter().any(|existing| existing == source) {
+                references.push(source.to_owned());
+            }
+        }
+        Ok(ParsedManagedPattern::Token {
+            name: format!("{prefix}<{}>", references.join("|")),
+            prefix: prefix.to_owned(),
+            variable_alias_refs: references,
+        })
     } else {
         parse_managed_enum_pattern(pattern)
     }

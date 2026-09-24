@@ -4,7 +4,7 @@ import SyntaxTr from '~/site/components/SyntaxTr'
 import Aa from '~/site/docs-shell/components/Aa'
 
 export default () => {
-  const previewSyntax = 'fg:blue-60'
+  const previewSyntax = 'fg-blue-60'
   return (
     <>
       <SyntaxTable>

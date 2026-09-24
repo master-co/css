@@ -8,11 +8,11 @@
 <DemoExample page="z-index" section="order-positioned-elements" />
 
 ```html
-<div class="rel isolate h:44x">
-  <div class="abs left top z:30 h:24x w:40x">Layer 30</div>
-  <div class="abs left:lg top:lg z:20 h:24x w:40x">Layer 20</div>
+<div class="rel isolate h:11rem">
+  <div class="abs left top z:30 h:6rem w:10rem">Layer 30</div>
+  <div class="abs left-lg top-lg z:20 h:6rem w:10rem">Layer 20</div>
   <!-- @MARK z:10 -->
-  <div class="abs left:2xl top:2xl z:10 h:24x w:40x">Layer 10</div>
+  <div class="abs left-2xl top-2xl z:10 h:6rem w:10rem">Layer 10</div>
 </div>
 ```
 
@@ -29,7 +29,7 @@ A negative z-index can place decoration behind content. `isolate` establishes a 
 <DemoExample page="z-index" section="use-negative-stacking-when-intentional" />
 
 ```html
-<article class="rel isolate h:40x p:md">
+<article class="rel isolate h:10rem p-md">
   <!-- @MARK z:-1 -->
   <div class="abs inset:0 z:-1" aria-hidden="true"></div>
   <p>Foreground content</p>
@@ -42,11 +42,11 @@ A child’s z-index competes inside its own stacking context. The blue `z:99` ch
 <DemoExample page="z-index" section="prefer-local-stacking-contexts" />
 
 ```html
-<div class="rel h:44x">
-  <article class="rel z:0 isolate h:40x w:48x">
-    <div class="abs left:md top:md z:99 h:24x w:40x">Child 99</div>
+<div class="rel h:11rem">
+  <article class="rel z:0 isolate h:10rem w:12rem">
+    <div class="abs left-md top-md z:99 h:6rem w:10rem">Child 99</div>
   </article>
-  <div class="abs left:2xl top:2xl z:1 h:24x w:40x">Sibling 1</div>
+  <div class="abs left-2xl top-2xl z:1 h:6rem w:10rem">Sibling 1</div>
 </div>
 ```
 
@@ -56,10 +56,10 @@ Use [selectors](/reference/rules/selectors) and [conditional queries](/reference
 <DemoExample page="z-index" section="apply-conditionally" />
 
 ```html
-<div class="rel isolate h:44x">
-  <div tabindex="0" class="abs left top z:0 h:24x w:40x z:20:focus-visible z:20@sm">
+<div class="rel isolate h:11rem">
+  <div tabindex="0" class="abs left top z:0 h:6rem w:10rem z:20:focus-visible z:20@sm">
     Focus with Tab
   </div>
-  <div class="abs left:2xl top:2xl z:10 h:24x w:40x">Layer 10</div>
+  <div class="abs left-2xl top-2xl z:10 h:6rem w:10rem">Layer 10</div>
 </div>
 ```

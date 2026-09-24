@@ -12,7 +12,7 @@ Use the scale by relationship:
 * `2xl` to `5xl` for layout gutters, section spacing, and large editorial rhythm.
 
 <Demo>
-  <div className="grid-cols:2 gap:md w:full p:md r:md bg:stripe-pink grid-cols:5@sm">
+  <div className="grid-cols:2 gap-md w:100% p-md r-md background-color:var(--stripe-pink) grid-cols:5@sm">
     <div className='app-box'>1</div>
     <div className='app-box'>2</div>
     <div className='app-box'>3</div>
@@ -27,8 +27,8 @@ Use the scale by relationship:
 </Demo>
 
 ```html
-<!-- @MARK gap:md --><!-- @MARK p:md -->
-<div class="grid-cols:4 gap:md p:md">
+<!-- @MARK gap-md --><!-- @MARK p-md -->
+<div class="grid-cols:4 gap-md p-md">
   <div>1</div>
   <div>2</div>
   ...
@@ -38,7 +38,7 @@ Use the scale by relationship:
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['grid-cols:4', 'gap:md', 'p:md']}
+    {['grid-cols:4', 'gap-md', 'p-md']}
   </Class2CSS>
 </details>
 
@@ -63,47 +63,41 @@ This lets spacing-related utilities use `md`, `lg`, or project token names witho
 Apply the custom spacing tokens in your markup:
 
 ```html
-<!-- @MARK mt:md --><!-- @MARK p:sm --><!-- @MARK gap:lg --><!-- @MARK py:wide -->
-<section class="py:wide">
-  <div class="gap:lg mt:md p:sm">...</div>
+<!-- @MARK mt-md --><!-- @MARK p-sm --><!-- @MARK gap-lg --><!-- @MARK py-wide -->
+<section class="py-wide">
+  <div class="gap-lg mt-md p-sm">...</div>
 </section>
 ```
 
 ---
 
-## Using spacing multiplier
-The `x` suffix multiplies the [base unit](/guide/variables-and-modes#project-settings) theme setting, which defaults to **4 pixels**. Use it for measured geometry that should stay aligned with the spacing grid but does not need a named token.
-
-For example, `1x` is `0.25rem`, `2x` is `0.5rem`, `3x` is `0.75rem`, and `8x` is `2rem`.
+## Using explicit lengths
+Use native CSS units for local geometry that does not need a named token. `rem` lengths follow the browser’s root font size; `px` lengths retain their CSS pixel value.
 
 ```html
-<!-- @MARK 1x -->
-<div class="m:1x"></div>        <!--  4px, margin: 0.25rem -->
-<!-- @MARK 2x -->
-<div class="p:2x"></div>        <!--  8px, padding: 0.5rem -->
-<!-- @MARK 8x -->
-<div class="w:8x"></div>       <!-- 32px, width: 2rem -->
-<!-- @MARK 3x -->
-<div class="gap:3x"></div>      <!-- 12px, gap: 0.75rem -->
+<div class="m:0.25rem"></div>
+<div class="p:0.5rem"></div>
+<div class="w:2rem"></div>
+<div class="gap:0.75rem"></div>
 ```
 
-For product surfaces, prefer named spacing tokens such as `sm`, `md`, and `lg`. Use `x` values for measured local geometry, such as icon size, avatar size, skeleton blocks, or a component-specific fixed width.
+For product surfaces, prefer shared names such as `p-sm`, `gap-md`, and `m-lg`. Master CSS does not generate a numeric spacing scale or convert length multipliers.
 
 ---
 
 ## Exact pixel values
-Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p:1` becomes `padding: 1` and is not a valid CSS length.
+Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a value needs exact pixel geometry. Bare numbers are emitted as written, so `p-1` becomes `padding: 1` and is not a valid CSS length.
 
 ```html
 <!-- @MARK m:0 -->
-<div class="m:0">0px, margin: 0rem</div>
+<div class="m:0">margin: 0</div>
 <!-- @MARK p:1px -->
 <div class="p:1px">1px, padding: 1px</div>
 <!-- @MARK w:2px -->
-<div class="w:2px">2px, width: 0.125rem</div>
+<div class="w:2px">width: 2px</div>
 ```
 
-(!) Avoid mixing named spacing tokens, `x` multipliers, and exact pixel values arbitrarily. Prefer named tokens for layout rhythm, `x` values for measured local geometry, and `px` values only for hairlines or exact pixel adjustments.
+(!) Avoid mixing named spacing tokens, explicit native lengths, and exact pixel values arbitrarily. Prefer named tokens for layout rhythm, explicit lengths for measured local geometry, and `px` values only for hairlines or exact pixel adjustments.
 
 ---
 
@@ -118,7 +112,7 @@ Use `0` for resets, explicit `1px` for hairlines, and other `px` units when a va
 }
 ```
 
-Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `p:1px` for a 1px value or `p:1x` for the default 4px base unit.
+Numeric keys are easy to confuse with low-level CSS values. Prefer semantic token keys like `sm` or `card`, then use `p:1px` for a 1px value or `p:0.25rem` for a root-relative length.
 
 (o) Use descriptive scale or role keys.
 
@@ -137,6 +131,6 @@ Numeric keys are easy to confuse with low-level CSS values. Prefer semantic toke
 Master CSS provides a unified system for defining spacing:
 
 * Use named spacing tokens for shared rhythm.
-* Use `x` multipliers for measured local geometry.
+* Use explicit native lengths for measured local geometry.
 * Use `0`, `1px`, or explicit pixel units for resets and exact pixel adjustments.
 * Avoid numeric token keys so markup stays clear.

@@ -5,7 +5,7 @@
 
 ## Basic usage \{#basic-usage\}
 ### Set the accent color \{#set-the-accent-color\}
-Compare `accent-color:auto` with `accent-color:blue` on a fieldset. Its checkbox, radio buttons and range input inherit the request; try each control.
+Compare `accent-color:auto` with `accent-color-blue` on a fieldset. Its checkbox, radio buttons and range input inherit the request; try each control.
 
 <DemoExample page="accent-color" section="set-the-accent-color" />
 
@@ -13,24 +13,24 @@ Compare `accent-color:auto` with `accent-color:blue` on a fieldset. Its checkbox
 <!-- Platform accent -->
 <form>
   <fieldset id="target"
-    class="grid gap:md min-w:0 m:0 p:0 b:0
+    class="grid gap-md min-w:0 m:0 p:0 border-width:0
            accent-color:auto">
     <legend class="sr-only">Platform accent</legend>
-    <label class="flex items-center gap:sm">
+    <label class="flex items-center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap:md">
-      <label class="flex items-center gap:sm">
+    <div class="flex flex-wrap gap-md">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap:sm">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap:xs w:240px max-w:full">
+    <label class="grid gap-xs w:240px max-w:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:full">
+        class="w:100%">
     </label>
   </fieldset>
 </form>
@@ -40,24 +40,24 @@ Compare `accent-color:auto` with `accent-color:blue` on a fieldset. Its checkbox
 <!-- Blue accent -->
 <form>
   <fieldset id="target"
-    class="grid gap:md min-w:0 m:0 p:0 b:0
-           accent-color:blue">
+    class="grid gap-md min-w:0 m:0 p:0 border-width:0
+           accent-color-blue">
     <legend class="sr-only">Blue accent</legend>
-    <label class="flex items-center gap:sm">
+    <label class="flex items-center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap:md">
-      <label class="flex items-center gap:sm">
+    <div class="flex flex-wrap gap-md">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap:sm">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap:xs w:240px max-w:full">
+    <label class="grid gap-xs w:240px max-w:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:full">
+        class="w:100%">
     </label>
   </fieldset>
 </form>
@@ -65,7 +65,7 @@ Compare `accent-color:auto` with `accent-color:blue` on a fieldset. Its checkbox
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>{['accent-color:auto', 'accent-color:blue']}</Class2CSS>
+  <Class2CSS>{['accent-color:auto', 'accent-color-blue']}</Class2CSS>
 </details>
 
 Browsers may adjust the accent or its contrasting foreground for legibility. The computed value describes the requested color, not every pixel of native control paint. Use `auto` to restore the platform choice.
@@ -80,25 +80,25 @@ Change a real control group from blue to violet at `sm`. Resize the viewport and
 <form>
   <fieldset id="target"
 
-  class="grid gap:md min-w:0 m:0 p:0 b:0
-         accent-color:blue accent-color:auto@print
-         accent-color:violet@screen&sm">
+  class="grid gap-md min-w:0 m:0 p:0 border-width:0
+         accent-color-blue accent-color:auto@print
+         accent-color-violet@screen&sm">
     <legend class="sr-only">Responsive accent</legend>
-    <label class="flex items-center gap:sm">
+    <label class="flex items-center gap-sm">
       <input type="checkbox" checked> Snap to grid
     </label>
-    <div class="flex flex-wrap gap:md">
-      <label class="flex items-center gap:sm">
+    <div class="flex flex-wrap gap-md">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="canvas" checked> Canvas
       </label>
-      <label class="flex items-center gap:sm">
+      <label class="flex items-center gap-sm">
         <input type="radio" name="view" value="layers"> Layers
       </label>
     </div>
-    <label class="grid gap:xs w:240px max-w:full">
+    <label class="grid gap-xs w:240px max-w:100%">
       Zoom
       <input type="range" min="25" max="100" value="65"
-        class="w:full">
+        class="w:100%">
     </label>
   </fieldset>
 </form>

@@ -31,7 +31,7 @@ for (const route of frameworkInstallationRoutes) test(`authored framework build 
     expect(await button.evaluate(button => button.getRootNode() instanceof ShadowRoot)).toBe(true)
     const color = await button.evaluate(button => getComputedStyle(button).backgroundColor)
     expect(color).not.toBe('rgba(0, 0, 0, 0)')
-    await button.evaluate(button => button.setAttribute('class', 'px:control-x py:control-y r:control bg:control-hover fg:white'))
+    await button.evaluate(button => button.setAttribute('class', 'px:control-x py:control-y r:control bg:control-hover fg-white'))
     await expect.poll(() => button.evaluate(button => getComputedStyle(button).backgroundColor)).not.toBe(color)
     expect(await element.evaluate((host: any) => {
       (window as any).installationHost = host
@@ -45,7 +45,7 @@ for (const route of frameworkInstallationRoutes) test(`authored framework build 
     await expect(button).toBeFocused()
   } else {
     const heading = page.getByRole('heading', { name: 'Hello World' })
-    await expect(heading).toHaveAttribute('class', 'm:md italic font:3xl font:heavy text:strong')
+    await expect(heading).toHaveAttribute('class', 'm-md italic font-3xl font-heavy text-strong')
     await expect(heading).toHaveCSS('font-style', 'italic')
     await expect(heading).toHaveCSS('margin-top', '16px')
   }

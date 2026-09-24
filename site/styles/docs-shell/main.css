@@ -7,31 +7,31 @@
 
 @components {
   hr {
-    @compose bb:1px|solid|muted my:2xl;
+    @compose bb:1px|solid|var(--color-line-muted) my-2xl;
   }
 
   segments {
-    @compose flex p:5px r:lg w:fit surface:muted;
+    @compose flex p:5px r-lg w:fit-content surface-muted;
   }
 
   segment {
-    @compose flex items-center justify-center r:sm px:sm font-weight:460 font:xs leading:1.375rem white-space:nowrap;
+    @compose flex items-center justify-center r-sm px-sm font-weight:460 font-xs leading:1.375rem white-space:nowrap;
 
     &.active {
-      @compose surface:raised shadow:xs outline:1px|solid|subtle text:strong;
+      @compose surface-raised shadow-xs outline:1px|solid|var(--color-line-subtle) text-strong;
     }
   }
 
   box {
-    @compose flex items-center justify-center b:1px|solid|base p:15px|20px r:md surface:raised text:strong font:sm text-center;
+    @compose flex items-center justify-center b:1px|solid|var(--color-line-base) p:15px|20px r-md surface-raised text-strong font-sm text-center;
 
     @dark {
-      @compose b:white/.05;
+      @compose b-white/.05;
     }
   }
 
   box-perspective-pink {
-    @compose b:1px|solid|pink-70 r:md bg:pink-70/.1;
+    @compose b:1px|solid|var(--color-pink-70) r-md bg-pink-70/.1;
   }
 
   demo-ground {
@@ -42,132 +42,132 @@
   demo {
     @compose bg-clip-padding flex items-center justify-center rel flex:1|1|auto flex-wrap;
     contain: content;
-    @compose b:1px|solid|subtle r:lg;
+    @compose b:1px|solid|var(--color-line-subtle) r-lg;
   }
 
   accent {
-    @compose bg:primary text:primary;
+    @compose bg-primary text-primary;
   }
 
   app-sticky-th {
-    @compose sticky surface:raised top z:1;
+    @compose sticky surface-raised top z:1;
   }
 
   app-wrapper {
-    @compose mx:auto px:5x;
+    @compose mx:auto px:1.25rem;
 
     @variant sm {
-      @compose px:10x;
+      @compose px:2.5rem;
     }
   }
 
   app-demo {
     @compose bg-clip-padding flex items-center justify-center rel flex:1|1|auto flex-wrap;
     contain: content;
-    @compose p:xl;
+    @compose p-xl;
 
     @variant 3xs {
-      @compose p:2xl;
+      @compose p-2xl;
     }
   }
 
   app-neutral {
-    @compose background-color:var(--color-float) text:strong;
+    @compose background-color:var(--color-float) text-strong;
   }
 
   app-object {
-    @compose inline-flex items-center justify-center outline:1px|solid|subtle text-decoration:none! surface:raised outline-offset:0;
+    @compose inline-flex items-center justify-center outline:1px|solid|var(--color-line-subtle) text-decoration:none! surface-raised outline-offset:0;
   }
 
   app-object-interactive {
     @compose user-select:none;
 
     &:hover {
-      @compose text:strong;
+      @compose text-strong;
     }
 
     &:focus {
-      @compose outline:2px|solid|focus! outline-offset:4xs!;
+      @compose outline:2px|solid|var(--color-focus)! outline-offset-4xs!;
     }
 
     &.disabled {
-      @compose bg:transparent! filter:grayscale(1);
+      @compose background-color:transparent! filter:grayscale(1);
     }
 
     @dark {
       &:hover {
-        @compose bg:gray-80;
+        @compose bg-gray-80;
       }
     }
 
     @light {
       &:hover {
-        @compose bg:neutral-5;
+        @compose bg-neutral-5;
       }
     }
   }
 
   app-panel {
-    @compose surface:raised shadow:sm;
+    @compose surface-raised shadow-sm;
   }
 
   app-float {
-    @compose flex items-center justify-center p:15px|20px r:5px background-color:var(--color-float) shadow:sm;
+    @compose flex items-center justify-center p:15px|20px r:5px background-color:var(--color-float) shadow-sm;
   }
 
   app-nav {
-    @compose text:sm user-select:none;
+    @compose text-sm user-select:none;
 
     &:disabled {
-      @compose text:disabled;
+      @compose text-disabled;
       cursor: not-allowed;
     }
 
     &:where(:hover, :active, .active) {
-      @compose text:strong;
+      @compose text-strong;
     }
   }
 
   app-box {
-    @compose flex items-center justify-center b:1px|solid|base p:xs r:md min:12x surface:raised font:medium font:sm;
+    @compose flex items-center justify-center b:1px|solid|var(--color-line-base) p-xs r-md min:3rem surface-raised font-medium font-sm;
   }
 
   app-icon {
-    @compose inline-flex fill:text-muted/.1 stroke:text-muted;
+    @compose inline-flex fill-text-muted/.1 stroke-text-muted;
   }
 
   app-icon-primary {
-    @compose inline-flex fill:accent/.1 stroke:accent;
+    @compose inline-flex fill-accent/.1 stroke-accent;
   }
 
   app-icon-red {
-    @compose inline-flex fill:crimson-40/.1 stroke:crimson-40;
+    @compose inline-flex fill-crimson-40/.1 stroke-crimson-40;
   }
 
   app-header-nav {
-    @compose text:sm user-select:none;
-    @compose flex items-center justify-center mx:md;
+    @compose text-sm user-select:none;
+    @compose flex items-center justify-center mx-md;
 
     &:disabled {
-      @compose text:disabled;
+      @compose text-disabled;
       cursor: not-allowed;
     }
 
     &:where(:hover, :active, .active) {
-      @compose text:strong;
+      @compose text-strong;
     }
   }
 
   app-header-icon {
-    @compose flex items-center justify-center flex:0|0|auto text:muted h:48px min-w:48px;
+    @compose flex items-center justify-center flex:0|0|auto text-muted h:48px min-w:48px;
 
     &:hover {
-      @compose text:strong;
+      @compose text-strong;
     }
   }
 
   app-subtitle {
-    @compose fg:accent font-weight:460 font:sm;
+    @compose fg-accent font-weight:460 font-sm;
   }
 }
 

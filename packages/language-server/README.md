@@ -93,7 +93,7 @@ CSS directive syntax is highlighted by the shared TextMate grammar. Server seman
 
 The server advertises `documentFormattingProvider` and `documentRangeFormattingProvider` when `formatDirectives` is enabled. Formatting returns directive-only edits for CSS, SCSS, and LESS documents, plus CSS-family `<style>` blocks in Vue, Svelte, and Astro documents.
 
-Directive formatting normalizes safe directive spacing and repairs class-list important markers such as `bg:transparent !` to `bg:transparent!`. It does not run the compiler and does not change generated CSS output.
+Directive formatting normalizes safe directive spacing and repairs class-list important markers such as `background-color:transparent !` to `background-color:transparent!`. It does not run the compiler and does not change generated CSS output.
 
 ## Settings
 

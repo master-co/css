@@ -10,7 +10,7 @@ Use [Visual Studio Code setup](/guide/installation/vscode) to install the offici
 Completion works inside configured class sources, including markup attributes, bound framework attributes, JavaScript helper calls, tagged templates, and project-specific class declarations.
 
 ```html
-<button class="inline-flex items-center gap:xs px:md py:xs r:md bg:blue-60 fg:white">
+<button class="inline-flex items-center gap-xs px-md py-xs r-md bg-blue-60 fg-white">
   Save
 </button>
 ```
@@ -21,12 +21,12 @@ Suggestions include utilities, property values, color tokens, selectors, queries
 Hover inspection shows the generated CSS for a class at the cursor. This is useful when a class combines a declaration, value, selector state, and query in one compact string.
 
 ```html
-<button class="fg:white bg:blue-60:hover@sm">
+<button class="fg-white bg-blue-60:hover@sm">
   Save
 </button>
 ```
 
-Hovering `bg:blue-60:hover@sm` previews the CSS that Master CSS would emit for the hover state at the `sm` breakpoint.
+Hovering `bg-blue-60:hover@sm` previews the CSS that Master CSS would emit for the hover state at the `sm` breakpoint.
 
 ### Syntax highlighting
 The extension highlights Master CSS directive syntax in CSS-family documents and uses semantic tokens for class-list spans. Embedded utilities can show their declaration, value, selector, query, unit, important marker, quoted segment, and component boundaries.
@@ -37,7 +37,7 @@ The default highlighting mode is active-context highlighting. It keeps long mark
 Color syntax can use VS Code color decorators and the color picker. This includes supported Master CSS color utilities and manifest colors that resolve through the active project.
 
 ```html
-<span class="bg:blue-60/.1 fg:#4f46e5">Primary</span>
+<span class="bg-blue-60/.1 fg:#4f46e5">Primary</span>
 ```
 
 ### Directive formatting
@@ -49,7 +49,7 @@ For class-list directives, formatting keeps important markers attached to the cl
 
 ```css
 .card {
-  @compose bg:transparent !;
+  @compose background-color:transparent !;
 }
 ```
 
@@ -57,7 +57,7 @@ becomes:
 
 ```css
 .card {
-  @compose bg:transparent!;
+  @compose background-color:transparent!;
 }
 ```
 

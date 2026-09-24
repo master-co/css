@@ -9,7 +9,7 @@ Use `text-left` to align each line to the physical left edge, regardless of the 
 
 ```html
 <!-- text-left -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-left">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-left">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Align contents to the right \{#align-contents-to-the-right\}
@@ -19,7 +19,7 @@ Use `text-right` to align each line to the physical right edge. The paragraph ke
 
 ```html
 <!-- text-right -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-right">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-right">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 ### Center contents \{#center-contents\}
@@ -29,7 +29,7 @@ Use `text-center` to center each line’s inline content within the paragraph. U
 
 ```html
 <!-- text-center -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-center">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-center">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 <details>
@@ -46,7 +46,7 @@ Use `text-justify` to distribute space across a line so both edges meet the para
 
 ```html
 <!-- text-justify -->
-<p id="target" class="w:240px max-w:100% m:0 font:md leading:24px text-justify">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:240px max-w:100% m:0 font-md leading:24px text-justify">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 Check the spacing at the actual reading width; short lines can produce large gaps between words.
@@ -58,22 +58,22 @@ Check the spacing at the actual reading width; short lines can produce large gap
 
 ```html
 <!-- LTR · text-start -->
-<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font:md leading:24px text-start">Good tools make room for clear thinking.</p>
+<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font-md leading:24px text-start">Good tools make room for clear thinking.</p>
 ```
 
 ```html
 <!-- LTR · text-end -->
-<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font:md leading:24px text-end">Good tools make room for clear thinking.</p>
+<p id="target" lang="en" dir="ltr" class="w:240px max-w:100% m:0 font-md leading:24px text-end">Good tools make room for clear thinking.</p>
 ```
 
 ```html
 <!-- RTL · text-start -->
-<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font:md leading:24px text-start">أدوات واضحة تمنح الأفكار مساحة.</p>
+<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font-md leading:24px text-start">أدوات واضحة تمنح الأفكار مساحة.</p>
 ```
 
 ```html
 <!-- RTL · text-end -->
-<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font:md leading:24px text-end">أدوات واضحة تمنح الأفكار مساحة.</p>
+<p id="target" lang="ar" dir="rtl" class="w:240px max-w:100% m:0 font-md leading:24px text-end">أدوات واضحة تمنح الأفكار مساحة.</p>
 ```
 
 Use physical `text-left` or `text-right` only when that physical edge is intentional.
@@ -85,7 +85,7 @@ Resize the real preview viewport. The text starts at the inline start, centers a
 
 ```html
 <!-- Responsive inline alignment -->
-<p id="target" class="w:full m:0 font:md leading:24px text-start text-start@print text-center@screen&sm text-end@screen&lg">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
+<p id="target" class="w:100% m:0 font-md leading:24px text-start text-start@print text-center@screen&sm text-end@screen&lg">A clear reading rhythm gives each idea room to breathe. Keep the measure comfortable and let the content set the pace.</p>
 ```
 
 The screen-qualified conditions keep viewport breakpoints from overriding the print rule.

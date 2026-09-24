@@ -21,10 +21,10 @@ export default function DocProp(props: any) {
   }, [props.defaultValue])
   return (
     <div className='doc-table'>
-      <table className="text:xs_code">
+      <table className="text-xs_code">
         <thead>
           <tr>
-            <th className="w:0 text:xs white-space:nowrap"><Translate>Type</Translate></th>
+            <th className="w:0 text-xs white-space:nowrap"><Translate>Type</Translate></th>
             <td>
               <DocBadgeGroup>
                 {props.types.map((type: string,) => <DocType type={type} key={type} />)}
@@ -35,11 +35,11 @@ export default function DocProp(props: any) {
         {defaultValueSpecified &&
           <tbody>
             <tr>
-              <th className="w:0 text:xs white-space:nowrap"><Translate>Default</Translate></th>
+              <th className="w:0 text-xs white-space:nowrap"><Translate>Default</Translate></th>
               <th>
                 <DocBadgeGroup>
                   <DocDefaultValue>
-                    <InlineCode lang="tsx" className={clsx(['auto', 'constructed'].includes(defaultValue) && 'italic text:body', 'white-space:pre-wrap! break-word')} beautify>{defaultValue}</InlineCode>
+                    <InlineCode lang="tsx" className={clsx(['auto', 'constructed'].includes(defaultValue) && 'italic text-body', 'white-space:pre-wrap! break-word')} beautify>{defaultValue}</InlineCode>
                   </DocDefaultValue>
                   {props.readonly && <DocBadge size="sm"><Translate>( Read Only )</Translate></DocBadge>}
                 </DocBadgeGroup>

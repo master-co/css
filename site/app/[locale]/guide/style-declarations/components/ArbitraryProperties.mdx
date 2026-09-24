@@ -16,18 +16,13 @@ Generated CSS:
 }
 ```
 
-Prefer built-in utilities when they exist, because they can include token resolution, aliases, sorting, and shorthand behavior.
+Use a named token when you want the project vocabulary. A colon always retains the property’s native value semantics, including when a short property alias exists.
 
-Use `{...}` for an explicit raw escape hatch or for one-off declaration groups:
+Use `{...}` for one-off groups. Each item follows the same named-token or direct-value contract:
 
 ```html
 <!-- @MARK {block-size:5rem;inline-size:5rem} -->
 <div class="{block-size:5rem;inline-size:5rem}">
 ```
 Generated CSS:
-```css
-.\{block-size\:5rem\;inline-size\:5rem\} {
-  block-size: 5rem;
-  inline-size: 5rem;
-}
-```
+<Class2CSS>{['{block-size:5rem;inline-size:5rem}']}</Class2CSS>

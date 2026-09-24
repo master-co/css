@@ -14,7 +14,7 @@ const manifest: MasterCSSManifest = {
 }
 
 test('reused default sessions return independent trees and retain custom transformers', async () => {
-  const code = '<div class="block fg:red invalid block"></div>'
+  const code = '<div class="block fg-red invalid block"></div>'
   const options = { lang: 'html' }
   const first = await highlightCode(code, options)
   const expected = structuredClone(first)

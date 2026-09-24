@@ -12,11 +12,11 @@ Each SVG rectangle translates by 50% of a different reference width. Its fill is
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Rectangle translated from its dashed source bounds"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <rect x="24" y="60" width="64" height="40"
     fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
   <rect id="target" x="24" y="60" width="64" height="40"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:translateX(50%) transform-fill
            stroke-width:16px" />
 </svg>
@@ -27,11 +27,11 @@ Each SVG rectangle translates by 50% of a different reference width. Its fill is
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Rectangle translated from its dashed source bounds"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <rect x="24" y="60" width="64" height="40"
     fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
   <rect id="target" x="24" y="60" width="64" height="40"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:translateX(50%) transform-stroke
            stroke-width:16px" />
 </svg>
@@ -42,11 +42,11 @@ Each SVG rectangle translates by 50% of a different reference width. Its fill is
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Rectangle translated from its dashed source bounds"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <rect x="24" y="60" width="64" height="40"
     fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
   <rect id="target" x="24" y="60" width="64" height="40"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:translateX(50%) transform-view
            stroke-width:16px" />
 </svg>
@@ -68,12 +68,12 @@ A 50% translation is 80px for this 160px border box. Compare its 108px content b
 
 ```html
 <!-- Border box · translate 80px -->
-<div class="w:3xs max-w:100% py:lg">
-  <div class="h:100px w:160px outline:1px|dashed|muted">
+<div class="w-3xs max-w:100% py-lg">
+  <div class="h:100px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="h:100px w:160px pb:lg pl:xl pr:sm pt:sm
-             b:4px|solid|blue-60 font:sm bg:blue-10
-             fg:blue-80 transform:translateX(50%)
+      class="h:100px w:160px pb-lg pl-xl pr-sm pt-sm
+             b:4px|solid|var(--color-blue-60) font-sm bg-blue-10
+             fg-blue-80 transform:translateX(50%)
              box-border transform-border">
       Reference box
     </div>
@@ -83,12 +83,12 @@ A 50% translation is 80px for this 160px border box. Compare its 108px content b
 
 ```html
 <!-- Content box · translate 54px -->
-<div class="w:3xs max-w:100% py:lg">
-  <div class="h:100px w:160px outline:1px|dashed|muted">
+<div class="w-3xs max-w:100% py-lg">
+  <div class="h:100px w:160px outline:1px|dashed|var(--color-line-muted)">
     <div id="target"
-      class="h:100px w:160px pb:lg pl:xl pr:sm pt:sm
-             b:4px|solid|blue-60 font:sm bg:blue-10
-             fg:blue-80 transform:translateX(50%)
+      class="h:100px w:160px pb-lg pl-xl pr-sm pt-sm
+             b:4px|solid|var(--color-blue-60) font-sm bg-blue-10
+             fg-blue-80 transform:translateX(50%)
              box-border transform-content">
       Reference box
     </div>
@@ -108,9 +108,9 @@ Keep the SVG fill box and 1.5 scale fixed, then compare center and top-left orig
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Circle scaled relative to its original dashed outline"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <circle id="target" cx="72" cy="80" r="24"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:scale(1.5) transform-fill
            stroke-width:2px transform-origin:center" />
   <circle aria-hidden="true" cx="72" cy="80" r="24"
@@ -124,9 +124,9 @@ Keep the SVG fill box and 1.5 scale fixed, then compare center and top-left orig
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Circle scaled relative to its original dashed outline"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <circle id="target" cx="72" cy="80" r="24"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:scale(1.5) transform-fill
            stroke-width:2px transform-origin:top|left" />
   <circle aria-hidden="true" cx="72" cy="80" r="24"
@@ -147,11 +147,11 @@ Widen to `sm` to switch the SVG from its fill box to its view box. The same 50% 
 <svg width="240" height="160" viewBox="0 0 240 160"
   role="img" aria-label="Rectangle translated from its dashed source bounds"
   class="block h:auto max-w:100%
-         outline:1px|solid|muted">
+         outline:1px|solid|var(--color-line-muted)">
   <rect x="24" y="60" width="64" height="40"
     fill="none" stroke="#7c3aed" stroke-dasharray="4 4" />
   <rect id="target" x="24" y="60" width="64" height="40"
-    class="fill:blue-20 stroke:blue-60
+    class="fill-blue-20 stroke-blue-60
            transform:translateX(50%) transform-fill
            stroke-width:16px transform-fill@print
            transform-view@screen&sm" />

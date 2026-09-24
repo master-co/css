@@ -63,7 +63,6 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 
 @settings {
   root-size: 16;
-  base-unit: 4;
 }
 
 @theme {
@@ -83,7 +82,7 @@ The current project CSS entry owns theme and manifest inputs. Move values out of
 
 {/* eslint-disable @master/css/no-invalid-classes -- custom variant is defined in the adjacent CSS example */}
 ```html
-<section class="grid gap:lg r:card fg:body grid-cols:3@dashboard p:card">
+<section class="grid gap-lg r-card fg-body grid-cols:3@dashboard p-card">
   ...
 </section>
 ```
@@ -99,12 +98,12 @@ If the v1 project had reusable component abstractions, migrate them to `@compone
 ```css name=app.css
 @components {
   card {
-    @compose grid gap:md b:1px|solid|base r:card bg:white shadow:sm p:card;
+    @compose grid gap-md b:1px|solid|var(--color-line-base) r-card bg-white shadow-sm p-card;
   }
 
   btn-primary {
-    @compose inline-flex items-center justify-center gap:xs h:10x px:md r:md bg:primary fg:white;
-    &:hover { @compose bg:blue-70; }
+    @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-primary fg-white;
+    &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }
   }
 }
@@ -135,7 +134,7 @@ Current Master CSS class strings should be complete, explicit, and validated by 
 Use current syntax for states, conditions, native declarations, and CSS variables:
 
 ```html
-<button class="inline-flex items-center gap:xs h:10x px:md r:md bg:blue-60 fg:white bg:blue-70:hover opacity:.5:disabled">
+<button class="inline-flex items-center gap-xs h:2.5rem px-md r-md bg-blue-60 fg-white bg-blue-70:hover opacity:.5:disabled">
   Save
 </button>
 ```
@@ -143,9 +142,9 @@ Use current syntax for states, conditions, native declarations, and CSS variable
 ```tsx
 function Progress({ value }: { value: number }) {
   return (
-    <div className="overflow:hidden h:2x r:full bg:gray-10">
+    <div className="overflow:hidden h:0.5rem r:100% bg-gray-10">
       <div
-        className="h:full w:$progress bg:blue-60 transition:width|fast|smooth"
+        className="h:100% w:var(--progress) bg-blue-60 transition:width|var(--duration-fast)|var(--easing-smooth)"
         style={{ '--progress': `${value}%` } as React.CSSProperties}
       />
     </div>

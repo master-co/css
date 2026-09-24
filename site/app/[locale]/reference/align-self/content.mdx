@@ -8,9 +8,9 @@ Use `self-center` to override the parent’s `items-start` alignment for just th
 <DemoExample page="align-self" section="override-cross-axis-alignment-for-one-item" />
 
 ```html
-<div id="layout" class="flex items-start gap:md h:36x">
-  <div id="target" class="self-center h:16x w:24x p:sm">Self center</div>
-  <div id="peer" class="h:12x w:24x p:sm">Parent start</div>
+<div id="layout" class="flex items-start gap-md h:9rem">
+  <div id="target" class="self-center h:4rem w:6rem p-sm">Self center</div>
+  <div id="peer" class="h:3rem w:6rem p-sm">Parent start</div>
 </div>
 ```
 
@@ -29,10 +29,10 @@ For a flex item, `align-self` acts on the cross axis. For a grid item, it acts a
 <DemoExample page="align-self" section="stretch-a-single-item" />
 
 ```html
-<div id="layout" class="flex items-center gap:md">
-  <div id="target" class="self-stretch w:24x p:sm">Auto height</div>
-  <div id="peer" class="size:24x p:sm">96px height</div>
-  <div id="item-3" class="h:12x w:16x p:sm">48px</div>
+<div id="layout" class="flex items-center gap-md">
+  <div id="target" class="self-stretch w:6rem p-sm">Auto height</div>
+  <div id="peer" class="size:6rem p-sm">96px height</div>
+  <div id="item-3" class="h:3rem w:4rem p-sm">48px</div>
 </div>
 ```
 
@@ -44,8 +44,8 @@ Use [conditional queries](/reference/rules/conditions) to change alignment at a 
 <DemoExample page="align-self" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex items-end gap:md h:36x">
-  <div id="target" class="self-auto h:16x w:24x p:sm self-center@sm">Target</div>
-  <div id="peer" class="h:12x w:24x p:sm">Parent end</div>
+<div id="layout" class="flex items-end gap-md h:9rem">
+  <div id="target" class="self-auto h:4rem w:6rem p-sm self-center@sm">Target</div>
+  <div id="peer" class="h:3rem w:6rem p-sm">Parent end</div>
 </div>
 ```

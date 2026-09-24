@@ -219,7 +219,6 @@ pub fn compile_manifest_input(
     let mut settings = Map::new();
     for (key, value) in [
         ("rootSize", input.root_size.map(number_value)),
-        ("baseUnit", input.base_unit.map(number_value)),
         ("defaultMode", input.default_mode.clone().map(Value::String)),
         ("scope", input.scope.clone().map(Value::String)),
         ("important", input.important.map(Value::Bool)),
@@ -341,7 +340,6 @@ pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerEr
 pub(super) fn is_default_setting(key: &str, value: &Value) -> bool {
     match key {
         "rootSize" => value.as_f64() == Some(16.0),
-        "baseUnit" => value.as_f64() == Some(4.0),
         "defaultMode" => value.as_str() == Some("light"),
         "important" => value.as_bool() == Some(false),
         "modeTrigger" => value.as_str() == Some("media"),

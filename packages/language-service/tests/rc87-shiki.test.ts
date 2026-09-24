@@ -15,7 +15,7 @@ import type { MasterCSSShikiOptions } from '../src/shiki'
 import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
-  variables: [{ key: 'brand', value: '#123456' }],
+  variables: [{ namespace: 'color', key: 'brand', value: '#123456' }, { namespace: 'color', key: 'primary', value: '#4f46e5' }],
   utilities: [
     {
       name: 'btn',
@@ -198,7 +198,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
       '}',
       '@components {',
       '    btn {',
-      '        @compose inline-flex fg:primary:hover@md;',
+      '        @compose inline-flex fg-primary:hover@md;',
       '    }',
       '}',
       '@keyframes fade {',
@@ -304,7 +304,7 @@ test.concurrent('normalizes Shiki language ids separately from class-list langua
 })
 
 test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () => {
-  const code = '<div className="fg:brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
+  const code = '<div className="fg-brand:hover@sm block btn btn:hover@sm btn_div::before"></div>'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'tsx',
     manifest
@@ -365,7 +365,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 
 test.concurrent('creates Shiki decorations for CSS directive class-list spans', () => {
   const code = [
-    '@safelist "block fg:red";',
+    '@safelist "block fg-red";',
     '@utilities {',
     '    text-<left|center|right> {',
     '        text-align: --value();',
@@ -381,7 +381,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '}',
     '@components {',
     '    btn {',
-    '        @compose inline-flex fg:brand:hover@sm;',
+    '        @compose inline-flex fg-brand:hover@sm;',
     '    }',
     '}'
   ].join('\n')
@@ -411,9 +411,9 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     }),
     expect.objectContaining({
       text: 'red',
-      type: 'enumMember',
+      type: 'variable',
       modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic-role-value-keyword'])
+      classNames: expect.arrayContaining(['mcss-semantic-role-value-variable'])
     }),
     expect.objectContaining({
       text: 'inline-flex',
@@ -449,7 +449,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
 })
 
 test.concurrent('creates Shiki decorations for raw Master CSS class lists', () => {
-  const code = 'fg:brand:hover@sm {bg:blue;fg:white}'
+  const code = 'fg-brand:hover@sm {bg-blue;fg-white}'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'mcss',
     classList: true,
@@ -473,7 +473,7 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
 })
 
 test.concurrent('skips semantic token decorations inside host comments', () => {
-  const code = '<!-- <div class="fg:red"></div> -->\n<div class="fg:blue"></div>'
+  const code = '<!-- <div class="fg-red"></div> -->\n<div class="fg-blue"></div>'
   const decorations = createMasterCSSShikiDecorations(code, {
     lang: 'html'
   })
@@ -609,7 +609,7 @@ test.concurrent('uses semantic token scope styles for selector semantic tokens',
 })
 
 test.concurrent('uses semantic token scope styles for documentation Master CSS tokens', () => {
-  const htmlCode = '<section class="bg:blue block grid-cols:2@md fg:primary:hover"></section>'
+  const htmlCode = '<section class="bg-blue block grid-cols:2@md fg-primary:hover"></section>'
   const htmlOptions = {
     lang: 'html'
   }
@@ -619,7 +619,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     '  --spacing-card: 24;',
     '}',
     '@components {',
-    '  card { @compose bg:blue fg:brand:hover; }',
+    '  card { @compose bg-blue fg-brand:hover; }',
     '}'
   ].join('\n')
   const cssOptions = {
@@ -659,14 +659,14 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
       className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
     },
     {
-      content: ':',
+      content: '-',
       htmlStyle: { color: 'operator' },
       className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-declaration-separator'
     },
     {
       content: 'blue',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'block',
@@ -697,8 +697,8 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     },
     {
       content: 'blue',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'brand',
@@ -720,7 +720,7 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
     '@components {',
     '    card {',
-    '        @compose p:md r:xl;',
+    '        @compose p-md r-xl;',
     '        @variant <sm {',
     '            @compose block;',
     '        }',
@@ -749,8 +749,8 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     },
     {
       content: 'md',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'r',
@@ -759,8 +759,8 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
     },
     {
       content: 'xl',
-      htmlStyle: { color: 'value' },
-      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-value-keyword'
+      htmlStyle: { color: 'variable' },
+      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
     },
     {
       content: 'block',

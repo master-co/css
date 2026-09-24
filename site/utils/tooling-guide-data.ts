@@ -14,12 +14,9 @@ export const toolingOptions = {
   canonical: {
     label: 'Canonical class options',
     options: [
-      { name: 'preferStaticUtilities', defaultValue: 'true', description: 'Prefer named utilities: text-align:center → text-center.' },
-      { name: 'preferThemeTokens', defaultValue: 'true', description: 'Use matching theme values: font:16px → font:md.' },
-      { name: 'preferPropertyAliases', defaultValue: 'true', description: 'Use shorter property keys: margin:md → m:md.' },
-      { name: 'preferVariableReferences', defaultValue: 'true', description: 'Replace registered CSS variable references with token keys.' },
-      { name: 'preferMultiValueTokens', defaultValue: 'true', description: 'Use tokens in compound values: m:1rem|1.5rem → m:md|lg.' },
-      { name: 'preferCompositionUtilities', defaultValue: 'true', description: 'Combine matching declarations: w:md h:md → size:md.' },
+      { name: 'preferStaticUtilities', defaultValue: 'true', description: 'Normalize named utilities only when their cascade identity is preserved.' },
+      { name: 'preferPropertyAliases', defaultValue: 'true', description: 'Use shorter property keys: margin:1rem → m:1rem.' },
+      { name: 'preferCompositionUtilities', defaultValue: 'true', description: 'Combine declarations only when value sources and cascade priorities are preserved.' },
       { name: 'preferConditionOrder', defaultValue: 'true', description: 'Normalize safe condition combinations: @dark@sm → @sm@dark.' },
       { name: 'preferNativeDeclarationsInCompose', defaultValue: 'true', description: 'Move declaration-like classes out of @compose into native CSS declarations.' },
       { name: 'preferVariantBlocksInCompose', defaultValue: 'true', description: 'Move conditional @compose classes into selector, @variant, or mode blocks.' }
@@ -35,11 +32,11 @@ export const toolingOptions = {
     ]
   },
   completions: {
-    label: 'Selected completion results for p:',
+    label: 'Selected completion results for p-',
     options: [
-      { name: 'sm', description: '(scope) .75rem' },
-      { name: 'md', description: '(scope) 1rem' },
-      { name: 'lg', description: '(scope) 1.5rem' }
+      { name: 'p-sm', description: '(token --spacing-sm) .75rem' },
+      { name: 'p-md', description: '(token --spacing-md) 1rem' },
+      { name: 'p-lg', description: '(token --spacing-lg) 1.5rem' }
     ]
   },
   languageSources: {
@@ -69,30 +66,30 @@ export const toolingOptions = {
 export const toolingExamples = {
   sort: {
     title: 'A stable class order', language: 'mcss', sourceLabel: 'Before sorting', resultLabel: 'After sorting',
-    source: 'bg:blue-60 p:md flex gap:sm', result: 'flex gap:sm p:md bg:blue-60'
+    source: 'bg-blue-60 p-md flex gap-sm', result: 'flex gap-sm p-md bg-blue-60'
   },
   invalid: {
     title: 'A recognized class with an invalid value', language: 'html',
     source: '<span class="text-decoration:bad()">Note</span>',
-    diagnostic: { severity: 'Error', rule: '@master/css/no-invalid-classes', message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration-color` property.' }
+    diagnostic: { severity: 'Error', rule: '@master/css/no-invalid-classes', message: 'Class "text-decoration:bad()" emits invalid CSS: Invalid value for `text-decoration` property.' }
   },
   canonical: {
     title: 'Use the project vocabulary', language: 'mcss', sourceLabel: 'Before canonicalization', resultLabel: 'After canonicalization',
-    source: 'text-align:center font:16px margin:md', result: 'text-center font:md m:md'
+    source: 'margin:1rem fg-red@dark@sm', result: 'm:1rem fg-red@sm@dark'
   },
   conflict: {
     title: 'One intended margin', language: 'mcss', sourceLabel: 'Before fix', resultLabel: 'After fix',
-    source: 'm:sm m:lg', result: 'm:lg',
-    diagnostic: { severity: 'Warning', rule: '@master/css/no-conflicting-classes', message: 'Remove class "m:sm"; it is overridden by later class "m:lg".' }
+    source: 'm-lg m-sm', result: 'm-sm',
+    diagnostic: { severity: 'Warning', rule: '@master/css/no-conflicting-classes', message: 'Remove class "m-lg"; it is overridden by class "m-sm" in generated CSS.' }
   },
   raw: {
-    title: 'A value that needs a token or an exception', language: 'mcss', source: 'font:15px',
-    diagnostic: { severity: 'Warning', rule: '@master/css/no-unapproved-raw-values', message: 'Raw value "15px" is not approved for class "font:15px". Use a token or allow the value explicitly.' }
+    title: 'A value that needs a token or an exception', language: 'mcss', source: 'font-size:15px',
+    diagnostic: { severity: 'Warning', rule: '@master/css/no-unapproved-raw-values', message: 'Raw value "15px" is not approved for class "font-size:15px". Use a token or allow the value explicitly.' }
   },
   hover: {
     title: 'CSS reported by hover', language: 'html', resultLanguage: 'css', resultLabel: 'Hover output',
-    source: '<button class="fg:white bg:blue-60:hover@sm">\n  Save\n</button>',
-    result: '@layer theme {\n  :root {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width>=52.125rem) {\n    .bg\\:blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
+    source: '<button class="fg-white bg-blue-60:hover@sm">\n  Save\n</button>',
+    result: '@layer theme {\n  :root {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width>=52.125rem) {\n    .bg-blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
   },
   format: {
     title: 'Keep the important marker with its class', language: 'css', sourceLabel: 'Before formatting', resultLabel: 'After formatting',

@@ -12,19 +12,19 @@ The summary’s text names a real disclosure. `sr-only` hides the words visually
 ```html
 <details>
   <summary
-    class="inline-flex items-center p:sm
-           b:1px|solid|base r:sm cursor:pointer">
+    class="inline-flex items-center p-sm
+           b:1px|solid|var(--color-line-base) r-sm cursor:pointer">
     <span id="target" class="sr-only">Canvas settings</span>
     <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20"
       fill="none" stroke="currentColor" stroke-width="1.5">
       <path d="M3 5h14 M3 10h14 M3 15h14" />
     </svg>
   </summary>
-  <label class="flex items-center gap:sm mt:md">
+  <label class="flex items-center gap-sm mt-md">
     <input type="checkbox"> Show grid
   </label>
 </details>
-<p class="mb:0 mt:md font:xs text:muted">Accessible name: Canvas settings</p>
+<p class="mb:0 mt-md font-xs text-muted">Accessible name: Canvas settings</p>
 ```
 
 <details>
@@ -40,12 +40,12 @@ Give an icon-only button a text alternative that describes its action. This nati
 <DemoExample page="screen-readers" section="label-icon-only-controls" />
 
 ```html
-<form class="grid justify-items:start gap:md">
-  <label class="grid gap:xs w:240px max-w:full">
-    Project name <input type="text" value="Canvas" class="w:full">
+<form class="grid justify-items:start gap-md">
+  <label class="grid gap-xs w:240px max-w:100%">
+    Project name <input type="text" value="Canvas" class="w:100%">
   </label>
   <button type="reset"
-    class="inline-flex items-center gap:sm">
+    class="inline-flex items-center gap-sm">
     <span id="target" class="sr-only">Reset project name</span>
     <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20"
       fill="none" stroke="currentColor" stroke-width="1.5">
@@ -53,7 +53,7 @@ Give an icon-only button a text alternative that describes its action. This nati
     </svg>
   </button>
 </form>
-<p class="mb:0 mt:md font:xs text:muted">Accessible name: Reset project name</p>
+<p class="mb:0 mt-md font-xs text-muted">Accessible name: Reset project name</p>
 ```
 
 The button stays visible, focusable and operable. Its SVG is decorative; the hidden text supplies the name without adding a second focus stop.
@@ -64,11 +64,11 @@ Keep the editable control and its label visible. Link a separate hidden descript
 <DemoExample page="screen-readers" section="avoid-hiding-interactive-content" />
 
 ```html
-<label for="target" class="block mb:xs">Project name</label>
+<label for="target" class="block mb-xs">Project name</label>
 <input id="target" type="text" value="Canvas" aria-describedby="name-help"
-  class="w:240px max-w:full">
+  class="w:240px max-w:100%">
 <p id="name-help" class="sr-only">Use a descriptive project name.</p>
-<p class="mb:0 mt:md font:xs text:muted">Accessible description: Use a descriptive project name.</p>
+<p class="mb:0 mt-md font-xs text-muted">Accessible description: Use a descriptive project name.</p>
 ```
 
 The `for` and `id` connect the visible label to the input. `aria-describedby` adds supporting information without replacing that name. Hiding a focusable input with `sr-only` would leave sighted keyboard users without a visible target.
@@ -79,12 +79,12 @@ Keep the reset label visible below `sm` and visually hide it at that breakpoint.
 <DemoExample page="screen-readers" section="apply-conditionally" />
 
 ```html
-<form class="grid justify-items:start gap:md">
-  <label class="grid gap:xs w:240px max-w:full">
-    Project name <input type="text" value="Canvas" class="w:full">
+<form class="grid justify-items:start gap-md">
+  <label class="grid gap-xs w:240px max-w:100%">
+    Project name <input type="text" value="Canvas" class="w:100%">
   </label>
   <button type="reset"
-    class="inline-flex items-center gap:sm">
+    class="inline-flex items-center gap-sm">
     <span id="target" class="sr-only@screen&sm">Reset project name</span>
     <svg aria-hidden="true" width="20" height="20" viewBox="0 0 20 20"
       fill="none" stroke="currentColor" stroke-width="1.5">
@@ -92,7 +92,7 @@ Keep the reset label visible below `sm` and visually hide it at that breakpoint.
     </svg>
   </button>
 </form>
-<p class="mb:0 mt:md font:xs text:muted">Accessible name: Reset project name at every width</p>
+<p class="mb:0 mt-md font-xs text-muted">Accessible name: Reset project name at every width</p>
 ```
 
 Only the text label changes its visual treatment. The button remains visible and keeps its native action. The screen condition leaves the text visible in print.

@@ -13,13 +13,13 @@ test('extractSearchNodesFromMdx reads markdown text, code, list items, and resol
     '',
     '## Overview [sr-only]',
     '',
-    'Use `text:body` for readable copy.',
+    'Use `text-body` for readable copy.',
     '',
     '- First **item**',
     '- Second item',
     '',
     '```html',
-    '<div class="text:body">Hello</div>',
+    '<div class="text-body">Hello</div>',
     '```',
     '',
     '<Demo />'
@@ -27,10 +27,10 @@ test('extractSearchNodesFromMdx reads markdown text, code, list items, and resol
 
   assert.deepEqual(nodes, [
     { id: 'overview', tag: 'h2', text: 'Overview' },
-    { tag: 'p', text: 'Use text:body for readable copy.' },
+    { tag: 'p', text: 'Use text-body for readable copy.' },
     { tag: 'li', text: 'First item' },
     { tag: 'li', text: 'Second item' },
-    { tag: 'code', text: '<div class="text:body">Hello</div>' }
+    { tag: 'code', text: '<div class="text-body">Hello</div>' }
   ])
 })
 
@@ -43,7 +43,7 @@ test('createSearchPage localizes metadata and prefixes non-default locales', () 
   const page = createSearchPage({
     defaultLocale: 'en',
     entry: {
-      content: '## Default palette\nUse `bg:blue`.',
+      content: '## Default palette\nUse `bg-blue`.',
       metadata: {
         category: 'Design Foundations',
         description: 'Choose palette steps.',

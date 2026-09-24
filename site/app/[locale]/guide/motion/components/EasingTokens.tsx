@@ -19,7 +19,7 @@ export function EasingTokenTable() {
     return {
       key: name,
       token: `--easing-${name}`,
-      utility: `animation-timing-function:${name}`,
+      utility: `animation-timing-function-${name}`,
       value: String(value),
       description: easingDescriptions[name]
     }

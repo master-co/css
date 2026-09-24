@@ -8,9 +8,9 @@
 <DemoExample page="flex-shrink" section="allow-an-item-to-shrink" />
 
 ```html
-<div id="layout" class="flex gap:md w:70x max-w:full">
-  <div id="target" class="flex-basis:48x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">192px basis</span></div>
-  <div id="peer" class="flex-basis:24x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">96px basis</span></div>
+<div id="layout" class="flex gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex-basis:12rem flex-shrink:1 h:6rem min-w:0"><span class="block p-sm">192px basis</span></div>
+  <div id="peer" class="flex-basis:6rem flex-shrink:1 h:6rem min-w:0"><span class="block p-sm">96px basis</span></div>
 </div>
 ```
 
@@ -29,9 +29,9 @@ At the full 280px row width, the items settle at 176px and 88px. `min-w:0` remov
 <DemoExample page="flex-shrink" section="prevent-fixed-media-from-shrinking" />
 
 ```html
-<div id="layout" class="flex items-center gap:md w:70x max-w:full">
-  <span id="target" class="grid flex-shrink:0 place-items:center size:12x" aria-hidden="true">AL</span>
-  <div id="peer" class="wrap-anywhere flex-basis:xs min-w:0 p:sm">Alexandra Lee<br>alexandra.lee@collaborative.design.example</div>
+<div id="layout" class="flex items-center gap-md w:17.5rem max-w:100%">
+  <span id="target" class="grid flex-shrink:0 place-items:center size:3rem" aria-hidden="true">AL</span>
+  <div id="peer" class="wrap-anywhere flex-basis-xs min-w:0 p-sm">Alexandra Lee<br>alexandra.lee@collaborative.design.example</div>
 </div>
 ```
 
@@ -43,9 +43,9 @@ Use [conditional queries](/reference/rules/conditions) to preserve the blue item
 <DemoExample page="flex-shrink" section="apply-conditionally" />
 
 ```html
-<div id="layout" class="flex gap:md w:70x max-w:full">
-  <div id="target" class="flex-basis:48x flex-shrink:1 h:24x min-w:0 flex-shrink:0@sm"><span class="block p:sm">Target</span></div>
-  <div id="peer" class="flex-basis:24x flex-shrink:1 h:24x min-w:0"><span class="block p:sm">Peer</span></div>
+<div id="layout" class="flex gap-md w:17.5rem max-w:100%">
+  <div id="target" class="flex-basis:12rem flex-shrink:1 h:6rem min-w:0 flex-shrink:0@sm"><span class="block p-sm">Target</span></div>
+  <div id="peer" class="flex-basis:6rem flex-shrink:1 h:6rem min-w:0"><span class="block p-sm">Peer</span></div>
 </div>
 ```
 

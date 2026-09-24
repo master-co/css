@@ -10,7 +10,7 @@ Both previews use a 200px-tall column container. Compare the blue block with aut
 <DemoExample page="break-inside" section="set-the-break-inside-behavior" />
 
 ```html
-<div class="columns:2 h:50x column-fill:auto">
+<div class="columns:2 h:12.5rem column-fill:auto">
   <div class="h:130px">1</div>
   <!-- @MARK break-inside:avoid -->
   <div class="h:90px break-inside:avoid">2</div>
@@ -20,7 +20,7 @@ Both previews use a 200px-tall column container. Compare the blue block with aut
 ```
 Without the avoidance rule, the second block can continue into the next column:
 ```html
-<div class="columns:2 h:50x column-fill:auto">
+<div class="columns:2 h:12.5rem column-fill:auto">
   <div class="h:130px">1</div>
   <div class="h:90px">2</div>
   <div class="h:60px">3</div>
@@ -34,7 +34,7 @@ Keep fragmentation automatic at narrow widths and avoid splitting the block at `
 <DemoExample page="break-inside" section="apply-conditionally" />
 
 ```html
-<div class="columns:2 h:50x column-fill:auto">
+<div class="columns:2 h:12.5rem column-fill:auto">
   <div class="h:130px">1</div>
   <div class="h:90px break-inside:auto break-inside:avoid@sm">2</div>
   <div class="h:60px">3</div>

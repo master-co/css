@@ -12,7 +12,7 @@ export function legacySyntaxMetadata(slug: LegacySyntaxSlug, locale: string) {
 export default function LegacySyntaxPage({ slug, locale }: { slug: LegacySyntaxSlug; locale: string }) {
   const page = legacySyntaxPages[slug]
   const tw = locale === 'tw'
-  return <main className="prose flex:1 px:xl pb:xl pt:5xl">
+  return <main className="prose flex:1 px-xl pb-xl pt-5xl">
     <LegacySyntaxRedirect slug={slug} locale={locale} />
     <h1>{tw ? '語法教學已整合' : 'The syntax guides have moved'}</h1>
     <p>{tw ? '繼續閱讀完整教學，或查閱正式規則。' : 'Continue with the complete tutorial, or look up the formal rules.'}</p>

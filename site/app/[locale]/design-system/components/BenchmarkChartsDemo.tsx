@@ -126,7 +126,7 @@ export default function BenchmarkChartsDemo() {
       <BenchmarkFigure
         title="Delta labels"
         description="Sample data for compact comparison badges.">
-        <div className="flex flex-wrap gap:xs">
+        <div className="flex flex-wrap gap-xs">
           <BenchmarkDelta tone="good" value="-38%" label="CSS bytes" />
           <BenchmarkDelta tone="warn" value="+12%" label="build time" />
           <BenchmarkDelta tone="bad" value="+42 ms" label="style calc" />

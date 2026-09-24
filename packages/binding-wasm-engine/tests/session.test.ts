@@ -70,10 +70,10 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
     },
     utilities: []
   }))
-  nativeDeclarationSession.ensureClassRules(['bg:stripe'])
+  nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
   expect(nativeDeclarationSession.snapshot().text).toBe(
     '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
-    + '@layer utilities{.bg\\:stripe{background:var(--stripe)}}'
+    + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
   )
   nativeDeclarationSession.dispose()
 })
@@ -94,9 +94,9 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     emittedGlobals: { variables: { 'color-red-60': 1 } }
   }, { input })
 
-  session.ensureClassRules(['fg:red-60'])
+  session.ensureClassRules(['fg-red-60'])
   expect(session.snapshot().text).toBe(
-    '@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}'
+    '@layer utilities{.fg-red-60{color:var(--color-red-60)}}'
   )
   session.dispose()
 })
@@ -115,12 +115,12 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     utilities: []
   }), {}, { input })
 
-  session.ensureClassRules(['fg:red-60'])
+  session.ensureClassRules(['fg-red-60'])
   expect(session.snapshot().text).toContain('--color-red-60:#d00')
   expect(session.registerEmittedGlobals({ variables: { 'color-red-60': 1 } }).mutations.length)
     .toBeGreaterThan(0)
   expect(session.snapshot().text).toBe(
-    '@layer utilities{.fg\\:red-60{color:var(--color-red-60)}}'
+    '@layer utilities{.fg-red-60{color:var(--color-red-60)}}'
   )
   session.dispose()
   expect(() => session.registerEmittedGlobals({ variables: {} })).toThrow('disposed')

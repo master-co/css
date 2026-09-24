@@ -72,8 +72,7 @@ const MANIFEST: &str = r##"{
           "variableAliasRefs":["~color"],
           "emit":{"type":"static","rules":[{"declarations":{"background-color":null}}]},
           "matchers":[
-            {"type":"variable","keys":["bg"]},
-            {"type":"value","keys":["bg"]}
+            {"type":"token","prefix":"bg-"}
           ]
         },
         {

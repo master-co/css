@@ -21,17 +21,17 @@ it('extract latent classes from html', () => {
               <img src="/vite.svg" class="logo" alt="Vite logo" />
             </a>
             <a href="https://css.master.co" target="_blank">
-              <img src="/master.svg" class="logo size:43x" alt="Master logo" />
+              <img src="/master.svg" class="logo size:10.75rem" alt="Master logo" />
             </a>
           </div>
           <h1
-            class="font:sans tracking:tight fg:white@dark font:heavy">
-            <span class="text-gradient bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
-            <span class="fg:slate-70 mx:0.625rem font:medium">+</span>
+            class="font-sans tracking-tight fg-white@dark font-heavy">
+            <span class="text-gradient background-image:linear-gradient(120deg,#bd34fe|30%,#41d1ff)">Vite</span>
+            <span class="fg-slate-70 mx:0.625rem font-medium">+</span>
             <span>Master CSS</span>
           </h1>
           <div class="card">
-            <button id="counter" type="button" class="fg:white@dark"></button>
+            <button id="counter" type="button" class="fg-white@dark"></button>
           </div>
           <p class="read-the-docs">
             Click on the Vite and Master CSS logos to learn more
@@ -62,17 +62,17 @@ it('extract latent classes from html', () => {
       '_blank',
       'logo',
       'Vite',
-      'size:43x',
+      'size:10.75rem',
       'Master',
-      'font:sans',
-      'tracking:tight',
-      'fg:white@dark',
-      'font:heavy',
+      'font-sans',
+      'tracking-tight',
+      'fg-white@dark',
+      'font-heavy',
       'text-gradient',
-      'bg:linear-gradient(120deg,#bd34fe|30%,#41d1ff)',
-      'fg:slate-70',
+      'background-image:linear-gradient(120deg,#bd34fe|30%,#41d1ff)',
+      'fg-slate-70',
       'mx:0.625rem',
-      'font:medium',
+      'font-medium',
       'card',
       'counter',
       'button',

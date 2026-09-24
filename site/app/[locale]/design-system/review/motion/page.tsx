@@ -14,18 +14,18 @@ export const metadata = {
 const original = <OriginalDemo><div className={styles.originalScene}>
   <div className={styles.originalCard}>
     <DemoLabel>animation:fade|slow|smooth</DemoLabel>
-    <div className="size:14x r:lg bg:blue-5 animation:fade|slow|smooth|infinite|alternate@motion" />
+    <div className="size:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion" />
   </div>
   <div className={styles.originalCard}>
     <DemoLabel>animation:zoom|fast|overshoot</DemoLabel>
-    <div className="size:14x r:lg bg:green-5 animation:zoom|fast|overshoot|infinite|alternate@motion" />
+    <div className="size:3.5rem r-lg bg-green-5 animation:zoom|var(--duration-fast)|var(--easing-overshoot)|infinite|alternate@motion" />
   </div>
 </div></OriginalDemo>
 
 function Preview({ candidate = false }: { candidate?: boolean }) {
   return <Demo padding="none"><div className={candidate ? styles.candidate : styles.current}>
     <DemoMotion><div className={styles.scene}>
-      <DemoItem tone="blue" className="grid place-content:center size:16x animation:rotate|2s|linear|infinite">↗</DemoItem>
+      <DemoItem tone="blue" className="grid place-content:center size:4rem animation:rotate|2s|linear|infinite">↗</DemoItem>
     </div></DemoMotion>
   </div></Demo>
 }

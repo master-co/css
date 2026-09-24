@@ -146,7 +146,9 @@ function registerPrompts(server: McpServer) {
           content: {
             type: 'text',
             text: [
-              'Use the Master CSS MCP tools to plan an incremental migration to Master CSS before editing.',
+              'Use the Master CSS MCP tools to plan a migration from CSS, CSS Modules, Sass, Tailwind CSS, CSS-in-JS, component-library styling, Master CSS v1, or Master CSS v2 RC before editing.',
+              'For pre-change v2 RC, follow https://rc.css.master.co/guide/migration/v2-rc: audit exact package versions, save the resolved RC manifest, settings and CSS/browser baseline, then coordinate source, package, native/Wasm and hydration upgrades without running both runtimes together.',
+              'Named tokens use hyphens; colon values use native CSS semantics and explicit var() references. Preview master-css migrate proposals, preserve token identity and cascade behavior, and leave uncertain dynamic or custom syntax for manual review.',
               'Inspect the workspace, identify the framework, package manager, current styling systems, stylesheet entries, source extraction coverage, existing theme tokens, component classes, and available validation commands.',
               'Produce a migration plan with the recommended rendering mode, the first reviewable migration batch, CSS output risks, manual visual checks, and the formatter, lint, type-check, test, or build commands to run.',
               'Preserve CSS output unless a deliberate behavior change is requested, keep vendor or generated CSS in place, and use write previews only for safe, scoped changes.'

@@ -4,26 +4,26 @@ import { extractClassCandidatesNative as extractClassCandidates } from '../../sr
 test.concurrent('extracts class candidates from mixed source strings', () => {
   const source = `
     import styles from './style.css'
-    const cls = "fg:red hover:bg:blue"
-    const nested = { class: 'content:"a;b" bg:url("/logo.png")' }
+    const cls = "fg-red hover:bg:blue"
+    const nested = { class: 'content:"a;b" background-image:url("/logo.png")' }
   `
 
   expect(extractClassCandidates(source)).toEqual([
     'const',
     'cls',
-    'fg:red',
+    'fg-red',
     'hover:bg:blue',
     'nested',
     'class',
     'content:"a;b"',
     'a;b',
-    'bg:url("/logo.png")'
+    'background-image:url("/logo.png")'
   ])
 })
 
 test.concurrent('keeps grouped class candidates before downstream validation', () => {
-  expect(extractClassCandidates('<div class="{fg:red;bg:blue}" data-id="${id}"></div>')).toEqual([
-    '{fg:red;bg:blue}',
+  expect(extractClassCandidates('<div class="{fg-red;bg-blue}" data-id="${id}"></div>')).toEqual([
+    '{fg-red;bg-blue}',
     '${id}'
   ])
 })

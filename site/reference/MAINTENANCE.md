@@ -42,11 +42,11 @@ The four project styling guides use `utils/project-style-content.ts` with the sa
 
 `ConfiguredExample` accepts either a class array or trusted literal HTML, including local raw HTML specimens. It compiles with the public render session and tooling native-declaration support, matching iframe previews. Generate CSS from the displayed source instead of maintaining cached CSS specimens; keep any configuration required by the output, such as `mode-trigger`, explicit.
 
-Namespace consumers come from `utils/variable-namespace-sources.ts`, which combines the public native-value and utility registries. Do not derive this index from defined preset values: registered consumers such as `order:` may have no preset token. The normalized Markdown retains every consumer. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape.
+Namespace consumers come from `utils/variable-namespace-sources.ts`, which combines the public named-token and utility registries. Do not derive this index from defined preset values: registered consumers such as `order-` may have no preset token. The normalized Markdown retains every consumer. `DocumentNamespaceTable` renders the same rows with native disclosures for long lists; its focused parser only recognizes the explicit Namespace/Consumers table shape.
 
 `DocumentCodeTable` keeps short syntax tokens intact while native CSS wraps at spaces. Reference adapts only two-column Token/CSS or Syntax/CSS tables whose cells each contain one code span. Keep long generated rules in code blocks; the authored Markdown remains the export source.
 
-`DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles remove size containment, wrap long syntax and keep both columns visible. Put longer multi-part decisions in prose lists. The four reviewed migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
+`DocumentComparison` is an opt-in wrapper for two-column Markdown reading tables. Its native table remains intact; scoped styles remove size containment, wrap long syntax and keep both columns visible. Put longer multi-part decisions in prose lists. The migration guides use `utils/migration-content.ts` to preserve their complete authored comparisons and code in search and llms output.
 
 ## Validation
 

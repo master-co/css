@@ -71,20 +71,20 @@ test('destroy on progressive', async ({ page }) => {
   await page.evaluate(async (manifest) => {
     const runtime = await globalThis.MasterCSSRuntime.start({ manifest })
     runtime.observe()
-    document.body.classList.add('block', 'font:bold')
+    document.body.classList.add('block', 'font-bold')
   }, defaultManifest)
   await waitForRuntimeRuleFlush(page)
   expect(await page.evaluate(() => globalThis.masterCSSRuntime?.snapshot().classRules))
     .toMatchObject({
       block: expect.anything(),
-      'font:bold': expect.anything()
+      'font-bold': expect.anything()
     })
 })
 
 test('disconnect and destroy clear pending mutation additions and removals', async ({ page }) => {
   await init(page)
   const disconnected = await page.evaluate(async () => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))
@@ -107,7 +107,7 @@ test('disconnect and destroy clear pending mutation additions and removals', asy
 
   await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.observe())
   const disposed = await page.evaluate(async (manifest) => {
-    document.body.innerHTML = '<p id="target" class="fg:red-60"></p><p class="z:1234"></p>'
+    document.body.innerHTML = '<p id="target" class="fg-red-60"></p><p class="z:1234"></p>'
     await new Promise(resolve => setTimeout(resolve, 0))
     document.getElementById('target')?.remove()
     await new Promise(resolve => setTimeout(resolve, 0))

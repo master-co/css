@@ -28,7 +28,7 @@ for (const route of serverInstallationRoutes) test(`authored server assets rende
   await serve(page, fixture)
   const heading = page.getByRole('heading', { name: 'Hello World' })
   expect(await heading.evaluate(element => [...element.classList].sort())).toEqual(
-    ['m:md', 'italic', 'font:3xl', 'font:heavy', 'text:strong'].sort(),
+    ['m-md', 'italic', 'font-3xl', 'font-heavy', 'text-strong'].sort(),
   )
   await expect(heading).toHaveCSS('font-style', 'italic')
   await expect(heading).toHaveCSS('margin-top', '16px')
@@ -45,12 +45,12 @@ for (const route of serverInstallationRoutes) test(`authored server assets rende
   } finally { await context.close() }
   if (!route.endsWith('/static-rendering')) {
     // Actual class insertion and node replacement; this does not simulate Turbo.
-    await heading.evaluate(element => element.classList.add('p:xl'))
+    await heading.evaluate(element => element.classList.add('p-xl'))
     await expect(heading).toHaveCSS('padding-top', '32px')
     await heading.evaluate(element => {
       const next = document.createElement('h2')
       next.textContent = 'Updated content'
-      next.className = 'p:lg italic'
+      next.className = 'p-lg italic'
       element.replaceWith(next)
     })
     const next = page.getByRole('heading', { name: 'Updated content' })

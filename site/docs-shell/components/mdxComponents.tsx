@@ -137,7 +137,7 @@ export const mdxComponents: MDXComponents = {
   //     newChildren = rehypeChildren(props.children, 'New ')
   //     if (newChildren) {
   //         return <DocH3 {...props}>
-  //             <IconSparkles className='app-icon-primary stroke:1 my:-0.375rem mr:2x w:1.5em h:1.5em' />
+  //             <IconSparkles className='app-icon-primary stroke-width:1 my:-0.375rem mr:0.5rem w:1.5em h:1.5em' />
   //             New {newChildren}
   //         </DocH3>
   //     }
@@ -145,7 +145,7 @@ export const mdxComponents: MDXComponents = {
   //     newChildren = rehypeChildren(props.children, 'Deprecated ')
   //     if (newChildren) {
   //         return <DocH3 {...props}>
-  //             <IconFileX className='app-icon-red stroke:1 my:-0.375rem mr:2x w:1.5em h:1.5em' />
+  //             <IconFileX className='app-icon-red stroke-width:1 my:-0.375rem mr:0.5rem w:1.5em h:1.5em' />
   //             Deprecated {newChildren}
   //         </DocH3>
   //     }

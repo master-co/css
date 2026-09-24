@@ -6,8 +6,8 @@ use super::{
     RuleTarget, StoredRule, UTILITY_LAYERS, UtilityLayerName, UtilityMatcherType,
     canonicalize_class_name, collect_class_completion_candidates, collect_engine_color_tokens,
     collect_stylesheet_animation_names, compare_stored_rules, compile_manifest, emit_declarations,
-    engine_variable_ir, layer_index, layer_name, match_utility, normalize_dynamic_value,
-    resolve_state_branches, resolve_style_selector_aliases, stylesheet_resource_syntax,
+    engine_variable_ir, layer_index, layer_name, normalize_dynamic_value, resolve_state_branches,
+    resolve_style_selector_aliases, stylesheet_resource_syntax,
 };
 
 impl EngineSession {
@@ -472,6 +472,7 @@ impl EngineSession {
             class_name: class_name.to_owned(),
             valid: !rules.is_empty(),
             rules,
+            diagnostics: super::named::diagnostics(class_name, &self.compiled),
         })
     }
 
@@ -524,6 +525,8 @@ impl EngineSession {
             ClassSemanticKind::Semantic
         } else if matcher_types.contains(&UtilityMatcherType::Pattern) {
             ClassSemanticKind::Pattern
+        } else if matcher_types.contains(&UtilityMatcherType::Token) {
+            ClassSemanticKind::Token
         } else {
             ClassSemanticKind::Declaration
         };
@@ -534,7 +537,19 @@ impl EngineSession {
             .map_or((raw_state_token.as_str(), false), |state| (state, true));
         let important = trailing_important || state_important;
         let state_token = (!state_token.is_empty()).then(|| state_token.to_owned());
-        let (key_token, value_token) = if kind == ClassSemanticKind::Declaration {
+        let (key_token, value_token) = if kind == ClassSemanticKind::Token {
+            let prefix =
+                super::named::token_prefix(semantic_class_name, &self.compiled).unwrap_or_default();
+            let prefix_length =
+                prefix.len() + usize::from(!semantic_class_name.starts_with(prefix));
+            let value_end = semantic_class_name
+                .len()
+                .saturating_sub(raw_state_token.len());
+            (
+                Some(semantic_class_name[..prefix_length].to_owned()),
+                Some(semantic_class_name[prefix_length..value_end].to_owned()),
+            )
+        } else if kind == ClassSemanticKind::Declaration {
             let value_end = semantic_class_name
                 .len()
                 .saturating_sub(raw_state_token.len());
@@ -559,6 +574,19 @@ impl EngineSession {
             state_token,
             important,
         })
+    }
+
+    /// Whether a declaration key has a registered named-token counterpart.
+    pub fn has_named_tokens_for_key(&self, key: &str) -> bool {
+        let prefix = format!("{key}-");
+        self.compiled
+            .token_utilities
+            .get(&prefix)
+            .is_some_and(|indexes| {
+                indexes
+                    .iter()
+                    .any(|index| !self.compiled.utilities[*index].variable_entries.is_empty())
+            })
     }
 
     pub fn class_variable_keys(&self, class_name: &str) -> Result<Vec<String>, EngineError> {
@@ -611,23 +639,20 @@ impl EngineSession {
         let (semantic_class_name, important) = class_name
             .strip_suffix('!')
             .map_or((class_name, false), |name| (name, true));
-        let mut matching_class_names = vec![semantic_class_name.to_owned()];
-        if let Some(canonical) = canonicalize_class_name(semantic_class_name) {
-            matching_class_names.push(canonical);
-        }
+        let matching_class_names = [canonicalize_class_name(semantic_class_name)
+            .unwrap_or_else(|| semantic_class_name.to_owned())];
         let mut variable_aliases = Vec::new();
         let mut seen_aliases = HashSet::new();
         let mut seen = HashSet::new();
         for matching_class_name in matching_class_names {
             let mut generated = false;
-            for utility in &self.compiled.utilities {
+            for (utility_index, matched) in
+                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            {
+                let utility = &self.compiled.utilities[utility_index];
                 if utility.native_fallback && generated {
                     break;
                 }
-                let Some(matched) = match_utility(&matching_class_name, utility, &self.compiled)
-                else {
-                    continue;
-                };
                 let resolved_value = matched.value.as_deref().map(|value| {
                     if matched.value_normalized {
                         value.to_owned()

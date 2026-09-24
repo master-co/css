@@ -22,11 +22,11 @@ export default function PreviewViewport({ html, breakpoint, responsive }: { html
   }, [mode])
   useEffect(syncFrameThemeMode, [syncFrameThemeMode])
   const toggleClassName = (pressed: boolean) => clsx(
-    'btn btn-sm b:1px|solid|base',
-    pressed ? 'outline:2px|solid|accent surface:raised' : 'surface:raised:hover'
+    'btn btn-sm b:1px|solid|var(--color-line-base)',
+    pressed ? 'outline:2px|solid|var(--color-accent) surface-raised' : 'surface-raised:hover'
   )
   return <div style={{ width: '100%', minWidth: 0 }}>
-    {responsive && <div className="flex flex-wrap items-center gap:sm text:sm" role="group" aria-label="Preview viewport">
+    {responsive && <div className="flex flex-wrap items-center gap-sm text-sm" role="group" aria-label="Preview viewport">
       <button type="button" className={toggleClassName(!wide)} aria-pressed={!wide} onClick={() => setWide(false)}>Below sm</button>
       <button type="button" className={toggleClassName(wide)} aria-pressed={wide} onClick={() => setWide(true)}>At sm and above</button>
       <span role="status">Viewport: {width}px</span>

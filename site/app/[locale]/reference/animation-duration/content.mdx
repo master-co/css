@@ -19,14 +19,14 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 ```html
 <!-- 500ms cycle -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
-             animation-duration:slower
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
+             animation-duration-slower
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear
@@ -39,13 +39,13 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 ```html
 <!-- One-second cycle -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -58,7 +58,7 @@ Compare the same 72px path over 500ms and one second. Duration controls one cycl
 
 <details>
   <summary>Generated CSS</summary>
-  <Class2CSS>{['animation-duration:slower']}</Class2CSS>
+  <Class2CSS>{['animation-duration-slower']}</Class2CSS>
 </details>
 
 Use a duration token or a nonnegative CSS time. At 250ms the first marker is halfway through its cycle; the second is one quarter through.
@@ -70,10 +70,10 @@ Compare one-second and three-second rotations with the same linear timing and in
 
 ```html
 <!-- One-second loop -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue animation-duration:1s
+    class="text-blue animation-duration:1s
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
@@ -82,16 +82,16 @@ Compare one-second and three-second rotations with the same linear timing and in
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font:sm">One-second loop</span>
+  <span class="font-sm">One-second loop</span>
 </div>
 ```
 
 ```html
 <!-- Three-second loop -->
-<div class="flex items-center gap:md p:sm">
+<div class="flex items-center gap-md p-sm">
   <svg id="target" aria-hidden="true" width="48" height="48" viewBox="0 0 48 48"
     fill="none" stroke="currentColor" stroke-width="2"
-    class="text:blue animation-duration:3s
+    class="text-blue animation-duration:3s
            animation-iteration-count:infinite
            animation-name:rotate
            animation-timing-function:linear
@@ -100,7 +100,7 @@ Compare one-second and three-second rotations with the same linear timing and in
     <circle cx="24" cy="24" r="17" opacity=".25" />
     <path d="M24 8v16h12 M19 13l5-5 5 5" />
   </svg>
-  <span class="font:sm">Three-second loop</span>
+  <span class="font-sm">Three-second loop</span>
 </div>
 ```
 
@@ -123,13 +123,13 @@ Compare a one-second animation with zero duration. Both use forwards fill; the z
 ```html
 <!-- One second · retains end -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:1s
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -143,13 +143,13 @@ Compare a one-second animation with zero duration. Both use forwards fill; the z
 ```html
 <!-- Zero duration · immediate end -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
              animation-duration:0ms
              animation-fill-mode:forwards
              animation-name:layer-slide
@@ -179,14 +179,14 @@ Resize before replaying to switch from a 500ms cycle to one second at `sm`. The 
 ```html
 <!-- 500ms → one second at sm -->
 <div class="w:240px max-w:100%">
-  <p class="mb:sm font:mono font:xs text:muted">Base 0 · start 24 · end 96px</p>
+  <p class="mb-sm font-mono font-xs text-muted">Base 0 · start 24 · end 96px</p>
   <div aria-hidden="true"
-    class="h:56px p:xs outline:1px|dashed|muted">
+    class="h:56px p-xs outline:1px|dashed|var(--color-line-muted)">
     <span id="target"
       class="grid place-items:center h:40px w:48px
-             b:1px|solid|blue-60 r:sm bg:blue-10
-             fg:blue-80 transform:none
-             animation-duration:slower
+             b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
+             fg-blue-80 transform:none
+             animation-duration-slower
              animation-fill-mode:forwards
              animation-name:layer-slide
              animation-timing-function:linear

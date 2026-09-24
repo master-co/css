@@ -1,6 +1,6 @@
 const syntaxes = [
-  ['outline:`size`|`style`|`color`'],
   'outline:solid',
+  ['outline:`size`|`style`|`color`'],
 ]
 
 export default syntaxes
