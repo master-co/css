@@ -304,7 +304,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     }
   })
 
-  test('prunes managed CSS entry native CSS and uses its config', async () => {
+  test('explicitly prunes managed CSS entry native CSS and uses its config', async () => {
     const root = mkdtempSync(path.join(tmpdir(), 'master-css-webpack-'))
     try {
       mkdirSync(path.join(root, 'src'), { recursive: true })
@@ -337,7 +337,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       writeFileSync(entryPath, source)
 
       const plugin = await new MasterCSSWebpackPlugin({
-        scanner: { verbose: 0 }
+        scanner: { verbose: 0 },
+        pruneNativeCSS: true
       }, root).init()
 
       const modulePath = path.join(root, 'src/page.tsx')
@@ -346,7 +347,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         [entryPath, source],
         [modulePath, moduleSource]
       ], () => false)
-      const css = await (plugin as any).createExtractedCSS()
+      const result = await (plugin as any).createExtractedCSSResult()
+      const css = [result.css, ...result.stylesheets.map((sheet: { css: string }) => sheet.css)].join('\n')
 
       expect(css).toContain('.native-used')
       expect(css).not.toContain('.native-unused')
@@ -370,7 +372,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }, root).init()
 
       await (plugin as any).processModuleContents([[entryPath, '@import "@master/css";']], () => false)
-      const css = await (plugin as any).createExtractedCSS()
+      const result = await (plugin as any).createExtractedCSSResult()
+      const css = [result.css, ...result.stylesheets.map((sheet: { css: string }) => sheet.css)].join('\n')
 
       expect(css).toContain('@layer base')
       expect(css).toContain('text-rendering: geometricprecision')
@@ -387,7 +390,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       const source = [
         '@master entry;',
         '@components {',
-        '  card { @compose bg:neutral-120; }',
+        '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n')
       writeFileSync(entryPath, source)

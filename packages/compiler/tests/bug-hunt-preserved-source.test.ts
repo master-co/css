@@ -4,18 +4,19 @@ import { createCompiler } from '../src/index'
 import { compileStylesheet } from '../src/stylesheet/index-public'
 import { compileBrowserStylesheet } from '../src/stylesheet/browser'
 
-const baseManifest = { version: 1 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
 const native = '/* 🧪 audit */.empty{}.shared{margin:0px 0px 0px 0px}.sibling{margin:0px 0px 0px 0px}'
 const source = '@theme{--color-unused:red}' + native
 
 for (const binding of ['native', 'wasm'] as const) {
-  test(`${binding} source preservation is explicit and rejects class pruning`, async () => {
+  test(`${binding} source preservation allows class lists and rejects explicit pruning`, async () => {
     using compiler = await createCompiler({ binding })
     expect(compiler.compileCSS(source).nativeCSS).not.toContain('.empty{}')
     const options = { baseManifest, from: '/project/entry.css', preserveNativeSource: true }
     expect(compiler.compileCSS(source, options).nativeCSS).toBe(native)
     expect(compiler.compileManifest(source, options).css).toBe(native)
-    expect(() => compiler.compileCSS(source, { ...options, classes: [] }))
+    expect(compiler.compileCSS(source, { ...options, classes: [] }).nativeCSS).toBe(native)
+    expect(() => compiler.compileCSS(source, { ...options, classes: [], pruneNativeCSS: true }))
       .toThrow('cannot be combined with class pruning')
     expect(compiler.compileCSS(source, { ...options, preserveNativeCSS: false }).nativeCSS).toBe('')
   })
@@ -27,7 +28,8 @@ for (const binding of ['native', 'wasm'] as const) {
       options: { preserveNativeSource: true }
     }
     expect(compiler.compileStylesheets(request).css).toBe(native)
-    expect(() => compiler.compileStylesheets({ ...request, classesByStylesheet: { entry: [] } }))
+    expect(compiler.compileStylesheets({ ...request, classesByStylesheet: { entry: [] } }).css).toBe(native)
+    expect(() => compiler.compileStylesheets({ ...request, options: { ...request.options, pruneNativeCSS: true }, classesByStylesheet: { entry: [] } }))
       .toThrow('cannot be combined with class pruning')
   })
 }

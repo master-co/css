@@ -25,13 +25,13 @@ export default function DocHeader(props: any) {
     <Header {...headerProps}>
       <HeaderContent>
         <DocMenuButton className="ml:-1.25rem hidden@md app-header-icon" locale={props.locale} />
-        <Link href={'/'} className="mx:auto@<md" onContextMenu={(e: any) => {
+        <Link href={'/'} className="mx:auto@media((width<64rem))" onContextMenu={(e: any) => {
           e.preventDefault()
           router.push('/brand')
         }}>
           {<app.Logotype style={{ height: 20, width: 'auto' }} />}
         </Link>
-        <label className={clsx('rel gap:0.313rem ml:1.875rem font-weight:460 hidden@<md app-header-nav', !app.versions.length && 'text-body:hover!')}>
+        <label className={clsx('rel gap:0.313rem ml:1.875rem font-weight:460 hidden@media((width<64rem)) app-header-nav', !app.versions.length && 'text-body:hover!')}>
           {app.versions.length
             ? <>
               v{process.env.NEXT_PUBLIC_VERSION}
@@ -40,7 +40,7 @@ export default function DocHeader(props: any) {
             </>
             : <>v{process.env.NEXT_PUBLIC_VERSION}</>}
         </label>
-        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('hidden@<md', primaryNavClassName)} key={eachLink.name} {...eachLink}>
+        {app.navs.map(({ Icon, fullName, ...eachLink }: any) => <HeaderNav className={clsx('hidden@media((width<64rem))', primaryNavClassName)} key={eachLink.name} {...eachLink}>
           {$(eachLink.name)}
           {eachLink.date && isDateWithinSevenDays(eachLink.date) && <DocBadge className="ml-3xs" $color="primary" $size="xs">New</DocBadge>}
         </HeaderNav>)}
@@ -48,15 +48,15 @@ export default function DocHeader(props: any) {
           <Link
             {...eachLink}
             aria-label={fullName || eachLink.name}
-            className={clsx(index === 0 && 'ml:auto', 'hidden@<md app-header-icon', { 'text-disabled': disabled })}
+            className={clsx(index === 0 && 'ml:auto', 'hidden@media((width<64rem)) app-header-icon', { 'text-disabled': disabled })}
             disabled={disabled}
             key={eachLink.name}
           >
             {Icon && <Icon width="22" height="22" strokeWidth="1.2" />}
           </Link>
         ))}
-        {app.communityNavs?.length ? <div className='h:1em w:1px mx-md bg-line-base hidden@<md'></div> : null}
-        <LanguageButton className="mr:-0.188rem hidden@<md app-header-icon" />
+        {app.communityNavs?.length ? <div className='h:1em w:1px mx-md bg-line-base hidden@media((width<64rem))'></div> : null}
+        <LanguageButton className="mr:-0.188rem hidden@media((width<64rem)) app-header-icon" />
         <SearchButton id="sidebar-toggle" className="mr:-1.25rem hidden@md app-header-icon">
           <IconListSearch width="22" height="22" strokeWidth="1.2" />
         </SearchButton>

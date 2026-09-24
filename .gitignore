@@ -39,6 +39,8 @@
 **/*.virtual
 **/coverage/
 **/*.next
+**/*.next-query
+**/*.master
 
 # Only exists if Bazel was run
 /bazel-out

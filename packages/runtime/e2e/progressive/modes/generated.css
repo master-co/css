@@ -1,5 +1,1 @@
-@layer utilities {
-  .light .hidden\@light {
-    display: none;
-  }
-}
+@layer utilities{.hidden\@light:where(.light,.light *){display:none}}

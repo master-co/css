@@ -48,7 +48,7 @@ export default function BackerTiers() {
 
   return <div className="grid-cols:2 gap:0.938rem grid-cols:3@sm">
     {backerTiers.map((eachBackerTier) => (
-      <button key={eachBackerTier.name} className="app-object app-object-interactive gap:1.25rem p:1.563rem|1.875rem r:5px flex-col@<lg" onClick={() => setSelectedTier(eachBackerTier)}>
+      <button key={eachBackerTier.name} className="app-object app-object-interactive gap:1.25rem p:1.563rem|1.875rem r:5px flex-col@media((width<80rem))" onClick={() => setSelectedTier(eachBackerTier)}>
         <div className="font-6xl">{eachBackerTier.icon}</div>
         <div className='flex:1 text-left'>
           <div className="text-md font-medium text-strong uppercase::first-letter">{eachBackerTier.name}</div>

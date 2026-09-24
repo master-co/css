@@ -8,7 +8,7 @@ Svelte CLI add-on for one-command Master CSS setup in SvelteKit projects.
 npx sv add @master/css-svelte-addon
 ```
 
-The add-on installs `@master/css` and `@master/css-svelte`, wires the SvelteKit Vite plugin, creates or updates the project stylesheet entry, imports that stylesheet from the root layout, and composes the SvelteKit server hook.
+The add-on installs `@master/css` and `@master/css-svelte`, wires the SvelteKit Vite plugin, creates or updates the project stylesheet entry, imports that stylesheet from the root layout, and defaults to static CSS without a server hook or browser runtime. Select runtime or progressive explicitly in the Vite integration when needed; progressive also requires the documented server hook.
 
 `@master/css-svelte-addon` is an installer only. User apps keep `@master/css-svelte` as the runtime and build integration package.
 

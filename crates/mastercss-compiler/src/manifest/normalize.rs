@@ -1,7 +1,6 @@
 use super::utilities::{compile_utilities, compile_variants};
 use super::variables::{
-    compile_variable_conditions, compile_variables, group_variables, manifest_error, number_value,
-    object,
+    compile_variable_conditions, compile_variables, group_variables, manifest_error, object,
 };
 use super::{
     CompileManifestOptions, CompileManifestResult, CompilerError, CssDirectiveManifestInput,
@@ -127,6 +126,27 @@ pub(super) fn merge_manifest(base: Option<&Value>, fragment: &Value) -> Value {
         .expect("manifest fragment is an object");
     let mut manifest = Map::new();
     manifest.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    manifest.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
+    let mut modes = base
+        .get("modes")
+        .and_then(Value::as_array)
+        .cloned()
+        .unwrap_or_default();
+    for mode in fragment
+        .get("modes")
+        .and_then(Value::as_array)
+        .into_iter()
+        .flatten()
+    {
+        modes.retain(|previous| previous.get("name") != mode.get("name"));
+        modes.push(mode.clone());
+    }
+    if !modes.is_empty() {
+        manifest.insert("modes".into(), Value::Array(modes));
+    }
     let settings = merge_records(base.get("settings"), fragment.get("settings"));
     let variables = merge_variables(base.get("variables"), fragment.get("variables"));
     let animations = merge_records(base.get("animations"), fragment.get("animations"));
@@ -201,46 +221,51 @@ pub fn compile_manifest_input(
         MasterCssManifest::new(base_manifest.clone())
             .map_err(|error| manifest_error(error.to_string()))?;
     }
-    let root_size = input
-        .root_size
-        .or_else(|| {
-            options
-                .base_manifest
-                .as_ref()
-                .and_then(|base| base.get("settings"))
-                .and_then(|settings| settings.get("rootSize"))
-                .and_then(Value::as_f64)
-        })
-        .unwrap_or(16.0);
     let variables = compile_variables(input, options.base_manifest.as_ref())?;
     let (mut conditions, breakpoint_conditions, container_conditions) =
-        compile_variable_conditions(&variables, root_size);
+        compile_variable_conditions(&variables);
     let grouped_variables = group_variables(variables);
     let mut settings = Map::new();
     for (key, value) in [
-        ("rootSize", input.root_size.map(number_value)),
-        ("defaultMode", input.default_mode.clone().map(Value::String)),
         ("scope", input.scope.clone().map(Value::String)),
         ("important", input.important.map(Value::Bool)),
-        ("modeTrigger", input.mode_trigger.clone().map(Value::String)),
-        (
-            "modes",
-            input
-                .modes
-                .clone()
-                .filter(|modes| !modes.is_empty())
-                .map(|modes| Value::Array(modes.into_iter().map(Value::String).collect())),
-        ),
     ] {
         if let Some(value) = value {
             settings.insert(key.into(), value);
         }
     }
     let (variants, selectors, variant_conditions) = compile_variants(input.variants.as_ref())?;
+    for variant in input.variants.iter().flatten() {
+        if let Some(name) = variant
+            .get("token")
+            .and_then(Value::as_str)
+            .and_then(|token| token.strip_prefix('@'))
+            && breakpoint_conditions.contains_key(name)
+        {
+            return Err(manifest_error(format!(
+                "Condition name {name} conflicts between breakpoint and custom variant"
+            )));
+        }
+    }
     conditions.extend(variant_conditions);
     let utilities = compile_utilities(input.utilities.as_ref())?;
     let mut fragment = Map::new();
     fragment.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    fragment.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
+    if let Some(modes) = &input.modes {
+        let mut effective = Vec::<&mastercss_schema::ModeDefinition>::new();
+        for mode in modes {
+            effective.retain(|previous| previous.name != mode.name);
+            effective.push(mode);
+        }
+        fragment.insert(
+            "modes".into(),
+            serde_json::to_value(effective).map_err(|error| manifest_error(error.to_string()))?,
+        );
+    }
     if !settings.is_empty() {
         fragment.insert("settings".into(), Value::Object(settings));
     }
@@ -338,18 +363,7 @@ pub fn normalize_manifest_for_json(manifest: &Value) -> Result<Value, CompilerEr
 }
 
 pub(super) fn is_default_setting(key: &str, value: &Value) -> bool {
-    match key {
-        "rootSize" => value.as_f64() == Some(16.0),
-        "defaultMode" => value.as_str() == Some("light"),
-        "important" => value.as_bool() == Some(false),
-        "modeTrigger" => value.as_str() == Some("media"),
-        "modes" => value.as_array().is_some_and(|modes| {
-            modes.len() == 2
-                && modes[0].as_str() == Some("light")
-                && modes[1].as_str() == Some("dark")
-        }),
-        _ => false,
-    }
+    key == "important" && value.as_bool() == Some(false)
 }
 
 /// Produces the public default-preset artifact shape. Engine registry data and
@@ -358,6 +372,10 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
     let manifest = object(manifest)?;
     let mut preset = Map::new();
     preset.insert("version".into(), Value::Number(MANIFEST_VERSION.into()));
+    preset.insert(
+        "languageVersion".into(),
+        Value::from(mastercss_schema::LANGUAGE_VERSION),
+    );
     if let Some(settings) = manifest.get("settings").and_then(Value::as_object) {
         let settings = settings
             .iter()
@@ -369,6 +387,7 @@ pub fn normalize_default_manifest_for_json(manifest: &Value) -> Result<Value, Co
         }
     }
     for key in [
+        "modes",
         "variables",
         "animations",
         "variants",

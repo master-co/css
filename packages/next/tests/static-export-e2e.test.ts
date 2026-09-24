@@ -1,5 +1,9 @@
-import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { dirname, join, relative } from 'node:path'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, extname, join, relative } from 'node:path'
+import { createServer } from 'node:http'
+import { once } from 'node:events'
+import { gzipSync, brotliCompressSync } from 'node:zlib'
+import { chromium } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
 import { describe, expect, it } from 'vitest'
 import { MASTER_CSS_HYDRATION_MANIFEST_ATTR } from '@master/css-schema/hydration-manifest'
@@ -50,7 +54,7 @@ function collectHydrationManifestSources(html: string) {
 }
 
 describe('static export e2e', () => {
-  it('emits every referenced hydration manifest directly into the export output', () => {
+  it('exports hydration assets and adopts them in the browser before dynamic updates', async () => {
     buildFixture()
 
     const htmlFiles = collectHTMLFiles(outDir)
@@ -72,7 +76,47 @@ describe('static export e2e', () => {
       expect(existsSync(manifestFile), `${source} should exist in the static export`).toBe(true)
       const manifest = JSON.parse(readFileSync(manifestFile, 'utf-8'))
       expect(manifest.version).toBe(1)
+      expect(manifest.languageVersion).toBe(2)
       expect(manifest.rules.length).toBeGreaterThan(0)
+    }
+    const requests: { path: string; raw: number; gzip: number; brotli: number }[] = []
+    const server = createServer((request, response) => {
+      const pathname = new URL(request.url || '/', 'http://localhost').pathname
+      const file = join(outDir, pathname === '/' ? 'index.html' : pathname)
+      if (relative(outDir, file).startsWith('..') || !existsSync(file)) {
+        response.writeHead(404).end()
+        return
+      }
+      const content = readFileSync(file)
+      const type = ({ '.html': 'text/html', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.wasm': 'application/wasm' } as Record<string, string>)[extname(file)] || 'application/octet-stream'
+      requests.push({ path: pathname, raw: content.length, gzip: gzipSync(content, { level: 9 }).length, brotli: brotliCompressSync(content).length })
+      response.writeHead(200, { 'content-type': type }).end(content)
+    })
+    server.listen(0, '127.0.0.1')
+    await once(server, 'listening')
+    const browser = await chromium.launch()
+    try {
+      const page = await browser.newPage()
+      const address = server.address() as { port: number }
+      await page.goto(`http://127.0.0.1:${address.port}`)
+      await page.waitForFunction(() => (globalThis as any).__MASTER_CSS_NEXT_RUNTIME__?.runtime?.snapshot().hydration.state === 'progressive')
+      expect(await page.locator('main').evaluate(element => getComputedStyle(element).fontSize)).toBe('40px')
+      await page.locator('main').evaluate(element => element.classList.add('padding:17px'))
+      await expect.poll(() => page.locator('main').evaluate(element => getComputedStyle(element).padding)).toBe('17px')
+      expect(requests.some(request => request.path.endsWith('.wasm'))).toBe(true)
+      expect(requests.some(request => request.path.includes('/static/media/') && request.path.endsWith('.json'))).toBe(false)
+      if (process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT) writeFileSync(process.env.MASTER_CSS_NEXT_PAYLOAD_REPORT, JSON.stringify({
+        languageVersion: 2, delivery: 'bundler-esm', requests,
+        compression: 'Measured from fetched response bodies; local test server sends uncompressed responses.',
+        timing: await page.evaluate(() => performance.getEntriesByType('resource').map(entry => {
+          const resource = entry as PerformanceResourceTiming
+          return { name: resource.name, transferSize: resource.transferSize, encodedBodySize: resource.encodedBodySize, duration: resource.duration }
+        }))
+      }, null, 2))
+    } finally {
+      await browser.close()
+      server.closeAllConnections()
+      await new Promise<void>((resolve, reject) => server.close(error => error ? reject(error) : resolve()))
     }
   })
 })

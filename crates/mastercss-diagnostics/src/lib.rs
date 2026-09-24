@@ -19,6 +19,8 @@ pub enum DiagnosticsError {
 impl DiagnosticsError {
     pub fn diagnostic(&self) -> Diagnostic {
         Diagnostic {
+            phase: mastercss_schema::DiagnosticPhase::Compiler,
+            severity: mastercss_schema::DiagnosticSeverity::Error,
             code: ErrorCode::InvalidInput,
             message: self.to_string(),
             source: None,
@@ -36,6 +38,8 @@ pub struct DiagnosticsReportInput {
     pub patterns: Vec<String>,
     pub files: Vec<SourceInspection>,
     pub classes: Vec<String>,
+    #[serde(default)]
+    pub inspections: Vec<ValidatedClassInspection>,
     pub scanner: ScannerInspectionInput,
     pub stylesheets: StylesheetInspectionInput,
     pub css: CssInspectionInput,
@@ -43,6 +47,35 @@ pub struct DiagnosticsReportInput {
     pub first_source_by_class: HashMap<String, String>,
     #[serde(default)]
     pub fatal_error: Option<String>,
+}
+
+/// Tooling supplies grammar checks; Rust preserves their evidence and builds
+/// the project report without changing engine generation decisions.
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatedClassInspection {
+    #[serde(flatten)]
+    pub class: mastercss_schema::ValidatorClassIr,
+    pub checks: Vec<ValidationCheck>,
+    pub declarations: Vec<ValidatedDeclaration>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidationCheck {
+    pub name: String,
+    pub version: String,
+    pub phase: mastercss_schema::DiagnosticPhase,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidatedDeclaration {
+    pub property: String,
+    pub value: String,
+    pub status: mastercss_schema::CssValueStatus,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range: Option<mastercss_schema::SourceRange>,
 }
 
 #[derive(Debug, Clone, Default, Serialize, Deserialize)]
@@ -143,6 +176,11 @@ pub struct StylesheetError {
 pub struct InspectionDiagnostic {
     pub code: InspectionDiagnosticCode,
     pub severity: InspectionDiagnosticSeverity,
+    pub phase: mastercss_schema::DiagnosticPhase,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub range: Option<mastercss_schema::SourceRange>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub notes: Vec<String>,
     pub message: String,
     pub source: String,
     pub source_kind: InspectionDiagnosticSourceKind,
@@ -160,6 +198,8 @@ pub enum InspectionDiagnosticCode {
     StylesheetError,
     StylesheetWarning,
     ScannerError,
+    #[serde(untagged)]
+    Semantic(ErrorCode),
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -167,6 +207,7 @@ pub enum InspectionDiagnosticCode {
 pub enum InspectionDiagnosticSeverity {
     Error,
     Warning,
+    Info,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
@@ -328,6 +369,7 @@ pub struct InspectionReport {
     #[serde(rename = "missingCSS")]
     pub missing_css: MissingCssInspectionReport,
     pub files: Vec<SourceInspection>,
+    pub inspections: Vec<ValidatedClassInspection>,
     pub diagnostics: Vec<InspectionDiagnostic>,
     pub summary: InspectionSummary,
 }
@@ -399,10 +441,14 @@ pub fn create_inspection_report(
         .collect::<Vec<_>>();
 
     let mut diagnostics = Vec::new();
+    let has_fatal_error = input.fatal_error.is_some();
     if let Some(message) = input.fatal_error {
         diagnostics.push(InspectionDiagnostic {
             code: InspectionDiagnosticCode::ScannerError,
             severity: InspectionDiagnosticSeverity::Error,
+            phase: mastercss_schema::DiagnosticPhase::Compiler,
+            range: None,
+            notes: Vec::new(),
             message,
             source: "Master CSS".into(),
             source_kind: InspectionDiagnosticSourceKind::Scanner,
@@ -411,12 +457,16 @@ pub fn create_inspection_report(
                 cwd: input.cwd.clone(),
             }),
         });
-    } else {
+    }
+    {
         for entry in &input.stylesheets.entries {
             for warning in &entry.warnings {
                 diagnostics.push(InspectionDiagnostic {
                     code: InspectionDiagnosticCode::StylesheetWarning,
                     severity: InspectionDiagnosticSeverity::Warning,
+                    phase: mastercss_schema::DiagnosticPhase::Compiler,
+                    range: None,
+                    notes: Vec::new(),
                     message: warning.clone(),
                     source: "Master CSS".into(),
                     source_kind: InspectionDiagnosticSourceKind::Stylesheet,
@@ -429,6 +479,9 @@ pub fn create_inspection_report(
             diagnostics.push(InspectionDiagnostic {
                 code: InspectionDiagnosticCode::StylesheetError,
                 severity: InspectionDiagnosticSeverity::Error,
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                range: None,
+                notes: Vec::new(),
                 message: error.message.clone(),
                 source: "Master CSS".into(),
                 source_kind: InspectionDiagnosticSourceKind::Stylesheet,
@@ -436,25 +489,46 @@ pub fn create_inspection_report(
                 data: None,
             });
         }
-        for class_name in &invalid {
-            diagnostics.push(InspectionDiagnostic {
-                code: InspectionDiagnosticCode::InvalidScannerClass,
-                severity: InspectionDiagnosticSeverity::Warning,
-                message: format!(
-                    "Scanner candidate \"{class_name}\" did not generate Master CSS rules."
-                ),
-                source: "Master CSS".into(),
-                source_kind: InspectionDiagnosticSourceKind::Scanner,
-                file_path: input.first_source_by_class.get(class_name).cloned(),
-                data: Some(InspectionDiagnosticData::ClassName {
-                    class_name: class_name.clone(),
-                }),
-            });
+    }
+    if !has_fatal_error {
+        for inspection in &input.inspections {
+            for diagnostic in &inspection.class.diagnostics {
+                diagnostics.push(InspectionDiagnostic {
+                    code: InspectionDiagnosticCode::Semantic(diagnostic.code),
+                    severity: match diagnostic.severity {
+                        mastercss_schema::DiagnosticSeverity::Error => {
+                            InspectionDiagnosticSeverity::Error
+                        }
+                        mastercss_schema::DiagnosticSeverity::Warning => {
+                            InspectionDiagnosticSeverity::Warning
+                        }
+                        mastercss_schema::DiagnosticSeverity::Info => {
+                            InspectionDiagnosticSeverity::Info
+                        }
+                    },
+                    phase: diagnostic.phase,
+                    range: diagnostic.range.clone(),
+                    notes: diagnostic.notes.clone(),
+                    message: diagnostic.message.clone(),
+                    source: "Master CSS".into(),
+                    source_kind: InspectionDiagnosticSourceKind::Scanner,
+                    file_path: input
+                        .first_source_by_class
+                        .get(&inspection.class.class_name)
+                        .cloned(),
+                    data: Some(InspectionDiagnosticData::ClassName {
+                        class_name: inspection.class.class_name.clone(),
+                    }),
+                });
+            }
         }
         for result in &missing {
             diagnostics.push(InspectionDiagnostic {
                 code: InspectionDiagnosticCode::MissingCss,
                 severity: InspectionDiagnosticSeverity::Error,
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                range: None,
+                notes: Vec::new(),
                 message: format!(
                     "No generated CSS found for \"{}\" ({}).",
                     result.class_name,
@@ -491,7 +565,10 @@ pub fn create_inspection_report(
         .iter()
         .filter(|diagnostic| diagnostic.severity == InspectionDiagnosticSeverity::Error)
         .count();
-    let warning_count = diagnostics.len() - error_count;
+    let warning_count = diagnostics
+        .iter()
+        .filter(|diagnostic| diagnostic.severity == InspectionDiagnosticSeverity::Warning)
+        .count();
     let file_count = input.files.len();
     let stylesheet_count = input.stylesheets.entries.len();
     let invalid_class_count = invalid_set.len();
@@ -543,6 +620,7 @@ pub fn create_inspection_report(
             missing: missing.clone(),
         },
         files: input.files,
+        inspections: input.inspections,
         summary: InspectionSummary {
             files: file_count,
             stylesheets: stylesheet_count,
@@ -614,7 +692,7 @@ mod tests {
 
     fn input() -> DiagnosticsReportInput {
         DiagnosticsReportInput {
-            version: 1,
+            version: DIAGNOSTICS_REPORT_VERSION,
             cwd: "/project".into(),
             patterns: vec!["index.html".into()],
             files: vec![SourceInspection {
@@ -629,6 +707,7 @@ mod tests {
                 },
             }],
             classes: vec!["block".into(), "missing".into()],
+            inspections: Vec::new(),
             scanner: ScannerInspectionInput {
                 valid: vec!["block".into()],
                 invalid: vec!["bad".into()],
@@ -647,14 +726,10 @@ mod tests {
     #[test]
     fn composes_stable_reports_and_utf8_css_sizes() {
         let report = create_inspection_report(input()).unwrap();
-        assert_eq!(report.version, 1);
+        assert_eq!(report.version, 2);
         assert_eq!(report.css.bytes, 4);
         assert_eq!(report.summary.errors, 1);
-        assert_eq!(report.summary.warnings, 1);
-        assert_eq!(
-            report.diagnostics[0].file_path.as_deref(),
-            Some("/project/index.html")
-        );
+        assert_eq!(report.summary.warnings, 0);
         assert_eq!(
             report.missing_css.missing[0].reason,
             MissingCssReason::NotDetected
@@ -710,7 +785,7 @@ mod tests {
     #[test]
     fn reports_version_mismatches_as_structured_invalid_input() {
         let mut input = input();
-        input.version = 2;
+        input.version = 1;
         let error = create_inspection_report(input).unwrap_err();
         assert_eq!(error.diagnostic().code, ErrorCode::InvalidInput);
     }

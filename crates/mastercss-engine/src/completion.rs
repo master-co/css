@@ -111,21 +111,13 @@ pub(crate) fn push_value_completion_candidate(
     );
 }
 
-pub(crate) fn completion_numeric_value(variable: &CompiledVariable, root_size: f64) -> Option<f64> {
+pub(crate) fn completion_numeric_value(variable: &CompiledVariable) -> Option<f64> {
     let numeric = variable.numeric.as_ref()?.as_object()?;
     let value = numeric.get("value")?.as_f64()?;
-    match numeric.get("unit").and_then(Value::as_str) {
-        Some("rem") => Some(value * root_size),
-        Some("") | Some("px") | None => Some(value),
-        _ => None,
-    }
+    Some(value)
 }
 
-pub(crate) fn variable_completion_sort_text(
-    variable: &CompiledVariable,
-    label: &str,
-    root_size: f64,
-) -> String {
+pub(crate) fn variable_completion_sort_text(variable: &CompiledVariable, label: &str) -> String {
     if variable.namespace.starts_with("color") {
         let (prefix, shade) = label
             .rsplit_once('-')
@@ -137,8 +129,17 @@ pub(crate) fn variable_completion_sort_text(
             format!("aaaa-color-{prefix}-{:0>10}", shade)
         };
     }
-    if let Some(value) = completion_numeric_value(variable, root_size) {
-        return format!("aaaa-{}-{value:020.8}", variable.namespace);
+    if let Some(value) = completion_numeric_value(variable) {
+        return format!(
+            "aaaa-{}-{}-{value:020.8}",
+            variable.namespace,
+            variable
+                .numeric
+                .as_ref()
+                .and_then(|v| v.get("unit"))
+                .and_then(Value::as_str)
+                .unwrap_or("")
+        );
     }
     format!("aaaa{label}")
 }
@@ -188,11 +189,7 @@ pub(crate) fn push_utility_value_completion_candidates(
                         // before the much larger named-token catalog.
                         sort_text: Some(format!(
                             "zzzz-token-{}",
-                            variable_completion_sort_text(
-                                variable,
-                                value_key,
-                                manifest.settings.root_size,
-                            )
+                            variable_completion_sort_text(variable, value_key,)
                         )),
                         trigger_suggest: false,
                     },
@@ -380,7 +377,18 @@ pub(crate) fn collect_class_completion_candidates(
             },
         );
     }
-    for token in manifest.conditions.keys() {
+    for token in manifest
+        .conditions
+        .keys()
+        .map(String::as_str)
+        .chain(manifest.modes.iter().map(|mode| mode.name.as_str()))
+        .chain(
+            manifest
+                .variants
+                .iter()
+                .filter_map(|variant| variant.token.strip_prefix('@')),
+        )
+    {
         push_class_completion_candidate(
             &mut candidates,
             &mut labels,
@@ -392,10 +400,9 @@ pub(crate) fn collect_class_completion_candidates(
                 sort_text: manifest
                     .compiled_variables
                     .get(&format!("breakpoint-{token}"))
-                    .and_then(|variable| {
-                        completion_numeric_value(variable, manifest.settings.root_size)
+                    .map(|variable| {
+                        format!("0000-{}", variable_completion_sort_text(variable, token))
                     })
-                    .map(|value| format!("0000-{value:020.8}"))
                     .or_else(|| Some(format!("1000-{token}"))),
                 trigger_suggest: false,
             },

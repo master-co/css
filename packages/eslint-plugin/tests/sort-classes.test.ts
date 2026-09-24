@@ -74,7 +74,7 @@ createTester({
                 priority={true}
                 alt="hello world"
               />
-              <h1 className="abs inset:0 height:fit-content m:auto font-heavy font-size:7vw text-center fg-white animation:flash|3s|infinite font-size:2.5rem@xs blend:overlay">
+              <h1 className="abs inset:0 height:fit-content m:auto font-heavy font-size:7vw text-center fg-white animation:flash|3s|infinite blend:overlay font-size:2.5rem@xs">
                 Hello, World!
               </h1>
             </div>
@@ -82,7 +82,7 @@ createTester({
         )
       `,
     },
-    { code: `<div class="mt:0 mt:0@sm a c d font:error hello:world">Error class</div>` },
+    { code: `<div class="mt:0 font:error hello:world mt:0@sm a c d">Error class</div>` },
   ],
   invalid: [
     {
@@ -362,7 +362,7 @@ createTester({
     },
     {
       code: `<div class="a mt:0 mt:0@sm c d hello:world font:error">Error class</div>`,
-      output: `<div class="mt:0 mt:0@sm a c d font:error hello:world">Error class</div>`,
+      output: `<div class="mt:0 font:error hello:world mt:0@sm a c d">Error class</div>`,
       errors: [{ messageId: 'invalidClassOrder' }],
     },
     {

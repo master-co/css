@@ -48,10 +48,8 @@ function compileCSSManifestWithDiagnostics(source: string) {
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
   test('lowers theme variables, modes, semantic components, utilities, and variants into one manifest', () => {
     const { manifest, warnings } = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
 
       @theme {
         --color-primary: #000;
@@ -97,10 +95,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
 
     expect(warnings).toEqual([])
-    expect(manifest.settings).toMatchObject({
-      modeTrigger: 'class',
-      modes: ['light', 'dark']
-    })
+    expect(manifest.modes).toEqual([
+      { name: 'light', branches: [{ selector: '.light' }] },
+      { name: 'dark', branches: [{ selector: '.dark' }] }
+    ])
     expect(variablesOf(manifest)).toContainEqual(expect.objectContaining({
       name: 'spacing-card',
       namespace: 'spacing',
@@ -117,8 +115,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     const css = createTestCSS(manifest)
     css.ensureClassRules('btn', 'content-auto', 'm-card')
-    expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--spacing-card:1rem}')
-    expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
+    expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#000;--spacing-card:1rem}')
+    expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
     expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
     expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
     expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
@@ -479,10 +477,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
   test('lowers dark and light shorthand variant blocks like explicit variant blocks', () => {
     const settings = `
-      @settings {
-        mode-trigger: class;
-        modes: light dark chrisma;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
+      @mode chrisma { .chrisma { @slot; } }
     `
     const explicit = compileCSSManifest(`
       ${settings}
@@ -546,17 +543,16 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     expect(shorthand.css).toBe(explicit.css)
     expect(shorthandCSS.componentsLayer.text).toBe(explicitCSS.componentsLayer.text)
-    expect(shorthand.css).toContain('.dark .card{display:block;color:#fff}')
-    expect(shorthand.css).toContain('.light .banner{display:none}')
-    expect(shorthandCSS.componentsLayer.text).toContain('.dark .panel{color:#fff}')
-    expect(shorthandCSS.componentsLayer.text).toContain('.light .panel{color:#000}')
+    expect(shorthand.css).toContain('.card:where(.dark,.dark *){display:block;color:#fff}')
+    expect(shorthand.css).toContain('.banner:where(.light,.light *){display:none}')
+    expect(shorthandCSS.componentsLayer.text).toContain('.panel:where(.dark,.dark *){color:#fff}')
+    expect(shorthandCSS.componentsLayer.text).toContain('.panel:where(.light,.light *){color:#000}')
   })
 
   test('keeps compose canonicalization rewrites output-equivalent', () => {
     const before = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
 
       @components {
         btn {
@@ -569,9 +565,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })
     const after = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
 
       @components {
         btn {
@@ -637,10 +632,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
   test('keeps custom modes explicit behind @variant', () => {
     const customMode = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark chrisma;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
+      @mode chrisma { .chrisma { @slot; } }
 
       .card {
         @variant chrisma {
@@ -649,12 +643,11 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })
 
-    expect(customMode.css).toContain('.chrisma .card{color:green}')
+    expect(customMode.css).toContain('.card:where(.chrisma,.chrisma *){color:green}')
     const bareCondition = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark chrisma;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
+      @mode chrisma { .chrisma { @slot; } }
 
       .card {
         @chrisma {

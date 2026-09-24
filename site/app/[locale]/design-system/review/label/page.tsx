@@ -28,7 +28,7 @@ function Specimen({ Label }: { Label: typeof DemoLabel }) {
       </DemoSurface>
     </div>
     <div>
-      <Label>width:100% min-width:0 @container(md)</Label>
+      <Label>width:100% min-width:0 @container((width&gt;=28rem))</Label>
       <DemoSurface className={styles.card}>
         <strong>Long class string</strong>
         <p>The annotation wraps inside a narrow document column.</p>
@@ -41,7 +41,7 @@ function OriginalSpecimen() {
   return <div className={styles.specimens}>
     <div><OriginalDemoLabel>shadow-sm</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Standard surface</strong><p>One utility, one visible effect.</p></DemoSurface></div>
     <div><OriginalDemoLabel>Collection / 024</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Asset library</strong><p>Descriptive metadata stays readable.</p></DemoSurface></div>
-    <div><OriginalDemoLabel>width:100% min-width:0 @container(md)</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Long class string</strong><p>The annotation wraps inside a narrow document column.</p></DemoSurface></div>
+    <div><OriginalDemoLabel>width:100% min-width:0 @container((width&gt;=28rem))</OriginalDemoLabel><DemoSurface className={styles.card}><strong>Long class string</strong><p>The annotation wraps inside a narrow document column.</p></DemoSurface></div>
   </div>
 }
 

@@ -12,10 +12,10 @@ const packageDir = dirname(fileURLToPath(new URL('../package.json', import.meta.
 const playgroundDir = join(packageDir, 'playground')
 const removedRuntimeRegistryName = ['CSSRuntime', 'Registry'].join('')
 
-function buildPlayground() {
+function buildPlayground(bundler: 'turbopack' | 'webpack') {
   try {
     rmSync(join(playgroundDir, '.next'), { recursive: true, force: true })
-    execPnpmSync(['--dir', playgroundDir, 'build'], {
+    execPnpmSync(['--dir', playgroundDir, 'exec', 'next', 'build', `--${bundler}`], {
       cwd: packageDir,
       encoding: 'utf-8',
       env: {
@@ -52,47 +52,23 @@ function readJavaScriptFiles(dir: string): string {
   return readOutputFiles(dir, (path) => path.endsWith('.js'))
 }
 
-function readJSONFiles(dir: string): string {
-  return readOutputFiles(dir, (path) => path.endsWith('.json'))
-}
-
-function readManifestJSONSources(nextDir: string) {
-  return [
-    ...readOutputFileContents(join(nextDir, 'static/media'), (path) => path.endsWith('.json')),
-    ...readOutputFileContents(join(nextDir, 'dev/static/media'), (path) => path.endsWith('.json'))
-  ]
-}
-
-interface ManifestJSON {
-  variables?: Record<string, { key: string }[]>
-}
-
 describe('playground', () => {
-  it('imports the global CSS entry as a Next config module', () => {
-    buildPlayground()
-
+  it.each(['turbopack', 'webpack'] as const)('defaults to static CSS without browser runtime assets in %s', (bundler) => {
+    buildPlayground(bundler)
     const nextDir = join(playgroundDir, '.next')
-    const htmlPath = join(nextDir, 'server/app/index.html')
-    const html = readFileSync(htmlPath, 'utf-8')
+    const html = readFileSync(join(nextDir, 'server/app/index.html'), 'utf-8')
     const clientSource = readJavaScriptFiles(join(nextDir, 'static/chunks'))
-    const manifestJSONSources = readManifestJSONSources(nextDir)
-    const manifestJSON = manifestJSONSources.map((source) => JSON.parse(source) as ManifestJSON)
-    const manifestJSONSource = manifestJSONSources.join('\n')
-    const hydrationManifestJSONSource = readJSONFiles(join(nextDir, 'static/master-css/hydration'))
-    const hasVariable = (namespace: string, key: string) => manifestJSON.some((manifest) =>
-      manifest.variables?.[namespace]?.some((variable) => variable.key === key)
-    )
-
-    expect(html).toContain('.fg-primary{color:var(--color-primary)}')
-    expect(html).toContain(`${MASTER_CSS_HYDRATION_MANIFEST_ATTR}="/_next/static/master-css/hydration/`)
-    expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
-    expect(html.match(new RegExp(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`, 'g'))?.length ?? 0).toBe(0)
-    expect(clientSource).toContain('__MASTER_CSS_NEXT_RUNTIME__')
+    const css = readOutputFiles(join(nextDir, 'static'), path => path.endsWith('.css'))
+    expect(html).toContain('rel="stylesheet"')
+    expect(css).toContain('.fg-primary{color:var(--color-primary)}')
+    expect(css).toContain('#0070f3')
+    expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+    expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID)
+    expect(clientSource).not.toContain('__MASTER_CSS_NEXT_RUNTIME__')
     expect(clientSource).not.toContain(removedRuntimeRegistryName)
-    expect(clientSource).not.toContain('var(--font-sans')
-    expect(clientSource).not.toContain('#0070f3')
-    expect(hasVariable('font-weight', 'bold')).toBe(true)
-    expect(manifestJSONSource).toContain('#0070f3')
-    expect(hydrationManifestJSONSource).toContain('"className":"fg-primary"')
+    expect(clientSource).not.toContain('mastercss_binding_wasm')
+    expect(clientSource).not.toContain('"nativeTokenNamespaces"')
+    expect(readOutputFileContents(join(nextDir, 'static'), path => path.endsWith('.wasm'))).toEqual([])
+    expect(existsSync(join(nextDir, 'static/master-css/hydration'))).toBe(false)
   })
 })

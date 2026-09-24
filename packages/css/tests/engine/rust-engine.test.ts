@@ -63,12 +63,11 @@ const selectorVariantRuleTexts = [
 ]
 const selectorVariantRuleText = selectorVariantRuleTexts.join('')
 const inlineThemeManifest = {
-  version: 1,
-  settings: {
-    defaultMode: 'light',
-    modeTrigger: 'class',
-    modes: ['light', 'dark']
-  },
+  version: 1, languageVersion: 2,
+  modes: [
+    { name: 'light', branches: [{ selector: '.light' }] },
+    { name: 'dark', branches: [{ selector: '.dark' }] }
+  ],
   variables: {
     color: [
       {
@@ -105,15 +104,15 @@ const inlineThemeManifest = {
 } as unknown as MasterCSSManifest
 const inlineThemeCSS = [
   '@layer theme{',
-  '.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}',
-  ':root{--color-gray-90:oklch(23.5% 0 none)}',
-  '.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}',
+  ':root,:host{--color-gray-90:oklch(23.5% 0 none)}',
+  '.light{--color-surface-raised:oklch(100% 0 none)}',
+  '.dark{--color-surface-raised:var(--color-gray-90)}',
   '}',
   '@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}'
 ].join('')
 
 const manifest: MasterCSSManifest = {
-  version: 1,
+  version: 1, languageVersion: 2,
   conditions: {
     sm: { id: 'media', nodes: [{ type: 'number', value: 52.125, unit: 'rem' }] }
   },
@@ -187,9 +186,9 @@ describe('Rust engine session', () => {
               const wasmCandidates = wasmRender.nativeDeclarationCandidates([step.className])
               expect(wasmCandidates, `${parityCase.id}: native candidates`).toEqual(nativeCandidates)
               operation = `native ensure for ${step.className}`
-              nativeRender.ensureClassRules([step.className], nativeCandidates.map(() => true))
+              nativeRender.ensureClassRules([step.className])
               operation = `Wasm ensure for ${step.className}`
-              wasmRender.ensureClassRules([step.className], wasmCandidates.map(() => true))
+              wasmRender.ensureClassRules([step.className])
               operation = `native snapshot for ${step.className}`
               const nativeSnapshot = nativeRender.snapshot()
               operation = `Wasm snapshot for ${step.className}`
@@ -234,7 +233,7 @@ describe('Rust engine session', () => {
             const nativeInspection = native.inspect(step.className)
             const wasmInspection = wasm.inspect(step.className)
             expect(wasmInspection, `${parityCase.id}: inspection`).toEqual(nativeInspection)
-            expect(nativeInspection.valid, parityCase.id).toBe(step.expectedValid)
+            expect((nativeInspection.matchStatus === 'matched'), parityCase.id).toBe(step.expectedValid)
             if (step.expectedRuleTexts?.length) {
               expect(nativeInspection.rules.map(({ text }) => text), parityCase.id)
                 .toEqual(step.expectedRuleTexts)
@@ -322,7 +321,9 @@ describe('Rust engine session', () => {
     expect(engine.inspect('block:hover')).toMatchObject({
       version: 1,
       className: 'block:hover',
-      valid: true
+      matchStatus: 'matched',
+      cssValueStatus: 'not-checked',
+      browserSupport: 'not-checked'
     })
     expect(engine.snapshot().text).toBe('')
     engine.dispose()

@@ -26,7 +26,7 @@ for (const resource of [false, true]) test.each(modes)('BH-0004 reconciles faile
   const f = fixture(resource)
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen()
     // Model an unregistered external dependency without changing the user's watch configuration.
     const add = vi.spyOn(server.watcher, 'add').mockReturnValue(server.watcher)

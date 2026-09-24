@@ -286,13 +286,13 @@ describe('@master/css-preset defaultManifest', () => {
     }
   })
 
-  it('uses engine default settings when the preset manifest omits settings', () => {
+  it('uses explicit preset mode branches without global engine mode settings', () => {
     const css = createTestCSS(defaultManifest)
 
     expect(defaultManifest.settings).toBeUndefined()
     expect(css.createRule('m:0.25rem')?.text).toBe('.m\\:0\\.25rem{margin:0.25rem}')
     expect(css.createRule('fg-blue-60@dark')?.text).toBe(
-      '@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}'
+      '@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:root,:root *){color:var(--color-blue-60)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:host,:host *){color:var(--color-blue-60)}}'
     )
   })
 
@@ -311,9 +311,7 @@ describe('@master/css-preset defaultManifest', () => {
 
   it('preserves the compiled default registry', () => {
     const css = createTestCSS(defaultManifest)
-    const noNativeCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: () => false
-    })
+    const declarationsCSS = createTestCSS(defaultManifest)
     const text = [
       css.createRule('inline-flex')?.text,
       css.createRule('background-image:linear-gradient(#000,#fff)')?.text,
@@ -332,9 +330,9 @@ describe('@master/css-preset defaultManifest', () => {
     expect(text).toContain('-webkit-line-clamp:3')
     expect(text).not.toContain('null')
     expect(css.createRule('gradient(#000,#fff)')).toBeUndefined()
-    expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
-    expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
-    expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
+    expect(declarationsCSS.createRule('bg:canvas')?.text).toContain('background:canvas')
+    expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
+    expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
   })
 
   it('executes CSS-authored semantic and enum pattern utilities', () => {
@@ -444,9 +442,7 @@ describe('@master/css-preset defaultManifest', () => {
     expect(orderedCSS.utilitiesLayer.text)
       .toBe('@layer utilities{.items-center{align-items:center}.items-start{align-items:start}.justify-between{justify-content:space-between}.justify-center{justify-content:center}}')
 
-    const nativeFallbackCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: ({ property, value }) => property === 'align-items' && value === 'center'
-    })
+    const nativeFallbackCSS = createTestCSS(defaultManifest)
     const semanticItemsCenter = nativeFallbackCSS.createRule('items-center')
     const nativeAlignItemsCenter = nativeFallbackCSS.createRule('align-items:center')
     expect(semanticItemsCenter?.type).toBe(UtilityType.Semantic)
@@ -456,18 +452,16 @@ describe('@master/css-preset defaultManifest', () => {
 
   it('keeps named tokens separate from native declaration values', () => {
     const css = createTestCSS(defaultManifest)
-    const noNativeCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: () => false
-    })
+    const declarationsCSS = createTestCSS(defaultManifest)
 
-    expect(noNativeCSS.createRule('text:center')).toBeUndefined()
-    expect(noNativeCSS.createRule('text:underline')).toBeUndefined()
-    expect(noNativeCSS.createRule('bg:cover')).toBeUndefined()
-    expect(noNativeCSS.createRule('object:cover')).toBeUndefined()
-    expect(noNativeCSS.createRule('border-solid')).toBeUndefined()
-    expect(noNativeCSS.createRule('border-l-solid')).toBeUndefined()
-    expect(noNativeCSS.createRule('rt:4x')).toBeUndefined()
-    expect(noNativeCSS.createRule('border-top-radius:4x')).toBeUndefined()
+    expect(declarationsCSS.createRule('text:center')?.text).toContain('text:center')
+    expect(declarationsCSS.createRule('text:underline')?.text).toContain('text:underline')
+    expect(declarationsCSS.createRule('bg:cover')?.text).toContain('background:cover')
+    expect(declarationsCSS.createRule('object:cover')?.text).toContain('object:cover')
+    expect(declarationsCSS.createRule('border-solid')).toBeUndefined()
+    expect(declarationsCSS.createRule('border-l-solid')).toBeUndefined()
+    expect(declarationsCSS.createRule('rt:4x')?.text).toContain('rt:4x')
+    expect(declarationsCSS.createRule('border-top-radius:4x')?.text).toContain('border-top-radius:4x')
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('border-width:1px')?.text).toBe('.border-width\\:1px{border-width:1px}')
     expect(css.createRule('b:line')?.text).toBe('.b\\:line{border:line}')
@@ -497,16 +491,16 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('pye:1rem')?.text).toBe('.pye\\:1rem{padding-block-end:1rem}')
     expect(css.createRule('ixs:1rem')?.text).toBe('.ixs\\:1rem{inset-inline-start:1rem}')
     expect(css.createRule('size-x-md')?.text).toBe('.size-x-md{inline-size:var(--container-md)}')
-    expect(noNativeCSS.createRule('mi:4x')).toBeUndefined()
-    expect(noNativeCSS.createRule('pbe:4x')).toBeUndefined()
-    expect(noNativeCSS.createRule('iis:4x')).toBeUndefined()
-    expect(noNativeCSS.createRule('bs:md')).toBeUndefined()
+    expect(declarationsCSS.createRule('mi:4x')?.text).toContain('mi:4x')
+    expect(declarationsCSS.createRule('pbe:4x')?.text).toContain('pbe:4x')
+    expect(declarationsCSS.createRule('iis:4x')?.text).toContain('iis:4x')
+    expect(declarationsCSS.createRule('bs:md')?.text).toContain('bs:md')
     expect(css.createRule('text-red')?.text).toBe('.text-red{color:var(--color-text-red)}')
     expect(css.createRule('text-blue')?.text).toBe('.text-blue{color:var(--color-text-blue)}')
     expect(css.createRule('fg-blue-60')?.text).toBe('.fg-blue-60{color:var(--color-blue-60)}')
-    expect(noNativeCSS.createRule('text:blue-60')).toBeUndefined()
-    expect(noNativeCSS.createRule('text:#fff')).toBeUndefined()
-    expect(noNativeCSS.createRule('text:transparent')).toBeUndefined()
+    expect(declarationsCSS.createRule('text:blue-60')?.text).toContain('text:blue-60')
+    expect(declarationsCSS.createRule('text:#fff')?.text).toContain('text:#fff')
+    expect(declarationsCSS.createRule('text:transparent')?.text).toContain('text:transparent')
     expect(css.createRule('text-body')?.text).toBe('.text-body{color:var(--color-text-body)}')
     expect(css.createRule('text-inverse')?.text).toBe('.text-inverse{color:var(--color-text-inverse)}')
     expect(css.createRule('text-muted')?.text).toBe('.text-muted{color:var(--color-text-muted)}')
@@ -520,17 +514,17 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('background-color-red')?.text).toBe('.background-color-red{background-color:var(--color-red)}')
     expect(css.createRule('background-color:#fff')?.text).toBe('.background-color\\:\\#fff{background-color:#fff}')
     expect(css.createRule('background-color:base')?.text).toBe('.background-color\\:base{background-color:base}')
-    expect(noNativeCSS.createRule('bg:canvas')).toBeUndefined()
-    expect(noNativeCSS.createRule('bg:surface')).toBeUndefined()
+    expect(declarationsCSS.createRule('bg:canvas')?.text).toContain('background:canvas')
+    expect(declarationsCSS.createRule('bg:surface')?.text).toContain('background:surface')
     expect(css.createRule('surface-base')?.text).toBe('.surface-base{background-color:var(--color-surface-base)}')
     expect(css.createRule('surface-overlay/.9')?.text).toBe('.surface-overlay\\/\\.9{background-color:color-mix(in oklab,var(--color-surface-overlay) 90%,transparent)}')
-    expect(noNativeCSS.createRule('surface:blue')).toBeUndefined()
-    expect(noNativeCSS.createRule('surface:#fff')).toBeUndefined()
+    expect(declarationsCSS.createRule('surface:blue')?.text).toContain('surface:blue')
+    expect(declarationsCSS.createRule('surface:#fff')?.text).toContain('surface:#fff')
     expect(css.createRule('font-size-sm')?.text).toBe('.font-size-sm{font-size:var(--font-size-sm)}')
     expect(css.createRule('font-size:1rem')?.text).toBe('.font-size\\:1rem{font-size:1rem}')
     expect(css.createRule('font-family-sans')?.text).toBe('.font-family-sans{font-family:var(--font-family-sans)}')
     expect(css.createRule('font-weight-bold')?.text).toBe('.font-weight-bold{font-weight:var(--font-weight-bold)}')
-    expect(noNativeCSS.createRule('font:var(--font-size-x)')).toBeUndefined()
+    expect(declarationsCSS.createRule('font:var(--font-size-x)')?.text).toContain('font:var(--font-size-x)')
     expect(css.createRule('size:1.25rem')?.text).toBe('.size\\:1\\.25rem{width:1.25rem;height:1.25rem}')
     expect(css.createRule('size-md')?.text).toBe('.size-md{width:var(--container-md);height:var(--container-md)}')
     expect(css.createRule('size:var(--radius-4xl)')?.text).toBe('.size\\:var\\(--radius-4xl\\){width:var(--radius-4xl);height:var(--radius-4xl)}')
@@ -548,15 +542,15 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('size:max-content')?.text).toBe('.size\\:max-content{width:max-content;height:max-content}')
     expect(css.createRule('flex-basis-sm')?.text).toBe('.flex-basis-sm{flex-basis:var(--container-sm)}')
     expect(css.createRule('flex-basis:0.5rem')?.text).toBe('.flex-basis\\:0\\.5rem{flex-basis:0.5rem}')
-    expect(noNativeCSS.createRule('outline-width:1px')).toBeUndefined()
-    expect(noNativeCSS.createRule('outline-width:2px')).toBeUndefined()
+    expect(declarationsCSS.createRule('outline-width:1px')?.text).toContain('outline-width:1px')
+    expect(declarationsCSS.createRule('outline-width:2px')?.text).toContain('outline-width:2px')
     expect(css.createRule('shape-margin:1px')?.text).toBe('.shape-margin\\:1px{shape-margin:1px}')
     expect(css.createRule('shape-margin:0.5rem')?.text).toBe('.shape-margin\\:0\\.5rem{shape-margin:0.5rem}')
     expect(css.createRule('word-spacing:1px')?.text).toBe('.word-spacing\\:1px{word-spacing:1px}')
     expect(css.createRule('word-spacing:0.5rem')?.text).toBe('.word-spacing\\:0\\.5rem{word-spacing:0.5rem}')
     expect(css.createRule('stroke-red')?.text).toBe('.stroke-red{stroke:var(--color-red)}')
     expect(css.createRule('stroke-width:.75')?.text).toBe('.stroke-width\\:\\.75{stroke-width:.75}')
-    expect(noNativeCSS.createRule('stroke-width:1px')).toBeUndefined()
+    expect(declarationsCSS.createRule('stroke-width:1px')?.text).toContain('stroke-width:1px')
     expect(css.createRule('text-underline-sm')?.text).toBe('.text-underline-sm{text-underline-offset:var(--spacing-sm)}')
     expect(css.createRule('text-underline-offset:0.5rem')?.text).toBe('.text-underline-offset\\:0\\.5rem{text-underline-offset:0.5rem}')
     expect(css.createRule('text-indent-sm')?.text).toBe('.text-indent-sm{text-indent:var(--spacing-sm)}')
@@ -567,22 +561,22 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('perspective:1rem')?.text).toBe('.perspective\\:1rem{perspective:1rem}')
     expect(css.createRule('perspective-origin:0.5rem|center')?.text).toBe('.perspective-origin\\:0\\.5rem\\|center{perspective-origin:0.5rem center}')
     expect(css.createRule('transform-origin:0.5rem|center')?.text).toBe('.transform-origin\\:0\\.5rem\\|center{transform-origin:0.5rem center}')
-    expect(noNativeCSS.createRule('text-stroke-width:1px')).toBeUndefined()
-    expect(noNativeCSS.createRule('text-stroke-width:thin')).toBeUndefined()
+    expect(declarationsCSS.createRule('text-stroke-width:1px')?.text).toContain('text-stroke-width:1px')
+    expect(declarationsCSS.createRule('text-stroke-width:thin')?.text).toContain('text-stroke-width:thin')
     expect(css.createRule('animation-delay-fast')?.text).toBe('.animation-delay-fast{animation-delay:var(--duration-fast)}')
     expect(css.createRule('transition-delay-fast')?.text).toBe('.transition-delay-fast{transition-delay:var(--duration-fast)}')
     expect(css.createRule('font-feature-settings-tabular')?.text).toBe('.font-feature-settings-tabular{font-feature-settings:var(--font-feature-tabular)}')
     expect(css.createRule('content-empty')?.text).toBe('.content-empty{content:var(--content-empty)}')
     expect(css.createRule("content:'x'")?.text).toBe(".content\\:\\'x\\'{content:'x'}")
-    expect(noNativeCSS.createRule('border-width:1px')).toBeUndefined()
-    expect(noNativeCSS.createRule('background:red')).toBeUndefined()
-    expect(noNativeCSS.createRule('background:sm')).toBeUndefined()
-    expect(noNativeCSS.createRule('bg:0.5rem')).toBeUndefined()
-    expect(noNativeCSS.createRule('transform:0.5rem')).toBeUndefined()
+    expect(declarationsCSS.createRule('border-width:1px')?.text).toContain('border-width:1px')
+    expect(declarationsCSS.createRule('background:red')?.text).toContain('background:red')
+    expect(declarationsCSS.createRule('background:sm')?.text).toContain('background:sm')
+    expect(declarationsCSS.createRule('bg:0.5rem')?.text).toContain('background:0.5rem')
+    expect(declarationsCSS.createRule('transform:0.5rem')?.text).toContain('transform:0.5rem')
     expect(css.createRule('animate-fade')?.text).toBe('.animate-fade{animation:var(--animate-fade)}')
     expect(css.createRule('animation:fade')?.text).toBe('.animation\\:fade{animation:fade}')
     expect(css.createRule('animation:fade')?.text).not.toContain('var(--animate-fade)')
-    expect(noNativeCSS.createRule('animation-name:fade')).toBeUndefined()
+    expect(declarationsCSS.createRule('animation-name:fade')?.text).toContain('animation-name:fade')
     expect(css.createRule('container:sm')?.text).not.toContain('var(--container-sm)')
     expect(css.createRule('flex:sm')?.text).not.toContain('flex-basis')
     expect(css.createRule('flex:md')?.text).not.toContain('flex-basis')
@@ -591,19 +585,19 @@ describe('@master/css-preset defaultManifest', () => {
     expect(css.createRule('m:var(--spacing-sm)|var(--spacing-md)')?.text).toBe('.m\\:var\\(--spacing-sm\\)\\|var\\(--spacing-md\\){margin:var(--spacing-sm) var(--spacing-md)}')
     expect(css.createRule('m:var(--spacing-sm)|calc(var(--spacing-md)|*|-1)')?.text).toBe('.m\\:var\\(--spacing-sm\\)\\|calc\\(var\\(--spacing-md\\)\\|\\*\\|-1\\){margin:var(--spacing-sm) calc(var(--spacing-md) * -1)}')
     expect(css.createRule('text-2xl')?.text).toContain('font-size:var(--font-size-2xl)')
-    expect(noNativeCSS.createRule('text-size:2xl')).toBeUndefined()
-    expect(noNativeCSS.createRule('text-size:1rem')).toBeUndefined()
+    expect(declarationsCSS.createRule('text-size:2xl')?.text).toContain('text-size:2xl')
+    expect(declarationsCSS.createRule('text-size:1rem')?.text).toContain('text-size:1rem')
     expect(css.createRule('grid-cols:var(--cols)')?.text).toBe('.grid-cols\\:var\\(--cols\\){display:grid;grid-template-columns:repeat(var(--cols), minmax(0, 1fr))}')
     expect(css.createRule('grid-rows:var(--rows)')?.text).toBe('.grid-rows\\:var\\(--rows\\){display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--rows), minmax(0, 1fr))}')
     expect(css.createRule('grid-col-span:2')?.text).toBe('.grid-col-span\\:2{grid-column:span 2/span 2}')
     expect(css.createRule('grid-col-span:var(--span)')?.text).toBe('.grid-col-span\\:var\\(--span\\){grid-column:span var(--span)/span var(--span)}')
     expect(css.createRule('grid-row-span:var(--span)')?.text).toBe('.grid-row-span\\:var\\(--span\\){grid-row:span var(--span)/span var(--span)}')
-    expect(noNativeCSS.createRule('line-clamp:var(--lines)')).toBeUndefined()
-    expect(noNativeCSS.createRule('grid-column-span:2')).toBeUndefined()
-    expect(noNativeCSS.createRule('lines:2')).toBeUndefined()
-    expect(noNativeCSS.createRule('text-truncate:2')).toBeUndefined()
-    expect(noNativeCSS.createRule('border-image:linear-gradient(red,blue)')).toBeUndefined()
-    expect(noNativeCSS.createRule('list-style:url(/marker.svg)')).toBeUndefined()
+    expect(declarationsCSS.createRule('line-clamp:var(--lines)')?.text).toContain('line-clamp:var(--lines)')
+    expect(declarationsCSS.createRule('grid-column-span:2')?.text).toContain('grid-column-span:2')
+    expect(declarationsCSS.createRule('lines:2')?.text).toContain('lines:2')
+    expect(declarationsCSS.createRule('text-truncate:2')?.text).toContain('text-truncate:2')
+    expect(declarationsCSS.createRule('border-image:linear-gradient(red,blue)')?.text).toContain('border-image:linear-gradient(red,blue)')
+    expect(declarationsCSS.createRule('list-style:url(/marker.svg)')?.text).toContain('list-style:url(/marker.svg)')
 
     for (const utility of defaultManifest.utilities || []) {
       expect('values' in utility, utility.id).toBe(false)
@@ -616,36 +610,20 @@ describe('@master/css-preset defaultManifest', () => {
     }
   })
 
-  it('prunes pure native coverage and keeps Master CSS native DX utilities', () => {
-    const css = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: () => false
-    })
-    const nativeCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: ({ property }) => property === 'perspective-origin'
-        || property === 'scroll-margin-inline-start'
-        || property === 'scroll-padding-block-end'
-        || property === 'background'
-        || property === 'animation'
-        || property === 'animation-name'
-        || property === 'line-clamp'
-        || property === 'font'
-        || property === 'container'
-        || property === 'flex'
-        || property === 'border-image-source'
-        || property === 'border-image-width'
-        || property === 'list-style-image'
-    })
+  it('preserves native declarations and explicit property aliases', () => {
+    const css = createTestCSS(defaultManifest)
+    const nativeCSS = createTestCSS(defaultManifest)
 
-    expect(css.createRule('float:left')).toBeUndefined()
-    expect(css.createRule('field-sizing:content')).toBeUndefined()
-    expect(css.createRule('caption-side:top')).toBeUndefined()
-    expect(css.createRule('scrollbar-width:thin')).toBeUndefined()
-    expect(css.createRule('transition-behavior:allow-discrete')).toBeUndefined()
-    expect(css.createRule('display:block')).toBeUndefined()
-    expect(css.createRule('d:block')).toBeUndefined()
-    expect(css.createRule('line-clamp:none')).toBeUndefined()
-    expect(css.createRule('view-transition-name:hero')).toBeUndefined()
-    expect(css.createRule('vt-name:hero')).toBeUndefined()
+    expect(css.createRule('float:left')?.text).toContain('float:left')
+    expect(css.createRule('field-sizing:content')?.text).toContain('field-sizing:content')
+    expect(css.createRule('caption-side:top')?.text).toContain('caption-side:top')
+    expect(css.createRule('scrollbar-width:thin')?.text).toContain('scrollbar-width:thin')
+    expect(css.createRule('transition-behavior:allow-discrete')?.text).toContain('transition-behavior:allow-discrete')
+    expect(css.createRule('display:block')?.text).toContain('display:block')
+    expect(css.createRule('d:block')?.text).toContain('d:block')
+    expect(css.createRule('line-clamp:none')?.text).toContain('line-clamp:none')
+    expect(css.createRule('view-transition-name:hero')?.text).toContain('view-transition-name:hero')
+    expect(css.createRule('vt-name:hero')?.text).toContain('vt-name:hero')
     expect(nativeCSS.createRule('perspective-origin:100%|0')?.text).toBe('.perspective-origin\\:100\\%\\|0{perspective-origin:100% 0}')
     expect(nativeCSS.createRule('scroll-mxs:1px')?.text).toBe('.scroll-mxs\\:1px{scroll-margin-inline-start:1px}')
     expect(nativeCSS.createRule('scroll-pye:1px')?.text).toBe('.scroll-pye\\:1px{scroll-padding-block-end:1px}')
@@ -678,9 +656,7 @@ describe('@master/css-preset defaultManifest', () => {
       expect(utility.matchers.some((matcher) => matcher.type === 'token'), utility.id).toBe(false)
     }
 
-    const nativeCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: () => true
-    })
+    const nativeCSS = createTestCSS(defaultManifest)
     expect(nativeCSS.createRule('display:block')?.text).toBe('.display\\:block{display:block}')
     expect(nativeCSS.createRule('text-stroke-width:thin')?.text)
       .toBe('.text-stroke-width\\:thin{-webkit-text-stroke-width:thin}')
@@ -698,9 +674,7 @@ describe('@master/css-preset defaultManifest', () => {
       expect(matcherKeys.has(alias), alias).toBe(false)
     }
 
-    const nativeCSS = createTestCSS(defaultManifest, {
-      nativeDeclarationMatcher: () => true
-    })
+    const nativeCSS = createTestCSS(defaultManifest)
     for (const [alias, property] of Object.entries(retainedRadiusKeyAliases)) {
       expect(nativeCSS.createRule(`${alias}:1rem`)?.text, alias)
         .toContain(`${property}:1rem`)

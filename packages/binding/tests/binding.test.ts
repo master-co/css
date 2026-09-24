@@ -8,7 +8,7 @@ import { createCompilerBindingSession } from '../src/compiler-binding'
 import { createToolingBinding } from '../src/tooling-binding'
 
 const manifest = Object.freeze({
-  version: 1,
+  version: 1, languageVersion: 2,
   utilities: Object.freeze([Object.freeze({
     id: 'display-block',
     name: 'block',
@@ -46,7 +46,7 @@ describe('binding loader', () => {
 
     const nativeDeclarationSession = await createEngineBindingSession({
       manifest: {
-        version: 1,
+        version: 1, languageVersion: 2,
         variables: {
           '': [{
             name: 'stripe',
@@ -61,7 +61,7 @@ describe('binding loader', () => {
     try {
       nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
       expect(nativeDeclarationSession.snapshot().text).toBe(
-        '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
+        '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
         + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
       )
     } finally {

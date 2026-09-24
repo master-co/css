@@ -1,3 +1,4 @@
+import { validateCompiledCSS } from '../value-validation'
 import {
   createCompiler,
   type MasterCSSCompileManifestResult
@@ -17,6 +18,8 @@ export interface MasterCSSBrowserStylesheetCompileOptions {
   readonly classNames?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
+  readonly pruneNativeCSS?: boolean
+  readonly cssValuePolicy?: 'report' | 'error'
   /** Keep untouched native source for host transforms; incompatible with class pruning. */
   readonly preserveNativeSource?: boolean
   /** Globals already present outside this render; emit only additional resources. */
@@ -62,6 +65,9 @@ export async function compileBrowserStylesheet(
   try {
     result = compiler.compileManifest(source, {
       baseManifest,
+      pruneNativeCSS: options.pruneNativeCSS,
+      classes: classNames,
+      cssValuePolicy: options.cssValuePolicy,
       ...(from ? { from } : {}),
       ...(preserveNativeCSS === undefined ? {} : { preserveNativeCSS }),
       ...(preserveNativeSource === undefined ? {} : { preserveNativeSource }),
@@ -78,8 +84,8 @@ export async function compileBrowserStylesheet(
   const renderSession: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
       bindingSession.nativeDeclarationCandidates(classNames),
-    ensureClasses: (classNames, nativeSupport) =>
-      bindingSession.ensureClasses(classNames, nativeSupport),
+    ensureClasses: (classNames) =>
+      bindingSession.ensureClasses(classNames),
     ensureStylesheetResources: (nativeCSS) =>
       bindingSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () =>
@@ -104,7 +110,7 @@ export async function compileBrowserStylesheet(
     nativeCSS: renderedCSS.nativeCSS,
     generatedCSS: renderedCSS.generatedCSS,
     manifest: result.manifest,
-    diagnostics: result.diagnostics,
+    diagnostics: Object.freeze([...result.diagnostics, ...validateCompiledCSS([{ css: renderedCSS.generatedCSS, source: from }], options)]),
     emittedGlobals: Object.freeze({
       variables: Object.freeze({ ...renderedCSS.emittedGlobals.variables }),
       animations: Object.freeze({ ...renderedCSS.emittedGlobals.animations })

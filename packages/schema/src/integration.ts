@@ -15,6 +15,7 @@ export interface MasterCSSIntegrationRuntimeOptions {
 export interface MasterCSSIntegrationOptions {
   enabled?: boolean
   mode?: MasterCSSRenderingMode
+  pruneNativeCSS?: boolean
   runtime?: boolean | MasterCSSIntegrationRuntimeOptions
 }
 

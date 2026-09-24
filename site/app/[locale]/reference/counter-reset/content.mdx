@@ -45,11 +45,11 @@ Where supported, `reversed(step)` derives an initial value from the elements tha
 
 ```html
 <!-- Native support · explicit countdown fallback -->
-<p class="mx:0 mb-2xs mt:0 font-sm hidden@supports(counter-reset:reversed(step))">Explicit fallback · starts at 4</p>
+<p class="mx:0 mb-2xs mt:0 font-sm hidden@supports((counter-reset:reversed(step)))">Explicit fallback · starts at 4</p>
 <p class="hidden mx:0 mb-2xs mt:0 font-sm
-    block@supports(counter-reset:reversed(step))">Native reversed() · item-derived start</p>
+    block@supports((counter-reset:reversed(step)))">Native reversed() · item-derived start</p>
 <ol id="target" role="list" reversed class="m:0 p:0 font-md leading-lg list-style:none counter-reset:step|4
-    counter-reset:reversed(step)@supports(counter-reset:reversed(step))">
+    counter-reset:reversed(step)@supports((counter-reset:reversed(step)))">
   <li class="mb-2xs counter-increment:step|-1 text-blue::before
     content:counter(step)'.\00a0'::before">Final review</li>
   <li class="mb-2xs counter-increment:step|-1 text-blue::before
@@ -69,7 +69,7 @@ Resize past `sm` to initialize this chapter counter at 4 on screen. The headings
 ```html
 <!-- Real viewport · initial 0 or 4 -->
 <article id="target" class="counter-reset:chapter counter-reset:chapter@print
-    counter-reset:chapter|4@screen&sm">
+    counter-reset:chapter|4@screen@sm">
   <h2 class="mx:0 mb-2xs mt:0 font-md font-medium leading-lg
     counter-increment:chapter text-blue::before
     content:counter(chapter)'.\00a0'::before">Setup</h2>

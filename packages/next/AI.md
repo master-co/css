@@ -9,7 +9,7 @@
 - `pre-render` mode through the Next.js Adapter API.
 - `runtime` mode through the Next client instrumentation hook.
 - `progressive` mode as runtime plus pre-render behavior.
-- `static` mode through generated CSS and Turbopack scanner loaders.
+- Default `static` mode through generated CSS and scanner loaders for Turbopack and Webpack.
 - Next-specific manifest import/loaders and static CSS loaders.
 - Build output rendering helpers.
 
@@ -60,8 +60,9 @@
 ## Dangerous Changes
 
 - Hiding request-time limitations behind build-time behavior.
-- Making static mode rely on `nextConfig.webpack` or `@master/css-webpack`.
-- Broadening JS loader rules beyond manifest-import handling.
+- Making Turbopack static mode depend on Webpack or `@master/css-webpack`.
+- Broadening JS loader rules beyond project-owned static scanning and manifest-import handling.
+- Writing manifest data into `.next` directly. Manifest imports are tracked ESM inputs; the bundler owns their delivery URLs and chunks.
 - Reintroducing React tree wrappers for automatic runtime injection.
 
 ## Validation

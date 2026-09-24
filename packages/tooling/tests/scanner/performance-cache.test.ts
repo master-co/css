@@ -13,7 +13,7 @@ test.each(['native', 'wasm'] as const)('%s skips extraction, validation and snap
   const scanner = await new MasterCSSScanner({ manifest, binding, wasm, verbose: 0 }).init()
   const session = (scanner as unknown as { bindingSession: BindingScannerSession }).bindingSession
   const extract = vi.spyOn(session, 'extractCandidates')
-  const validate = vi.spyOn(session, 'generateValidationBatch')
+  const validate = vi.spyOn(session, 'scanCandidates')
   const snapshot = vi.spyOn(session, 'state')
   const change = vi.fn()
   scanner.on('change', change)
@@ -30,7 +30,7 @@ test.each(['native', 'wasm'] as const)('%s skips extraction, validation and snap
     const previous = scanner.state
     expect(snapshot).toHaveBeenCalledTimes(1)
     expect(await scanner.scanSource('b.html', content)).toEqual({ ...first, changed: false })
-    expect(validate).toHaveBeenCalledTimes(1)
+    expect(validate).toHaveBeenCalledTimes(2)
     expect(snapshot).toHaveBeenCalledTimes(1)
     expect(scanner.state.cachedSources).toBe(2)
     expect(scanner.state).not.toBe(previous)

@@ -20,6 +20,8 @@ export default async function runProgram(argv: string[] = process.argv) {
     .command('migrate')
     .description('Preview migration from the saved Master CSS v2 RC manifest.')
     .argument('[paths...]', 'Source files, directories, or glob patterns')
+    .addOption(new Option('--from <profile>', 'Saved RC language profile.').choices(['rc-legacy', 'rc-named']).makeOptionMandatory())
+    .option('--source-version <version>', 'Actual saved RC package version, unless present in the manifest metadata.')
     .option('--manifest <path>', 'Original resolved RC manifest, saved before upgrading.', 'master.rc.manifest.json')
     .option('--target-manifest <path>', 'Compiled migrated project manifest for custom utilities.')
     .option('--write', 'Apply safe edits only when the selected files have no review diagnostics.')
@@ -36,6 +38,8 @@ export default async function runProgram(argv: string[] = process.argv) {
     .option('-v, --verbose <level>', 'Verbose logging 0~N', '1')
     .addOption(new Option('--binding <binding>', 'Execution binding: auto, native, or wasm.').choices(['auto', 'native', 'wasm']).default('auto'))
     .option('--no-export', 'Print only CSS results.')
+    .option('--strict', 'Fail CSS value validation before publishing any generated assets.')
+    .option('--prune-native-css', 'Prune unused native CSS only in project-owned source files.')
     .action(async (sourcePaths: string[], options: GenerateOptions) => {
       const { default: runGenerate } = await import('./generate')
       return runGenerate(sourcePaths, options)

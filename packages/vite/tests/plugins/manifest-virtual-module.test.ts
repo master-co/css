@@ -56,7 +56,7 @@ describe('ManifestVirtualModulePlugin', () => {
       writeFileSync(entryPath, [
         '@master entry;',
         '@components {',
-        '    card { @compose bg:neutral-120; }',
+        '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
       const { context, viteConfig } = createContext(root)

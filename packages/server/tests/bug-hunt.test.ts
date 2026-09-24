@@ -35,7 +35,7 @@ test('BH-0006: escaped class content cannot create executable HTML elements', ()
 
 test('BH-0007: static resources render even when HTML has no class attributes', () => {
   const staticManifest: MasterCSSManifest = {
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: { color: [{ key: 'brand', value: 'red', static: true }] },
     utilities: []
   }

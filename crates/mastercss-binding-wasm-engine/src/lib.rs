@@ -92,23 +92,6 @@ impl WasmEngineSession {
         serde_wasm_bindgen::to_value(&candidates).map_err(serialization_error)
     }
 
-    #[wasm_bindgen(js_name = ensureClassRulesWithNativeSupport)]
-    pub fn ensure_class_rules_with_native_support(
-        &mut self,
-        class_names: Vec<String>,
-        supported: Vec<u8>,
-    ) -> Result<JsValue, JsValue> {
-        let supported = supported
-            .into_iter()
-            .map(|value| value != 0)
-            .collect::<Vec<_>>();
-        let transition = self
-            .inner
-            .ensure_class_rules_with_native_support(class_names, &supported)
-            .map_err(js_error)?;
-        serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
-    }
-
     pub fn refresh(&mut self, manifest_json: &str) -> Result<JsValue, JsValue> {
         let transition = self.inner.refresh(manifest_json).map_err(js_error)?;
         serde_wasm_bindgen::to_value(&transition).map_err(serialization_error)
@@ -170,22 +153,8 @@ impl WasmRenderSession {
     }
 
     #[wasm_bindgen(js_name = ensureClasses)]
-    pub fn ensure_classes(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: JsValue,
-    ) -> Result<(), JsValue> {
-        let native_support = if native_support.is_null() || native_support.is_undefined() {
-            None
-        } else {
-            Some(
-                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-                    .map_err(serialization_error)?,
-            )
-        };
-        self.inner
-            .ensure_classes(class_names, native_support.as_deref())
-            .map_err(js_error)
+    pub fn ensure_classes(&mut self, class_names: Vec<String>) -> Result<(), JsValue> {
+        self.inner.ensure_classes(class_names).map_err(js_error)
     }
 
     #[wasm_bindgen(js_name = ensureStylesheetResources)]

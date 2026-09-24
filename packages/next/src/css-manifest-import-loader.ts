@@ -1,4 +1,4 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, existsSync, writeFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import { dirname, isAbsolute, relative, resolve } from 'node:path'
 import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
@@ -8,10 +8,9 @@ import {
 } from '@master/css-internal/manifest-module'
 import {
   ensureVirtualModulePackageJSONPath,
-  toVirtualCSSManifestAssetPath,
   toVirtualCSSManifestModulePath
 } from '@master/css-internal/node'
-import { toUniversalManifestFacadeModule } from '@master/css-internal/manifest-facade'
+import { toInlineManifestModule } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import {
   defaultBuildManifest,
@@ -25,6 +24,7 @@ interface LoaderContext {
   resourcePath: string
   rootContext?: string
   addDependency?: (file: string) => void
+  cacheable?: (cacheable: boolean) => void
   async?: () => (error: Error | null, content?: string) => void
   getOptions?: () => {
     projectDir?: string
@@ -75,7 +75,6 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
 
   const projectDir = context.getOptions?.().projectDir || context.rootContext || process.cwd()
   const virtualManifestPath = toVirtualCSSManifestModulePath(projectDir, manifestPath)
-  const virtualManifestAssetPath = toVirtualCSSManifestAssetPath(projectDir, manifestPath)
   const dependencies = new Set(collectStylesheetDependenciesSync(manifestPath, undefined, { projectDir }))
   for (const dependency of dependencies) {
     context.addDependency?.(dependency)
@@ -87,13 +86,11 @@ function writeCSSManifestModule(context: LoaderContext, manifestPath: string) {
   })
   ensureVirtualModulePackageJSONPath(projectDir)
   mkdirSync(dirname(virtualManifestPath), { recursive: true })
-  writeFileSync(virtualManifestAssetPath, serializeMasterCSSManifest(result.manifest))
-  writeFileSync(
-    virtualManifestPath,
-    toUniversalManifestFacadeModule(
-      `new URL(${JSON.stringify(toModuleSpecifier(virtualManifestPath, virtualManifestAssetPath))}, import.meta.url)`
-    )
-  )
+  const moduleSource = toInlineManifestModule(serializeMasterCSSManifest(result.manifest))
+  if (!existsSync(virtualManifestPath) || readFileSync(virtualManifestPath, 'utf8') !== moduleSource) {
+    writeFileSync(virtualManifestPath, moduleSource)
+  }
+  context.addDependency?.(virtualManifestPath)
   for (const dependency of result.dependencies) {
     if (dependencies.has(dependency)) continue
     context.addDependency?.(dependency)
@@ -124,6 +121,9 @@ async function transformManifestImports(context: LoaderContext, source: string) 
 }
 
 export default function masterCSSManifestImportLoader(this: LoaderContext, source: string) {
+  // The small generated ESM input must be recreated even after its directory is
+  // cleaned while the bundler retains cached importer transforms.
+  this.cacheable?.(false)
   const callback = this.async?.()
   if (!callback) {
     throw new Error('[@master/css-next] CSS manifest import loader requires an async loader context.')

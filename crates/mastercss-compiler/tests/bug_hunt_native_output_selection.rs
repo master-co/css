@@ -13,7 +13,7 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
             {"from":"bridge","specifier":"./selected.css","resolved":"selected"}
         ]},
         "urls":{"entry":"/output/entry.css","bridge":"/output/bridge.css","selected":"/output/selected.css"},
-        "baseManifest":{"version":1,"utilities":[]},
+        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]},
         "nativeStylesheets":["selected"]
     });
     let result =
@@ -76,8 +76,8 @@ fn selected_native_output_keeps_local_reachability_and_only_selected_external_im
 fn suppressed_native_imports_do_not_declare_unused_layers() {
     let base = json!({
         "graph": {"entry":"entry", "files": {
-            "entry":"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@utilities{paint{color:purple}}.live{@compose paint;}",
-            "dead":"@utilities{unused{color:red}}",
+            "entry":"@import './dead.css' layer(later);@import './bridge.css' supports(display:grid);@utilities{paint{color:purple}unused{color:red}}.live{@compose paint;}",
+            "dead":".dead{color:red}",
             "bridge":"@import './leaf.css' layer(base);",
             "leaf":".leaf{@compose paint;}"
         }, "edges":[
@@ -86,7 +86,7 @@ fn suppressed_native_imports_do_not_declare_unused_layers() {
             {"from":"bridge","specifier":"./leaf.css","resolved":"leaf"}
         ]},
         "urls":{"entry":"/entry.css","dead":"/dead.css","bridge":"/bridge.css","leaf":"/leaf.css"},
-        "baseManifest":{"version":1,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
     });
     let compile =
         |value| compile_css_stylesheet_graph(&serde_json::from_value(value).unwrap()).unwrap();

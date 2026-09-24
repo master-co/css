@@ -1,3 +1,4 @@
+import { addStaticCSSDependencies, transformStaticStyleSource } from './static'
 import { prepareNextEntryGraph } from './prepare-entry-graph'
 import type { ModuleContext } from './prepare-module'
 import { deliverNextStylesheet } from './stylesheet-delivery'
@@ -71,6 +72,12 @@ async function transformStyleSource(resourcePath: string, source: string, projec
   // delivery path, which accepts import shapes flattening has to refuse.
   const resolution = resolveStylesheetSync(resourcePath, source, { projectDir, preserveImports: true, ...context })
   if (!resolution) return { code: source, dependencies, sourceMap }
+  if (options.staticStatePath && resolution.kind === 'entry') {
+    await addStaticCSSDependencies(options.staticStatePath, onDependency)
+    const code = await transformStaticStyleSource(options.staticStatePath, resourcePath, source)
+    await addStaticCSSDependencies(options.staticStatePath, onDependency)
+    return { code, dependencies, sourceMap: undefined }
+  }
   if (resolution.kind === 'entry' || resolution.kind === 'master-package-entry') {
     const preparedGraph = await prepareNextEntryGraph(loaderContext ?? { resourcePath }, projectDir ?? dirname(resourcePath), options, onDependency, source, sourceMap)
     const { graph, entry: preparedEntry } = preparedGraph

@@ -5,7 +5,7 @@ import { join } from 'node:path'
 import { createCompiler } from '../src/index'
 import { compileManifestSync, compileManifestFileSync } from '../src/node'
 
-const baseManifest = { version: 1 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
 const definitions = '@utilities{paint{color:red}}'
 const cases = [
   { name: 'compose before native', body: '.example{@compose paint;}.example{color:blue}', order: ['red', 'blue'] },

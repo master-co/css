@@ -17,8 +17,6 @@ import { EventEmitter } from 'node:events'
 import path from 'path'
 import {
   createScannerSession,
-  resolveGeneratedRuleSupport,
-  resolveNativeSupport,
   serializeScannerBlocklist,
   type BindingScannerSession,
   type BindingScannerState
@@ -374,26 +372,13 @@ export class MasterCSSScanner extends EventEmitter implements AsyncDisposable {
       ? await adapter.extract({ source, content })
       : this.getBindingSession().extractCandidates(source, content)
     const blocklist = serializeScannerBlocklist(this.options.blocklist)
-    const validationCandidates = session.filterCandidates(extractedClasses, blocklist)
-    let nativeSupport: boolean[] = []
-    let invalidGeneratedClasses: string[] = []
-    if (validationCandidates.length) {
-      nativeSupport = resolveNativeSupport(session.nativeDeclarationCandidates(validationCandidates))
-      const validationBatch = session.generateValidationBatch(validationCandidates, nativeSupport)
-      invalidGeneratedClasses = session.invalidGeneratedClasses(
-        validationBatch,
-        resolveGeneratedRuleSupport(validationBatch)
-      )
-    }
     // A new source changes cachedSources even when it contributes no new class.
     this.bindingState = undefined
     const update = session.scanCandidates(
       source,
       content,
       extractedClasses,
-      blocklist,
-      nativeSupport,
-      invalidGeneratedClasses
+      blocklist
     )
     const changedClasses = [...update.validClasses, ...(update.usedNativeClasses || [])]
     if (changedClasses.length) {

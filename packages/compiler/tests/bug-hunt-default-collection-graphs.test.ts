@@ -34,7 +34,7 @@ for (const preserveNativeCSS of [false, true]) for (const includeNativeCSS of [f
       const css = result.css
       expect(css.includes('.project')).toBe(includeNativeCSS && preserveNativeCSS)
       expect(css.includes('.nested')).toBe(includeNativeCSS && preserveNativeCSS)
-      expect(css).not.toContain('.unused')
+      expect(css.includes('.unused')).toBe(includeNativeCSS && preserveNativeCSS)
       expect(css.includes('.composed')).toBe(includeNativeCSS)
       expect(css.includes('.from-master {')).toBe(includeMasterBaseCSS && preserveNativeCSS)
       expect(css.includes('.from-master-child')).toBe(includeMasterBaseCSS && preserveNativeCSS)
@@ -53,9 +53,9 @@ test('BH-0004 default graph composes separate entries with child-owned reference
   try {
     f.file('parts/tokens.css', '@utilities{reference-paint{padding:2rem}}.reference-never{color:pink}')
     f.file('tokens.css', '@utilities{reference-paint{padding:99rem}}')
-    f.file('parts/child.css', '@reference "./tokens.css";@source "./views/*.html";@utilities{custom{margin:3rem}}.native{@compose reference-paint;}')
+    f.file('parts/child.css', '@reference "./tokens.css";@source "./views/*.html";.native{@compose reference-paint;}')
     f.file('parts/views/view.html', '<div class="native custom"></div>')
-    const first = f.file('first.css', '@import "./parts/child.css" layer(a) screen;@master entry;')
+    const first = f.file('first.css', '@import "./parts/child.css" layer(a) screen;@master entry;@utilities{custom{margin:3rem}}')
     const second = f.file('second.css', '@master entry;@safelist "second-custom";@utilities{second-custom{border-width:4px}}')
     await scanner.init()
     for (const entry of [first, second]) await collection.register(scanner, entry, readFileSync(entry, 'utf8'), { baseManifest: scanner.css.manifest, projectDir: f.root })

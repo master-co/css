@@ -26,7 +26,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              transition-property:transform
              transition-timing-function:linear
              transition:none@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -52,7 +52,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              transition-property:transform
              transition-timing-function:ease-in
              transition:none@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -78,7 +78,7 @@ Toggle each layer to compare linear, ease-in and ease-out over the same 800ms an
              transition-property:transform
              transition-timing-function:ease-out
              transition:none@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -116,7 +116,7 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|1s|linear@screen&motion">
+             transition:transform|1s|linear@screen@motion">
       Layer 01
     </span>
   </span>
@@ -140,7 +140,7 @@ Compare steady movement with four discrete steps. Both travel 96px over one seco
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|1s|steps(4,end)@screen&motion">
+             transition:transform|1s|steps(4,end)@screen@motion">
       Layer 01
     </span>
   </span>
@@ -173,7 +173,7 @@ Check to move the layer out with ease-out. After it arrives, uncheck to return w
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|var(--duration-slowest)|ease-in@screen&motion">
+             transition:transform|var(--duration-slowest)|ease-in@screen@motion">
       Layer 01
     </span>
   </span>
@@ -204,8 +204,8 @@ Resize before toggling. Below `sm`, the layer uses ease-out; at `sm`, it uses li
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|var(--duration-slowest)|ease-out@screen&motion
-             transition-timing-function:linear@screen&sm">
+             transition:transform|var(--duration-slowest)|ease-out@screen@motion
+             transition-timing-function:linear@screen@sm">
       Layer 01
     </span>
   </span>

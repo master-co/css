@@ -49,7 +49,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
   const f = fixture();let server: ViteDevServer | undefined, pending: Promise<unknown> | undefined, gate: ReturnType<typeof hold> | undefined
   const render = vi.spyOn(MasterCSSServerRenderer.prototype, 'renderHTML')
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] }, perEnvironmentStartEndDuringDev: true } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] }, perEnvironmentStartEndDuringDev: true } })
     await server.listen();expect((await html(server)).text).toContain('.card{padding:7rem}')
     const liveRenderer = render.mock.contexts.at(-1)
     await server.environments.client.waitForRequestsIdle()
@@ -68,7 +68,7 @@ for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as con
 test.each(modes)('BH-0004 restarting a failed manifest server transfers recovery to the new environment in %s', async mode => {
   const f = fixture(true);let server: ViteDevServer | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode, runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen();expect((await html(server)).status).toBe(500)
     const old = server.environments.client, oldTransform = vi.spyOn(old, 'transformRequest')
     await old.waitForRequestsIdle();await server.restart();expect(server.environments.client).not.toBe(old)
@@ -84,7 +84,7 @@ test.each(modes)('BH-0004 restarting a failed manifest server transfers recovery
 for (const fail of [false, true]) test.each(['pre-render', 'progressive'] as const)('BH-0004 an in-flight HMR manifest operation cannot notify or report errors after close in %s (failure=' + fail + ')', async mode => {
   const f = fixture();let server: ViteDevServer | undefined, gate: ReturnType<typeof hold> | undefined, pending: Promise<unknown> | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, watch: { ignored: ['**/*'] }, fs: { allow: [f.parent] } } })
     await server.listen();expect((await html(server)).text).toContain('.card{padding:7rem}');await server.environments.client.waitForRequestsIdle()
     const hook = server.config.plugins.find(p => p.name === 'master-css:pre-render')!.handleHotUpdate
     if (typeof hook !== 'function') throw new Error('Expected pre-render HMR hook')
@@ -101,7 +101,7 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
   const f = fixture();let server: ViteDevServer | undefined
   try {
     writeFileSync(join(f.root, 'entry.js'), 'import manifest from "virtual:master-css-manifest";export default manifest;if(import.meta.hot)import.meta.hot.accept("virtual:master-css-manifest",()=>{});')
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'runtime', runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'runtime' }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen()
     const environment = server.environments.client
     await environment.transformRequest('/entry.js');await environment.waitForRequestsIdle()
@@ -121,7 +121,7 @@ test('BH-0004 reconciliation updates an already loaded manifest through its HMR 
 for (const fail of [false, true]) test.each(['client', 'server'] as const)('BH-0004 closing %s during manifest recovery prevents late notifications (failure=' + fail + ')', async closing => {
   const f = fixture(true);let server: ViteDevServer | undefined, gate: ReturnType<typeof hold> | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'progressive', runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'progressive' }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen();expect((await html(server)).status).toBe(500);await server.environments.client.waitForRequestsIdle()
     gate = hold(fail);f.write()
     await vi.waitFor(() => expect(gate!.entered()).toBe(true), { timeout: watchDeadline })

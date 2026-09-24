@@ -84,7 +84,7 @@ describe('StyleEntryPlugin', () => {
     expect(context.virtualCSSPlaceholderEmitted).toBeUndefined()
   })
 
-  test('treats @master/css import stylesheets as managed native CSS pruning entries', async () => {
+  test('treats @master/css import stylesheets as managed entries preserving native CSS', async () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -96,7 +96,7 @@ describe('StyleEntryPlugin', () => {
 
     expect(result.code).toBe(SLOT)
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
-      prunesNativeCSS: true,
+      prunesNativeCSS: false,
       source: expect.stringContaining('.card')
     })
     expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@master/css')
@@ -116,7 +116,7 @@ describe('StyleEntryPlugin', () => {
 
     expect(result.code).toBe(SLOT)
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
-      prunesNativeCSS: true,
+      prunesNativeCSS: false,
       source: expect.stringContaining('.card')
     })
     expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@fontsource/fira-mono')
@@ -149,7 +149,7 @@ describe('StyleEntryPlugin', () => {
       [
         '@master entry;',
         '@components {',
-        '    card { @compose bg:neutral-120; }',
+        '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'),
       '/project/src/style.css'
@@ -196,7 +196,7 @@ describe('StyleEntryPlugin', () => {
     expect(result.code).not.toContain(SLOT)
     expect(result.code).not.toContain('.fg-red')
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
-      prunesNativeCSS: true
+      prunesNativeCSS: false
     })
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
   })
@@ -222,7 +222,7 @@ describe('StyleEntryPlugin', () => {
     expect(context.virtualCSSImporters).toEqual(new Set(['/project/src/style.css']))
   })
 
-  test('treats @master stylesheets as managed native CSS pruning entries', async () => {
+  test('treats @master stylesheets as managed entries preserving native CSS', async () => {
     const context = makeContext('build')
     const plugin = StyleEntryPlugin({ mode: 'static' } as any, context)
 
@@ -234,7 +234,7 @@ describe('StyleEntryPlugin', () => {
 
     expect(result.code).toBe(SLOT)
     expect(getStylesheet(context, '/project/src/style.css')).toMatchObject({
-      prunesNativeCSS: true,
+      prunesNativeCSS: false,
       source: expect.stringContaining('.card')
     })
     expect(getStylesheet(context, '/project/src/style.css')?.source).toContain('@master entry;')
@@ -247,7 +247,7 @@ describe('StyleEntryPlugin', () => {
 
     const result = await (plugin as any).transform.call(
       {},
-      '@settings { root-size: 16; }\n.card { color: red }',
+      '@settings { important: off; }\n.card { color: red }',
       '/project/src/style.css'
     )
 

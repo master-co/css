@@ -21,6 +21,8 @@ import {
   addReactRouterRootCSSImport,
   addTanStackStartRootCSSImport,
   addLitShadowRuntime,
+  addLitShadowStylesheet,
+  addGeneratedStylesheetImport,
   addViteClientTypes,
   createAstroConfig,
   createMasterCSSStylesheet,
@@ -140,10 +142,15 @@ export function planMasterCSSSetup(options: MasterCSSSetupOptions = {}): MasterC
       reason: 'SvelteKit file setup is delegated to the official Svelte CLI add-on.'
     })
   } else {
-    for (const dependency of dependenciesForFramework(framework, version)) {
+    for (const dependency of dependenciesForFramework(framework, version, mode)) {
       pushDependency(dependencies, dependency.name, dependency.dev, dependency.version)
     }
     files.push(...filesForFramework(root, framework, warnings, mode))
+  }
+
+  if ((framework === 'angular' || framework === 'none') && (!mode || mode === 'static')) {
+    commands.push({ executable: 'npx', args: ['master-css', 'generate', '--output', 'src/master.generated.css'], reason: 'Generate static CSS before the application build. Add --watch in a separate terminal during development.' })
+    warnings.push('Run the proposed CSS generation command after installation and before the application build; it does not run automatically.')
   }
 
   if (eslint) {
@@ -243,7 +250,7 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
       return files
     }
     case 'tanstack-start': {
-      const pluginMode = mode ?? 'runtime'
+      const pluginMode = mode ?? 'static'
       const files: MasterCSSSetupFileChange[] = [
         planTextFile(root, firstExistingPath(root, ['vite.config.ts', 'vite.config.js', 'vite.config.mjs'], 'vite.config.ts'), (content) => addMasterCSSTanStackStartVitePlugin(content, pluginMode), createViteConfig(pluginMode), `Register the Master CSS Vite plugin in ${pluginMode} mode.`),
         planTextFile(root, 'src/styles/app.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the TanStack Start stylesheet entry.')
@@ -298,13 +305,17 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
       ]
       const elementPath = findExistingPath(root, ['src/my-element.ts', 'src/my-element.js'])
       if (elementPath) {
-        files.push(planTextFile(root, elementPath, addLitShadowRuntime, '', 'Initialize Master CSS Runtime for the Lit shadow root.'))
+        files.push(planTextFile(root, elementPath, mode === 'runtime' || mode === 'progressive' ? addLitShadowRuntime : addLitShadowStylesheet, '', mode === 'runtime' || mode === 'progressive' ? 'Initialize Master CSS Runtime for the Lit shadow root.' : 'Include generated CSS in the Lit shadow root.'))
       } else {
-        warnings.push('No standard src/my-element.ts or src/my-element.js file was found. Add @withMasterCSSRuntime to Lit elements that render Master CSS classes inside shadow roots.')
+        warnings.push('No standard src/my-element.ts or src/my-element.js file was found. Add the selected mode’s CSS or runtime to each Lit shadow root using the Lit installation guide.')
       }
       return files
     }
     case 'angular': {
+      if (!mode || mode === 'static') return [
+        planTextFile(root, 'master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create the CLI source entry.'),
+        planTextFile(root, 'src/styles.css', addGeneratedStylesheetImport, addGeneratedStylesheetImport(''), 'Import the generated static CSS from Angular’s global stylesheet.')
+      ]
       const files = [
         planTextFile(root, 'src/styles.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create or update the Angular global stylesheet entry.')
       ]
@@ -334,7 +345,7 @@ function filesForFramework(root: string, framework: MasterCSSSetupFramework, war
     case 'none':
     default:
       return [
-        planTextFile(root, 'src/master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create a standalone Master CSS stylesheet entry.')
+        planTextFile(root, 'master.css', addMasterCSSImportToStylesheet, createMasterCSSStylesheet(), 'Create a standalone Master CSS source entry; link the generated src/master.generated.css in your application.')
       ]
   }
 }
@@ -345,20 +356,25 @@ function assertFrameworkSupportsMode(framework: MasterCSSSetupFramework, mode: M
     if (mode === 'static') return
     throw new Error(`--mode ${mode} is not supported for laravel. The Laravel installer only supports --mode static.`)
   }
-  if (framework === 'angular' || framework === 'svelte' || framework === 'none') {
+  if (framework === 'angular' || framework === 'none') {
+    if (mode === 'static' || mode === 'runtime') return
+    throw new Error(`--mode ${mode} is not supported for ${framework}. Use static or runtime.`)
+  }
+  if (framework === 'svelte') {
     throw new Error(`--mode is not supported for ${framework}. Supported frameworks: vite, react, react-router, tanstack-start, vue, nextjs, nuxt, astro, webpack, rspack, rsbuild, laravel, lit.`)
   }
 }
 
-function dependenciesForFramework(framework: MasterCSSSetupFramework, version: string): MasterCSSSetupDependency[] {
+function dependenciesForFramework(framework: MasterCSSSetupFramework, version: string, mode?: MasterCSSRenderingMode): MasterCSSSetupDependency[] {
   const dependencies = [{ name: MASTER_CSS_PACKAGES.css, version, dev: false }]
   if (framework === 'vite' || framework === 'react' || framework === 'react-router' || framework === 'tanstack-start' || framework === 'vue' || framework === 'laravel' || framework === 'lit') dependencies.push({ name: MASTER_CSS_PACKAGES.vite, version, dev: false })
   if (framework === 'nextjs') dependencies.push({ name: MASTER_CSS_PACKAGES.next, version, dev: false })
   if (framework === 'nuxt') dependencies.push({ name: MASTER_CSS_PACKAGES.nuxt, version, dev: false })
   if (framework === 'astro') dependencies.push({ name: MASTER_CSS_PACKAGES.astro, version, dev: false })
   if (framework === 'webpack' || framework === 'rspack' || framework === 'rsbuild') dependencies.push({ name: MASTER_CSS_PACKAGES.webpack, version, dev: false })
-  if (framework === 'none' || framework === 'lit' || framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
-  if (framework === 'angular') dependencies.push({ name: MASTER_CSS_PACKAGES.preset, version, dev: false })
+  if ((framework === 'none' || framework === 'lit' || framework === 'angular') && (mode === 'runtime' || mode === 'progressive')) dependencies.push({ name: MASTER_CSS_PACKAGES.runtime, version, dev: false })
+  if ((framework === 'none' || framework === 'angular') && (!mode || mode === 'static')) dependencies.push({ name: MASTER_CSS_PACKAGES.cli, version, dev: true })
+  if (framework === 'angular' && mode === 'runtime') dependencies.push({ name: MASTER_CSS_PACKAGES.preset, version, dev: false })
   return dependencies
 }
 

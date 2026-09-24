@@ -169,9 +169,9 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[3] !== true) &&
           <Handler  {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom left top items-center cursor:col-resize hidden@<sm',
+              'bottom left top items-center cursor:col-resize hidden@media((width<52.125rem))',
               {
-                'transform:translateX(-100%) transform:translateX(-50%).active h:40.active>svg': !handlerStyle,
+                'transform:translateX(-100%) transform:translateX(-50%).active h:40px.active>svg': !handlerStyle,
                 'transform:translateX(-50%)': handlerStyle === 'hidden'
               }
             )}
@@ -184,9 +184,9 @@ export default function Resizable({
           || showHandler.length === 4 && showHandler[1] !== true) &&
           <Handler {...props} resizing={resizing} setResizing={setResizing} handlerStyle={handlerStyle} setCurrentHandler={setCurrentHandler} overlay={overlay}
             className={clsx(
-              'bottom right top items-center cursor:col-resize hidden@<sm',
+              'bottom right top items-center cursor:col-resize hidden@media((width<52.125rem))',
               {
-                'transform:translateX(100%) transform:translateX(50%).active h:40.active>svg': !handlerStyle,
+                'transform:translateX(100%) transform:translateX(50%).active h:40px.active>svg': !handlerStyle,
                 'transform:translateX(50%)': handlerStyle === 'hidden'
               }
             )}
@@ -201,7 +201,7 @@ export default function Resizable({
             className={clsx(
               'left right top justify-center cursor:row-resize',
               {
-                'transform:translateY(-100%) transform:translateY(-50%).active w:40.active>svg': !handlerStyle,
+                'transform:translateY(-100%) transform:translateY(-50%).active w:40px.active>svg': !handlerStyle,
                 'transform:translateY(-50%)': handlerStyle === 'hidden'
               },
             )}

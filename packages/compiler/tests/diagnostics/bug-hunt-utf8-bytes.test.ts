@@ -7,7 +7,7 @@ test('BH-0020 native inspection counts UTF-8 CSS bytes independently of text inc
     for (const included of [false, true]) {
       for (const [text, bytes] of [['', 0], ['abc', 3], ['é中文😀', 12]] as const) {
         const report = await compiler.createInspectionReport({
-          version: 1, cwd: '/', patterns: [], files: [], classes: [],
+          version: 2, cwd: '/', patterns: [], files: [], classes: [],
           scanner: {}, stylesheets: {}, css: { text, included }
         })
         expect(report.css.bytes).toBe(bytes)

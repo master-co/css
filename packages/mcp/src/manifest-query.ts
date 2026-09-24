@@ -3,7 +3,7 @@ import {
   type MasterCSSManifestUtility
 } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import {
   compactConditions,
   compactUtility,
@@ -16,6 +16,7 @@ const MANIFEST_QUERY_VERSION = 1
 export type ManifestQueryKind = 'all' | 'token' | 'utility' | 'variant' | 'mode' | 'condition' | 'alias'
 
 export interface ManifestQueryOptions {
+  context?: SemanticContext
   query?: string
   kind?: ManifestQueryKind
   namespace?: string
@@ -51,7 +52,7 @@ function utilitySearchValues(utility: MasterCSSManifestUtility) {
 }
 
 export async function queryManifest(context: MasterCSSMCPContext, options: ManifestQueryOptions = {}) {
-  const manifest = await loadWorkspaceManifest(context)
+  const manifest = await loadWorkspaceManifest(context, options.context)
   const query = (options.query || '').toLowerCase()
   const kind = options.kind || 'all'
   const namespace = options.namespace
@@ -62,7 +63,8 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       version: MANIFEST_QUERY_VERSION,
       root: context.root,
       manifest: {
-        status: manifest.status,
+        ...manifestMetadata(manifest),
+      status: manifest.status,
         entries: manifest.entries,
         error: manifest.error
       },
@@ -121,16 +123,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
       layers: [...new Set(variant.branches.map((branch) => branch.layer).filter(Boolean))]
     }))
 
-  const modes = [
-    ...(activeManifest.settings?.defaultMode ? [activeManifest.settings.defaultMode] : []),
-    ...(activeManifest.settings?.modes || [])
-  ].filter((mode, index, list) => list.indexOf(mode) === index)
-    .filter((mode) => includesQuery(mode, query))
-    .map((mode) => ({
-      name: mode,
-      default: mode === activeManifest.settings?.defaultMode,
-      trigger: activeManifest.settings?.modeTrigger
-    }))
+  const modes = (activeManifest.modes ?? []).filter((mode) => includesQuery(mode.name, query))
 
   const conditions = [
     ...compactConditions(activeManifest.conditions),
@@ -182,6 +175,7 @@ export async function queryManifest(context: MasterCSSMCPContext, options: Manif
     version: MANIFEST_QUERY_VERSION,
     root: context.root,
     manifest: {
+      ...manifestMetadata(manifest),
       status: manifest.status,
       entries: manifest.entries,
       summary: summarizeManifest(activeManifest)

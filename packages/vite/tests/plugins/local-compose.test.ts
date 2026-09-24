@@ -177,7 +177,7 @@ describe('LocalComposePlugin', () => {
 
       await expect((plugin as any).transform.call(
         { addWatchFile },
-        '.button { @compose bg:neutral-120; }',
+        '.button { @compose bg-missing-token; }',
         modulePath
       )).rejects.toThrow('Invalid @compose class')
       expect(addWatchFile).toHaveBeenCalledWith(modulePath)

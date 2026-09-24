@@ -71,7 +71,7 @@ test('syntax', async () => {
   }
 })
 
-it('keeps CSS grammar validation in the host batch handshake', async () => {
+it('preserves declarations whose CSS capability is unknown', async () => {
   const scanner = await new MasterCSSScanner({}, __dirname).init()
   await scanner.scan(
     'validation.html',
@@ -79,5 +79,5 @@ it('keeps CSS grammar validation in the host batch handshake', async () => {
   )
 
   expect(scanner.validClasses).toContain('text-wrap:pretty')
-  expect(scanner.invalidClasses).toContain('text-decoration:bad()')
+  expect(scanner.validClasses).toContain('text-decoration:bad()')
 })

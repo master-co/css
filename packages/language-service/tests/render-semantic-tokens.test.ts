@@ -50,7 +50,7 @@ function expectToken(tokens: { text: string, type: string, modifiers: string[] }
 
 test.concurrent('renders semantic tokens for class attributes', () => {
   const { tokens } = renderTokens(
-    '<div className="fg-brand:hover@sm block block:hover block:state-name hidden_div::before:of(.active) m:1rem background-color:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
+    '<div className="fg-brand:hover@sm block block:hover block:is(:state-name) hidden_div::before:of(.active) m:1rem background-color:rgb(0|0|0) w:0.625rem::scrollbar btn btn:hover@sm btn_div::before"></div>',
     'tsx',
     {
       manifest: createPresetManifest({

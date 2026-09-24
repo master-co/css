@@ -59,6 +59,57 @@ impl Migration {
                     .map_or(end, |token| token.bytes.end);
                 add_edit(&mut result, source, first.bytes.start, end, String::new());
             }
+            if matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if name == "settings")
+                && let CssSyntaxKind::Ident(name) = &first.kind
+                && matches!(
+                    name.as_ref(),
+                    "root-size" | "mode-trigger" | "default-mode" | "modes"
+                )
+            {
+                let actual = prelude
+                    .split_once(':')
+                    .map(|(_, value)| value.trim())
+                    .unwrap_or_default();
+                let key = match name.as_ref() {
+                    "root-size" => "rootSize",
+                    "mode-trigger" => "modeTrigger",
+                    "default-mode" => "defaultMode",
+                    _ => "modes",
+                };
+                let saved = self
+                    .original
+                    .get("settings")
+                    .and_then(|settings| settings.get(key));
+                let matches = if key == "rootSize" {
+                    actual.parse::<f64>().ok() == Some(self.root_size)
+                } else if key == "modes" {
+                    let names: Vec<_> = actual
+                        .split(|character: char| character == ',' || character.is_whitespace())
+                        .filter(|name| !name.is_empty())
+                        .collect();
+                    names == self.modes.iter().map(String::as_str).collect::<Vec<_>>()
+                } else {
+                    saved
+                        .and_then(serde_json::Value::as_str)
+                        .unwrap_or(if key == "modeTrigger" {
+                            "media"
+                        } else {
+                            "light"
+                        })
+                        == actual
+                };
+                if matches {
+                    let end = tokens
+                        .get(statement.tokens.end)
+                        .filter(|token| token.kind == CssSyntaxKind::Delim(';'))
+                        .map_or(end, |token| token.bytes.end);
+                    add_edit(&mut result, source, first.bytes.start, end, String::new());
+                } else {
+                    result.notes.push(format!(
+                        "CSS {name} does not match the saved RC configuration"
+                    ));
+                }
+            }
             if statement.has_block
                 && matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if matches!(name.as_ref(), "utilities" | "components" | "defaults"))
             {
@@ -152,6 +203,9 @@ impl Migration {
             if statement.has_block && prelude.contains("\\:") {
                 result.notes.push("Generated selector reference requires manual migration and browser verification".into());
             }
+        }
+        if source.contains("@settings") && !source.contains("@mode ") {
+            add_edit(&mut result, source, 0, 0, self.configuration_css.clone());
         }
         result.edits.sort_by_key(|edit| edit.range.start);
         if result

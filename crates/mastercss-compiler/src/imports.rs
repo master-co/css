@@ -6,7 +6,7 @@ use super::{
     StandaloneCssDirectiveStatement, StyleSheet, filter_native_css_rules,
     find_css_directive_ranges, find_css_import_statements, find_master_directive_statements,
     normalize_stylesheet_value, parse_css_import_source, remove_css_reference_statements,
-    remove_master_directive_statements, utf16_to_byte_offset,
+    utf16_to_byte_offset,
 };
 use crate::source_spans::MappedSource;
 use lightningcss::{rules::CssRule, traits::ToCss};
@@ -40,6 +40,22 @@ pub(crate) fn imported_css_wrappers(
             message: "Cannot inline a qualified CSS import containing unresolved imports; resolve its nested imports first".into(),
             filename: filename.to_owned(),
         });
+    }
+    if import.layer.is_some() || import.supports.is_some() || !import.media.media_queries.is_empty()
+    {
+        let (_, definitions) = mastercss_lexer::extract_top_level_at_rule_blocks(
+            source,
+            &IMPORTED_DEFINITION_DIRECTIVES,
+        );
+        if let Some(definition) = definitions.first() {
+            return Err(CompilerError::Import {
+                message: format!(
+                    "Qualified import {statement} contains global @{} definitions. Import the definitions without media/supports/layer qualifiers, or split them from the native CSS.",
+                    definition.name
+                ),
+                filename: filename.into(),
+            });
+        }
     }
     let print_error = |error: lightningcss::error::PrinterError| CompilerError::Print {
         message: error.to_string(),
@@ -146,53 +162,15 @@ fn import_layer_name(statement: &str) -> Option<String> {
 }
 
 /// Definition directives an imported stylesheet may declare at its top level.
-const IMPORTED_DEFINITION_DIRECTIVES: [&str; 6] = [
+pub(crate) const IMPORTED_DEFINITION_DIRECTIVES: [&str; 7] = [
     "settings",
+    "mode",
     "theme",
     "custom-variant",
     "defaults",
     "components",
     "utilities",
 ];
-
-/// A qualifier wraps the imported rules in `@layer`/`@media`/`@supports`, but the
-/// imported stylesheet's definitions are global declarations, not conditional
-/// ones, and a directive contained in a native at-rule cannot be lowered. Split
-/// them out so they stay beside the wrapper instead of inside it.
-fn split_imported_definitions(source: MappedSource) -> (Option<MappedSource>, MappedSource) {
-    let (_, blocks) = mastercss_lexer::extract_top_level_at_rule_blocks(
-        &source.text,
-        &IMPORTED_DEFINITION_DIRECTIVES,
-    );
-    if blocks.is_empty() {
-        return (None, source);
-    }
-    let mut definitions = MappedSource::default();
-    let mut body = MappedSource::default();
-    let mut byte_index = 0;
-    for block in &blocks {
-        let (Some(start), Some(end)) = (
-            utf16_to_byte_offset(&source.text, block.start),
-            utf16_to_byte_offset(&source.text, block.end),
-        ) else {
-            continue;
-        };
-        if start < byte_index {
-            continue;
-        }
-        body.push(source.slice(byte_index, start));
-        if !definitions.text.is_empty() {
-            definitions.push_unmapped("\n");
-        }
-        definitions.push(source.slice(start, end));
-        byte_index = end;
-    }
-    if definitions.text.is_empty() {
-        return (None, source);
-    }
-    body.push(source.slice(byte_index, source.text.len()));
-    (Some(definitions), body)
-}
 
 pub(crate) fn default_filename() -> String {
     "master.css".into()
@@ -295,6 +273,9 @@ pub(crate) fn extraction_policy_from_statements(
                         );
                     }
                 }
+            }
+            "prune" if statement.modifiers.iter().any(|value| value == "native") => {
+                policy.prune_native = true;
             }
             "preserve" if statement.modifiers.iter().any(|value| value == "native") => {
                 policy.preserve_native = true;
@@ -426,13 +407,8 @@ pub(crate) fn resolve_css_import_graph_file<P: CssImportProvider>(
             if prefix.is_empty() {
                 output.push(source);
             } else {
-                let (definitions, body) = split_imported_definitions(source);
-                if let Some(definitions) = definitions {
-                    output.push(definitions);
-                    output.push_unmapped("\n");
-                }
                 output.push_unmapped(&prefix);
-                output.push(body);
+                output.push(source);
                 output.push_unmapped(&suffix);
             }
         } else {
@@ -514,13 +490,17 @@ pub fn compile_native_css(
     source: &str,
     options: &CompileNativeCssOptions,
 ) -> Result<CompileNativeCssResult, CompilerError> {
-    if options.preserve_native_source && options.classes.is_some() {
+    let policy = crate::analyze_standalone_directives(source);
+    let prune = !policy.extraction_policy.preserve_native
+        && (options.prune_native_css || policy.extraction_policy.prune_native);
+    if options.preserve_native_source && prune && options.classes.is_some() {
         return Err(CompilerError::Print {
             filename: options.from.clone(),
             message: "preserveNativeSource cannot be combined with class pruning".into(),
         });
     }
-    let (source, had_master_entry_directive) = remove_master_directive_statements(source);
+    let had_master_entry_directive = !find_master_directive_statements(source).is_empty();
+    let source = policy.code;
     if !options.preserve_native_css {
         return Ok(CompileNativeCssResult {
             native_css: String::new(),
@@ -549,7 +529,7 @@ pub fn compile_native_css(
             had_master_entry_directive,
         });
     }
-    if let Some(classes) = &options.classes {
+    if prune && let Some(classes) = &options.classes {
         let classes = classes.iter().cloned().collect::<HashSet<_>>();
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }

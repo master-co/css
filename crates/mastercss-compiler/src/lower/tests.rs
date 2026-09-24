@@ -15,7 +15,7 @@ fn lower_for_test(
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
             resolution_manifest: None,
         },
     )
@@ -23,7 +23,7 @@ fn lower_for_test(
 }
 
 #[test]
-fn rejects_invalid_native_declarations_in_compose() {
+fn preserves_native_values_in_compose_for_tooling_validation() {
     let definition: CssDirectiveStyleDefinition = serde_json::from_value(json!({
         "type": "compose",
         "order": 1,
@@ -31,20 +31,17 @@ fn rejects_invalid_native_declarations_in_compose() {
         "selector": ".card"
     }))
     .unwrap();
-    let error = lower_css_directives(
+    let result = lower_css_directives(
         &CssDirectiveManifestInput::default(),
         &[definition],
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
             resolution_manifest: None,
         },
     )
-    .unwrap_err();
-    assert_eq!(
-        error.to_string(),
-        "Invalid @compose class: background:neutral-120"
-    );
+    .unwrap();
+    assert_eq!(result.generated_css, ".card{background:neutral-120}");
 }
 
 #[test]
@@ -93,7 +90,7 @@ fn accepts_valid_unparsed_native_declarations_in_compose() {
         &definitions,
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({ "version": 1, "utilities": [] })),
+            base_manifest: Some(json!({ "version": 1,"languageVersion":2, "utilities": [] })),
             resolution_manifest: None,
         },
     )
@@ -165,12 +162,9 @@ fn orders_unconditioned_compositions_before_matching_responsive_compositions() {
 }
 
 #[test]
-fn normalizes_root_size_when_ordering_numeric_conditions() {
+fn sorts_distinct_units_without_assuming_a_root_size() {
     let result = lower_for_test(
-        CssDirectiveManifestInput {
-            root_size: Some(20.0),
-            ..Default::default()
-        },
+        CssDirectiveManifestInput::default(),
         json!([
             {
                 "type": "native",

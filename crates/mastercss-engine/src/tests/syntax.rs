@@ -38,12 +38,12 @@ fn renders_selector_condition_layer_and_important_state() {
             "@layer utilities{@media print{.block\\@media\\(print\\){display:block}}}",
         ),
         (
-            "block@supports(display:grid)",
-            "@layer utilities{@supports (display:grid){.block\\@supports\\(display\\:grid\\){display:block}}}",
+            "block@supports((display:grid))",
+            "@layer utilities{@supports (display:grid){.block\\@supports\\(\\(display\\:grid\\)\\){display:block}}}",
         ),
         (
-            "block@container(h>160)",
-            "@layer utilities{@container (height>10rem){.block\\@container\\(h\\>160\\){display:block}}}",
+            "block@container((height>160px))",
+            "@layer utilities{@container (height>160px){.block\\@container\\(\\(height\\>160px\\)\\){display:block}}}",
         ),
         (
             "w:10px:hover@sm",
@@ -159,7 +159,7 @@ fn tracks_keyframes_only_from_animation_declarations() {
 #[test]
 fn tracks_theme_variables_referenced_by_keyframes() {
     let manifest = r##"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "variables":{"color":[{"name":"color-primary","key":"primary","value":"#ff0"}]},
           "animations":{"fade":{"to":{"background":"var(--color-primary)"}}},
           "utilities":[{
@@ -176,7 +176,7 @@ fn tracks_theme_variables_referenced_by_keyframes() {
     engine.ensure_class_rules(["btn"]).unwrap();
     assert_eq!(
         engine.resource_snapshot().theme_text.as_deref(),
-        Some(":root{--color-primary:#ff0}")
+        Some(":root,:host{--color-primary:#ff0}")
     );
     assert!(
         engine
@@ -194,11 +194,11 @@ fn parses_each_compound_condition_as_a_condition() {
     for (class_name, expected) in [
         (
             "block@dark@sm",
-            "@layer utilities{@media (prefers-color-scheme:dark) and (width>=52.125rem){.block\\@dark\\@sm{display:block}}}",
+            "@layer utilities{@media (prefers-color-scheme:dark){@media (width>=52.125rem){.block\\@dark\\@sm:where(:root,:root *){display:block}}}}",
         ),
         (
             "block@sm@dark",
-            "@layer utilities{@media (width>=52.125rem) and (prefers-color-scheme:dark){.block\\@sm\\@dark{display:block}}}",
+            "@layer utilities{@media (width>=52.125rem){@media (prefers-color-scheme:dark){.block\\@sm\\@dark:where(:root,:root *){display:block}}}}",
         ),
     ] {
         let mut engine = EngineSession::create(MANIFEST).unwrap();
@@ -209,28 +209,20 @@ fn parses_each_compound_condition_as_a_condition() {
     let engine = EngineSession::create(MANIFEST).unwrap();
     let original = engine.inspect("block@dark@sm").unwrap();
     let canonical = engine.inspect("block@sm@dark").unwrap();
-    assert_eq!(original.rules[0].priority, canonical.rules[0].priority);
+    assert_eq!(original.rules[0].priority.features, canonical.rules[0].priority.features);
+    assert_ne!(original.rules[0].priority.conditions, canonical.rules[0].priority.conditions);
 }
 
 #[test]
 fn renders_the_compiled_condition_grammar() {
     for (class_name, expected_condition) in [
-        ("block@media(pointer:coarse)", "@media (pointer:coarse)"),
-        ("block@h<sm", "@media (height<52.125rem)"),
-        (
-            "block@h>=sm&h<lg",
-            "@media (height>=52.125rem) and (height<80rem)",
-        ),
-        ("block@!sm", "@media not (width>=52.125rem)"),
-        ("block@only(print)", "@media only print"),
-        (
-            "block@!(screen&(any-hover:hover))",
-            "@media not (screen and (any-hover:hover))",
-        ),
-        (
-            "block@<sm,>=lg",
-            "@media (width<52.125rem) or (width>=80rem)",
-        ),
+        ("block@media((pointer:coarse))", "@media (pointer:coarse)"),
+        ("block@media((height<52.125rem))", "@media (height<52.125rem)"),
+        ("block@media((height>=52.125rem)|and|(height<80rem))", "@media (height>=52.125rem) and (height<80rem)"),
+        ("block@media(not|(width>=52.125rem))", "@media not (width>=52.125rem)"),
+        ("block@media(only|print)", "@media only print"),
+        ("block@media(not|screen|and|(any-hover:hover))", "@media not screen and (any-hover:hover)"),
+        ("block@media((width<52.125rem)|or|(width>=80rem))", "@media (width<52.125rem) or (width>=80rem)"),
         ("block@starting-style", "@starting-style"),
     ] {
         let mut engine = EngineSession::create(include_str!(
@@ -251,7 +243,7 @@ fn renders_the_compiled_condition_grammar() {
 
 #[test]
 fn separates_child_selectors_from_dynamic_values() {
-    let mut engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+    let mut engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
     engine.ensure_class_rules(["mt:0>div"]).unwrap();
     assert_eq!(
         engine.css_text(),
@@ -271,7 +263,7 @@ fn separates_child_selectors_from_dynamic_values() {
 #[test]
 fn native_property_precedes_overlapping_enum_name_inside_groups() {
     let manifest = r#"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "utilities":[{
             "id":"text-<wrap|pretty>",
             "type":-2,
@@ -281,7 +273,7 @@ fn native_property_precedes_overlapping_enum_name_inside_groups() {
         }"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
-        .ensure_class_rules_with_native_support(["{text-wrap:pretty}"], &[true])
+        .ensure_class_rules(["{text-wrap:pretty}"])
         .unwrap();
     assert_eq!(
         engine.css_text(),
@@ -304,7 +296,7 @@ fn preserves_math_function_names_that_overlap_inline_variables() {
 #[test]
 fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions() {
     let manifest = r#"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "utilities":[
             {
               "id":"text-<left|center>",
@@ -326,20 +318,20 @@ fn prefers_exact_utilities_over_patterns_and_rejects_legacy_variable_functions()
         ".text-center{text-align:start}"
     );
 
-    let engine = EngineSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
-    assert!(!engine.inspect("margin:$(spacing-x1)").unwrap().valid);
+    let engine = EngineSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
+    assert!(engine.inspect("margin:$(spacing-x1)").unwrap().match_status != mastercss_schema::MatchStatus::Matched);
     assert!(
-        !engine
+        engine
             .inspect("width:calc(-2px+$(spacing-x1))")
             .unwrap()
-            .valid
+            .match_status != mastercss_schema::MatchStatus::Matched
     );
 }
 
 #[test]
 fn preserves_all_static_rules_for_the_same_class_across_layers() {
     let manifest = r#"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "utilities":[
             {
               "id":"demo-defaults",
@@ -368,7 +360,7 @@ fn preserves_all_static_rules_for_the_same_class_across_layers() {
 #[test]
 fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
     let manifest = r#"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "variables":{"":[
             {
               "name":"stripe",
@@ -398,18 +390,18 @@ fn lets_native_key_aliases_handle_variables_outside_managed_namespaces() {
         }]
     );
     engine
-        .ensure_class_rules_with_native_support(["bg:var(--stripe)"], &[true])
+        .ensure_class_rules(["bg:var(--stripe)"])
         .unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+        "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
     );
 }
 
 #[test]
 fn preserves_native_alias_matchers_for_shared_declarations() {
     let manifest = r#"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "variables":{"":[
             {
               "name":"stripe",
@@ -422,23 +414,23 @@ fn preserves_native_alias_matchers_for_shared_declarations() {
         }"#;
     let mut engine = EngineSession::create(manifest).unwrap();
     engine
-        .ensure_class_rules_with_native_support(["background:var(--stripe)"], &[true])
+        .ensure_class_rules(["background:var(--stripe)"])
         .unwrap();
     engine
-        .ensure_class_rules_with_native_support(["bg:var(--stripe)"], &[true])
+        .ensure_class_rules(["bg:var(--stripe)"])
         .unwrap();
 
-    assert!(engine.inspect("bg:var(--stripe)").unwrap().valid);
+    assert!(engine.inspect("bg:var(--stripe)").unwrap().match_status == mastercss_schema::MatchStatus::Matched);
     assert_eq!(
         engine.css_text(),
-        "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+        "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
     );
 }
 
 #[test]
 fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
     let manifest = r##"{
-          "version":1,
+          "version":1,"languageVersion":2,
           "variables":{"color":[
             {"name":"color-primary","key":"primary","value":"#123","inline":true},
             {"name":"color-brand","key":"brand","value":"var(--color-primary)","inline":true}
@@ -470,8 +462,8 @@ fn resolves_dependencies_of_inline_variables_without_emitting_resources() {
 #[test]
 fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
     let manifest = r##"{
-          "version":1,
-          "settings":{"defaultMode":"light","modeTrigger":"class","modes":["light","dark"]},
+          "version":1,"languageVersion":2,
+          "modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],
           "variables":{
             "color":[
               {"name":"color-white","key":"white","value":"oklch(100% 0 none)","inline":true},
@@ -502,7 +494,7 @@ fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
     engine.ensure_class_rules(["surface-raised"]).unwrap();
     assert_eq!(
         engine.css_text(),
-        "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
+        "@layer theme{:root,:host{--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:oklch(100% 0 none)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
     );
     assert_eq!(
         engine
@@ -529,7 +521,7 @@ fn resolves_inline_dependencies_in_emitted_base_and_mode_variables() {
 fn rejects_circular_inline_variable_references() {
     let error = EngineSession::create(
         r##"{
-              "version":1,
+              "version":1,"languageVersion":2,
               "variables":{"color":[
                 {"name":"color-a","key":"a","value":"var(--color-b)","inline":true},
                 {"name":"color-b","key":"b","value":"var(--color-a)","inline":true}

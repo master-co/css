@@ -118,8 +118,8 @@ export async function createCompilerWasmRenderBindingSession(
     binding: 'wasm',
     nativeDeclarationCandidates: (classNames) =>
       session.nativeDeclarationCandidates([...classNames]),
-    ensureClasses: (classNames, nativeSupport) =>
-      session.ensureClasses([...classNames], nativeSupport ? [...nativeSupport] : undefined),
+    ensureClasses: (classNames) =>
+      session.ensureClasses([...classNames]),
     ensureStylesheetResources: (nativeCSS) => session.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => session.emittedGlobals(),
     snapshot: () => session.snapshot(),

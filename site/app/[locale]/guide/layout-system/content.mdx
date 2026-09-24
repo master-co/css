@@ -45,7 +45,7 @@ A layout system should answer five questions before individual components start 
 | Outer margin | Spacing | `px-md`, `px-xl@md` |
 | Columns | Grid | `grid-cols:4`, `grid-cols:12@md` |
 | Gutters | Spacing | `gap-md`, `gap-x-lg`, `gap-y-xl` |
-| Region behavior | Grid, Flex, and queries | `grid-col-span:8@md`, `flex-row@2xs`, `@container(md)` |
+| Region behavior | Grid, Flex, and queries | `grid-col-span:8@md`, `flex-row@2xs`, `@container((width>=28rem))` |
 
 These decisions are separate on purpose. A page can keep the same maximum width while changing column count. A component can keep the same columns while increasing its gutter. A reusable card can respond to its container instead of the viewport.
 
@@ -174,8 +174,8 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 | Two-axis alignment | One-axis distribution |
 
 <Demo>
-  <article className="flex container flex-col gap-md w:100% p-md b:1px|solid|var(--color-line-base) r-lg surface-raised shadow-xs flex-row@container(2xs)">
-    <div className="grid place-content:center w:100% aspect-ratio:4/3 r-md bg-blue-60/.12 flex:0@container(2xs) w:9rem@container(2xs)">
+  <article className="flex container flex-col gap-md w:100% p-md b:1px|solid|var(--color-line-base) r-lg surface-raised shadow-xs flex-row@container((width>=18rem))">
+    <div className="grid place-content:center w:100% aspect-ratio:4/3 r-md bg-blue-60/.12 flex:0@container((width>=18rem)) w:9rem@container((width>=18rem))">
       <div className="grid-cols:3 gap-2xs w:5rem">
         <div className="h:1.25rem r-sm bg-blue-60/.25"></div>
         <div className="h:1.25rem r-sm bg-blue-60/.35"></div>
@@ -198,9 +198,9 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 </Demo>
 
 ```html
-<!-- @MARK container --><!-- @MARK w:100% --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container(2xs) -->
-<article class="flex container flex-col gap-md w:100% flex-row@container(2xs)">
-  <img class="w:100% flex:0@container(2xs) w:9rem@container(2xs)" alt="" />
+<!-- @MARK container --><!-- @MARK w:100% --><!-- @MARK flex --><!-- @MARK flex-col --><!-- @MARK flex-row@container((width>=18rem)) -->
+<article class="flex container flex-col gap-md w:100% flex-row@container((width>=18rem))">
+  <img class="w:100% flex:0@container((width>=18rem)) w:9rem@container((width>=18rem))" alt="" />
   <div class="flex:1 min-w:0">...</div>
 </article>
 ```
@@ -208,7 +208,7 @@ Use Grid when the parent owns the columns, rows, or area placement. Use Flexbox 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'flex', 'flex-col', 'flex-row@container(2xs)', 'gap-md', 'w:100%', 'w:9rem@container(2xs)', 'flex:0@container(2xs)', 'min-w:0', 'flex:1']}
+    {['container', 'flex', 'flex-col', 'flex-row@container((width>=18rem))', 'gap-md', 'w:100%', 'w:9rem@container((width>=18rem))', 'flex:0@container((width>=18rem))', 'min-w:0', 'flex:1']}
   </Class2CSS>
 </details>
 
@@ -223,8 +223,8 @@ Add `container` to the component boundary, then use `@container(<size>)` on desc
 
 ```html
 <section class="container">
-  <!-- @MARK grid-cols:2@container(2xs) --><!-- @MARK gap-lg@container(2xs) -->
-  <article class="grid-cols:1 gap-md grid-cols:2@container(2xs) gap-lg@container(2xs)">
+  <!-- @MARK grid-cols:2@container((width>=18rem)) --><!-- @MARK gap-lg@container((width>=18rem)) -->
+  <article class="grid-cols:1 gap-md grid-cols:2@container((width>=18rem)) gap-lg@container((width>=18rem))">
     ...
   </article>
 </section>
@@ -233,7 +233,7 @@ Add `container` to the component boundary, then use `@container(<size>)` on desc
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'grid-cols:1', 'grid-cols:2@container(2xs)', 'gap-md', 'gap-lg@container(2xs)']}
+    {['container', 'grid-cols:1', 'grid-cols:2@container((width>=18rem))', 'gap-md', 'gap-lg@container((width>=18rem))']}
   </Class2CSS>
 </details>
 
@@ -339,7 +339,7 @@ Use explicit tracks for app shells, data views, split panes, and content that ha
 
 ```html
 <section class="container">
-  <article class="grid-cols:1 gap-lg grid-cols:2@container(2xs)">...</article>
+  <article class="grid-cols:1 gap-lg grid-cols:2@container((width>=18rem))">...</article>
 </section>
 ```
 

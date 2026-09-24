@@ -31,6 +31,12 @@ test.each([
     for (const name of names) {
       const html = readFileSync(join(root, 'dist', name), 'utf8')
       const hrefs = [...html.matchAll(/data-master-css-hydration-manifest="([^"]+)"/g)].map(match => match[1])
+      if (mode === 'pre-render') {
+        expect(hrefs, name).toHaveLength(0)
+        expect(html).toContain('.block{display:block}')
+        expect(html).not.toContain('master-css-hydration-manifest')
+        continue
+      }
       expect(hrefs, name).toHaveLength(1)
       const pageURL = new URL(name, 'https://app.example.test/app/')
       const url = new URL(hrefs[0], pageURL)
@@ -43,7 +49,7 @@ test.each([
       assets.add(asset)
     }
     // Same classes share JSON bytes, but each page gets its own relative URL.
-    expect(assets.size).toBe(1)
+    expect(assets.size).toBe(mode === 'progressive' ? 1 : 0)
   } finally {
     rmSync(root, { recursive: true, force: true })
   }

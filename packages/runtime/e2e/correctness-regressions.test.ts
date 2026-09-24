@@ -86,7 +86,7 @@ for (const change of ['none', 'reverse', 'extra', 'duplicate', 'missing'] as con
 
 test('hydrates shared resource dependencies from actual server output without fallback', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: { '': [
       { name: 'x', key: 'x', value: 'red' },
       { name: 'y', key: 'y', value: 'blue' },
@@ -112,16 +112,16 @@ test('hydrates shared resource dependencies from actual server output without fa
 
 test('reordered theme buckets cannot silently change the dark-mode cascade', async ({ page }) => {
   const manifest: MasterCSSManifest = {
-    version: 1,
-    settings: { defaultMode: 'light', modeTrigger: 'class', modes: ['light', 'dark'] },
+    version: 1, languageVersion: 2,
+    modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
     variables: { '': [{ name: 'primary', key: 'primary', modes: { light: { value: '#000000' }, dark: { value: '#ffffff' } } }] },
     utilities: [utility('theme-color', { color: 'var(--primary)' })]
   }
   using renderer = createServerRenderer({ manifest })
   const rendered = renderer.renderHTML('<html class="dark"><head></head><body><div id="target" class="theme-color"></div></body></html>', { hydrationManifest: 'inject' })
   const reversed = rendered.html.replace(
-    '.light,:root{color-scheme:light;--primary:#000000}.dark{color-scheme:dark;--primary:#ffffff}',
-    '.dark{color-scheme:dark;--primary:#ffffff}.light,:root{color-scheme:light;--primary:#000000}'
+    '.light{--primary:#000000}.dark{--primary:#ffffff}',
+    '.dark{--primary:#ffffff}.light{--primary:#000000}'
   )
   expect(reversed).not.toBe(rendered.html)
   await startRendered(page, reversed, manifest)
@@ -133,7 +133,7 @@ test('reordered theme buckets cannot silently change the dark-mode cascade', asy
 
 test('decimal media queries and quoted attribute values match in the browser', async ({ page }) => {
   await page.setViewportSize({ width: 800, height: 600 })
-  await page.setContent('<div id="responsive" class="hidden@w>=600.5"></div><div id="literal" data-state=":first"></div><div id="different" data-state=":first-child"></div>')
+  await page.setContent('<div id="responsive" class="hidden@media((width>=600.5px))"></div><div id="literal" data-state=":first"></div><div id="different" data-state=":first-child"></div>')
   await page.evaluate(() => {
     for (const id of ['literal', 'different']) document.getElementById(id)!.className = 'hidden[data-state=":first"]'
   })
@@ -148,7 +148,7 @@ test('decimal media queries and quoted attribute values match in the browser', a
 for (const change of ['none', 'reverse', 'extra', 'duplicate'] as const) {
   test(`hydration validates multiple CSSOM nodes per rule across all utility layers: ${change}`, async ({ page }) => {
     const manifest: MasterCSSManifest = {
-      version: 1,
+      version: 1, languageVersion: 2,
       utilities: ['base', 'defaults', 'components', 'utilities'].map(layer => ({
         ...utility(layer, { color: 'red' }),
         layer: layer as 'base' | 'defaults' | 'components' | 'utilities',

@@ -24,14 +24,14 @@ fn scan(scanner: &mut ScannerSession, source: &str, candidates: &[&str]) {
 }
 
 #[test]
-fn repeated_invalid_candidates_do_not_shift_native_support_for_new_classes() {
+fn unknown_native_capabilities_survive_host_support_results() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut scanner = ScannerSession::create(manifest).unwrap();
     scan(&mut scanner, "a.html", &["made-up:bad"]);
     scan(&mut scanner, "b.html", &["made-up:bad", "accent-color:red"]);
     let state = scanner.state().unwrap();
-    assert_eq!(state.valid_classes, ["accent-color:red"]);
-    assert_eq!(state.invalid_classes, ["made-up:bad"]);
+    assert_eq!(state.valid_classes, ["made-up:bad", "accent-color:red"]);
+    assert!(state.invalid_classes.is_empty());
     assert!(state.engine.text.contains("accent-color:"));
 }
 
@@ -51,15 +51,21 @@ fn support_alignment_survives_duplicates_groups_blocklists_and_source_order() {
     ];
     let mut expected = None;
     for order in [[0, 1, 2], [1, 2, 0], [2, 0, 1]] {
-        let mut scanner = ScannerSession::create(r#"{"version":1}"#).unwrap();
+        let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
         for index in order {
             scan(&mut scanner, &format!("{index}.html"), inputs[index]);
         }
         let state = scanner.state().unwrap();
         let mut valid = state.valid_classes.clone();
         valid.sort();
-        assert_eq!(valid.len(), 3);
-        assert!(!valid.iter().any(|name| name.starts_with("made-up")));
+        assert_eq!(valid.len(), 5);
+        assert_eq!(
+            valid
+                .iter()
+                .filter(|name| name.starts_with("made-up"))
+                .count(),
+            2
+        );
         let actual = (valid, state.engine.text);
         if let Some(expected) = &expected {
             assert_eq!(&actual, expected);

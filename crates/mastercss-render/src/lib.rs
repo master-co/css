@@ -55,11 +55,7 @@ impl RenderSession {
         )
     }
 
-    pub fn ensure_classes<I, S>(
-        &mut self,
-        class_names: I,
-        native_support: Option<&[bool]>,
-    ) -> Result<(), EngineError>
+    pub fn ensure_classes<I, S>(&mut self, class_names: I) -> Result<(), EngineError>
     where
         I: IntoIterator<Item = S>,
         S: AsRef<str>,
@@ -72,12 +68,7 @@ impl RenderSession {
                 new_classes.push(class_name.to_owned());
             }
         }
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(&new_classes, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(&new_classes)?;
-        }
+        self.engine.ensure_class_rules(&new_classes)?;
         Ok(())
     }
 
@@ -152,7 +143,6 @@ impl RenderSession {
 pub fn render_classes<I, S>(
     manifest_json: &str,
     class_names: I,
-    native_support: Option<&[bool]>,
 ) -> Result<ServerRenderIr, EngineError>
 where
     I: IntoIterator<Item = S>,
@@ -163,7 +153,7 @@ where
         .map(|class_name| class_name.as_ref().to_owned())
         .collect::<Vec<_>>();
     let mut session = RenderSession::create(manifest_json, None)?;
-    session.ensure_classes(classes, native_support)?;
+    session.ensure_classes(classes)?;
     session.snapshot()
 }
 
@@ -173,7 +163,7 @@ mod tests {
 
     fn manifest() -> String {
         serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "utilities": [
                 {
                     "id": ".block",
@@ -204,8 +194,7 @@ mod tests {
 
     #[test]
     fn composes_sorted_css_and_hydration_rules() {
-        let rendered =
-            render_classes(&manifest(), ["red", "block", "red", "unknown"], None).unwrap();
+        let rendered = render_classes(&manifest(), ["red", "block", "red", "unknown"]).unwrap();
         assert_eq!(rendered.classes, ["red", "block", "unknown"]);
         assert_eq!(
             rendered.snapshot.text,
@@ -217,15 +206,15 @@ mod tests {
     }
 
     #[test]
-    fn native_support_only_applies_to_new_classes() {
-        let mut session = RenderSession::create(r#"{"version":1,"utilities":[]}"#, None).unwrap();
+    fn repeated_classes_share_generated_rules() {
+        let mut session =
+            RenderSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#, None)
+                .unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block"])
             .unwrap();
         assert_eq!(candidates.len(), 1);
-        session
-            .ensure_classes(["display:block"], Some(&[true]))
-            .unwrap();
+        session.ensure_classes(["display:block"]).unwrap();
 
         assert!(
             session
@@ -233,7 +222,7 @@ mod tests {
                 .unwrap()
                 .is_empty()
         );
-        session.ensure_classes(["display:block"], None).unwrap();
+        session.ensure_classes(["display:block"]).unwrap();
         assert_eq!(
             session.snapshot().unwrap().snapshot.text,
             "@layer utilities{.display\\:block{display:block}}"
@@ -244,18 +233,16 @@ mod tests {
     fn snapshots_cached_class_subsets_like_fresh_sessions() {
         let manifest = manifest();
         let mut cached = RenderSession::create(&manifest, None).unwrap();
-        cached
-            .ensure_classes(["block", "red", "unknown"], None)
-            .unwrap();
+        cached.ensure_classes(["block", "red", "unknown"]).unwrap();
 
         let red = cached
             .snapshot_for_classes(["red", "unknown", "red"])
             .unwrap();
-        let fresh_red = render_classes(&manifest, ["red", "unknown", "red"], None).unwrap();
+        let fresh_red = render_classes(&manifest, ["red", "unknown", "red"]).unwrap();
         assert_eq!(red, fresh_red);
 
         let block_red = cached.snapshot_for_classes(["block", "red"]).unwrap();
-        let fresh_block_red = render_classes(&manifest, ["block", "red"], None).unwrap();
+        let fresh_block_red = render_classes(&manifest, ["block", "red"]).unwrap();
         assert_eq!(block_red, fresh_block_red);
     }
 
@@ -263,9 +250,9 @@ mod tests {
     fn cached_subset_output_does_not_depend_on_warm_up_order() {
         let manifest = manifest();
         let mut forward = RenderSession::create(&manifest, None).unwrap();
-        forward.ensure_classes(["block", "red"], None).unwrap();
+        forward.ensure_classes(["block", "red"]).unwrap();
         let mut reverse = RenderSession::create(&manifest, None).unwrap();
-        reverse.ensure_classes(["red", "block"], None).unwrap();
+        reverse.ensure_classes(["red", "block"]).unwrap();
 
         assert_eq!(
             forward.snapshot_for_classes(["red", "block"]).unwrap(),
@@ -276,7 +263,7 @@ mod tests {
     #[test]
     fn cached_native_declarations_preserve_later_alias_matchers() {
         let manifest = serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "variables": {
                 "": [{
                     "name": "stripe",
@@ -289,27 +276,22 @@ mod tests {
         })
         .to_string();
         let mut cached = RenderSession::create(&manifest, None).unwrap();
-        cached
-            .ensure_classes(["background:var(--stripe)"], Some(&[true]))
-            .unwrap();
-        cached
-            .ensure_classes(["bg:var(--stripe)"], Some(&[true]))
-            .unwrap();
+        cached.ensure_classes(["background:var(--stripe)"]).unwrap();
+        cached.ensure_classes(["bg:var(--stripe)"]).unwrap();
 
         let cached_snapshot = cached.snapshot_for_classes(["bg:var(--stripe)"]).unwrap();
-        let fresh_snapshot =
-            render_classes(&manifest, ["bg:var(--stripe)"], Some(&[true])).unwrap();
+        let fresh_snapshot = render_classes(&manifest, ["bg:var(--stripe)"]).unwrap();
         assert_eq!(cached_snapshot, fresh_snapshot);
         assert_eq!(
             cached_snapshot.snapshot.text,
-            "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+            "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
         );
     }
 
     #[test]
     fn cached_subsets_preserve_page_resource_composition() {
         let manifest = serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },
@@ -344,12 +326,12 @@ mod tests {
         .to_string();
         let emitted_globals = r#"{"animations":{"fade":1}}"#;
         let mut cached = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
-        cached.ensure_classes(["animated", "brand"], None).unwrap();
+        cached.ensure_classes(["animated", "brand"]).unwrap();
 
         for classes in [["brand"].as_slice(), ["animated", "brand"].as_slice()] {
             let cached_snapshot = cached.snapshot_for_classes(classes).unwrap();
             let mut fresh = RenderSession::create(&manifest, Some(emitted_globals)).unwrap();
-            fresh.ensure_classes(classes, None).unwrap();
+            fresh.ensure_classes(classes).unwrap();
             assert_eq!(cached_snapshot, fresh.snapshot().unwrap());
         }
     }
@@ -357,7 +339,7 @@ mod tests {
     #[test]
     fn composes_native_stylesheet_resources_without_duplicate_keyframes() {
         let manifest = serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },
@@ -396,7 +378,7 @@ mod tests {
     #[test]
     fn preserves_and_increments_host_resource_counts() {
         let manifest = serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "variables": {
                 "color": [{ "key": "primary", "value": "red" }]
             },

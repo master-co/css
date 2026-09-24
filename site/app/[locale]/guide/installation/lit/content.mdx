@@ -14,7 +14,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Lit project root. Lit uses the default Vite runtime mode so classes can be generated as components render.
+      Run the installer from the Lit project root. Lit uses Vite static mode by default. Keep complete class names in source; use explicit runtime mode if classes must be generated from new names in the browser.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -24,29 +24,21 @@
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Use the runtime decorator
-      Master CSS styles inside a Lit shadow root need a runtime attached to that root. The installer adds this to the standard `src/my-element.ts` file when it exists.
+      ### <StepNum />Include styles in the shadow root
+      Import the generated stylesheet as text and include it with Lit’s `unsafeCSS`. The CSS comes from your build input; do not pass untrusted user text to `unsafeCSS`. The installer preserves the standard component’s existing styles when adding this stylesheet.
     </StepL>
     <StepR>
       ```ts name=src/my-element.ts
-      import { LitElement, html } from 'lit'
+      import { LitElement, html, unsafeCSS } from 'lit'
       import { customElement } from 'lit/decorators.js'
-      import { withMasterCSSRuntime } from '@master/css-runtime'
-      import type { MasterCSSRuntime } from '@master/css-runtime'
-      import manifest from 'virtual:master-css-manifest'
-      import emittedGlobals from 'virtual:master-css-emitted-globals'
+      import masterCSSStyles from './index.css?inline'
 
       @customElement('my-element')
-      @withMasterCSSRuntime({ manifest, emittedGlobals })
       export class MyElement extends LitElement {
-        masterCSSRuntime?: MasterCSSRuntime
+        static styles = [unsafeCSS(masterCSSStyles)]
 
         render() {
-          return html`
-            <button class="inline-flex items-center gap-xs px-md py-xs r-lg bg-blue fg-white">
-              Hello Lit
-            </button>
-          `
+          return html`<button class="px-md py-xs bg-blue fg-white">Hello Lit</button>`
         }
       }
       ```
@@ -69,3 +61,9 @@
   </Step>
   <HelloWorld url="localhost:5173" />
 </StepSection>
+
+
+For newly generated class names, explicitly select `--mode runtime` and use the
+`withMasterCSSRuntime` decorator with `virtual:master-css-manifest` and
+`virtual:master-css-emitted-globals`. Attach one runtime to each shadow root.
+Static mode needs no engine, Wasm, manifest, or decorator in the browser.

@@ -129,7 +129,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
     const doc = catalog.documents.find(doc => doc.id === id)!
     assert.equal(new Set(doc.headings.map(heading => heading.id)).size, doc.headings.length, id)
     const configured = doc.examples.filter(example => example.configuration !== undefined)
-    assert.equal(configured.length, id === 'rules/layers' ? 6 : 2, id)
+    assert.equal(configured.length, id === 'rules/layers' ? 6 : 3, id)
     for (const example of configured) {
       assert.equal(example.css, configuredExampleCSS(example.configuration!, example.classes))
       assert.ok(doc.markdown.includes(example.css))
@@ -142,7 +142,7 @@ test('mode and layer contracts retain complete configured CSS, consumers and uni
   // when this index was incorrectly derived from the defined variable inventory.
   assert.deepEqual(variableNamespaceSources.find(row => row.namespace === 'order')?.consumers, ['order-'])
   assert.ok(variableNamespaceSources.find(row => row.namespace === 'spacing')?.consumers.includes('scroll-padding-inline-end-'))
-  assert.ok(variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.includes('@container(md)'))
+  assert.ok(variableNamespaceSources.find(row => row.namespace === 'container')?.consumers.includes('@container((width>=28rem))'))
   for (const row of variableNamespaceSources) for (const consumer of row.consumers) assert.ok(renderDocumentMarkdown(modes, catalog).includes(`\`${consumer}\``))
   const layers = catalog.documents.find(doc => doc.id === 'rules/layers')!
   assert.ok(layers.headings.some(heading => heading.id === 'summary' && heading.title === 'Defaults stay below local decisions'))
@@ -204,8 +204,8 @@ test('language contracts export portable examples, complete CSS and stable secti
   assert.match(extraction, /setAttribute\('aria-valuenow'/)
   assert.doesNotMatch(extraction, /(?:font-size|w):\$/)
   const conditions = renderDocumentMarkdown(catalog.documents.find(doc => doc.id === 'rules/conditions')!, catalog)
-  assert.match(conditions, /container:sidebar\/inline-size/)
-  assert.match(conditions, /@supports\(backdrop-filter:blur\(0px\)\)/)
+  assert.match(conditions, /container:card\/inline-size/)
+  assert.match(conditions, /@supports\(\(display:grid\)\)/)
   assert.doesNotMatch(conditions, /`css @/)
 })
 
@@ -378,7 +378,7 @@ test('directive contracts preserve stable entrances and complete compiled styles
   }
   const settings = docs.find(doc => doc.id === 'directives/settings')!
   assert.match(settings.markdown, /Setting \| Default \| Effect/)
-  assert.match(settings.markdown, /`root-size` \| `16`/)
+  assert.match(settings.markdown, /`root-size`.*removed/)
   assert.match(settings.markdown, /`scope` \| `not set`/)
 })
 
@@ -419,7 +419,7 @@ test('package declarations preserve every export and anchor without exposing imp
   }
   const next = packages.find(doc => doc.id === 'packages/css-next')!
   const section = next.markdown.split('### withMasterCSS')[1].split('## @master/css-next/adapter')[0]
-  assert.equal((section.match(/function withMasterCSS/g) ?? []).length, 3)
+  assert.equal((section.match(/function withMasterCSS/g) ?? []).length, 5)
   assert.match(packages.find(doc => doc.id === 'packages/css-language-server')!.markdown, /Executable server startup entry/)
   assert.doesNotMatch(packages.find(doc => doc.id === 'packages/css-svelte-addon')!.markdown, /sv\.file|defineAddon\(/)
 })

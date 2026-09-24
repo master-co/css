@@ -1,3 +1,4 @@
+import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
 import type {
   MasterCSSIntegrationRuntimeOptions,
   MasterCSSRenderingMode
@@ -7,6 +8,7 @@ import type { MasterCSSScannerConfiguration } from '@master/css-tooling/scanner/
 export interface MasterCSSVitePluginOptions {
   enabled?: boolean
   mode?: MasterCSSRenderingMode
+  pruneNativeCSS?: boolean
   scanner?: MasterCSSScannerConfiguration
   runtime?: boolean | MasterCSSIntegrationRuntimeOptions
 }
@@ -14,6 +16,7 @@ export interface MasterCSSVitePluginOptions {
 export interface ResolvedMasterCSSVitePluginOptions {
   enabled?: boolean
   mode?: MasterCSSRenderingMode
+  pruneNativeCSS?: boolean
   scanner?: MasterCSSScannerConfiguration
   injectRuntime?: boolean
   avoidFOUC?: boolean
@@ -22,23 +25,24 @@ export interface ResolvedMasterCSSVitePluginOptions {
 export const defaultMasterCSSVitePluginOptions:
 Readonly<ResolvedMasterCSSVitePluginOptions> = Object.freeze({
   enabled: true,
-  mode: 'runtime',
+  mode: 'static',
+  pruneNativeCSS: false,
   scanner: Object.freeze({}),
-  injectRuntime: true,
+  injectRuntime: false,
   avoidFOUC: true
 })
 
 export function resolveMasterCSSVitePluginOptions(
   options: MasterCSSVitePluginOptions = {}
 ): ResolvedMasterCSSVitePluginOptions {
-  const runtime = typeof options.runtime === 'object'
-    ? options.runtime
-    : { enabled: options.runtime }
+  const mode = options.mode ?? 'static'
+  const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     enabled: options.enabled ?? true,
-    mode: options.mode ?? 'runtime',
+    mode,
+    pruneNativeCSS: options.pruneNativeCSS ?? false,
     scanner: options.scanner ?? {},
-    injectRuntime: runtime.enabled ?? true,
+    injectRuntime: runtime.enabled,
     avoidFOUC: runtime.avoidFOUC ?? true
   }
 }

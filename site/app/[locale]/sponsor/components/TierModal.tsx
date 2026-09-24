@@ -8,7 +8,7 @@ export default function TierModal({ tierState }: { tierState: [any, Dispatch<any
   const $ = useTranslation()
   const [selectedTier, setSelectedTier] = tierState
   return <Modal backdropClick={() => setSelectedTier(null)} contentClass="max-w:320px pb:0.938rem">
-    <div className="flex gap:1.25rem p:1.563rem r:5px flex-col@<lg">
+    <div className="flex gap:1.25rem p:1.563rem r:5px flex-col@media((width<80rem))">
       <div className="font-6xl">{selectedTier.icon}</div>
       <div className='flex:1'>
         <div className="text-md font-medium text-strong uppercase::first-letter">{selectedTier.name}</div>

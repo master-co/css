@@ -1,5 +1,4 @@
 import { createRenderBindingSessionSync } from '@master/css-binding/engine/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import {
   renderCompiledManifestCSSWithSession,
   type RenderCompiledManifestCSSOptions,
@@ -17,7 +16,7 @@ export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOpti
   const session: StylesheetRenderSession = {
     nativeDeclarationCandidates: (classNames) =>
       [...nativeSession.nativeDeclarationCandidates(classNames)],
-    ensureClasses: (classNames, nativeSupport) => nativeSession.ensureClassRules(classNames, nativeSupport),
+    ensureClasses: (classNames) => nativeSession.ensureClassRules(classNames),
     ensureStylesheetResources: (nativeCSS) => nativeSession.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => nativeSession.emittedGlobals() as Required<import('@master/css-schema/emitted-globals').MasterCSSEmittedGlobals>,
     snapshot: () => nativeSession.snapshot(),
@@ -27,8 +26,7 @@ export function renderCompiledManifestCSS(options: RenderCompiledManifestCSSOpti
   try {
     return renderCompiledManifestCSSWithSession(
       options,
-      session,
-      supportsNativeDeclaration
+      session
     )
   } finally {
     session.dispose()

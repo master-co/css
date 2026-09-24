@@ -6,7 +6,8 @@ import {
   registerStylesheetSource,
   type StylesheetSources
 } from '../stylesheet'
-import { discoverManifestEntries } from '../project/manifest'
+import { validateClassNames } from '@master/css-tooling/validator'
+import { discoverManifestEntries, loadProjectManifest } from '../project/manifest'
 import fg from 'fast-glob'
 import fs from 'node:fs'
 import path from 'node:path'
@@ -204,15 +205,22 @@ export async function createMasterCSSInspectionReport(
   const stylesheetSources: StylesheetSources = new Map()
   const firstSourceByClass = new Map<string, string>()
   let reportInput: MasterCSSDiagnosticsReportInput
+  let stylesheetInspection: Awaited<ReturnType<typeof registerManagedCSSEntries>> | undefined
 
   try {
-    await scanner.init()
-    const stylesheetInspection = await registerManagedCSSEntries(
+    let projectManifest = options.manifest
+    let projectError: unknown
+    try {
+      projectManifest = (await loadProjectManifest({ root: cwd, baseManifest: options.manifest })).manifest
+    } catch (error) { projectError = error }
+    await scanner.init({ ...scanner.customOptions, manifest: projectManifest })
+    stylesheetInspection = await registerManagedCSSEntries(
       scanner,
       stylesheetSources,
       options.manifest,
       options.resolveExistingFile
     )
+    if (projectError) throw projectError
     const sourcePaths = resolveSourcePaths(
       cwd,
       sourcePatterns,
@@ -245,6 +253,7 @@ export async function createMasterCSSInspectionReport(
       patterns: sourcePatterns,
       files,
       classes: classChecks,
+      inspections: (await validateClassNames([...new Set([...scanner.latentClasses, ...scanner.validClasses, ...scanner.invalidClasses, ...classChecks])], { manifest: scanner.manifest })).classes,
       scanner: {
         latent: [...scanner.latentClasses],
         valid: [...scanner.validClasses],
@@ -274,7 +283,7 @@ export async function createMasterCSSInspectionReport(
       files: [],
       classes: classChecks,
       scanner: {},
-      stylesheets: {},
+      stylesheets: stylesheetInspection ?? {},
       css: {},
       fatalError: error instanceof Error ? error.message : String(error)
     }

@@ -10,7 +10,7 @@ afterAll(() => validator.dispose())
 
 function generateValidRules(className: string) {
   const result = validator.validateClassNames([className]).classes[0]
-  if (!result?.matched || result.rules.some(({ text }) => validateCSS(text).length)) return []
+  if (result?.matchStatus !== 'matched' || result.rules.some(({ text }) => validateCSS(text).length)) return []
   return result.rules
 }
 

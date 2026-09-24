@@ -52,7 +52,8 @@ describe('stylesheet CSS directives', () => {
       exclude: [],
       safelist: [],
       blocklist: [],
-      preserveNative: false
+      preserveNative: false,
+      pruneNative: false
     })
     expect(result.removed).toBe(false)
     expect(result.code).toContain('@master source')
@@ -157,6 +158,7 @@ describe('stylesheet CSS directives', () => {
     const result = await registerStylesheetSource(scanner, stylesheetSources, join(root, 'app/a/a.css'), `
       @import "@master/css";
       @source './*.tsx';
+      @prune native;
 
       .card {
         color: red;
@@ -183,6 +185,7 @@ describe('stylesheet CSS directives', () => {
   it('merges imported stylesheet class directives into the parent root scope', async () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/shared.css'), `
+      @prune native;
       @safelist 'shared-card legacy-card';
       @blocklist 'legacy-*';
 

@@ -62,7 +62,7 @@
           ]
         },
         {
-          "begin": "(@)(preserve)\\b",
+          "begin": "(@)(preserve|prune)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"
@@ -172,7 +172,7 @@
           ]
         },
         {
-          "begin": "(@)(custom-variant)\\b",
+          "begin": "(@)(custom-variant|mode)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"

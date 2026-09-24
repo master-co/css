@@ -108,7 +108,7 @@ fn reserved_names_longest_prefix_and_ambiguity_are_deterministic() {
         "background-color:var(--color-cover)"
     );
     let ambiguous = engine.inspect("font-brand:hover").unwrap();
-    assert!(!ambiguous.valid);
+    assert!(ambiguous.match_status != mastercss_schema::MatchStatus::Matched);
     assert!(ambiguous.diagnostics[0].message.contains("Ambiguous"));
     assert!(
         ambiguous.diagnostics[0]
@@ -120,9 +120,12 @@ fn reserved_names_longest_prefix_and_ambiguity_are_deterministic() {
             .notes
             .contains(&"font-size-brand:hover".into())
     );
-    assert!(!engine.inspect("font-family-sm").unwrap().valid);
+    assert!(
+        engine.inspect("font-family-sm").unwrap().match_status
+            != mastercss_schema::MatchStatus::Matched
+    );
     let group = engine.inspect("{p-md;font-brand}:hover").unwrap();
-    assert!(!group.valid);
+    assert!(group.match_status != mastercss_schema::MatchStatus::Matched);
     assert!(group.diagnostics[0].message.contains("Ambiguous"));
     assert_eq!(
         declarations(&engine, "font-size-brand"),
@@ -144,13 +147,22 @@ fn signs_opacity_and_variants_preserve_token_identity() {
         "margin:calc(var(--spacing-sm) * -1)"
     );
     for class in ["-p-sm", "-fg-red", "p--sm", "fg-red/2", "p-md/0.5", "p-4"] {
-        assert!(!engine.inspect(class).unwrap().valid, "{class}");
+        assert!(
+            engine.inspect(class).unwrap().match_status != mastercss_schema::MatchStatus::Matched,
+            "{class}"
+        );
     }
     assert_eq!(
         declarations(&engine, "fg-red/0.5"),
         "color:color-mix(in oklab,var(--color-red) 50%,transparent)"
     );
-    assert!(engine.inspect("{p-md;fg-red}:hover@sm!").unwrap().valid);
+    assert!(
+        engine
+            .inspect("{p-md;fg-red}:hover@sm!")
+            .unwrap()
+            .match_status
+            == mastercss_schema::MatchStatus::Matched
+    );
     let inspection = engine.inspect("p-md:hover!").unwrap();
     assert!(
         inspection.rules[0]
@@ -184,10 +196,10 @@ fn css_resolution_x_is_preserved_and_lengths_are_not_converted() {
         "background-image:image-set(url(a.png) 1x,url(b.png) 2x)"
     );
     assert_eq!(declarations(&engine, "p:4x"), "padding:4x"); // Invalid CSS is a host validation concern.
-    let resolution = engine.inspect("p:1px@media(resolution>=2x)").unwrap();
-    assert!(resolution.rules[0].text.contains("resolution >= 2x"));
-    let configured = compile("@settings{root-size:20}").unwrap();
-    assert_eq!(declarations(&configured, "p:4px"), "padding:4px");
+    let resolution = engine.inspect("p:1px@media((resolution>=2x))").unwrap();
+    assert!(resolution.rules[0].text.contains("resolution>=2x"));
+    assert!(compile("@settings{root-size:20}").is_err());
+    assert_eq!(declarations(&engine, "p:4px"), "padding:4px");
     assert_eq!(
         declarations(&engine, "m:calc(var(--spacing-sm)+2px)"),
         "margin:calc(var(--spacing-sm) + 2px)"
@@ -231,9 +243,7 @@ fn native_property_names_do_not_become_token_prefixes() {
         let candidates = engine.native_declaration_candidates([class]).unwrap();
         assert_eq!(candidates[0].property, property);
         assert_eq!(candidates[0].value, value);
-        engine
-            .ensure_class_rules_with_native_support([class], &[true])
-            .unwrap();
+        engine.ensure_class_rules([class]).unwrap();
         assert_eq!(declarations(&engine, class), format!("{property}:{value}"));
     }
 }
@@ -257,10 +267,13 @@ fn rejects_rc_contracts_in_formal_compilation() {
             .contains("removed")
     );
     assert!(serde_json::from_value::<CssDirectiveManifestInput>(json!({"baseUnit":4})).is_err());
-    assert!(MasterCssManifest::new(json!({"version":1,"settings":{"baseUnit":4}})).is_err());
+    assert!(
+        MasterCssManifest::new(json!({"version":1,"languageVersion":2,"settings":{"baseUnit":4}}))
+            .is_err()
+    );
     assert!(
         MasterCssManifest::new(
-            json!({"version":1,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
+            json!({"version":1,"languageVersion":2,"utilities":[{"matchers":[{"type":"variable","keys":["p"]}]}]})
         )
         .is_err()
     );
@@ -293,7 +306,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
         json!({"id":"native-override","type":0,"matchers":[{"type":"static","name":"font:16px"}],"emit":{"type":"property","property":"font-size"}}),
         json!({"id":"native-enum","type":0,"matchers":[{"type":"pattern","prefix":"color:","values":["red"],"valueMap":{"red":"blue"}}],"emit":{"type":"property","property":"color"}}),
     ] {
-        let source = json!({"version":1,"utilities":[utility]}).to_string();
+        let source = json!({"version":1,"languageVersion":2,"utilities":[utility]}).to_string();
         assert!(
             EngineSession::create(&source)
                 .err()
@@ -308,7 +321,7 @@ fn hand_authored_manifests_cannot_reinterpret_native_declarations() {
 fn handwritten_static_names_reserve_token_spellings_at_every_sort_type() {
     for utility_type in [-2, -1, 0] {
         let manifest = json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "variables": {"color": [{"key":"red", "type":"string", "value":"#f00"}]},
             "utilities": [{
                 "id":"explicit-red", "name":"fg-red", "type": utility_type,
@@ -347,7 +360,10 @@ fn mixed_manifest_matchers_preserve_source_boundaries() {
     matchers.push(json!({"type":"pattern", "prefix":"font-", "values":["reserved"], "valueMap":{"reserved":"serif"}}));
     matchers.push(json!({"type":"key", "keys":["custom-font"]}));
     let engine = EngineSession::create(&manifest.to_string()).unwrap();
-    assert!(!engine.inspect("font-brand").unwrap().valid);
+    assert!(
+        engine.inspect("font-brand").unwrap().match_status
+            != mastercss_schema::MatchStatus::Matched
+    );
     assert_eq!(declarations(&engine, "font-reserved"), "font-family:serif");
     assert_eq!(
         declarations(&engine, "custom-font:monospace"),

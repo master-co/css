@@ -24,7 +24,7 @@ describe('masterCSS plugin composition', () => {
     ]))
   })
 
-  test('null mode registers the shared scanner and style entry pipeline', () => {
+  test('static mode registers the shared scanner and style entry pipeline', () => {
     const names = pluginNames({ mode: 'static' })
 
     expect(names.filter((name) => name === 'master-css:scanner')).toHaveLength(1)
@@ -37,8 +37,8 @@ describe('masterCSS plugin composition', () => {
   test('runtime mode registers runtime preloads only with runtime injection', () => {
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'runtime' })).toContain('master-css:runtime-preload')
-    expect(pluginNames({ mode: 'runtime', runtime: false })).not.toContain('master-css:manifest-preload')
-    expect(pluginNames({ mode: 'runtime', runtime: false })).not.toContain('master-css:runtime-preload')
+    expect(() => pluginNames({ mode: 'runtime', runtime: false })).toThrow(/runtime/)
+    expect(() => pluginNames({ mode: 'static', runtime: true })).toThrow(/runtime/)
     expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:manifest-preload')
     expect(pluginNames({ mode: 'progressive' })).not.toContain('master-css:runtime-preload')
     expect(pluginNames({ mode: 'static' })).not.toContain('master-css:manifest-preload')

@@ -4,8 +4,7 @@ import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '
 import generateManifestCondition from '~/site/utils/generate-manifest-condition'
 
 const breakpointVariableEntries = getThemeNumericVariableEntries('breakpoint')
-const formatLength = (value: number, unit: string) => `${Number(value.toFixed(4))}${unit}`
-const formatValue = (entry: ThemeNumericVariableEntry) => `${formatLength(entry.px, 'px')} / ${formatLength(entry.rem, 'rem')}`
+const formatValue = (entry: ThemeNumericVariableEntry) => entry.value
 
 export default () => {
   return (

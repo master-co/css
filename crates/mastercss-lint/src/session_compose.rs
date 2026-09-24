@@ -14,19 +14,9 @@ impl LintSession {
         class_names: &[String],
         native_support: Option<&[bool]>,
     ) -> Result<Vec<NativeDeclarationCandidateIr>, EngineError> {
-        let Some(native_support) = native_support else {
-            self.engine.ensure_class_rules(class_names)?;
-            return Ok(Vec::new());
-        };
+        let _ = native_support;
         let native_candidates = self.engine.native_declaration_candidates(class_names)?;
-        for (index, candidate) in native_candidates.iter().enumerate() {
-            if native_support.get(index).copied().unwrap_or(false) {
-                self.supported_native_declarations
-                    .insert((candidate.property.clone(), candidate.value.clone()));
-            }
-        }
-        self.engine
-            .ensure_class_rules_with_native_support(class_names, native_support)?;
+        self.engine.ensure_class_rules(class_names)?;
         Ok(native_candidates)
     }
 
@@ -34,16 +24,7 @@ impl LintSession {
         &self,
         class_name: &str,
     ) -> Result<Option<NativeDeclarationCandidateIr>, EngineError> {
-        let Some(candidate) = self.compose_native_declaration(class_name)? else {
-            return Ok(None);
-        };
-        if !self
-            .supported_native_declarations
-            .contains(&(candidate.property.clone(), candidate.value.clone()))
-        {
-            return Ok(None);
-        }
-        Ok(Some(candidate))
+        self.compose_native_declaration(class_name)
     }
 
     pub(crate) fn is_compose_native_declaration(

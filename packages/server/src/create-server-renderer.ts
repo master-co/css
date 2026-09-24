@@ -6,7 +6,6 @@ import {
   type MasterCSSRenderSnapshot
 } from '@master/css/node'
 import { MasterCSSError } from '@master/css-schema'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import {
   bindHTMLRenderSessionInternal
 } from './html-render-session'
@@ -19,10 +18,7 @@ import {
 
 const DEFAULT_MAX_CACHED_CLASSES = 8192
 
-export interface MasterCSSServerRendererOptions extends Omit<
-  MasterCSSRenderSessionOptions,
-  'supportsNativeDeclaration'
-> {
+export interface MasterCSSServerRendererOptions extends MasterCSSRenderSessionOptions {
   readonly maxCachedClasses?: number
 }
 
@@ -96,8 +92,7 @@ export class MasterCSSServerRenderer implements Disposable {
   private renderOptions(): MasterCSSRenderSessionOptions {
     return {
       manifest: this.options.manifest,
-      emittedGlobals: this.options.emittedGlobals,
-      supportsNativeDeclaration: supportsNativeDeclaration
+      emittedGlobals: this.options.emittedGlobals
     }
   }
 

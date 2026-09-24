@@ -4,13 +4,15 @@ use super::{
 };
 
 pub fn find_css_directive_ranges(source: &str) -> Vec<CssDirectiveRange> {
-    const NAMES: [&str; 17] = [
+    const NAMES: [&str; 19] = [
         "master",
         "settings",
         "source",
         "safelist",
         "blocklist",
         "preserve",
+        "prune",
+        "mode",
         "reference",
         "theme",
         "defaults",

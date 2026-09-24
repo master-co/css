@@ -21,7 +21,7 @@ pub(crate) fn validate_semantic_parity_corpus(
     corpus: &SemanticParityCorpus,
 ) -> Result<HashSet<String>, String> {
     if corpus.version != 2
-        || corpus.semantic_baseline != "v2-named-token-contract"
+        || corpus.semantic_baseline != "v2-final-semantics-contract"
         || corpus.public_baseline != "Master CSS v2"
     {
         return Err("Language corpus has an unsupported version or contract.".into());
@@ -134,26 +134,12 @@ pub(crate) fn validate_semantic_parity_corpus(
                     expected_css,
                     expected_resource_order,
                 } => {
-                    let candidate_count = engine
-                        .native_declaration_candidates(classes)
-                        .map_err(|error| {
-                            format!(
-                                "Parity case {} step {} cannot inspect native declarations: {error}",
-                                case.id, step_index
-                            )
-                        })?
-                        .len();
-                    engine
-                        .ensure_class_rules_with_native_support(
-                            classes,
-                            &vec![true; candidate_count],
+                    engine.ensure_class_rules(classes).map_err(|error| {
+                        format!(
+                            "Parity case {} step {} cannot ensure classes: {error}",
+                            case.id, step_index
                         )
-                        .map_err(|error| {
-                            format!(
-                                "Parity case {} step {} cannot ensure classes: {error}",
-                                case.id, step_index
-                            )
-                        })?;
+                    })?;
                     if engine.css_text() != *expected_css {
                         return Err(format!(
                             "Parity case {} step {} CSS mismatch.\nexpected: {}\nactual:   {}",
@@ -227,7 +213,9 @@ pub(crate) fn validate_semantic_parity_corpus(
                             case.id, step_index
                         )
                     })?;
-                    if inspection.valid != *expected_valid {
+                    if (inspection.match_status == mastercss_schema::MatchStatus::Matched)
+                        != *expected_valid
+                    {
                         return Err(format!(
                             "Parity case {} step {} validity mismatch for {class_name}.",
                             case.id, step_index
@@ -318,20 +306,8 @@ pub(crate) fn validate_semantic_parity_corpus(
                     class_name,
                     expected_rule_contains,
                 } => {
-                    let candidate_count = engine
-                        .native_declaration_candidates(std::slice::from_ref(class_name))
-                        .map_err(|error| {
-                            format!(
-                                "Parity case {} step {} cannot inspect native declarations for {class_name}: {error}",
-                                case.id, step_index
-                            )
-                        })?
-                        .len();
                     engine
-                        .ensure_class_rules_with_native_support(
-                            std::slice::from_ref(class_name),
-                            &vec![true; candidate_count],
-                        )
+                        .ensure_class_rules(std::slice::from_ref(class_name))
                         .map_err(|error| {
                             format!(
                                 "Parity case {} step {} cannot ensure {class_name}: {error}",
@@ -344,7 +320,7 @@ pub(crate) fn validate_semantic_parity_corpus(
                             case.id, step_index
                         )
                     })?;
-                    if !inspection.valid
+                    if inspection.match_status != mastercss_schema::MatchStatus::Matched
                         || !inspection
                             .rules
                             .iter()

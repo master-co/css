@@ -282,35 +282,3 @@ pub(super) fn render_style_definitions(
     }
     (css, mappings)
 }
-
-pub(super) fn media_mode_warnings(input: &CssDirectiveManifestInput) -> Vec<String> {
-    if input.mode_trigger.as_deref() != Some("media") {
-        return Vec::new();
-    }
-    let mut modes = input
-        .modes
-        .clone()
-        .unwrap_or_default()
-        .into_iter()
-        .filter(|mode| !matches!(mode.as_str(), "light" | "dark"))
-        .collect::<Vec<_>>();
-    if let Some(default_mode) = input.default_mode.as_ref()
-        && default_mode != "none"
-        && !matches!(default_mode.as_str(), "light" | "dark")
-        && !modes.contains(default_mode)
-    {
-        modes.push(default_mode.clone());
-    }
-    if modes.is_empty() {
-        return Vec::new();
-    }
-    let list = modes
-        .iter()
-        .map(|mode| format!("\"{mode}\""))
-        .collect::<Vec<_>>()
-        .join(", ");
-    let subject = if modes.len() == 1 { "mode" } else { "modes" };
-    vec![format!(
-        "Custom {subject} {list} will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes."
-    )]
-}

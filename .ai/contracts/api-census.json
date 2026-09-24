@@ -11,17 +11,17 @@
     "packages/mcp/src/**/*.ts"
   ],
   "summary": {
-    "records": 894,
+    "records": 901,
     "byKind": {
       "bin": 3,
       "cli-command": 4,
-      "export": 711,
+      "export": 717,
       "mcp-prompt": 3,
       "mcp-resource": 3,
       "mcp-tool": 20,
       "package": 35,
       "subpath": 93,
-      "wire-contract": 22
+      "wire-contract": 23
     }
   },
   "records": [
@@ -2410,6 +2410,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MASTER_CSS_LANGUAGE_VERSION",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MASTER_CSS_LANGUAGE_VERSION"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./tooling#MASTER_CSS_LEXER_BATCH_VERSION",
       "package": "@master/css-binding",
       "subpath": "./tooling",
@@ -2502,6 +2524,50 @@
       "package": "@master/css-binding",
       "subpath": "./tooling",
       "name": "MasterCSSBindingLoadOptions"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MasterCSSBrowserSupport",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MasterCSSBrowserSupport"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MasterCSSDiagnostic",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MasterCSSDiagnostic"
     },
     {
       "kind": "export",
@@ -2894,6 +2960,28 @@
       "lifecycle": "binding-session",
       "visibility": "published-internal",
       "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MasterCSSMatchStatus",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MasterCSSMatchStatus"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
       "id": "export:@master/css-binding:./tooling#MasterCSSNativeBindingLoadOptions",
       "package": "@master/css-binding",
       "subpath": "./tooling",
@@ -3140,6 +3228,28 @@
       "package": "@master/css-binding",
       "subpath": "./tooling",
       "name": "MasterCSSValidatorBindingSession"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "conditional",
+      "lifecycle": "binding-session",
+      "visibility": "published-internal",
+      "disposition": "loader",
+      "id": "export:@master/css-binding:./tooling#MasterCSSValueStatus",
+      "package": "@master/css-binding",
+      "subpath": "./tooling",
+      "name": "MasterCSSValueStatus"
     },
     {
       "kind": "export",
@@ -8137,46 +8247,6 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-schema:./css-directives#CSSDirectiveDefaultMode",
-      "package": "@master/css-schema",
-      "subpath": "./css-directives",
-      "name": "CSSDirectiveDefaultMode"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-schema:./css-directives#CSSDirectiveError",
       "package": "@master/css-schema",
       "subpath": "./css-directives",
@@ -8301,46 +8371,6 @@
       "package": "@master/css-schema",
       "subpath": "./css-directives",
       "name": "CSSDirectiveManifestInput"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css-schema:./css-directives#CSSDirectiveModeTrigger",
-      "package": "@master/css-schema",
-      "subpath": "./css-directives",
-      "name": "CSSDirectiveModeTrigger"
     },
     {
       "kind": "export",
@@ -11497,46 +11527,6 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-schema:./manifest#MasterCSSManifestDefaultMode",
-      "package": "@master/css-schema",
-      "subpath": "./manifest",
-      "name": "MasterCSSManifestDefaultMode"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css-schema",
-      "responsibility": "serializable contracts and codecs",
-      "consumers": [
-        "@master/create-css",
-        "@master/css",
-        "@master/css-astro",
-        "@master/css-binding",
-        "@master/css-binding-wasm-compiler",
-        "@master/css-binding-wasm-engine",
-        "@master/css-binding-wasm-tooling",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-internal",
-        "@master/css-language-server",
-        "@master/css-language-service",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-nuxt",
-        "@master/css-preset",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-tooling",
-        "@master/css-vite",
-        "@master/css-vscode",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "value",
-      "visibility": "public",
-      "disposition": "retain",
       "id": "export:@master/css-schema:./manifest#MasterCSSManifestKeyframes",
       "package": "@master/css-schema",
       "subpath": "./manifest",
@@ -11577,10 +11567,10 @@
       "lifecycle": "value",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-schema:./manifest#MasterCSSManifestModeTrigger",
+      "id": "export:@master/css-schema:./manifest#MasterCSSManifestMode",
       "package": "@master/css-schema",
       "subpath": "./manifest",
-      "name": "MasterCSSManifestModeTrigger"
+      "name": "MasterCSSManifestMode"
     },
     {
       "kind": "export",
@@ -17429,10 +17419,64 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-tooling:./node#MasterCSSNativeDeclarationCandidate",
+      "id": "export:@master/css-tooling:./node#CSS_VALUE_CHECK",
       "package": "@master/css-tooling",
       "subpath": "./node",
-      "name": "MasterCSSNativeDeclarationCandidate"
+      "name": "CSS_VALUE_CHECK"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./node#cssValueStatus",
+      "package": "@master/css-tooling",
+      "subpath": "./node",
+      "name": "cssValueStatus"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "node",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./node#getToolingBindingInfo",
+      "package": "@master/css-tooling",
+      "subpath": "./node",
+      "name": "getToolingBindingInfo"
     },
     {
       "kind": "export",
@@ -17483,10 +17527,10 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
-      "id": "export:@master/css-tooling:./node#supportsNativeDeclaration",
+      "id": "export:@master/css-tooling:./node#validateRuleDeclarations",
       "package": "@master/css-tooling",
       "subpath": "./node",
-      "name": "supportsNativeDeclaration"
+      "name": "validateRuleDeclarations"
     },
     {
       "kind": "export",
@@ -17915,6 +17959,87 @@
       "lifecycle": "tooling-session",
       "visibility": "public",
       "disposition": "retain",
+      "id": "export:@master/css-tooling:./validator#CSS_VALUE_CHECK",
+      "package": "@master/css-tooling",
+      "subpath": "./validator",
+      "name": "CSS_VALUE_CHECK"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./validator#cssValueStatus",
+      "package": "@master/css-tooling",
+      "subpath": "./validator",
+      "name": "cssValueStatus"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./validator#DeclarationValidation",
+      "package": "@master/css-tooling",
+      "subpath": "./validator",
+      "name": "DeclarationValidation"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
       "id": "export:@master/css-tooling:./validator#MasterCSSClassValidation",
       "package": "@master/css-tooling",
       "subpath": "./validator",
@@ -17973,6 +18098,33 @@
       "package": "@master/css-tooling",
       "subpath": "./validator",
       "name": "validateClassNames"
+    },
+    {
+      "kind": "export",
+      "owner": "@master/css-tooling",
+      "responsibility": "lexer, source, scanner, validator, lint, and language tooling",
+      "consumers": [
+        "@master/css-cli",
+        "@master/css-compiler",
+        "@master/css-language-server",
+        "@master/css-language-service",
+        "@master/css-mcp",
+        "@master/css-next",
+        "@master/css-server",
+        "@master/css-vite",
+        "@master/css-vscode",
+        "@master/css-webpack",
+        "@master/eslint-plugin-css",
+        "site"
+      ],
+      "platform": "universal",
+      "lifecycle": "tooling-session",
+      "visibility": "public",
+      "disposition": "retain",
+      "id": "export:@master/css-tooling:./validator#validateRuleDeclarations",
+      "package": "@master/css-tooling",
+      "subpath": "./validator",
+      "name": "validateRuleDeclarations"
     },
     {
       "kind": "export",
@@ -18687,46 +18839,6 @@
       "package": "@master/css",
       "subpath": "./node",
       "name": "MasterCSSNativeDeclaration"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css",
-      "responsibility": "manifest execution and engine rendering",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-figma",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-vite",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "master-css-astro-example",
-        "master-css-example",
-        "master-css-integration-lab",
-        "master-css-laravel-example",
-        "master-css-lit-example",
-        "master-css-nextjs-example",
-        "master-css-nuxtjs-example",
-        "master-css-react-example",
-        "master-css-svelte-example",
-        "master-css-vite-example",
-        "master-css-webpack-example",
-        "site"
-      ],
-      "platform": "node",
-      "lifecycle": "engine-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css:./node#MasterCSSNativeDeclarationSupport",
-      "package": "@master/css",
-      "subpath": "./node",
-      "name": "MasterCSSNativeDeclarationSupport"
     },
     {
       "kind": "export",
@@ -19527,46 +19639,6 @@
       "package": "@master/css",
       "subpath": ".",
       "name": "MasterCSSNativeDeclaration"
-    },
-    {
-      "kind": "export",
-      "owner": "@master/css",
-      "responsibility": "manifest execution and engine rendering",
-      "consumers": [
-        "@master/css-astro",
-        "@master/css-cli",
-        "@master/css-compiler",
-        "@master/css-figma",
-        "@master/css-mcp",
-        "@master/css-next",
-        "@master/css-runtime",
-        "@master/css-server",
-        "@master/css-svelte",
-        "@master/css-vite",
-        "@master/css-webpack",
-        "@master/eslint-plugin-css",
-        "master-css-angular-example",
-        "master-css-astro-example",
-        "master-css-example",
-        "master-css-integration-lab",
-        "master-css-laravel-example",
-        "master-css-lit-example",
-        "master-css-nextjs-example",
-        "master-css-nuxtjs-example",
-        "master-css-react-example",
-        "master-css-svelte-example",
-        "master-css-vite-example",
-        "master-css-webpack-example",
-        "site"
-      ],
-      "platform": "universal",
-      "lifecycle": "engine-session",
-      "visibility": "public",
-      "disposition": "retain",
-      "id": "export:@master/css:.#MasterCSSNativeDeclarationSupport",
-      "package": "@master/css",
-      "subpath": ".",
-      "name": "MasterCSSNativeDeclarationSupport"
     },
     {
       "kind": "export",
@@ -23808,7 +23880,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_BINDING_ABI_VERSION",
       "name": "MASTER_CSS_BINDING_ABI_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 8
+      "value": 9
     },
     {
       "kind": "wire-contract",
@@ -23830,7 +23902,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "name": "MASTER_CSS_DIAGNOSTICS_REPORT_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -23895,6 +23967,28 @@
       "disposition": "loader",
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_BATCH_VERSION",
       "name": "MASTER_CSS_LANGUAGE_BATCH_VERSION",
+      "source": "packages/binding/src/protocol.ts",
+      "value": 3
+    },
+    {
+      "kind": "wire-contract",
+      "owner": "@master/css-binding",
+      "responsibility": "native and Wasm binding loading",
+      "consumers": [
+        "@master/css",
+        "@master/css-compiler",
+        "@master/css-preset",
+        "@master/css-runtime",
+        "@master/css-server",
+        "@master/css-tooling",
+        "@master/css-vscode"
+      ],
+      "platform": "universal",
+      "lifecycle": "serialized-value",
+      "visibility": "internal-protocol",
+      "disposition": "loader",
+      "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_LANGUAGE_VERSION",
+      "name": "MASTER_CSS_LANGUAGE_VERSION",
       "source": "packages/binding/src/protocol.ts",
       "value": 2
     },
@@ -24006,7 +24100,7 @@
       "id": "wire-contract:packages/binding/src/protocol.ts#MASTER_CSS_VALIDATOR_BATCH_VERSION",
       "name": "MASTER_CSS_VALIDATOR_BATCH_VERSION",
       "source": "packages/binding/src/protocol.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24022,7 +24116,7 @@
       "id": "wire-contract:packages/cli/src/lint.ts#REPORT_VERSION",
       "name": "REPORT_VERSION",
       "source": "packages/cli/src/lint.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24064,7 +24158,7 @@
       "id": "wire-contract:packages/mcp/src/compare.ts#CSS_COMPARE_VERSION",
       "name": "CSS_COMPARE_VERSION",
       "source": "packages/mcp/src/compare.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24120,7 +24214,7 @@
       "id": "wire-contract:packages/mcp/src/lint.ts#LINT_REPORT_VERSION",
       "name": "LINT_REPORT_VERSION",
       "source": "packages/mcp/src/lint.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",
@@ -24148,7 +24242,7 @@
       "id": "wire-contract:packages/mcp/src/result.ts#MASTER_CSS_MCP_RESULT_VERSION",
       "name": "MASTER_CSS_MCP_RESULT_VERSION",
       "source": "packages/mcp/src/result.ts",
-      "value": 1
+      "value": 2
     },
     {
       "kind": "wire-contract",

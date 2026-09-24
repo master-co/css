@@ -1,3 +1,4 @@
+import type { MasterCSSBindingInfo } from './protocol'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   MasterCSSBindingLoadOptions,
@@ -168,6 +169,7 @@ export interface MasterCSSScannerBindingSession extends MasterCSSToolingBindingS
 }
 
 export interface MasterCSSToolingBinding {
+  readonly info: MasterCSSBindingInfo
   readonly binding: MasterCSSResolvedBinding
   createLexerSession(): Promise<MasterCSSLexerBindingSession>
   createSourceSession(): Promise<MasterCSSSourceBindingSession>
@@ -183,6 +185,7 @@ export interface MasterCSSToolingBinding {
 }
 
 export interface MasterCSSToolingBindingSync {
+  readonly info: MasterCSSBindingInfo
   readonly binding: 'native'
   createLexerSession(): MasterCSSLexerBindingSession
   createSourceSession(): MasterCSSSourceBindingSession

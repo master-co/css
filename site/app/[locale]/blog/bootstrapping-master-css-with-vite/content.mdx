@@ -46,7 +46,7 @@ export default defineConfig({
 })
 ```
 
-By default, the plugin uses `runtime` mode. That is the most forgiving way to start: Master CSS reads classes in the browser, generates the required rules, and keeps working as your UI changes.
+By default, the plugin uses `static` mode. Master CSS scans complete classes in source and emits ordinary CSS. CSS variables and native selectors remain dynamic in the browser; explicitly select runtime mode when new class names must be interpreted after the build.
 
 Run the Vite dev server and start writing Master CSS classes:
 

@@ -274,3 +274,57 @@ pub(super) fn audit_source(source: &str) -> Vec<String> {
     }
     notes
 }
+
+// Frozen RC value/suffix boundary decoding, used only by explicit migration.
+pub(super) fn split_rc_value_state(value: &str) -> (String, String) {
+    let mut quote = None;
+    let mut escaped = false;
+    let mut depth = 0_u32;
+    for (index, character) in value.char_indices() {
+        if escaped {
+            escaped = false;
+            continue;
+        }
+        if character == '\\' {
+            escaped = true;
+            continue;
+        }
+        if let Some(current_quote) = quote {
+            if character == current_quote {
+                quote = None;
+            }
+            continue;
+        }
+        if character == '\'' || character == '"' {
+            quote = Some(character);
+            continue;
+        }
+        if character == '[' && depth == 0 {
+            return (value[..index].to_owned(), value[index..].to_owned());
+        }
+        if matches!(character, '(' | '[' | '{') {
+            depth += 1;
+            continue;
+        }
+        if matches!(character, ')' | ']' | '}') {
+            depth = depth.saturating_sub(1);
+            continue;
+        }
+        if depth == 0 {
+            let next = value[index + character.len_utf8()..].chars().next();
+            let previous = value[..index].chars().next_back();
+            let starts_state = matches!(
+                character,
+                '!' | '*' | '>' | '+' | '~' | ':' | '[' | '@' | '_'
+            ) || character == '.'
+                && next.is_none_or(|next| !next.is_ascii_digit())
+                || character == '#'
+                    && index > 0
+                    && previous.is_some_and(|previous| !matches!(previous, '|' | ' '));
+            if starts_state {
+                return (value[..index].to_owned(), value[index..].to_owned());
+            }
+        }
+    }
+    (value.to_owned(), String::new())
+}

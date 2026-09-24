@@ -80,7 +80,9 @@ export interface MasterCSSEngineSnapshot {
 export interface MasterCSSEngineInspection {
   readonly version: 1
   readonly className: string
-  readonly valid: boolean
+  readonly matchStatus: 'matched' | 'unmatched' | 'ambiguous' | 'syntax-error'
+  readonly cssValueStatus: 'valid' | 'invalid' | 'unknown' | 'not-checked'
+  readonly browserSupport: 'supported' | 'unsupported' | 'unknown' | 'not-checked'
   readonly rules: readonly MasterCSSHydrationRule[]
 }
 

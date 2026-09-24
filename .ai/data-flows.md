@@ -30,6 +30,17 @@ Risks:
   and ESLint.
 - CSS bytes, layer order, and keyframe placement are behavioral contracts.
 
+The envelope stays Manifest v1; executable manifests and hydration must carry
+`languageVersion: 2`. Reject missing or unsupported language versions before
+semantic execution. Native declaration output does not depend on host support
+callbacks. CSS value checking belongs to compiler/tooling report or strict
+failure policy, and browser support is a separate observation.
+
+Conditions retain their ordered native wrappers and authored units. Named
+conditions, variants, and modes share a collision-checked namespace. Mode
+activation branches are explicit manifest data; theme variables inherit through
+CSS, and the engine does not infer light/dark triggers or color-scheme.
+
 ## CSS Authoring To Manifest
 
 ```txt

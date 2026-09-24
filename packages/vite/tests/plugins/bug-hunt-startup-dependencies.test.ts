@@ -29,7 +29,7 @@ test.each(cases)('BH-0004 startup $missing recovers $kind in $mode', async ({ mo
   const f = fixture(kind, missing)
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen()
     const observed: { event: string, file: string }[] = []
     server.watcher.on('all', (event, file) => { if (file.startsWith(f.parent)) observed.push({ event, file }) })

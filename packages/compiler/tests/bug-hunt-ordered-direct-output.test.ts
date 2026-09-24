@@ -8,7 +8,7 @@ import { createCompiler } from '../src/index'
 import { createCompilerBindingSession } from '../src/session'
 import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
-const baseManifest = { version: 1 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
 const source = '@utilities{paint{padding:2rem}}@layer{.card{@compose paint;}.card{padding:3rem!important}}'
 
 for (const binding of ['native', 'wasm'] as const) {
@@ -37,20 +37,15 @@ test('ordered output and mappings survive a native/Wasm JSON round trip, includi
   } finally { native.dispose(); wasm.dispose() }
 })
 
-test('BH-0004 qualified imports with child managed definitions preserve output and source maps', async () => {
+test('BH-0004 qualified imports reject global child definitions before publishing output', async () => {
   const root = mkdtempSync(join(tmpdir(), 'master-ordered-map-'))
   try {
     const entry = join(root, 'entry.css'), child = join(root, 'child.css')
     const childSource = '@utilities{paint{padding:2rem}}\n.card{@compose paint;}\n.card{padding:3rem}'
     writeFileSync(child, childSource)
     const text = '@import "./child.css" layer;\n.after{margin:1px}'
-    const result = await compileRenderedStylesheet(entry, text, { baseManifest, projectDir: root, preserveNativeCSS: true })
-    expect(result.css.match(/@layer/g)).toHaveLength(1)
-    const map = new SourceMap(JSON.parse(result.sourceMap!))
-    for (const [selector, file, line] of [['.card', child, 1], ['.after', entry, 1]] as const) {
-      const prefix = result.css.slice(0, result.css.indexOf(selector)).split('\n')
-      expect(map.findEntry(prefix.length - 1, prefix.at(-1)!.length)).toMatchObject({ originalSource: pathToFileURL(file).href, originalLine: line, originalColumn: 0 })
-    }
+    await expect(compileRenderedStylesheet(entry, text, { baseManifest, projectDir: root, preserveNativeCSS: true })).rejects.toThrow(/Qualified import.*global @utilities/)
+
   } finally { rmSync(root, { recursive: true, force: true }) }
 })
 

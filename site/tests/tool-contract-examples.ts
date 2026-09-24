@@ -12,7 +12,7 @@ export async function verifyToolContractExamples() {
   const file = join(root, 'src/button.html')
   const source = '<button class="bg-blue-60 p-md flex gap-sm">Save</button>'
   writeFileSync(file, source)
-  writeFileSync(join(root, 'app.css'), '@master entry;\n@theme { --color-brand: blue; }')
+  writeFileSync(join(root, 'app.css'), '@import "@master/css";\n@theme { --color-brand: blue; }')
   const connection = await connect(root)
   const reports: Record<string, any> = {}
   try {
@@ -21,7 +21,7 @@ export async function verifyToolContractExamples() {
     for (const [name, editorial] of Object.entries(mcpEditorial)) {
       if (name === 'mastercss_apply_preview') continue
       const report = value<any>(await connection.call(name, editorial.example))
-      assert.equal(report.version, 1, name)
+      assert.equal(report.version, 2, name)
       assert.ok(Array.isArray(report.diagnostics), name)
       reports[name.replace('mastercss_', '')] = report
       assert.equal(readFileSync(file, 'utf8'), source, `${name} must not change source`)
@@ -30,7 +30,7 @@ export async function verifyToolContractExamples() {
     assert.ok(reports.workspace_info.manifest.entries.includes(join(root, 'app.css')))
     assert.equal(reports.setup_audit.status, 'warning')
     assert.ok(reports.setup_audit.diagnostics.some((d: any) => d.code === 'missing-master-css-package'))
-    assert.equal(reports.inspect_class.valid, true)
+    assert.equal(reports.inspect_class.matchStatus, 'matched')
     assert.match(reports.inspect_class.css, /padding:var\(--spacing-md\)/)
     assert.equal(reports.trace_class.status, 'present')
     assert.equal(reports.trace_class.detected, true)

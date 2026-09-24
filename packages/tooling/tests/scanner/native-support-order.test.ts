@@ -24,9 +24,10 @@ test.each(['native', 'wasm'] as const)('%s scanner keeps native validation align
       for (const index of order) await scanner.scan(`${index}.html`, sources[index])
       expect([...scanner.validClasses].sort()).toEqual([
         'accent-color:red',
+        'made-up:bad',
         '{accent-color:blue;caret-color:red}'
       ])
-      expect([...scanner.invalidClasses]).toEqual(['made-up:bad'])
+      expect([...scanner.invalidClasses]).toEqual([])
       expectedCSS ??= scanner.css.text
       expect(scanner.css.text).toBe(expectedCSS)
       await scanner.scan('repeat.html', sources[1])

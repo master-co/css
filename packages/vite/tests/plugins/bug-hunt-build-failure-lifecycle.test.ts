@@ -20,7 +20,7 @@ async function setup(mode: 'static' | 'runtime' | 'pre-render' | 'progressive', 
   writeFileSync(style, (managed ? '@master entry;' : '') + '@reference "./missing/nested/tokens.css";.target{@compose paint;}')
   writeFileSync(join(root, 'entry.js'), 'import "./style.css"')
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
-  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode, runtime: false }), { name: 'recovery-event-observer', watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
+  const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), { name: 'recovery-event-observer', watchChange(id, change) { trace('watch', { id, change });if (process.env.BH_WATCH_TRACE) console.log('WATCH', mode, Date.now(), id, change) } }], build: { watch: { include, exclude }, minify: false } }).catch(error => { rmSync(root, { recursive: true, force: true });throw error })
   if (!('on' in result)) throw new Error('Expected build watcher')
   const events: { code: string, error?: unknown }[] = [], closing: Promise<void>[] = []
   let terminal: { code: string, error?: unknown } | undefined, closed = false

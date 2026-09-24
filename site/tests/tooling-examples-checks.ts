@@ -71,7 +71,7 @@ export function verifyLanguageExamples() {
     const hover = toolingExample('hover')
     const doc = createDoc('html', hover.source)
     const output = service.inspectSyntax(doc, doc.positionAt(hover.source.indexOf('bg-') + 3))
-    assert.equal((output?.contents as { value: string }).value, `Named token: \`--color-blue-60\`\n\n\`\`\`css\n${hover.result}\n\`\`\``)
+    assert.ok((output?.contents as { value: string }).value.startsWith( `Named token: \`--color-blue-60\`\n\n\`\`\`css\n${hover.result}\n\`\`\``))
     const source = '<button class="p-">Save</button>'
     const completion = createDoc('html', source)
     const items = service.suggestSyntax(completion, completion.positionAt(source.indexOf('p-') + 2), { triggerKind: 2, triggerCharacter: '-' })

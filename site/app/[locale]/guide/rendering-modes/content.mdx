@@ -1,10 +1,10 @@
 ## Overview [sr-only]
-Master CSS integrations choose how generated rules reach the browser. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
+Official build integrations default to `static`. Choose an explicit mode when browser rule generation or server pre-rendering is needed. The same project CSS entry graph can be used by runtime rendering, static rendering, server rendering, and progressive hydration.
 
 | Mode                      | Description                                                                                                                                           |
 |---------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `'runtime'`               | Starts `MasterCSSRuntime` in the browser, loads the project manifest, observes connected elements, and ensures generated rules as class names appear. |
-| `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, prunes native CSS, and generates CSS from the project CSS entry graph. |
+| `'static'`                | Scans source files, replaces `@import '@master/css'` in managed CSS entries, preserves native CSS by default, and generates CSS from the project CSS entry graph. |
 | `'pre-render'`            | Renders HTML output and injects the CSS required by the rendered class names. This mode is usually owned by SSR/SSG integrations. |
 | `'progressive'`           | Combines server-rendered first-page CSS, a hydration manifest, and client-side runtime adoption for classes that appear after the initial HTML. |
 
@@ -198,7 +198,7 @@ This does not change class syntax or cascade semantics. It is a delivery choice:
 ### Project manifest delivery
 `virtual:master-css-manifest` is the project-level runtime input. It represents the compiled CSS entry graph, so it can include project tokens, modes, component definitions, utility definitions, variants, and managed keyframes.
 
-During development, integrations can serve that manifest as an inline virtual module. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module import that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
+Next.js delivers this manifest as a standard ESM data module; its bundler manages chunks, caching and URLs. Other integrations can serve the manifest as an inline virtual module during development. In production runtime builds, official integrations may emit it as a hashed JSON asset and make the virtual module import that asset before the runtime starts. Runtime-only pages need this JSON before they can interpret classes, so integrations that inject the runtime can also add:
 
 ```html
 <link rel="modulepreload" as="json" crossorigin href="/assets/master-css-manifest.<hash>.json">
@@ -215,7 +215,7 @@ On the client, the [CSS runtime](#runtime-rendering) hydrates these rules into a
   <ModeImg src="/master-css-progressive-rendering.svg" alt='Master CSS Progressive Rendering' />
   <figcaption>Server-side pre-rendering and client-side hydration process</figcaption>
 </figure>
-Static and pre-rendered outputs use an external page hydration manifest by default:
+Progressive outputs use a page hydration manifest to hand generated rules to the runtime. Static and pre-render modes do not require runtime engine, Wasm or a runtime manifest:
 
 ```html
 <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json">...</style>
@@ -435,10 +435,6 @@ Rendering modes change delivery, not the authoring model. The source of truth is
 
 ```css name=index.css
 @import '@master/css';
-
-@settings {
-  root-size: 16;
-}
 
 @theme {
   --color-primary: #4f46e5;

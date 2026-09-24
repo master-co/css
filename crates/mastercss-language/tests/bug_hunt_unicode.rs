@@ -2,7 +2,7 @@ use mastercss_language::{AnalyzeDocumentRequestIr, LanguageSession};
 
 #[test]
 fn bh_0013_unicode_before_a_long_line_string_does_not_panic() {
-    let session = LanguageSession::create(r#"{"version":1}"#).unwrap();
+    let session = LanguageSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
     for unicode in ["é", "中", "😀", "e\u{301}"] {
         for padding in 0..4 {
             let source = format!(

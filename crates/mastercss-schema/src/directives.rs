@@ -114,6 +114,8 @@ pub enum ErrorCode {
     NativeLoadFailed,
     WasmLoadFailed,
     RuntimeStartupTimeout,
+    CssValueInvalid,
+    CssValueUnknown,
     CssParseError,
     CssPrintError,
     CssDirectiveError,
@@ -126,11 +128,16 @@ pub enum ErrorCode {
     CssImportError,
     SessionDisposed,
     InvalidInput,
+    ClassSyntaxError,
+    UnknownCondition,
+    UndefinedMode,
+    AmbiguousToken,
+    UnknownToken,
     Internal,
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 17] = [
+    pub const ALL: [Self; 24] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -138,6 +145,8 @@ impl ErrorCode {
         Self::NativeLoadFailed,
         Self::WasmLoadFailed,
         Self::RuntimeStartupTimeout,
+        Self::CssValueInvalid,
+        Self::CssValueUnknown,
         Self::CssParseError,
         Self::CssPrintError,
         Self::CssDirectiveError,
@@ -147,6 +156,11 @@ impl ErrorCode {
         Self::CssImportError,
         Self::SessionDisposed,
         Self::InvalidInput,
+        Self::ClassSyntaxError,
+        Self::UnknownCondition,
+        Self::UndefinedMode,
+        Self::AmbiguousToken,
+        Self::UnknownToken,
         Self::Internal,
     ];
 
@@ -159,6 +173,8 @@ impl ErrorCode {
             Self::NativeLoadFailed => "NATIVE_LOAD_FAILED",
             Self::WasmLoadFailed => "WASM_LOAD_FAILED",
             Self::RuntimeStartupTimeout => "RUNTIME_STARTUP_TIMEOUT",
+            Self::CssValueInvalid => "CSS_VALUE_INVALID",
+            Self::CssValueUnknown => "CSS_VALUE_UNKNOWN",
             Self::CssParseError => "CSS_PARSE_ERROR",
             Self::CssPrintError => "CSS_PRINT_ERROR",
             Self::CssDirectiveError => "CSS_DIRECTIVE_ERROR",
@@ -168,6 +184,11 @@ impl ErrorCode {
             Self::CssImportError => "CSS_IMPORT_ERROR",
             Self::SessionDisposed => "SESSION_DISPOSED",
             Self::InvalidInput => "INVALID_INPUT",
+            Self::ClassSyntaxError => "CLASS_SYNTAX_ERROR",
+            Self::UnknownCondition => "UNKNOWN_CONDITION",
+            Self::UndefinedMode => "UNDEFINED_MODE",
+            Self::AmbiguousToken => "AMBIGUOUS_TOKEN",
+            Self::UnknownToken => "UNKNOWN_TOKEN",
             Self::Internal => "INTERNAL",
         }
     }
@@ -188,10 +209,6 @@ pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub utilities: Option<Vec<Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub root_size: Option<f64>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub default_mode: Option<String>,
-    #[serde(skip_serializing_if = "Option::is_none")]
     pub scope: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub important: Option<bool>,
@@ -200,9 +217,7 @@ pub struct CssDirectiveManifestInput {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub animation_options: Option<Map<String, Value>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub modes: Option<Vec<String>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub mode_trigger: Option<String>,
+    pub modes: Option<Vec<ModeDefinition>>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -231,6 +246,8 @@ pub struct CssDirectiveExtractionPolicy {
     pub safelist: Vec<String>,
     pub blocklist: Vec<CssDirectiveBlocklistEntry>,
     pub preserve_native: bool,
+    #[serde(default)]
+    pub prune_native: bool,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]

@@ -1,136 +1,47 @@
-<StepSection>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Create a project
-      If you don&#39;t have a Angular project, create one first. It&#39;s recommended to refer [Angular CLI](https://angular.io/cli).
-    </StepL>
-    <StepR>
-      <CodeTabs>
-        {[
-          {
-            name: 'Terminal',
-            lang: 'bash',
-            code: `
-              ng new my-app
-              cd my-app
-            `
-          }
-        ]}
-      </CodeTabs>
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Install Master CSS and others
-      Install the Master CSS and Angular custom webpack plugin into your project via package managers.
-    </StepL>
-    <StepR>
-      ```bash action=install
-      @master/css-webpack@rc @angular-builders/custom-webpack
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Set up static rendering
-      - Create a `webpack.config.js` file
-      - Add a `MasterCSSPlugin` to the plugins
-    </StepL>
-    <StepR>
-      ```js name=webpack.config.js
-      import MasterCSSPlugin from '@master/css-webpack' // [!code ++]
+Generate ordinary CSS with the CLI before Angular builds the application. This
+works with Angular’s existing builder and does not require a browser runtime.
 
-      export default (config) => { // [!code ++]
-        config.plugins.push( // [!code ++]
-          new MasterCSSPlugin() // [!code ++]
-        ) // [!code ++]
-        return config // [!code ++]
-      } // [!code ++]
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Configure Angular
-      Use `@angular-builders/custom-webpack` instead of the default builder for custom webpack configuration.
-    </StepL>
-    <StepR>
-      <CodeTabs>
-        {[
-          {
-            name: 'angular.json',
-            lang: 'js',
-            code: `
-                {
-                  …,
-                  "projects": {
-                    "my-app": {
-                      …,
-                      "architect": {
-                        "build": {
-                           "builder": "@angular-devkit/build-angular:browser", // [!code --]
-                           "builder": "@angular-builders/custom-webpack:browser", // [!code ++]
-                           "options": {
-                             "customWebpackConfig": { // [!code ++]
-                               "path": "./webpack.config.js" // [!code ++]
-                             }, // [!code ++]
-                            …
-                          },
-                          …
-                        },
-                        "serve": {
-                           "builder": "@angular-devkit/build-angular:dev-server", // [!code --]
-                           "builder": "@angular-builders/custom-webpack:dev-server", // [!code ++]
-                           "options": { // [!code ++]
-                             "browserTarget": "my-app:build" // [!code ++]
-                           }, // [!code ++]
-                          …
-                        },
-                        …
-                      }
-                    },
-                    …
-                  }
-                }
-            `
-          }
-        ]}
-      </CodeTabs>
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Import stylesheets
-      Import Master CSS into Angular's app stylesheet `src/styles.css`. This stylesheet is also the project CSS entry.
+## Install
 
-      (!) Don&#39;t import it in the <code>src/main.ts</code>, you&#39;ll get some errors about webpack loaders.
-    </StepL>
-    <StepR>
-      ```css name=src/styles.css
-      /* You can add global styles to this file, and also import other style files */
-      @import '@master/css'; /* [!code ++] */
-      ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Launch server
-      Run the development server.
-    </StepL>
-    <StepR>
-      ```bash name=Terminal
-      npm run start
-      ```
-    </StepR>
-  </Step>
-  <Step>
-    ### <StepNum />Start using Master CSS
-    Now style your first element using Master CSS syntax!
-    Open your browser to watch the changes.
-  </Step>
-  <HelloWorld url="localhost:3000" />
-</StepSection>
+```bash
+npm create @master/css@rc -- --framework angular --mode static --yes
+```
+
+The installer creates a separate source entry and imports the generated output:
+
+```css name=master.css
+@import '@master/css';
+```
+
+```css name=src/styles.css
+@import './master.generated.css';
+```
+
+Keep `src/styles.css` in the application’s existing global styles configuration.
+The generated file is output, so do not edit it or import it from `master.css`.
+
+## Generate and build
+
+Run from the project root before each production build:
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+During development, keep the CLI watcher in a separate terminal:
+
+```bash
+npx master-css generate --output src/master.generated.css --watch
+```
+
+Then run `npm start`. Keep complete class names in Angular templates or an explicit
+safelist. Bind CSS custom properties for dynamic values; static mode does not
+compile newly assembled class names in the browser.
 
 ```html name=src/app/app.component.html
-<h1 class="m-2xl italic font-5xl font-heavy text-neutral">Hello World</h1>
+<div class="width:var(--progress)" [style.--progress]="progress + '%'">Progress</div>
 ```
+
+For browser generation, select `--mode runtime` explicitly and follow the
+[runtime guide](/guide/installation/angular/runtime-rendering).

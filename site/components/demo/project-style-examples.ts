@@ -42,10 +42,8 @@ export const projectStyleExamples = {
   },
   modes: {
     title: 'The same card in two modes',
-    source: `@settings {
-  mode-trigger: class;
-  default-mode: light;
-}
+    source: `@mode light { .light { @slot; } }
+@mode dark { .dark { @slot; } }
 
 @theme light {
   --color-surface-card: var(--color-white);

@@ -75,3 +75,9 @@
     @slot;
   }
 }
+
+@custom-variant starting-style {
+  @starting-style {
+    @slot;
+  }
+}

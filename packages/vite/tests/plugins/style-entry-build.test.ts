@@ -211,6 +211,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
         }
       }
       ctx.scanner.validClasses = new Set(['btn'])
+      ctx.pruneNativeCSS = true
       ctx.scanner.usedNativeClasses = new Set(['native-card'])
       ctx.scanner.options.safelist = []
       const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)
@@ -271,6 +272,7 @@ describe('StyleEntryBuildPlugin (D1 placeholder-leak warn)', () => {
           }
         }
       }
+      ctx.pruneNativeCSS = true
       ctx.scanner.latentClasses = new Set(['btn', 'native-used'])
 
       const styleEntryPlugin = StyleEntryPlugin({ mode: 'static' } as any, ctx)

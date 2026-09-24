@@ -8,8 +8,6 @@ pub enum LanguageError {
     InvalidRange,
     #[error("The prepared document is missing or expired.")]
     InvalidPreparedDocument,
-    #[error("Native support count does not match the prepared document.")]
-    InvalidNativeSupport,
 }
 
 pub fn collect_class_positions(

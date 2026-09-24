@@ -25,7 +25,7 @@ interface GeneratedCompilerWasmModule {
   compileCSSStylesheetGraph(request: unknown): unknown
   CompilerRenderSession: new (manifestJSON: string, emittedGlobalsJSON?: string) => {
     nativeDeclarationCandidates(classNames: string[]): unknown
-    ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
+    ensureClasses(classNames: string[]): void
     ensureStylesheetResources(nativeCSS: string): void
     emittedGlobals(): unknown
     snapshot(): unknown
@@ -178,7 +178,7 @@ export async function createCompilerRenderSession(
   let disposed = false
   return {
     nativeDeclarationCandidates: (classNames: string[]) => session.nativeDeclarationCandidates(classNames),
-    ensureClasses: (classNames: string[], nativeSupport?: boolean[]) => session.ensureClasses(classNames, nativeSupport),
+    ensureClasses: (classNames: string[]) => session.ensureClasses(classNames),
     ensureStylesheetResources: (nativeCSS: string) => session.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => session.emittedGlobals(),
     snapshot: () => session.snapshot(),

@@ -27,7 +27,7 @@ function importGeneratedModule(source: string) {
   return import(specifier) as Promise<{ default: unknown }>
 }
 
-const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":1}')}`
+const dataManifestURL = `data:application/json,${encodeURIComponent('{"version":1,"languageVersion":2}')}`
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -42,9 +42,9 @@ describe('@master/css-internal module helpers', () => {
   })
 
   it('serializes manifest and emittedGlobals modules', () => {
-    expect(EMPTY_MANIFEST_JSON).toBe('{"version":1}')
+    expect(EMPTY_MANIFEST_JSON).toBe('{"version":1,"languageVersion":2}')
     expect(EMPTY_EMITTED_GLOBALS_MODULE).toBe('export default { variables: {}, animations: {} };')
-    expect(toManifestJSON({ version: 1 })).toBe('{"version":1}')
+    expect(toManifestJSON({ version: 1, languageVersion: 2 })).toBe('{"version":1,"languageVersion":2}')
     expect(toEmittedGlobalsModule({ variables: { color: 1 } })).toBe('export default {"variables":{"color":1},"animations":{}};')
     expect(normalizeEmittedGlobals()).toEqual({ variables: {}, animations: {} })
   })
@@ -77,12 +77,12 @@ describe('@master/css-internal module helpers', () => {
     )
   })
 
-  it('builds a universal manifest facade that resolves Next production and dev assets', () => {
+  it('builds a universal manifest facade using the emitted asset URL', () => {
     const source = toUniversalManifestFacadeModule('new URL("./master-css-manifest.json", import.meta.url)')
 
-    expect(source).toContain(`join(process.cwd(), '.next', value.slice('/_next/'.length))`)
-    expect(source).toContain(`join(process.cwd(), '.next', 'dev', value.slice('/_next/'.length))`)
-    expect(source).toContain('for (const file of files)')
+    expect(source).not.toContain('/_next/')
+    expect(source).not.toContain('process.cwd()')
+    expect(source).toContain("load(specifier, { with: { type: 'json' } })")
     expect(source).toContain(`return import(specifier, options)`)
     expect(source).toContain(`with: { type: 'json' }`)
     expect(source).toContain(`if (error?.name !== 'SyntaxError') throw error;`)
@@ -98,7 +98,7 @@ describe('@master/css-internal module helpers', () => {
       toBrowserManifestFacadeModule(JSON.stringify(dataManifestURL))
     )
 
-    expect(module.default).toEqual({ version: 1 })
+    expect(module.default).toEqual({ version: 1, languageVersion: 2 })
     expect(fetch).not.toHaveBeenCalled()
   })
 
@@ -107,7 +107,7 @@ describe('@master/css-internal module helpers', () => {
     const fetch = vi.fn(async () => ({
       ok: true,
       status: 200,
-      json: async () => ({ version: 1 })
+      json: async () => ({ version: 1, languageVersion: 2 })
     }))
     vi.stubGlobal('Function', vi.fn(function MockFunction(...args: string[]) {
       if (args.at(-1)?.includes(`with: { type: 'json' }`)) throw new SyntaxError('Unsupported import attributes')
@@ -119,7 +119,7 @@ describe('@master/css-internal module helpers', () => {
       toBrowserManifestFacadeModule(JSON.stringify(dataManifestURL))
     )
 
-    expect(module.default).toEqual({ version: 1 })
+    expect(module.default).toEqual({ version: 1, languageVersion: 2 })
     expect(fetch).toHaveBeenCalledOnce()
     expect(fetch).toHaveBeenCalledWith(dataManifestURL)
   })

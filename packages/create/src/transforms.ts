@@ -14,10 +14,10 @@ function formatNuxtModule(mode?: MasterCSSRenderingMode) {
 }
 
 function formatNextCall(target: string, mode?: MasterCSSRenderingMode) {
-  const awaited = mode === 'static' ? 'await ' : ''
+  const awaited = !mode || mode === 'static' ? 'await ' : ''
   return mode
     ? `${awaited}withMasterCSS(${target}, { mode: '${mode}' })`
-    : `withMasterCSS(${target})`
+    : `await withMasterCSS(${target})`
 }
 
 function addImport(content: string, statement: string) {
@@ -314,6 +314,21 @@ export function addViteClientTypes(content: string) {
     next = lines.join('\n')
   }
   return next
+}
+
+/** Preserve the component's own styles while adding build-generated shadow CSS. */
+export function addLitShadowStylesheet(content: string) {
+  if (content.includes("import masterCSSStyles from './index.css?inline'")) return content
+  const ownStyles = /\bstatic\s+(?:get\s+)?styles\b/.test(content)
+  let next = content.replace(/(\bstatic\s+(?:get\s+)?)styles\b/, '$1masterCSSOriginalStyles')
+  next = addImport(next, "import { unsafeCSS } from 'lit'")
+  next = addImport(next, "import masterCSSStyles from './index.css?inline'")
+  return next.replace(/(export\s+class\s+\w+[^\{]*\{)/, `$1\n  static get styles() { return [unsafeCSS(masterCSSStyles)${ownStyles ? ', this.masterCSSOriginalStyles' : ''}] }\n`)
+}
+
+export function addGeneratedStylesheetImport(content: string) {
+  const statement = "@import './master.generated.css';"
+  return content.includes(statement) ? content : `${statement}\n${content}`
 }
 
 export function addLitShadowRuntime(content: string) {

@@ -13,14 +13,9 @@ export interface MasterCSSNativeDeclaration {
   readonly value: string
 }
 
-export type MasterCSSNativeDeclarationSupport = (
-  declaration: MasterCSSNativeDeclaration
-) => boolean
-
 export interface MasterCSSRenderSessionOptions {
   readonly manifest: MasterCSSManifest
   readonly emittedGlobals?: MasterCSSEmittedGlobals
-  readonly supportsNativeDeclaration?: MasterCSSNativeDeclarationSupport
 }
 
 export interface MasterCSSRenderSnapshot {
@@ -47,7 +42,7 @@ export interface BindingRenderSession {
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclaration[]
-  ensureClasses(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
+  ensureClasses(classNames: readonly string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): MasterCSSEmittedGlobals
   snapshot(): BindingRenderResult
@@ -88,13 +83,11 @@ function toSnapshot(
 }
 
 let bindRenderSession: (
-  session: BindingRenderSession,
-  supportsNativeDeclaration?: MasterCSSNativeDeclarationSupport
+  session: BindingRenderSession
 ) => MasterCSSRenderSession
 
 export class MasterCSSRenderSession implements Disposable {
   #session!: BindingRenderSession
-  #supportsNativeDeclaration: MasterCSSNativeDeclarationSupport = () => false
   #disposed = false
 
   private constructor() { }
@@ -102,9 +95,7 @@ export class MasterCSSRenderSession implements Disposable {
   ensureClassRules(classNames: readonly string[]) {
     this.assertActive()
     const classes = [...classNames]
-    const candidates = this.#session.nativeDeclarationCandidates(classes)
-    const support = candidates.map((candidate) => this.#supportsNativeDeclaration(candidate))
-    this.#session.ensureClasses(classes, support.length ? support : undefined)
+    this.#session.ensureClasses(classes)
     return this.snapshot()
   }
 
@@ -151,10 +142,9 @@ export class MasterCSSRenderSession implements Disposable {
   }
 
   static {
-    bindRenderSession = (session, supportsNativeDeclaration) => {
+    bindRenderSession = (session) => {
       const renderer = new MasterCSSRenderSession()
       renderer.#session = session
-      renderer.#supportsNativeDeclaration = supportsNativeDeclaration ?? (() => false)
       return renderer
     }
   }
@@ -162,8 +152,7 @@ export class MasterCSSRenderSession implements Disposable {
 
 /** @internal */
 export function bindRenderSessionInternal(
-  session: BindingRenderSession,
-  supportsNativeDeclaration?: MasterCSSNativeDeclarationSupport
+  session: BindingRenderSession
 ) {
-  return bindRenderSession(session, supportsNativeDeclaration)
+  return bindRenderSession(session)
 }

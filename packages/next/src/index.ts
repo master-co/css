@@ -250,10 +250,19 @@ function applyMasterCSSWebpackConfig(
   virtualManifestPath: string,
   virtualEmittedGlobalsPath: string,
   runtimeInstrumentationPath: string | undefined,
-  projectDir: string
+  projectDir: string,
+  staticStatePath?: string
 ) {
   config.module ??= {}
-  config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY)
+  config.module.rules = composeWebpackStylesheets(config.module.rules ?? [], stylesheetLoaderPath, MASTER_CSS_MANIFEST_RESOURCE_QUERY, staticStatePath ? { staticStatePath } : {})
+  if (staticStatePath) {
+    config.module.rules.push({
+      test: /\.[mc]?[jt]sx?$/,
+      exclude: /[/\\]node_modules[/\\]/,
+      enforce: 'pre',
+      use: [{ loader: resolveStaticLoaderPath(), options: { statePath: staticStatePath } }]
+    })
+  }
   config.module.rules.push({
     test: MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN,
     use: [
@@ -261,8 +270,7 @@ function applyMasterCSSWebpackConfig(
         loader: cssManifestLoaderPath,
         options: {
           virtual: true,
-          module: true,
-          external: true
+          module: true
         }
       }
     ]
@@ -284,8 +292,7 @@ function applyMasterCSSWebpackConfig(
       {
         loader: cssManifestLoaderPath,
         options: {
-          module: true,
-          external: true
+          module: true
         }
       }
     ]
@@ -347,8 +354,7 @@ function applyMasterCSSTurbopackConfig(
         loader: cssManifestLoaderPath,
         options: {
           virtual: true,
-          module: true,
-          external: true
+          module: true
         }
       }
     ],
@@ -379,13 +385,11 @@ function applyMasterCSSTurbopackConfig(
       {
         loader: cssManifestLoaderPath,
         options: {
-          module: true,
-          external: true
+          module: true
         }
       }
     ],
-    type: 'ecmascript' as const,
-    as: '*.js'
+    type: 'ecmascript' as const
   }
   const publishedStylesheetMapRule = {
     condition: { all: [
@@ -393,8 +397,7 @@ function applyMasterCSSTurbopackConfig(
       { not: { query: MASTER_CSS_MANIFEST_RESOURCE_QUERY } }
     ] },
     loaders: [fileURLToPath(new URL('./stylesheet-map-loader.js', import.meta.url))],
-    type: 'css' as const,
-    as: '*.css'
+    type: 'css' as const
   }
   const masterCSSStyleRule = {
     condition: {
@@ -406,8 +409,7 @@ function applyMasterCSSTurbopackConfig(
       ]
     },
     loaders: [{ loader: stylesheetLoaderPath, options: { sassOptions: nextConfig.sassOptions ?? {} } }],
-    type: 'css' as const,
-    as: '*.css'
+    type: 'css' as const
   }
   // Directives can be introduced by @use/@forward in another Sass file.
   const importedSassRule = {
@@ -422,7 +424,6 @@ function applyMasterCSSTurbopackConfig(
   const cssModuleRule = {
     ...masterCSSStyleRule,
     type: 'css-module' as const,
-    as: '*.module.css',
     condition: { all: [
       { path: /\.module\.(css|scss|sass)$/ },
       { any: [{ content: MASTER_CSS_STYLE_CONTENT_PATTERN }, { path: /\.(scss|sass)$/ }] },
@@ -464,16 +465,17 @@ function applyMasterCSSTurbopackConfig(
   }
 }
 
-function createStaticSourceRule(path: RegExp, as: string, type: 'typescript' | 'ecmascript') {
+// Keep Next's original module type and RSC transforms, including 'use client'.
+// Setting type: 'ecmascript' bypasses those transforms; `as` on the '*' rule
+// also appends an extension and changes the source's module identity.
+function createStaticSourceRule(path: RegExp) {
   return {
     condition: {
       all: [
         { not: 'foreign' as const },
         { path }
       ]
-    },
-    as,
-    type
+    }
   }
 }
 
@@ -524,13 +526,13 @@ function applyMasterCSSStaticTurbopackConfig(
     }
   }
   const sourceRules = [
-    createStaticSourceRule(/\.tsx$/, '*.tsx', 'typescript'),
-    createStaticSourceRule(/\.ts$/, '*.ts', 'typescript'),
-    createStaticSourceRule(/\.mts$/, '*.mts', 'typescript'),
-    createStaticSourceRule(/\.cts$/, '*.cts', 'typescript'),
-    createStaticSourceRule(/\.jsx$/, '*.jsx', 'ecmascript'),
-    createStaticSourceRule(/\.js$/, '*.js', 'ecmascript'),
-    createStaticSourceRule(/\.cjs$/, '*.cjs', 'ecmascript')
+    createStaticSourceRule(/\.tsx$/),
+    createStaticSourceRule(/\.ts$/),
+    createStaticSourceRule(/\.mts$/),
+    createStaticSourceRule(/\.cts$/),
+    createStaticSourceRule(/\.jsx$/),
+    createStaticSourceRule(/\.js$/),
+    createStaticSourceRule(/\.cjs$/)
   ].map((rule) => ({
     ...rule,
     loaders: [staticLoader]
@@ -552,8 +554,7 @@ function applyMasterCSSStaticTurbopackConfig(
         }
       }
     ],
-    type: 'css' as const,
-    as: '*.css'
+    type: 'css' as const
   }
 
   return {
@@ -580,7 +581,8 @@ function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
   webpackVirtualEmittedGlobalsPath: string,
   turbopackVirtualEmittedGlobalsPath: string,
   projectDir: string,
-  runtimeInstrumentationPath?: string
+  runtimeInstrumentationPath?: string,
+  staticStatePath?: string
 ) {
   const userWebpack = nextConfig.webpack
   return {
@@ -588,7 +590,7 @@ function createNextConfigWithCSSManifestLoader<T extends NextConfig>(
     turbopack: applyMasterCSSTurbopackConfig(nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath, virtualCSSPath, turbopackVirtualManifestPath, turbopackVirtualEmittedGlobalsPath, projectDir, runtimeInstrumentationPath),
     webpack(config: WebpackConfig, context: WebpackContext) {
       const resolvedConfig = userWebpack ? userWebpack(config, context) || config : config
-      return applyMasterCSSWebpackConfig(resolvedConfig, cssManifestLoaderPath, stylesheetLoaderPath, virtualCSSPath, webpackVirtualManifestPath, webpackVirtualEmittedGlobalsPath, runtimeInstrumentationPath, projectDir)
+      return applyMasterCSSWebpackConfig(resolvedConfig, cssManifestLoaderPath, stylesheetLoaderPath, virtualCSSPath, webpackVirtualManifestPath, webpackVirtualEmittedGlobalsPath, runtimeInstrumentationPath, projectDir, staticStatePath)
     }
   } as T
 }
@@ -597,8 +599,10 @@ export function withMasterCSS<T extends NextConfig>(
   nextConfig: T,
   options: MasterCSSNextOptions & ({ enabled: false } | { mode: 'runtime' })
 ): T
+export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'progressive' | 'pre-render' }): WithAdapterPath<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T, options: MasterCSSNextOptions & { mode: 'static' }): Promise<T>
-export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions): WithAdapterPath<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions & { mode?: 'static' }): Promise<T>
+export function withMasterCSS<T extends NextConfig>(nextConfig?: T, options?: MasterCSSNextOptions): T | WithAdapterPath<T> | Promise<T>
 export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, options: MasterCSSNextOptions = {}): T | WithAdapterPath<T> | Promise<T> {
   const projectDir = process.cwd()
   const resolvedOptions = resolveOptions(options)
@@ -623,8 +627,14 @@ export function withMasterCSS<T extends NextConfig>(nextConfig: T = {} as T, opt
       const outputPath = resolveStaticOutputPath(setup.projectDir)
       const statePath = resolveStaticStatePath(outputPath)
       const turbopackVirtualCSSPath = toTurbopackProjectPath(outputPath, setup.projectDir)
+      const configured = createNextConfigWithCSSManifestLoader(
+        nextConfig, cssManifestLoaderPath, cssManifestImportLoaderPath, stylesheetLoaderPath,
+        outputPath, virtualManifestPath, turbopackVirtualManifestPath,
+        virtualEmittedGlobalsPath, turbopackVirtualEmittedGlobalsPath, setup.projectDir,
+        undefined, statePath
+      )
       return {
-        ...nextConfig,
+        ...configured,
         turbopack: applyMasterCSSStaticTurbopackConfig(
           nextConfig,
           cssManifestLoaderPath,

@@ -35,7 +35,7 @@ export const firstPaintHTML = `<article class="m-md p-lg r-lg b:1px|solid|var(--
 </article>`
 
 export function firstPaintCSS() {
-  return configuredExampleCSS('@settings { mode-trigger: class; }', configuredMarkupClasses(firstPaintHTML))
+  return configuredExampleCSS('@mode light { .light { @slot; } }\n@mode dark { .dark { @slot; } }', configuredMarkupClasses(firstPaintHTML))
 }
 
 export function firstPaintMarkdown() {

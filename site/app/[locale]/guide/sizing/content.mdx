@@ -7,7 +7,7 @@ Master CSS keeps sizing decisions close to the element that owns them. Use `w:*`
 
 <Demo>
   <div className="container w:100%">
-    <div className="grid grid-cols:1 gap-md w:100% grid-cols:2@container(2xs)">
+    <div className="grid grid-cols:1 gap-md w:100% grid-cols:2@container((width>=18rem))">
       <section className="min-w:0 p-lg r-lg surface-raised shadow-xs">
         <DemoLabel>Fluid wrapper</DemoLabel>
         <div className="w:100% max-w-3xs mx:auto">
@@ -222,16 +222,16 @@ Sizing classes can use the same [breakpoints](/guide/breakpoints), [containers](
 <!-- @MARK w:100% --><!-- @MARK w:50%@sm --><!-- @MARK max-w-7xl@lg -->
 <section class="w:100% w:50%@sm max-w-7xl@lg">...</section>
 
-<!-- @MARK container --><!-- @MARK size:2.5rem@container(md) -->
+<!-- @MARK container --><!-- @MARK size:2.5rem@container((width>=28rem)) -->
 <article class="container">
-  <button class="size:2rem size:2.5rem@container(md)">...</button>
+  <button class="size:2rem size:2.5rem@container((width>=28rem))">...</button>
 </article>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['w:100%', 'w:50%@sm', 'max-w-7xl@lg', 'container', 'size:2rem', 'size:2.5rem@container(md)']}
+    {['w:100%', 'w:50%@sm', 'max-w-7xl@lg', 'container', 'size:2rem', 'size:2.5rem@container((width>=28rem))']}
   </Class2CSS>
 </details>
 

@@ -1,6 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
 import { renderClassNamesSync } from '@master/css/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import {
@@ -14,7 +13,7 @@ import init, { getRuntimeLoaderURL } from './init'
 const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 function renderHydration(...classNames: string[]) {
-  const rendered = renderClassNamesSync(classNames, { manifest: defaultManifest, supportsNativeDeclaration })
+  const rendered = renderClassNamesSync(classNames, { manifest: defaultManifest })
   return { text: rendered.cssText, hydrationManifest: rendered.hydrationManifest }
 }
 
@@ -121,6 +120,7 @@ test('progressive hydration with an empty manifest rebuilds with runtime CSS', a
   })
   await init(page, '@layer utilities{.block{display:block}}', undefined, {
     version: 1,
+    languageVersion: 2,
     rules: [],
     resourceOrder: []
   })
@@ -647,14 +647,14 @@ test('progressive hydration rejects reordered theme variable buckets', async ({ 
   })
   await init(
     page,
-    '@layer theme{.dark{color-scheme:dark;--color-primary:#ffffff}.light,:root{color-scheme:light;--color-primary:#000000}}@layer utilities{.fg-primary{color:var(--color-primary)}}',
+    '@layer theme{.dark{--color-primary:#ffffff}.light{--color-primary:#000000}}@layer utilities{.fg-primary{color:var(--color-primary)}}',
     {
       variables: [
         { namespace: 'color', key: 'primary', value: '#000000', mode: 'light' },
         { namespace: 'color', key: 'primary', value: '#ffffff', mode: 'dark' }
       ],
-      modes: ['light', 'dark'],
-      modeTrigger: 'class'
+      modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
+
     },
     'auto'
   )
@@ -672,8 +672,8 @@ test('progressive hydration rejects reordered theme variable buckets', async ({ 
     'color-primary': 1
   })
   expect(result.nativeThemeRuleCount).toBe(2)
-  expect(result.text).toContain('.light,:root{color-scheme:light;--color-primary:#000000}')
-  expect(result.text).toContain('.dark{color-scheme:dark;--color-primary:#ffffff}')
+  expect(result.text).toContain('.light{--color-primary:#000000}')
+  expect(result.text).toContain('.dark{--color-primary:#ffffff}')
 })
 
 test('removes shared alias variable dependencies when classes disappear', async ({ page }) => {
@@ -695,7 +695,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     counts: Object.fromEntries(globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.tokenCounts)
   }))
   expect(initial).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
     counts: {
       brand: 2,
       surface: 2
@@ -712,7 +712,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     retainedClassNames: [...globalThis.__MASTER_CSS_RUNTIME_TEST__.retainedClassNames]
   }))
   expect(afterOneRemoval).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
     counts: {
       brand: 2,
       surface: 2
@@ -731,7 +731,7 @@ test('removes shared alias variable dependencies when classes disappear', async 
     nativeAttached: !!globalThis.__MASTER_CSS_RUNTIME_TEST__.themeLayer.native?.parentStyleSheet
   }))
   expect(afterAllRemoved).toEqual({
-    text: '@layer theme{:root{--brand:var(--surface);--surface:#ffffff}}',
+    text: '@layer theme{:root,:host{--brand:var(--surface);--surface:#ffffff}}',
     counts: {
       brand: 2,
       surface: 2

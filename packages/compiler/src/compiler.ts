@@ -1,3 +1,4 @@
+import { validateCompiledCSS } from './value-validation'
 import {
   MASTER_CSS_DIAGNOSTIC_VERSION,
   MasterCSSError,
@@ -25,6 +26,7 @@ function warningDiagnostic(message: string): MasterCSSDiagnostic {
     version: MASTER_CSS_DIAGNOSTIC_VERSION,
     code: 'COMPILER_WARNING',
     domain: 'compiler',
+    phase: 'compiler',
     severity: 'warning',
     message
   })
@@ -52,7 +54,8 @@ function freezeExtractionPolicy(
     exclude: Object.freeze([...policy.exclude]),
     safelist: Object.freeze([...policy.safelist]),
     blocklist: Object.freeze([...policy.blocklist]),
-    preserveNative: policy.preserveNative
+    preserveNative: policy.preserveNative,
+    pruneNative: policy.pruneNative
   })
 }
 
@@ -83,7 +86,8 @@ function directiveSummary(result: CompileCSSResult) {
 /** @internal */
 export function toMasterCSSCompileResultInternal(
   result: CompileCSSResult,
-  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
+  cssValuePolicy?: 'report' | 'error'
 ): MasterCSSCompileResult {
   return Object.freeze({
     css: result.css,
@@ -93,7 +97,7 @@ export function toMasterCSSCompileResultInternal(
     dependencies: Object.freeze([...result.dependencies]),
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
-    diagnostics: diagnosticsFor(result.warnings, onDiagnostic),
+    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css }], { onDiagnostic, cssValuePolicy })]),
     directiveSummary: directiveSummary(result)
   })
 }
@@ -113,7 +117,8 @@ interface InternalManifestCompileResult {
 /** @internal */
 export function toMasterCSSCompileManifestResultInternal(
   result: InternalManifestCompileResult,
-  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
+  onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void,
+  cssValuePolicy?: 'report' | 'error'
 ): MasterCSSCompileManifestResult {
   return Object.freeze({
     css: result.css,
@@ -122,7 +127,7 @@ export function toMasterCSSCompileManifestResultInternal(
     dependencies: Object.freeze([...result.dependencies]),
     classNames: Object.freeze([...result.classNames]),
     nativeClassNames: Object.freeze([...result.nativeClassNames]),
-    diagnostics: diagnosticsFor(result.warnings, onDiagnostic),
+    diagnostics: Object.freeze([...diagnosticsFor(result.warnings, onDiagnostic), ...validateCompiledCSS([{ css: result.css }], { onDiagnostic, cssValuePolicy })]),
     directiveSummary: directiveSummary(result.directives),
     manifest: Object.freeze(result.manifest),
     directives: toMasterCSSCompileResultInternal(result.directives)
@@ -161,7 +166,8 @@ export class MasterCSSCompiler implements Disposable {
     this.assertActive()
     return toMasterCSSCompileResultInternal(
       this.#session.compileCSS(source, options),
-      options.onDiagnostic
+      options.onDiagnostic,
+      options.cssValuePolicy
     )
   }
 
@@ -192,9 +198,9 @@ export class MasterCSSCompiler implements Disposable {
       generatedCSS: string
       css?: string
     }
-    const diagnostics = diagnosticsFor(lowered.warnings, options.onDiagnostic)
     const generatedCSS = lowered.generatedCSS || ''
     const css = lowered.css ?? [rawDirectives.nativeCSS, generatedCSS].filter(Boolean).join('\n')
+    const diagnostics = Object.freeze([...diagnosticsFor(lowered.warnings, options.onDiagnostic), ...validateCompiledCSS([{ css, source: options.from }], options)])
     return Object.freeze({
       css,
       nativeCSS: rawDirectives.nativeCSS,
@@ -242,12 +248,13 @@ export class MasterCSSCompiler implements Disposable {
     return Object.freeze(this.#session.renderCSSStylesheetBundle(request).map(asset => Object.freeze({ ...asset })))
   }
 
-  compileStylesheets(request: MasterCSSCompileStylesheetsRequest): MasterCSSCompileStylesheetsResult {
+  compileStylesheets(request: MasterCSSCompileStylesheetsRequest, options: MasterCSSCompileOptions = {}): MasterCSSCompileStylesheetsResult {
     this.assertActive()
     const result = this.#session.compileCSSStylesheetGraph(request)
     const directives = toMasterCSSCompileResultInternal(result.directives)
     return Object.freeze({
       ...directives,
+      diagnostics: Object.freeze([...directives.diagnostics, ...validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id })), options)]),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(stylesheet => Object.freeze({ ...stylesheet }))),
       manifest: Object.freeze(result.manifest),

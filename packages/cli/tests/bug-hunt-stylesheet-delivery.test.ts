@@ -37,7 +37,7 @@ test('BH-0004 CLI emits a referenced resource and native compose without emittin
   } finally { rmSync(cwd, { recursive: true, force: true }) }
 })
 
-test('BH-0004 CLI keeps separate native pruning scopes for shared imports', () => {
+test('BH-0004 CLI preserves shared native imports by default', () => {
   const cwd = mkdtempSync(join(tmpdir(), 'master-css-bh-delivery-pruning-'))
   try {
     writeFileSync(join(cwd, 'a.css'), "@import './shared.css' print;@master entry;@preserve native;")
@@ -48,7 +48,7 @@ test('BH-0004 CLI keeps separate native pruning scopes for shared imports', () =
       cwd, encoding: 'utf8', env: { ...process.env, TSX_TSCONFIG_PATH: tsconfig }
     })
     const css = readdirSync(join(cwd, 'dist')).filter(file => file.endsWith('.css')).map(file => readFileSync(join(cwd, 'dist', file), 'utf8'))
-    expect(css.filter(text => text.includes('.unscanned'))).toHaveLength(1)
+    expect(css.filter(text => text.includes('.unscanned'))).toHaveLength(2)
     expect(css.some(text => text.includes('print'))).toBe(true)
     expect(css.some(text => text.includes('screen'))).toBe(true)
   } finally { rmSync(cwd, { recursive: true, force: true }) }

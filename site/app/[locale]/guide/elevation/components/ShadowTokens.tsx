@@ -90,7 +90,7 @@ export function ShadowScaleDemo() {
   return (
     <Demo>
       <div className="container w:100%">
-        <div className="grid-cols:1 gap-xl w:100% grid-cols:2@container(2xs)">
+        <div className="grid-cols:1 gap-xl w:100% grid-cols:2@container((width>=18rem))">
           {getShadowRows().map(({ key, utility, role, description }) => (
             <div className={`surface-raised r-lg p-lg ${utility}`} key={key}>
               <DemoLabel>{utility}</DemoLabel>

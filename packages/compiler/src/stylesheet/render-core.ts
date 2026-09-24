@@ -34,7 +34,7 @@ export interface RenderCompiledManifestCSSResult {
 
 export interface StylesheetRenderSession {
   nativeDeclarationCandidates(classNames: string[]): readonly MasterCSSNativeDeclarationCandidate[]
-  ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
+  ensureClasses(classNames: string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): Required<MasterCSSEmittedGlobals>
   snapshot(): MasterCSSRenderBindingResult
@@ -49,22 +49,13 @@ export function normalizeNativeCSS(nativeCSS: string | string[] | undefined) {
 
 export function renderCompiledManifestCSSWithSession(
   options: RenderCompiledManifestCSSOptions,
-  session: StylesheetRenderSession,
-  supportsNativeDeclaration?: (
-    candidate: MasterCSSNativeDeclarationCandidate
-  ) => boolean
+  session: StylesheetRenderSession
 ): RenderCompiledManifestCSSResult {
   const nativeCSS = normalizeNativeCSS(options.nativeCSS)
   const nativeCSSText = nativeCSS.join('\n\n')
   if (options.includeGeneratedCSS !== false) {
     const classNames = [...(options.classNames || [])]
-    if (supportsNativeDeclaration) {
-      const candidates = session.nativeDeclarationCandidates(classNames)
-      const support = candidates.map(supportsNativeDeclaration)
-      session.ensureClasses(classNames, support.length ? support : undefined)
-    } else {
-      session.ensureClasses(classNames)
-    }
+    session.ensureClasses(classNames)
   }
   session.ensureStylesheetResources(nativeCSSText)
   const generatedCSS = session.snapshot().snapshot.text

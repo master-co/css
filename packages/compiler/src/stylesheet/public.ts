@@ -1,3 +1,4 @@
+import { validateCompiledCSS } from '../value-validation'
 import { mapStylesheetError, type StylesheetSourceContext } from './source-context'
 import type { StylesheetDeliveryOptions, StylesheetResourceAsset } from './delivery'
 import { prepareCSSImportGraph, prepareCSSImportGraphWithResolver, type CSSImportFileResolver } from '../node-imports'
@@ -60,6 +61,7 @@ export interface MasterCSSCompiledStylesheet extends MasterCSSCompileResult {
 }
 
 export interface MasterCSSStylesheetTransformResult {
+  readonly diagnostics: readonly import('@master/css-schema').MasterCSSDiagnostic[]
   readonly sourceMap?: string
   /** Retained child stylesheets; delivery hosts must publish every returned asset. */
   readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
@@ -128,6 +130,7 @@ export interface MasterCSSStylesheetCompositionOptions extends MasterCSSStyleshe
 }
 
 export interface MasterCSSStylesheetComposition {
+  readonly diagnostics: readonly import('@master/css-schema').MasterCSSDiagnostic[]
   readonly stylesheets?: readonly { readonly id: string, readonly href: string, readonly css: string }[]
   readonly resources?: readonly StylesheetResourceAsset[]
   readonly dependencies?: readonly string[]
@@ -307,7 +310,7 @@ export async function compileStylesheet(
   })
   options.signal?.throwIfAborted()
   return freezeCompilation(
-    toMasterCSSCompileResultInternal(result, options.onDiagnostic)
+    toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
   )
 }
 
@@ -322,9 +325,10 @@ export async function compileRenderedStylesheet(
     loadSass: compileOptions.loadSass as ((projectDir?: string) => SassModule) | undefined
   })
   options.signal?.throwIfAborted()
-  const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic)
+  const compilation = toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
   return Object.freeze({
     ...compilation,
+    diagnostics: Object.freeze([...compilation.diagnostics, ...validateCompiledCSS((result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id })), options)]),
     ...(result.stylesheets ? {
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(({ id, href, css, sourceMap }) => Object.freeze({ id, href, css, sourceMap }))),
@@ -367,6 +371,7 @@ export async function transformStylesheet(
   options.signal?.throwIfAborted()
   return Object.freeze({
     code: result.code,
+    diagnostics: validateCompiledCSS([{ css: result.code, source: id }, ...(result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id }))], options),
     ...(result.result?.sourceMap ? { sourceMap: result.result.sourceMap } : {}),
     dependencies: Object.freeze([...result.dependencies]),
     transformed: result.transformed,
@@ -376,7 +381,8 @@ export async function transformStylesheet(
       ? {
         compilation: toMasterCSSCompileResultInternal(
           result.result,
-          options.onDiagnostic
+          options.onDiagnostic,
+          options.cssValuePolicy
         )
       }
       : {})
@@ -426,7 +432,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
       }
     )
     options.signal?.throwIfAborted()
-    return toMasterCSSCompileResultInternal(result, options.onDiagnostic)
+    return toMasterCSSCompileResultInternal(result, options.onDiagnostic, options.cssValuePolicy)
   }
 
   delete(id: string): boolean {
@@ -456,6 +462,7 @@ export class MasterCSSStylesheetCollection implements Disposable {
     options.signal?.throwIfAborted()
     return Object.freeze({
       css: result.css,
+      diagnostics: validateCompiledCSS([{ css: result.css }, ...(result.stylesheets ?? []).map(asset => ({ css: asset.css, source: asset.id }))], options),
       ...(result.stylesheets ? { stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.resources ? { resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset }))) } : {}),
       ...(result.dependencies ? { dependencies: Object.freeze([...result.dependencies]) } : {}),

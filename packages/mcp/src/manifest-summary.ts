@@ -9,6 +9,8 @@ import { flattenMasterCSSManifestVariables } from '@master/css-schema/manifest'
 export function summarizeManifest(manifest: MasterCSSManifest) {
   const variables = flattenMasterCSSManifestVariables(manifest.variables)
   return {
+    languageVersion: manifest.languageVersion,
+    modes: manifest.modes ?? [],
     settings: manifest.settings ?? {},
     counts: {
       variables: variables.length,
@@ -26,13 +28,15 @@ export function summarizeManifest(manifest: MasterCSSManifest) {
 
 export function compactVariable(variable: MasterCSSManifestVariableEntry) {
   return {
+    ...variable,
+    dependencies: [...(variable.dependencies ?? [])],
     name: variable.name,
     key: variable.key,
     namespace: variable.namespace || '',
     type: variable.type,
     value: variable.value,
     ...(variable.numeric ? { numeric: variable.numeric } : {}),
-    ...(variable.modes ? { modes: Object.keys(variable.modes) } : {}),
+    ...(variable.modes ? { modes: variable.modes } : {}),
     ...(variable.inline ? { inline: true } : {}),
     ...(variable.static ? { static: true } : {})
   }
@@ -40,6 +44,7 @@ export function compactVariable(variable: MasterCSSManifestVariableEntry) {
 
 export function compactUtility(utility: MasterCSSManifestUtility) {
   return {
+    ...utility,
     id: utility.id,
     ...(utility.name ? { name: utility.name } : {}),
     ...(utility.key ? { key: utility.key } : {}),
@@ -58,6 +63,7 @@ export function compactConditions(conditions: MasterCSSManifestConditions | unde
   return Object.entries(conditions || {}).map(([name, rule]) => ({
     name,
     id: rule.id,
-    nodes: rule.nodes.length
+    nodes: rule.nodes,
+    nodeCount: rule.nodes.length
   }))
 }

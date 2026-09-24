@@ -45,6 +45,7 @@ export function hasStylesheetDirectives(directives?: StylesheetDirectives) {
     || directives.safelist.length
     || directives.blocklist.length
     || directives.preserveNative
+    || directives.pruneNative
   ))
 }
 

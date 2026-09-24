@@ -1,7 +1,7 @@
 use super::{
-    ManifestProjection, ManifestSelectorNode, ManifestVariant, StateBranch, add_condition_features,
-    add_condition_wrapper, merge_condition_features, parse_raw_condition_wrapper,
-    render_condition_token, render_manifest_condition, resolve_layer_condition,
+    ManifestProjection, ManifestSelectorNode, ManifestVariant, StateBranch, add_condition_wrapper,
+    merge_condition_features, parse_raw_condition_wrapper, render_condition_token,
+    render_manifest_condition, resolve_layer_condition,
 };
 
 pub(crate) fn resolve_state_branches(
@@ -39,19 +39,12 @@ pub(crate) fn resolve_state_branches(
     }
 
     for condition_token in condition_tokens {
-        if manifest.settings.modes.contains(&condition_token) {
-            for branch in &mut branches {
-                branch.key.push('@');
-                branch.key.push_str(&condition_token);
-                branch.mode = Some(condition_token.clone());
-                if manifest.settings.mode_trigger == "media" {
-                    add_condition_wrapper(
-                        &mut branch.condition_wrappers,
-                        "media",
-                        format!("@media (prefers-color-scheme:{condition_token})"),
-                    );
-                }
-            }
+        if let Some(mode) = manifest
+            .modes
+            .iter()
+            .find(|mode| mode.name == condition_token)
+        {
+            branches = expand_mode_branches(branches, mode);
             continue;
         }
 
@@ -85,32 +78,64 @@ pub(crate) fn resolve_state_branches(
                 add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper.clone());
                 merge_condition_features(&mut branch.features, &features);
             }
+        } else {
+            return Vec::new();
         }
     }
     branches
 }
 
+pub(crate) fn expand_mode_branches(
+    current: Vec<StateBranch>,
+    mode: &mastercss_schema::ModeDefinition,
+) -> Vec<StateBranch> {
+    current
+        .into_iter()
+        .flat_map(|base| {
+            mode.branches
+                .iter()
+                .enumerate()
+                .map(move |(index, activation)| {
+                    let mut branch = base.clone();
+                    branch.key.push_str(&format!("@{}#{index}", mode.name));
+                    branch.mode = Some(mode.name.clone());
+                    let guard = format!(":where({0},{0} *)", activation.selector);
+                    branch.mode_guard =
+                        Some(format!("{}{guard}", branch.mode_guard.unwrap_or_default()));
+                    for raw in &activation.conditions {
+                        if let Some((id, wrapper)) = parse_raw_condition_wrapper(raw) {
+                            let features = super::condition::native_query_features(&wrapper);
+                            merge_condition_features(&mut branch.features, &features);
+                            add_condition_wrapper(&mut branch.condition_wrappers, &id, wrapper);
+                        }
+                    }
+                    branch
+                })
+        })
+        .collect()
+}
+
 pub(crate) fn apply_forced_mode(
-    branches: &mut [StateBranch],
+    branches: &mut Vec<StateBranch>,
     mode: Option<&str>,
     manifest: &ManifestProjection,
 ) {
-    let Some(mode) = mode else {
+    let Some(name) = mode else { return };
+    let Some(mode) = manifest.modes.iter().find(|mode| mode.name == name) else {
+        branches.clear();
         return;
     };
-    for branch in branches {
-        if branch.mode.is_some() {
-            continue;
-        }
-        branch.mode = Some(mode.to_owned());
-        if manifest.settings.mode_trigger == "media" {
-            add_condition_wrapper(
-                &mut branch.condition_wrappers,
-                "media",
-                format!("@media (prefers-color-scheme:{mode})"),
-            );
-        }
-    }
+    let current = std::mem::take(branches);
+    *branches = current
+        .into_iter()
+        .flat_map(|branch| {
+            if branch.mode.is_some() {
+                vec![branch]
+            } else {
+                expand_mode_branches(vec![branch], mode)
+            }
+        })
+        .collect();
 }
 
 pub(crate) fn split_state_token(state_token: &str) -> (String, Vec<String>) {
@@ -204,7 +229,12 @@ pub(crate) fn expand_variant_branches(
                                 &condition.id,
                                 wrapper,
                             );
-                            add_condition_features(&mut branch.features, &condition.nodes, None);
+                            merge_condition_features(
+                                &mut branch.features,
+                                &super::condition::native_query_features(
+                                    &render_manifest_condition(condition, None),
+                                ),
+                            );
                         }
                     } else {
                         for raw in &variant_branch.conditions {

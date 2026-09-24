@@ -82,7 +82,7 @@ fn assert_replay(
 #[test]
 fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals() {
     let manifest = json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "variables": {"": (0..200).map(|i| json!({"name":format!("v{i}"),"key":format!("v{i}"),"value":"red"})).collect::<Vec<_>>()},
         "utilities": (0..200).map(|i| json!({
             "id":format!("c{i}"),"name":format!("c{i}"),"type":0,
@@ -150,8 +150,8 @@ fn batches_two_hundred_variables_and_replays_ensure_delete_refresh_and_globals()
 #[test]
 fn batches_static_dynamic_inline_cyclic_dependencies_modes_and_keyframes() {
     let manifest = json!({
-        "version":1,
-        "settings":{"modeTrigger":"class","defaultMode":"light","modes":["light","dark"]},
+        "version":1,"languageVersion":2,
+        "modes":[{"name":"light","branches":[{"selector":".light","conditions":[]}]},{"name":"dark","branches":[{"selector":".dark","conditions":[]}]}],
         "variables":{"": [
             {"name":"a","key":"a","value":"var(--b)","dependencies":["b"]},
             {"name":"b","key":"b","value":"var(--a)","dependencies":["a"]},

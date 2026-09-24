@@ -26,13 +26,9 @@ impl NodeRenderSession {
     }
 
     #[napi]
-    pub fn ensure_classes(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: Option<Vec<bool>>,
-    ) -> Result<()> {
+    pub fn ensure_classes(&mut self, class_names: Vec<String>) -> Result<()> {
         self.inner
-            .ensure_classes(class_names, native_support.as_deref())
+            .ensure_classes(class_names)
             .map_err(to_napi_error)
     }
 

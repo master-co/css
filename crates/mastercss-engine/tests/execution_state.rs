@@ -4,7 +4,9 @@ use mastercss_engine::EngineSession;
 fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classes() {
     let manifest = include_str!("../../../packages/preset/src/default-manifest.json");
     let mut engine = EngineSession::create(manifest).unwrap();
-    assert!(engine.inspect("block").unwrap().valid);
+    assert!(
+        engine.inspect("block").unwrap().match_status == mastercss_schema::MatchStatus::Matched
+    );
     let initial = engine.execution_state(["block", "unknown"]).unwrap();
     assert!(
         initial
@@ -42,7 +44,9 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
             .references
             .is_empty()
     );
-    engine.refresh(r#"{"version":1}"#).unwrap();
+    engine
+        .refresh(r#"{"version":1,"languageVersion":2}"#)
+        .unwrap();
     assert!(
         engine.execution_state(["block@base"]).unwrap().classes[0]
             .references
@@ -55,7 +59,7 @@ fn execution_state_reads_stored_references_without_ensuring_or_inspecting_classe
 #[test]
 fn execution_state_tracks_resource_counts_without_css_mutations() {
     let mut engine = EngineSession::create(
-        r#"{"version":1,"variables":{"": [{"name":"x","key":"x","value":"red"}]}}"#,
+        r#"{"version":1,"languageVersion":2,"variables":{"": [{"name":"x","key":"x","value":"red"}]}}"#,
     )
     .unwrap();
     engine

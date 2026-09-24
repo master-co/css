@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { expect, test } from 'vitest'
 import { compileProjectManifest } from '../src/node-compiler'
 
-const baseManifest = { version: 1 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
 for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)', ' print', ' layer(cards) supports(display:grid) print']) {
   for (const compose of [false, true]) {
     test(`Node project retains imported definitions: ${qualifier || 'unqualified'}, compose=${compose}`, () => {
@@ -13,6 +13,11 @@ for (const qualifier of ['', ' layer', ' layer(cards)', ' supports(display:grid)
         const entry = join(root, 'entry.css'), child = join(root, 'child.css')
         writeFileSync(entry, `@import "./child.css"${qualifier};.after{margin:1px}`)
         writeFileSync(child, '@utilities{paint{padding:2rem}}\n' + (compose ? '.composed{@compose paint;}' : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        if (qualifier) {
+          expect(() => compileProjectManifest([entry], { root, baseManifest })).toThrow(/Qualified import.*global @utilities/)
+          writeFileSync(entry, `@import "./child.css"${qualifier};@utilities{paint{padding:2rem}}.after{margin:1px}`)
+          writeFileSync(child, (compose ? '.composed{@compose paint;}' : '.composed{padding:2rem}') + '\n.card{padding:3rem}')
+        }
         const result = compileProjectManifest([entry], { root, baseManifest, preserveNativeCSS: true, classes: ['composed', 'card', 'after'] })
         expect(result.manifest.utilities?.some(utility => utility.name === 'paint')).toBe(true)
         expect(result.css).toMatch(/padding:\s*2rem/)

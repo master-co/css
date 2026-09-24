@@ -29,13 +29,13 @@ export const cliEditorial: Record<string, CLIEditorial> = {
     ]
   },
   migrate: {
-    introduction: 'Upgrade a project from the v2 RC language to named tokens and native declarations. Save the resolved original manifest before upgrading; RC versions can differ. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).',
+    introduction: 'Upgrade a project from its saved v2 RC language contract. Choose `--from rc-legacy` before named tokens or `--from rc-named` after named tokens and before the final conditions/modes contract. Record the actual original package version with `--source-version`; the example version must be replaced if it differs. Save the resolved original manifest before upgrading; RC versions can differ. See [Migrating from Master CSS v2 RC](/guide/migration/v2-rc).',
     effects: 'The default operation only proposes edits. `--write` applies verified edits only when the entire selected batch has no review diagnostics. Dynamic classes, selector references, ambiguous names, and uncertain cascade changes require manual review. Missing or invalid original configuration stops the command before writing.',
-    output: 'JSON stdout contains `version: 1`, `mode`, `manifest`, and per-file `edits`, `review`, and `written` results. Read all review diagnostics. `--manifest` selects the saved RC manifest; `--target-manifest` supplies a migrated manifest for custom utilities. Without a target file, the new preset is combined with original project token resources for equivalence checking.',
+    output: 'JSON stdout contains `version: 2`, `from`, `sourceVersion`, `configurationCSS`, `notes`, `mode`, `manifest`, and per-file `edits`, `review`, and `written` results. Read all review diagnostics. `--manifest` selects the saved RC manifest; `--target-manifest` supplies a migrated manifest for custom utilities. Without a target file, the new preset is combined with original project token resources for equivalence checking.',
     examples: [
-      { description: 'Preview an upgrade using the saved original manifest:', command: 'master-css migrate src --manifest master.rc.manifest.json' },
-      { description: 'Apply a reviewed batch with no unresolved diagnostics:', command: 'master-css migrate src --manifest master.rc.manifest.json --write' },
-      { description: 'Verify custom definitions against their migrated manifest:', command: 'master-css migrate src --manifest master.rc.manifest.json --target-manifest master.v2.manifest.json' }
+      { description: 'Preview an upgrade using the saved original manifest:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json' },
+      { description: 'Apply a reviewed batch with no unresolved diagnostics:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json --write' },
+      { description: 'Verify custom definitions against their migrated manifest:', command: 'master-css migrate src app.css --from rc-legacy --source-version 2.0.0-rc.87 --manifest master.rc.manifest.json --target-manifest master.v2.manifest.json' }
     ]
   },
   inspect: {

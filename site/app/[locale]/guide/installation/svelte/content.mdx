@@ -15,7 +15,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the Svelte CLI add-on from the SvelteKit project root.
+      Run the Svelte CLI add-on from the SvelteKit project root. It installs static rendering and leaves existing server hooks unchanged.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -46,3 +46,11 @@
   Hello World
 </h1>
 ```
+
+
+Static is the default. For browser generation, explicitly use `masterCSS({ mode:
+'runtime' })` in the Vite configuration. For progressive rendering, select
+`mode: 'progressive'` and export the `handle` from `@master/css-svelte/hooks.server`;
+compose it first when using SvelteKit’s `sequence()`. For pre-render only, select
+`mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
+A static application does not need the Master CSS server hook.

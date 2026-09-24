@@ -29,7 +29,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
     writeFileSync(join(root, 'style.module.css'), imports.join('\n'))
     writeFileSync(join(root, 'entry.js'), 'import styles from "./style.module.css"; globalThis.referenceClasses = styles; export default styles; if(import.meta.hot) import.meta.hot.accept("./style.module.css", next => { globalThis.referenceClasses = next.default });')
     writeFileSync(join(root, 'index.html'), '<script type="module" src="./entry.js"></script>')
-    const config = { root, cacheDir: join(root, '.vite'), configFile: false as const, logLevel: 'silent' as const, plugins: masterCSS({ mode, runtime: false }) }
+    const config = { root, cacheDir: join(root, '.vite'), configFile: false as const, logLevel: 'silent' as const, plugins: masterCSS({ mode }) }
     const sources: string[] = []
     let collect: (() => Promise<string[]>) | undefined
     if (command === 'build') {

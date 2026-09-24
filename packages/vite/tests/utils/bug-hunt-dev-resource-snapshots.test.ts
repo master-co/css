@@ -19,7 +19,7 @@ test.each(['replace', 'delete'] as const)('resource naming captures bytes before
     publishDevStylesheets(context, {
       css: `.resource{background-image:url("${href}")}`,
       resources: [{ file: source, href }],
-      emittedGlobals: { variables: {}, animations: {} }
+      diagnostics: [], emittedGlobals: { variables: {}, animations: {} }
     }, '#master-css-slot{--slot:0}')
     snapshot = devStylesheetState(context).resources.get(new URL(href).pathname)?.file
     expect(snapshot).toBeDefined()

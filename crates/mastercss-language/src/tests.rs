@@ -359,7 +359,7 @@ fn applies_document_context_settings_in_rust() {
 fn tokenizes_group_terminators_and_selector_combinators_in_rust() {
     let session = LanguageSession::create(
         r#"{
-              "version":1,
+              "version":1,"languageVersion":2,
               "utilities":[
                 {
                   "id":"block",
@@ -446,7 +446,7 @@ fn skips_overlapping_and_multiline_tokens() {
 fn batches_manifest_driven_class_semantics() {
     let mut session = LanguageSession::create(
             r#"{
-              "version":1,
+              "version":1,"languageVersion":2,
               "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
               "utilities":[
                 {
@@ -490,7 +490,7 @@ fn batches_manifest_driven_class_semantics() {
 fn owns_mdn_and_negative_completion_candidates_in_rust() {
     let session = LanguageSession::create(
             r#"{
-              "version":1,
+              "version":1,"languageVersion":2,
               "variables":{"spacing":[{"key":"md","type":"number","value":"1rem","numeric":{"value":1,"unit":"rem"}}]},
               "utilities":[
                 {
@@ -519,8 +519,33 @@ fn owns_mdn_and_negative_completion_candidates_in_rust() {
 }
 
 #[test]
-fn commits_only_host_supported_native_class_semantics() {
-    let mut session = LanguageSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+fn completion_owns_modes_variants_and_native_query_templates() {
+    let session = LanguageSession::create(r#"{
+        "version":1,"languageVersion":2,
+        "modes":[{"name":"ocean","branches":[{"selector":".ocean","conditions":[]}]}],
+        "variants":[{"token":"@quiet","branches":[{"selector":"&","conditions":["@media (prefers-reduced-motion:reduce)"]}]}]
+    }"#).unwrap();
+    let entries = session.completion_index().unwrap().class_entries;
+    for label in [
+        "@ocean",
+        "@quiet",
+        "@media()",
+        "@supports()",
+        "@container()",
+    ] {
+        assert!(entries.iter().any(|entry| entry.label == label), "{label}");
+    }
+    assert!(
+        !entries
+            .iter()
+            .any(|entry| entry.label.starts_with("@>") || entry.label.starts_with("@@"))
+    );
+}
+
+#[test]
+fn classifies_native_structure_independently_of_host_support() {
+    let mut session =
+        LanguageSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#).unwrap();
     let class_names = ["display:block", "made-up:nope"];
     let candidates = session.native_declaration_candidates(class_names).unwrap();
     assert_eq!(candidates.len(), 2);
@@ -533,7 +558,7 @@ fn commits_only_host_supported_native_class_semantics() {
     );
     assert_eq!(
         batch.classes[1].kind,
-        mastercss_engine::ClassSemanticKind::Unknown
+        mastercss_engine::ClassSemanticKind::Declaration
     );
     assert_eq!(
         session
@@ -547,7 +572,7 @@ fn commits_only_host_supported_native_class_semantics() {
             .inspect_class_name("made-up:nope", None, None)
             .unwrap()
             .kind,
-        ClassSemanticKind::Unknown
+        ClassSemanticKind::Declaration
     );
 }
 
@@ -555,8 +580,8 @@ fn commits_only_host_supported_native_class_semantics() {
 fn renders_isolated_hover_inspection_css() {
     let session = LanguageSession::create(
         r#"{
-              "version":1,
-              "settings":{"modeTrigger":"class"},
+              "version":1,"languageVersion":2,
+              "modes":[{"name":"dark","branches":[{"selector":".dark"}]}],
               "variables":{"color":[{"key":"brand","value":"oklch(50% .1 20)"}]},
               "utilities":[
                 {
@@ -582,7 +607,7 @@ fn renders_isolated_hover_inspection_css() {
         .inspect_class_name("card:hover", None, None)
         .unwrap();
     assert_eq!(inspection.version, LANGUAGE_BATCH_VERSION);
-    assert!(inspection.valid);
+    assert!(inspection.match_status == mastercss_schema::MatchStatus::Matched);
     assert_eq!(inspection.kind, ClassSemanticKind::Component);
     assert_eq!(inspection.base, "card");
     assert_eq!(inspection.suffix, ":hover");
@@ -597,7 +622,7 @@ fn renders_isolated_hover_inspection_css() {
         .unwrap();
     assert_eq!(
         forced_mode.text,
-        "@layer components{.dark .card{display:block}}"
+        "@layer components{.card:where(.dark,.dark *){display:block}}"
     );
     let variable = session
         .inspect_class_name("fg-brand:hover", None, None)

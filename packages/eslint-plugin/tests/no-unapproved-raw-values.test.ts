@@ -28,7 +28,7 @@ const registryFieldManifest = createPresetManifest({
 jsxTester.run('no unapproved raw values', rule, {
   valid: [
     { code: `<div class="font-md m-md m:var(--spacing-md)|var(--spacing-lg) fg-red-60 text-center">Tokens and static utilities</div>` },
-    { code: `<div class="font:error unknown-class">Invalid and unknown classes are ignored</div>` },
+    { code: `<div class="font: unknown-class">Invalid and unknown classes are ignored</div>` },
     {
       code: `<div class="font-size:15px">Raw values disabled</div>`,
       options: [{ allowRawValues: true }]

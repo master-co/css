@@ -41,7 +41,7 @@ it('normalizes Wasm initialization failures', async () => {
 
 it('loads the packaged Wasm artifact in Node without fetch support for file URLs', async () => {
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -51,7 +51,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
     }]
   }))
 
-  expect(session.inspect('block')).toMatchObject({ valid: true, className: 'block' })
+  expect(session.inspect('block')).toMatchObject({ matchStatus: 'matched', className: 'block' })
   expect(session.snapshot().text).toBe('')
   const transition = session.ensureClassRules(['block'])
   expect(transition.mutations).toHaveLength(1)
@@ -59,7 +59,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   session.dispose()
 
   const nativeDeclarationSession = await createWasmEngineSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: {
       '': [{
         name: 'stripe',
@@ -72,7 +72,7 @@ it('loads the packaged Wasm artifact in Node without fetch support for file URLs
   }))
   nativeDeclarationSession.ensureClassRules(['bg:var(--stripe)'])
   expect(nativeDeclarationSession.snapshot().text).toBe(
-    '@layer theme{:root{--stripe:linear-gradient(red,blue)}}'
+    '@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}'
     + '@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}'
   )
   nativeDeclarationSession.dispose()
@@ -85,7 +85,7 @@ it('passes emitted globals to the Wasm-owned session', async () => {
     import.meta.url
   )))
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: {
       color: [{ key: 'red-60', value: '#d00' }]
     },
@@ -108,7 +108,7 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
     import.meta.url
   )))
   const session = await createWasmEngineSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: {
       color: [{ key: 'red-60', value: '#d00' }]
     },
@@ -126,7 +126,7 @@ it('registers emitted globals after the Wasm-owned session starts', async () => 
   expect(() => session.registerEmittedGlobals({ variables: {} })).toThrow('disposed')
 })
 
-it('uses a batched CSS.supports handshake for browser-native declarations', async () => {
+it('preserves native declarations independently of browser CSS.supports', async () => {
   vi.stubGlobal('CSS', {
     supports: (property: string, value: string) => property === 'display' && value === 'block'
   })
@@ -135,26 +135,26 @@ it('uses a batched CSS.supports handshake for browser-native declarations', asyn
     import.meta.url
   )))
   const session = await createWasmEngineSession(
-    JSON.stringify({ version: 1, utilities: [] }),
+    JSON.stringify({ version: 1, languageVersion: 2, utilities: [] }),
     {},
     { input }
   )
 
   const transition = session.ensureClassRules(['display:block', 'made-up:nope'])
-  expect(transition.mutations).toHaveLength(1)
+  expect(transition.mutations).toHaveLength(2)
   expect(session.snapshot().text).toBe(
-    '@layer utilities{.display\\:block{display:block}}'
+    '@layer utilities{.display\\:block{display:block}.made-up\\:nope{made-up:nope}}'
   )
   session.dispose()
 
   const renderSession = await createWasmRenderSession(
-    JSON.stringify({ version: 1, utilities: [] }),
+    JSON.stringify({ version: 1, languageVersion: 2, utilities: [] }),
     {},
     { input }
   )
 
   expect(renderSession.nativeDeclarationCandidates(['accent-color:transparent'])).toHaveLength(1)
-  renderSession.ensureClassRules(['accent-color:transparent'], [true])
+  renderSession.ensureClassRules(['accent-color:transparent'])
   const snapshot = renderSession.snapshot() as { snapshot: { text: string } }
   expect(snapshot.snapshot.text).toBe(
     '@layer utilities{.accent-color\\:transparent{accent-color:transparent}}'

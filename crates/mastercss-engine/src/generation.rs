@@ -4,8 +4,7 @@ use super::{
     collect_animation_names, collect_css_variable_names, composition_conditions,
     composition_selector, create_selector_text, emit_declarations, find_group_close,
     normalize_dynamic_value, parse_serialized_declarations, resolve_state_branches,
-    selector_priority, single_native_declaration, split_top_level, wrap_raw_conditions,
-    wrap_state_conditions,
+    selector_priority, split_top_level, wrap_raw_conditions, wrap_state_conditions,
 };
 
 impl EngineSession {
@@ -36,6 +35,9 @@ impl EngineSession {
                 })
                 .collect();
         }
+        if mastercss_lexer::decode_native_content(class_name).is_none() {
+            return Vec::new();
+        }
         let mut generated = Vec::new();
         let mut seen = HashSet::new();
         let (semantic_class_name, important) = class_name
@@ -45,10 +47,20 @@ impl EngineSession {
             .unwrap_or_else(|| semantic_class_name.to_owned())];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
-            for (utility_index, matched) in
-                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
+            let fallback = matches
+                .is_empty()
+                .then(|| self.native_declaration_fallback(&matching_class_name))
+                .flatten();
+            for (utility, matched) in matches
+                .into_iter()
+                .map(|(index, matched)| (&self.compiled.utilities[index], matched))
+                .chain(
+                    fallback
+                        .as_ref()
+                        .map(|(utility, matched)| (utility, matched.clone())),
+                )
             {
-                let utility = &self.compiled.utilities[utility_index];
                 if utility.native_fallback && generated.len() > generated_before_candidate {
                     break;
                 }
@@ -64,20 +76,11 @@ impl EngineSession {
                         .into_iter()
                         .enumerate()
                 {
-                    let mut emitted_rules = emit_declarations(
+                    let emitted_rules = emit_declarations(
                         utility,
                         resolved_value.as_deref(),
                         branch.important || self.compiled.settings.important,
                     );
-                    if utility.native_fallback
-                        && let Some(support) = self.native_declaration_support.get(class_name)
-                    {
-                        emitted_rules.retain(|(_, declarations, _, _)| {
-                            single_native_declaration(declarations).is_none_or(|declaration| {
-                                support.get(&declaration).copied() != Some(false)
-                            })
-                        });
-                    }
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -108,6 +111,11 @@ impl EngineSession {
                         },
                         sort_key: super::named::sort_key(utility, &matched),
                         features: branch.features.clone(),
+                        conditions: branch
+                            .condition_wrappers
+                            .iter()
+                            .map(|(_, value)| mastercss_lexer::canonical_native_content(value))
+                            .collect(),
                         selector: selector_priority(branch.selector_template.as_deref()),
                     };
                     let base_selector = composition_selector(&branch, &self.compiled);
@@ -149,6 +157,9 @@ impl EngineSession {
         if let Some(rules) = self.generate_group_rules(class_name, mode) {
             return rules;
         }
+        if mastercss_lexer::decode_native_content(class_name).is_none() {
+            return Vec::new();
+        }
         let mut generated = Vec::new();
         let mut seen = HashSet::new();
         let (semantic_class_name, important) = class_name
@@ -158,10 +169,20 @@ impl EngineSession {
             .unwrap_or_else(|| semantic_class_name.to_owned())];
         for matching_class_name in matching_class_names {
             let generated_before_candidate = generated.len();
-            for (utility_index, matched) in
-                super::named::matching_utilities(&matching_class_name, &self.compiled)
+            let matches = super::named::matching_utilities(&matching_class_name, &self.compiled);
+            let fallback = matches
+                .is_empty()
+                .then(|| self.native_declaration_fallback(&matching_class_name))
+                .flatten();
+            for (utility, matched) in matches
+                .into_iter()
+                .map(|(index, matched)| (&self.compiled.utilities[index], matched))
+                .chain(
+                    fallback
+                        .as_ref()
+                        .map(|(utility, matched)| (utility, matched.clone())),
+                )
             {
-                let utility = &self.compiled.utilities[utility_index];
                 if utility.native_fallback && generated.len() > generated_before_candidate {
                     break;
                 }
@@ -176,20 +197,11 @@ impl EngineSession {
                     }
                 });
                 for (branch_index, branch) in state_branches.into_iter().enumerate() {
-                    let mut emitted_rules = emit_declarations(
+                    let emitted_rules = emit_declarations(
                         utility,
                         resolved_value.as_deref(),
                         branch.important || self.compiled.settings.important,
                     );
-                    if utility.native_fallback
-                        && let Some(support) = self.native_declaration_support.get(class_name)
-                    {
-                        emitted_rules.retain(|(_, declarations, _, _)| {
-                            single_native_declaration(declarations).is_none_or(|declaration| {
-                                support.get(&declaration).copied() != Some(false)
-                            })
-                        });
-                    }
                     if emitted_rules.is_empty() {
                         continue;
                     }
@@ -257,6 +269,13 @@ impl EngineSession {
                                 },
                                 sort_key: super::named::sort_key(utility, &matched),
                                 features: branch.features.clone(),
+                                conditions: branch
+                                    .condition_wrappers
+                                    .iter()
+                                    .map(|(_, value)| {
+                                        mastercss_lexer::canonical_native_content(value)
+                                    })
+                                    .collect(),
                                 selector: selector_priority(branch.selector_template.as_deref()),
                             },
                             text,

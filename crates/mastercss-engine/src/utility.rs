@@ -161,6 +161,7 @@ pub fn compare_rule_priority(left: &GeneratedRuleIr, right: &GeneratedRuleIr) ->
     left.sort_tier
         .cmp(&right.sort_tier)
         .then_with(|| compare_condition_features(&left.priority.features, &right.priority.features))
+        .then_with(|| left.priority.conditions.cmp(&right.priority.conditions))
         .then_with(|| left.priority.selector.cmp(&right.priority.selector))
         .then_with(|| left.utility_type.cmp(&right.utility_type))
         .then_with(|| {
@@ -305,7 +306,7 @@ pub(crate) fn match_utility_filtered(
                         continue;
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
-                    if !value.is_empty() && !contains_legacy_variable_function(&value) {
+                    if !value.is_empty() && !contains_legacy_variable_reference(&value) {
                         let (value, variable_names) =
                             resolve_value_components(&value, Some(utility), manifest);
                         return Some(UtilityMatch {
@@ -363,7 +364,7 @@ pub(crate) fn match_utility_filtered(
                     };
                     let (value, state_token) = split_dynamic_value_state(raw_value);
                     if value.is_empty()
-                        || contains_legacy_variable_function(&value)
+                        || contains_legacy_variable_reference(&value)
                         || (segments.as_deref() != Some("multiple")
                             && has_top_level_value_separator(&value))
                         || !matches_utility_kind(&value, utility.kind.as_deref())
@@ -400,8 +401,15 @@ pub(crate) fn builtin_key_alias(key: &str) -> Option<&'static str> {
         .find_map(|(alias, canonical)| (*alias == key).then_some(*canonical))
 }
 
-pub(crate) fn contains_legacy_variable_function(value: &str) -> bool {
-    value.contains("$(")
+pub(crate) fn contains_legacy_variable_reference(value: &str) -> bool {
+    value.contains('$')
+        && mastercss_lexer::tokenize_css_syntax(value)
+            .iter()
+            .any(|token| {
+                matches!(token.kind, mastercss_lexer::CssSyntaxKind::Delim('$'))
+                    && value[token.bytes.end..]
+                        .starts_with(|c: char| c.is_alphanumeric() || matches!(c, '(' | '-' | '_'))
+            })
 }
 
 pub(crate) fn resolve_inline_variable_value(variable: &CompiledVariable) -> Option<String> {

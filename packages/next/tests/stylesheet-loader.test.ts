@@ -186,7 +186,7 @@ describe('Next style CSS loader', () => {
     let error: Error & { dependencies?: string[] } | undefined
 
     try {
-      await runStylesheetLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
+      await runStylesheetLoader(root, modulePath, '.button { @compose bg-missing-token; }')
     } catch (caught) {
       error = caught as Error & { dependencies?: string[] }
     }

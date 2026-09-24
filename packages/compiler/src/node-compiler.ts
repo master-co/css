@@ -211,6 +211,7 @@ export function compileCSS(source: string, options: CompileCSSOptions = {}): Com
       {
         from: options.from || 'master.css',
         preserveNativeCSS: options.preserveNativeCSS !== false,
+        pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
         ...(options.classes ? { classes: options.classes } : {})
       }
@@ -528,6 +529,7 @@ export function compileCSSManifestGraph(
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
+        pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(options.classes ? { classes: options.classes } : {}) },
     inlineImports: true
   }))
@@ -576,7 +578,7 @@ function compileCSSManifestFileInternal(file: string, options: CompileCSSManifes
     projectDir: options.root, onDependency: options.onDependency
   }, analyzeCSSDependencies)
   return compileCSSManifestGraph(graph, {
-    ...options, preserveNativeCSS: options.preserveNativeCSS ?? false,
+    ...options, preserveNativeCSS: options.preserveNativeCSS ?? true,
     from: absoluteFile,
     referenceStack: [...(options.referenceStack || []), absoluteFile]
   })
@@ -611,7 +613,7 @@ export function compileProjectManifest(entries: string[], options: CompileCSSMan
     const manifestResult = compileCSSManifestFile(entry, {
       ...options,
       baseManifest: manifest,
-      preserveNativeCSS: options.preserveNativeCSS ?? false
+      preserveNativeCSS: options.preserveNativeCSS ?? true
     })
     const result = manifestResult.directives
     directives = result

@@ -359,10 +359,10 @@ export default defineConfig([
       }
     })
 
-    const result = runCLI(['--cwd', root, '--json', '--framework', 'angular', '--mode', 'static'])
+    const result = runCLI(['--cwd', root, '--json', '--framework', 'angular', '--mode', 'progressive'])
 
     expect(result.status).toBe(1)
-    expect(result.stderr).toContain('--mode is not supported for angular')
+    expect(result.stderr).toContain('--mode progressive is not supported for angular')
     expect(result.stderr).not.toContain('Error:')
   })
 

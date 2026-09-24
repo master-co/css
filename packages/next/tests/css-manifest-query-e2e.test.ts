@@ -47,31 +47,21 @@ function isStaticMediaJSONFile(filePath: string) {
   return filePath.endsWith('.json') && parts.includes('static') && parts.includes('media')
 }
 
-interface ManifestJSON {
-  variables?: Record<string, { key: string }[]>
-}
-
 describe('css manifest query e2e', () => {
   it('builds a clean Next project that imports an explicit CSS manifest resource', () => {
     buildFixture()
 
-    const nextDir = join(fixtureDir, '.next')
-    const html = readFileSync(join(fixtureDir, '.next/server/app/index.html'), 'utf-8')
+    const nextDir = join(fixtureDir, '.next-query')
+    const html = readFileSync(join(nextDir, 'server/app/index.html'), 'utf-8')
     const manifestJSONFiles = collectOutputFiles(nextDir, isStaticMediaJSONFile)
-    const manifestJSONContents = manifestJSONFiles.map((filePath) => readFileSync(filePath, 'utf-8'))
-    const manifestJSON = manifestJSONContents.map((contents) => JSON.parse(contents) as ManifestJSON)
     const jsBundleContents = collectOutputFiles(nextDir, (filePath) => filePath.endsWith('.js'))
       .map((filePath) => readFileSync(filePath, 'utf-8'))
       .join('\n')
-    const hasVariable = (namespace: string, key: string) => manifestJSON.some((manifest) =>
-      manifest.variables?.[namespace]?.some((variable) => variable.key === key)
-    )
-
     expect(html).toContain('data-color="#4b6fff"')
     expect(html).toContain('data-breakpoint="1234"')
-    expect(manifestJSONFiles.length).toBeGreaterThan(0)
-    expect(hasVariable('font-weight', 'bold')).toBe(true)
-    expect(hasVariable('color', 'e2e')).toBe(true)
-    expect(jsBundleContents).not.toContain('font-weight-bold')
+    expect(manifestJSONFiles).toEqual([])
+    expect(html).toContain('/assets/_next/')
+    expect(jsBundleContents).toContain('#4b6fff')
+    expect(jsBundleContents).not.toContain('loadMasterCSSManifestFromImport')
   })
 })

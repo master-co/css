@@ -39,7 +39,7 @@ export interface MasterCSSDocumentAnalysisRequest {
 }
 
 export interface MasterCSSDocumentAnalysis {
-  readonly version: 2
+  readonly version: 3
   readonly classPositions: readonly MasterCSSLanguageClassPosition[]
   readonly semanticTokens: readonly SemanticTokenItem[]
   readonly semanticTokenData: readonly number[]
@@ -52,7 +52,7 @@ export interface MasterCSSFormatDirectivesRequest {
 }
 
 export interface MasterCSSFormatDirectivesResult {
-  readonly version: 2
+  readonly version: 3
   readonly edits: readonly Readonly<{
     range: Readonly<{ start: number, end: number }>
     text: string
@@ -70,7 +70,7 @@ export interface MasterCSSLanguageClass {
 }
 
 export interface MasterCSSLanguageClassifications {
-  readonly version: 2
+  readonly version: 3
   readonly variableNames: readonly string[]
   readonly classes: readonly MasterCSSLanguageClass[]
 }
@@ -94,9 +94,13 @@ export interface MasterCSSLanguageClassVariable {
 }
 
 export interface MasterCSSLanguageInspection {
-  readonly version: 2
+  readonly version: 3
   readonly className: string
-  readonly valid: boolean
+  readonly matchStatus: BindingInspection['matchStatus']
+  readonly declarations: readonly import('../value-validation').DeclarationValidation[]
+  readonly checks: readonly (typeof import('../value-validation').CSS_VALUE_CHECK)[]
+  readonly cssValueStatus: BindingInspection['cssValueStatus']
+  readonly browserSupport: BindingInspection['browserSupport']
   readonly kind: MasterCSSLanguageClassKind
   readonly base: string
   readonly suffix: string
@@ -125,12 +129,12 @@ export interface MasterCSSLanguageCompletionEntry {
 }
 
 export interface MasterCSSLanguageCompletionIndex {
-  readonly version: 2
+  readonly version: 3
   readonly classEntries: readonly MasterCSSLanguageCompletionEntry[]
 }
 
 export interface MasterCSSLanguageColorPresentation {
-  readonly version: 2
+  readonly version: 3
   readonly editable: boolean
   readonly replacementPrefix?: string
   readonly colorToken: string
@@ -169,6 +173,6 @@ export type MasterCSSLanguageColorExpression =
     }>
 
 export interface MasterCSSLanguageColorTokens {
-  readonly version: 2
+  readonly version: 3
   readonly tokens: readonly MasterCSSLanguageColorToken[]
 }

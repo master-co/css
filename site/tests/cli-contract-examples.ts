@@ -69,7 +69,7 @@ export async function verifyCLIContractExamples() {
     const inspected = run(inspect)
     assert.equal(inspected.status, 0, inspected.stderr)
     const report = JSON.parse(inspected.stdout)
-    assert.equal(report.version, 1)
+    assert.equal(report.version, 2)
     assert.match(report.css.text, /display:flex/)
     assert.deepEqual(report.missingCSS.missing, [])
     assert.ok(report.missingCSS.present.some((item: any) => item.className === 'p-md'))
@@ -80,7 +80,8 @@ export async function verifyCLIContractExamples() {
     const saved = run(save)
     assert.equal(saved.status, 0, saved.stderr)
     assert.equal(saved.stdout, '')
-    assert.equal(JSON.parse(readFileSync(join(root, 'inspection.json'), 'utf8')).version, 1)
+    assert.equal(JSON.parse(readFileSync(join(root, 'inspection.json'), 'utf8')).version, 2)
+    writeFileSync(join(root, 'app.css'), '@master entry; @settings { root-size:16; }')
     const rcSource = '<button class="font:mono p:4x">Save</button>'
     writeFileSync(file, rcSource)
     writeFileSync(join(root, 'master.rc.manifest.json'), readFileSync(new URL('../../crates/mastercss-compiler/tests/fixtures/v2-rc-before-named-tokens.manifest.json', import.meta.url)))

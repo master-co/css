@@ -5,15 +5,14 @@ fn compile(entry: &str, child: &str, child_url: &str) -> Value {
     let input: CompileCssStylesheetGraphInput = serde_json::from_value(json!({
         "inlineImports":true,
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
-        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":1,"utilities":[]}
+        "urls":{"/entry.css":"/entry.css","/child.css":child_url},"baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph_input(&input).unwrap()).unwrap()
 }
 #[test]
 fn inline_qualified_child_keeps_composition_and_original_anchors() {
-    let child = "@utilities{paint{padding:2rem}}\n.card{@compose paint;}.card{padding:3rem}";
-    let entry =
-        "@import './child.css' layer supports(display:grid) screen;/* 😀 */\n.after{margin:1px}";
+    let child = "\n.card{@compose paint;}.card{padding:3rem}";
+    let entry = "@import './child.css' layer supports(display:grid) screen;@utilities{paint{padding:2rem}}/* 😀 */\n.after{margin:1px}";
     let result = compile(entry, child, "/child.css");
     assert_eq!(result["stylesheets"].as_array().unwrap().len(), 1);
     let sheet = &result["stylesheets"][0];

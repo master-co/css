@@ -4,6 +4,8 @@ use serde_json::{Value, json};
 
 fn request(classes: &[&str]) -> RcMigrationRequest {
     RcMigrationRequest {
+        from: mastercss_compiler::RcMigrationProfile::RcLegacy,
+        source_version: "2.0.0-rc.87".into(),
         manifest: serde_json::from_str(include_str!(
             "fixtures/v2-rc-before-named-tokens.manifest.json"
         ))
@@ -254,5 +256,74 @@ fn audits_unchanged_alias_spellings_and_logical_shorthand_overlaps() {
             .all(|proposal| proposal.status == "review"),
         "{}",
         serde_json::to_string(&result).unwrap()
+    );
+}
+
+#[test]
+fn named_rc_profile_preserves_old_numeric_queries_and_native_dimensions() {
+    let mut request = request(&[
+        "p-md@>=800",
+        "width:8px@media((width>=800px))",
+        "p-md@>=800px",
+    ]);
+    request.from = mastercss_compiler::RcMigrationProfile::RcNamed;
+    request.manifest = json!({
+        "version":1,"settings":{"rootSize":20},
+        "variables":{"spacing":[{"key":"md","value":"1rem"}]}, "utilities":[]
+    });
+    let result = migrate_rc(&request).unwrap();
+    assert_eq!(
+        result.class_lists[0][0].after.as_deref(),
+        Some("p-md@media((width>=40rem))")
+    );
+    assert_eq!(
+        result.class_lists[1][0].after.as_deref(),
+        Some("width:8px@media((width>=800px))")
+    );
+    assert_eq!(
+        result.class_lists[2][0].status, "review",
+        "{:?}",
+        result.class_lists[2][0]
+    );
+    assert_eq!(result.from, mastercss_compiler::RcMigrationProfile::RcNamed);
+    assert!(result.configuration_css.contains("@mode dark"));
+    let encoded = serde_json::to_value(&result).unwrap();
+    assert_eq!(encoded["configurationCSS"], result.configuration_css);
+    assert!(encoded.get("configurationCss").is_none());
+}
+
+#[test]
+fn named_rc_settings_become_explicit_modes_base_values_and_scheme() {
+    let mut request = request(&[]);
+    request.from = mastercss_compiler::RcMigrationProfile::RcNamed;
+    request.manifest = json!({
+        "version":1,"settings":{"rootSize":20,"modeTrigger":"class","defaultMode":"dark","modes":["light","dark"]},
+        "variables":{"color":[{"key":"surface","modes":{"light":{"value":"white"},"dark":{"value":"black"}}}]},
+        "utilities":[]
+    });
+    request.stylesheets = vec![
+        "@settings{root-size:20;mode-trigger:class;default-mode:dark;modes:light,dark;}".into(),
+    ];
+    let result = migrate_rc(&request).unwrap();
+    assert!(
+        result
+            .configuration_css
+            .contains("@mode dark{.dark{@slot;}}")
+    );
+    assert!(
+        result
+            .configuration_css
+            .contains("@theme{--color-surface:black;}")
+    );
+    assert!(result.configuration_css.contains("color-scheme:dark"));
+    assert!(
+        !result.notes.is_empty(),
+        "Class-mode overlap and specificity need review"
+    );
+    assert!(
+        result.stylesheets[0]
+            .edits
+            .iter()
+            .any(|edit| edit.before == "root-size:20;" && edit.after.is_empty())
     );
 }

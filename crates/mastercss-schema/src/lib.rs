@@ -15,13 +15,14 @@ use serde_json::{Map, Value};
 use thiserror::Error;
 
 pub const MANIFEST_VERSION: u32 = 1;
+pub const LANGUAGE_VERSION: u32 = 2;
 pub const HYDRATION_MANIFEST_VERSION: u32 = 1;
-pub const BINDING_ABI_VERSION: u32 = 8;
+pub const BINDING_ABI_VERSION: u32 = 9;
 pub const ENGINE_TRANSITION_VERSION: u32 = 1;
-pub const VALIDATOR_BATCH_VERSION: u32 = 1;
-pub const DIAGNOSTICS_REPORT_VERSION: u32 = 1;
+pub const VALIDATOR_BATCH_VERSION: u32 = 2;
+pub const DIAGNOSTICS_REPORT_VERSION: u32 = 2;
 pub const LINT_BATCH_VERSION: u32 = 1;
-pub const LANGUAGE_BATCH_VERSION: u32 = 2;
+pub const LANGUAGE_BATCH_VERSION: u32 = 3;
 pub const LEXER_BATCH_VERSION: u32 = 1;
 pub const SOURCE_BATCH_VERSION: u32 = 1;
 
@@ -31,6 +32,7 @@ pub struct BindingInfo<'a> {
     pub binding_abi_version: u32,
     pub package_version: &'a str,
     pub manifest_version: u32,
+    pub language_version: u32,
     pub hydration_manifest_version: u32,
     pub engine_transition_version: u32,
     pub validator_batch_version: u32,
@@ -55,6 +57,7 @@ impl<'a> BindingInfo<'a> {
             binding_abi_version: BINDING_ABI_VERSION,
             package_version,
             manifest_version: MANIFEST_VERSION,
+            language_version: LANGUAGE_VERSION,
             hydration_manifest_version: HYDRATION_MANIFEST_VERSION,
             engine_transition_version: ENGINE_TRANSITION_VERSION,
             validator_batch_version: VALIDATOR_BATCH_VERSION,
@@ -83,7 +86,9 @@ pub struct EmittedGlobals {
 #[serde(rename_all = "camelCase")]
 pub struct ValidatorClassIr {
     pub class_name: String,
-    pub matched: bool,
+    pub match_status: MatchStatus,
+    pub css_value_status: CssValueStatus,
+    pub browser_support: BrowserSupport,
     pub rules: Vec<GeneratedRuleIr>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub diagnostics: Vec<Diagnostic>,

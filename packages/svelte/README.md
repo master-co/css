@@ -58,7 +58,7 @@
 npx sv add @master/css-svelte-addon
 ```
 
-The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and composes the SvelteKit server hook.
+The Svelte CLI add-on installs `@master/css-svelte`, wires Vite, creates the stylesheet entry, imports it from the root layout, and defaults to static rendering without adding a server hook.
 
 `@master/css-svelte` provides the SvelteKit Vite integration and server hook used at dev, build, and SSR time. Source extraction for `.svelte` files is handled automatically by `@master/css-tooling/source`.
 
@@ -87,7 +87,7 @@ export default defineConfig({
 
 ### Server hook
 
-Export the server handle to inject streamed CSS before `</head>`.
+For progressive rendering, explicitly set `masterCSS({ mode: 'progressive' })` and export the server handle to inject streamed CSS before `</head>`. Static mode needs no server hook. For pre-render only, select `mode: 'pre-render'` and create the server handle with `hydrationManifest: false`.
 
 ```ts
 export { handle } from '@master/css-svelte/hooks.server'

@@ -25,7 +25,7 @@ describe('@master/css-schema manifest helpers', () => {
 
   it('normalizes derived manifest fields in JSON', () => {
     const manifest: MasterCSSManifest = {
-      version: 1,
+      version: 1, languageVersion: 2,
       variables: {
         color: [{ name: 'color-brand', key: 'brand', type: 'string', value: '#123' }]
       },
@@ -44,7 +44,7 @@ describe('@master/css-schema manifest helpers', () => {
     }
 
     expect(serializeMasterCSSManifest(manifest)).toBe(
-      '{"version":1,"variables":{"color":[{"key":"brand","value":"#123"}]},"utilities":[{"id":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]}]}'
+      '{"version":1,"languageVersion":2,"variables":{"color":[{"key":"brand","value":"#123"}]},"utilities":[{"id":"block","type":-2,"emit":{"type":"static","rules":[{"declarations":{"display":"block"}}]},"matchers":[{"type":"static","name":"block"}]}]}'
     )
   })
 })

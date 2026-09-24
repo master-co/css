@@ -80,17 +80,17 @@ A breakpoint should exist because something meaningful changes. Avoid adding thr
 ---
 
 ## Query viewport ranges
-Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators when a style belongs to a range instead of every larger viewport.
+Use a complete [native media query](/reference/rules/conditions#media-queries) when a style belongs to a range instead of every larger viewport.
 
 ```html
-<!-- @MARK hidden@sm&<=md -->
-<aside class="hidden@sm&<=md">...</aside>
+<!-- @MARK hidden@media((52.125rem<=width<=64rem)) -->
+<aside class="hidden@media((52.125rem<=width<=64rem))">...</aside>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@sm&<=md']}
+    {['hidden@media((52.125rem<=width<=64rem))']}
   </Class2CSS>
 </details>
 
@@ -143,7 +143,7 @@ Here `@sm`, `@md`, and `@lg` come from the breakpoint namespace. The `4xl`, `5xl
 ```html
 <main class="grid-cols:12@md">
   <section class="container">
-    <article class="grid-cols:2@container(md)">...</article>
+    <article class="grid-cols:2@container((width>=28rem))">...</article>
   </section>
 </main>
 ```

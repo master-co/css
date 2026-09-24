@@ -1,1 +1,1 @@
-@layer theme{:root{--primary:#00000080}}@layer utilities{.fg\:var\(--primary\){color:var(--primary)}}
+@layer theme{:root,:host{--primary:#00000080}}@layer utilities{.fg\:var\(--primary\){color:var(--primary)}}

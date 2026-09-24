@@ -191,6 +191,7 @@ describe('@master/css-mcp', () => {
       const rendered = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_render_css',
         arguments: {
+          context: 'preset',
           classList: 'block'
         }
       }))
@@ -200,10 +201,12 @@ describe('@master/css-mcp', () => {
       const renderedNative = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_render_css',
         arguments: {
-          classList: 'block field-sizing:content display:banana'
+          context: 'preset',
+          classList: 'block field-sizing:content display:16px'
         }
       }))
-      expect(renderedNative.invalid).toEqual(['display:banana'])
+      expect(renderedNative.invalid).toEqual([])
+      expect(renderedNative.inspections.find((item: { className: string }) => item.className === 'display:16px')).toMatchObject({ matchStatus: 'matched', cssValueStatus: 'invalid' })
       expect(renderedNative.css.text).toContain('.block{display:block}')
       expect(renderedNative.css.text).toContain('.field-sizing\\:content{field-sizing:content}')
       expect(renderedNative.css.bytes).toBe(renderedNative.css.text.length)
@@ -211,6 +214,7 @@ describe('@master/css-mcp', () => {
       const suggestions = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_suggest_syntax',
         arguments: {
+          context: 'preset',
           content: '<div class="block"></div>',
           filePath: 'index.html',
           position: { line: 0, character: 13 },
@@ -244,9 +248,7 @@ describe('@master/css-mcp', () => {
     })
     writeFileSync(join(root, 'master.css'), [
       '@master entry;',
-      '@settings {',
-      '  mode-trigger: class;',
-      '}',
+      '@mode ocean { [data-theme=ocean] { @slot; } }',
       '@theme {',
       '  --color-brand: #123456;',
       '}'
@@ -258,7 +260,7 @@ describe('@master/css-mcp', () => {
         name: 'mastercss_setup_audit',
         arguments: {}
       }))
-      expect(audit.version).toBe(1)
+      expect(audit.version).toBe(2)
       expect(audit.manifest.entries).toHaveLength(1)
       expect(audit.packages.declared).toContainEqual(expect.objectContaining({
         name: '@master/css'
@@ -293,11 +295,11 @@ describe('@master/css-mcp', () => {
           entryPath: 'master.css'
         }
       }))
-      expect(directives.version).toBe(1)
+      expect(directives.version).toBe(2)
       expect(directives.status).toBe('ok')
       expect(directives.directiveEntries).toEqual(expect.arrayContaining([
         expect.objectContaining({ name: 'theme' }),
-        expect.objectContaining({ name: 'settings' })
+        expect.objectContaining({ name: 'mode' })
       ]))
       expect(directives.manifest.counts.variables).toBeGreaterThan(0)
     } finally {
@@ -314,19 +316,21 @@ describe('@master/css-mcp', () => {
       const trace = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_trace_class',
         arguments: {
+          context: 'preset',
           className: 'block',
           patterns: ['index.html']
         }
       }))
-      expect(trace.version).toBe(1)
+      expect(trace.version).toBe(2)
       expect(trace.status).toBe('present')
       expect(trace.reason).toBe('generated')
       expect(trace.detected).toBe(true)
-      expect(trace.inspection.valid).toBe(true)
+      expect(trace.inspection.matchStatus).toBe('matched')
 
       const inspected = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_inspect_class',
         arguments: {
+          context: 'preset',
           className: 'block',
           mode: 'dark'
         }
@@ -334,50 +338,53 @@ describe('@master/css-mcp', () => {
       expect(inspected).toMatchObject({
         className: 'block',
         mode: 'dark',
-        valid: true,
+        matchStatus: 'matched',
         base: 'block',
         suffix: '',
         matcherTypes: ['static']
       })
-      expect(inspected.rules).toHaveLength(1)
+      expect(inspected.rules).toHaveLength(2)
       expect(inspected.rules[0].text).toContain('@media (prefers-color-scheme:dark)')
       expect(inspected.css).toBe(inspected.rules.map((rule: { text: string }) => rule.text).join(''))
 
       const extracted = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_extract_classes',
         arguments: {
+          context: 'preset',
           content: '<div className="block fg-red"></div>',
           filePath: 'src/App.tsx'
         }
       }))
-      expect(extracted.version).toBe(1)
+      expect(extracted.version).toBe(2)
       expect(extracted.files[0].languageId).toBe('typescriptreact')
       expect(extracted.files[0].classes).toEqual(expect.arrayContaining([
         expect.objectContaining({
           token: 'block',
-          valid: true
+          matchStatus: 'matched'
         })
       ]))
 
       const manifest = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_manifest_query',
         arguments: {
+          context: 'preset',
           query: 'spacing',
           kind: 'token',
           limit: 5
         }
       }))
-      expect(manifest.version).toBe(1)
+      expect(manifest.version).toBe(2)
       expect(manifest.results.tokens.length).toBeGreaterThan(0)
 
       const compare = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_css_compare',
         arguments: {
+          context: 'preset',
           beforeClassList: 'block',
           afterClassList: 'block inline'
         }
       }))
-      expect(compare.version).toBe(1)
+      expect(compare.version).toBe(2)
       expect(compare.summary.changed).toBe(true)
       expect(compare.classes.added).toEqual(['inline'])
       expect(compare.rules.added.length).toBeGreaterThan(0)
@@ -385,15 +392,16 @@ describe('@master/css-mcp', () => {
       const nativeCompare = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_css_compare',
         arguments: {
-          beforeClassList: 'block display:banana',
+          context: 'preset',
+          beforeClassList: 'block display:16px',
           afterClassList: 'block field-sizing:content'
         }
       }))
       expect(nativeCompare.invalid).toEqual({
-        before: ['display:banana'],
+        before: [],
         after: [],
         added: [],
-        removed: ['display:banana']
+        removed: []
       })
       expect(nativeCompare.css.after.text).toContain('field-sizing:content')
     } finally {
@@ -411,6 +419,7 @@ describe('@master/css-mcp', () => {
       const contentFormat = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
         arguments: {
+          context: 'preset',
           content: '@compose block   inline;',
           filePath: 'style.css'
         }
@@ -421,6 +430,7 @@ describe('@master/css-mcp', () => {
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_directive_format',
         arguments: {
+          context: 'preset',
           patterns: ['style.css']
         }
       }))
@@ -457,7 +467,7 @@ describe('@master/css-mcp', () => {
         }
       }))
 
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(2)
       expect(report.audience).toBe('master-css-repository-contributors')
       expect(report.status).toBe('loaded')
       expect(report.affectedPackages).toContainEqual(expect.objectContaining({
@@ -779,6 +789,7 @@ describe('@master/css-mcp', () => {
       const preview = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_preview_fixes',
         arguments: {
+          context: 'preset',
           patterns: ['index.html']
         }
       }))
@@ -810,6 +821,7 @@ describe('@master/css-mcp', () => {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_lint_project',
         arguments: {
+          context: 'preset',
           patterns: ['component.cjs']
         }
       }))
@@ -826,22 +838,23 @@ describe('@master/css-mcp', () => {
 
   it('scans project sources with missing CSS classification', async () => {
     const root = createTempDir('master-css-mcp-scan-')
-    writeFileSync(join(root, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+    writeFileSync(join(root, 'index.html'), '<div class="block p-missing"></div>')
 
     const connection = await connect(root)
     try {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_scan_project',
         arguments: {
+          context: 'preset',
           patterns: ['index.html'],
           classes: ['block', 'never-generated-class']
         }
       }))
 
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(2)
       expect(report.root).toBe(root)
       expect(report.files[0].discovered.valid).toContain('block')
-      expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+      expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
         className: 'block',
         reason: 'generated'
@@ -863,12 +876,13 @@ describe('@master/css-mcp', () => {
       const report = parseToolJSON(await connection.client.callTool({
         name: 'mastercss_lint_content',
         arguments: {
+          context: 'preset',
           filePath: 'src/Component.tsx',
           content: 'export function Component() { return <div className="fg-white m:0.5rem" /> }'
         }
       }))
 
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(2)
       expect(report.root).toBe(root)
       expect(report.files).toHaveLength(1)
       expect(report.files[0].filePath).toBe(resolve(root, 'src/Component.tsx'))

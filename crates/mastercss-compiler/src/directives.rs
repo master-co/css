@@ -108,7 +108,12 @@ fn compile_css_directives_impl(
     options: &CompileNativeCssOptions,
     slots: Option<&mut Vec<NativeStyleSlot>>,
 ) -> Result<CompileCssDirectivesResult, CompilerError> {
-    if options.preserve_native_source && options.classes.is_some() {
+    let policy = crate::analyze_standalone_directives(source).extraction_policy;
+    if options.preserve_native_source
+        && !policy.preserve_native
+        && (options.prune_native_css || policy.prune_native)
+        && options.classes.is_some()
+    {
         return Err(CompilerError::Print {
             filename: options.from.clone(),
             message: "preserveNativeSource cannot be combined with class pruning".into(),
@@ -229,6 +234,12 @@ fn compile_css_directives_impl(
         }
         match rule {
             CssRule::Custom(directive) => match directive.name {
+                DirectiveName::Mode => crate::mode::lower_mode_rule(
+                    source,
+                    &options.from,
+                    directive,
+                    &mut manifest_input,
+                )?,
                 DirectiveName::Settings => {
                     lower_settings_rule(source, &options.from, directive, &mut manifest_input)?
                 }
@@ -273,7 +284,10 @@ fn compile_css_directives_impl(
     }
     crate::output_mappings::refine_native_declaration_sources(source, &mut style_definitions);
     stylesheet.rules.0 = native_rules;
-    if let Some(classes) = &options.classes {
+    if !extraction_policy.preserve_native
+        && (options.prune_native_css || extraction_policy.prune_native)
+        && let Some(classes) = &options.classes
+    {
         let classes = classes.iter().cloned().collect::<HashSet<_>>();
         stylesheet.rules.0 = filter_native_css_rules(stylesheet.rules.0, &classes);
     }

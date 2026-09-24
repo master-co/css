@@ -1,10 +1,14 @@
-export type MasterCSSInspectionDiagnosticSeverity = 'error' | 'warning'
+import type { MasterCSSClassValidation } from '@master/css-tooling/validator'
+import type { MasterCSSDiagnostic } from '@master/css-binding/tooling'
+
+export type MasterCSSInspectionDiagnosticSeverity = 'error' | 'warning' | 'info'
 export type MasterCSSInspectionDiagnosticCode =
   | 'invalid-scanner-class'
   | 'missing-css'
   | 'stylesheet-error'
   | 'stylesheet-warning'
   | 'scanner-error'
+  | MasterCSSDiagnostic['code']
 export type MasterCSSInspectionDiagnosticSourceKind =
   | 'scanner'
   | 'stylesheet'
@@ -26,6 +30,9 @@ export interface MasterCSSMissingCSSResult {
 
 export interface MasterCSSInspectionDiagnostic {
   readonly code: MasterCSSInspectionDiagnosticCode
+  readonly phase: MasterCSSDiagnostic['phase']
+  readonly range?: MasterCSSDiagnostic['range']
+  readonly notes?: readonly string[]
   readonly severity: MasterCSSInspectionDiagnosticSeverity
   readonly message: string
   readonly source: 'Master CSS'
@@ -69,7 +76,7 @@ export interface MasterCSSStylesheetError {
 }
 
 export interface MasterCSSInspectionReport {
-  readonly version: 1
+  readonly version: 2
   readonly cwd: string
   readonly inputs: Readonly<{
     patterns: readonly string[]
@@ -118,6 +125,7 @@ export interface MasterCSSInspectionReport {
     missing: readonly MasterCSSMissingCSSResult[]
   }>
   readonly files: readonly MasterCSSSourceInspection[]
+  readonly inspections: readonly MasterCSSClassValidation[]
   readonly diagnostics: readonly MasterCSSInspectionDiagnostic[]
   readonly summary: Readonly<{
     files: number

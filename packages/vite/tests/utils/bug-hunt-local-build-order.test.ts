@@ -10,14 +10,14 @@ import masterCSS from '../../src/core'
 test('local graph names depend on CSS order and content, not asynchronous registration order', () => {
   using compiler = createCompilerSync()
   const a: LocalStylesheet = { slot: '#local-a{--slot:0}', result: {
-    code: '@import "./child-a.css" layer(a);.target{color:red}', transformed: true, dependencies: [],
+    code: '@import "./child-a.css" layer(a);.target{color:red}', transformed: true, diagnostics: [], dependencies: [],
     stylesheets: [{ id: 'a', href: './child-a.css', css: '@import "https://external.test/a.css";.a{padding:1rem}' }]
   } }
   const b: LocalStylesheet = { slot: '#local-b{--slot:0}', result: {
-    code: '@import "./child-b.css" layer(b);.target{color:blue}', transformed: true, dependencies: [],
+    code: '@import "./child-b.css" layer(b);.target{color:blue}', transformed: true, diagnostics: [], dependencies: [],
     stylesheets: [{ id: 'b', href: './child-b.css', css: '@import "https://external.test/b.css";.b{padding:2rem}' }]
   } }
-  const extracted = { css: '', stylesheets: [], emittedGlobals: { variables: {}, animations: {} } }
+  const extracted = { css: '', stylesheets: [], diagnostics: [], emittedGlobals: { variables: {}, animations: {} } }
   const source = a.slot + '.between{display:block}' + b.slot
   const prepare = (source: string, locals: LocalStylesheet[]) => prepareBuildStylesheet(compiler, source, '#managed{--slot:0}', extracted, locals)
   const first = prepare(source, [a, b])

@@ -233,7 +233,7 @@ pub fn find_standalone_css_directive_statements(
     scan_top_level_at_rules(source, |start, name| {
         if !matches!(
             name,
-            "master" | "source" | "safelist" | "blocklist" | "preserve"
+            "master" | "source" | "safelist" | "blocklist" | "preserve" | "prune"
         ) {
             return None;
         }

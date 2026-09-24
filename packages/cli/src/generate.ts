@@ -31,6 +31,8 @@ let chokidarModulePromise: Promise<Chokidar> | undefined
 let bytesPromise: Promise<Bytes> | undefined
 
 export interface GenerateOptions {
+  strict?: boolean
+  pruneNativeCSS?: boolean
   watch?: boolean
   output?: string
   verbose?: string | number
@@ -204,6 +206,9 @@ export default async function runGenerate(specifiedSourcePaths: string[] = [], o
       scanner,
       baseManifest: defaultManifest,
       projectDir: scanner.cwd,
+      pruneNativeCSS: options.pruneNativeCSS,
+      cssValuePolicy: options.strict ? 'error' : 'report',
+      onDiagnostic: diagnostic => { if (diagnostic.severity === 'error') process.stderr.write(`${diagnostic.code}: ${diagnostic.message}\n`) },
       delivery
     })
     revision = ''

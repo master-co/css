@@ -38,8 +38,8 @@ export default function DocSidebar({ pageCategories, includeNestedPages = false 
 
   return (
     <aside id="sidebar" ref={sidebarRef} className={clsx(
-      'sticky top overflow-y:auto flex:0|0|auto h:100dvh w:252px pb-2xl pt:3.813rem br:1px|solid|var(--color-line-subtle) overscroll-behavior:contain hidden@print pr-xl@sm z:1050@<md surface-raised/.8@<md backdrop-filter:blur(25px)@<md px:1.25rem@<sm scrollbar scrollbar-concealed',
-      { 'hidden@<md': !opened }
+      'sticky top overflow-y:auto flex:0|0|auto h:100dvh w:252px pb-2xl pt:3.813rem br:1px|solid|var(--color-line-subtle) overscroll-behavior:contain hidden@print pr-xl@sm z:1050@media((width<64rem)) surface-raised/.8@media((width<64rem)) backdrop-filter:blur(25px)@media((width<64rem)) px:1.25rem@media((width<52.125rem)) scrollbar scrollbar-concealed',
+      { 'hidden@media((width<64rem))': !opened }
     )}>
       <div className="top:20px z:1 flex items-center mx:-1rem mb:-1.875rem px-md pb:1.875rem pt:1.25rem untouchable sticky@md top@md background-image:linear-gradient(180deg,var(--color-surface-base)|0%,var(--color-surface-base)|calc(100%-2rem),transparent|100%)@md">
         <SearchButton className="flex items-center w:100% font-sm leading:2.25rem text-left text-disabled pointer-events:auto" />

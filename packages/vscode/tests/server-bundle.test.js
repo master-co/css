@@ -263,7 +263,6 @@ test('server bundle embeds referenced MDN JSON modules', () => {
   expect(source).not.toContain('../data/patch.json')
   expect(source).not.toContain('mdn-data/css/')
   expect(source).toContain('repeating-linear-gradient()')
-  expect(source).toContain(':first-child')
 })
 
 test('staged extension includes runtime packages for the current target', async () => {
@@ -361,7 +360,7 @@ test('staged extension includes shared TextMate grammar asset', async () => {
   })
 })
 
-test('staged language server starts without workspace node_modules and shuts down', async () => {
+test('staged language server completes native selectors without workspace node_modules and shuts down', async () => {
   await withStagedExtension(async ({ stagingDir }) => {
     const server = createLanguageServer({
       cwd: stagingDir,
@@ -382,6 +381,19 @@ test('staged language server starts without workspace node_modules and shuts dow
 
       expect(result.capabilities?.textDocumentSync).toBeTruthy()
       expect(result.capabilities?.hoverProvider).toBe(true)
+
+      server.notify('initialized', {})
+      const uri = 'untitled:selector-test.html'
+      const text = '<div class="block:">'
+      server.notify('textDocument/didOpen', {
+        textDocument: { uri, languageId: 'html', version: 1, text }
+      })
+      const completion = await server.request('textDocument/completion', {
+        textDocument: { uri },
+        position: { line: 0, character: text.indexOf('block:') + 'block:'.length },
+        context: { triggerKind: 2, triggerCharacter: ':' }
+      })
+      expect(completion.find((item) => item.label === ':first')?.detail).toBe(':first-child')
 
       await server.request('shutdown', null)
       server.notify('exit')

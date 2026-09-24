@@ -3,13 +3,9 @@ import { createToolingBindingSync } from '@master/css-binding/tooling/node'
 import type {
   MasterCSSBindingLoadOptions,
   MasterCSSEngineSnapshot,
-  MasterCSSEngineTransition,
-  MasterCSSNativeDeclarationCandidate,
-  MasterCSSValidatorBatch
+  MasterCSSEngineTransition
 } from '@master/css-binding/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
-import { supportsNativeDeclaration } from '../host'
-import { validateCSS } from '../css'
 
 export interface BindingScannerUpdate {
   changed: boolean
@@ -41,13 +37,8 @@ export interface BindingScannerSession {
     source: string,
     content: string,
     candidates: string[],
-    blocklist: BindingScannerBlocklist[],
-    nativeSupport: boolean[],
-    invalidGeneratedClasses: string[]
+    blocklist: BindingScannerBlocklist[]
   ): BindingScannerUpdate
-  nativeDeclarationCandidates(candidates: string[]): MasterCSSNativeDeclarationCandidate[]
-  generateValidationBatch(candidates: string[], nativeSupport: boolean[]): MasterCSSValidatorBatch
-  invalidGeneratedClasses(batch: MasterCSSValidatorBatch, ruleSupport: boolean[][]): string[]
   ensureClasses(classNames: string[]): void
   registerNativeClasses(classNames: string[]): boolean
   reset(): void
@@ -68,34 +59,24 @@ export function serializeScannerBlocklist(blocklist: Iterable<string | RegExp> =
 
 function bindScannerSession(
   binding: BindingScannerSession['binding'],
-  session: ReturnType<ReturnType<typeof createToolingBindingSync>['createScannerSession']>,
-  validator: ReturnType<ReturnType<typeof createToolingBindingSync>['createValidatorSession']>
+  session: ReturnType<ReturnType<typeof createToolingBindingSync>['createScannerSession']>
 ): BindingScannerSession {
   return {
     binding,
     cachedSourceCandidates: (source, content) => session.cachedSourceCandidates(source, content),
     extractCandidates: (source, content) => [...session.extractCandidates(source, content)],
-    scanCandidates(source, content, candidates, blocklist, nativeSupport, invalidGeneratedClasses) {
+    scanCandidates(source, content, candidates, blocklist) {
       return session.scanCandidates(
         source,
         content,
         candidates,
         blocklist,
-        nativeSupport,
-        invalidGeneratedClasses
+        [],
+        []
       ) as BindingScannerUpdate
     },
-    nativeDeclarationCandidates: (candidates) =>
-      session.nativeDeclarationCandidates(candidates) as MasterCSSNativeDeclarationCandidate[],
     collectCandidates: (candidates) => [...session.collectCandidates(candidates)],
     filterCandidates: (candidates, blocklist) => [...session.filterCandidates(candidates, blocklist)],
-    generateValidationBatch: (candidates, nativeSupport) =>
-      validator.generateClassRules(
-        candidates,
-        nativeSupport.length ? nativeSupport : undefined
-      ) as MasterCSSValidatorBatch,
-    invalidGeneratedClasses: (batch, ruleSupport) =>
-      [...session.invalidGeneratedClasses(batch, ruleSupport)],
     ensureClasses(classNames) {
       session.ensureClassRules(classNames)
     },
@@ -104,7 +85,6 @@ function bindScannerSession(
     state: () => session.snapshot() as BindingScannerState,
     dispose() {
       session.dispose()
-      validator.dispose()
     }
   }
 }
@@ -113,29 +93,12 @@ export function createNativeScannerSession(manifest: MasterCSSManifest): Binding
   const tooling = createToolingBindingSync()
   return bindScannerSession(
     tooling.binding,
-    tooling.createScannerSession(manifest),
-    tooling.createValidatorSession(manifest)
+    tooling.createScannerSession(manifest)
   )
 }
 
 export async function createScannerSession(manifest: MasterCSSManifest, options: MasterCSSBindingLoadOptions = {}): Promise<BindingScannerSession> {
   const tooling = await createToolingBinding(options)
-  const [scanner, validator] = await Promise.all([
-    tooling.createScannerSession(manifest),
-    tooling.createValidatorSession(manifest)
-  ])
-  return bindScannerSession(tooling.binding, scanner, validator)
-}
-
-export function resolveNativeSupport(candidates: MasterCSSNativeDeclarationCandidate[]) {
-  return candidates.map(supportsNativeDeclaration)
-}
-
-export function resolveGeneratedRuleSupport(batch: MasterCSSValidatorBatch) {
-  return batch.classes
-    .map((
-      { rules }: MasterCSSValidatorBatch['classes'][number]
-    ) => rules.map((
-      { text }: MasterCSSValidatorBatch['classes'][number]['rules'][number]
-    ) => validateCSS(text).length === 0))
+  const scanner = await tooling.createScannerSession(manifest)
+  return bindScannerSession(tooling.binding, scanner)
 }

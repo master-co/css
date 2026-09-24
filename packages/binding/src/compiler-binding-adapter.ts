@@ -109,8 +109,8 @@ export function bindCompilerBindingSession(
         Object.hasOwn(request.graph.files, filename) ? request.graph.files[filename] : undefined),
     createInspectionReport: (input) => invoke('tooling', () =>
       operations.createInspectionReport?.(input) ?? unavailable('Inspection reporting')),
-    renderClassNames: (manifest, classNames, nativeSupport) => invoke('server', () =>
-      operations.renderClassNames?.(manifest, classNames, nativeSupport)
+    renderClassNames: (manifest, classNames) => invoke('server', () =>
+      operations.renderClassNames?.(manifest, classNames)
         ?? unavailable('Native class rendering')),
     dispose,
     [Symbol.dispose]: dispose

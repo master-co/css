@@ -45,12 +45,12 @@ async function setup(options?: Parameters<typeof masterCSS>[0]) {
 }
 
 describe('@master/css-astro integration', () => {
-  it('defaults to progressive mode', () => {
-    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe('progressive')
+  it('defaults to static mode', () => {
+    expect(resolveMasterCSSAstroIntegrationOptions().mode).toBe('static')
   })
 
   it('adds Astro middleware and runtime script in progressive mode', async () => {
-    const result = await setup()
+    const result = await setup({ mode: 'progressive' })
 
     expect(result.addMiddleware).toHaveBeenCalledWith({
       order: 'pre',
@@ -60,9 +60,9 @@ describe('@master/css-astro integration', () => {
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
-    expect(result.pluginNames).toContain('master-css:astro-emitted-globals')
-    expect(result.pluginNames).not.toContain('master-css:scanner')
-    expect(result.pluginNames).not.toContain('master-css:style-entry')
+    expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
+    expect(result.pluginNames).toContain('master-css:scanner')
+    expect(result.pluginNames).toContain('master-css:style-entry')
     expect(result.viteConfig?.ssr?.external).toEqual(ASTRO_SSR_EXTERNAL)
     expect(result.viteConfig?.build?.rollupOptions?.external).toEqual(ASTRO_SSR_EXTERNAL)
   })
@@ -77,7 +77,7 @@ describe('@master/css-astro integration', () => {
     expect(result.injectScript).not.toHaveBeenCalled()
     expect(result.pluginNames).not.toContain('master-css:pre-render')
     expect(result.pluginNames.filter((name) => name === 'master-css:virtual-module:manifest')).toHaveLength(1)
-    expect(result.pluginNames).toContain('master-css:astro-emitted-globals')
+    expect(result.pluginNames).toContain('master-css:virtual-module:emitted-globals')
   })
 
   it('injects runtime script without Astro middleware in runtime mode', async () => {
@@ -89,17 +89,15 @@ describe('@master/css-astro integration', () => {
     expect(result.pluginNames).not.toContain('master-css:inject-runtime')
   })
 
-  it('honors runtime=false in progressive mode', async () => {
-    const result = await setup({ mode: 'progressive', runtime: false })
-
-    expect(result.addMiddleware).toHaveBeenCalled()
-    expect(result.injectScript).not.toHaveBeenCalled()
+  it('rejects an explicit runtime option that contradicts its mode', async () => {
+    await expect(setup({ mode: 'progressive', runtime: false })).rejects.toThrow('requires runtime.enabled=true')
+    await expect(setup({ mode: 'static', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
+    await expect(setup({ mode: 'pre-render', runtime: true })).rejects.toThrow('requires runtime.enabled=false')
   })
 
-  it('honors injectRuntime=false in progressive mode', async () => {
-    const result = await setup({ mode: 'progressive', runtime: false })
-
-    expect(result.addMiddleware).toHaveBeenCalled()
+  it('does not inject client runtime or middleware by default', async () => {
+    const result = await setup()
+    expect(result.addMiddleware).not.toHaveBeenCalled()
     expect(result.injectScript).not.toHaveBeenCalled()
   })
 
@@ -140,7 +138,7 @@ describe('@master/css-astro integration', () => {
 
   it('does not preload the runtime manifest outside runtime injection static builds', async () => {
     for (const scenario of [
-      { integrationOptions: { mode: 'runtime', runtime: false }, buildOutput: 'static' },
+      { integrationOptions: { mode: 'static' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'progressive' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'pre-render' }, buildOutput: 'static' },
       { integrationOptions: { mode: 'runtime' }, buildOutput: 'server' }

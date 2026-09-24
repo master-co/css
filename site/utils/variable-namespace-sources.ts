@@ -3,7 +3,7 @@ import { getUtilityVariableNamespaces, getVariableNamespacePublicKeys, manifestU
 
 /** Registry consumers can exist before a project defines any values in that namespace. */
 export const variableNamespaceSources = [
-  { namespace: 'breakpoint', consumers: ['@md', '@<md', '@sm&<lg'] },
+  { namespace: 'breakpoint', consumers: ['@md', '@media((width<64rem))', '@sm&<lg'] },
   ...[...new Set([
     ...builtinTokenNamespaces.flatMap(entry => entry.variableAliasRefs.map(ref => ref.replace(/^[=~]/, ''))),
     ...manifestUtilities.flatMap(getUtilityVariableNamespaces),
@@ -11,7 +11,7 @@ export const variableNamespaceSources = [
     namespace,
     consumers: [
       ...getVariableNamespacePublicKeys(namespace).map(key => `${key}-`),
-      ...(namespace === 'container' ? ['@container(md)'] : []),
+      ...(namespace === 'container' ? ['@container((width>=28rem))'] : []),
     ],
   })),
 ]

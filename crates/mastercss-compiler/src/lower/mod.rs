@@ -1,11 +1,6 @@
 use std::cmp::Ordering;
 use std::collections::{HashMap, HashSet};
 
-use lightningcss::declaration::DeclarationBlock;
-use lightningcss::properties::Property;
-use lightningcss::stylesheet::ParserOptions;
-use lightningcss::traits::Parse;
-use lightningcss::values::length::{Length, LengthPercentageOrAuto};
 use mastercss_engine::{EngineCompositionRuleIr, EngineSession, natural_compare};
 use mastercss_schema::{
     CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveSourceReference,

@@ -573,6 +573,7 @@ fn load_project_manifest_graphs(
         let result = compile_css_directives(
             &graph.source,
             &CompileNativeCssOptions {
+                prune_native_css: false,
                 from: entry_text.clone(),
                 preserve_native_css: false,
                 preserve_native_source: false,

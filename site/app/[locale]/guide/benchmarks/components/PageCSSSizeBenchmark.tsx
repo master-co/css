@@ -63,9 +63,9 @@ export default () => (
                       suffix='kB'
                       animated
                       icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@<sm'>{page.name}, </span> {formatRatio(page.css.total.rawBytes, masterCSSPage.css.total.rawBytes)}x larger</div>}
+                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.rawBytes, masterCSSPage.css.total.rawBytes)}x larger</div>}
                       {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'hidden@<sm')}>( {formatMasterCSSBreakdown('rawBytes')} )</div>
+                        <div className={clsx(detailClassName, 'hidden@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('rawBytes')} )</div>
                       )}
                     </Bar>
                   )
@@ -90,9 +90,9 @@ export default () => (
                       suffix='kB'
                       animated
                       icon={brand?.src && <brand.src width={24} height={24} className={clsx('mx:0', brand?.className)} />}>
-                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@<sm'>{page.name}, </span> {formatRatio(page.css.total.brotliBytes, masterCSSPage.css.total.brotliBytes)}x larger</div>}
+                      {page.name !== 'Master CSS' && <div className={detailClassName}><span className='hidden@media((width<52.125rem))'>{page.name}, </span> {formatRatio(page.css.total.brotliBytes, masterCSSPage.css.total.brotliBytes)}x larger</div>}
                       {page.name === 'Master CSS' && (
-                        <div className={clsx(detailClassName, 'hidden@<sm')}>( {formatMasterCSSBreakdown('brotliBytes')} )</div>
+                        <div className={clsx(detailClassName, 'hidden@media((width<52.125rem))')}>( {formatMasterCSSBreakdown('brotliBytes')} )</div>
                       )}
                     </Bar>
                   )

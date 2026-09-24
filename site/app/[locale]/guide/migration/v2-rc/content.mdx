@@ -1,4 +1,4 @@
-This guide upgrades projects from **Master CSS v2 RC before the named-token breaking change** to the new v2 contract. Check the exact installed RC versions and the project's resolved manifest before applying any mapping. RC releases did not all have identical behavior.
+This guide upgrades both **RC before named tokens (`rc-legacy`)** and **RC with named tokens before the final semantic contract (`rc-named`)** to language v2. The first profile requires both stages below; the second already uses hyphenated tokens and begins with the final semantics stage. Check the exact installed RC versions and the project's resolved manifest before applying any mapping. RC releases did not all have identical behavior.
 
 Save the old generated CSS and browser results first. Upgrade related packages, native/Wasm artifacts, manifests, hydration output, and source syntax as one coordinated change. Do not initialize the old and new Master runtimes on the same page.
 
@@ -119,7 +119,7 @@ rem value = old x value × old base-unit ÷ old root-size
 | `base-unit:6`, `root-size:20` | `4x` | `1.2rem` |
 | `base-unit:6`, `root-size:20` | `-2.5x` | `-0.75rem` |
 
-After converting all affected lengths, remove `base-unit` from CSS settings and `baseUnit` from manifest inputs. They are rejected by the new compiler and engine. `root-size` remains available for conditions and tooling; it no longer converts declaration values or changes the document's root font size.
+After converting all affected lengths, remove `base-unit` from CSS settings and `baseUnit` from manifest inputs. They are rejected by the new compiler and engine. `root-size` and `rootSize` are also removed in the final contract. Keep their saved original values for migration only; query conversion must preserve the old generated result.
 
 Preserve native resolution units. CSS uses `x` as a resolution unit in `image-set()` and resolution queries. This is valid new syntax and must retain `1x` and `2x`:
 
@@ -169,9 +169,11 @@ Regenerate artifacts from their source definitions. Manifest and hydration envel
 
 - Token matchers use `{ "type": "token", "prefix": "font-" }` with namespace references on their utility; the old `variable` matcher is rejected.
 - Directive IR has a `token` pattern distinct from `dynamic` raw parameters.
+- Add `languageVersion: 2` to regenerated manifest and hydration data; missing or unsupported language versions are rejected even though their envelope remains `version: 1`.
+- Replace global mode settings with ordered `modes` activation definitions, and remove `rootSize`, `defaultMode`, `modeTrigger`, and `settings.modes`.
 - Remove `baseUnit`; update consumers of the generated named-token registry to `builtinTokenNamespaces`.
 - Preserve rule source priority and semantic sort keys across composition, server rendering, and hydration.
-- Update native and Wasm providers together to **binding ABI 8**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
+- Update native and Wasm providers together to **binding ABI 9**. Custom engine adapters must still implement the complete engine interface, including `executionState()`.
 - Rebuild cached generated CSS, server output, progressive payloads, and hydration artifacts with the same package set. Do not mix old rule data with a new runtime.
 
 See the [directives contract](/reference/directives) and [rendering modes](/guide/rendering-modes) for the current interfaces. Legacy parsing belongs to the explicitly invoked migration workflow; the production runtime has no old-token fallback.
@@ -183,13 +185,13 @@ See the [directives contract](/reference/directives) and [rendering modes](/guid
 Save the resolved original manifest as `master.rc.manifest.json` before upgrading. Run the migration command from the project root; `--manifest` selects that saved file. Missing, unreadable, or invalid configuration stops migration before any writes:
 
 ```sh
-master-css migrate src --manifest master.rc.manifest.json
+master-css migrate src app.css --from rc-legacy --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json
 ```
 
 The default operation proposes changes without writing source files. Inspect the proposal and its diagnostics before applying safe edits:
 
 ```sh
-master-css migrate src --manifest master.rc.manifest.json --write
+master-css migrate src app.css --from rc-legacy --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json --write
 ```
 
 Automatic changes must preserve the token identity, declaration intent, state, and conditions. Length conversion uses the RC settings rather than the new defaults. Equal current numbers do not justify replacing literals with tokens or converting unrelated `px` values to `rem`. Remove the retired canonical lint options `preferThemeTokens`, `preferVariableReferences`, and `preferMultiValueTokens`; token migration now uses this explicit command.
@@ -208,7 +210,138 @@ Update `@compose`, safelists, blocklists, dependency-provided classes, and gener
 
 ---
 
-## 7. Verify the coordinated upgrade
+## 7. Complete the final semantics stage
+
+This stage applies to **both** RC profiles. If named tokens were already migrated,
+preview with the named profile and the actual saved version:
+
+```sh
+master-css migrate src app.css --from rc-named --source-version YOUR_ACTUAL_RC_VERSION --manifest master.rc.manifest.json
+```
+
+The version can also come from saved manifest `packageVersion` metadata. Missing
+or unreadable metadata is an error, not permission to use current preset defaults.
+The report includes CSS configuration proposals and project-wide review notes.
+`--write` never bypasses those notes or file-level manual-review diagnostics.
+Include the original CSS settings source when applying configuration changes; replace `app.css` in these commands with that entry. A source-only batch cannot silently skip the mode configuration proposal.
+
+### Preserve the old query result
+
+The RC column is historical, non-executable text. With the old `rootSize: 16`,
+these examples preserve the old generated dimensions:
+
+| Historical RC reference | Explicit language v2 query | Preserved generated condition |
+| --- | --- | --- |
+| `width:10px@>=800` | `width:10px@media((width>=50rem))` | `@media (width>=50rem)` |
+| `display:grid@supports(display:grid)` | `display:grid@supports((display:grid))` | `@supports (display:grid)` |
+
+New code authored as `@media((width>=800px))` retains `800px`; it does not mean
+the same thing as the first migrated query under every user font setting.
+Breakpoints and container tokens also retain their authored units. If the same
+token was used both as a converted RC query and a literal CSS value, split or
+review it rather than changing both meanings automatically.
+
+Use complete media, supports, and container syntax, including native parentheses:
+
+```text name="Language v2 queries"
+grid-cols:2@media((aspect-ratio>=1.5))
+display:grid@supports(selector(:has(*)))
+grid-cols:2@container(card|(width>=40rem))
+gap:1rem@container(style(--density:compact))
+```
+
+Unknown names no longer become container names. Numeric and feature shorthand
+inference is gone. Repeated wrappers preserve order and nesting. Review class
+combinations whose old priority depended on inferred dimensions or root size.
+An invalid old condition that becomes effective after correction requires a
+manual behavior decision, not an equivalence claim.
+
+### Replace global mode settings
+
+`@theme ocean` assigns values; `@mode ocean` assigns activation. Remove
+`default-mode`, `mode-trigger`, and `settings.modes` after introducing explicit
+branches. For manual light/dark switching with system fallback, define both:
+
+```css
+@mode light {
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="light"] { @slot; }
+}
+@mode dark {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="dark"] { @slot; }
+}
+@theme { --color-panel: white; }
+@theme dark { --color-panel: #111827; }
+:root { color-scheme: light dark; }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
+```
+
+Base values come from unqualified `@theme`; copy the old default-mode values
+there when needed. The engine no longer adds `color-scheme`. The migration
+proposal makes old side effects explicit, but overlapping modes, nested themes,
+and formerly demand-driven resources still require review. Activation guards
+now cover the root element and descendants without adding utility specificity.
+For a shadow tree, define a `:host(...)` branch explicitly. Neither the old class
+strategy nor the new mode crosses native shadow boundaries automatically.
+
+Mode redefinition replaces the entire activation definition. Token value blocks
+still merge by token name. Breakpoints, variants, and modes cannot share names
+across categories. Mode activation rejects pseudo-elements, declarations,
+containers, layers, and recursive mode references.
+
+### Keep native CSS and choose delivery deliberately
+
+All CSS-producing compiler APIs preserve native CSS by default. Passing classes
+no longer enables pruning. To retain intentional RC pruning, set
+`pruneNativeCSS: true` for project-owned sources, or place `@prune native;` in each
+source that should opt in. This directive does not propagate through imports;
+`@preserve native;` excludes its own file. `preserveNativeCSS: false` still means
+explicitly omit native output and is not a pruning option.
+
+Qualified imports cannot contain global definitions. Move `@settings`, `@theme`,
+`@mode`, custom variants, and managed definitions to unqualified imports or
+reference inputs. Pure native qualified imports and native `@compose` retain
+native conditions. Review imports whose old behavior hoisted definitions.
+
+Official integration defaults are static. Explicitly set the old rendering mode
+when preserving a runtime, pre-render, or progressive application. A runtime
+flag contradicting its mode is a configuration error. Static and pre-render
+must not include runtime engine, Wasm, or runtime manifest assets. Use ordinary
+CSS variables for dynamic values in a static app. Rebuild Next manifest imports
+as bundler-managed ESM modules; do not depend on private `.next/static/media`
+filenames or manually assembled URLs.
+
+### Update diagnostics and custom hosts
+
+Remove output-affecting `supportsNativeDeclaration` callbacks. Normal generation
+preserves even known-invalid native values and reports them separately. Check
+`matchStatus`, `cssValueStatus`, and `browserSupport`; the former `valid` or
+`matched` booleans cannot represent these distinctions. Managed declarations are
+validated too: `grid-cols:2.5` may match but its `repeat()` count is invalid.
+
+Use `cssValuePolicy: 'error'` in compiler APIs or `master-css generate --strict`
+for atomic failure on known-invalid values. Unknown capabilities and `var()`
+results remain unverified, rather than being silently removed. Review CSS that
+was previously suppressed by a host validator and now reaches the browser.
+
+MCP uses project context by default. A missing entry and an entry that fails to
+compile return distinct structured errors; neither silently selects the preset.
+Select `context: "preset"` explicitly for isolated preset queries. Consumers must
+read result version 2, full diagnostic and dependency arrays, context metadata,
+manifest fingerprint, language version, and binding version. Update editor,
+CLI, native, Wasm, server, and hydration consumers together. Ordinary canonical
+autofix does not perform version migration or infer pixel/rem equivalence.
+
+---
+
+## 8. Verify the coordinated upgrade
+
 
 - Run the project's build, lint, type-check, and focused application tests with the upgraded package set.
 - Compare generated declarations against the saved RC baseline. Explain every difference, including intentionally restored native shorthand semantics and native resolution units.

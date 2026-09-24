@@ -1,6 +1,6 @@
 use super::{
     ConditionFeature, EngineSettings, JS_MAX_SAFE_INTEGER, ManifestCondition, ManifestProjection,
-    UtilityLayerName, Value, find_matching_parenthesis, json, natural_compare,
+    UtilityLayerName, Value, natural_compare,
 };
 
 pub(crate) fn resolve_layer_condition(
@@ -25,337 +25,145 @@ pub(crate) fn render_condition_token(
     token: &str,
     manifest: &ManifestProjection,
 ) -> Option<(String, String, Vec<ConditionFeature>)> {
-    let mut parser = ConditionTokenParser::new(manifest);
-    let nodes = parser.parse(token);
-    let id = parser.id.unwrap_or_else(|| "media".into());
-    let body = render_condition_nodes_body(&id, &nodes, None);
+    if let Some(condition) = manifest.conditions.get(token) {
+        let wrapper = render_manifest_condition(condition, None);
+        let features = native_query_features(&wrapper);
+        return Some((condition.id.clone(), wrapper, features));
+    }
+    let query = mastercss_lexer::parse_native_query(token)?;
+    let wrapper = format!("@{} {}", query.kind, query.prelude);
+    let features = native_query_features(&wrapper);
+    Some((query.kind, wrapper, features))
+}
+
+/// Only simple ranges with identical units are compared numerically. The unit is
+/// part of the feature identity; rem/em/px never share an assumed root size.
+pub fn native_query_features(query: &str) -> Vec<ConditionFeature> {
     let mut features = Vec::new();
-    add_condition_features(&mut features, &nodes, None);
-    let wrapper = if body.is_empty() {
-        format!("@{id}")
-    } else {
-        format!("@{id} {body}")
-    };
-    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
-    Some((id, wrapper, features))
-}
-
-struct ConditionTokenParser<'a> {
-    manifest: &'a ManifestProjection,
-    id: Option<String>,
-    first_token: Option<String>,
-}
-
-impl<'a> ConditionTokenParser<'a> {
-    fn new(manifest: &'a ManifestProjection) -> Self {
-        Self {
-            manifest,
-            id: None,
-            first_token: None,
-        }
-    }
-
-    fn parse(&mut self, token: &str) -> Vec<Value> {
-        let Some(open) = token.find('(') else {
-            return self.resolve(token);
-        };
-        let Some(close) = find_matching_parenthesis(token, open) else {
-            return self.resolve(token);
-        };
-
-        let mut nodes = self.parse(&token[..open]);
-        let body = &token[open + 1..close];
-        if !body.is_empty() {
-            if self.id.as_deref() == Some("supports") {
-                nodes.push(json!({
-                    "type": "group",
-                    "children": [{ "type": "string", "value": body.replace('|', " ") }]
-                }));
-            } else {
-                let children = self.parse(body);
-                if children.len() > 1 {
-                    nodes.push(json!({ "type": "group", "children": children }));
-                } else {
-                    nodes.extend(children);
-                }
-            }
-        }
-        nodes.extend(self.parse(&token[close + 1..]));
-        nodes
-    }
-
-    fn resolve(&mut self, token: &str) -> Vec<Value> {
-        let raw_tokens = tokenize_condition(token);
-        let mut nodes = Vec::new();
-        for (index, raw) in raw_tokens.iter().enumerate() {
-            if matches!(raw.as_str(), ">=" | "<=" | ">" | "<" | "=") {
-                nodes.push(json!({ "type": "comparison", "value": raw }));
-                continue;
-            }
-            if let Some(operator) = logical_condition_operator(raw) {
-                nodes.push(json!({ "type": "logical", "value": operator }));
-                continue;
-            }
-
-            let defined = self.defined_condition(raw).cloned();
-            if self.id.is_none() && self.first_token.is_none() {
-                self.first_token = Some(raw.clone());
-                self.id =
-                    if is_condition_identifier(raw) {
-                        Some(raw.clone())
-                    } else if let Some(condition) = &defined {
-                        Some(condition.id.clone())
-                    } else if is_comparable_condition_feature(raw) {
-                        Some("media".into())
-                    } else if raw.chars().next().is_some_and(|character| {
-                        character.is_ascii_alphabetic() || character == '-'
-                    }) {
-                        Some("container".into())
-                    } else {
-                        Some("media".into())
-                    };
-                if is_condition_identifier(raw) {
-                    continue;
-                }
-            }
-
-            if let Some(condition) = &defined {
-                if condition.nodes.len() == 1 {
-                    add_parsed_condition_node(&mut nodes, condition.nodes[0].clone());
-                } else if !condition.nodes.is_empty() {
-                    add_parsed_condition_node(
-                        &mut nodes,
-                        json!({ "children": condition.nodes.clone() }),
-                    );
-                }
-                continue;
-            }
-
-            let (name, value) = raw
-                .split_once(':')
-                .filter(|(_, value)| !value.is_empty())
-                .map_or((None, raw.as_str()), |(name, value)| {
-                    (Some(condition_feature_name(name)), value)
-                });
-            let resolved_value = condition_feature_name(value);
-            let media_like = matches!(self.id.as_deref(), Some("media" | "container"));
-            if media_like && name.is_none() && is_comparable_condition_feature(&resolved_value) {
-                let followed_by_comparison = raw_tokens
-                    .get(index + 1)
-                    .is_some_and(|token| matches!(token.as_str(), ">=" | "<=" | ">" | "<" | "="));
-                if followed_by_comparison {
-                    add_parsed_condition_node(
-                        &mut nodes,
-                        json!({ "type": "string", "value": resolved_value }),
-                    );
-                } else {
-                    add_parsed_condition_node(
-                        &mut nodes,
-                        json!({ "type": "boolean", "name": resolved_value }),
-                    );
-                }
-                continue;
-            }
-
-            let mut node = if media_like {
-                if let Ok(number) = value.parse::<f64>() {
-                    json!({
-                        "type": "number",
-                        "value": number / self.manifest.settings.root_size,
-                        "unit": "rem"
-                    })
-                } else {
-                    json!({ "type": "string", "value": resolved_value })
-                }
-            } else {
-                json!({ "type": "string", "value": resolved_value })
+    let body = if let Some(body) = query.strip_prefix("@media ") {
+        body.trim()
+    } else if let Some(body) = query.strip_prefix("@container ") {
+        let body = body.trim();
+        if body.starts_with('(') {
+            body
+        } else {
+            let Some((name, body)) = body.split_once(char::is_whitespace) else {
+                return features;
             };
-            if let Some(name) = name {
-                node.as_object_mut()
-                    .expect("condition node is an object")
-                    .insert("name".into(), Value::String(name));
+            if !name
+                .chars()
+                .all(|c| c.is_alphanumeric() || matches!(c, '-' | '_'))
+            {
+                return features;
             }
-            add_parsed_condition_node(&mut nodes, node);
-        }
-        nodes
-    }
-
-    fn defined_condition(&self, token: &str) -> Option<&'a ManifestCondition> {
-        if self.id.as_deref() == Some("container") {
-            self.manifest.container_conditions.get(token).or_else(|| {
-                (!self.manifest.breakpoint_conditions.contains_key(token))
-                    .then(|| self.manifest.conditions.get(token))
-                    .flatten()
-            })
-        } else {
-            self.manifest.conditions.get(token)
-        }
-    }
-}
-
-pub(crate) fn tokenize_condition(token: &str) -> Vec<String> {
-    let mut tokens = Vec::new();
-    let mut current = String::new();
-    let mut characters = token.chars().peekable();
-    while let Some(character) = characters.next() {
-        if character.is_ascii_alphanumeric() || matches!(character, '-' | '.' | ':' | '%' | '|') {
-            current.push(character);
-            continue;
-        }
-        if !current.is_empty() {
-            tokens.push(std::mem::take(&mut current));
-        }
-        if matches!(character, '&' | '!' | ',' | '>' | '<' | '=') {
-            let mut operator = character.to_string();
-            if matches!(character, '>' | '<') && characters.peek() == Some(&'=') {
-                operator.push(characters.next().expect("peeked comparison suffix"));
-            }
-            tokens.push(operator);
-        }
-    }
-    if !current.is_empty() {
-        tokens.push(current);
-    }
-    tokens
-}
-
-pub(crate) fn logical_condition_operator(token: &str) -> Option<&'static str> {
-    match token {
-        "&" | "and" => Some("and"),
-        "!" | "not" => Some("not"),
-        "," | "or" => Some("or"),
-        "only" => Some("only"),
-        _ => None,
-    }
-}
-
-pub(crate) fn is_condition_identifier(token: &str) -> bool {
-    matches!(
-        token,
-        "container" | "starting-style" | "supports" | "media" | "layer"
-    )
-}
-
-pub(crate) fn condition_feature_name(token: &str) -> String {
-    match token {
-        "w" => "width".into(),
-        "h" => "height".into(),
-        _ => token.to_owned(),
-    }
-}
-
-pub(crate) fn is_comparable_condition_feature(token: &str) -> bool {
-    matches!(
-        condition_feature_name(token).as_str(),
-        "width" | "height" | "resolution"
-    )
-}
-
-pub(crate) fn add_parsed_condition_node(nodes: &mut Vec<Value>, mut node: Value) {
-    let is_unnamed_number = node.as_object().is_some_and(|object| {
-        object.get("type").and_then(Value::as_str) == Some("number") && !object.contains_key("name")
-    });
-    if !is_unnamed_number {
-        nodes.push(node);
-        return;
-    }
-
-    let object = node
-        .as_object_mut()
-        .expect("unnamed numeric condition node is an object");
-    let comparison = nodes.last().and_then(|previous| {
-        (previous.get("type").and_then(Value::as_str) == Some("comparison"))
-            .then(|| previous.get("value").and_then(Value::as_str))
-            .flatten()
-            .map(str::to_owned)
-    });
-    if let Some(comparison) = comparison {
-        nodes.pop();
-        object.insert("operator".into(), Value::String(comparison));
-        let feature = nodes.last().and_then(|previous| {
-            (previous.get("type").and_then(Value::as_str) == Some("string"))
-                .then(|| previous.get("value").and_then(Value::as_str))
-                .flatten()
-                .map(condition_feature_name)
-        });
-        if let Some(feature) = feature {
-            nodes.pop();
-            object.insert("name".into(), Value::String(feature));
-        } else {
-            object.insert("name".into(), Value::String("width".into()));
+            body.trim()
         }
     } else {
-        object.insert("name".into(), Value::String("width".into()));
-        object.insert("operator".into(), Value::String(">=".into()));
-    }
-    nodes.push(node);
-}
-
-pub(crate) fn add_condition_features(
-    features: &mut Vec<ConditionFeature>,
-    nodes: &[Value],
-    override_operator: Option<&str>,
-) {
-    add_condition_features_inner(features, nodes, override_operator, false);
-    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
-}
-
-pub(crate) fn add_condition_features_inner(
-    features: &mut Vec<ConditionFeature>,
-    nodes: &[Value],
-    override_operator: Option<&str>,
-    outside_not: bool,
-) {
-    for (index, node) in nodes.iter().enumerate() {
-        let Some(object) = node.as_object() else {
-            continue;
-        };
-        let previous_is_not = index.checked_sub(1).is_some_and(|previous| {
-            nodes[previous].as_object().is_some_and(|previous| {
-                previous.get("type").and_then(Value::as_str) == Some("logical")
-                    && previous.get("value").and_then(Value::as_str) == Some("not")
-            })
-        });
-        if let Some(children) = object.get("children").and_then(Value::as_array) {
-            add_condition_features_inner(
-                features,
-                children,
-                override_operator,
-                outside_not || previous_is_not,
-            );
-            continue;
-        }
-        if object.get("type").and_then(Value::as_str) != Some("number") {
-            continue;
-        }
-        let Some(value) = object.get("value").and_then(Value::as_f64) else {
-            continue;
-        };
-        let name = object
-            .get("name")
-            .and_then(Value::as_str)
-            .unwrap_or("width");
-        let Some(mut operator) = override_operator
-            .or_else(|| object.get("operator").and_then(Value::as_str))
-            .or_else(|| object.get("name").is_none().then_some(">="))
+        return features;
+    };
+    // Numeric ordering is only justified for a conjunction of simple ranges.
+    // Negation, disjunction, functions and nested expressions use stable syntax.
+    for part in body.split(" and ") {
+        let Some(body) = part
+            .trim()
+            .strip_prefix('(')
+            .and_then(|s| s.strip_suffix(')'))
         else {
-            continue;
+            return Vec::new();
         };
-        if outside_not || previous_is_not {
-            operator = invert_comparison_operator(operator);
+        if body.contains(['(', ')', '\'', '"']) {
+            return Vec::new();
         }
-        add_condition_feature(features, name, operator, value);
+        if !add_native_range_features(&mut features, body.trim()) {
+            return Vec::new();
+        }
     }
+    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
+    features
 }
 
-pub(crate) fn invert_comparison_operator(operator: &str) -> &str {
-    match operator {
-        ">=" => "<",
-        "<=" => ">",
-        ">" => "<=",
-        "<" => ">=",
-        _ => operator,
+fn range_dimension(value: &str) -> Option<(f64, String)> {
+    let number_end = value
+        .find(|c: char| !(c.is_ascii_digit() || matches!(c, '.' | '-' | '+')))
+        .unwrap_or(value.len());
+    let number = value[..number_end].parse::<f64>().ok()?;
+    let unit = &value[number_end..];
+    (number.is_finite() && unit.chars().all(|c| c.is_ascii_alphabetic() || c == '%'))
+        .then(|| (number, unit.to_ascii_lowercase()))
+}
+
+fn range_feature(value: &str) -> bool {
+    matches!(value, "width" | "height" | "resolution" | "aspect-ratio")
+}
+
+fn add_native_range_features(features: &mut Vec<ConditionFeature>, body: &str) -> bool {
+    if let Some((name, dimension)) = body.split_once(':') {
+        let name = name.trim();
+        let (name, operator) = if let Some(name) = name.strip_prefix("min-") {
+            (name, ">=")
+        } else if let Some(name) = name.strip_prefix("max-") {
+            (name, "<=")
+        } else {
+            (name, "=")
+        };
+        let Some((number, unit)) = range_dimension(dimension.trim()) else {
+            return false;
+        };
+        if !range_feature(name) {
+            return false;
+        }
+        add_condition_feature(features, &format!("{name}:{unit}"), operator, number);
+        return true;
     }
+    let mut operands = Vec::new();
+    let mut operators = Vec::new();
+    let mut remaining = body;
+    while let Some(index) = remaining.find(['>', '<', '=']) {
+        operands.push(remaining[..index].trim());
+        remaining = &remaining[index..];
+        let end = remaining
+            .find(|c: char| !matches!(c, '>' | '<' | '='))
+            .unwrap_or(remaining.len());
+        operators.push(&remaining[..end]);
+        remaining = &remaining[end..];
+    }
+    operands.push(remaining.trim());
+    if operators.is_empty() || operators.len() > 2 {
+        return false;
+    }
+    if operators.len() == 2
+        && (!range_feature(operands[1])
+            || operators[0].starts_with('=')
+            || operators[0].chars().next() != operators[1].chars().next())
+    {
+        return false;
+    }
+    for (index, operator) in operators.iter().enumerate() {
+        let (left, right) = (operands[index], operands[index + 1]);
+        let (name, dimension, operator) = if range_feature(left) {
+            (left, right, *operator)
+        } else if range_feature(right) {
+            let reversed = match *operator {
+                ">" => "<",
+                ">=" => "<=",
+                "<" => ">",
+                "<=" => ">=",
+                "=" => "=",
+                _ => return false,
+            };
+            (right, left, reversed)
+        } else {
+            return false;
+        };
+        if !matches!(operator, ">" | ">=" | "<" | "<=" | "=") {
+            return false;
+        }
+        let Some((number, unit)) = range_dimension(dimension) else {
+            return false;
+        };
+        add_condition_feature(features, &format!("{name}:{unit}"), operator, number);
+    }
+    true
 }
 
 pub(crate) fn add_condition_feature(
@@ -371,10 +179,12 @@ pub(crate) fn add_condition_feature(
         features.last_mut().expect("inserted condition feature")
     };
     match operator {
-        ">" => feature.1 = value + 0.02,
-        ">=" => feature.1 = value,
-        "<" => feature.2 = value - 0.02,
-        "<=" => feature.2 = value,
+        ">" | ">=" => feature.1 = feature.1.max(value),
+        "<" | "<=" => feature.2 = feature.2.min(value),
+        "=" => {
+            feature.1 = value;
+            feature.2 = value;
+        }
         _ => {}
     }
 }
@@ -510,18 +320,5 @@ pub(crate) fn add_condition_wrapper(
     id: &str,
     wrapper: String,
 ) {
-    if let Some((_, current)) = wrappers.iter_mut().find(|(current_id, _)| current_id == id) {
-        let prefix = format!("@{id}");
-        let current_body = current.strip_prefix(&prefix).unwrap_or(current).trim();
-        let next_body = wrapper.strip_prefix(&prefix).unwrap_or(&wrapper).trim();
-        *current = if current_body.is_empty() {
-            wrapper
-        } else if next_body.is_empty() {
-            current.clone()
-        } else {
-            format!("{prefix} {current_body} and {next_body}")
-        };
-    } else {
-        wrappers.push((id.to_owned(), wrapper));
-    }
+    wrappers.push((id.to_owned(), wrapper));
 }

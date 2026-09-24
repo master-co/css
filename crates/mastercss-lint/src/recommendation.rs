@@ -268,6 +268,12 @@ pub(crate) fn push_canonical_candidate(
         return;
     }
     candidates.push(CanonicalCandidate { class_name, order });
+    // A reordered condition suffix can change wrapper order or priority. Keep
+    // the original suffix as a candidate so a safe property alias survives
+    // even when the reordered candidate fails semantic equivalence.
+    if suffix != parts.suffix {
+        push_canonical_candidate(candidates, candidate_base, parts, &parts.suffix, order);
+    }
 }
 
 pub(crate) fn has_same_canonical_rule_shape(

@@ -143,7 +143,7 @@ Use mode-specific `@theme` blocks when the same token should resolve differently
 
 Keep the token name mode-neutral. Markup should say `surface-card` or `text-card`, not `dark-card`.
 
-For `mode-trigger`, `default-mode`, manual switches, and local mode islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
+For explicit `@mode` definitions, manual switches, and local mode islands, see [Variables and Modes](/guide/variables-and-modes#mode-triggers).
 
 ---
 
@@ -194,13 +194,13 @@ Responsive thresholds are theme tokens too. Define `breakpoint` variables for vi
 ```
 
 ```html
-<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w-lg --><!-- @MARK grid-cols:2@container(md) -->
+<!-- @MARK grid-cols:2@md --><!-- @MARK grid-cols:3@lg --><!-- @MARK max-w-lg --><!-- @MARK grid-cols:2@container((width>=28rem)) -->
 <div class="grid-cols:1 gap-md grid-cols:2@md grid-cols:3@lg">
   ...
 </div>
 
 <aside class="container max-w-lg">
-  <article class="grid-cols:1 grid-cols:2@container(md)">
+  <article class="grid-cols:1 grid-cols:2@container((width>=28rem))">
     ...
   </article>
 </aside>

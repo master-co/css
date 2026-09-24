@@ -57,7 +57,7 @@ export default async function ArticleHeader(props: any) {
   }
   return (
     <>
-      <div className="flex flex-nowrap gap-xl flex-col@<2xs">
+      <div className="flex flex-nowrap gap-xl flex-col@media((width<37.5rem))">
         <div className='flex:1'>
           {metadata.category && <Category>{$(metadata.category)}</Category>}
           {date && <Category>{dayjs(date).format('MMMM D, YYYY')}</Category>}
@@ -76,7 +76,7 @@ export default async function ArticleHeader(props: any) {
         <div className={clsx('flex gap-xs hidden:empty', center ? 'items-center' : 'items-start')}>
           {end}
         </div>
-        {icon && <div className='grid flex:0|0|auto place-content:center mx:auto@<2xs' style={headerIconOuterStyle}>
+        {icon && <div className='grid flex:0|0|auto place-content:center mx:auto@media((width<37.5rem))' style={headerIconOuterStyle}>
           <div className="grid place-content:center size:4.5rem size:5rem@sm" style={headerIconSlotStyle}>
             {icon}
           </div>

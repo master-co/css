@@ -102,7 +102,7 @@ impl LanguageSession {
     pub fn finish_document(
         &mut self,
         id: u32,
-        native_support: &[bool],
+        _native_support: &[bool],
     ) -> Result<LanguageDocumentIr, LanguageError> {
         if !self
             .prepared_document
@@ -112,19 +112,7 @@ impl LanguageSession {
             return Err(LanguageError::InvalidPreparedDocument);
         }
         let prepared = self.prepared_document.take().unwrap();
-        if native_support.len() != prepared.native_candidates.len() {
-            return Err(LanguageError::InvalidNativeSupport);
-        }
-        for (candidate, supported) in prepared
-            .native_candidates
-            .iter()
-            .zip(native_support.iter().copied())
-        {
-            self.native_support_by_class
-                .insert(candidate.class_name.clone(), supported);
-        }
-        self.engine
-            .ensure_class_rules_with_native_support(&prepared.class_names, native_support)?;
+        self.engine.ensure_class_rules(&prepared.class_names)?;
         self.document_result(prepared)
     }
 

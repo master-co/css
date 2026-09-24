@@ -12,15 +12,14 @@ export async function renderClassNames(
   const session = bindRenderSessionInternal(
     {
       nativeDeclarationCandidates: (classNames) => binding.nativeDeclarationCandidates(classNames),
-      ensureClasses: (classNames, nativeSupport) =>
-        binding.ensureClassRules(classNames, nativeSupport),
+      ensureClasses: (classNames) =>
+        binding.ensureClassRules(classNames),
       ensureStylesheetResources: (nativeCSS) => binding.ensureStylesheetResources(nativeCSS),
       emittedGlobals: () => binding.emittedGlobals(),
       snapshot: () => binding.snapshot(),
       snapshotForClasses: (classNames) => binding.snapshotForClassNames(classNames),
       dispose: () => binding.dispose()
-    },
-    options.supportsNativeDeclaration
+    }
   )
   try {
     return session.ensureClassRules(classNames)

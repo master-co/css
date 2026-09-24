@@ -4,26 +4,26 @@ import {
   lintMasterCSSContent,
   resolveMasterCSSLintRules,
   summarizeMasterCSSLintFiles,
-  type MasterCSSLintFileResult,
-  type MasterCSSLintRuleId,
-  type MasterCSSLintSourceDiagnostic
+  type MasterCSSLintRuleId
 } from '@master/css-tooling/lint'
 import type { MasterCSSToolingSession } from '@master/css-tooling'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { resolveSourceFiles } from './scan'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 
 const DEFAULT_LINT_SOURCE_PATTERNS = ['**/*.{html,htm,js,jsx,cjs,ts,tsx,mts,cts,svelte,astro,vue,md,mdx,pug,php,css,scss,less}']
 const DEFAULT_IGNORE_PATTERNS = ['**/node_modules/**', 'node_modules']
-const LINT_REPORT_VERSION = 1
+const LINT_REPORT_VERSION = 2
 
 export interface LintProjectOptions {
+  context?: SemanticContext
   patterns?: string[]
   rules?: string
 }
 
 export interface LintContentOptions {
+  context?: SemanticContext
   content: string
   filePath: string
   rules?: string
@@ -34,32 +34,10 @@ export interface PreviewFixesOptions extends LintProjectOptions {
   ttlMs?: number
 }
 
-function createManifestDiagnostic(context: MasterCSSMCPContext, message: string): MasterCSSLintSourceDiagnostic {
-  const range = { start: 0, end: 0 }
-  return {
-    ruleId: 'manifest',
-    code: 'manifest-loading-error',
-    severity: 'error',
-    message,
-    range,
-    loc: {
-      start: { line: 1, column: 1 },
-      end: { line: 1, column: 1 }
-    },
-    source: 'Master CSS',
-    sourceKind: 'manifest',
-    data: {
-      cwd: context.root
-    }
-  }
-}
-
 async function loadLintState(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const rules = resolveMasterCSSLintRules(options.rules)
-  const manifest = await loadWorkspaceManifest(context)
-  const lintSession = manifest.status === 'loaded'
-    ? createToolingSessionSync({ manifest: manifest.manifest })
-    : undefined
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
   const files = await resolveSourceFiles(
     context,
     options.patterns ?? DEFAULT_LINT_SOURCE_PATTERNS,
@@ -85,31 +63,17 @@ function lintInputs(
   })).filter((result) => result.diagnostics.length)
 }
 
-function createManifestFileResult(context: MasterCSSMCPContext, diagnostic: MasterCSSLintSourceDiagnostic): MasterCSSLintFileResult {
-  return {
-    filePath: context.root,
-    languageId: 'manifest',
-    sourceKind: 'manifest',
-    diagnostics: [diagnostic]
-  }
-}
-
 export async function lintProject(context: MasterCSSMCPContext, options: LintProjectOptions = {}) {
   const state = await loadLintState(context, options)
   try {
-    const files = state.manifest.status === 'error' || !state.lintSession
-      ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${state.manifest.error}`))]
-      : lintInputs(state.inputs, state.rules, state.lintSession)
+    const files = lintInputs(state.inputs, state.rules, state.lintSession)
 
     return {
       version: LINT_REPORT_VERSION,
       root: context.root,
-      manifest: {
-        status: state.manifest.status,
-        entries: state.manifest.entries,
-        diagnostics: state.manifest.status === 'error' ? files[0].diagnostics : []
-      },
+      manifest: manifestMetadata(state.manifest),
       files,
+      diagnostics: files.flatMap(file => file.diagnostics),
       summary: summarizeMasterCSSLintFiles(files)
     }
   } finally {
@@ -120,29 +84,17 @@ export async function lintProject(context: MasterCSSMCPContext, options: LintPro
 export async function lintContent(context: MasterCSSMCPContext, options: LintContentOptions) {
   const rules = resolveMasterCSSLintRules(options.rules)
   const filePath = context.resolveVirtualPath(options.filePath)
-  const manifest = await loadWorkspaceManifest(context)
-  const lintSession = manifest.status === 'loaded'
-    ? createToolingSessionSync({ manifest: manifest.manifest })
-    : undefined
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const lintSession = createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
   try {
-    const files = manifest.status === 'error' || !lintSession
-      ? [createManifestFileResult(context, createManifestDiagnostic(context, `Failed to load Master CSS manifest: ${manifest.error}`))]
-      : [lintMasterCSSContent({
-        content: options.content,
-        filePath,
-        rules,
-        lintSession
-      })]
+    const files = [lintMasterCSSContent({ content: options.content, filePath, rules, lintSession })]
 
     return {
       version: LINT_REPORT_VERSION,
       root: context.root,
-      manifest: {
-        status: manifest.status,
-        entries: manifest.entries,
-        diagnostics: manifest.status === 'error' ? files[0].diagnostics : []
-      },
+      manifest: manifestMetadata(manifest),
       files,
+      diagnostics: files.flatMap(file => file.diagnostics),
       summary: summarizeMasterCSSLintFiles(files)
     }
   } finally {
@@ -153,13 +105,6 @@ export async function lintContent(context: MasterCSSMCPContext, options: LintCon
 export async function previewLintFixes(context: MasterCSSMCPContext, options: PreviewFixesOptions = {}) {
   const state = await loadLintState(context, options)
   try {
-    if (state.manifest.status === 'error' || !state.lintSession) {
-      return {
-        mode: 'lint-fixes',
-        preview: await context.createPreview([], options.ttlMs),
-        lint: await lintProject(context, options)
-      }
-    }
     const changes = []
     for (const input of state.inputs) {
       const fixed = fixMasterCSSContent({
@@ -179,6 +124,7 @@ export async function previewLintFixes(context: MasterCSSMCPContext, options: Pr
     }
     const preview = await context.createPreview(changes, options.ttlMs)
     return {
+      manifest: manifestMetadata(state.manifest),
       mode: 'lint-fixes',
       preview,
       lint: await lintProject(context, options)

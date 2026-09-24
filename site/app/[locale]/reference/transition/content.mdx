@@ -17,7 +17,7 @@ Hover or keyboard-focus the button to increase its opacity. The shorthand keeps 
            outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
            opacity:1@print transition:none@print
-           transition:opacity|var(--duration-fast)|ease-out@screen&motion
+           transition:opacity|var(--duration-fast)|ease-out@screen@motion
            opacity:1:is(:hover,:focus-visible)@screen">
     Preview changes
   </button>
@@ -27,7 +27,7 @@ Hover or keyboard-focus the button to increase its opacity. The shorthand keeps 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['transition:opacity|var(--duration-fast)|ease-out@screen&motion']}
+    {['transition:opacity|var(--duration-fast)|ease-out@screen@motion']}
   </Class2CSS>
 </details>
 
@@ -48,7 +48,7 @@ Focus or hover the real link to lift it by 8px. Only transform interpolates, whi
            outline:2px|solid|var(--color-blue):focus-visible
            outline-offset:3px:focus-visible
            transform:none@print transition:none@print
-           transition:transform|var(--duration-normal)|var(--easing-smooth)@screen&motion
+           transition:transform|var(--duration-normal)|var(--easing-smooth)@screen@motion
            transform:translateY(-8px):is(:hover,:focus-visible)@screen">
     View report
   </a>
@@ -76,7 +76,7 @@ The longhands below keep opacity and ease-out fixed while enabling a 150ms durat
            outline-offset:3px:focus-visible
            opacity:1@print
            transition-duration:0ms@print
-           transition-duration-fast@screen&motion
+           transition-duration-fast@screen@motion
            opacity:1:is(:hover,:focus-visible)@screen">
     Preview emphasis
   </button>
@@ -107,7 +107,7 @@ Use the native checkbox to change opacity. Below `sm` the change is immediate; a
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none transition:none@print
-             transition:opacity|var(--duration-fast)|var(--easing-smooth)@screen&motion&sm">
+             transition:opacity|var(--duration-fast)|var(--easing-smooth)@screen@motion@sm">
       Layer 01
     </span>
   </span>

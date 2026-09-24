@@ -133,11 +133,14 @@
         ],
         "./tooling": [
           "MASTER_CSS_LANGUAGE_BATCH_VERSION",
+          "MASTER_CSS_LANGUAGE_VERSION",
           "MASTER_CSS_LEXER_BATCH_VERSION",
           "MASTER_CSS_LINT_BATCH_VERSION",
           "MASTER_CSS_SOURCE_BATCH_VERSION",
           "MASTER_CSS_VALIDATOR_BATCH_VERSION",
           "MasterCSSBindingLoadOptions",
+          "MasterCSSBrowserSupport",
+          "MasterCSSDiagnostic",
           "MasterCSSEngineSnapshot",
           "MasterCSSEngineTransition",
           "MasterCSSLanguageBindingSession",
@@ -155,6 +158,7 @@
           "MasterCSSLintCanonicalClassSuggestions",
           "MasterCSSLintCanonicalComposeDirective",
           "MasterCSSLintRawValueCandidates",
+          "MasterCSSMatchStatus",
           "MasterCSSNativeBindingLoadOptions",
           "MasterCSSNativeDeclarationCandidate",
           "MasterCSSScannerBindingSession",
@@ -167,6 +171,7 @@
           "MasterCSSToolingBindingSession",
           "MasterCSSValidatorBatch",
           "MasterCSSValidatorBindingSession",
+          "MasterCSSValueStatus",
           "MasterCSSWasmBindingLoadOptions",
           "createToolingBinding"
         ],
@@ -183,7 +188,7 @@
           "createToolingBindingSync"
         ]
       },
-      "surface": "71dd29a971415fc5"
+      "surface": "4994759483938abb"
     },
     "@master/css-binding-darwin-arm64": {
       "directory": "binding-darwin-arm64",
@@ -512,7 +517,6 @@
           "MasterCSSEngineTransition",
           "MasterCSSEngineVariableResource",
           "MasterCSSNativeDeclaration",
-          "MasterCSSNativeDeclarationSupport",
           "MasterCSSRenderSessionOptions",
           "MasterCSSRenderSnapshot",
           "MasterCSSRuleTarget",
@@ -525,7 +529,6 @@
           "MasterCSSEngineBindingOptions",
           "MasterCSSEngineOptions",
           "MasterCSSNativeDeclaration",
-          "MasterCSSNativeDeclarationSupport",
           "MasterCSSRenderSession",
           "MasterCSSRenderSessionOptions",
           "MasterCSSRenderSnapshot",
@@ -536,7 +539,7 @@
         ],
         "./client": []
       },
-      "surface": "d63451756bc2efde"
+      "surface": "d9ffc7463bc37565"
     },
     "@master/css-svelte-addon": {
       "directory": "css-sv",
@@ -821,9 +824,8 @@
           "MasterCSSManifestConditionStringNode",
           "MasterCSSManifestConditionValueNode",
           "MasterCSSManifestConditions",
-          "MasterCSSManifestDefaultMode",
           "MasterCSSManifestKeyframes",
-          "MasterCSSManifestModeTrigger",
+          "MasterCSSManifestMode",
           "MasterCSSManifestSelectorCombinatorNode",
           "MasterCSSManifestSelectorLiteralNode",
           "MasterCSSManifestSelectorNode",
@@ -873,12 +875,10 @@
           "CSSDirectiveAnimationOptions",
           "CSSDirectiveConditionPathEntry",
           "CSSDirectiveDeclarations",
-          "CSSDirectiveDefaultMode",
           "CSSDirectiveError",
           "CSSDirectiveExtractionPolicy",
           "CSSDirectiveLayerName",
           "CSSDirectiveManifestInput",
-          "CSSDirectiveModeTrigger",
           "CSSDirectiveReference",
           "CSSDirectiveRelatedInformation",
           "CSSDirectiveResult",
@@ -950,7 +950,7 @@
           "isMasterCSSRenderingMode"
         ]
       },
-      "surface": "b9128de4c4dd64a3"
+      "surface": "a9ba715bae9500b4"
     },
     "@master/css-server": {
       "directory": "server",
@@ -1030,10 +1030,12 @@
           "createToolingSession"
         ],
         "./node": [
-          "MasterCSSNativeDeclarationCandidate",
+          "CSS_VALUE_CHECK",
           "MasterCSSToolingSession",
           "createToolingSessionSync",
-          "supportsNativeDeclaration"
+          "cssValueStatus",
+          "getToolingBindingInfo",
+          "validateRuleDeclarations"
         ],
         "./builtins": [
           "MasterCSSBuiltinKeyAliases",
@@ -1077,9 +1079,13 @@
           "defaultScannerOptions"
         ],
         "./validator": [
+          "CSS_VALUE_CHECK",
+          "DeclarationValidation",
           "MasterCSSClassValidation",
           "MasterCSSClassValidationResult",
-          "validateClassNames"
+          "cssValueStatus",
+          "validateClassNames",
+          "validateRuleDeclarations"
         ],
         "./validator/node": [
           "validateClassNamesSync"
@@ -1203,7 +1209,7 @@
           "inspectClassNameSync"
         ]
       },
-      "surface": "7093222eed066c71"
+      "surface": "5b2f6fc9af02b819"
     },
     "@master/css-vite": {
       "directory": "vite",

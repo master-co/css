@@ -32,7 +32,8 @@ export async function renderResponse(response: Response, manifest: MasterCSSMani
 
 export function createMasterCSSMiddleware(
   manifest: MasterCSSManifest,
-  emittedGlobals: MasterCSSEmittedGlobals = {}
+  emittedGlobals: MasterCSSEmittedGlobals = {},
+  hydrate = true
 ): MiddlewareHandler {
   const renderer = createServerRenderer({ manifest, emittedGlobals })
   return async (_context, next) => {
@@ -40,7 +41,7 @@ export function createMasterCSSMiddleware(
     if (BODYLESS_STATUSES.has(response.status) || !isHTMLResponse(response)) {
       return response
     }
-    const rendered = renderer.renderHTML(await response.text(), { hydrationManifest: 'inject' })
+    const rendered = renderer.renderHTML(await response.text(), { hydrationManifest: hydrate ? 'inject' : false })
     return createResponse(response, rendered.html)
   }
 }

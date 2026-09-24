@@ -34,7 +34,7 @@ impl ValidatorSession {
     pub fn generate_classes<I, S>(
         &mut self,
         class_names: I,
-        native_support: Option<&[bool]>,
+        _native_support: Option<&[bool]>,
     ) -> Result<ValidatorBatchIr, EngineError>
     where
         I: IntoIterator<Item = S>,
@@ -44,19 +44,16 @@ impl ValidatorSession {
             .into_iter()
             .map(|class_name| class_name.as_ref().to_owned())
             .collect::<Vec<_>>();
-        if let Some(native_support) = native_support {
-            self.engine
-                .ensure_class_rules_with_native_support(&class_names, native_support)?;
-        } else {
-            self.engine.ensure_class_rules(&class_names)?;
-        }
+        self.engine.ensure_class_rules(&class_names)?;
         let classes = class_names
             .iter()
             .map(|class_name| {
                 let inspection = self.engine.inspect(class_name)?;
                 Ok(ValidatorClassIr {
                     class_name: class_name.clone(),
-                    matched: inspection.valid,
+                    match_status: inspection.match_status,
+                    css_value_status: inspection.css_value_status,
+                    browser_support: inspection.browser_support,
                     rules: inspection.rules,
                     diagnostics: inspection.diagnostics,
                 })
@@ -79,7 +76,7 @@ mod tests {
     use super::*;
 
     const MANIFEST: &str = r#"{
-      "version":1,
+      "version":1,"languageVersion":2,
       "utilities":[{
         "id":"display-block",
         "name":"block",
@@ -95,18 +92,20 @@ mod tests {
         let first = session
             .generate_classes(["block", "unknown"], None)
             .unwrap();
-        assert_eq!(first.version, 1);
-        assert!(first.classes[0].matched);
+        assert_eq!(first.version, 2);
+        assert!(first.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
         assert_eq!(first.classes[0].rules[0].text, ".block{display:block}");
-        assert!(!first.classes[1].matched);
+        assert!(first.classes[1].match_status != mastercss_schema::MatchStatus::Matched);
 
         let second = session.generate_classes(["block"], None).unwrap();
         assert_eq!(second.classes[0].rules, first.classes[0].rules);
     }
 
     #[test]
-    fn commits_only_host_supported_native_declarations() {
-        let mut session = ValidatorSession::create(r#"{"version":1,"utilities":[]}"#).unwrap();
+    fn preserves_native_declarations_regardless_of_host_support() {
+        let mut session =
+            ValidatorSession::create(r#"{"version":1,"languageVersion":2,"utilities":[]}"#)
+                .unwrap();
         let candidates = session
             .native_declaration_candidates(["display:block", "display:banana"])
             .unwrap();
@@ -114,8 +113,12 @@ mod tests {
         let result = session
             .generate_classes(["display:block", "display:banana"], Some(&[true, false]))
             .unwrap();
-        assert!(result.classes[0].matched);
-        assert!(!result.classes[1].matched);
+        assert!(result.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
+        assert!(result.classes[1].match_status == mastercss_schema::MatchStatus::Matched);
+        assert_eq!(
+            result.classes[1].css_value_status,
+            mastercss_schema::CssValueStatus::NotChecked
+        );
     }
 
     #[test]
@@ -129,7 +132,7 @@ mod tests {
         let result = session
             .generate_classes(["{text-wrap:pretty;block}"], Some(&[true]))
             .unwrap();
-        assert!(result.classes[0].matched);
+        assert!(result.classes[0].match_status == mastercss_schema::MatchStatus::Matched);
         assert_eq!(
             result.classes[0].rules[0].text,
             ".\\{text-wrap\\:pretty\\;block\\}{text-wrap:pretty}"

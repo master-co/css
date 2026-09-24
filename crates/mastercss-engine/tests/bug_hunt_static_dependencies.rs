@@ -2,7 +2,7 @@ use mastercss_engine::EngineSession;
 
 fn manifest() -> String {
     serde_json::json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "variables": {"color": [
             {"key":"brand", "value":"var(--color-base)", "dependencies":["color-base"], "static":true},
             {"key":"base", "value":"red"}

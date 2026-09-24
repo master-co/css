@@ -73,6 +73,7 @@ fn source_preservation_is_opt_in_and_rejects_pruning() {
         &CompileNativeCssOptions {
             preserve_native_source: true,
             classes: Some(vec![]),
+            prune_native_css: true,
             ..Default::default()
         },
     )
@@ -118,6 +119,7 @@ fn native_only_preservation_respects_disabled_output_and_rejects_pruning() {
             .is_empty()
     );
     options.classes = Some(vec![]);
+    options.prune_native_css = true;
     assert!(
         compile_native_css(".empty{}", &options)
             .unwrap_err()

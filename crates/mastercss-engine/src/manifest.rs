@@ -1,47 +1,9 @@
 use super::{
     CompiledVariable, CompiledVariableMode, EngineError, EngineVariableIr, HashMap,
-    ManifestProjection, Map, MasterCssManifest, ThemeBucket, UtilityLayerName, UtilityMatcher,
-    Value, append_builtin_native_declaration_utilities, append_builtin_token_utilities,
+    ManifestProjection, Map, MasterCssManifest, UtilityLayerName, UtilityMatcher, Value,
+    append_builtin_native_declaration_utilities, append_builtin_token_utilities,
     compile_utility_variables, split_top_level, transform_css_variable_references,
 };
-
-pub(crate) fn push_theme_declaration(
-    buckets: &mut Vec<ThemeBucket>,
-    media_text: &str,
-    selector_text: &str,
-    mode: Option<&str>,
-    declaration: String,
-) {
-    if let Some(bucket) = buckets
-        .iter_mut()
-        .find(|bucket| bucket.media_text == media_text && bucket.selector_text == selector_text)
-    {
-        bucket.declarations.push(declaration);
-        return;
-    }
-    buckets.push(ThemeBucket {
-        media_text: media_text.to_owned(),
-        selector_text: selector_text.to_owned(),
-        mode: mode.map(str::to_owned),
-        order: buckets.len(),
-        declarations: vec![declaration],
-    });
-}
-
-pub(crate) fn theme_bucket_rank(bucket: &ThemeBucket) -> u8 {
-    if !bucket.media_text.is_empty() {
-        2
-    } else if bucket
-        .selector_text
-        .split(',')
-        .map(str::trim)
-        .any(|selector| matches!(selector, ":root" | ":host"))
-    {
-        0
-    } else {
-        1
-    }
-}
 
 pub(crate) fn layer_name(layer: UtilityLayerName) -> &'static str {
     match layer {
@@ -68,6 +30,81 @@ pub(crate) fn compile_manifest(
     let (compiled_variables, compiled_variable_order) = compile_variables(&projection.variables)?;
     projection.compiled_variables = compiled_variables;
     projection.compiled_variable_order = compiled_variable_order;
+    let mut names = HashMap::new();
+    for name in projection.conditions.keys() {
+        names.insert(name.as_str(), "condition");
+    }
+    for variant in &projection.variants {
+        let Some(name) = variant.token.strip_prefix('@') else {
+            continue;
+        };
+        // A variant may project its first condition into the completion index.
+        // That projection must agree with the branch, never hide a second definition.
+        let is_projection = projection.conditions.get(name).is_some_and(|condition| {
+            let indexed = super::condition::render_manifest_condition(condition, None);
+            variant.branches.iter().any(|branch| {
+                branch.conditions.first().is_some_and(|query| {
+                    mastercss_lexer::canonical_native_content(query)
+                        == mastercss_lexer::canonical_native_content(&indexed)
+                }) || branch
+                    .layer
+                    .is_some_and(|layer| indexed == format!("@layer {}", layer_name(layer)))
+            })
+        });
+        let is_breakpoint = projection
+            .compiled_variables
+            .values()
+            .any(|variable| variable.namespace == "breakpoint" && variable.key == name);
+        if let Some(kind) = names.insert(name, "variant")
+            && (kind != "condition" || !is_projection || is_breakpoint)
+        {
+            return Err(EngineError::InvalidManifest(format!(
+                "Condition name {name} is defined more than once"
+            )));
+        }
+    }
+    for mode in &projection.modes {
+        if let Some(kind) = names.insert(&mode.name, "mode") {
+            return Err(EngineError::InvalidManifest(format!(
+                "Condition name {} conflicts with {kind}; use a distinct mode name",
+                mode.name
+            )));
+        }
+        if !mastercss_lexer::valid_mode_name(&mode.name)
+            || mode.branches.is_empty()
+            || mode.branches.iter().any(|branch| {
+                !mastercss_lexer::valid_mode_selector(&branch.selector)
+                    || mastercss_lexer::replace_nesting_selector(&branch.selector, "").is_some()
+                    || branch.conditions.iter().any(|condition| {
+                        let Some((kind, prelude)) = condition
+                            .strip_prefix('@')
+                            .and_then(|value| value.split_once(' '))
+                        else {
+                            return true;
+                        };
+                        !matches!(kind, "media" | "supports")
+                            || mastercss_lexer::parse_native_query(&format!("{kind}({prelude})"))
+                                .is_none()
+                    })
+            })
+        {
+            return Err(EngineError::InvalidManifest(format!(
+                "Invalid activation branches for mode {}",
+                mode.name
+            )));
+        }
+    }
+    for variable in projection.compiled_variables.values() {
+        for value in &variable.modes {
+            if !projection.modes.iter().any(|mode| mode.name == value.name) {
+                return Err(EngineError::InvalidManifest(format!(
+                    "Token {} refers to undefined mode {}; define @mode {}",
+                    variable.name, value.name, value.name
+                )));
+            }
+        }
+    }
+
     resolve_compiled_inline_variable_references(
         &mut projection.compiled_variables,
         &projection.compiled_variable_order,

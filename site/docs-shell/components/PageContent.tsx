@@ -21,7 +21,7 @@ export default function PageContent({ metadata }: any) {
   const $ = useTranslation()
 
   return (
-    <aside ref={ref} className="sticky top overflow-y:auto flex:0|0|auto h:100dvh w:calc(252/16*1rem) pb-2xl pt:8.75rem b-subtle:not(.top) hidden@print hidden@<lg bl:1px|solid|transparent@<lg surface-raised/.8@<lg backdrop-filter:blur(25px)@<lg scrollbar scrollbar-concealed">
+    <aside ref={ref} className="sticky top overflow-y:auto flex:0|0|auto h:100dvh w:calc(252/16*1rem) pb-2xl pt:8.75rem b-subtle:not(.top) hidden@print hidden@media((width<80rem)) bl:1px|solid|transparent@media((width<80rem)) surface-raised/.8@media((width<80rem)) backdrop-filter:blur(25px)@media((width<80rem)) scrollbar scrollbar-concealed">
       <div className="flex items-center mb-md">
         <ContentsSvg width="14" height="14" className="my:-1px ml:-0.125rem" fill="currentColor" />
         <span className=" ml-3xs font-xs">{$('On this page')}</span>

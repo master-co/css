@@ -43,7 +43,7 @@ export default function InlineStylesheetPlugin(context: MasterCSSVitePluginConte
       using compiler = createCompilerSync()
       for (const entry of inlineStylesheets(context).values()) {
         if (!entry.reference) continue
-        const result = entry.local ? { ...entry.local, css: entry.local.code } : await withSassDiagnostics(context, () => entry.collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: context.config?.root, includeGeneratedCSS: context.includeGeneratedCSS, delivery: inlineDelivery(context) }))
+        const result = entry.local ? { ...entry.local, css: entry.local.code } : await withSassDiagnostics(context, () => entry.collection.compose({ scanner, baseManifest: scanner.css.manifest, projectDir: context.config?.root, pruneNativeCSS: context.pruneNativeCSS, includeGeneratedCSS: context.includeGeneratedCSS, delivery: inlineDelivery(context) }))
         const managed = { entry: 'inline-managed', stylesheets: [{ id: 'inline-managed', href: INLINE_URL_BASE + 'entry.css', css: result.css }, ...(result.stylesheets ?? [])] }
         const bundle = compiler.prepareStylesheetBundle({ source: scanner.slotCSSRule, from: entry.token, slotCSSRule: scanner.slotCSSRule, managed })
         const hash = inlineDigest(JSON.stringify(bundle))

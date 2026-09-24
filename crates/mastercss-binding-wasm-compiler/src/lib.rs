@@ -67,22 +67,8 @@ impl CompilerRenderSession {
     }
 
     #[wasm_bindgen(js_name = ensureClasses)]
-    pub fn ensure_classes(
-        &mut self,
-        class_names: Vec<String>,
-        native_support: JsValue,
-    ) -> Result<(), JsValue> {
-        let native_support = if native_support.is_null() || native_support.is_undefined() {
-            None
-        } else {
-            Some(
-                serde_wasm_bindgen::from_value::<Vec<bool>>(native_support)
-                    .map_err(serialization_error)?,
-            )
-        };
-        self.inner
-            .ensure_classes(class_names, native_support.as_deref())
-            .map_err(engine_error)
+    pub fn ensure_classes(&mut self, class_names: Vec<String>) -> Result<(), JsValue> {
+        self.inner.ensure_classes(class_names).map_err(engine_error)
     }
 
     #[wasm_bindgen(js_name = ensureStylesheetResources)]

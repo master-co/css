@@ -453,6 +453,99 @@
   --color-terracotta-100: oklch(19.3% 0.025 26);
 }
 
+/* Base values are independent of mode activation. */
+@theme {
+  /* Color aliases */
+  --color-stone: var(--color-stone-30);
+  --color-gray: var(--color-gray-30);
+  --color-neutral: var(--color-neutral-30);
+  --color-slate: var(--color-slate-30);
+  --color-brown: var(--color-brown-40);
+  --color-orange: var(--color-orange-40);
+  --color-amber: var(--color-amber-40);
+  --color-yellow: var(--color-yellow-40);
+  --color-lime: var(--color-lime-40);
+  --color-green: var(--color-green-40);
+  --color-beryl: var(--color-beryl-40);
+  --color-teal: var(--color-teal-40);
+  --color-cyan: var(--color-cyan-40);
+  --color-sky: var(--color-sky-60);
+  --color-blue: var(--color-blue-60);
+  --color-indigo: var(--color-indigo-60);
+  --color-violet: var(--color-violet-60);
+  --color-purple: var(--color-purple-60);
+  --color-fuchsia: var(--color-fuchsia-60);
+  --color-pink: var(--color-pink-60);
+  --color-crimson: var(--color-crimson-60);
+  --color-red: var(--color-red-60);
+
+  /* Surface color aliases */
+  --color-surface-base: var(--color-neutral-0);
+  --color-surface-muted: var(--color-neutral-5);
+  --color-surface-raised: var(--color-white);
+  --color-surface-overlay: var(--color-white);
+  --color-surface-inverse: var(--color-black);
+
+  /* Line color aliases */
+  --color-line-base: oklch(0% 0 none / 0.12);
+  --color-line-strong: oklch(0% 0 none / 0.18);
+  --color-line-muted: oklch(0% 0 none / 0.09);
+  --color-line-subtle: oklch(0% 0 none / 0.06);
+
+  /* Text color aliases */
+  --color-text-body: var(--color-neutral-70);
+  --color-text-strong: var(--color-neutral-100);
+  --color-text-muted: var(--color-neutral-60);
+  --color-text-subtle: var(--color-neutral-50);
+  --color-text-disabled: var(--color-neutral-40);
+  --color-text-placeholder: var(--color-neutral-40);
+  --color-text-inverse: var(--color-white);
+  --color-text-link: var(--color-blue-60);
+  --color-text-link-hover: var(--color-blue-70);
+
+  --color-text-stone: var(--color-stone-60);
+  --color-text-gray: var(--color-gray-60);
+  --color-text-neutral: var(--color-neutral-60);
+  --color-text-slate: var(--color-slate-60);
+  --color-text-brown: var(--color-brown-60);
+  --color-text-orange: var(--color-orange-60);
+  --color-text-amber: var(--color-amber-60);
+  --color-text-yellow: var(--color-yellow-70);
+  --color-text-lime: var(--color-lime-70);
+  --color-text-green: var(--color-green-70);
+  --color-text-beryl: var(--color-beryl-70);
+  --color-text-teal: var(--color-teal-70);
+  --color-text-cyan: var(--color-cyan-70);
+  --color-text-sky: var(--color-sky-70);
+  --color-text-blue: var(--color-blue-60);
+  --color-text-indigo: var(--color-indigo-60);
+  --color-text-violet: var(--color-violet-60);
+  --color-text-purple: var(--color-purple-60);
+  --color-text-fuchsia: var(--color-fuchsia-60);
+  --color-text-pink: var(--color-pink-60);
+  --color-text-crimson: var(--color-crimson-60);
+  --color-text-red: var(--color-red-60);
+
+  /* Natural material aliases */
+  --color-sand: var(--color-sand-30);
+  --color-taupe: var(--color-taupe-30);
+  --color-olive: var(--color-olive-50);
+  --color-sage: var(--color-sage-30);
+  --color-moss: var(--color-moss-50);
+  --color-petrol: var(--color-petrol-60);
+  --color-copper: var(--color-copper-50);
+  --color-terracotta: var(--color-terracotta-50);
+
+  --color-text-sand: var(--color-sand-60);
+  --color-text-taupe: var(--color-taupe-60);
+  --color-text-olive: var(--color-olive-60);
+  --color-text-sage: var(--color-sage-60);
+  --color-text-moss: var(--color-moss-60);
+  --color-text-petrol: var(--color-petrol-60);
+  --color-text-copper: var(--color-copper-60);
+  --color-text-terracotta: var(--color-terracotta-70);
+}
+
 @theme light {
   /* Color aliases */
   --color-stone: var(--color-stone-30);

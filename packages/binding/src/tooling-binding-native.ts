@@ -15,6 +15,7 @@ export function createNativeToolingBinding(
   if (!native) return
   const bound: MasterCSSToolingBindingSync = {
     binding: 'native',
+    info: native.info,
     createLexerSession: () => protectToolingSession(native.createLexerSession()),
     createSourceSession: () => protectToolingSession(native.createSourceSession()),
     createValidatorSession: (manifest) =>
@@ -44,6 +45,7 @@ export function asAsyncToolingBinding(
 ): MasterCSSToolingBinding {
   const bound: MasterCSSToolingBinding = {
     binding: binding.binding,
+    info: binding.info,
     createLexerSession: async () => binding.createLexerSession(),
     createSourceSession: async () => binding.createSourceSession(),
     createValidatorSession: async (manifest) => binding.createValidatorSession(manifest),

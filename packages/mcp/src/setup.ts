@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { discoverManifestEntries } from '@master/css-compiler/project'
 import { resolveMasterCSSWorkspacePackages } from '@master/css-internal/workspace'
 import type MasterCSSMCPContext from './context'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, manifestMetadata } from './project'
 import { getErrorMessage } from './result'
 
 const SETUP_AUDIT_VERSION = 1
@@ -232,6 +232,7 @@ export async function auditSetup(context: MasterCSSMCPContext) {
     },
     integrations,
     manifest: {
+      ...manifestMetadata(manifest),
       status: manifest.status,
       entries: manifest.entries.length ? manifest.entries : discoveredEntries,
       dependencies: manifest.dependencies,

@@ -48,7 +48,7 @@ describe('Rust lint session', () => {
   it('owns canonical recommendations while the wrapper only maps host diagnostics', () => {
     const lint = createTestToolingSession(createPresetManifest())
     try {
-      const classList = 'margin:1rem@dark@sm'
+      const classList = 'margin-md'
       const classNames = lint.tokenizeClassList(classList).map(({ token }) => token)
       const result = lint.analyzeLintClassList(classList, classNames, { canonicalOptions: {} })
       const diagnostics = result.diagnostics.filter(({ ruleId }) => ruleId === 'prefer-canonical-classes')
@@ -70,7 +70,7 @@ describe('Rust lint session', () => {
         'm:var(--spacing-md)|var(--spacing-lg)',
         'fg-red-60',
         'text-center',
-        'font:error',
+        'font:16px',
         'unknown-class',
         'btn'
       ])).toEqual([])

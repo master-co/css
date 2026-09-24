@@ -10,7 +10,7 @@ Master CSS keeps those decisions close to the element with `animate-*` recipes, 
 
 <Demo>
   <div className="container w:100%">
-    <div className="grid grid-cols:1 gap-md w:100% grid-cols:2@container(3xs)">
+    <div className="grid grid-cols:1 gap-md w:100% grid-cols:2@container((width>=16rem))">
       <div className="p-lg r-lg surface-raised shadow-xs">
         <DemoLabel>animation:fade|slow|smooth</DemoLabel>
         <div className="size:3.5rem r-lg bg-blue-5 animation:fade|var(--duration-slow)|var(--easing-smooth)|infinite|alternate@motion"></div>

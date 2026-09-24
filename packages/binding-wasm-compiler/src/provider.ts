@@ -39,7 +39,7 @@ interface MasterCSSCompilerWasmProviderSession {
 
 interface MasterCSSCompilerWasmRenderProviderSession {
   nativeDeclarationCandidates(classNames: string[]): unknown
-  ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
+  ensureClasses(classNames: string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): unknown
   snapshot(): unknown

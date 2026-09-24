@@ -55,7 +55,7 @@ interface MasterCSSWasmEngineProviderSession {
 
 interface MasterCSSWasmRenderProviderSession {
   nativeDeclarationCandidates(classNames: readonly string[]): unknown
-  ensureClassRules(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
+  ensureClassRules(classNames: readonly string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): unknown
   snapshot(): unknown

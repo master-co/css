@@ -73,7 +73,7 @@ describe('ManifestLoaderPlugin', () => {
       mkdirSync(root, { recursive: true })
       writeFileSync(manifestPath, [
         '@components {',
-        '    card { @compose bg:neutral-120; }',
+        '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
       const context = await createContext(root)

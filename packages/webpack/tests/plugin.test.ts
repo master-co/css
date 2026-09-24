@@ -314,10 +314,8 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       await compilation.hooks.finishModules.promise([])
       await compiler.hooks.beforeRun.promise(compiler)
 
-      const virtualCSS = (compiler.inputFileSystem._writeVirtualFile as any).mock.calls
-        .map((call: unknown[]) => String(call[2]))
-        .reverse()
-        .find((content: string) => content.includes('.active-card'))
+      const result = await (plugin as any).createExtractedCSSResult()
+      const virtualCSS = [result.css, ...result.stylesheets.map((sheet: { css: string }) => sheet.css)].join('\n')
       expect(virtualCSS).toContain('@keyframes active-spin')
       expect(virtualCSS).toContain('.native-card')
       expect(virtualCSS).toContain('--color-active:red')
@@ -415,7 +413,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       let error: Error & { dependencies?: string[] } | undefined
       try {
-        await runStylesheetLoader(root, modulePath, '.button { @compose bg:neutral-120; }')
+        await runStylesheetLoader(root, modulePath, '.button { @compose bg-missing-token; }')
       } catch (caught) {
         error = caught as Error & { dependencies?: string[] }
       }
@@ -576,7 +574,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       writeFileSync(entryPath, [
         '@master entry;',
         '@components {',
-        '  card { @compose bg:neutral-120; }',
+        '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
       const plugin = makePlugin({}, root)
@@ -697,7 +695,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(manifestPath, [
         '@components {',
-        '  card { @compose bg:neutral-120; }',
+        '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
       const plugin = makePlugin({}, root)

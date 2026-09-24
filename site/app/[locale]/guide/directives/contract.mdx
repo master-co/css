@@ -7,9 +7,6 @@ Directives do not behave like normal CSS rules. Consumed directives are removed 
 @import "@master/css";
 
 @settings {
-  root-size: 16;
-  default-mode: light;
-  mode-trigger: media;
   scope: #app;
   important: off;
 }
@@ -41,7 +38,7 @@ Marks the stylesheet as a full Master CSS entry, loads the package stylesheet gr
 @import "@master/css";
 ```
 
-Other directive families such as `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, and `@preserve native` are not entry markers by themselves.
+Other directive families such as `@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, `@prune native`, and `@preserve native` are not entry markers by themselves.
 
 ### Local file URLs
 
@@ -64,9 +61,7 @@ combining files must preserve those boundaries and the URLs of their images and
 fonts. A resource used by an imported managed definition retains that definition's
 source location when another file uses it through `@compose`.
 
-Native CLI project scanning reads managed definitions from each local imported
-file before resolving `@compose`. Import layers and conditions remain attached
-to composed native rules; they do not hide the file's managed definitions.
+Native CLI project scanning reads global definitions from unqualified imports before resolving `@compose`. A qualified import may contain native CSS, including native rules with `@compose`, but cannot contain global Master definitions. Put those definitions in an unqualified import or a separate `@reference` input.
 Relative `@source` patterns are resolved from the file that declares them, and
 `@reference` supplies composition context without adding its scanning sources or
 exporting its managed classes. Reading this metadata does not publish stylesheet
@@ -96,8 +91,7 @@ consumed and native `@compose` rules are still lowered, while unrelated comments
 empty rules, value spelling, and rule boundaries are retained. The option defaults
 to `false`, preserving the compiler's normal native CSS normalization.
 
-Source preservation cannot be combined with a native class-pruning list, including
-an empty list. `preserveNativeCSS: false` still suppresses native output. The option
+Source preservation cannot be combined with enabled native pruning. Passing a class list alone does not enable pruning. `preserveNativeCSS: false` still suppresses native output. The option
 does not prevent subsequent host transforms from optimizing the result or rewriting
 its source map, and it does not discover new Master definitions or generated-global
 references introduced by a later transform.
@@ -136,7 +130,7 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 }
 ```
 
-Referenced stylesheets can define `@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
+Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
 
 ```css name=app.css
 @import "@master/css";
@@ -169,9 +163,6 @@ Place `@settings` at the top level of an entry stylesheet. These settings change
 
 ```css
 @settings {
-  root-size: 16;
-  default-mode: light;
-  mode-trigger: media;
   scope: #app;
   important: off;
 }
@@ -179,20 +170,17 @@ Place `@settings` at the top level of an entry stylesheet. These settings change
 
 | Setting | Default | Effect |
 | --- | --- | --- |
-| `root-size` | `16` | Reference root size for conditions and tooling. It does not convert declaration values or change `html { font-size }`. |
-| `default-mode` | `light` | Default mode name. Use `none` to avoid attaching a default mode. |
-| `mode-trigger` | `media` | Mode activation strategy: `media`, `class`, or `host`. |
 | `scope` | `not set` | Optional root selector prepended to generated selectors. It does not create that element. |
 | `important` | `off` | Use `on` to add `!important` to generated declarations. This changes their cascade priority. |
 
-The block above sets `scope: #app`; all other shown values match the engine defaults. Token values and native CSS declarations remain distinct from these compiler settings. `base-unit` is removed; use CSS units for lengths. Native resolution `x` remains valid.
+The block above sets `scope: #app`; all other shown values match the engine defaults. Token values and native CSS declarations remain distinct from these compiler settings. `root-size`, `default-mode`, `mode-trigger`, and `base-unit` are removed. Use explicit queries, `@mode` activation, and native CSS units. Native resolution `x` remains valid.
 
 For token authoring, see [Theme Tokens](/guide/theme). For mode behavior, see [Variables and Modes](/guide/variables-and-modes).
 
 ---
 
 ## Theme and variants \{#theme-and-variants\}
-Theme directives register tokens, modes, managed animations and reusable conditions. Their definitions become compiler input; only resources required by the resulting stylesheet are emitted, unless marked `static`.
+Theme directives register token values and managed animations. `@mode` registers activation branches; `@custom-variant` registers utility selector and condition transformations. Their definitions become compiler input; only resources required by the resulting stylesheet are emitted, unless marked `static`.
 
 ### `@theme` \{#theme\}
 Defines theme tokens and managed keyframes. Token names keep their leading `--`; Master CSS uses the name after `--` for namespace resolution. The native rule below uses the token, so its variable is included in the result.
@@ -203,12 +191,62 @@ Defines theme tokens and managed keyframes. Token names keep their leading `--`;
 />
 
 ### `@theme <mode>` \{#theme-mode\}
-Defines mode-specific token values. Mode blocks can override regular theme tokens and add new mode names. With the default media trigger, the dark value is emitted inside the native color-scheme media query.
+Defines mode-specific token values. The final manifest must contain a matching `@mode` definition. Repeated token declarations merge, with later values replacing the same token; they never infer an activation selector or add `color-scheme`.
 
 <StylesheetExample
   title="One token in two modes"
-  source={"@theme {\n  --color-panel: white;\n}\n\n@theme dark {\n  --color-panel: #111827;\n}\n\n.card {\n  @compose bg-panel;\n}"}
+  source={"@mode dark {\n  @media (prefers-color-scheme: dark) {\n    :root, :host { @slot; }\n  }\n}\n\n@theme {\n  --color-panel: white;\n}\n\n@theme dark {\n  --color-panel: #111827;\n}\n\n.card {\n  @compose bg-panel;\n}"}
 />
+
+### `@mode` \{#mode\}
+
+Defines where a named mode is active, separately from its token values:
+
+```css
+@mode ocean {
+  [data-theme="ocean"] { @slot; }
+}
+
+@theme { --color-surface: white; }
+@theme ocean { --color-surface: #082f49; }
+```
+
+Each branch must contain an element selector and a bare `@slot;`. Branches may
+nest selectors, `@media`, and `@supports`. Declarations, pseudo-elements,
+`@container`, layers, and recursive mode references are rejected. A later
+same-name `@mode` replaces the entire activation definition and moves its
+cascade position to that definition's source order.
+
+Token declarations appear on each activation selector. An `@ocean` utility
+matches the activation element and its descendants through a zero-specificity
+`:where()` guard. Nested token values inherit normally. Overlapping modes follow
+the cascade; there is no nearest-mode exclusion or JavaScript state machine.
+Use explicit `:host(...)` branches in a shadow tree. Selectors do not cross native
+shadow or slot boundaries. Base `@theme` resources target `:root` and `:host`.
+
+```css
+@mode dark {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="dark"] { @slot; }
+}
+@mode light {
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="light"] { @slot; }
+}
+
+/* Native declarations explicitly control browser-provided UI. */
+:root { color-scheme: light dark; }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
+```
+
+The preset supplies explicit system-preference light/dark branches and base
+values. Override both modes for manual switching. Breakpoints, modes, and custom
+variants share a namespace: a cross-category duplicate is an error.
 
 ### `@theme inline` \{#theme-inline\}
 Defines utility shorthands that are written directly into generated declarations instead of emitting CSS custom properties. Inline tokens cannot be mode-specific. Compare this result with the variable-backed token above.
@@ -227,7 +265,7 @@ Emits the token or managed keyframes as initial CSS resources instead of waiting
 />
 
 ### `@custom-variant` \{#custom-variant\}
-Defines reusable condition variants. Use them as `@` suffixes, such as `animation:fade-in@motion-safe`. Selector aliases are built in; use selector suffixes in markup and nested selectors in CSS rules.
+Defines reusable utility selector transformations and conditions. Branches can combine selectors such as `&:hover` with native conditional wrappers around `@slot`. Use names as suffixes such as `animation:fade-in@motion-safe`. Unlike `@mode`, a custom variant does not define where token variables are declared.
 
 <StylesheetExample
   title="A reusable condition"
@@ -398,7 +436,7 @@ Literal enum values can stand alone when at least two values are provided, such 
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
 
-`@settings`, `@theme`, `@custom-variant`, `@defaults`, `@components`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. Importing a stylesheet with a qualifier follows the same rule: the import's `layer()`, `supports()`, or media query wraps the imported rules, while the imported stylesheet's definitions are kept beside that wrapper rather than inside it, so they stay global.
+`@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. A resolved import qualified with `layer()`, `supports()`, or a media query must not contain global Master definitions, including definitions in its local import graph. Compilation reports the source and rejects the import. Move the definitions to an unqualified import or a separate `@reference` input; qualified pure native CSS retains native semantics.
 
 An import Master cannot resolve, such as one addressing a remote stylesheet, stays an `@import` and moves to the top of the expanded stylesheet, because CSS requires every `@import` to precede the other rules. Moving it also moves the first appearance of any layer it names, and first appearance is what orders layers, so expansion leads with the authored order:
 
@@ -473,7 +511,7 @@ For the scanning model, see [Scanning latent classes](/guide/scanning-latent-cla
 Use `@safelist` to include known classes that source discovery cannot see, and `@blocklist` to reject unwanted candidates. Keep ordinary application classes complete and literal in source.
 
 ### `@safelist` \{#safelist\}
-`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates are still validated before CSS is generated.
+`@safelist` adds bounded class candidates that do not exist in scanned source. Safelisted candidates follow the same matching and diagnostic policy as discovered classes; CSS value support never silently filters their declarations.
 
 ```css
 @safelist "opacity:1";
@@ -567,8 +605,7 @@ Native style rules inside `@media`, `@supports`, `@container`, `@layer`, and
 including within anonymous layers. Use the final `css` result: `nativeCSS` and
 `generatedCSS` describe separate parts and cannot be concatenated to recover that order.
 Quoted content remains literal even when it resembles an internal compose marker.
-The Node rendered stylesheet API also preserves managed definitions imported with
-`layer`, `supports()`, and media qualifiers. Imports that require separate CSS assets
+Qualified imports can contain native rules with `@compose`, but must not contain global Master definitions. Imports that require separate CSS assets
 still need the stylesheet delivery options.
 When using those options with `compileRenderedStylesheet()`, publish every returned
 stylesheet and resource at its assigned URL, including the entry stylesheet.
@@ -598,10 +635,10 @@ Use `@variant` inside managed definitions or native style rules to share the cur
 
 <StylesheetExample
   title="A condition around the current selector"
-  source={".notice {\n  @compose p-md r-lg;\n\n  @dark {\n    @compose bg-gray-90 fg-white;\n  }\n\n  @variant <sm {\n    @compose p-sm;\n  }\n}"}
+  source={".notice {\n  @compose p-md r-lg;\n\n  @dark {\n    @compose bg-gray-90 fg-white;\n  }\n\n  @variant media((width<52.125rem)) {\n    @compose p-sm;\n  }\n}"}
 />
 
-Use `@dark` and `@light` as shorthands for the default mode conditions. Use `@variant` for custom condition variants, custom modes such as `@variant chrisma`, breakpoint tokens, and raw Master CSS condition syntax such as `<sm`. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
+Use `@dark` and `@light` as rule-local shorthands for those explicitly defined modes. Use `@variant` for other modes, custom variants, breakpoint names, and complete native queries such as `media((width<52.125rem))`. Unknown names are errors; numeric and feature shorthand inference is removed. These blocks are rule-local compiler directives, not native CSS at-rules or entry markers.
 
 For selector states, write a nested selector such as `&:hover` directly. A selector can contain `@variant` when it also needs a condition. Define custom modes and variants before using them; `@variant` does not declare a new mode or condition. See [Conditional queries](/reference/rules/conditions) for the condition grammar.
 
@@ -637,8 +674,7 @@ paths still have separate import-graph limitations.
 
 Node project manifest loading (`compileProjectManifest`, `loadProjectManifest`,
 and their synchronous variants) preserves each imported stylesheet while
-compiling shared definitions. A qualified local import containing an external
-import can therefore supply definitions without fetching that external CSS.
+compiling shared definitions. Pure native qualified imports may retain external imports without fetching them. Global definitions must be loaded through unqualified imports or references.
 `@reference` supplies definitions for composition and contributes dependencies;
 its native rules, standalone utility classes, and source policies are not imported.
 Relative `@source` and `@source not` patterns beginning with `./` or `../` resolve
@@ -663,8 +699,7 @@ and returns assets without writing output files. `css`, `nativeCSS` and
 `generatedCSS` describe the entry only, so publishing only `css` is insufficient.
 Relative resource URLs are rewritten for their original source owner and retain
 query strings and fragments. Reference-only stylesheets are not published.
-Omitting `preserveNativeCSS` retains the file API's existing default of removing
-raw native CSS while preserving compiled native `@compose` and its conditions.
+Omitting `preserveNativeCSS` preserves native CSS across compiler APIs. Explicit `false` suppresses the native portion; it does not enable pruning.
 Omitting `delivery` continues to use the legacy single-string file path, whose
 external-import limitations remain; other build and `--no-export` consumers
 still require their own asset publishing integration.
@@ -857,6 +892,24 @@ package while retaining its native rules. `@preserve native;` explicitly keeps
 project-native rules regardless of class usage.
 
 ## Native CSS preservation \{#native-css-preservation\}
+Native CSS is preserved by default, even when a class list is supplied. Set
+`pruneNativeCSS: true` in an integration or stylesheet API to prune project-owned
+sources. Package CSS stays preserved unless its own source explicitly opts in.
+
+### `@prune native` \{#prune-native\}
+
+```css
+@prune native;
+.used { color: red; }
+.unused { color: blue; }
+```
+
+This directive opts only its declaring file into pruning. It does not propagate
+to imported stylesheets. `@preserve native;` takes precedence in the same file,
+including when the integration enables project-wide pruning. The native-output
+switch `preserveNativeCSS: false` is separate and suppresses native output
+regardless of either directive.
+
 ### `@preserve native` \{#preserve-native\}
 Use `@preserve native;` when a Master-managed stylesheet contains native CSS class rules that must not be removed by native CSS pruning.
 
@@ -876,3 +929,44 @@ For the full native CSS pruning model, see [Native CSS pruning](/guide/native-cs
 ### Group rule identity
 
 Each item in a declaration group retains its declaration identity, value source, conditions, importance, and shorthand or longhand priority. Groups can emit multiple rules for the same escaped group selector. This lets direct values override tokens within the same scope in generated CSS, `@compose`, SSR, and hydration, independently of item order.
+
+## Native queries and validation \{#native-queries-and-validation\}
+
+A condition suffix accepts a registered name or a complete native query. The
+outer parentheses belong to Master; parentheses inside them belong to CSS:
+
+```text name="Language v2 queries"
+width:10px@sm
+width:20px@media((width>=800px))
+width:30px@media((aspect-ratio>=1.5))
+width:40px@media(screen|and|(width>=50rem))
+display:grid@supports((display:grid))
+display:grid@supports(selector(:has(*)))
+width:50px@container(card|(width>=40rem))
+width:60px@container(style(--density:compact))
+```
+
+Query units remain authored: `800px` is not rewritten to `50rem`. Pipes decode
+to spaces outside quoted strings and escapes. Repeated wrappers retain their
+nesting and order. Comparable ranges with identical units use range priority;
+other queries use stable normalized syntax without assuming a browser root size.
+Bare numeric ranges, feature shorthand, and unknown-container-name inference
+are removed. Undefined mode or variant references are diagnosed.
+
+The engine emits structurally valid native declarations independently of host
+support databases and `CSS.supports()`. Tooling checks every expanded declaration,
+including managed utilities. Known-invalid values remain in normal output with
+`CSS_VALUE_INVALID` diagnostics. Unknown properties, functions, units, and values
+that depend on `var()` are not represented as verified computed values.
+
+Inspection separates `matchStatus` (`matched`, `unmatched`, `ambiguous`,
+`syntax-error`), `cssValueStatus` (`valid`, `invalid`, `unknown`, `not-checked`),
+and `browserSupport` (`supported`, `unsupported`, `unknown`, `not-checked`).
+Checks report their validator version. Browser support remains `not-checked`
+unless a target browser was actually queried.
+
+Compiler APIs accept `cssValuePolicy: 'error'` to reject known-invalid values in
+the complete result before returning any assets; the default `'report'` preserves
+CSS and diagnostics. CLI builds opt in with `master-css generate --strict`.
+Unknown capabilities do not fail this policy. Syntax and name-resolution errors
+remain distinct from native value validity.

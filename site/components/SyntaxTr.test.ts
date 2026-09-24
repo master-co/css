@@ -160,15 +160,17 @@ test('uses the current syntax declarations before falling back to preview syntax
     '#12345678'
   )
   assert.equal(
-    generateSyntaxTrDeclarations('unknown:`value`', 'bg-blue-60')?.['background-color'],
+    generateSyntaxTrDeclarations('unknown-token', 'bg-blue-60')?.['background-color'],
     'var(--color-blue-60)'
   )
 })
 
-test('throws when syntax and preview fallback generate empty declarations', () => {
+test('preserves native values and only falls back for unmatched Master names', () => {
+  assert.equal(generateSyntaxTrDeclarations('appearance:push-button').appearance, 'push-button')
+  assert.equal(generateSyntaxTrDeclarations('future-property:new-value', 'bg-blue-60')['future-property'], 'new-value')
   assert.throws(
-    () => generateSyntaxTrDeclarations('appearance:push-button'),
-    /SyntaxTr generated empty CSS declarations for `appearance:push-button`\./
+    () => generateSyntaxTrDeclarations('unknown-token'),
+    /SyntaxTr generated empty CSS declarations for `unknown-token`\./
   )
 })
 

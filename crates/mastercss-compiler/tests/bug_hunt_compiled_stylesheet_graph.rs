@@ -9,7 +9,7 @@ fn request(entry: &str, child: &str) -> CompileCssStylesheetGraphRequest {
         "graph": {"entry":"entry", "files":{"entry":entry, "child":child},
             "edges":[{"from":"entry", "specifier":"./child.css", "resolved":"child"}]},
         "urls":{"entry":"/output/entry.css", "child":"/output/child.css"},
-        "baseManifest":{"version":1,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
     }))
     .unwrap()
 }
@@ -41,7 +41,7 @@ fn manifest_and_managed_dependencies_match_concatenated_authoring_order() {
         parsed.style_definitions.as_deref().unwrap_or_default(),
         &[],
         &LowerCssDirectivesOptions {
-            base_manifest: Some(json!({"version":1,"utilities":[]})),
+            base_manifest: Some(json!({"version":1,"languageVersion":2,"utilities":[]})),
             resolution_manifest: None,
         },
     )
@@ -87,10 +87,11 @@ fn repeated_imports_use_occurrence_order_for_manifest_overrides() {
 #[test]
 fn native_filtering_does_not_remove_import_topology_or_manifest_definitions() {
     let mut request = request(
-        "@import './child.css' print;.unused{color:blue}",
-        ".example{color:red}.unused{color:blue}@utilities{paint{color:green}}",
+        "@import './child.css' print;@utilities{paint{color:green}}.unused{color:blue}",
+        ".example{color:red}.unused{color:blue}",
     );
     request.options.classes = Some(vec!["example".into()]);
+    request.options.prune_native_css = true;
     let output = compile_css_stylesheet_graph(&request).unwrap();
     assert!(output.stylesheets[0].css.contains("print"));
     assert!(
@@ -125,7 +126,7 @@ fn compiled_browser_corpus_assets() {
             "graph":{"entry":"entry", "files":{"entry":case["entry"], "local":case["local"].as_str().unwrap_or(".example{color:red}")},
                 "edges":[{"from":"entry", "specifier":"./local.css", "resolved":"local"}]},
             "urls":{"entry":"/delivered/entry.css", "local":"/delivered/local.css"},
-            "baseManifest":{"version":1,"utilities":[]}, "options":{"classes":["example"]}
+            "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}, "options":{"classes":["example"]}
         })).unwrap();
         let output = compile_css_stylesheet_graph(&request).unwrap();
         assert_eq!(output.stylesheets.len(), 2);

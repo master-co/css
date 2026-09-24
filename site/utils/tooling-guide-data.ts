@@ -89,7 +89,7 @@ export const toolingExamples = {
   hover: {
     title: 'CSS reported by hover', language: 'html', resultLanguage: 'css', resultLabel: 'Hover output',
     source: '<button class="fg-white bg-blue-60:hover@sm">\n  Save\n</button>',
-    result: '@layer theme {\n  :root {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width>=52.125rem) {\n    .bg-blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
+    result: '@layer theme {\n  :root,\n  :host {\n    --color-blue-60: oklch(51.83% .2687 266.1)\n  }\n}\n@layer utilities {\n  @media (width>=52.125rem) {\n    .bg-blue-60\\:hover\\@sm:hover {\n      background-color: var(--color-blue-60)\n    }\n  }\n}'
   },
   format: {
     title: 'Keep the important marker with its class', language: 'css', sourceLabel: 'Before formatting', resultLabel: 'After formatting',

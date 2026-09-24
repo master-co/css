@@ -2,7 +2,7 @@
 
 @theme {
   --color-brand: #123;
-  --breakpoint-md: 768;
+  --breakpoint-md: 48rem;
 }
 
 @components {

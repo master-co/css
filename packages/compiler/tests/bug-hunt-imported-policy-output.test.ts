@@ -30,7 +30,7 @@ for (const qualifier of ['layer', 'layer(scope)', 'supports(display:grid)', 'scr
     try {
       writeFileSync(join(root, 'child.css'), '@source "./views/*.html";@safelist "flex";.sentinel{display:grid}')
       const result = await compileRenderedStylesheet(join(root, 'entry.css'), `@import './child.css' ${qualifier};@master entry;`, {
-        baseManifest: { version: 1, utilities: [] }, projectDir: root
+        baseManifest: { version: 1, languageVersion: 2, utilities: [] }, projectDir: root
       })
       expect(result.css).not.toMatch(/@(?:source|safelist|master)\b/)
       expect(result.css).toContain('.sentinel')

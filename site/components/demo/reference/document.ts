@@ -2,7 +2,6 @@ import { readFileSync } from 'node:fs'
 import path from 'node:path'
 import { compileManifestSync } from '@master/css-compiler/node'
 import { createRenderSessionSync } from '@master/css/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import { escape } from './html'
 import preset from '../../../utils/preset-manifest'
 import type { DemoScene, ReferenceDemoSection } from './types'
@@ -12,7 +11,7 @@ const tokenFile = path.join(siteRoot, 'styles/demo.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
 let tokens = readFileSync(tokenFile, 'utf8').split('@layer components')[0]
 const frameCSS = readFileSync(frameFile, 'utf8')
-let shared = compileManifestSync(`@settings { mode-trigger: class; }\n${tokens}`, { baseManifest: preset }).manifest
+let shared = compileManifestSync(`@mode light { .light { @slot; } }\n@mode dark { .dark { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest
 
 export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
   // A srcdoc inherits the host URL as its base. Keep native fragment navigation
@@ -24,14 +23,14 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
     const nextTokens = readFileSync(tokenFile, 'utf8').split('@layer components')[0]
     if (nextTokens !== tokens) {
       tokens = nextTokens
-      shared = compileManifestSync(`@settings { mode-trigger: class; }\n${tokens}`, { baseManifest: preset }).manifest
+      shared = compileManifestSync(`@mode light { .light { @slot; } }\n@mode dark { .dark { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest
     }
   }
   const configuration = [section.css, scene.css].filter(Boolean).join('\n')
   const compiled = configuration ? compileManifestSync(configuration, { baseManifest: shared }) : undefined
   const errors = compiled?.diagnostics.filter(item => item.severity === 'error') ?? []
   if (errors.length) throw new Error(`${section.page}#${section.id}: ${JSON.stringify(errors)}`)
-  const engine = createRenderSessionSync({ manifest: compiled?.manifest ?? shared, supportsNativeDeclaration })
+  const engine = createRenderSessionSync({ manifest: compiled?.manifest ?? shared })
   try {
     const classNames = [...new Set([...`${scene.html}<body class="${scene.bodyClass ?? ''}">`.matchAll(/\bclass="([\s\S]*?)"/g)].flatMap(match => match[1].replaceAll('&quot;', '"').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').split(/\s+/)).filter(Boolean))]
     const tokenClasses = ['bg-demo-canvas', 'bg-demo-surface', 'fg-demo-text', 'fg-demo-muted', 'fg-demo-blue', 'fg-demo-violet', 'fg-demo-amber', 'fg-demo-neutral', 'b-demo-line', 'bg-demo-grid', 'font-sans', 'font-mono']

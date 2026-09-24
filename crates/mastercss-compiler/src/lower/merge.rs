@@ -101,115 +101,11 @@ pub(super) fn compare_features(left: &RulePriorityIr, right: &RulePriorityIr) ->
     Ordering::Equal
 }
 
-pub(super) fn style_condition_features(
-    conditions: &[String],
-    root_size: f64,
-) -> Vec<StyleConditionFeature> {
-    let mut features: HashMap<String, (Option<f64>, Option<f64>)> = HashMap::new();
-    for condition in conditions {
-        for (name, operator, mut value, unit) in parse_style_condition_features(condition) {
-            if unit == "px" {
-                value /= root_size;
-            }
-            let entry = features.entry(name.to_owned()).or_default();
-            match operator {
-                ">" => entry.0 = Some(value + 0.02),
-                ">=" => entry.0 = Some(value),
-                "<" => entry.1 = Some(value - 0.02),
-                "<=" => entry.1 = Some(value),
-                _ => {}
-            }
-        }
-    }
-    let mut features = features
-        .into_iter()
-        .map(|(name, (min, max))| {
-            (
-                name,
-                min.unwrap_or(0.0),
-                max.unwrap_or(9_007_199_254_740_991.0),
-            )
-        })
-        .collect::<Vec<_>>();
-    features.sort_by(|left, right| natural_compare(&left.0, &right.0));
-    features
-}
-
-pub(super) fn parse_style_condition_features(condition: &str) -> Vec<(&str, &str, f64, &str)> {
-    let bytes = condition.as_bytes();
-    let mut features = Vec::new();
-    let mut search_start = 0;
-    while let Some(relative_start) = condition[search_start..].find('(') {
-        let start = search_start + relative_start;
-        let mut index = start + 1;
-        skip_ascii_whitespace(bytes, &mut index);
-        let Some(name) = ["width", "height", "resolution"]
-            .into_iter()
-            .find(|name| condition[index..].starts_with(name))
-        else {
-            search_start = start + 1;
-            continue;
-        };
-        index += name.len();
-        skip_ascii_whitespace(bytes, &mut index);
-        let Some(operator) = [">=", "<=", ">", "<"]
-            .into_iter()
-            .find(|operator| condition[index..].starts_with(operator))
-        else {
-            search_start = start + 1;
-            continue;
-        };
-        index += operator.len();
-        skip_ascii_whitespace(bytes, &mut index);
-        let number_start = index;
-        if bytes.get(index) == Some(&b'-') {
-            index += 1;
-        }
-        let integer_start = index;
-        while bytes.get(index).is_some_and(u8::is_ascii_digit) {
-            index += 1;
-        }
-        let integer_digits = index - integer_start;
-        let mut fraction_digits = 0;
-        if bytes.get(index) == Some(&b'.') {
-            index += 1;
-            let fraction_start = index;
-            while bytes.get(index).is_some_and(u8::is_ascii_digit) {
-                index += 1;
-            }
-            fraction_digits = index - fraction_start;
-        }
-        if integer_digits == 0 && fraction_digits == 0 {
-            search_start = start + 1;
-            continue;
-        }
-        let Ok(value) = condition[number_start..index].parse::<f64>() else {
-            search_start = start + 1;
-            continue;
-        };
-        let unit_start = index;
-        while bytes
-            .get(index)
-            .is_some_and(|byte| byte.is_ascii_lowercase() || *byte == b'%')
-        {
-            index += 1;
-        }
-        let unit = &condition[unit_start..index];
-        skip_ascii_whitespace(bytes, &mut index);
-        if bytes.get(index) != Some(&b')') {
-            search_start = start + 1;
-            continue;
-        }
-        features.push((name, operator, value, unit));
-        search_start = index + 1;
-    }
-    features
-}
-
-pub(super) fn skip_ascii_whitespace(bytes: &[u8], index: &mut usize) {
-    while bytes.get(*index).is_some_and(u8::is_ascii_whitespace) {
-        *index += 1;
-    }
+pub(super) fn style_condition_features(conditions: &[String]) -> Vec<StyleConditionFeature> {
+    conditions
+        .iter()
+        .flat_map(|condition| mastercss_engine::native_query_features(condition))
+        .collect()
 }
 
 pub(super) fn compare_style_condition_features(
@@ -241,7 +137,6 @@ pub(super) fn compare_style_condition_features(
 pub(super) fn compare_style_merge_buckets(
     left: &StyleMergeBucket,
     right: &StyleMergeBucket,
-    root_size: f64,
 ) -> Ordering {
     let left_layer = left.layer.unwrap_or(UtilityLayerName::Components);
     let right_layer = right.layer.unwrap_or(UtilityLayerName::Components);
@@ -252,8 +147,8 @@ pub(super) fn compare_style_merge_buckets(
             return left_conditioned.cmp(&right_conditioned);
         }
         if left_conditioned {
-            let left_features = style_condition_features(&left.conditions, root_size);
-            let right_features = style_condition_features(&right.conditions, root_size);
+            let left_features = style_condition_features(&left.conditions);
+            let right_features = style_condition_features(&right.conditions);
             if !left_features.is_empty() && !right_features.is_empty() {
                 let order = compare_style_condition_features(&left_features, &right_features);
                 if order != Ordering::Equal {
@@ -357,7 +252,6 @@ pub(super) fn create_merged_style_definitions(
     definitions: &[CssDirectiveStyleDefinition],
     engine: &mut EngineSession,
     target_layer: Option<UtilityLayerName>,
-    root_size: f64,
 ) -> Result<Vec<MergedStyleDefinition>, CompilerError> {
     let mut buckets = Vec::new();
     for definition in definitions {
@@ -452,7 +346,7 @@ pub(super) fn create_merged_style_definitions(
             }
         }
     }
-    buckets.sort_by(|(_, left), (_, right)| compare_style_merge_buckets(left, right, root_size));
+    buckets.sort_by(|(_, left), (_, right)| compare_style_merge_buckets(left, right));
     Ok(buckets
         .into_iter()
         .filter_map(|(_, bucket)| merged_bucket(bucket))

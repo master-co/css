@@ -1,5 +1,5 @@
 use super::{
-    CompilerError, CssOutputMapping, LowerCssDirectivesOptions, LowerCssDirectivesResult, Value,
+    CompilerError, CssOutputMapping, LowerCssDirectivesOptions, LowerCssDirectivesResult,
     merge::create_merged_style_definitions,
     render::render_style_definitions,
     resolution::{compile_with_base, directive_error, engine_for_manifest},
@@ -18,11 +18,6 @@ pub(super) fn assemble_native_output(
             .clone()
             .or_else(|| options.base_manifest.clone()),
     )?;
-    let root_size = manifest
-        .get("settings")
-        .and_then(|value| value.get("rootSize"))
-        .and_then(Value::as_f64)
-        .unwrap_or(16.0);
     let mut engine = engine_for_manifest(&manifest)?;
     let mut css = String::new();
     let mut mappings = Vec::new();
@@ -72,7 +67,7 @@ pub(super) fn assemble_native_output(
         css.push_str(&output.css[source_byte..start]);
         offset += slot.start - source_offset;
         let (replacement, slot_mappings) = render_style_definitions(
-            create_merged_style_definitions(&slot.definitions, &mut engine, None, root_size)?,
+            create_merged_style_definitions(&slot.definitions, &mut engine, None)?,
         );
         mappings.extend(slot_mappings.into_iter().map(|mut mapping| {
             mapping.generated_start += offset;

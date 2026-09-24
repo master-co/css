@@ -1,7 +1,7 @@
 import { withMasterCSS } from '../dist/index.js'
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withMasterCSS({
+const nextConfig = await withMasterCSS({
   reactStrictMode: true
 }, {
   buildReport: true,

@@ -3,7 +3,9 @@
 mod lower;
 mod manifest;
 mod migration;
-pub use migration::{RcClassMigration, RcMigrationRequest, RcMigrationResult, migrate_rc};
+pub use migration::{
+    RcClassMigration, RcMigrationProfile, RcMigrationRequest, RcMigrationResult, migrate_rc,
+};
 
 pub use lower::{
     LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
@@ -37,7 +39,7 @@ use mastercss_lexer::{
     StandaloneCssDirectiveStatement, byte_to_utf16_offset, collect_class_list_token_ranges,
     extract_top_level_at_rule_blocks, find_css_directive_ranges, find_css_import_statements,
     find_master_directive_statements, parse_css_import_source, remove_css_reference_statements,
-    remove_master_directive_statements, remove_standalone_css_directives, utf16_to_byte_offset,
+    remove_standalone_css_directives, utf16_to_byte_offset,
 };
 use mastercss_schema::{
     CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy,
@@ -76,6 +78,8 @@ pub struct CompileNativeCssOptions {
     pub from: String,
     #[serde(default = "default_true", rename = "preserveNativeCSS")]
     pub preserve_native_css: bool,
+    #[serde(default, rename = "pruneNativeCSS")]
+    pub prune_native_css: bool,
     /// Preserve untouched native source for subsequent host transforms.
     #[serde(default)]
     pub preserve_native_source: bool,
@@ -88,6 +92,7 @@ impl Default for CompileNativeCssOptions {
         Self {
             from: default_filename(),
             preserve_native_css: true,
+            prune_native_css: false,
             preserve_native_source: false,
             classes: None,
         }
@@ -330,6 +335,8 @@ impl CompilerError {
                 filename,
                 range,
             } => Diagnostic {
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
                 code: ErrorCode::CssParseError,
                 message: message.clone(),
                 source: Some(filename.clone()),
@@ -337,6 +344,8 @@ impl CompilerError {
                 notes: vec![],
             },
             Self::Print { message, filename } => Diagnostic {
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
                 code: ErrorCode::CssPrintError,
                 message: message.clone(),
                 source: Some(filename.clone()),
@@ -348,6 +357,8 @@ impl CompilerError {
                 filename,
                 range,
             } => Diagnostic {
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
                 code: ErrorCode::CssDirectiveError,
                 message: message.clone(),
                 source: Some(filename.clone()),
@@ -360,6 +371,8 @@ impl CompilerError {
                 filename,
                 range,
             } => Diagnostic {
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
                 code: *code,
                 message: message.clone(),
                 source: Some(filename.clone()),
@@ -367,6 +380,8 @@ impl CompilerError {
                 notes: vec![],
             },
             Self::Import { message, filename } => Diagnostic {
+                phase: mastercss_schema::DiagnosticPhase::Compiler,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
                 code: ErrorCode::CssImportError,
                 message: message.clone(),
                 source: Some(filename.clone()),
@@ -390,6 +405,7 @@ enum DirectiveName {
     Components,
     Utilities,
     CustomVariant,
+    Mode,
 }
 
 impl DirectiveName {
@@ -401,6 +417,7 @@ impl DirectiveName {
             Self::Components => "components",
             Self::Utilities => "utilities",
             Self::CustomVariant => "custom-variant",
+            Self::Mode => "mode",
         }
     }
 
@@ -409,7 +426,7 @@ impl DirectiveName {
             Self::Defaults => Some(UtilityLayerName::Defaults),
             Self::Components => Some(UtilityLayerName::Components),
             Self::Utilities => Some(UtilityLayerName::Utilities),
-            Self::Settings | Self::Theme | Self::CustomVariant => None,
+            Self::Settings | Self::Theme | Self::CustomVariant | Self::Mode => None,
         }
     }
 }
@@ -440,6 +457,7 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
         _options: &ParserOptions<'i>,
     ) -> Result<Self::Prelude, ParseError<'i, Self::Error>> {
         let directive_name = match name.as_ref() {
+            name if name.eq_ignore_ascii_case("mode") => DirectiveName::Mode,
             name if name.eq_ignore_ascii_case("theme") => DirectiveName::Theme,
             name if name.eq_ignore_ascii_case("settings") => DirectiveName::Settings,
             name if name.eq_ignore_ascii_case("defaults") => DirectiveName::Defaults,
@@ -508,6 +526,7 @@ impl<'i> AtRuleParser<'i> for ThemeAtRuleParser {
 
 fn directive_name_from_prelude(prelude: &ThemePrelude) -> DirectiveName {
     match prelude.parts.first().map(String::as_str) {
+        Some("mode") => DirectiveName::Mode,
         Some("settings") => DirectiveName::Settings,
         Some("defaults") => DirectiveName::Defaults,
         Some("components") => DirectiveName::Components,
@@ -650,6 +669,7 @@ mod stylesheet_graph;
 mod stylesheet_inline;
 mod stylesheet_resources;
 pub use stylesheet_resources::{CssResourceReference, analyze_css_resources};
+mod mode;
 mod syntax;
 mod theme;
 mod variant;

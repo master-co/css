@@ -1,7 +1,51 @@
 [
-  {"id":"chain","css":"@theme{--color-base:red;--color-mid:var(--color-base)}@theme static{--color-brand:var(--color-mid)}","names":["color-base","color-brand","color-mid"],"color":"rgb(255, 0, 0)"},
-  {"id":"inline","css":"@theme{--color-base:red}@theme inline{--color-alias:var(--color-base)}@theme static{--color-brand:var(--color-alias)}","names":["color-base","color-brand"],"color":"rgb(255, 0, 0)"},
-  {"id":"shared","css":"@theme{--color-base:red}@theme static{--color-brand:var(--color-base);--color-other:var(--color-base)}","names":["color-base","color-brand","color-other"],"color":"rgb(255, 0, 0)"},
-  {"id":"modes","css":"@settings{mode-trigger:class;default-mode:light;modes:light dark}@theme{--color-base:red;--color-dark:blue}@theme static light{--color-brand:var(--color-base)}@theme static dark{--color-brand:var(--color-dark)}","names":["color-base","color-brand","color-dark"],"color":"rgb(255, 0, 0)","darkColor":"rgb(0, 0, 255)"},
-  {"id":"cycle","css":"@theme{--color-other:var(--color-brand)}@theme static{--color-brand:var(--color-other)}","names":["color-brand","color-other"],"color":"rgb(0, 128, 0)"}
+  {
+    "id": "chain",
+    "css": "@theme{--color-base:red;--color-mid:var(--color-base)}@theme static{--color-brand:var(--color-mid)}",
+    "names": [
+      "color-base",
+      "color-brand",
+      "color-mid"
+    ],
+    "color": "rgb(255, 0, 0)"
+  },
+  {
+    "id": "inline",
+    "css": "@theme{--color-base:red}@theme inline{--color-alias:var(--color-base)}@theme static{--color-brand:var(--color-alias)}",
+    "names": [
+      "color-base",
+      "color-brand"
+    ],
+    "color": "rgb(255, 0, 0)"
+  },
+  {
+    "id": "shared",
+    "css": "@theme{--color-base:red}@theme static{--color-brand:var(--color-base);--color-other:var(--color-base)}",
+    "names": [
+      "color-base",
+      "color-brand",
+      "color-other"
+    ],
+    "color": "rgb(255, 0, 0)"
+  },
+  {
+    "id": "modes",
+    "css": "@mode light{.light{@slot;}}@mode dark{.dark{@slot;}}@theme{--color-base:red;--color-dark:blue}@theme static light{--color-brand:var(--color-base)}@theme static dark{--color-brand:var(--color-dark)}",
+    "names": [
+      "color-base",
+      "color-brand",
+      "color-dark"
+    ],
+    "color": "rgb(255, 0, 0)",
+    "darkColor": "rgb(0, 0, 255)"
+  },
+  {
+    "id": "cycle",
+    "css": "@theme{--color-other:var(--color-brand)}@theme static{--color-brand:var(--color-other)}",
+    "names": [
+      "color-brand",
+      "color-other"
+    ],
+    "color": "rgb(0, 128, 0)"
+  }
 ]

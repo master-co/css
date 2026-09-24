@@ -2,13 +2,13 @@ import { expect, test } from 'vitest'
 import { createCompiler } from '../src/index'
 import type { MasterCSSCompileStylesheetsRequest } from '../src/index'
 
-const entry = '@import "./child.css" layer;/* 😀 */\n.after{margin:1px}'
-const child = '.image{background:url("./dot.svg")}/* 😀 */\n@utilities{paint{padding:2rem}}@layer{.card{@compose paint;}.card{padding:3rem}}'
+const entry = '@import "./child.css" layer;@utilities{paint{padding:2rem}}/* 😀 */\n.after{margin:1px}'
+const child = '.image{background:url("./dot.svg")}/* 😀 */\n@layer{.card{@compose paint;}.card{padding:3rem}}'
 const request: MasterCSSCompileStylesheetsRequest = {
   graph: { entry: '/entry.css', files: { '/entry.css': entry, '/child.css': child }, edges: [{ from: '/entry.css', specifier: './child.css', resolved: '/child.css' }] },
   urls: { '/entry.css': '/entry.css', '/child.css': '/assets/very-long-child-😀.css?version=abcdef' },
   resourceURLs: { '/child.css': { './dot.svg': 'https://cdn.test/very-long-resource.svg' } },
-  baseManifest: { version: 1, utilities: [] }
+  baseManifest: { version: 1, languageVersion: 2, utilities: [] }
 }
 
 test('graph output mappings retain original anchors across import, resource and compose output', async () => {
@@ -29,7 +29,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`graph ${binding} preserves quoted compose marker text and renders the actual rule`, async () => {
     using compiler = await createCompiler({ binding })
     const source = '@utilities{paint{padding:2rem}}.label::before{content:"@--master-css-compose-slot-0;"}.card{@compose paint;}'
-    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { version: 1, utilities: [] } })
+    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { version: 1, languageVersion: 2, utilities: [] } })
     expect(result.css).toContain('content: "@--master-css-compose-slot-0;"')
     expect(result.css).toContain('.card{padding:2rem}')
     const sheet = result.stylesheets[0]
@@ -41,7 +41,7 @@ for (const binding of ['native', 'wasm'] as const) {
   test(`graph ${binding} native suppression preserves composed conditions and their source anchors`, async () => {
     using compiler = await createCompiler({ binding })
     const source = '@utilities{paint{padding:2rem}}.plain{margin:1px}@media print{@layer{.card{@compose paint;}.other{@compose paint;}}}'
-    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { version: 1, utilities: [] }, options: { preserveNativeCSS: false } })
+    const result = compiler.compileStylesheets({ graph: { entry: '/entry.css', files: { '/entry.css': source }, edges: [] }, urls: { '/entry.css': '/entry.css' }, baseManifest: { version: 1, languageVersion: 2, utilities: [] }, options: { preserveNativeCSS: false } })
     expect(result.css).toContain('@media print')
     expect(result.css.match(/@layer/g)).toHaveLength(1)
     expect(result.css).not.toContain('.plain')

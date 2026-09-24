@@ -450,37 +450,27 @@ pub(super) fn group_variables(variables: Vec<Map<String, Value>>) -> Option<Valu
     Some(Value::Object(grouped))
 }
 
-pub(super) fn condition_for_variable(
-    variable: &Map<String, Value>,
-    id: &str,
-    root_size: f64,
-) -> Option<Value> {
+pub(super) fn condition_for_variable(variable: &Map<String, Value>, id: &str) -> Option<Value> {
     let key = variable.get("key")?.as_str()?;
     if key.starts_with('-') {
         return None;
     }
     let numeric = variable.get("numeric").and_then(Value::as_object);
-    let mut value = numeric
+    let value = numeric
         .and_then(|numeric| numeric.get("value"))
         .and_then(Value::as_f64)
         .or_else(|| variable.get("value").and_then(Value::as_f64))?;
     let unit = numeric
         .and_then(|numeric| numeric.get("unit"))
         .and_then(Value::as_str);
-    match unit {
-        None | Some("") | Some("px") => value /= root_size,
-        Some("rem") => {}
-        Some(_) => return None,
-    }
     Some(json!({
         "id": id,
-        "nodes": [{ "type": "number", "value": number_value(value), "unit": "rem" }]
+        "nodes": [{ "type": "number", "value": number_value(value), "unit": unit.unwrap_or("") }]
     }))
 }
 
 pub(super) fn compile_variable_conditions(
     variables: &[Map<String, Value>],
-    root_size: f64,
 ) -> (Map<String, Value>, Map<String, Value>, Map<String, Value>) {
     let mut conditions = Map::new();
     let mut breakpoint_conditions = Map::new();
@@ -492,12 +482,12 @@ pub(super) fn compile_variable_conditions(
             .and_then(Value::as_str)
             .unwrap_or_default();
         if namespace == Some("breakpoint") {
-            if let Some(condition) = condition_for_variable(variable, "media", root_size) {
+            if let Some(condition) = condition_for_variable(variable, "media") {
                 conditions.insert(key.into(), condition.clone());
                 breakpoint_conditions.insert(key.into(), condition);
             }
         } else if namespace == Some("container")
-            && let Some(condition) = condition_for_variable(variable, "container", root_size)
+            && let Some(condition) = condition_for_variable(variable, "container")
         {
             container_conditions.insert(key.into(), condition);
         }

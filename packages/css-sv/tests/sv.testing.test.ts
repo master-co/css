@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { add } from 'sv'
 import { createSetupTest } from 'sv/testing'
@@ -77,7 +77,7 @@ for (const addonTestCase of testCases) {
     assertMasterCSSSetup(projectDir, addonTestCase.variant)
 
     if (addonTestCase.kind.type === 'existing-hook') {
-      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(masterCSSHandle, originalHandle)')
+      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).not.toContain('masterCSSHandle')
     }
 
     if (addonTestCase.kind.type === 'existing-vite-config') {
@@ -85,7 +85,7 @@ for (const addonTestCase of testCases) {
     }
 
     if (addonTestCase.kind.type === 'existing-sequence') {
-      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(masterCSSHandle, first, second)')
+      expect(readProjectFile(projectDir, hookPath(addonTestCase.variant))).toContain('sequence(first, second)')
     }
 
     if (addonTestCase.kind.type === 'existing-stylesheet') {
@@ -130,10 +130,10 @@ function assertMasterCSSSetup(projectDir: string, variant: string) {
   expect(readProjectFile(projectDir, 'src/routes/layout.css')).toContain("@import '@master/css';")
   expect(readProjectFile(projectDir, 'src/routes/+layout.svelte')).toContain("import './layout.css';")
 
-  const hooksServer = readProjectFile(projectDir, hookPath(variant))
-  expect(hooksServer).toContain("from '@master/css-svelte/hooks.server'")
-  expect(hooksServer).toContain('masterCSSHandle')
-  expect(hooksServer).toMatch(/export[\s\S]*const handle/)
+  if (existsSync(resolve(projectDir, hookPath(variant)))) {
+    expect(readProjectFile(projectDir, hookPath(variant))).not.toContain('@master/css-svelte/hooks.server')
+  }
+
 }
 
 function ensureLocalDependencyOverrides(cwd: string) {
@@ -243,7 +243,7 @@ function snapshotProjectFiles(projectDir: string, variant: string) {
     vite: readProjectFile(projectDir, viteConfigPath(variant)),
     stylesheet: readProjectFile(projectDir, 'src/routes/layout.css'),
     layout: readProjectFile(projectDir, 'src/routes/+layout.svelte'),
-    hooks: readProjectFile(projectDir, hookPath(variant))
+    hooks: existsSync(resolve(projectDir, hookPath(variant))) ? readProjectFile(projectDir, hookPath(variant)) : undefined
   }
 }
 

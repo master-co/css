@@ -1,20 +1,16 @@
-import { mkdirSync, writeFileSync } from 'node:fs'
-import { dirname, resolve } from 'node:path'
 import { compileProjectManifestSync } from '@master/css-compiler/project/sync'
 import {
   discoverManifestEntries,
   loadProjectManifest
 } from '@master/css-compiler/project'
 import { loadMasterCSSVirtualManifest } from '@master/css-internal/manifest-loader'
-import { toHashedManifestAssetFileName } from '@master/css-internal/node'
 import {
   defaultBuildManifest,
   isManifestStylesheetRequest
 } from '@master/css-internal/project'
 import { stripMasterCSSManifestQuery } from '@master/css-internal/manifest-module'
 import {
-  toInlineManifestModule,
-  toUniversalManifestFacadeModule
+  toInlineManifestModule
 } from '@master/css-internal/manifest-facade'
 import { collectStylesheetDependenciesSync } from '@master/css-compiler/node'
 import { serializeMasterCSSManifest } from '@master/css-schema/manifest'
@@ -32,7 +28,6 @@ interface LoaderContext {
 interface MasterCSSManifestLoaderOptions {
   virtual?: boolean
   module?: boolean
-  external?: boolean
   emittedGlobals?: boolean
 }
 
@@ -46,30 +41,8 @@ const manifestHost = {
   }
 }
 
-function writeExternalManifestAssets(projectDir: string, json: string) {
-  const assetFileName = toHashedManifestAssetFileName(json)
-  const assetPaths = [
-    resolve(projectDir, '.next', 'static', 'media', assetFileName),
-    resolve(projectDir, '.next', 'dev', 'static', 'media', assetFileName)
-  ]
-  for (const assetPath of assetPaths) {
-    mkdirSync(dirname(assetPath), { recursive: true })
-    writeFileSync(assetPath, json)
-  }
-  return assetFileName
-}
-
-function toLoaderResult(context: LoaderContext, json: string, options: MasterCSSManifestLoaderOptions) {
-  if (!options.module) return json
-  if (process.env.NODE_ENV === 'development') return toInlineManifestModule(json)
-  if (!options.external) return toInlineManifestModule(json)
-
-  const projectDir = context.rootContext || process.cwd()
-  const assetFileName = writeExternalManifestAssets(projectDir, json)
-
-  return toUniversalManifestFacadeModule(
-    JSON.stringify(`/_next/static/media/${assetFileName}`)
-  )
+function toLoaderResult(json: string, options: MasterCSSManifestLoaderOptions) {
+  return options.module ? toInlineManifestModule(json) : json
 }
 
 async function loadVirtualManifestJSON(context: LoaderContext) {
@@ -144,6 +117,6 @@ export default function masterCSSManifestLoader(this: LoaderContext) {
     ? loadVirtualManifestJSON(this)
     : Promise.resolve(loadCSSManifestJSON(this))
   result
-    .then((json) => callback(null, toLoaderResult(this, json, options)))
+    .then((json) => callback(null, toLoaderResult(json, options)))
     .catch((error: Error) => callback(error))
 }

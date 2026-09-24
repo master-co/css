@@ -118,7 +118,7 @@ test('prepared Sass maps resolve relative references from an imported partial', 
     writeFileSync(join(root, 'tokens.css'), '@utilities { paint { padding: 99rem; } }')
     const prepared = await stylesheets.prepareStylesheet(file, '@use "parts/rules";', { projectDir: root })
     const result = await stylesheets.transformStylesheet('\0prepared:entry.css', prepared.source, {
-      baseManifest: { version: 1, utilities: [] }, projectDir: root,
+      baseManifest: { version: 1, languageVersion: 2, utilities: [] }, projectDir: root,
       delivery: { baseFile: prepared.baseFile, sourceMap: prepared.sourceMap,
         entryURL: '/entry.css', stylesheetURL: id => '/' + Buffer.from(id).toString('hex') + '.css', resourceURL: id => id }
     })

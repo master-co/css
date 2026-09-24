@@ -12,9 +12,11 @@ const useCloudflareImageLoader = shouldUseCloudflareImageLoader({
   siteUrl: publicEnv.NEXT_PUBLIC_URL
 })
 
-const nextConfig = withSiteDemos(withMasterCSS(await withCommonNextConfig({
+const nextConfig = withSiteDemos(await withMasterCSS(await withCommonNextConfig({
   redirects
-})))
+}), {
+  mode: 'progressive'
+}))
 
 nextConfig.staticPageGenerationTimeout = 180
 nextConfig.turbopack ??= {}

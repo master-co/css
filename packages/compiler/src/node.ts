@@ -1,3 +1,4 @@
+import { validateCompiledCSS } from './value-validation'
 import {
   MasterCSSCompiler,
   bindCompilerSessionInternal,
@@ -93,10 +94,11 @@ export function compileManifestFileSync(
     const result = compileDeliveredFile(file, {
       ...options,
       projectDir: options.root,
-      preserveNativeCSS: options.preserveNativeCSS ?? false
+      preserveNativeCSS: options.preserveNativeCSS ?? true
     })
     return Object.freeze({
-      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic),
+      ...toMasterCSSCompileManifestResultInternal({ ...result.directives, manifest: result.manifest, directives: result.directives }, options.onDiagnostic, options.cssValuePolicy),
+      diagnostics: validateCompiledCSS(result.stylesheets.map(asset => ({ css: asset.css, source: asset.id })), options),
       entry: result.entry,
       stylesheets: Object.freeze(result.stylesheets.map(asset => Object.freeze({ ...asset }))),
       resources: Object.freeze(result.resources.map(asset => Object.freeze({ ...asset })))
@@ -104,7 +106,8 @@ export function compileManifestFileSync(
   }
   return toMasterCSSCompileManifestResultInternal(
     compileCSSManifestFile(file, options),
-    options.onDiagnostic
+    options.onDiagnostic,
+    options.cssValuePolicy
   )
 }
 

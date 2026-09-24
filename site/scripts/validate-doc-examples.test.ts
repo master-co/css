@@ -63,7 +63,7 @@ function extractClassCandidates(content: string) {
 
 function validate(className: string) {
   const generated = tooling.validateClassNames([className]).classes[0]
-  if (!generated?.matched) {
+  if (generated?.matchStatus !== 'matched') {
     return {
       matched: false,
       errors: [{
@@ -727,7 +727,7 @@ function usesLocallyDefinedVariant(candidate: string, context: string): boolean 
 }
 
 function usesLocallyDefinedToken(candidate: string, context: string): boolean {
-  const declarations = [...context.matchAll(/--[a-z][\w-]*\s*:\s*[^;{}]+;/g)].map(match => match[0])
+  const declarations = [...context.replaceAll('\\n', '\n').matchAll(/(?<=^|[;{])\s*(--[a-z][\w-]*\s*:\s*[^;{}]+;)/gm)].map(match => match[1])
   if (!declarations.length) return false
   try {
     configuredExampleCSS(`@theme { ${declarations.join(' ')} }`, [candidate])

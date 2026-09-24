@@ -93,9 +93,10 @@ describe('StyleEntryPlugin Vite build integration', () => {
     expect(css).not.toContain('@master/css')
   })
 
-  test('default runtime mode emits preset base CSS for the root Master CSS import', async () => {
+  test('explicit runtime mode emits preset base CSS for the root Master CSS import', async () => {
     const css = await buildCSSFixture({
       appClass: 'block',
+      plugins: [masterCSS({ mode: 'runtime' })],
       stylesheet: [
         '@import "@master/css";',
         '',
@@ -149,7 +150,7 @@ describe('StyleEntryPlugin Vite build integration', () => {
     expect(css).not.toContain('#master-css-slot')
   })
 
-  test('default runtime mode lets Vite expand the explicit base.css subpath import', async () => {
+  test('default static mode lets Vite expand the explicit base.css subpath import', async () => {
     const css = await buildCSSFixture({
       stylesheet: [
         '@import "@master/css/base.css";',

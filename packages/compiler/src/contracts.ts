@@ -9,8 +9,12 @@ export interface CompileCSSOptions {
   readonly classes?: readonly string[]
   readonly from?: string
   readonly preserveNativeCSS?: boolean
+  /** Opt in to pruning native rules in project-owned files. */
+  readonly pruneNativeCSS?: boolean
   /** Keep untouched native source for host transforms; incompatible with class pruning. */
   readonly preserveNativeSource?: boolean
+  /** Report CSS value errors by default; error rejects the complete output. */
+  readonly cssValuePolicy?: 'report' | 'error'
   readonly onDiagnostic?: (diagnostic: MasterCSSDiagnostic) => void
 }
 
@@ -39,6 +43,7 @@ export function emptyExtractionPolicy(): CSSDirectiveExtractionPolicy {
     exclude: [],
     safelist: [],
     blocklist: [],
-    preserveNative: false
+    preserveNative: false,
+    pruneNative: false
   }
 }

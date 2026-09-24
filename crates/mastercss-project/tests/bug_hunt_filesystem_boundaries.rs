@@ -26,7 +26,11 @@ impl Project {
         path.to_string_lossy().into_owned()
     }
     fn load(&self) -> mastercss_project::ProjectManifestIr {
-        load_project_manifest(&self.0, json!({"version":1,"utilities":[]})).unwrap()
+        load_project_manifest(
+            &self.0,
+            json!({"version":1,"languageVersion":2,"utilities":[]}),
+        )
+        .unwrap()
     }
 }
 impl Drop for Project {
@@ -43,7 +47,7 @@ fn css(manifest: &serde_json::Value, classes: &str) -> String {
 }
 
 #[test]
-fn qualified_files_keep_shared_definitions_and_composed_output() {
+fn qualified_files_reject_global_definitions_but_keep_native_compose() {
     for qualifier in [
         "",
         " layer",
@@ -61,6 +65,15 @@ fn qualified_files_keep_shared_definitions_and_composed_output() {
             "child.css",
             "@utilities{paint{color:red}}.card{@compose paint;}.ordinary{color:blue}",
         );
+        if !qualifier.is_empty() {
+            let error = load_project_manifest(&project.0, json!({"version":1,"languageVersion":2}))
+                .unwrap_err()
+                .to_string();
+            assert!(error.contains("Qualified import"), "{error}");
+            assert!(error.contains("child.css"), "{error}");
+            project.file("entry.css", &format!("@import './child.css'{qualifier};@master entry;@utilities{{paint{{color:red}}}}"));
+            project.file("child.css", ".card{@compose paint;}.ordinary{color:blue}");
+        }
         let result = project.load();
         assert!(
             css(&result.manifest, "paint").contains(".paint{color:red}"),
@@ -89,10 +102,7 @@ fn qualified_files_keep_shared_definitions_and_composed_output() {
 #[test]
 fn imported_source_patterns_belong_to_the_child_file() {
     let project = Project::new();
-    project.file(
-        "entry.css",
-        "@import './styles/child.css' screen;@master entry;",
-    );
+    project.file("entry.css", "@import './styles/child.css';@master entry;");
     project.file(
         "styles/child.css",
         "@source './views/*.html';@utilities{paint{color:red}}",
@@ -107,9 +117,9 @@ fn external_native_imports_do_not_block_manifest_and_compose() {
     let project = Project::new();
     project.file(
         "entry.css",
-        "@import './child.css' layer(cards) screen;@master entry;",
+        "@import './child.css' layer(cards) screen;@master entry;@utilities{paint{color:red}}",
     );
-    project.file("child.css", "@import 'https://invalid.invalid/remote.css';@utilities{paint{color:red}}.card{@compose paint;}body{background:url('./missing.png')}");
+    project.file("child.css", "@import 'https://invalid.invalid/remote.css';.card{@compose paint;}body{background:url('./missing.png')}");
     let result = project.load();
     assert!(css(&result.manifest, "paint").contains(".paint{color:red}"));
     assert!(result.css.contains(".card{color:red}"), "{}", result.css);
@@ -144,8 +154,11 @@ fn filesystem_import_and_reference_cycles_remain_errors() {
             &format!("@{kind} './child.css';@master entry;"),
         );
         project.file("child.css", &format!("@{kind} './entry.css';"));
-        let error =
-            load_project_manifest(&project.0, json!({"version":1,"utilities":[]})).unwrap_err();
+        let error = load_project_manifest(
+            &project.0,
+            json!({"version":1,"languageVersion":2,"utilities":[]}),
+        )
+        .unwrap_err();
         assert!(
             error.to_string().contains("Circular CSS"),
             "{kind}: {error}"
@@ -156,13 +169,16 @@ fn filesystem_import_and_reference_cycles_remain_errors() {
 #[test]
 fn repeated_imports_and_entry_override_keep_authoring_order() {
     let project = Project::new();
-    project.file("entry.css", "@import './red.css' screen;@import './blue.css';@import './red.css' layer(repeated);@master entry;");
+    project.file(
+        "entry.css",
+        "@import './red.css';@import './blue.css';@import './red.css';@master entry;",
+    );
     project.file("red.css", "@utilities{paint{color:red}}");
     project.file("blue.css", "@utilities{paint{color:blue}}");
     assert!(css(&project.load().manifest, "paint").contains(".paint{color:red}"));
     project.file(
         "entry.css",
-        "@import './red.css' screen;@master entry;@utilities{paint{color:blue}}",
+        "@import './red.css';@master entry;@utilities{paint{color:blue}}",
     );
     assert!(css(&project.load().manifest, "paint").contains(".paint{color:#00f}"));
 }

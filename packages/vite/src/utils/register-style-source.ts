@@ -11,7 +11,7 @@ export async function registerStylesheetSource(context: MasterCSSVitePluginConte
   const delivery = getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
   return context.stylesheets.register(scanner, id, source, {
     baseManifest: scanner.css.manifest,
-    projectDir: context.config?.root,
+    projectDir: context.config?.root, pruneNativeCSS: context.pruneNativeCSS,
     delivery: delivery ? { ...delivery, ...host, baseFile: getSassSourceFile(id), sourceMap: await getPreparedSassSourceMap(context, id) } : undefined
   })
 }

@@ -11,15 +11,6 @@ function createFixtureDir() {
   return fixtureDir
 }
 
-function readVirtualManifestSource(projectDir: string) {
-  const manifestDir = join(projectDir, 'node_modules/.master-css')
-  const filename = readdirSync(manifestDir).find((entry) => entry.endsWith('.manifest.json'))
-  if (!filename) {
-    throw new Error(`Expected generated CSS manifest asset in ${manifestDir}.`)
-  }
-  return readFileSync(join(manifestDir, filename), 'utf-8')
-}
-
 function readVirtualManifestModule(projectDir: string) {
   const manifestDir = join(projectDir, 'node_modules/.master-css')
   const [filename] = readdirSync(manifestDir).filter((entry) => entry.endsWith('.manifest.js'))
@@ -77,12 +68,13 @@ describe('css manifest import loader', () => {
 
     expect(source).toContain('import presetManifest from "../node_modules/.master-css/')
     expect(source).toContain('.manifest.js"')
-    expect(dependencies).toEqual([manifestPath])
-    expect(readVirtualManifestModule(projectDir)).toContain('new URL("./')
-    expect(readVirtualManifestModule(projectDir)).not.toContain('#123')
-    expect(readVirtualManifestSource(projectDir)).toContain('"version":1')
-    expect(readVirtualManifestSource(projectDir)).toContain('primary')
-    expect(readVirtualManifestSource(projectDir)).toContain('#123')
+    expect(dependencies).toContain(manifestPath)
+    expect(dependencies.some(path => path.endsWith('.manifest.js'))).toBe(true)
+    expect(readVirtualManifestModule(projectDir)).toContain('export default')
+    expect(readVirtualManifestModule(projectDir)).toContain('#123')
+    expect(readVirtualManifestModule(projectDir)).toContain('"version":1')
+    expect(readVirtualManifestModule(projectDir)).toContain('primary')
+    expect(readVirtualManifestModule(projectDir)).toContain('#123')
   })
 
   it('resolves package CSS manifest query imports without package-specific rules', async () => {
@@ -110,9 +102,9 @@ describe('css manifest import loader', () => {
 
     expect(source).toContain('import presetManifest from "../node_modules/.master-css/')
     expect(source).toContain('.manifest.js"')
-    expect(readVirtualManifestModule(projectDir)).not.toContain('#456')
-    expect(readVirtualManifestSource(projectDir)).toContain('package')
-    expect(readVirtualManifestSource(projectDir)).toContain('#456')
+    expect(readVirtualManifestModule(projectDir)).toContain('#456')
+    expect(readVirtualManifestModule(projectDir)).toContain('package')
+    expect(readVirtualManifestModule(projectDir)).toContain('#456')
   })
 
   it('leaves non-import strings and unrelated imports unchanged', async () => {
@@ -134,5 +126,29 @@ describe('css manifest import loader', () => {
       'const request = "./theme.css?master-css-manifest"',
       'export default manifest'
     ].join('\n'))
+  })
+
+  it('rebuilds tracked ESM inputs after source changes and output cleanup', async () => {
+    const projectDir = createFixtureDir()
+    const manifestPath = join(projectDir, 'theme.css')
+    const resourcePath = join(projectDir, 'entry.ts')
+    const dependencies: string[] = []
+    const input = {
+      projectDir, resourcePath,
+      source: 'export { default } from "./theme.css?master-css-manifest"',
+      addDependency: (file: string) => dependencies.push(file)
+    }
+    writeFileSync(manifestPath, '@theme { --color-brand: #123; }')
+    const first = await runManifestImportLoader(input)
+    expect(readVirtualManifestModule(projectDir)).toContain('#123')
+    writeFileSync(manifestPath, '@theme { --color-brand: #456; }')
+    expect(await runManifestImportLoader(input)).toBe(first)
+    expect(readVirtualManifestModule(projectDir)).toContain('#456')
+    expect(readVirtualManifestModule(projectDir)).not.toContain('#123')
+    rmSync(join(projectDir, 'node_modules/.master-css'), { recursive: true })
+    expect(await runManifestImportLoader(input)).toBe(first)
+    expect(readVirtualManifestModule(projectDir)).toContain('#456')
+    expect(dependencies).toContain(manifestPath)
+    expect(dependencies.filter(file => file.endsWith('.manifest.js'))).toHaveLength(3)
   })
 })

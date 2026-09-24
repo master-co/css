@@ -10,7 +10,7 @@ use super::{
 const DEFAULT_MANIFEST: &str = include_str!("../../../packages/preset/src/default-manifest.json");
 
 const MANIFEST: &str = r#"{
-      "version":1,
+      "version":1,"languageVersion":2,
       "variables":{
         "spacing":[{"key":"md","type":"number","value":"1rem"}]
       },
@@ -34,13 +34,17 @@ fn classifies_host_rule_validation_results_in_rust() {
             mastercss_schema::ValidatorClassIr {
                 diagnostics: Vec::new(),
                 class_name: "block".into(),
-                matched: true,
+                match_status: mastercss_schema::MatchStatus::Matched,
+                css_value_status: mastercss_schema::CssValueStatus::NotChecked,
+                browser_support: mastercss_schema::BrowserSupport::NotChecked,
                 rules: engine.inspect("block").unwrap().rules,
             },
             mastercss_schema::ValidatorClassIr {
                 diagnostics: Vec::new(),
                 class_name: "unknown".into(),
-                matched: false,
+                match_status: mastercss_schema::MatchStatus::Unmatched,
+                css_value_status: mastercss_schema::CssValueStatus::NotChecked,
+                browser_support: mastercss_schema::BrowserSupport::NotChecked,
                 rules: Vec::new(),
             },
         ],
@@ -200,16 +204,10 @@ fn suggests_canonical_classes_from_engine_facts() {
         .unwrap();
     assert_eq!(
         result.suggestions,
-        [
-            CanonicalClassSuggestionIr {
-                class_name: "margin-md".into(),
-                recommended: "m-md".into()
-            },
-            CanonicalClassSuggestionIr {
-                class_name: "block@dark@sm".into(),
-                recommended: "block@sm@dark".into()
-            },
-        ]
+        [CanonicalClassSuggestionIr {
+            class_name: "margin-md".into(),
+            recommended: "m-md".into()
+        },]
     );
     assert_eq!(session.engine.css_text(), "");
 }
@@ -446,7 +444,7 @@ fn unknown_named_prefixes_follow_the_unknown_class_policy() {
             .collect::<Vec<_>>();
         assert_eq!(unknown.len(), usize::from(strict));
         if strict {
-            assert_eq!(unknown[0].code, "unknown-token");
+            assert_eq!(unknown[0].code, "UNKNOWN_TOKEN");
         }
     }
 }

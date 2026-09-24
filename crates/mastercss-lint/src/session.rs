@@ -18,7 +18,6 @@ impl LintSession {
             variable_keys,
             variable_values,
             canonical_index,
-            supported_native_declarations: HashSet::new(),
         })
     }
 
@@ -144,17 +143,18 @@ impl LintSession {
                 });
                 result.diagnostics.push(crate::LintDiagnosticIr {
                     rule_id: "no-invalid-classes".into(),
-                    code: if unknown_token {
-                        "unknown-token"
-                    } else {
-                        "ambiguous-token"
-                    }
-                    .into(),
+                    code: serde_json::to_value(diagnostic.code)
+                        .expect("diagnostic code is serializable")
+                        .as_str()
+                        .expect("diagnostic code is a string")
+                        .into(),
                     message: diagnostic.message,
                     range: item.range.clone(),
                     data: serde_json::Map::from_iter([
                         ("className".into(), Value::String(item.token.clone())),
                         ("kind".into(), Value::String("syntax".into())),
+                        ("phase".into(), serde_json::json!(diagnostic.phase)),
+                        ("severity".into(), serde_json::json!(diagnostic.severity)),
                         ("alternatives".into(), serde_json::json!(diagnostic.notes)),
                     ]),
                     fix: None,
@@ -288,13 +288,8 @@ impl LintSession {
     ) -> Result<CanonicalComposeDirectiveIr, EngineError> {
         let native_candidates = self.ensure_class_rules(class_names, native_support)?;
         let mut native_declarations = HashMap::new();
-        for (index, candidate) in native_candidates.into_iter().enumerate() {
-            if native_support
-                .and_then(|support| support.get(index))
-                .copied()
-                .unwrap_or(false)
-                && self.is_compose_native_declaration(&candidate)?
-            {
+        for candidate in native_candidates {
+            if self.is_compose_native_declaration(&candidate)? {
                 native_declarations.insert(candidate.class_name.clone(), candidate);
             }
         }

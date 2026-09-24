@@ -12,7 +12,7 @@ export default function SponsorTiers() {
 
   return <div className="grid-cols:2 gap:0.938rem grid-cols:3@sm">
     {sponsorTiers.map((eachSponsorTier) => (
-      <button key={eachSponsorTier.name} className="app-object app-object-interactive gap:1.25rem p:1.563rem|1.875rem r:5px flex-col@<lg" onClick={() => setSelectedTier(eachSponsorTier)}>
+      <button key={eachSponsorTier.name} className="app-object app-object-interactive gap:1.25rem p:1.563rem|1.875rem r:5px flex-col@media((width<80rem))" onClick={() => setSelectedTier(eachSponsorTier)}>
         <div className="font-6xl">{eachSponsorTier.icon}</div>
         <div className='flex:1 text-left'>
           <div className="text-md font-medium text-strong uppercase::first-letter">{eachSponsorTier.name}</div>

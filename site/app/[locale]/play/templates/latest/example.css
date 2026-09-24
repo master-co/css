@@ -1,6 +1,8 @@
-@settings {
-  mode-trigger: class;
-}
+@mode light { .light { @slot; } }
+@mode dark { .dark { @slot; } }
+
+.light { color-scheme: light; }
+.dark { color-scheme: dark; }
 
 @theme {
   --color-master: var(--color-yellow-40);

@@ -27,7 +27,7 @@ export default async function PageNavs({ pageCategories, metadata, locale, dicti
   return (nextDefinedMetadata || prevDefinedMetadata) && (
     <>
       <hr className="hr" />
-      <div className="flex gap:2.5rem flex-wrap@<sm">
+      <div className="flex gap:2.5rem flex-wrap@media((width<52.125rem))">
         {prevDefinedMetadata && <Nav definedMetadata={prevDefinedMetadata} navigatorIconClass="ml:-0.25rem mr:0.375rem mt:-0.125rem" />}
         {nextDefinedMetadata && <Nav definedMetadata={nextDefinedMetadata} navigatorIconClass="ml:0.375rem order:1 rotate:180deg mt:-0.125rem" />}
       </div>

@@ -72,7 +72,6 @@ test('loads the isolated compiler Wasm surface', async () => {
   })
   expect(compiler.compileCSSDirectives('@theme dark static { --color-brand: #fff; }')).toMatchObject({
     manifestInput: {
-      modes: ['dark'],
       variables: [{ name: 'color-brand', value: '#fff', mode: 'dark', static: true }]
     },
     nativeCSS: ''
@@ -82,7 +81,7 @@ test('loads the isolated compiler Wasm surface', async () => {
     utilities: [{ name: 'card', declarations: { color: 'red' } }]
   }))).toEqual({
     manifest: {
-      version: 1,
+      version: 1, languageVersion: 2,
       variables: {
         color: [{
           name: 'color-brand',

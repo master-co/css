@@ -10,12 +10,10 @@ import type {
   MasterCSSLintCanonicalClassSuggestions,
   MasterCSSLintCanonicalComposeDirective,
   MasterCSSLintRawValueCandidates,
-  MasterCSSNativeDeclarationCandidate,
   MasterCSSValidatorBatch
 } from '@master/css-binding/tooling'
 import { MASTER_CSS_LINT_BATCH_VERSION } from '@master/css-binding/tooling'
-import { supportsNativeDeclaration } from '../host'
-import { validateCSS } from '../css'
+import { validateRuleDeclarations } from '../value-validation'
 import type {
   CanonicalClassNameOptions,
   CanonicalComposeDirectiveResult,
@@ -85,8 +83,8 @@ function collectHostRuleErrors(batch: MasterCSSValidatorBatch): string[][][] {
     { rules }: MasterCSSValidatorBatch['classes'][number]
   ) => rules.map((
     { text }: MasterCSSValidatorBatch['classes'][number]['rules'][number]
-  ) => validateCSS(text).map((error) =>
-    error.message || error.rawMessage || 'CSS validation failed'
+  ) => validateRuleDeclarations(text).filter((declaration) => declaration.status === 'invalid').map((declaration) =>
+    `Invalid CSS value: ${declaration.property}:${declaration.value}`
   )))
 }
 
@@ -96,20 +94,13 @@ export function bindLintSession(
   language: MasterCSSLanguageBindingSession
 ): LintSession {
   const resolveInputs = (classNames: string[]) => {
-    const candidates = lint.nativeDeclarationCandidates(
-      classNames
-    ) as MasterCSSNativeDeclarationCandidate[]
-    const nativeSupport = candidates.map(supportsNativeDeclaration)
-    const validation = validator.generateClassRules(
-      classNames,
-      nativeSupport.length ? nativeSupport : undefined
-    ) as MasterCSSValidatorBatch
+    const validation = validator.generateClassRules(classNames) as MasterCSSValidatorBatch
     const resolvedValidation = lint.resolveValidation(
       validation,
       collectHostRuleErrors(validation)
     ) as BindingLintValidation
     return {
-      nativeSupport: nativeSupport.length ? nativeSupport : undefined,
+      nativeSupport: undefined,
       ...resolvedValidation
     }
   }

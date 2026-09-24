@@ -21,7 +21,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
         applyToEnvironment: failure === 'environment-init' ? async () => { throw error } : undefined
       }
       const failed = () => expect(build({ root, cacheDir, configFile: false, logLevel: 'silent',
-        plugins: [masterCSS({ mode, runtime: false }), failing], build: { watch: {},
+        plugins: [masterCSS({ mode }), failing], build: { watch: {},
           ...(failure === 'factory' ? { createEnvironment() { throw error } } : {})
         }
       })).rejects.toThrow(error.message)
@@ -46,7 +46,7 @@ for (const mode of ['static', 'runtime', 'pre-render', 'progressive'] as const) 
     }
     try {
       writeFileSync(join(root, 'entry.js'), 'export const value=1')
-      const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode, runtime: false })],
+      const result = await build({ root, cacheDir, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode })],
         build: { watch: {}, minify: false, createEnvironment(name, config) { calls.push(name);return new CustomEnvironment(name, config) },
           rolldownOptions: { input: join(root, 'entry.js') }
         }

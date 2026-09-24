@@ -16,7 +16,8 @@ import { extractClasses, traceClass } from './classes'
 import { queryManifest } from './manifest-query'
 import { previewDirectiveFormat } from './format'
 import { compareCSS } from './compare'
-import { jsonResourceResult, jsonToolResult } from './result'
+import { jsonResourceResult, executeTool } from './result'
+import { toolOutputSchema } from './output-schema'
 
 class MasterCSSMCPServer {
   readonly #server: McpServer
@@ -177,6 +178,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     {
       title: 'Master CSS Workspace Info',
       description: 'Report workspace roots, resolved Master CSS packages, and project manifest status.',
+      outputSchema: toolOutputSchema('mastercss_workspace_info'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -184,7 +186,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async () => jsonToolResult(await getWorkspaceInfo(context))
+    async () => executeTool(() => getWorkspaceInfo(context))
   )
 
   server.registerTool(
@@ -192,6 +194,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     {
       title: 'Audit Master CSS Setup',
       description: 'Audit package, entry stylesheet, manifest, integration, and package-resolution setup for a workspace.',
+      outputSchema: toolOutputSchema('mastercss_setup_audit'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -199,7 +202,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async () => jsonToolResult(await auditSetup(context))
+    async () => executeTool(() => auditSetup(context))
   )
 
   server.registerTool(
@@ -208,9 +211,11 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Inspect Master CSS Class',
       description: 'Inspect one Master CSS class and return semantic parts, generated rules, variables, and CSS text.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         className: z.string().min(1),
         mode: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_inspect_class'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -218,7 +223,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await inspectClass(context, input))
+    async (input) => executeTool(() => inspectClass(context, input))
   )
 
   server.registerTool(
@@ -227,11 +232,13 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Trace Master CSS Class',
       description: 'Trace one class from project extraction through generated CSS, missing CSS classification, and engine inspection.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         className: z.string().min(1),
         patterns: z.array(z.string()).optional(),
         includeCss: z.boolean().optional(),
         mode: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_trace_class'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -239,7 +246,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await traceClass(context, input))
+    async (input) => executeTool(() => traceClass(context, input))
   )
 
   server.registerTool(
@@ -248,11 +255,13 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Extract Master CSS Classes',
       description: 'Extract class positions and validation summaries from project files or an in-memory source buffer.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         content: z.string().optional(),
         filePath: z.string().optional(),
         patterns: z.array(z.string()).optional(),
         includeRules: z.boolean().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_extract_classes'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -260,7 +269,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await extractClasses(context, input))
+    async (input) => executeTool(() => extractClasses(context, input))
   )
 
   server.registerTool(
@@ -269,11 +278,13 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Inspect Master CSS Directives',
       description: 'Inspect CSS-first directives from a stylesheet entry or in-memory CSS content and report manifest/CSS effects.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         content: z.string().optional(),
         filePath: z.string().optional(),
         entryPath: z.string().optional(),
         preserveNativeCSS: z.boolean().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_inspect_directives'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -281,7 +292,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await inspectDirectives(context, input))
+    async (input) => executeTool(() => inspectDirectives(context, input))
   )
 
   server.registerTool(
@@ -290,9 +301,11 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Render Master CSS',
       description: 'Generate CSS from an HTML fragment or a whitespace-separated class list.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         html: z.string().optional(),
         classList: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_render_css'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -300,7 +313,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await renderCSS(context, input))
+    async (input) => executeTool(() => renderCSS(context, input))
   )
 
   server.registerTool(
@@ -309,10 +322,12 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Scan Master CSS Project',
       description: 'Scan source files, register stylesheet entries, and report scanner state and generated CSS metadata.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         classes: z.array(z.string()).optional(),
         includeCss: z.boolean().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_scan_project'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -320,7 +335,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await scanProject(context, input))
+    async (input) => executeTool(() => scanProject(context, input))
   )
 
   server.registerTool(
@@ -333,6 +348,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         paths: z.array(z.string()).optional(),
         diff: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_repo_context'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -340,7 +356,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await getRepoContext(context, input))
+    async (input) => executeTool(() => getRepoContext(context, input))
   )
 
   server.registerTool(
@@ -353,6 +369,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         paths: z.array(z.string()).optional(),
         diff: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_change_impact'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -360,7 +377,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await getChangeImpact(context, input))
+    async (input) => executeTool(() => getChangeImpact(context, input))
   )
 
   server.registerTool(
@@ -373,6 +390,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         paths: z.array(z.string()).optional(),
         diff: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_test_router'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -380,7 +398,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await getTestRouter(context, input))
+    async (input) => executeTool(() => getTestRouter(context, input))
   )
 
   server.registerTool(
@@ -392,6 +410,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         packageName: z.string().optional(),
         includeExamples: z.boolean().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_package_graph'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -399,7 +418,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await getPackageGraph(context, input))
+    async (input) => executeTool(() => getPackageGraph(context, input))
   )
 
   server.registerTool(
@@ -408,11 +427,13 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Query Master CSS Manifest',
       description: 'Query active manifest tokens, utilities, variants, modes, conditions, and aliases.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         query: z.string().optional(),
         kind: z.enum(['all', 'token', 'utility', 'variant', 'mode', 'condition', 'alias']).optional(),
         namespace: z.string().optional(),
         limit: z.number().int().min(1).max(500).optional()
       },
+      outputSchema: toolOutputSchema('mastercss_manifest_query'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -420,7 +441,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await queryManifest(context, input))
+    async (input) => executeTool(() => queryManifest(context, input))
   )
 
   server.registerTool(
@@ -429,6 +450,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Compare Master CSS Output',
       description: 'Compare generated CSS for before/after class lists, HTML fragments, or source buffers.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         beforeClassList: z.string().optional(),
         afterClassList: z.string().optional(),
         beforeHtml: z.string().optional(),
@@ -437,6 +459,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         afterContent: z.string().optional(),
         filePath: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_css_compare'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -444,7 +467,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await compareCSS(context, input))
+    async (input) => executeTool(() => compareCSS(context, input))
   )
 
   server.registerTool(
@@ -453,9 +476,11 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Lint Master CSS Project',
       description: 'Run Master CSS class-list diagnostics and return fix proposals without writing files.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         patterns: z.array(z.string()).optional(),
         rules: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_lint_project'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -463,7 +488,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await lintProject(context, input))
+    async (input) => executeTool(() => lintProject(context, input))
   )
 
   server.registerTool(
@@ -472,10 +497,12 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Lint Master CSS Content',
       description: 'Run Master CSS class-list diagnostics on an in-memory source buffer without writing files.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         content: z.string(),
         filePath: z.string(),
         rules: z.string().optional()
       },
+      outputSchema: toolOutputSchema('mastercss_lint_content'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -483,7 +510,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await lintContent(context, input))
+    async (input) => executeTool(() => lintContent(context, input))
   )
 
   server.registerTool(
@@ -492,6 +519,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Suggest Master CSS Syntax',
       description: 'Return language-service completions and hover context for a document position.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         content: z.string(),
         filePath: z.string(),
         position: z.object({
@@ -501,6 +529,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         triggerCharacter: z.string().optional(),
         limit: z.number().int().min(1).max(200).optional()
       },
+      outputSchema: toolOutputSchema('mastercss_suggest_syntax'),
       annotations: {
         readOnlyHint: true,
         destructiveHint: false,
@@ -508,7 +537,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await suggestSyntax(context, input))
+    async (input) => executeTool(() => suggestSyntax(context, input))
   )
 
   server.registerTool(
@@ -517,6 +546,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Preview Master CSS Fixes',
       description: 'Create a diff preview for lint fixes or generated CSS output and return a confirmation token.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         mode: z.enum(['lint-fixes', 'generated-css']).optional(),
         patterns: z.array(z.string()).optional(),
         rules: z.string().optional(),
@@ -524,6 +554,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         outputPath: z.string().optional(),
         ttlMs: z.number().int().min(1000).max(60 * 60 * 1000).optional()
       },
+      outputSchema: toolOutputSchema('mastercss_preview_fixes'),
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
@@ -534,14 +565,15 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
     async (input) => {
       if (input.mode === 'generated-css') {
         if (!input.outputPath) throw new Error('outputPath is required when mode is "generated-css".')
-        return jsonToolResult(await previewGeneratedCSS(context, {
+        return executeTool(() => previewGeneratedCSS(context, {
+          context: input.context,
           patterns: input.patterns,
           includeCss: true,
-          outputPath: input.outputPath,
+          outputPath: input.outputPath!,
           ttlMs: input.ttlMs
         }))
       }
-      return jsonToolResult(await previewLintFixes(context, input))
+      return executeTool(() => previewLintFixes(context, input))
     }
   )
 
@@ -551,12 +583,14 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       title: 'Preview Master CSS Directive Format',
       description: 'Create a safe preview for formatting Master CSS directives, or format in-memory content without writing files.',
       inputSchema: {
+        context: z.enum(['project', 'preset']).optional(),
         content: z.string().optional(),
         filePath: z.string().optional(),
         patterns: z.array(z.string()).optional(),
         range: rangeSchema.optional(),
         ttlMs: z.number().int().min(1000).max(60 * 60 * 1000).optional()
       },
+      outputSchema: toolOutputSchema('mastercss_preview_directive_format'),
       annotations: {
         readOnlyHint: false,
         destructiveHint: false,
@@ -564,7 +598,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await previewDirectiveFormat(context, input))
+    async (input) => executeTool(() => previewDirectiveFormat(context, input))
   )
 
   server.registerTool(
@@ -575,6 +609,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
       inputSchema: {
         confirmToken: z.string().min(1)
       },
+      outputSchema: toolOutputSchema('mastercss_apply_preview'),
       annotations: {
         readOnlyHint: false,
         destructiveHint: true,
@@ -582,7 +617,7 @@ function registerTools(server: McpServer, context: MasterCSSMCPContext) {
         openWorldHint: false
       }
     },
-    async (input) => jsonToolResult(await context.applyPreview(input.confirmToken))
+    async (input) => executeTool(() => context.applyPreview(input.confirmToken))
   )
 }
 

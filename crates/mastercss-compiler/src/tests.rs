@@ -137,6 +137,7 @@ fn filters_native_selectors_without_losing_discovered_classes() {
         ".used,.unused { color: red; }\n@media print { .unused { display: none; } }",
         &CompileNativeCssOptions {
             classes: Some(vec!["used".into()]),
+            prune_native_css: true,
             ..CompileNativeCssOptions::default()
         },
     )
@@ -180,8 +181,7 @@ fn lowers_theme_modifiers_and_replaces_duplicate_mode_tokens_in_order() {
                 { "name": "color-accent", "value": "#222" },
                 { "name": "color-brand", "value": "#333", "mode": "dark", "static": true },
                 { "name": "color-brand", "value": "#444" }
-            ],
-            "modes": ["dark"]
+            ]
         })
     );
 }
@@ -289,27 +289,13 @@ fn normalizes_theme_alpha_aliases_and_unquoted_pipes() {
 #[test]
 fn lowers_settings_into_the_canonical_manifest_input() {
     let result = compile_css_directives(
-        "@settings {\n\
-               root-size: 16;\n\
-               default-mode: light;\n\
-               mode-trigger: class;\n\
-               important: on;\n\
-               modes: light, dark chrisma;\n\
-               scope: .app;\n\
-             }",
+        "@settings { important: on; scope: .app; }",
         &CompileNativeCssOptions::default(),
     )
     .unwrap();
     assert_eq!(
         serde_json::to_value(result.manifest_input).unwrap(),
-        serde_json::json!({
-            "rootSize": 16.0,
-            "defaultMode": "light",
-            "scope": ".app",
-            "important": true,
-            "modes": ["light", "dark", "chrisma"],
-            "modeTrigger": "class"
-        })
+        serde_json::json!({ "scope": ".app", "important": true })
     );
 }
 

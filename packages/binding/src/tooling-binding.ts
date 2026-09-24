@@ -76,3 +76,6 @@ export async function createToolingBinding(
     throw normalizeBindingError(cause, 'tooling')
   }
 }
+
+export type { MasterCSSDiagnostic, MasterCSSMatchStatus, MasterCSSValueStatus, MasterCSSBrowserSupport } from './protocol'
+export { MASTER_CSS_LANGUAGE_VERSION } from './protocol'

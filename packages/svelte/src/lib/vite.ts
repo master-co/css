@@ -30,7 +30,7 @@ export function createMasterCSSVitePlugin(
   return [
     SvelteKitServerExternalPlugin(),
     ...createBaseMasterCSSVitePlugin({
-      mode: 'progressive',
+      mode: 'static',
       ...options
     })
   ]

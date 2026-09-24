@@ -1,13 +1,13 @@
 import type { CallToolResult, ReadResourceResult } from '@modelcontextprotocol/sdk/types.js'
 
-export const MASTER_CSS_MCP_RESULT_VERSION = 1
+export const MASTER_CSS_MCP_RESULT_VERSION = 2
 
 function normalizeResult(value: unknown) {
   if (value && typeof value === 'object' && !Array.isArray(value)) {
     return {
-      version: MASTER_CSS_MCP_RESULT_VERSION,
       diagnostics: [],
-      ...value
+      ...value,
+      version: MASTER_CSS_MCP_RESULT_VERSION
     }
   }
   return {
@@ -22,11 +22,13 @@ export function toJSONText(value: unknown) {
 }
 
 export function jsonToolResult(value: unknown): CallToolResult {
+  const structuredContent = normalizeResult(value)
   return {
+    structuredContent,
     content: [
       {
         type: 'text',
-        text: toJSONText(normalizeResult(value))
+        text: toJSONText(structuredContent)
       }
     ]
   }
@@ -46,4 +48,23 @@ export function jsonResourceResult(uri: URL | string, value: unknown): ReadResou
 
 export function getErrorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error)
+}
+
+export async function executeTool(operation: () => unknown | Promise<unknown>): Promise<CallToolResult> {
+  try {
+    return jsonToolResult(await operation())
+  } catch (error) {
+    const detail = error && typeof error === 'object' ? error as Record<string, unknown> : {}
+    const diagnostic = {
+      code: detail.code ?? 'TOOL_EXECUTION_FAILED', phase: 'compiler', severity: 'error',
+      message: getErrorMessage(error)
+    }
+    return {
+      ...jsonToolResult({
+        status: 'error', context: detail.context, manifest: detail.manifest,
+        diagnostics: [diagnostic, ...(Array.isArray(detail.diagnostics) ? detail.diagnostics : [])]
+      }),
+      isError: true
+    }
+  }
 }

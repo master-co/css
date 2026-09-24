@@ -5,7 +5,7 @@ use mastercss_schema::CssDirectiveBlocklistEntry;
 
 #[test]
 fn source_cache_retains_all_candidates_and_pending_validation_preserves_order() {
-    let mut scanner = ScannerSession::create(r#"{"version":1}"#).unwrap();
+    let mut scanner = ScannerSession::create(r#"{"version":1,"languageVersion":2}"#).unwrap();
     let blocklist = [CssDirectiveBlocklistEntry::Exact("blocked:value".into())];
     for (source, candidates, expected) in [
         ("a", vec!["made-up:bad"], vec!["made-up:bad"]),
@@ -60,7 +60,7 @@ fn source_cache_retains_all_candidates_and_pending_validation_preserves_order() 
     }
     assert_eq!(
         scanner.state().unwrap().valid_classes,
-        ["color:red", "background:blue"]
+        ["made-up:bad", "color:red", "background:blue"]
     );
     assert!(scanner.cached_source_candidates("", "content").is_none());
     assert!(scanner.cached_source_candidates("a", "").is_none());

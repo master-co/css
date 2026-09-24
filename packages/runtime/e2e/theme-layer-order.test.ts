@@ -3,9 +3,7 @@ import init from './init'
 
 test('keeps default variable buckets before mode buckets when CSSOM buckets are inserted later', async ({ page }) => {
   await init(page, '', {
-    defaultMode: 'light',
-    modeTrigger: 'class',
-    modes: ['light', 'dark'],
+    modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] })),
     variables: [
       { namespace: 'color', key: 'blue', value: '#66f', mode: 'light' },
       { namespace: 'color', key: 'blue', value: '#44f', mode: 'dark' },

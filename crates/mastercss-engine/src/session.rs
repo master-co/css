@@ -41,7 +41,6 @@ impl EngineSession {
             theme_batch_depth: 0,
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
-            native_declaration_support: HashMap::new(),
             disposed: false,
         };
         session.initialize_variable_resources();
@@ -199,30 +198,6 @@ impl EngineSession {
                     .map(|candidate| candidate.ir)
             })
             .collect())
-    }
-
-    pub fn ensure_class_rules_with_native_support<I, S>(
-        &mut self,
-        class_names: I,
-        supported: &[bool],
-    ) -> Result<EngineTransitionIr, EngineError>
-    where
-        I: IntoIterator<Item = S>,
-        S: AsRef<str>,
-    {
-        self.ensure_active()?;
-        let class_names = class_names
-            .into_iter()
-            .map(|class_name| class_name.as_ref().to_owned())
-            .collect::<Vec<_>>();
-        let candidates = class_names
-            .iter()
-            .flat_map(|class_name| self.native_declaration_candidates_for_class(class_name))
-            .collect::<Vec<_>>();
-        for (candidate, supported) in candidates.into_iter().zip(supported.iter().copied()) {
-            self.register_native_declaration_candidate(candidate, supported);
-        }
-        self.ensure_class_rules(class_names)
     }
 
     pub fn ensure_stylesheet_resources(
@@ -467,12 +442,43 @@ impl EngineSession {
             .into_iter()
             .map(|rule| rule.ir)
             .collect::<Vec<_>>();
+        let mut diagnostics = super::named::diagnostics(class_name, &self.compiled);
+        if let Some(mode) = mode
+            && !self
+                .compiled
+                .modes
+                .iter()
+                .any(|definition| definition.name == mode)
+        {
+            diagnostics.push(mastercss_schema::Diagnostic {
+                code: mastercss_schema::ErrorCode::UndefinedMode,
+                phase: mastercss_schema::DiagnosticPhase::Match,
+                severity: mastercss_schema::DiagnosticSeverity::Error,
+                message: format!("Undefined mode {mode}; define @mode {mode}"),
+                source: None,
+                range: None,
+                notes: Vec::new(),
+            });
+        }
         Ok(EngineInspectionIr {
             version: 1,
             class_name: class_name.to_owned(),
-            valid: !rules.is_empty(),
+            match_status: if !rules.is_empty() {
+                mastercss_schema::MatchStatus::Matched
+            } else if diagnostics
+                .iter()
+                .any(|diagnostic| diagnostic.code == mastercss_schema::ErrorCode::AmbiguousToken)
+            {
+                mastercss_schema::MatchStatus::Ambiguous
+            } else if !diagnostics.is_empty() {
+                mastercss_schema::MatchStatus::SyntaxError
+            } else {
+                mastercss_schema::MatchStatus::Unmatched
+            },
+            css_value_status: mastercss_schema::CssValueStatus::NotChecked,
+            browser_support: mastercss_schema::BrowserSupport::NotChecked,
             rules,
-            diagnostics: super::named::diagnostics(class_name, &self.compiled),
+            diagnostics,
         })
     }
 
@@ -783,7 +789,6 @@ impl EngineSession {
         self.theme_variable_names.clear();
         self.animation_counts.clear();
         self.animation_names.clear();
-        self.native_declaration_support.clear();
         self.theme_text = None;
         self.theme_dirty = false;
         self.disposed = true;
@@ -805,7 +810,6 @@ impl EngineSession {
             theme_batch_depth: 0,
             animation_counts: HashMap::new(),
             animation_names: Vec::new(),
-            native_declaration_support: self.native_declaration_support.clone(),
             disposed: false,
         };
         session.initialize_variable_resources();

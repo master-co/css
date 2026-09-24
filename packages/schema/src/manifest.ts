@@ -3,8 +3,6 @@ import type { UtilityType } from './utility-type.js'
 
 export type MasterCSSManifestConditionIdentifier = 'container' | 'starting-style' | 'supports' | 'media' | 'layer'
 export type MasterCSSManifestUtilityLayerName = 'base' | 'defaults' | 'components' | 'utilities'
-export type MasterCSSManifestDefaultMode = 'light' | 'dark' | 'none' | string
-export type MasterCSSManifestModeTrigger = 'class' | 'media' | 'host'
 export type MasterCSSManifestVariantToken = `:${string}` | `::${string}` | `@${string}`
 export type MasterCSSManifestUtilityKind = 'number' | 'color' | 'image'
 /** Defaults to single for raw value matchers; multiple is an explicit opt-in. */
@@ -68,12 +66,8 @@ export type MasterCSSManifestSelectorNode =
 export type MasterCSSManifestSelectors = Record<string, MasterCSSManifestSelectorNode[]>
 
 export interface MasterCSSManifestSettings {
-  rootSize?: number
-  defaultMode?: MasterCSSManifestDefaultMode
   scope?: string
   important?: boolean
-  modeTrigger?: MasterCSSManifestModeTrigger
-  modes?: string[]
 }
 
 export interface MasterCSSManifestVariable {
@@ -162,6 +156,11 @@ export interface MasterCSSManifestUtility {
 
 export type MasterCSSManifestUtilities = MasterCSSManifestUtility[]
 
+export interface MasterCSSManifestMode {
+  name: string
+  branches: { selector: string; conditions?: string[] }[]
+}
+
 export interface MasterCSSManifest {
   /**
    * MasterCSSManifest IR schema/codec version.
@@ -169,6 +168,8 @@ export interface MasterCSSManifest {
    * unsupported manifest versions instead of migrating authoring APIs at runtime.
    */
   version: 1
+  languageVersion: 2
+  modes?: MasterCSSManifestMode[]
   settings?: MasterCSSManifestSettings
   variables?: MasterCSSManifestVariables
   animations?: MasterCSSManifestAnimations

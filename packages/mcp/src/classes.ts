@@ -1,18 +1,16 @@
 import { readFile } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument, getLanguageId } from './document'
-import { loadWorkspaceManifest } from './project'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 import { compactClassInspection, createMCPToolingSession } from './tooling-session'
 import { resolveSourceFiles, scanProject } from './scan'
 
 const CLASS_EXTRACTION_VERSION = 1
 const CLASS_TRACE_VERSION = 1
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
 
 export interface ExtractClassesOptions {
+  context?: SemanticContext
   content?: string
   filePath?: string
   patterns?: string[]
@@ -20,15 +18,16 @@ export interface ExtractClassesOptions {
 }
 
 export interface TraceClassOptions {
+  context?: SemanticContext
   className: string
   patterns?: string[]
   includeCss?: boolean
   mode?: string
 }
 
-async function createClassInspectionState(context: MasterCSSMCPContext) {
-  const manifest = await loadWorkspaceManifest(context)
-  const activeManifest = manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+async function createClassInspectionState(context: MasterCSSMCPContext, options: { context?: SemanticContext } = {}) {
+  const manifest = await loadWorkspaceManifest(context, options.context)
+  const activeManifest = requireWorkspaceManifest(manifest)
   return {
     manifest,
     session: await createMCPToolingSession(activeManifest)
@@ -49,7 +48,7 @@ function classifyExtractedClass(
   if (discovered?.usedNative.includes(token)) return 'native-css'
   if (discovered?.invalid.includes(token)) return 'invalid'
   if (discovered?.latent.includes(token)) return 'latent'
-  return inspection.valid ? 'generated' : 'unknown'
+  return (inspection.matchStatus === 'matched') ? 'generated' : 'unknown'
 }
 
 function extractFromContent(
@@ -76,14 +75,16 @@ function extractFromContent(
       contextRange: position.contextRange,
       sourceKind: 'class-position',
       status: classifyExtractedClass(position.token, inspection, discovered),
-      valid: inspection.valid,
+      matchStatus: inspection.matchStatus,
+      cssValueStatus: inspection.cssValueStatus,
+      browserSupport: inspection.browserSupport,
       inspection
     }
   })
 }
 
 export async function extractClasses(context: MasterCSSMCPContext, options: ExtractClassesOptions = {}) {
-  const { manifest, session } = await createClassInspectionState(context)
+  const { manifest, session } = await createClassInspectionState(context, options)
   const includeRules = Boolean(options.includeRules)
 
   try {
@@ -93,11 +94,7 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
       return {
         version: CLASS_EXTRACTION_VERSION,
         root: context.root,
-        manifest: {
-          status: manifest.status,
-          entries: manifest.entries,
-          ...(manifest.status === 'error' ? { error: manifest.error } : {})
-        },
+        manifest: manifestMetadata(manifest),
         inputs: {
           mode: 'content',
           filePath
@@ -112,14 +109,15 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
         summary: {
           files: 1,
           classes: classes.length,
-          valid: classes.filter((className) => className.valid).length,
-          invalid: classes.filter((className) => !className.valid).length
+          matched: classes.filter((className) => className.matchStatus === 'matched').length,
+          unmatched: classes.filter((className) => className.matchStatus !== 'matched').length
         }
       }
     }
 
     const filePaths = await resolveSourceFiles(context, options.patterns)
     const scan = await scanProject(context, {
+      context: options.context,
       patterns: options.patterns,
       includeCss: false
     })
@@ -137,11 +135,7 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
     return {
       version: CLASS_EXTRACTION_VERSION,
       root: context.root,
-      manifest: {
-        status: manifest.status,
-        entries: manifest.entries,
-        ...(manifest.status === 'error' ? { error: manifest.error } : {})
-      },
+      manifest: manifestMetadata(manifest),
       inputs: {
         mode: 'project',
         patterns: options.patterns ?? scan.inputs.patterns,
@@ -155,8 +149,8 @@ export async function extractClasses(context: MasterCSSMCPContext, options: Extr
       summary: {
         files: files.length,
         classes: classes.length,
-        valid: classes.filter((className) => className.valid).length,
-        invalid: classes.filter((className) => !className.valid).length,
+        matched: classes.filter((className) => className.matchStatus === 'matched').length,
+        unmatched: classes.filter((className) => className.matchStatus !== 'matched').length,
         diagnostics: scan.summary.diagnostics
       }
     }
@@ -192,25 +186,22 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
     scanProject(context, {
       patterns: options.patterns,
       classes: [options.className],
-      includeCss: options.includeCss
+      includeCss: options.includeCss,
+      context: options.context
     }),
-    createClassInspectionState(context)
+    createClassInspectionState(context, options)
   ])
   try {
     const inspection = compactClassInspection(state.session, options.className, options.mode, true)
     const missingResult = [...scan.missingCSS.present, ...scan.missingCSS.missing]
       .find((result) => result.className === options.className)
     const occurrences = findClassOccurrences(scan, options.className)
-    const status = missingResult?.status ?? (inspection.valid ? 'present' : 'missing')
-    const reason = missingResult?.reason ?? (inspection.valid ? 'generated' : 'not-detected')
+    const status = missingResult?.status ?? ((inspection.matchStatus === 'matched') ? 'present' : 'missing')
+    const reason = missingResult?.reason ?? ((inspection.matchStatus === 'matched') ? 'generated' : 'not-detected')
     return {
       version: CLASS_TRACE_VERSION,
       root: context.root,
-      manifest: {
-        status: state.manifest.status,
-        entries: state.manifest.entries,
-        ...(state.manifest.status === 'error' ? { error: state.manifest.error } : {})
-      },
+      manifest: manifestMetadata(state.manifest),
       inputs: {
         className: options.className,
         patterns: options.patterns ?? scan.inputs.patterns,
@@ -244,7 +235,9 @@ export async function traceClass(context: MasterCSSMCPContext, options: TraceCla
         status,
         reason,
         detected: occurrences.length > 0,
-        valid: inspection.valid,
+        matchStatus: inspection.matchStatus,
+      cssValueStatus: inspection.cssValueStatus,
+      browserSupport: inspection.browserSupport,
         rules: inspection.rules.length,
         diagnostics: scan.diagnostics.length
       }

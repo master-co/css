@@ -377,15 +377,8 @@ pub fn compile_default_preset_manifest_json(request_json: String) -> Result<Stri
 }
 
 #[napi]
-pub fn render_classes_json(
-    manifest_json: String,
-    class_names: Vec<String>,
-    native_support: Option<Vec<bool>>,
-) -> Result<String> {
-    to_json(
-        &mastercss_render::render_classes(&manifest_json, &class_names, native_support.as_deref())
-            .map_err(to_napi_error)?,
-    )
+pub fn render_classes_json(manifest_json: String, class_names: Vec<String>) -> Result<String> {
+    to_json(&mastercss_render::render_classes(&manifest_json, &class_names).map_err(to_napi_error)?)
 }
 
 #[napi]

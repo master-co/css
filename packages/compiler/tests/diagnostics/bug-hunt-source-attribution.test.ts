@@ -20,9 +20,9 @@ interface AttributionCase {
 }
 
 const cases: AttributionCase[] = [
-  { name: 'separate classes and invalid warning', files: { 'a.js': js('inline'), 'b.js': js('block text-decoration:bad()') }, expected: { 'a.js': ['inline'], 'b.js': ['block'] }, invalid: { 'b.js': ['text-decoration:bad()'] } },
-  { name: 'reverse source patterns', files: { 'a.js': js('inline'), 'b.js': js('block text-decoration:bad()') }, expected: { 'a.js': ['inline'], 'b.js': ['block'] }, invalid: { 'b.js': ['text-decoration:bad()'] }, patterns: ['b.js', 'a.js'] },
-  { name: 'repeated valid and invalid classes', files: { 'a.js': js('block text-decoration:bad()'), 'b.mjs': js('block text-decoration:bad()'), 'c.html': html('inline') }, expected: { 'a.js': ['block'], 'b.mjs': ['block'], 'c.html': ['inline'] }, invalid: { 'a.js': ['text-decoration:bad()'], 'b.mjs': ['text-decoration:bad()'] } },
+  { name: 'separate classes and invalid warning', files: { 'a.js': js('inline'), 'b.js': js('block p-missing') }, expected: { 'a.js': ['inline'], 'b.js': ['block'] }, invalid: { 'b.js': ['p-missing'] } },
+  { name: 'reverse source patterns', files: { 'a.js': js('inline'), 'b.js': js('block p-missing') }, expected: { 'a.js': ['inline'], 'b.js': ['block'] }, invalid: { 'b.js': ['p-missing'] }, patterns: ['b.js', 'a.js'] },
+  { name: 'repeated valid and invalid classes', files: { 'a.js': js('block p-missing'), 'b.mjs': js('block p-missing'), 'c.html': html('inline') }, expected: { 'a.js': ['block'], 'b.mjs': ['block'], 'c.html': ['inline'] }, invalid: { 'a.js': ['p-missing'], 'b.mjs': ['p-missing'] } },
   { name: 'asynchronous Vue and Svelte adapters', files: { 'a.vue': `<template>${html('block flex')}</template>`, 'b.svelte': html('block grid'), 'c.html': html('inline') }, expected: { 'a.vue': ['block', 'flex'], 'b.svelte': ['block', 'grid'], 'c.html': ['inline'] } },
   { name: 'native classes and repeated usage', files: { 'index.css': '@master entry;.native{color:red}', 'a.html': html('native'), 'b.html': html('native block'), 'c.html': html('inline') }, expected: { 'a.html': [], 'b.html': ['block'], 'c.html': ['inline'] }, native: { 'a.html': ['native'], 'b.html': ['native'] } },
   { name: 'safelist is not source ownership', files: { 'index.css': '@master entry;@safelist "block inline";', 'a.html': html('block'), 'b.html': html('block'), 'c.js': '' }, expected: { 'a.html': ['block'], 'b.html': ['block'], 'c.js': [] } },
@@ -35,7 +35,7 @@ for (const entry of cases) {
     try {
       for (const [file, content] of Object.entries(entry.files)) writeFileSync(join(cwd, file), content)
       const report = await createMasterCSSInspectionReport({ manifest, cwd, patterns: entry.patterns, includeCss: true })
-      expect(report.summary.errors).toBe(0)
+      expect(report.summary.errors).toBe(entry.invalid ? 1 : 0)
       expect(report.files.map((file) => basename(file.filePath)).sort()).toEqual(Object.keys(entry.expected).sort())
       const invalid = entry.invalid
       const native = entry.native
@@ -49,7 +49,7 @@ for (const entry of cases) {
       }
       if (invalid) {
         const firstInvalidFile = report.files.find((file) => invalid[basename(file.filePath)]?.length)!
-        expect(report.diagnostics.find((d) => d.code === 'invalid-scanner-class')?.filePath).toBe(firstInvalidFile.filePath)
+        expect(report.diagnostics.find((d) => d.code === 'UNKNOWN_TOKEN')?.filePath).toBe(firstInvalidFile.filePath)
       }
       if (entry.name === 'safelist is not source ownership') {
         expect(report.css.text).toContain('display:inline')

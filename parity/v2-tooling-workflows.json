@@ -1,0 +1,58 @@
+{
+  "version": 1,
+  "languageVersion": 2,
+  "source": "@import \"@master/css\";\n@theme { --font-family-brand: ui-monospace; --font-size-brand: 1rem; }\n",
+  "cases": [
+    {
+      "className": "font-brand",
+      "matchStatus": "ambiguous",
+      "cssValueStatus": "not-checked",
+      "code": "AMBIGUOUS_TOKEN"
+    },
+    {
+      "className": "padding:red",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "font:16px",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "grid-cols:2.5",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "grid-cols:foo",
+      "matchStatus": "matched",
+      "cssValueStatus": "invalid",
+      "code": "CSS_VALUE_INVALID"
+    },
+    {
+      "className": "future-property:future(1furlong)",
+      "matchStatus": "matched",
+      "cssValueStatus": "unknown"
+    },
+    {
+      "className": "width:var(--dynamic)",
+      "matchStatus": "matched",
+      "cssValueStatus": "unknown"
+    },
+    {
+      "className": "ordinary-card",
+      "matchStatus": "unmatched",
+      "cssValueStatus": "not-checked"
+    },
+    {
+      "className": "block@missing",
+      "matchStatus": "syntax-error",
+      "cssValueStatus": "not-checked",
+      "code": "UNKNOWN_CONDITION"
+    }
+  ]
+}

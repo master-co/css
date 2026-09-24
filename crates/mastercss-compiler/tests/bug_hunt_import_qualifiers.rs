@@ -146,41 +146,25 @@ impl CssImportProvider for DefiningChild {
 }
 
 #[test]
-fn bh_0004_qualified_import_keeps_imported_definitions_top_level() {
-    let result = resolve_css_import_graph(
-        "entry",
-        &DefiningChild("@utilities{paint{padding:2rem}}\n.card{padding:3rem}"),
-    )
-    .unwrap();
-    assert_eq!(
-        result.source,
-        "@utilities{paint{padding:2rem}}\n@supports (display: grid){@media screen{@layer cards{\n.card{padding:3rem}}}}\n.after{margin:1px}"
-    );
-}
-
-#[test]
-fn bh_0004_qualified_import_hoists_every_definition_family() {
-    let result = resolve_css_import_graph(
-        "entry",
-        &DefiningChild(
-            "@theme{--color-card:red}\n.card{padding:3rem}\n@components{note{padding:1rem}}",
-        ),
-    )
-    .unwrap();
-    assert!(
-        result
-            .source
-            .starts_with("@theme{--color-card:red}\n@components{note{padding:1rem}}\n@supports"),
-        "{}",
-        result.source
-    );
-    assert!(
-        result
-            .source
-            .contains("@layer cards{\n.card{padding:3rem}\n}"),
-        "{}",
-        result.source
-    );
+fn qualified_imports_reject_global_master_definitions() {
+    for source in [
+        "@settings { important: on; }",
+        "@theme { --color-card: red; }",
+        "@mode ocean { .ocean { @slot; } }",
+        "@custom-variant print { @media print { @slot; } }",
+        "@defaults { card { padding: 1rem; } }",
+        "@components { card { padding: 1rem; } }",
+        "@utilities { card { padding: 1rem; } }",
+    ] {
+        let error = resolve_css_import_graph("entry", &DefiningChild(source)).unwrap_err();
+        let message = error.to_string();
+        assert!(message.contains("Qualified import"), "{message}");
+        assert!(message.contains("./child.css"), "{message}");
+        assert!(
+            message.contains("without media/supports/layer"),
+            "{message}"
+        );
+    }
 }
 
 #[test]

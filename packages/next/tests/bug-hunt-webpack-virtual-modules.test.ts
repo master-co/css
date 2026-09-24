@@ -4,9 +4,9 @@ import withMasterCSS from '../src'
 
 const ids = ['virtual:master-css-manifest', 'virtual:master-css-emitted-globals', 'virtual:master-utilities.css']
 
-function configuredResolver() {
+async function configuredResolver() {
   const userPlugin = { apply() {} }
-  const config = (withMasterCSS({}) as NextConfig).webpack!({ plugins: [userPlugin], module: { rules: [] }, resolve: { alias: { custom: '/user/custom.js' } } }, {} as never)
+  const config = (withMasterCSS({}, { mode: 'runtime' }) as NextConfig).webpack!({ plugins: [userPlugin], module: { rules: [] }, resolve: { alias: { custom: '/user/custom.js' } } }, {} as never)
   const callbacks: ((data: { request: string } | undefined) => void)[] = []
   const factory = { hooks: { beforeResolve: { tap(_name: string, callback: typeof callbacks[number]) { callbacks.push(callback) } } } }
   const compiler = { hooks: { normalModuleFactory: { tap(_name: string, callback: (value: typeof factory) => void) { callback(factory) } } } }
@@ -20,15 +20,16 @@ function configuredResolver() {
   }
 }
 
-for (const id of ids) test(`Next resolves ${id} before Webpack URI dispatch`, () => {
-  const resolver = configuredResolver()
+for (const id of ids) test(`Next resolves ${id} before Webpack URI dispatch`, async () => {
+  const resolver = await configuredResolver()
   expect(resolver.resolve(id)).toBe(resolver.aliases[id])
 })
 
-for (const id of ['virtual:another-package', 'virtual:master-css-manifest-extra', './native.css?master-css-manifest', 'custom', 'toString']) test(`Next virtual handling preserves unrelated request ${id}`, () => {
-  expect(configuredResolver().resolve(id)).toBe(id)
+for (const id of ['virtual:another-package', 'virtual:master-css-manifest-extra', './native.css?master-css-manifest', 'custom', 'toString']) test(`Next virtual handling preserves unrelated request ${id}`, async () => {
+  expect((await configuredResolver()).resolve(id)).toBe(id)
 })
 
-test('Next virtual handling tolerates a cancelled resolution', () => {
-  expect(() => configuredResolver().cancel()).not.toThrow()
+test('Next virtual handling tolerates a cancelled resolution', async () => {
+  const resolver = await configuredResolver()
+  expect(() => resolver.cancel()).not.toThrow()
 })

@@ -6,6 +6,8 @@ pub struct RulePriorityIr {
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub features: Vec<(String, f64, f64)>,
     pub selector: i32,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conditions: Vec<String>,
     /// Named tokens precede direct values within the same utility/condition tier.
     #[serde(default, skip_serializing_if = "is_zero_priority")]
     pub value_priority: i8,
@@ -49,6 +51,7 @@ pub struct GeneratedRuleIr {
 #[serde(rename_all = "camelCase")]
 pub struct HydrationManifest {
     pub version: u32,
+    pub language_version: u32,
     pub rules: Vec<GeneratedRuleIr>,
     pub resource_order: Vec<String>,
 }
@@ -57,6 +60,7 @@ impl HydrationManifest {
     pub fn new(rules: Vec<GeneratedRuleIr>, resource_order: Vec<String>) -> Self {
         Self {
             version: HYDRATION_MANIFEST_VERSION,
+            language_version: LANGUAGE_VERSION,
             rules,
             resource_order,
         }
@@ -186,7 +190,9 @@ pub struct EngineExecutionStateIr {
 pub struct EngineInspectionIr {
     pub version: u32,
     pub class_name: String,
-    pub valid: bool,
+    pub match_status: MatchStatus,
+    pub css_value_status: CssValueStatus,
+    pub browser_support: BrowserSupport,
     pub rules: Vec<GeneratedRuleIr>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub diagnostics: Vec<Diagnostic>,
@@ -198,4 +204,31 @@ pub struct NativeDeclarationCandidateIr {
     pub class_name: String,
     pub property: String,
     pub value: String,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum MatchStatus {
+    Matched,
+    Unmatched,
+    Ambiguous,
+    SyntaxError,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum CssValueStatus {
+    Valid,
+    Invalid,
+    Unknown,
+    NotChecked,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum BrowserSupport {
+    Supported,
+    Unsupported,
+    Unknown,
+    NotChecked,
 }

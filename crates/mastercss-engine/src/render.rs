@@ -15,12 +15,8 @@ pub(crate) fn create_selector_text(
         prefix.push_str(scope);
         prefix.push(' ');
     }
-    if let Some(mode) = &branch.mode {
-        match manifest.settings.mode_trigger.as_str() {
-            "class" => prefix = format!(".{mode} {prefix}"),
-            "host" => prefix = format!(":host(.{mode}) {prefix}"),
-            _ => {}
-        }
+    if let Some(guard) = &branch.mode_guard {
+        body.push_str(guard);
     }
     body.insert_str(0, &prefix);
     let mut selector = branch
@@ -34,34 +30,21 @@ pub(crate) fn create_selector_text(
     selector
 }
 
-pub(crate) fn composition_selector(branch: &StateBranch, manifest: &ManifestProjection) -> String {
-    let mut selector = branch
+pub(crate) fn composition_selector(branch: &StateBranch, _manifest: &ManifestProjection) -> String {
+    let anchor = format!("&{}", branch.mode_guard.as_deref().unwrap_or_default());
+    branch
         .selector_template
-        .clone()
-        .unwrap_or_else(|| "&".into());
-    if let Some(mode) = &branch.mode {
-        selector = match manifest.settings.mode_trigger.as_str() {
-            "class" => format!(".{mode} {selector}"),
-            "host" => format!(":host(.{mode}) {selector}"),
-            _ => selector,
-        };
-    }
-    selector
+        .as_deref()
+        .map(|template| template.replace('&', &anchor))
+        .unwrap_or(anchor)
 }
 
 pub(crate) fn composition_conditions(branch: &StateBranch) -> Vec<String> {
-    ["container", "starting-style", "supports", "media", "layer"]
-        .into_iter()
-        .filter_map(|id| {
-            if id == "layer" && branch.layer.is_some() {
-                return None;
-            }
-            branch
-                .condition_wrappers
-                .iter()
-                .find(|(current_id, _)| current_id == id)
-                .map(|(_, wrapper)| wrapper.clone())
-        })
+    branch
+        .condition_wrappers
+        .iter()
+        .filter(|(id, _)| id != "layer" || branch.layer.is_none())
+        .map(|(_, wrapper)| wrapper.clone())
         .collect()
 }
 
@@ -121,10 +104,8 @@ pub(crate) fn wrap_raw_conditions(mut text: String, conditions: &[String]) -> St
 }
 
 pub(crate) fn wrap_state_conditions(mut text: String, wrappers: &[(String, String)]) -> String {
-    for id in ["container", "starting-style", "supports", "media", "layer"] {
-        if let Some((_, wrapper)) = wrappers.iter().find(|(current_id, _)| current_id == id) {
-            text = format!("{wrapper}{{{text}}}");
-        }
+    for (_, wrapper) in wrappers.iter().rev() {
+        text = format!("{wrapper}{{{text}}}");
     }
     text
 }

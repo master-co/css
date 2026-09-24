@@ -31,6 +31,7 @@ export interface MasterCSSVitePluginContext {
   virtualCSSImporters?: Set<string>
   virtualCSSPlaceholderEmitted?: boolean
   stylesheets?: MasterCSSStylesheetCollection
+  pruneNativeCSS?: boolean
   includeGeneratedCSS?: boolean
   emittedGlobals?: MasterCSSEmittedGlobals
   defaultManifestAssetReferenceId?: string
@@ -48,6 +49,7 @@ export function createMasterCSSVitePlugin(
 function createPlugins(options: ResolvedMasterCSSVitePluginOptions): Plugin[] {
   const runtimeBootstrap = RuntimeBootstrapPlugin()
   const context = {
+    pruneNativeCSS: options.pruneNativeCSS,
     includeGeneratedCSS: options.mode === 'static'
   } as MasterCSSVitePluginContext
   const plugins: Plugin[] = [

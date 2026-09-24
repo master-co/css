@@ -62,7 +62,7 @@ export interface MasterCSSRenderBindingSession extends Disposable {
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclarationCandidate[]
-  ensureClassRules(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
+  ensureClassRules(classNames: readonly string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): MasterCSSEmittedGlobals
   snapshot(): MasterCSSServerRender

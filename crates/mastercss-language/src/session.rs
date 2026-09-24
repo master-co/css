@@ -7,7 +7,6 @@ impl LanguageSession {
         Ok(Self {
             engine,
             manifest_json: manifest_json.to_owned(),
-            native_support_by_class: HashMap::new(),
             prepared_document: None,
             next_document_id: 0,
         })
@@ -304,7 +303,7 @@ impl LanguageSession {
     pub fn classify_class_names<I, S>(
         &mut self,
         class_names: I,
-        native_support: Option<&[bool]>,
+        _native_support: Option<&[bool]>,
     ) -> Result<LanguageClassificationsIr, LanguageError>
     where
         I: IntoIterator<Item = S>,
@@ -314,19 +313,6 @@ impl LanguageSession {
             .into_iter()
             .map(|class_name| class_name.as_ref().to_owned())
             .collect::<Vec<_>>();
-        if let Some(native_support) = native_support {
-            for (candidate, supported) in self
-                .engine
-                .native_declaration_candidates(&class_names)?
-                .into_iter()
-                .zip(native_support.iter().copied())
-            {
-                self.native_support_by_class
-                    .insert(candidate.class_name, supported);
-            }
-            self.engine
-                .ensure_class_rules_with_native_support(&class_names, native_support)?;
-        }
         let classes = class_names
             .iter()
             .map(|class_name| self.engine.inspect_class_semantics(class_name))
@@ -341,53 +327,42 @@ impl LanguageSession {
     pub fn inspect_class_name(
         &self,
         class_name: &str,
-        native_support: Option<&[bool]>,
+        _native_support: Option<&[bool]>,
         mode: Option<&str>,
     ) -> Result<LanguageInspectionIr, LanguageError> {
         let mut engine = EngineSession::create(&self.manifest_json)?;
-        let cached_native_support = self
-            .native_support_by_class
-            .get(class_name)
-            .copied()
-            .map(|supported| [supported]);
-        let native_support = native_support.or(cached_native_support
-            .as_ref()
-            .map(|support| support.as_slice()));
-        if let Some(native_support) = native_support {
-            engine.ensure_class_rules_with_native_support([class_name], native_support)?;
-        } else {
-            engine.ensure_class_rules([class_name])?;
-        }
+        engine.ensure_class_rules([class_name])?;
         let semantics = engine.inspect_class_semantics_with_mode(class_name, mode)?;
         let inspection = engine.inspect_with_mode(class_name, mode)?;
         let (fallback_base, fallback_suffix, fallback_key, fallback_value) =
             inspect_class_name_parts(class_name);
-        let (base, suffix, key, value) = if inspection.valid {
-            let suffix = format!(
-                "{}{}",
-                if semantics.important { "!" } else { "" },
-                semantics.state_token.as_deref().unwrap_or_default()
-            );
-            let base = if suffix.is_empty() {
-                class_name.to_owned()
+        let (base, suffix, key, value) =
+            if inspection.match_status == mastercss_schema::MatchStatus::Matched {
+                let suffix = format!(
+                    "{}{}",
+                    if semantics.important { "!" } else { "" },
+                    semantics.state_token.as_deref().unwrap_or_default()
+                );
+                let base = if suffix.is_empty() {
+                    class_name.to_owned()
+                } else {
+                    class_name
+                        .strip_suffix(&suffix)
+                        .unwrap_or(class_name)
+                        .to_owned()
+                };
+                let key_value = semantics
+                    .key_token
+                    .as_deref()
+                    .and_then(|key| key.strip_suffix(':').or_else(|| key.strip_suffix('-')))
+                    .zip(semantics.value_token.as_deref());
+                let (key, value) = key_value
+                    .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
+                    .unwrap_or_default();
+                (base, suffix, key, value)
             } else {
-                class_name
-                    .strip_suffix(&suffix)
-                    .unwrap_or(class_name)
-                    .to_owned()
+                (fallback_base, fallback_suffix, fallback_key, fallback_value)
             };
-            let key_value = semantics
-                .key_token
-                .as_deref()
-                .and_then(|key| key.strip_suffix(':').or_else(|| key.strip_suffix('-')))
-                .zip(semantics.value_token.as_deref());
-            let (key, value) = key_value
-                .map(|(key, value)| (Some(key.to_owned()), Some(value.to_owned())))
-                .unwrap_or_default();
-            (base, suffix, key, value)
-        } else {
-            (fallback_base, fallback_suffix, fallback_key, fallback_value)
-        };
         let mut variables = engine.class_variable_entries(class_name)?;
         if semantics.kind == ClassSemanticKind::Token {
             let token_key = semantics
@@ -403,7 +378,9 @@ impl LanguageSession {
         Ok(LanguageInspectionIr {
             version: LANGUAGE_BATCH_VERSION,
             class_name: class_name.to_owned(),
-            valid: inspection.valid,
+            match_status: inspection.match_status,
+            css_value_status: inspection.css_value_status,
+            browser_support: inspection.browser_support,
             kind: semantics.kind,
             base,
             suffix,

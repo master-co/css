@@ -13,7 +13,7 @@ beforeAll(() => {
   )
 })
 
-it('validates classes through a Rust session and host CSS oracle', () => {
+it('validates classes through a Rust session with independent CSS value checks', () => {
   const validator = createTestToolingSession(defaultManifest)
   try {
     const classNames = [
@@ -32,33 +32,33 @@ it('validates classes through a Rust session and host CSS oracle', () => {
 
     for (const className of classNames.slice(0, 7)) {
       const generated = byClass.get(className)!
-      expect(generated.matched, className).toBe(true)
+      expect(generated.matchStatus, className).toBe('matched')
       expect(generated.rules.flatMap(({ text }) => validateCSS(text)), className).toEqual([])
     }
-    expect(byClass.get('text-align:asdf')?.matched).toBe(false)
-    expect(byClass.get('text-align:asdf')?.rules).toEqual([])
-    expect(byClass.get('made-up:left')?.matched).toBe(false)
+    expect(byClass.get('text-align:asdf')?.cssValueStatus).toBe('unknown')
+    expect(byClass.get('text-align:asdf')?.rules[0].text).toContain('{text-align:asdf}')
+    expect(byClass.get('made-up:left')?.cssValueStatus).toBe('unknown')
   } finally {
     validator.dispose()
   }
 })
 
-it('keeps native declarations behind host support checks', () => {
+it('preserves native declarations while reporting invalid CSS values', () => {
   const validator = createTestToolingSession(defaultManifest)
   try {
     const result = validator.validateClassNames([
       'float:left',
       'view-transition-name:hero',
       '--foo:123',
-      'float:banana',
-      'display:banana'
+      'float:16px',
+      'display:16px'
     ])
     expect(result.classes[0].rules[0]?.text).toBe('.float\\:left{float:left}')
     expect(result.classes[1].rules[0]?.text)
       .toBe('.view-transition-name\\:hero{view-transition-name:hero}')
     expect(result.classes[2].rules[0]?.text).toContain('{--foo:123}')
-    expect(result.classes[3].matched).toBe(false)
-    expect(result.classes[4].matched).toBe(false)
+    expect(result.classes[3].cssValueStatus).toBe('invalid')
+    expect(result.classes[4].cssValueStatus).toBe('invalid')
   } finally {
     validator.dispose()
   }

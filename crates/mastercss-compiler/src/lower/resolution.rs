@@ -1,9 +1,7 @@
 use super::{
     CompileManifestOptions, CompilerError, CssDirectiveConditionPathEntry,
-    CssDirectiveManifestInput, CssDirectiveSourceReference, DeclarationBlock,
-    EngineCompositionRuleIr, EngineSession, ErrorCode, Length, LengthPercentageOrAuto, Map, Parse,
-    ParserOptions, Property, ResolvedStyleBranch, UtilityLayerName, Value, compile_manifest_input,
-    json,
+    CssDirectiveManifestInput, CssDirectiveSourceReference, EngineCompositionRuleIr, EngineSession,
+    ErrorCode, Map, ResolvedStyleBranch, UtilityLayerName, Value, compile_manifest_input, json,
 };
 
 pub(super) fn directive_error(message: impl Into<String>) -> CompilerError {
@@ -64,7 +62,7 @@ pub(super) fn condition_path(
 }
 
 pub(super) fn combine_selector_wrapper(selector: &str, wrapper: &str) -> String {
-    wrapper.replace('&', selector)
+    mastercss_lexer::replace_nesting_selector(wrapper, selector).unwrap_or_else(|| wrapper.into())
 }
 
 pub(super) fn split_selector_list(selector: &str) -> Vec<String> {
@@ -115,11 +113,10 @@ pub(super) fn combine_style_selectors(parent: &str, child: &str) -> String {
     let mut selectors = Vec::new();
     for child in children {
         for parent in &parents {
-            selectors.push(if child.contains('&') {
-                child.replace('&', parent)
-            } else {
-                format!("{parent} {child}")
-            });
+            selectors.push(
+                mastercss_lexer::replace_nesting_selector(&child, parent)
+                    .unwrap_or_else(|| format!("{parent} {child}")),
+            );
         }
     }
     selectors.join(",")
@@ -129,67 +126,6 @@ pub(super) fn composition_rules(
     engine: &mut EngineSession,
     class_name: &str,
 ) -> Result<Vec<EngineCompositionRuleIr>, CompilerError> {
-    let candidates = engine
-        .native_declaration_candidates([class_name])
-        .map_err(|error| directive_error(error.to_string()))?;
-    if !candidates.is_empty() {
-        let supported = candidates
-            .iter()
-            .map(|candidate| {
-                if candidate.property.starts_with("--") {
-                    return true;
-                }
-                let accepts_unparsed = || {
-                    let value = candidate.value.trim();
-                    matches!(
-                        value,
-                        "initial" | "inherit" | "unset" | "revert" | "revert-layer"
-                    ) || ["var(", "env(", "attr("]
-                        .iter()
-                        .any(|function| value.contains(function))
-                        || ((value.starts_with('\'') && value.ends_with('\''))
-                            || (value.starts_with('"') && value.ends_with('"')))
-                        || (candidate.property == "content" && matches!(value, "normal" | "none"))
-                        || (candidate.property == "text-underline-offset"
-                            && LengthPercentageOrAuto::parse_string(value).is_ok())
-                        || (candidate.property == "outline-offset"
-                            && Length::parse_string(value).is_ok())
-                        || (candidate.property == "contain"
-                            && value.split_whitespace().all(|keyword| {
-                                matches!(
-                                    keyword,
-                                    "none"
-                                        | "strict"
-                                        | "content"
-                                        | "size"
-                                        | "inline-size"
-                                        | "layout"
-                                        | "style"
-                                        | "paint"
-                                )
-                            }))
-                };
-                let declaration_source = format!("{}:{}", candidate.property, candidate.value);
-                let Ok(block) =
-                    DeclarationBlock::parse_string(&declaration_source, ParserOptions::default())
-                else {
-                    return accepts_unparsed();
-                };
-                block.declarations.len() == 1
-                    && block
-                        .declarations
-                        .iter()
-                        .all(|declaration| match declaration {
-                            Property::Unparsed(_) => accepts_unparsed(),
-                            Property::Custom(_) => accepts_unparsed(),
-                            _ => true,
-                        })
-            })
-            .collect::<Vec<_>>();
-        engine
-            .ensure_class_rules_with_native_support([class_name], &supported)
-            .map_err(|error| directive_error(error.to_string()))?;
-    }
     engine
         .composition_rules(class_name)
         .map_err(|error| directive_error(error.to_string()))

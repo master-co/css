@@ -88,7 +88,7 @@ describe('native target resolution', () => {
 
   it('rejects unsupported lint request versions with a structured error', () => {
     const lint = loadNativeToolingBinding({ required: true })!
-      .createLintSession({ version: 1, utilities: [] } as never)
+      .createLintSession({ version: 1, languageVersion: 2, utilities: [] } as never)
     try {
       expect(() => lint.analyzeClassListPolicy({
         version: 0,
@@ -102,7 +102,7 @@ describe('native target resolution', () => {
 
   it('loads raw value policy candidates and diagnostics', () => {
     const lint = loadNativeToolingBinding({ required: true })!.createLintSession({
-      version: 1,
+      version: 1, languageVersion: 2,
       variables: {
         spacing: [{ key: 'md', type: 'number', value: '1rem' }]
       },
@@ -144,7 +144,7 @@ describe('native target resolution', () => {
 
   it('loads the manifest-driven language session', () => {
     const language = loadNativeToolingBinding({ required: true })!.createLanguageSession({
-      version: 1,
+      version: 1, languageVersion: 2,
       utilities: [{
         id: 'display-block',
         name: 'block',
@@ -155,27 +155,27 @@ describe('native target resolution', () => {
     } as never)
     try {
       expect(language.classifyClassNames(['block:hover', 'unknown'])).toMatchObject({
-        version: 2,
+        version: 3,
         classes: [
           { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
           { className: 'unknown', kind: 'unknown' }
         ]
       })
       expect(language.inspectClassName('block:hover')).toMatchObject({
-        version: 2,
+        version: 3,
         className: 'block:hover',
         kind: 'semantic',
         text: '@layer utilities{.block\\:hover:hover{display:block}}'
       })
       expect(language.completionIndex()).toMatchObject({
-        version: 2,
+        version: 3,
         classEntries: expect.arrayContaining([
           expect.objectContaining({ label: 'block', kind: 'value' }),
           expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
         ])
       })
       expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-        version: 2,
+        version: 3,
         colorToken: 'rgba(0|0|0/.5)',
         editable: true,
         sourceFormat: { syntax: 'rgb' }
@@ -184,7 +184,7 @@ describe('native target resolution', () => {
         className: 'color:#123',
         start: 2
       }])).toEqual({
-        version: 2,
+        version: 3,
         tokens: [{
           range: { start: 8, end: 12 },
           expression: { kind: 'literal', value: '#123' }

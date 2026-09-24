@@ -115,9 +115,8 @@ Use `@theme light` and `@theme dark` when token values should change by mode.
 ```css name=app.css
 @import "@master/css";
 
-@settings {
-  mode-trigger: class;
-}
+@mode light { .light { @slot; } }
+@mode dark { .dark { @slot; } }
 
 @theme light {
   --color-panel: #fff;
@@ -189,7 +188,7 @@ Tailwind writes variants before the utility. Master CSS appends selectors and co
 | `focus-visible:outline-2` | `outline-width:2px:focus-visible` | Use native pseudo-class names when they are clearer. |
 | `disabled:opacity-50` | `opacity:.5:disabled` | Attribute and pseudo-class selectors are supported. |
 | `md:grid-cols-3` | `grid-cols:3@md` | Breakpoint and condition suffixes use `@`. |
-| `dark:bg-slate-950` | `bg-slate-95@dark` | Output depends on `mode-trigger`. |
+| `dark:bg-slate-950` | `bg-slate-95@dark` | Output follows the explicit `@mode dark` activation. |
 | `motion-safe:animate-spin` | `animation:rotate|var(--duration-slowest)|linear|infinite@motion` | Built-in motion variants are `@motion` and `@reduce-motion`. |
 | `supports-[backdrop-filter]:...` | `backdrop-filter:blur(12px)@supports(backdrop-filter(0px))` | Use raw `@supports()` for local conditions. |
 | `data-[state=open]:...` | `bg-blue-5[data-state=open]` | Native attribute selectors are appended directly. |

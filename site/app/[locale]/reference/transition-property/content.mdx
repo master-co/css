@@ -27,7 +27,7 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
              transition-property:opacity
              transition-timing-function:linear
              transition-duration:0ms@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -54,7 +54,7 @@ Toggle each checkbox to move and fade the same layer. The first transition inclu
              transition-property:opacity,transform
              transition-timing-function:linear
              transition-duration:0ms@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -88,7 +88,7 @@ Focus or hover this native button. A 200ms duration and the smooth easing token 
            outline-offset:3px:focus-visible
            transform:none@print
            transition-duration:0ms@print
-           transition-duration-normal@screen&motion
+           transition-duration-normal@screen@motion
            transform:translateY(-8px):is(:hover,:focus-visible)@screen">
     Lift layer
   </button>
@@ -121,7 +121,7 @@ Compare the same movement with transform selected and with none. Both specimens 
              transition-property:transform
              transition-timing-function:linear
              transition-duration:0ms@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -147,7 +147,7 @@ Compare the same movement with transform selected and with none. Both specimens 
              transition-property:none
              transition-timing-function:linear
              transition-duration:0ms@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -180,9 +180,9 @@ Toggle the layer after resizing. Below `sm`, only opacity interpolates; at `sm`,
              fg-blue-80 opacity:1 transform:none
              transition-property:opacity
              transition-timing-function:linear
-             transition-duration-slowest@screen&motion
+             transition-duration-slowest@screen@motion
              transition-property:none@print
-             transition-property:opacity,transform@screen&sm">
+             transition-property:opacity,transform@screen@sm">
       Layer 01
     </span>
   </span>

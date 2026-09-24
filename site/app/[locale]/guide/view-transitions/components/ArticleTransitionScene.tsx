@@ -59,7 +59,7 @@ export default function ArticleTransitionScene() {
           <IconArrowLeft size={14} aria-hidden="true" />Back to collection
         </button>
       </div>
-    </article> : <div className="grid grid-cols:1 gap-md grid-cols:2@container(md)">
+    </article> : <div className="grid grid-cols:1 gap-md grid-cols:2@container((width>=28rem))">
       {articles.map(article => <DemoSurface key={article.id} className="flex overflow:hidden flex-col">
         <Image alt={article.imageAlt} src={article.image} placeholder="blur" sizes="(max-width: 480px) 100vw, 300px"
           className={clsx(article.imageTransition, shared, 'block h:auto w:100% aspect-ratio:16/10 object-cover')} />

@@ -116,6 +116,7 @@ function createHydrationFixture(classNames) {
       bodyMarkup: createClassMarkup(classNames),
       hydrationManifest: {
         version: 1,
+        languageVersion: defaultManifest.languageVersion,
         rules: snapshot.rules,
         resourceOrder: [
           ...snapshot.resources.variables.map(({ name }) => name),

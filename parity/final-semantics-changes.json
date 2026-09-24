@@ -1,0 +1,888 @@
+{
+  "baselineCommit": "e0464d255",
+  "languageVersion": 2,
+  "changes": [
+    {
+      "id": "engine-variable-lifecycle/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}",
+      "after": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
+    },
+    {
+      "id": "engine-variable-lifecycle/1",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}",
+      "after": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
+    },
+    {
+      "id": "engine-variable-lifecycle/2",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}}",
+      "after": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}}"
+    },
+    {
+      "id": "engine-inline-theme-variable-dependencies/0",
+      "key": "expectedCss",
+      "before": "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
+      "after": "@layer theme{:root,:host{--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:oklch(100% 0 none)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}"
+    },
+    {
+      "id": "engine-mode-conditions/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:light){.bg-white\\@light{background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}}",
+      "after": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:root,:root *){color:var(--color-blue-60)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:host,:host *){color:var(--color-blue-60)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:root,:root *){background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:host,:host *){background-color:oklch(100% 0 none)}}}"
+    },
+    {
+      "id": "engine-functions-and-negative-values/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}",
+      "after": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+    },
+    {
+      "id": "engine-negative-variable-identifier-bytes/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}",
+      "after": "@layer theme{:root,:host{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}"
+    },
+    {
+      "id": "engine-border-radius-aliases/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}",
+      "after": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
+    },
+    {
+      "id": "engine-pseudo-and-responsive-selectors/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}",
+      "after": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+    },
+    {
+      "id": "engine-native-alias-global-variable/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}",
+      "after": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+    },
+    {
+      "id": "engine-native-alias-warm-session/0",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}",
+      "after": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+    },
+    {
+      "id": "engine-native-alias-warm-session/1",
+      "key": "expectedCss",
+      "before": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}",
+      "after": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+    },
+    {
+      "id": "rc87-compiler-variables-modes-dependencies",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "settings": {
+          "modeTrigger": "class",
+          "modes": [
+            "light",
+            "dark"
+          ]
+        },
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": 12,
+              "numeric": {
+                "value": 12
+              },
+              "static": true
+            }
+          ],
+          "color": [
+            {
+              "name": "color-blue-50",
+              "key": "blue-50",
+              "type": "string",
+              "value": "#369",
+              "static": true
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "type": "string",
+              "value": "var(--color-blue-50)",
+              "dependencies": [
+                "color-blue-50"
+              ],
+              "static": true,
+              "modes": {
+                "dark": {
+                  "type": "string",
+                  "value": "#123"
+                }
+              }
+            }
+          ]
+        }
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "modes": [
+          {
+            "name": "light",
+            "branches": [
+              {
+                "selector": ".light"
+              }
+            ]
+          },
+          {
+            "name": "dark",
+            "branches": [
+              {
+                "selector": ".dark"
+              }
+            ]
+          }
+        ],
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": 12,
+              "numeric": {
+                "value": 12
+              },
+              "static": true
+            }
+          ],
+          "color": [
+            {
+              "name": "color-blue-50",
+              "key": "blue-50",
+              "type": "string",
+              "value": "#369",
+              "static": true
+            },
+            {
+              "name": "color-brand",
+              "key": "brand",
+              "type": "string",
+              "value": "var(--color-blue-50)",
+              "dependencies": [
+                "color-blue-50"
+              ],
+              "static": true,
+              "modes": {
+                "dark": {
+                  "type": "string",
+                  "value": "#123"
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-explicit-negative-variable",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing--card",
+              "key": "-card",
+              "type": "number",
+              "value": -12,
+              "numeric": {
+                "value": -12
+              },
+              "static": true
+            }
+          ]
+        }
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing--card",
+              "key": "-card",
+              "type": "number",
+              "value": -12,
+              "numeric": {
+                "value": -12
+              },
+              "static": true
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-static-animation",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "animations": {
+          "fade": {
+            "to": {
+              "opacity": "1"
+            }
+          }
+        },
+        "animationOptions": {
+          "fade": {
+            "static": true
+          }
+        }
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "animations": {
+          "fade": {
+            "to": {
+              "opacity": "1"
+            }
+          }
+        },
+        "animationOptions": {
+          "fade": {
+            "static": true
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-omits-registry-input",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2
+      }
+    },
+    {
+      "id": "rc87-compiler-breakpoint-container-conditions",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "variables": {
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "777px",
+              "numeric": {
+                "value": 777,
+                "unit": "px"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "333px",
+              "numeric": {
+                "value": 333,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48.5625,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48.5625,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 20.8125,
+                "unit": "rem"
+              }
+            ]
+          }
+        }
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "variables": {
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "777px",
+              "numeric": {
+                "value": 777,
+                "unit": "px"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "333px",
+              "numeric": {
+                "value": 333,
+                "unit": "px"
+              }
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 777,
+                "unit": "px"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 777,
+                "unit": "px"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 333,
+                "unit": "px"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-unitful-numeric-tokens",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": "1.5rem",
+              "numeric": {
+                "value": 1.5,
+                "unit": "rem"
+              }
+            }
+          ],
+          "radius": [
+            {
+              "name": "radius-card",
+              "key": "card",
+              "type": "number",
+              "value": "8px",
+              "numeric": {
+                "value": 8,
+                "unit": "px"
+              }
+            }
+          ],
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "48rem",
+              "numeric": {
+                "value": 48,
+                "unit": "rem"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "512px",
+              "numeric": {
+                "value": 512,
+                "unit": "px"
+              }
+            }
+          ],
+          "shadow": [
+            {
+              "name": "shadow-card",
+              "key": "card",
+              "type": "string",
+              "value": "1rem"
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 32,
+                "unit": "rem"
+              }
+            ]
+          }
+        }
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "variables": {
+          "spacing": [
+            {
+              "name": "spacing-card",
+              "key": "card",
+              "type": "number",
+              "value": "1.5rem",
+              "numeric": {
+                "value": 1.5,
+                "unit": "rem"
+              }
+            }
+          ],
+          "radius": [
+            {
+              "name": "radius-card",
+              "key": "card",
+              "type": "number",
+              "value": "8px",
+              "numeric": {
+                "value": 8,
+                "unit": "px"
+              }
+            }
+          ],
+          "breakpoint": [
+            {
+              "name": "breakpoint-card",
+              "key": "card",
+              "type": "number",
+              "value": "48rem",
+              "numeric": {
+                "value": 48,
+                "unit": "rem"
+              }
+            }
+          ],
+          "container": [
+            {
+              "name": "container-panel",
+              "key": "panel",
+              "type": "number",
+              "value": "512px",
+              "numeric": {
+                "value": 512,
+                "unit": "px"
+              }
+            }
+          ],
+          "shadow": [
+            {
+              "name": "shadow-card",
+              "key": "card",
+              "type": "string",
+              "value": "1rem"
+            }
+          ]
+        },
+        "conditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "breakpointConditions": {
+          "card": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 48,
+                "unit": "rem"
+              }
+            ]
+          }
+        },
+        "containerConditions": {
+          "panel": {
+            "id": "container",
+            "nodes": [
+              {
+                "type": "number",
+                "value": 512,
+                "unit": "px"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "rc87-compiler-variant-branches",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "variants": [
+          {
+            "token": "@motion-safe",
+            "branches": [
+              {
+                "conditions": [
+                  "@media (prefers-reduced-motion:no-preference)"
+                ],
+                "conditionNodes": [
+                  {
+                    "id": "media",
+                    "nodes": [
+                      {
+                        "type": "string",
+                        "name": "prefers-reduced-motion",
+                        "value": "no-preference"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "conditions": {
+          "motion-safe": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "string",
+                "name": "prefers-reduced-motion",
+                "value": "no-preference"
+              }
+            ]
+          }
+        },
+        "utilities": [
+          {
+            "id": ".hocus",
+            "name": "hocus",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "block"
+                  },
+                  "selector": "&:is(:hover,:focus)"
+                },
+                {
+                  "declarations": {
+                    "display": "grid"
+                  },
+                  "conditions": [
+                    "@media (prefers-reduced-motion:no-preference)"
+                  ]
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "hocus"
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "variants": [
+          {
+            "token": "@motion-safe",
+            "branches": [
+              {
+                "conditions": [
+                  "@media (prefers-reduced-motion:no-preference)"
+                ],
+                "conditionNodes": [
+                  {
+                    "id": "media",
+                    "nodes": [
+                      {
+                        "type": "string",
+                        "name": "prefers-reduced-motion",
+                        "value": "no-preference"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ],
+        "conditions": {
+          "motion-safe": {
+            "id": "media",
+            "nodes": [
+              {
+                "type": "string",
+                "name": "prefers-reduced-motion",
+                "value": "no-preference"
+              }
+            ]
+          }
+        },
+        "utilities": [
+          {
+            "id": ".hocus",
+            "name": "hocus",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "block"
+                  },
+                  "selector": "&:is(:hover,:focus)"
+                },
+                {
+                  "declarations": {
+                    "display": "grid"
+                  },
+                  "conditions": [
+                    "@media (prefers-reduced-motion:no-preference)"
+                  ]
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "hocus"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rc87-compiler-semantic-utility",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": ".card",
+            "name": "card",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "grid",
+                    "color": "var(--color-primary)"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "card"
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "utilities": [
+          {
+            "id": ".card",
+            "name": "card",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "grid",
+                    "color": "var(--color-primary)"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "card"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "rc87-compiler-browser-manifest",
+      "key": "expectedManifest",
+      "before": {
+        "version": 1,
+        "utilities": [
+          {
+            "id": ".btn",
+            "name": "btn",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "flex",
+                    "color": "red"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "btn"
+              }
+            ]
+          }
+        ]
+      },
+      "after": {
+        "version": 1,
+        "languageVersion": 2,
+        "utilities": [
+          {
+            "id": ".btn",
+            "name": "btn",
+            "type": -2,
+            "order": 0,
+            "layer": "components",
+            "emit": {
+              "type": "static",
+              "rules": [
+                {
+                  "declarations": {
+                    "display": "flex",
+                    "color": "red"
+                  }
+                }
+              ]
+            },
+            "matchers": [
+              {
+                "type": "static",
+                "name": "btn"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -4,7 +4,7 @@ import { compileRenderedStylesheet } from '../src/stylesheet/index-public'
 
 test.each(['native', 'wasm'] as const)('preserves selector literals while lowering @compose through %s', async (binding) => {
   const source = String.raw`@utilities{paint{display:block}}[data-state=":first"]:first{@compose paint;}.literal\:before:before{@compose paint;}:is(:first,[data-state=':last']){@compose paint;}`
-  const options = { baseManifest: { version: 1 as const }, preserveNativeCSS: true }
+  const options = { baseManifest: { version: 1 as const, languageVersion: 2 as const }, preserveNativeCSS: true }
   const result = binding === 'native'
     ? await compileRenderedStylesheet('/tmp/selector-literals.css', source, options)
     : await compileBrowserStylesheet(source, options)

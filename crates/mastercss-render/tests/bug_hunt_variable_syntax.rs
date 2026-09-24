@@ -6,7 +6,7 @@ fn raw_stylesheet_variables_follow_css_tokens_and_keep_nested_fallbacks() {
     let cases: Vec<Value> =
         serde_json::from_str(include_str!("bug_hunt_variable_syntax.json")).unwrap();
     let manifest = json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "utilities": [],
         "variables": {
             "color": [

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import withMasterCSS from '../src'
@@ -21,7 +21,7 @@ function readGeneratedInstrumentationClientSource(root: string) {
   const cwd = process.cwd()
   try {
     process.chdir(root)
-    withMasterCSS({})
+    withMasterCSS({}, { mode: 'progressive' })
     return readFileSync(join(root, 'node_modules', '.master-css', 'master-css-next-instrumentation-client.js'), 'utf-8')
   } finally {
     process.chdir(cwd)
@@ -106,15 +106,15 @@ function createMasterCSSRuntimeTestModule() {
 
 describe('withMasterCSS', () => {
   it('sets the Next adapter path and registers options', () => {
-    const nextConfig = withMasterCSS({ reactStrictMode: true }, { buildReport: 'master-css.json' })
+    const nextConfig = withMasterCSS({ reactStrictMode: true }, { mode: 'progressive', buildReport: 'master-css.json' })
 
     expect(nextConfig.reactStrictMode).toBe(true)
     expect(nextConfig.adapterPath).toContain('adapter.js')
-    expect(getRegisteredOptions()).toEqual({ buildReport: 'master-css.json' })
+    expect(getRegisteredOptions()).toEqual({ mode: 'progressive', buildReport: 'master-css.json' })
   })
 
   it('adds a CSS manifest webpack loader', () => {
-    const nextConfig = withMasterCSS({}) as any
+    const nextConfig = withMasterCSS({}, { mode: 'progressive' }) as any
     const webpackConfig = { module: { rules: [] } }
     const resolvedConfig = nextConfig.webpack(webpackConfig as any, {} as any)
 
@@ -125,8 +125,7 @@ describe('withMasterCSS', () => {
           expect.objectContaining({
             options: {
               virtual: true,
-              module: true,
-              external: true
+              module: true
             }
           })
         ]
@@ -136,8 +135,7 @@ describe('withMasterCSS', () => {
         use: [
           expect.objectContaining({
             options: {
-              module: true,
-              external: true
+              module: true
             }
           })
         ]
@@ -171,7 +169,7 @@ describe('withMasterCSS', () => {
           }
         }
       }
-    })
+    }, { mode: 'progressive' })
 
     expect(nextConfig.turbopack.rules).toEqual({
       '*': expect.arrayContaining([
@@ -183,8 +181,7 @@ describe('withMasterCSS', () => {
             expect.objectContaining({
               options: {
                 virtual: true,
-                module: true,
-                external: true
+                module: true
               }
             })
           ],
@@ -200,13 +197,11 @@ describe('withMasterCSS', () => {
           loaders: [
             expect.objectContaining({
               options: {
-                module: true,
-                external: true
+                module: true
               }
             })
           ],
-          type: 'ecmascript',
-          as: '*.js'
+          type: 'ecmascript'
         }),
         expect.objectContaining({
           condition: {
@@ -230,8 +225,7 @@ describe('withMasterCSS', () => {
               { not: { query: /master-css-manifest/ } }
             ]
           },
-          type: 'css',
-          as: '*.css'
+          type: 'css'
         })
       ]),
       '*.js': [
@@ -330,7 +324,7 @@ describe('withMasterCSS', () => {
     writeFileSync(join(root, 'src/instrumentation-client.ts'), 'export const marker = true')
     try {
       process.chdir(root)
-      const nextConfig = withMasterCSS({}) as any
+      const nextConfig = withMasterCSS({}, { mode: 'progressive' }) as any
 
       expect(nextConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBe('./src/instrumentation-client.ts')
       expect(nextConfig.webpack({ module: { rules: [] } }, {}).resolve.alias[masterCSSUserInstrumentationClientId]).toContain(join('src', 'instrumentation-client.ts'))
@@ -416,56 +410,9 @@ describe('withMasterCSS', () => {
     expect(resolvedConfig).toBe(nextConfig)
   })
 
-  it('adds CSS manifest loaders without runtime aliases or the adapter when mode is null', () => {
-    const nextConfig = { reactStrictMode: true }
-    const resolvedConfig = withMasterCSS(nextConfig, {
-      mode: 'runtime',
-      runtime: false
-    }) as any
-
-    expect(resolvedConfig.reactStrictMode).toBe(true)
-    expect(resolvedConfig.adapterPath).toBeUndefined()
-    expect(resolvedConfig.turbopack.rules).toEqual({
-      '*': expect.arrayContaining([
-        expect.objectContaining({
-          condition: { path: expect.any(RegExp) },
-          type: 'ecmascript'
-        }),
-        expect.objectContaining({
-          condition: {
-            all: [
-              { path: /\.css$/ },
-              { query: /master-css-manifest/ }
-            ]
-          },
-          type: 'ecmascript',
-          as: '*.js'
-        }),
-        expect.objectContaining({
-          condition: {
-            all: [
-              { path: /\.(css|scss|sass)$/ },
-              { not: { path: /\.module\.(css|scss|sass)$/ } },
-              { content: expect.any(RegExp) },
-              { not: { query: /master-css-manifest/ } }
-            ]
-          },
-          type: 'css',
-          as: '*.css'
-        })
-      ]),
-      '*.js': [expect.objectContaining({ type: 'ecmascript' })],
-      '*.cjs': [expect.objectContaining({ type: 'ecmascript' })],
-      '*.ts': [expect.objectContaining({ type: 'typescript' })]
-    })
-    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules)
-      .toEqual(expect.arrayContaining([
-        expect.objectContaining({ test: expect.any(RegExp) }),
-        expect.objectContaining({ resourceQuery: /master-css-manifest/ })
-      ]))
-    expect(resolvedConfig.webpack({ module: { rules: [] } }, {}).module.rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
-    expect(resolvedConfig.turbopack.resolveAlias[nextInstrumentationClientId]).toBeUndefined()
-    expect(resolvedConfig.turbopack.resolveAlias[masterCSSUserInstrumentationClientId]).toBeUndefined()
+  it('rejects runtime switches that contradict the selected mode', () => {
+    expect(() => withMasterCSS({}, { mode: 'runtime', runtime: false })).toThrow(/runtime/)
+    expect(() => withMasterCSS({}, { mode: 'static', runtime: true })).toThrow(/runtime/)
   })
 
   it('composes an existing Next adapter path with the Master CSS adapter', () => {
@@ -476,6 +423,7 @@ describe('withMasterCSS', () => {
       const nextConfig = withMasterCSS({
         adapterPath: './external-adapter.js'
       }, {
+        mode: 'progressive',
         adapterOrder: 'external-first'
       }) as any
       const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
@@ -496,7 +444,7 @@ describe('withMasterCSS', () => {
     try {
       process.chdir(root)
       process.env.NEXT_ADAPTER_PATH = './env-adapter.js'
-      const nextConfig = withMasterCSS({}) as any
+      const nextConfig = withMasterCSS({}, { mode: 'progressive' }) as any
       const adapterSource = readFileSync(nextConfig.adapterPath, 'utf-8')
 
       expect(toPosixPath(nextConfig.adapterPath)).toContain(composedAdapterProjectPath)
@@ -512,7 +460,7 @@ describe('withMasterCSS', () => {
     }
   })
 
-  it('sets up static mode with Turbopack rules without adding a webpack callback', async () => {
+  it('defaults to static mode with Turbopack rules without a runtime bootstrap', async () => {
     const cwd = process.cwd()
     const root = mkdtempSync(join(tmpdir(), 'master-css-next-config-'))
     mkdirSync(join(root, 'app'), { recursive: true })
@@ -520,11 +468,12 @@ describe('withMasterCSS', () => {
     writeFileSync(join(root, 'app/page.tsx'), 'export default function Page() { return <main className="block" /> }')
     try {
       process.chdir(root)
-      const nextConfig = await withMasterCSS({}, {
-        mode: 'static'
-      }) as any
+      const nextConfig = await withMasterCSS({}) as any
 
-      expect(nextConfig.webpack).toBeUndefined()
+      expect(nextConfig.webpack).toBeTypeOf('function')
+      const webpackConfig = nextConfig.webpack({ module: { rules: [] } }, {})
+      expect(webpackConfig.resolve.alias[VIRTUAL_CSS_ID]).toBe(join(realpathSync(root), '.master/next.css'))
+      expect(webpackConfig.resolve.alias[nextInstrumentationClientId]).toBeUndefined()
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_CSS_ID]).toBe('./.master/next.css')
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_MANIFEST_ID]).toContain(virtualManifestProjectPath)
       expect(nextConfig.turbopack.resolveAlias[VIRTUAL_EMITTED_GLOBALS_ID]).toContain(virtualEmittedGlobalsProjectPath)
@@ -560,8 +509,7 @@ describe('withMasterCSS', () => {
               { not: { query: /master-css-manifest/ } }
             ])
           }),
-          type: 'css',
-          as: '*.css'
+          type: 'css'
         })
       ]))
     } finally {

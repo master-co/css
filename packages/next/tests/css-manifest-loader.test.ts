@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, existsSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
@@ -74,29 +74,21 @@ describe('css manifest loader', () => {
     expect(source).toContain('#123')
   })
 
-  it('wraps the manifest JSON as an external JSON facade when requested', async () => {
+  it('exports standard ESM data without writing bundler output assets', async () => {
     const projectDir = createFixtureDir()
     const manifestPath = join(projectDir, 'index.css')
-    mkdirSync(projectDir, { recursive: true })
     writeFileSync(manifestPath, '@theme { --color-primary: #123; }')
-
     const source = await runManifestLoader({
       resourcePath: manifestPath,
       rootContext: projectDir,
-      getOptions: () => ({ module: true, external: true })
+      getOptions: () => ({ module: true })
     })
-    const assetDir = join(projectDir, '.next/static/media')
-    const assetFile = readdirSync(assetDir).find((file) => file.endsWith('.json'))
-
-    expect(source).toContain('/_next/static/media/master-css-manifest.')
-    expect(source).toContain('loadMasterCSSManifestFromImport')
-    expect(source).toContain(`with: { type: 'json' }`)
-    expect(source).toContain(`if (error?.name !== 'SyntaxError') throw error;`)
-    expect(source).toContain('const response = await fetch(specifier)')
-    expect(source).not.toContain('#123')
-    expect(assetFile).toBeTruthy()
-    expect(readFileSync(join(assetDir, assetFile || ''), 'utf8')).toContain('#123')
-    expect(readFileSync(join(projectDir, '.next/dev/static/media', assetFile || ''), 'utf8')).toContain('#123')
+    const { default: manifest } = await import(`data:text/javascript,${encodeURIComponent(source)}`)
+    expect(manifest.languageVersion).toBe(2)
+    expect(JSON.stringify(manifest)).toContain('#123')
+    expect(source).not.toContain('fetch(')
+    expect(source).not.toContain('/_next/')
+    expect(existsSync(join(projectDir, '.next'))).toBe(false)
   })
 
   it('inlines manifest modules in development for HMR', async () => {
@@ -112,7 +104,7 @@ describe('css manifest loader', () => {
       const source = await runManifestLoader({
         resourcePath: manifestPath,
         rootContext: projectDir,
-        getOptions: () => ({ module: true, external: true })
+        getOptions: () => ({ module: true })
       })
 
       expect(source).toMatch(/^export default \{"version":1/)
@@ -229,7 +221,7 @@ describe('css manifest loader', () => {
       '@import "@master/css";',
       '@components {',
       '    card {',
-      '        @compose bg:neutral-120;',
+      '        @compose bg-missing-token;',
       '    }',
       '}'
     ].join('\n'))

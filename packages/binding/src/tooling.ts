@@ -61,6 +61,7 @@ export function loadNativeToolingBinding(
     if (!loaded) return
     const nativeBinding = loaded.binding
     const toolingBinding: MasterCSSNativeToolingBinding = {
+      info: loaded.info,
       createLexerSession() {
         const session = new nativeBinding.LexerSession()
         const dispose = disposable(session)

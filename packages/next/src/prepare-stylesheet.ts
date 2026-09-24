@@ -5,6 +5,7 @@ import { prepareStylesheet, type MasterCSSSassCompiler } from '@master/css-compi
 
 export interface NextStylesheetLoaderOptions {
   preprocessed?: boolean
+  staticStatePath?: string
   sassOptions?: Record<string, unknown>
 }
 

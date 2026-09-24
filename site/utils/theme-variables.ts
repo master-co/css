@@ -6,7 +6,8 @@ import {
 } from '@master/css-schema/manifest'
 
 const presetVariables = flattenMasterCSSManifestVariables((presetManifest as MasterCSSManifest).variables)
-const rootSize = presetManifest.settings?.rootSize || 16
+// Display-only equivalents for the documentation preview, never compiler units.
+const previewRootPixels = 16
 
 export interface ThemeNumericVariableEntry {
   key: string
@@ -47,7 +48,7 @@ function getNumericRemValue(variable: MasterCSSManifestVariable) {
     case undefined:
     case '':
     case 'px':
-      return numeric.value / rootSize
+      return numeric.value / previewRootPixels
     default:
       return
   }
@@ -65,7 +66,7 @@ export function getThemeNumericVariableEntries(namespace: string): ThemeNumericV
       key: variable.key,
       value: String(variable.value),
       ...(getNumericUnit(variable) ? { unit: getNumericUnit(variable) } : {}),
-      px: rem * rootSize,
+      px: rem * previewRootPixels,
       rem
     }]
   })

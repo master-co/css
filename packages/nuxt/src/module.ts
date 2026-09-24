@@ -253,6 +253,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
         `new URL(${JSON.stringify(pathToFileURL(manifestAssetPath).href)})`
       )
       config.virtual[VIRTUAL_EMITTED_GLOBALS_ID] = emittedGlobalsModule
+      config.virtual['virtual:master-css-nuxt-hydration'] = `export default ${options.mode === 'progressive'}`
       if (hasClientRuntime) {
         addNitroPublicAsset(config, manifestDir, MASTER_CSS_MANIFEST_ASSET_BASE)
       }
@@ -265,10 +266,11 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
         }
         viteConfig.plugins.push(createMasterCSSVitePlugin({
           // Nuxt owns client startup and Nitro rendering; Vite still compiles CSS.
-          mode: options.mode === 'static' ? 'static' : 'runtime',
+          mode: options.mode,
           scanner: options.scanner,
-          runtime: { enabled: false, avoidFOUC: false }
-        }) as unknown as Plugin)
+          pruneNativeCSS: options.pruneNativeCSS,
+          runtime: options.runtime
+        }).filter(plugin => !['master-css:pre-render', 'master-css:inject-runtime', 'master-css:inject-runtime:serve', 'master-css:runtime-preload', 'master-css:manifest-preload'].includes(plugin.name)) as unknown as Plugin)
       })
     }
     switch (options.mode) {
@@ -305,7 +307,7 @@ export const masterCSSNuxtModule: NuxtModule<MasterCSSNuxtModuleOptions> = defin
         nuxt.options.build.transpile.push(resolve('./runtime/css-server'))
         addServerPlugin(resolve('./runtime/css-server'))
         nuxt.hook('nitro:init', (nitro) => {
-          registerNitroPrerenderHydrationManifest(nitro)
+          if (options.mode === 'progressive') registerNitroPrerenderHydrationManifest(nitro)
         })
         break
     }

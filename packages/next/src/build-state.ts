@@ -36,7 +36,7 @@ export interface MasterCSSBuildStateResolver {
   dispose: () => Promise<void>
 }
 
-export async function createMasterCSSBuildStateResolver(projectDir: string): Promise<MasterCSSBuildStateResolver> {
+export async function createMasterCSSBuildStateResolver(projectDir: string, options: { pruneNativeCSS?: boolean } = {}): Promise<MasterCSSBuildStateResolver> {
   const result = await loadMasterCSSVirtualManifest({
     host: manifestHost,
     root: projectDir
@@ -52,7 +52,8 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
     for (const entry of result.entries) {
       await stylesheets.register(scanner, entry, await readFile(entry, 'utf8'), {
         baseManifest: result.manifest,
-        projectDir
+        projectDir,
+        pruneNativeCSS: options.pruneNativeCSS
       })
     }
     const emittedGlobalsResult = await collectStylesheetEmittedGlobals([...result.entries], {
@@ -69,16 +70,15 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
 
   return {
     async resolve(classes?: string[]) {
-      const nativeCSS = classes?.length
-        ? (await stylesheets.compose({
+      const nativeCSS = (await stylesheets.compose({
           scanner,
           baseManifest: result.manifest,
           manifest: result.manifest,
           projectDir,
+          pruneNativeCSS: options.pruneNativeCSS,
           classes,
           includeGeneratedCSS: false
         })).css
-        : ''
 
       const stylesheetSnapshot = stylesheets.snapshot()
       return {
@@ -102,9 +102,10 @@ export async function createMasterCSSBuildStateResolver(projectDir: string): Pro
 
 export async function resolveMasterCSSBuildState(
   projectDir: string,
-  classes?: string[]
+  classes?: string[],
+  options: { pruneNativeCSS?: boolean } = {}
 ): Promise<MasterCSSBuildState> {
-  const resolver = await createMasterCSSBuildStateResolver(projectDir)
+  const resolver = await createMasterCSSBuildStateResolver(projectDir, options)
   try {
     return await resolver.resolve(classes)
   } finally {

@@ -37,7 +37,7 @@ export interface MasterCSSEngineWasmProviderContract {
   ): Promise<Readonly<{
     nativeDeclarationCandidates:
       MasterCSSRenderBindingSession['nativeDeclarationCandidates']
-    ensureClassRules(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
+    ensureClassRules(classNames: readonly string[]): void
     ensureStylesheetResources(nativeCSS: string): void
     emittedGlobals(): MasterCSSEmittedGlobals
     snapshot(): MasterCSSServerRender
@@ -115,8 +115,8 @@ export async function createWasmRenderBindingSession(
     ...lifecycle(session),
     nativeDeclarationCandidates: (classNames) =>
       session.nativeDeclarationCandidates(classNames) as never,
-    ensureClassRules: (classNames, nativeSupport) =>
-      session.ensureClassRules(classNames, nativeSupport),
+    ensureClassRules: (classNames) =>
+      session.ensureClassRules(classNames),
     ensureStylesheetResources: (nativeCSS) => session.ensureStylesheetResources(nativeCSS),
     emittedGlobals: () => session.emittedGlobals() as MasterCSSEmittedGlobals,
     snapshot: () => session.snapshot() as MasterCSSServerRender,

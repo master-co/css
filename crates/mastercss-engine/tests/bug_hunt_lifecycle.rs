@@ -94,7 +94,10 @@ fn audit_transition_replay_matches_snapshot_through_256_operations() {
             }
             1 => engine.refresh(MANIFEST).unwrap(),
             _ => {
-                if engine.inspect(class).unwrap().valid && !active.contains(&class) {
+                if engine.inspect(class).unwrap().match_status
+                    == mastercss_schema::MatchStatus::Matched
+                    && !active.contains(&class)
+                {
                     active.push(class);
                 }
                 engine.ensure_class_rules([class, class, ""]).unwrap()
@@ -126,7 +129,7 @@ fn audit_invalid_refresh_preserves_active_state_and_disposal_is_repeatable() {
     for invalid in [
         "{",
         r#"{"version":999}"#,
-        r#"{"version":1,"utilities":null}"#,
+        r#"{"version":1,"languageVersion":2,"utilities":null}"#,
     ] {
         assert!(engine.refresh(invalid).is_err());
         assert_eq!(engine.snapshot().unwrap(), before);

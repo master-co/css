@@ -62,8 +62,8 @@ export function bindRenderBindingSession(
     binding,
     nativeDeclarationCandidates: (classNames) =>
       invoke(() => session.nativeDeclarationCandidates(classNames)),
-    ensureClassRules: (classNames, nativeSupport) =>
-      invoke(() => session.ensureClassRules(classNames, nativeSupport)),
+    ensureClassRules: (classNames) =>
+      invoke(() => session.ensureClassRules(classNames)),
     ensureStylesheetResources: (nativeCSS) =>
       invoke(() => session.ensureStylesheetResources(nativeCSS)),
     emittedGlobals: () => invoke(() => session.emittedGlobals()),

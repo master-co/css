@@ -83,15 +83,14 @@ export function createRenderSessionSync(
   return bindRenderSessionInternal(
     {
       nativeDeclarationCandidates: (classNames) => native.nativeDeclarationCandidates(classNames),
-      ensureClasses: (classNames, nativeSupport) =>
-        native.ensureClassRules(classNames, nativeSupport ? [...nativeSupport] : undefined),
+      ensureClasses: (classNames) =>
+        native.ensureClassRules(classNames),
       ensureStylesheetResources: (nativeCSS) => native.ensureStylesheetResources(nativeCSS),
       emittedGlobals: () => native.emittedGlobals(),
       snapshot: () => native.snapshot(),
       snapshotForClasses: (classNames) => native.snapshotForClassNames(classNames),
       dispose: () => native.dispose()
-    },
-    options.supportsNativeDeclaration
+    }
   )
 }
 
@@ -110,7 +109,6 @@ export function renderClassNamesSync(
 export {
   MasterCSSRenderSession,
   type MasterCSSNativeDeclaration,
-  type MasterCSSNativeDeclarationSupport,
   type MasterCSSRenderSessionOptions,
   type MasterCSSRenderSnapshot
 } from './render-session'

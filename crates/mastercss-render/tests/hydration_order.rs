@@ -5,7 +5,7 @@ use serde_json::json;
 #[test]
 fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     let manifest = json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "variables": { "": [
             { "name": "x", "key": "x", "value": "red" },
             { "name": "y", "key": "y", "value": "blue" },
@@ -26,7 +26,7 @@ fn server_resources_can_be_reconstructed_from_hydration_rule_order() {
     for order in [["c", "a", "b"], ["b", "c", "a"], ["a", "b", "c"]] {
         let mut renderer = RenderSession::create(&manifest, None).unwrap();
         for class_name in order {
-            renderer.ensure_classes([class_name], None).unwrap();
+            renderer.ensure_classes([class_name]).unwrap();
         }
         for rendered in [
             renderer.snapshot().unwrap(),
@@ -66,11 +66,9 @@ fn warmed_subsets_restore_theme_and_animation_order_with_host_globals() {
         Some(r#"{"variables":{"color-red-60":1},"animations":{"fade":1}}"#),
     ] {
         let mut renderer = RenderSession::create(manifest, emitted).unwrap();
-        renderer
-            .ensure_classes(["fg:green-60", "hidden"], None)
-            .unwrap();
+        renderer.ensure_classes(["fg:green-60", "hidden"]).unwrap();
         for class_name in classes.iter().rev() {
-            renderer.ensure_classes([class_name], None).unwrap();
+            renderer.ensure_classes([class_name]).unwrap();
         }
         let rendered = renderer.snapshot_for_classes(classes).unwrap();
         let mut engine = EngineSession::create_with_emitted_globals(manifest, emitted).unwrap();

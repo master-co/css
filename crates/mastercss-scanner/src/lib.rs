@@ -189,9 +189,9 @@ impl ScannerSession {
         content: &str,
         extracted_candidates: Vec<String>,
         blocklist: &[CssDirectiveBlocklistEntry],
-        support_candidates: &[String],
-        native_support: &[bool],
-        invalid_generated_classes: &HashSet<String>,
+        _support_candidates: &[String],
+        _native_support: &[bool],
+        _invalid_generated_classes: &HashSet<String>,
     ) -> Result<ScannerUpdateIr, EngineError> {
         if content.is_empty() {
             return Ok(ScannerUpdateIr::unchanged(false));
@@ -207,24 +207,6 @@ impl ScannerSession {
                     candidates: extracted_candidates.clone(),
                 },
             );
-        }
-
-        // Resolve slices before insertion changes native candidate counts. The
-        // query and commit must use the same ordered validation input.
-        let mut native_support_by_class = HashMap::new();
-        let mut native_support_offset = 0_usize;
-        for candidate in support_candidates {
-            let count = self
-                .engine
-                .native_declaration_candidates([candidate])?
-                .len();
-            let end = native_support_offset
-                .saturating_add(count)
-                .min(native_support.len());
-            native_support_by_class
-                .entry(candidate.clone())
-                .or_insert(native_support_offset..end);
-            native_support_offset = end;
         }
 
         let candidates = self.collect_candidates(extracted_candidates);
@@ -249,23 +231,9 @@ impl ScannerSession {
             if self.valid_index.contains(candidate) || self.invalid_index.contains(candidate) {
                 continue;
             }
-            let candidate_native_support = native_support_by_class
-                .get(candidate)
-                .map(|range| &native_support[range.clone()])
-                .unwrap_or_default();
-            if invalid_generated_classes.contains(candidate) {
-                self.invalid_index.insert(candidate.clone());
-                self.invalid_classes.push(candidate.clone());
-                invalid_classes.push(candidate.clone());
-                continue;
-            }
-            let transition = if candidate_native_support.is_empty() {
-                self.engine.ensure_class_rules([candidate])?
-            } else {
-                self.engine
-                    .ensure_class_rules_with_native_support([candidate], candidate_native_support)?
-            };
-            let valid = self.engine.inspect(candidate)?.valid;
+            let transition = self.engine.ensure_class_rules([candidate])?;
+            let valid = self.engine.inspect(candidate)?.match_status
+                == mastercss_schema::MatchStatus::Matched;
             if valid {
                 self.valid_index.insert(candidate.clone());
                 self.valid_classes.push(candidate.clone());
@@ -399,7 +367,7 @@ pub fn invalid_generated_classes(
         .iter()
         .enumerate()
         .filter_map(|(class_index, class_result)| {
-            if !class_result.matched {
+            if class_result.match_status != mastercss_schema::MatchStatus::Matched {
                 return None;
             }
             let support = rule_support.get(class_index);
@@ -424,7 +392,7 @@ mod tests {
 
     fn manifest() -> String {
         serde_json::json!({
-            "version": 1,
+            "version": 1,"languageVersion":2,
             "utilities": [
                 {
                     "id": "display-block",

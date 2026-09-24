@@ -85,7 +85,7 @@ describe('inspect command', () => {
   it('prints scanner state and missing CSS diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block text-decoration:bad()"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="block p-missing"></div>')
       const error = runFailedCLI([
         'inspect',
         '--classes',
@@ -94,13 +94,13 @@ describe('inspect command', () => {
       ], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(2)
       expect(report.inputs.files[0]).toMatch(/index\.html$/)
       expect(report.scanner.classes.valid).toContain('block')
-      expect(report.scanner.classes.invalid).toContain('text-decoration:bad()')
+      expect(report.scanner.classes.invalid).toContain('p-missing')
       expect(report.files).toHaveLength(1)
       expect(report.files[0].discovered.valid).toContain('block')
-      expect(report.files[0].discovered.invalid).toContain('text-decoration:bad()')
+      expect(report.files[0].discovered.invalid).toContain('p-missing')
       expect(report.missingCSS.present).toContainEqual(expect.objectContaining({
         className: 'block',
         reason: 'generated'
@@ -110,7 +110,7 @@ describe('inspect command', () => {
         reason: 'not-detected'
       }))
       expect(report.diagnostics).toContainEqual(expect.objectContaining({
-        code: 'invalid-scanner-class',
+        code: 'UNKNOWN_TOKEN',
         sourceKind: 'scanner',
         filePath: expect.stringMatching(/index\.html$/)
       }))
@@ -118,8 +118,8 @@ describe('inspect command', () => {
         code: 'missing-css',
         sourceKind: 'missing-css'
       }))
-      expect(report.summary.errors).toBe(1)
-      expect(report.summary.warnings).toBe(1)
+      expect(report.summary.errors).toBe(2)
+      expect(report.summary.warnings).toBe(0)
       expect(report.css.bytes).toBeGreaterThan(0)
     } finally {
       fs.rmSync(cwd, { recursive: true, force: true })
@@ -145,7 +145,7 @@ describe('inspect command', () => {
       expect(report.stylesheets.entries[0]).toEqual(expect.objectContaining({
         filePath: fs.realpathSync(resolve(cwd, 'index.css')),
         masterCSS: false,
-        pruneNativeCSS: true
+        pruneNativeCSS: false
       }))
       expect(report.stylesheets.entries[0].dependencies).toContain(fs.realpathSync(resolve(cwd, 'index.css')))
       expect(report.css.included).toBe(true)
@@ -156,7 +156,7 @@ describe('inspect command', () => {
     }
   })
 
-  it('reports stylesheet entry errors without hiding scanner diagnostics', () => {
+  it('reports entry errors without inspecting against a fallback manifest', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-inspect-entry-error-'))
     try {
       fs.writeFileSync(resolve(cwd, 'index.css'), '@master entry;\n@import "./missing.css";')
@@ -170,7 +170,8 @@ describe('inspect command', () => {
         filePath: fs.realpathSync(resolve(cwd, 'index.css')),
         message: expect.stringContaining('CSS file not found')
       }))
-      expect(report.scanner.classes.valid).toContain('block')
+      expect(report.scanner.classes.valid).toEqual([])
+      expect(report.inspections).toEqual([])
       expect(report.diagnostics).toContainEqual(expect.objectContaining({
         code: 'stylesheet-error',
         severity: 'error',
@@ -187,11 +188,11 @@ describe('lint command', () => {
   it('prints machine-readable diagnostics as json', () => {
     const cwd = fs.mkdtempSync(resolve(os.tmpdir(), 'master-css-cli-lint-json-'))
     try {
-      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="fg-white m:0.5rem text-decoration:bad()"></div>')
+      fs.writeFileSync(resolve(cwd, 'index.html'), '<div class="fg-white m:0.5rem padding:red"></div>')
       const error = runFailedCLI(['lint', 'index.html'], { cwd })
       expect(error.status).toBe(1)
       const report = JSON.parse(String(error.stdout))
-      expect(report.version).toBe(1)
+      expect(report.version).toBe(2)
       expect(report.manifest.status).toBe('loaded')
       expect(report.files).toHaveLength(1)
       expect(report.files[0].diagnostics.map((diagnostic: TestDiagnostic) => diagnostic.code)).toEqual(expect.arrayContaining([

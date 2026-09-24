@@ -1,12 +1,10 @@
 use super::{
     EngineAnimationResourceIr, EngineError, EngineResourcesIr, EngineSession,
-    EngineVariableResourceIr, HashMap, HashSet, Map, NativeDeclarationCandidate,
-    NativeDeclarationCandidateIr, RuleMutationIr, RuleTarget, StaticUtilityRule, ThemeBucket,
-    UtilityDefinition, UtilityEmit, UtilityLayerName, UtilityMatcher, Value, builtin_key_alias,
-    collect_css_variable_names, find_group_close, is_native_shorthand_property,
-    is_valid_native_property, push_theme_declaration, resolve_value_components,
-    serialize_literal_value, single_native_declaration, split_dynamic_value_state, split_top_level,
-    theme_bucket_rank,
+    EngineVariableResourceIr, HashMap, HashSet, NativeDeclarationCandidate,
+    NativeDeclarationCandidateIr, RuleMutationIr, RuleTarget, UtilityDefinition, UtilityEmit,
+    UtilityLayerName, Value, builtin_key_alias, collect_css_variable_names, find_group_close,
+    is_valid_native_property, resolve_value_components, serialize_literal_value,
+    single_native_declaration, split_dynamic_value_state, split_top_level,
 };
 
 impl EngineSession {
@@ -19,88 +17,39 @@ impl EngineSession {
     }
 
     pub(crate) fn render_theme_rule_text(&self) -> Option<String> {
-        let mut buckets = Vec::<ThemeBucket>::new();
-        for name in &self.theme_variable_names {
-            let Some(variable) = self.compiled.compiled_variables.get(name) else {
+        let declarations = |mode: Option<&str>| {
+            self.theme_variable_names
+                .iter()
+                .filter_map(|name| {
+                    let variable = self.compiled.compiled_variables.get(name)?;
+                    let value = match mode {
+                        None => variable.value.as_ref(),
+                        Some(mode) => variable
+                            .modes
+                            .iter()
+                            .find(|value| value.name == mode)
+                            .map(|value| &value.value),
+                    }?;
+                    Some(format!("--{name}:{value}"))
+                })
+                .collect::<Vec<_>>()
+                .join(";")
+        };
+        let mut text = String::new();
+        let base = declarations(None);
+        if !base.is_empty() {
+            text.push_str(&format!(":root,:host{{{base}}}"));
+        }
+        for mode in &self.compiled.modes {
+            let values = declarations(Some(&mode.name));
+            if values.is_empty() {
                 continue;
-            };
-            if let Some(value) = &variable.value {
-                push_theme_declaration(
-                    &mut buckets,
-                    "",
-                    ":root",
-                    None,
-                    format!("--{name}:{value}"),
-                );
             }
-            if self.compiled.settings.mode_trigger.is_empty() {
-                continue;
-            }
-            for mode in &variable.modes {
-                let is_default_mode = variable.value.is_none()
-                    && self.compiled.settings.default_mode != "none"
-                    && self.compiled.settings.default_mode == mode.name;
-                let (media_text, selector_text) = match self.compiled.settings.mode_trigger.as_str()
-                {
-                    "class" => (
-                        "".to_owned(),
-                        format!(
-                            ".{}{}",
-                            mode.name,
-                            if is_default_mode { ",:root" } else { "" }
-                        ),
-                    ),
-                    "host" => (
-                        "".to_owned(),
-                        format!(
-                            ":host(.{}){}",
-                            mode.name,
-                            if is_default_mode { ",:host" } else { "" }
-                        ),
-                    ),
-                    _ => (
-                        format!("@media (prefers-color-scheme:{})", mode.name),
-                        ":root".to_owned(),
-                    ),
-                };
-                push_theme_declaration(
-                    &mut buckets,
-                    &media_text,
-                    &selector_text,
-                    Some(&mode.name),
-                    format!("--{name}:{}", mode.value),
-                );
+            for branch in &mode.branches {
+                let rule = format!("{}{{{values}}}", branch.selector);
+                text.push_str(&super::wrap_raw_conditions(rule, &branch.conditions));
             }
         }
-        buckets.sort_by(|left, right| {
-            theme_bucket_rank(left)
-                .cmp(&theme_bucket_rank(right))
-                .then_with(|| left.order.cmp(&right.order))
-        });
-        let text = buckets
-            .into_iter()
-            .map(|bucket| {
-                let mut declarations = Vec::new();
-                if matches!(
-                    self.compiled.settings.mode_trigger.as_str(),
-                    "class" | "host"
-                ) && bucket.media_text.is_empty()
-                    && matches!(bucket.mode.as_deref(), Some("light" | "dark"))
-                {
-                    declarations.push(format!(
-                        "color-scheme:{}",
-                        bucket.mode.as_deref().unwrap_or_default()
-                    ));
-                }
-                declarations.extend(bucket.declarations);
-                let rule = format!("{}{{{}}}", bucket.selector_text, declarations.join(";"));
-                if bucket.media_text.is_empty() {
-                    rule
-                } else {
-                    format!("{}{{{rule}}}", bucket.media_text)
-                }
-            })
-            .collect::<String>();
         (!text.is_empty()).then_some(text)
     }
 
@@ -244,50 +193,25 @@ impl EngineSession {
                 property: property.to_owned(),
                 value,
             },
-            match_name: format!("{property}:{raw_value}"),
         })
     }
 
-    pub(crate) fn register_native_declaration_candidate(
-        &mut self,
-        candidate: NativeDeclarationCandidate,
-        supported: bool,
-    ) {
-        self.native_declaration_support
-            .entry(candidate.ir.class_name.clone())
-            .or_default()
-            .insert(
-                (candidate.ir.property.clone(), candidate.ir.value.clone()),
-                supported,
-            );
-        if !supported {
-            return;
+    // Called only after registered utility matching returned no candidates.
+    pub(crate) fn native_declaration_fallback(
+        &self,
+        class_name: &str,
+    ) -> Option<(UtilityDefinition, super::UtilityMatch)> {
+        let candidate = self.parse_native_declaration_candidate(class_name)?;
+        let (_, state) = split_dynamic_value_state(class_name.split_once(':')?.1);
+        let value = candidate.ir.value;
+        if super::utility::contains_legacy_variable_reference(&value) {
+            return None;
         }
-        let id = format!("native:{}\0{}", candidate.ir.property, candidate.ir.value);
-        if let Some(utility) = self
-            .compiled
-            .utilities
-            .iter_mut()
-            .find(|utility| utility.id == id)
-        {
-            if !utility.matchers.iter().any(
-                |matcher| matches!(matcher, UtilityMatcher::Static { name } if name == &candidate.match_name),
-            ) {
-                utility.matchers.push(UtilityMatcher::Static {
-                    name: candidate.match_name,
-                });
-            }
-            return;
-        }
-        let mut declarations = Map::new();
-        declarations.insert(
-            candidate.ir.property.clone(),
-            Value::String(candidate.ir.value),
-        );
-        self.compiled.utilities.push(UtilityDefinition {
-            id,
-            name: Some(candidate.match_name.clone()),
-            utility_type: if is_native_shorthand_property(&candidate.ir.property) {
+        mastercss_lexer::decode_native_content(&value)?;
+        let utility = UtilityDefinition {
+            id: format!("native:{}", candidate.ir.property),
+            name: None,
+            utility_type: if super::is_native_shorthand_property(&candidate.ir.property) {
                 -1
             } else {
                 0
@@ -303,17 +227,21 @@ impl EngineSession {
             variable_entries: Vec::new(),
             native_fallback: true,
             builtin_token: false,
-            emit: UtilityEmit::Static {
-                rules: vec![StaticUtilityRule {
-                    declarations,
-                    selector: None,
-                    conditions: Vec::new(),
-                }],
+            emit: UtilityEmit::Property {
+                property: candidate.ir.property,
             },
-            matchers: vec![UtilityMatcher::Static {
-                name: candidate.match_name,
-            }],
-        });
+            matchers: Vec::new(),
+        };
+        Some((
+            utility,
+            super::UtilityMatch {
+                value: Some(value),
+                value_normalized: true,
+                state_token: state,
+                variable_names: Vec::new(),
+                matcher_type: super::UtilityMatcherType::Key,
+            },
+        ))
     }
 
     pub(crate) fn native_declaration_candidates_for_class(
@@ -342,7 +270,7 @@ impl EngineSession {
         if generated.iter().any(|rule| !rule.native_fallback) {
             return Vec::new();
         }
-        let Some(source_candidate) = source_candidate else {
+        let Some(_source_candidate) = source_candidate else {
             return Vec::new();
         };
         let mut seen = HashSet::new();
@@ -356,7 +284,6 @@ impl EngineSession {
                     property,
                     value,
                 },
-                match_name: source_candidate.match_name.clone(),
             })
             .collect()
     }

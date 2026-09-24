@@ -832,7 +832,6 @@ Use `StylesheetExample` when a CSS directive changes the emitted stylesheet. The
 />
 
 <DocumentOptions label="Example settings" options={[
-  { name: 'root-size', defaultValue: '16', description: <>Divisor for numeric lengths converted to <code>rem</code>. It does not change the browser’s root font size.</> },
   { name: 'scope', description: <>An optional root selector. See <a href="/reference/directives/settings">Project settings</a> for the defaults.</> }
 ]} />
 </div>
@@ -946,7 +945,7 @@ For a new lesson, supply its actual configuration and complete HTML:
   caption="p-card references --spacing-card." />
 ```
 
-`theme` adds a real document-class switch; define `mode-trigger: class` in the
+`theme` adds a real document-class switch; define explicit `.light` and `.dark` branches with `@mode` in the
 configuration when teaching that behavior. The default has no controls. `code={false}`
 is for a gallery specimen whose usage link leads to the complete source. These are
 server components; only the existing iframe controls hydrate. Use trusted site-authored
@@ -1115,7 +1114,7 @@ Use practical compositions when teaching layout decisions. These shared specimen
 <Demo title="Container query" padding="none">
   <DemoContainer title="Card">
     <section className="container">
-      <article className="grid-cols:1 grid-cols:2@container(md)">
+      <article className="grid-cols:1 grid-cols:2@container((width>=28rem))">
         <div>Media</div><div>Content</div>
       </article>
     </section>

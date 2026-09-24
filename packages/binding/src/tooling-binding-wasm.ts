@@ -99,6 +99,7 @@ export async function createWasmToolingBinding(
   })
   const bound: MasterCSSToolingBinding = {
     binding: 'wasm',
+    info: wasm.info,
     async createLexerSession(): Promise<MasterCSSLexerBindingSession> {
       const session = await callBindingAsync('tooling', () => wasm.createLexerSession())
       const bound: MasterCSSLexerBindingSession = {

@@ -1,3 +1,4 @@
+import { resolveIntegrationRuntime } from '@master/css-internal/runtime-bootstrap'
 import type { MasterCSSIntegrationRuntimeOptions } from '@master/css-schema/integration'
 import type { MasterCSSVitePluginOptions } from '@master/css-vite'
 
@@ -14,14 +15,13 @@ extends Omit<MasterCSSNuxtModuleOptions, 'runtime'> {
 export function resolveMasterCSSNuxtModuleOptions(
   options: MasterCSSNuxtModuleOptions = {}
 ): ResolvedMasterCSSNuxtModuleOptions {
-  const runtime = typeof options.runtime === 'object'
-    ? options.runtime
-    : { enabled: options.runtime }
+  const mode = options.mode ?? 'static'
+  const runtime = resolveIntegrationRuntime(mode, options.runtime)
   return {
     ...options,
     enabled: options.enabled ?? true,
-    mode: options.mode ?? 'progressive',
+    mode,
     runtime,
-    injectRuntime: runtime.enabled ?? true
+    injectRuntime: runtime.enabled
   }
 }

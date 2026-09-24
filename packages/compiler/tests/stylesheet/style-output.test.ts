@@ -166,7 +166,7 @@ describe('style CSS extraction helpers', () => {
     expect(css).toContain('@layer base')
     expect(css).toContain('text-rendering: geometricprecision')
     expect(css).toContain('.main')
-    expect(css).not.toContain('.unused')
+    expect(css).toContain('.unused')
     expect(css).toContain('--color-primary:red')
     expect(css).toContain('--color-red')
     expect(css).toContain('@keyframes fade')
@@ -341,7 +341,7 @@ describe('style CSS extraction helpers', () => {
     })
   })
 
-  it('prunes local CSS imports from Master CSS import roots by default', async () => {
+  it('prunes local CSS imports from Master CSS import roots when explicitly enabled', async () => {
     const root = createFixture()
     mkdirSync(join(root, 'app/styles'), { recursive: true })
     writeFileSync(join(root, 'app/styles/btn.css'), `
@@ -375,7 +375,8 @@ describe('style CSS extraction helpers', () => {
       scanner,
       stylesheetSources,
       baseManifest: defaultManifest,
-      projectDir: root
+      projectDir: root,
+      pruneNativeCSS: true
     })
 
     expect(result.dependencies).toContain(join(root, 'app/globals.css'))
@@ -415,8 +416,8 @@ describe('style CSS extraction helpers', () => {
       projectDir: root
     })
 
-    expect([...scanner.nativeClassNames]).toEqual([])
-    expect([...scanner.usedNativeClasses]).toEqual([])
+    expect([...scanner.nativeClassNames]).toEqual(['card', 'unused'])
+    expect([...scanner.usedNativeClasses]).toEqual(['card'])
     expect(css).toContain('.card')
     expect(css).toContain('.unused')
     expect(css).not.toContain('@preserve native')
@@ -452,7 +453,7 @@ describe('style CSS extraction helpers', () => {
       projectDir: root
     })
 
-    expect([...scanner.nativeClassNames]).toEqual([])
+    expect([...scanner.nativeClassNames]).toEqual(['btn-native', 'btn-unused'])
     expect(css).toContain('.btn-native')
     expect(css).toContain('.btn-unused')
     expect(css).not.toContain('@preserve native')

@@ -32,7 +32,7 @@ function hasReload(calls: readonly (readonly unknown[])[]) { return calls.some((
 test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers without module requests or watcher events in %s', async mode => {
   const f = fixture();let server: ViteDevServer | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode, runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen()
     const events: string[] = []
     server.watcher.on('all', (event, file) => { if (file === f.dependency) events.push(event) })
@@ -60,14 +60,14 @@ test.each(modes)('BH-0004 manifest bootstrap reports HTTP errors and recovers wi
 test.each(modes)('BH-0004 production still fails for missing project manifest dependencies in %s', async mode => {
   const f = fixture()
   try {
-    await expect(build({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), build: { write: false, minify: false } })).rejects.toThrow('tokens.css')
+    await expect(build({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), build: { write: false, minify: false } })).rejects.toThrow('tokens.css')
   } finally { rmSync(f.parent, { recursive: true, force: true }) }
 })
 
 test.each(['client', 'ssr', 'server'] as const)('BH-0004 manifest bootstrap recovery respects %s close', async closing => {
   const f = fixture();let server: ViteDevServer | undefined
   try {
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'progressive', runtime: false }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: [masterCSS({ mode: 'progressive' }), noExternalEvents()], server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] } } })
     await server.listen();expect((await response(server)).status).toBe(500)
     await server.environments.client.waitForRequestsIdle()
     if (closing === 'server') await server.close()
@@ -85,7 +85,7 @@ test.each(['pre-render', 'progressive'] as const)('BH-0004 invalid manifest afte
   const f = fixture();let server: ViteDevServer | undefined
   try {
     f.write()
-    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] }, watch: { ignored: ['**/*'] } } })
+    server = await createServer({ root: f.root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [f.parent] }, watch: { ignored: ['**/*'] } } })
     await server.listen();expect((await response(server)).text).toContain('.card{padding:7rem}')
     const plugin = server.config.plugins.find(p => p.name === 'master-css:pre-render')!
     const hook = plugin.handleHotUpdate

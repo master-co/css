@@ -98,8 +98,7 @@ export interface MasterCSSCompilerBindingSession extends Disposable {
   createInspectionReport(input: MasterCSSDiagnosticsReportInput): MasterCSSInspectionReport
   renderClassNames(
     manifest: MasterCSSManifest,
-    classNames: readonly string[],
-    nativeSupport?: readonly boolean[]
+    classNames: readonly string[]
   ): MasterCSSServerRender
   dispose(): void
 }
@@ -114,7 +113,7 @@ export interface MasterCSSCompilerRenderBindingSession extends Disposable {
   nativeDeclarationCandidates(
     classNames: readonly string[]
   ): readonly MasterCSSNativeDeclarationCandidate[]
-  ensureClasses(classNames: readonly string[], nativeSupport?: readonly boolean[]): void
+  ensureClasses(classNames: readonly string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): MasterCSSEmittedGlobals
   snapshot(): MasterCSSServerRender

@@ -7,7 +7,7 @@ test('audit control: failed manifest loads retain watch dependencies and recover
   const plugin = createMasterCSSManifestVirtualModulePlugin(async ({ onDependency }) => {
     onDependency('/project/theme.css')
     if (fail) throw new Error('temporary invalid manifest')
-    return { manifest: { version: 1 }, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
+    return { manifest: { version: 1, languageVersion: 2 }, entries: ['/project/theme.css'], dependencies: ['/project/theme.css'], diagnostics: [] }
   })
   const allow: string[] = []
   plugin.configResolved({ command: 'serve', root: '/project', server: { fs: { allow } } })

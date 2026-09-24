@@ -8,6 +8,8 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 export interface MigrateOptions {
+  from?: 'rc-legacy' | 'rc-named'
+  sourceVersion?: string
   cwd?: string
   manifest?: string
   targetManifest?: string
@@ -24,11 +26,14 @@ const languageByExtension: Record<string, string> = {
 
 /** Filesystem orchestration only. All syntax and equivalence decisions are Rust-owned. */
 export default function runMigrate(sourcePaths: string[], options: MigrateOptions = {}) {
+  if (!options.from) throw new Error('Migration requires --from rc-legacy or --from rc-named.')
   const cwd = path.resolve(options.cwd || process.cwd())
   const manifestPath = path.resolve(cwd, options.manifest || 'master.rc.manifest.json')
   // An unreadable original manifest is fatal. Never substitute the new preset
   // or default settings for a project we could not load.
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8')) as Record<string, unknown>
+  const sourceVersion = options.sourceVersion ?? manifest.packageVersion
+  if (typeof sourceVersion !== 'string' || !sourceVersion.trim()) throw new Error('Record the actual RC package version with --source-version or manifest.packageVersion.')
   const targetManifest = (options.targetManifest
     ? JSON.parse(fs.readFileSync(path.resolve(cwd, options.targetManifest), 'utf8'))
     : defaultManifestJSON) as MasterCSSManifest
@@ -63,7 +68,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     }
   } finally { language.dispose() }
   const stylesheets = files.filter(file => file.languageId === 'css')
-  const result = migrateRCSync({ manifest, targetManifest, targetIsPreset: !options.targetManifest,
+  const result = migrateRCSync({ from: options.from, sourceVersion, manifest, targetManifest, targetIsPreset: !options.targetManifest,
     classLists: contexts.map(context => context.positions.map(position => position.token)),
     stylesheets: stylesheets.map(file => file.source),
     documents: files.map(file => file.languageId === 'css' ? '' : file.source)
@@ -74,6 +79,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     review: [] as { before: string, notes: readonly string[] }[],
     written: false
   }))
+  if (result.notes.length && reports.length) reports[0].review.push({ before: '(configuration)', notes: result.notes })
   for (const [index, notes] of result.documents.entries()) {
     if (notes.length) reports[index].review.push({ before: '(source)', notes })
   }
@@ -98,6 +104,9 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
     report.edits.push(...stylesheet.edits.map(edit => ({ ...edit.range, before: edit.before, after: edit.after })))
     if (stylesheet.notes.length) report.review.push({ before: '(stylesheet)', notes: stylesheet.notes })
   }
+  if (result.configurationCSS && !stylesheets.some(file => file.source.includes('@settings') || file.source.includes('@mode ')) && reports.length) {
+    reports[0].review.push({ before: '(configuration)', notes: ['Add the proposed configurationCSS to the project entry, regenerate --target-manifest, and review delivery mode and native pruning before applying this batch.'] })
+  }
   for (const report of reports) {
     report.edits.sort((a, b) => a.start - b.start)
     if (report.edits.some((edit, index) => index > 0 && edit.start < report.edits[index - 1].end)) {
@@ -120,7 +129,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
       report.written = true
     }
   }
-  const report = { version: 1, mode: options.write ? 'write' : 'preview', manifest: manifestPath, files: reports }
+  const report = { version: 2, from: options.from, sourceVersion, configurationCSS: result.configurationCSS, notes: result.notes, mode: options.write ? 'write' : 'preview', manifest: manifestPath, files: reports }
   console.log(JSON.stringify(report, null, 2))
   return report
 }

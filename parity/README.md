@@ -76,7 +76,9 @@ same Rust implementation.
 
 `rust-semantic-corpus.json` remains frozen RC evidence. The explicitly requested
 2.0 breaking language contract is exercised by `v2-language-corpus.json`, which
-retains every engine/compiler case id and the unchanged parser corpus. `cargo
+retains every engine/compiler case id and the historical parser inputs and outputs.
+Removed condition forms are marked `historicalRejection` and explicitly tested as
+rejections; the recorded RC canonical strings remain evidence, not current output. `cargo
 xtask parity` verifies the frozen source hash and case lineage before executing
 the new cases. Native and Wasm tests execute this same new corpus.
 
@@ -96,3 +98,19 @@ contract and retain the historical input and output evidence.
 See [v2-language-validation.md](v2-language-validation.md) for the implementation
 validation, browser QA, measured tradeoffs, and outstanding baseline/environment
 failures. Measurements are retained in `v2-language-performance.json`.
+
+The final semantic contract additionally records explicit modes, native unit
+preservation, Document/ShadowRoot variables, and language version boundaries.
+[final-semantics-changes.json](final-semantics-changes.json) retains the reviewed
+old/new output changes from `e0464d255`. Independent assertions live in
+`crates/mastercss-compiler/tests/final_semantics_contract.rs`; native value policy
+is also checked by compiler/tooling tests, independently of these golden bytes.
+
+
+`v2-tooling-workflows.json` is the shared language v2 corpus for CLI, editor, and
+MCP inspection. It covers ambiguous names, known-invalid expanded declarations,
+unknown native capabilities, deferred values, ordinary classes, and unresolved
+conditions. Run the owning packages' `final-semantics.test.ts` suites; set
+`MASTER_CSS_EVALUATION_REPORT` when running the MCP suite to save its actual tool
+results outside the repository. These are reproducible tool evaluations, not a
+comparison of model generation accuracy.

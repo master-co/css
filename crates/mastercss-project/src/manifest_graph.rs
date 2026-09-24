@@ -95,9 +95,11 @@ pub(super) fn compile_manifest_graph_with_output(
             urls,
             resource_urls: None,
             relative_resource_urls: false,
+            prune_native_stylesheets: None,
             classes_by_stylesheet: HashMap::new(),
             native_stylesheets: (!emit_native_compose).then(Vec::new),
             options: CompileNativeCssOptions {
+                prune_native_css: false,
                 from: request.entry.clone(),
                 preserve_native_css: false,
                 preserve_native_source: false,

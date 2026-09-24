@@ -23,7 +23,7 @@ export function createTestCSS(manifest: MasterCSSManifest) {
     createRule(className: string) {
       const inspection = engine.inspect(className)
       const rules = inspection.rules.filter((rule) => rule.className === className)
-      if (!inspection.valid || !rules.length) return
+      if (inspection.matchStatus !== 'matched' || !rules.length) return
       return {
         text: rules.map((rule) => rule.text).join(''),
         type: rules[0].type,

@@ -667,6 +667,7 @@ export async function createExtractedCSSResult(options: CreateExtractedCSSOption
       .map(([id, styleSource]) => compileStylesheet(id, styleSource.source, {
         ...compileOptions,
         references: styleSource.references,
+        pruneNativeCSS: styleSource.pruneNativeCSS,
         classes: styleSource.pruneNativeCSS
           ? getStyleSourceClasses(scanner, styleSource, classes, compileOptions.projectDir ?? scanner.cwd)
           : undefined

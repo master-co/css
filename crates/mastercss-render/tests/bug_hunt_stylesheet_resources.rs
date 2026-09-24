@@ -2,7 +2,7 @@ use mastercss_render::RenderSession;
 
 fn render(css: &str) -> String {
     let manifest = serde_json::json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "variables": {"color": [{"key": "brand", "value": "red"}]},
         "animations": {"fade": {"to": {"opacity": "1"}}},
         "utilities": []

@@ -64,14 +64,7 @@ export function createNativeEngineSession(
       session.dispose()
     }
     return {
-      ensureClassRules: (classNames) => {
-        const values = [...classNames]
-        const candidates = parse<unknown[]>(session.nativeDeclarationCandidates(values))
-        return parse(session.ensureClassRulesWithNativeSupport(
-          values,
-          candidates.map(() => true)
-        ))
-      },
+      ensureClassRules: (classNames) => parse(session.ensureClassRules([...classNames])),
       deleteClassRules: (classNames) => parse(session.deleteClassRules([...classNames])),
       registerEmittedGlobals: (emittedGlobals) =>
         parse(session.registerEmittedGlobals(JSON.stringify(emittedGlobals))),
@@ -107,8 +100,8 @@ export function createNativeRenderSession(
     return {
       nativeDeclarationCandidates: (classNames) =>
         parse(session.nativeDeclarationCandidates([...classNames])),
-      ensureClassRules: (classNames, nativeSupport) =>
-        session.ensureClasses([...classNames], nativeSupport ? [...nativeSupport] : undefined),
+      ensureClassRules: (classNames) =>
+        session.ensureClasses([...classNames]),
       ensureStylesheetResources: (nativeCSS) => session.ensureStylesheetResources(nativeCSS),
       emittedGlobals: () => parse(session.emittedGlobals()),
       snapshot: () => parse(session.snapshot()),

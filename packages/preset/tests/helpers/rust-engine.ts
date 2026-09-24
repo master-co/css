@@ -2,27 +2,12 @@ import { onTestFinished } from 'vitest'
 import { createRenderBindingSessionSync } from '@master/css-binding/engine/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 
-interface TestCSSOptions {
-  nativeDeclarationMatcher?: (candidate: {
-    readonly className: string
-    readonly property: string
-    readonly value: string
-  }) => boolean
-}
-
-export function createTestCSS(
-  manifest: MasterCSSManifest,
-  options: TestCSSOptions = {}
-) {
+export function createTestCSS(manifest: MasterCSSManifest) {
   const session = createRenderBindingSessionSync({ manifest })
   onTestFinished(() => session.dispose())
 
   function ensureClassRules(classNames: readonly string[]) {
-    const candidates = session.nativeDeclarationCandidates(classNames)
-    session.ensureClassRules(
-      classNames,
-      candidates.map((candidate) => options.nativeDeclarationMatcher?.(candidate) ?? true)
-    )
+    session.ensureClassRules(classNames)
   }
 
   return {

@@ -93,8 +93,43 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
     {
         return super::split_top_level(&body[..close], ';')
             .iter()
-            .flat_map(|item| diagnostics(item, manifest))
+            .flat_map(|item| diagnostics(&format!("{item}{}", &body[close + 1..]), manifest))
             .collect();
+    }
+    let error = |code, message: String| super::Diagnostic {
+        phase: mastercss_schema::DiagnosticPhase::Match,
+        severity: mastercss_schema::DiagnosticSeverity::Error,
+        code,
+        message,
+        source: None,
+        range: Some(mastercss_schema::SourceRange {
+            start: 0,
+            end: source.encode_utf16().count() as u32,
+        }),
+        notes: Vec::new(),
+    };
+    if mastercss_lexer::decode_native_content(source).is_none() {
+        return vec![error(
+            super::ErrorCode::ClassSyntaxError,
+            format!("Unbalanced or invalid Master class structure: {source}"),
+        )];
+    }
+    for token in super::state::split_state_token(source).1 {
+        if !manifest.modes.iter().any(|mode| mode.name == token)
+            && !manifest
+                .variants
+                .iter()
+                .any(|variant| variant.token == format!("@{token}"))
+            && super::render_condition_token(&token, manifest).is_none()
+            && super::resolve_layer_condition(&token, manifest).is_none()
+        {
+            return vec![error(
+                super::ErrorCode::UnknownCondition,
+                format!(
+                    "Unknown or invalid condition @{token}; define a named condition or use @media(...), @supports(...), or @container(...)"
+                ),
+            )];
+        }
     }
     if !matching_utilities(source, manifest).is_empty() {
         return Vec::new();
@@ -130,7 +165,13 @@ pub(crate) fn diagnostics(source: &str, manifest: &ManifestProjection) -> Vec<su
         }
     }
     vec![super::Diagnostic {
-        code: super::ErrorCode::InvalidInput,
+        phase: mastercss_schema::DiagnosticPhase::Match,
+        severity: mastercss_schema::DiagnosticSeverity::Error,
+        code: if candidates.len() > 1 {
+            super::ErrorCode::AmbiguousToken
+        } else {
+            super::ErrorCode::UnknownToken
+        },
         message: if candidates.len() > 1 {
             format!(
                 "Ambiguous named token {source}; use an explicit utility name{}",

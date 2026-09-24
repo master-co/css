@@ -13,7 +13,7 @@ export async function getExtractedCSSResult(context: MasterCSSVitePluginContext)
   const result = await withSassDiagnostics(context, () => context.stylesheets!.compose({
     scanner,
     baseManifest: scanner.css.manifest,
-    projectDir: context.config?.root,
+    projectDir: context.config?.root, pruneNativeCSS: context.pruneNativeCSS,
     includeGeneratedCSS: context.includeGeneratedCSS,
     delivery: getBuildStylesheetDelivery(context) ?? getDevStylesheetDelivery(context)
   }))

@@ -111,6 +111,35 @@ describe('Next static mode', () => {
     expect(css).toContain('margin:0')
   })
 
+  it('publishes complete CSS in independent workers before source loaders run, including MDX', async () => {
+    const root = createFixture()
+    const page = join(root, 'app/page.tsx')
+    const document = join(root, 'app/content.mdx')
+    writeFileSync(page, '<main className="p:17px" />')
+    writeFileSync(document, '<section className="grid-cols:3">Documentation</section>')
+    const state = (await prepareNextStatic({}, { projectDir: root }))!
+    const initial = readStaticCSS(state.outputPath)
+    expect(initial).toContain('padding:17px')
+    expect(initial).toContain('repeat(3, minmax(0, 1fr))')
+    const firstWorker = globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__
+    globalThis.__MASTER_CSS_NEXT_STATIC_SESSIONS__ = new Map()
+    try {
+      await prepareNextStatic({}, { projectDir: root })
+      expect(readStaticCSS(state.outputPath)).toBe(initial)
+      writeFileSync(document, '<section className="grid-cols:4">Documentation</section>')
+      const result = await runStaticCSSLoaderWithDependencies(state.statePath,
+        join(root, 'app/globals.css'), '@import "@master/css";')
+      expect(result.dependencies).toContain(document)
+      expect(result.dependencies).toContain(page)
+      expect(readStaticCSS(state.outputPath)).toContain('repeat(4, minmax(0, 1fr))')
+    } finally {
+      for (const session of firstWorker?.values() || []) {
+        await session.scanner.dispose()
+        session.stylesheets.dispose()
+      }
+    }
+  })
+
   it('replaces @master/css imports for dev CSS chunks and preserves ordinary CSS', async () => {
     const root = createFixture()
     writeFileSync(join(root, 'app/globals.css'), `
@@ -165,7 +194,7 @@ describe('Next static mode', () => {
     const outputPath = resolveStaticOutputPath(root)
     const statePath = resolveStaticStatePath(outputPath)
 
-    await prepareNextStatic({ mode: 'static' }, { projectDir: root })
+    await prepareNextStatic({ mode: 'static', pruneNativeCSS: true }, { projectDir: root })
     await scanStaticFixtureModule(statePath, pagePath)
 
     const replaced = await runStaticCSSLoader(statePath, join(root, 'app/globals.css'), `

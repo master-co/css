@@ -1,6 +1,5 @@
 import { Page } from '@playwright/test'
 import { renderClassNamesSync } from '@master/css/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import {
@@ -32,11 +31,7 @@ type RuntimeProjectManifestUtilityInput = Partial<NonNullable<MasterCSSManifest[
 type RuntimeManifestVariableInput = MasterCSSManifestVariable
 type RuntimeManifestVariable = MasterCSSManifestVariable
 
-type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities'>> & {
-  rootSize?: number
-  defaultMode?: string
-  modeTrigger?: NonNullable<MasterCSSManifest['settings']>['modeTrigger']
-  modes?: string[]
+type RuntimeProjectManifestInput = Partial<Omit<MasterCSSManifest, 'utilities' | 'variables'>> & {
   variables?: RuntimeManifestVariableInput[]
   utilities?: RuntimeProjectManifestUtilityInput[]
 }
@@ -148,9 +143,9 @@ function normalizeUtility(utility: RuntimeProjectManifestUtilityInput, order: nu
   }
 }
 
-function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
+export function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
   const defaultUtilities = defaultManifest.utilities || []
-  const { rootSize, defaultMode, modeTrigger, modes, ...rest } = manifest
+  const { modes, ...rest } = manifest
   const variables = createRuntimeVariables(flattenMasterCSSManifestVariables(defaultManifest.variables), rest.variables)
   const customUtilities = (rest.utilities || []).map((utility, index) => normalizeUtility(utility, defaultUtilities.length + index))
   return {
@@ -160,11 +155,9 @@ function createRuntimeProjectManifest(manifest: RuntimeProjectManifestInput) {
     settings: {
       ...defaultManifest.settings,
       ...rest.settings,
-      ...(rootSize !== undefined ? { rootSize } : {}),
-      ...(defaultMode !== undefined ? { defaultMode } : {}),
-      ...(modeTrigger !== undefined ? { modeTrigger } : {}),
-      ...(modes !== undefined ? { modes } : {})
+
     },
+    modes: [...(defaultManifest.modes || []).filter(mode => !modes?.some(custom => custom.name === mode.name)), ...(modes || [])],
     variables,
     animations: {
       ...(defaultManifest.animations || {}),
@@ -189,7 +182,7 @@ async function createHydrationManifestForPage(page: Page, manifest: MasterCSSMan
     }
     return [...classNames]
   })
-  return renderClassNamesSync(classNames, { manifest, supportsNativeDeclaration }).hydrationManifest
+  return renderClassNamesSync(classNames, { manifest }).hydrationManifest
 }
 
 export async function getRuntimeLoaderURL() {

@@ -7,8 +7,8 @@ jsxTester.run('order', rule, {
     {
       ...source('../fixtures/issues/387/1.input.tsx', import.meta.url),
       errors: [
-        { messageId: 'invalidClass', line: 4, column: 22, endLine: 4, endColumn: 43 },
-{ messageId: 'invalidClass', line: 4, column: 22, endLine: 4, endColumn: 43 },
+        { messageId: 'invalidClass', line: 4, column: 22, endLine: 4, endColumn: 39 },
+{ messageId: 'invalidClass', line: 4, column: 22, endLine: 4, endColumn: 39 },
       ]
     }
   ]

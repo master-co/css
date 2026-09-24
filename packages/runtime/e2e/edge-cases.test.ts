@@ -108,7 +108,7 @@ test('disconnect clears counts and observe rescans the current DOM', async ({ pa
   expect(reconnected.counts).toEqual({
     'font-bold': 1
   })
-  expect(reconnected.text).toContain(':root{--font-weight-bold:700}')
+  expect(reconnected.text).toContain(':root,:host{--font-weight-bold:700}')
   expect(reconnected.text).toContain('.font-bold{font-weight:var(--font-weight-bold)}')
   expect(reconnected.text).not.toContain('.block{display:block}')
 })

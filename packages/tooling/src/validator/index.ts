@@ -22,3 +22,5 @@ export async function validateClassNames(
     session.dispose()
   }
 }
+
+export { cssValueStatus, validateRuleDeclarations, CSS_VALUE_CHECK, type DeclarationValidation } from '../value-validation'

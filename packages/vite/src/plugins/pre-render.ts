@@ -111,10 +111,10 @@ export default function PreRenderPlugin(options: ResolvedMasterCSSVitePluginOpti
       : `${MASTER_CSS_HYDRATION_MANIFEST_ASSET_BASE}${fileName}`
   }
   const renderHTML = (html: string, htmlPath?: string) => renderer?.renderHTML(html, {
-    hydrationManifest: {
+    hydrationManifest: options.mode === 'progressive' ? {
       type: 'external',
       source: json => addHydrationManifestAsset(json, htmlPath)
-    }
+    } : false
   })
   return {
     name: 'master-css:pre-render',

@@ -30,7 +30,7 @@ test('reuses a renderer without leaking rules between documents', () => {
 
 test('preserves native aliases that share a declaration across cached pages', () => {
   const manifest = {
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: {
       '': [{
         name: 'stripe',

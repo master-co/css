@@ -25,7 +25,7 @@ test.each(cases)('BH-0004 missing directory recovers $kind in $mode via $backend
   writeFileSync(join(root, 'index.html'), '<div class="target"></div><script type="module" src="./entry.js"></script>')
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
-    server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode, runtime: false }), server: { host: '127.0.0.1', port: 0, fs: { allow: [parent] }, ...(backend === 'node' ? { watch: { useFsEvents: false, usePolling: false } } : {}) } })
+    server = await createServer({ root, configFile: false, logLevel: 'silent', plugins: masterCSS({ mode }), server: { host: '127.0.0.1', port: 0, fs: { allow: [parent] }, ...(backend === 'node' ? { watch: { useFsEvents: false, usePolling: false } } : {}) } })
     await server.listen()
     const origin = server.resolvedUrls!.local[0]
     const adds = vi.spyOn(server.watcher, 'add')

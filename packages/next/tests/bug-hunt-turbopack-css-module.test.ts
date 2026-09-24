@@ -23,13 +23,13 @@ for (const extension of ['css', 'scss', 'sass']) test(`Turbopack preserves CSS M
   const rules = stylesheetRules(`card.module.${extension}`, '.card{@compose p:2rem;}')
   expect(rules).toHaveLength(1)
   expect(rules[0].type).toBe('css-module')
-  expect(rules[0].as).toBe('*.module.css')
+  expect(rules[0].as).toBeUndefined() // Preserve the source identity; type handles Sass output.
 })
 for (const extension of ['scss', 'sass']) test(`Turbopack handles imported directives in .module.${extension} once`, () => {
   const rules = stylesheetRules(`card.module.${extension}`, '@use "parts/card";')
   expect(rules).toHaveLength(1)
   expect(rules[0].type).toBe('css-module')
-  expect(rules[0].as).toBe('*.module.css')
+  expect(rules[0].as).toBeUndefined() // Preserve the source identity; type handles Sass output.
 })
 test('Turbopack keeps global Sass global and forwards configured options', () => {
   const rules = stylesheetRules('globals.scss', '@use "parts/global";')

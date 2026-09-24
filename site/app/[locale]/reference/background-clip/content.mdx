@@ -49,9 +49,9 @@ Clip a real gradient to the glyphs and make the glyph fill transparent only when
 <p id="target"
   class="inline-block max-w:100% m:0 font-4xl font-semibold leading-lg
          bg-clip-text text-fill-color-current
-         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports(background-clip:text)@screen
+         background-image:linear-gradient(90deg,var(--color-blue-50),var(--color-violet-50))@supports((background-clip:text))@screen
          text-fill-color-current@print
-         text-fill-color:transparent@supports(background-clip:text)@screen"
+         text-fill-color:transparent@supports((background-clip:text))@screen"
 >Clear type</p>
 ```
 
@@ -67,7 +67,7 @@ Widen to `sm` to move the painting edge from the border box to the content box. 
 <div id="target" role="img" aria-label="Responsive background painting area"
   class="h:176px w:280px max-w:100% p-lg b:8px|dashed|color-mix(in|oklab,var(--color-violet-50)|50%,transparent)
          bg-clip-border bg-blue-30 bg-clip-border@print
-         bg-clip-content@screen&sm"
+         bg-clip-content@screen@sm"
 ></div>
 ```
 

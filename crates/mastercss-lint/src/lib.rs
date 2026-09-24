@@ -106,7 +106,7 @@ pub fn classify_host_rule_validation(
         .iter()
         .enumerate()
         .map(|(class_index, class_result)| {
-            if !class_result.matched {
+            if class_result.match_status != mastercss_schema::MatchStatus::Matched {
                 return Vec::new();
             }
             class_result
@@ -128,7 +128,8 @@ pub fn classify_host_rule_validation(
         .iter()
         .enumerate()
         .filter(|(index, class_result)| {
-            class_result.matched && !validation_errors[*index].is_empty()
+            class_result.match_status == mastercss_schema::MatchStatus::Matched
+                && !validation_errors[*index].is_empty()
         })
         .map(|(_, class_result)| class_result.class_name.clone())
         .collect();
@@ -276,7 +277,6 @@ pub struct LintSession {
     variable_keys: Vec<String>,
     variable_values: HashMap<String, String>,
     canonical_index: CanonicalRecommendationIndex,
-    supported_native_declarations: HashSet<(String, String)>,
 }
 
 #[derive(Debug, Default)]

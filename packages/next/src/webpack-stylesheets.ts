@@ -22,7 +22,7 @@ function expandedSassOptions(options: Record<string, unknown> = {}) {
 
 // Keep Next's own CSS rules, conditions and loaders. Appending a separate CSS
 // rule makes Next disable its CSS support, and cannot preserve Sass ordering.
-export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: string, manifestQuery: RegExp) {
+export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: string, manifestQuery: RegExp, stylesheetOptions: Record<string, unknown> = {}) {
   function compose(value: unknown): { rule: unknown; changed: boolean } {
     if (!value || typeof value !== 'object') return { rule: value, changed: false }
     const original = value as Rule
@@ -51,7 +51,7 @@ export function composeWebpackStylesheets(rules: unknown[], stylesheetLoader: st
               ? function(this: unknown, ...args: unknown[]) { return expandedSassOptions(sassOptions.apply(this, args)) }
               : expandedSassOptions(sassOptions) } }
           }
-          return position === index ? [loader, { loader: stylesheetLoader, options: { preprocessed: true } }] : [loader]
+          return position === index ? [loader, { loader: stylesheetLoader, options: { preprocessed: true, ...stylesheetOptions } }] : [loader]
         })
         rule.use = (rule.use as unknown[]).map(item => {
           const loader = item as Loader

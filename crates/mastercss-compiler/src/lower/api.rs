@@ -1,12 +1,12 @@
 use super::merge::create_merged_style_definitions;
 use super::render::{
     managed_dependencies, managed_dependency_order, managed_refresh_count, managed_style_groups,
-    media_mode_warnings, push_static_utility_rule, render_style_definitions,
+    push_static_utility_rule, render_style_definitions,
 };
 use super::resolution::{compile_with_base, engine_for_manifest, finalize_utility_definitions};
 use super::{
     CompilerError, CssDirectiveManifestInput, CssDirectiveStyleDefinition, HashMap, HashSet,
-    LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult, Value,
+    LowerCssDirectivesOptions, LowerCssDirectivesRequest, LowerCssDirectivesResult,
 };
 
 pub fn lower_css_directives(
@@ -23,12 +23,7 @@ pub fn lower_css_directives(
     if input.utilities.as_ref().is_none_or(Vec::is_empty) && style_definitions.is_empty() {
         let resolution_manifest = compile_with_base(&input, resolution_base)?;
         let manifest = compile_with_base(&input, options.base_manifest.clone())?;
-        let mut warnings = initial_warnings.to_vec();
-        for warning in media_mode_warnings(&input) {
-            if !warnings.contains(&warning) {
-                warnings.push(warning);
-            }
-        }
+        let warnings = initial_warnings.to_vec();
         return Ok(LowerCssDirectivesResult {
             css: None,
             output_mappings: Vec::new(),
@@ -42,11 +37,6 @@ pub fn lower_css_directives(
         });
     }
     let initial_manifest = compile_with_base(&input, resolution_base.clone())?;
-    let root_size = initial_manifest
-        .get("settings")
-        .and_then(|settings| settings.get("rootSize"))
-        .and_then(Value::as_f64)
-        .unwrap_or(16.0);
     let mut engine = engine_for_manifest(&initial_manifest)?;
     let unfinalized_input = input.clone();
     finalize_utility_definitions(&mut input, &mut engine)?;
@@ -75,9 +65,7 @@ pub fn lower_css_directives(
             unrefreshed.clear();
         }
         let ((name, layer), definitions) = &groups[*index];
-        for definition in
-            create_merged_style_definitions(definitions, &mut engine, Some(*layer), root_size)?
-        {
+        for definition in create_merged_style_definitions(definitions, &mut engine, Some(*layer))? {
             push_static_utility_rule(&mut input, name, *layer, definition)?;
         }
         unrefreshed.insert(*index);
@@ -108,16 +96,10 @@ pub fn lower_css_directives(
             &native_definitions,
             &mut engine,
             None,
-            root_size,
         )?)
     };
     let manifest = compile_with_base(&input, options.base_manifest.clone())?;
-    let mut warnings = initial_warnings.to_vec();
-    for warning in media_mode_warnings(&input) {
-        if !warnings.contains(&warning) {
-            warnings.push(warning);
-        }
-    }
+    let warnings = initial_warnings.to_vec();
     let diagnostic_counts = HashMap::from([(
         "lower-managed-style-refresh-count".into(),
         managed_refresh_count(

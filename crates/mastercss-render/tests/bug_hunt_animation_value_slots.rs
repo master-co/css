@@ -3,7 +3,7 @@ use mastercss_render::RenderSession;
 fn generated_names(value: &str) -> Vec<String> {
     let names = ["fade", "linear", "infinite", "backwards"];
     let manifest = serde_json::json!({
-        "version": 1,
+        "version": 1,"languageVersion":2,
         "utilities": [],
         "variables": {"animation": [{"key": "easing", "value": "linear"}]},
         "animations": names.into_iter().map(|name| {

@@ -1,18 +1,15 @@
-import { createRequire } from 'node:module'
 import { renderClassNamesSync } from '@master/css/node'
 import type { MasterCSSToolingSession } from '@master/css-tooling'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type MasterCSSMCPContext from './context'
 import { createMCPTextDocument } from './document'
-import { loadWorkspaceManifest } from './project'
-import { createMCPToolingSession } from './tooling-session'
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
+import { createMCPToolingSession, compactClassInspection } from './tooling-session'
 
-const CSS_COMPARE_VERSION = 1
-const require = createRequire(import.meta.url)
-const defaultManifest = require('@master/css-preset/default-manifest.json') as MasterCSSManifest
+const CSS_COMPARE_VERSION = 2
 
 export interface CompareCSSOptions {
+  context?: SemanticContext
   beforeClassList?: string
   afterClassList?: string
   beforeHtml?: string
@@ -65,12 +62,11 @@ function resolveClasses(
 
 function renderClasses(manifest: MasterCSSManifest, classes: string[]) {
   const rendered = renderClassNamesSync(classes, {
-    manifest,
-    supportsNativeDeclaration: supportsNativeDeclaration
+    manifest
   })
   return {
     text: rendered.cssText,
-    bytes: rendered.cssText.length,
+    bytes: Buffer.byteLength(rendered.cssText, 'utf8'),
     invalid: [...rendered.invalidClassNames]
   }
 }
@@ -101,15 +97,19 @@ function createTextDiff(before: string, after: string) {
 }
 
 export async function compareCSS(context: MasterCSSMCPContext, options: CompareCSSOptions) {
-  const manifest = await loadWorkspaceManifest(context)
+  const manifest = await loadWorkspaceManifest(context, options.context)
   const filePath = context.resolveVirtualPath(options.filePath || 'index.html')
-  const activeManifest = manifest.status === 'loaded' ? manifest.manifest : defaultManifest
+  const activeManifest = requireWorkspaceManifest(manifest)
   const session = createMCPToolingSession(activeManifest)
   try {
     const beforeClasses = resolveClasses(options, 'before', filePath, session)
     const afterClasses = resolveClasses(options, 'after', filePath, session)
     const before = renderClasses(activeManifest, beforeClasses)
     const after = renderClasses(activeManifest, afterClasses)
+    const inspections = {
+      before: beforeClasses.map(name => compactClassInspection(session, name, undefined, true)),
+      after: afterClasses.map(name => compactClassInspection(session, name, undefined, true))
+    }
     const classDiff = diffValues(beforeClasses, afterClasses)
     const beforeRules = splitRules(before.text)
     const afterRules = splitRules(after.text)
@@ -117,11 +117,9 @@ export async function compareCSS(context: MasterCSSMCPContext, options: CompareC
     return {
       version: CSS_COMPARE_VERSION,
       root: context.root,
-      manifest: {
-        status: manifest.status,
-        entries: manifest.entries,
-        ...(manifest.status === 'error' ? { error: manifest.error } : {})
-      },
+      manifest: manifestMetadata(manifest),
+      inspections,
+      diagnostics: [...inspections.before, ...inspections.after].flatMap(inspection => inspection.diagnostics ?? []),
       inputs: {
         filePath,
         before: {

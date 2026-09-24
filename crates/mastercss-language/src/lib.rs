@@ -112,7 +112,9 @@ pub struct LanguageClassificationsIr {
 pub struct LanguageInspectionIr {
     pub version: u32,
     pub class_name: String,
-    pub valid: bool,
+    pub match_status: mastercss_schema::MatchStatus,
+    pub css_value_status: mastercss_schema::CssValueStatus,
+    pub browser_support: mastercss_schema::BrowserSupport,
     pub kind: ClassSemanticKind,
     pub base: String,
     pub suffix: String,
@@ -218,6 +220,16 @@ fn canonical_mdn_property(name: &str) -> &str {
 }
 
 fn augment_completion_entries(entries: &mut Vec<LanguageCompletionEntryIr>) {
+    for name in ["container", "media", "supports"] {
+        entries.push(LanguageCompletionEntryIr {
+            label: format!("@{name}()"),
+            kind: LanguageCompletionKind::Function,
+            detail: Some("Complete native CSS query; retain the query's own parentheses".into()),
+            documentation_text: None,
+            sort_text: Some(format!("2000-{name}")),
+            trigger_suggest: false,
+        });
+    }
     let registry = mdn_completion_registry();
     let pseudo_labels = registry.pseudos.iter().collect::<HashSet<_>>();
     for entry in entries
@@ -377,7 +389,6 @@ pub struct LanguageColorTokensIr {
 pub struct LanguageSession {
     engine: EngineSession,
     manifest_json: String,
-    native_support_by_class: HashMap<String, bool>,
     prepared_document: Option<analysis::PreparedDocument>,
     next_document_id: u32,
 }

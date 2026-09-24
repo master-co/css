@@ -60,6 +60,7 @@ function bindCompilerSession(session: MasterCSSCompilerBindingSession): BindingC
       return reviveCompileResult(session.compileCSSDirectives(source, {
         from: options.from || 'master.css',
         preserveNativeCSS: options.preserveNativeCSS !== false,
+        pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }),
         ...(options.classes ? { classes: options.classes } : {})
       }) as CompileCSSResult)

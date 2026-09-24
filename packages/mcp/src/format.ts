@@ -1,17 +1,16 @@
 import { readFile } from 'node:fs/promises'
 import { MasterCSSLanguageService } from '@master/css-language-service'
-import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
-import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createToolingSessionSync } from '@master/css-tooling/node'
 import type MasterCSSMCPContext from './context'
 import { applyTextEdits, createMCPTextDocument, getLanguageId, type Range, type TextEdit } from './document'
 import { resolveSourceFiles } from './scan'
 
 const DIRECTIVE_FORMAT_PREVIEW_VERSION = 1
-const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
+import { loadWorkspaceManifest, requireWorkspaceManifest, manifestMetadata, type SemanticContext } from './project'
 const DEFAULT_DIRECTIVE_FORMAT_PATTERNS = ['**/*.{css,scss,less,vue,svelte,astro}']
 
 export interface PreviewDirectiveFormatOptions {
+  context?: SemanticContext
   content?: string
   filePath?: string
   patterns?: string[]
@@ -35,8 +34,9 @@ function formatContent(service: MasterCSSLanguageService, filePath: string, cont
 }
 
 export async function previewDirectiveFormat(context: MasterCSSMCPContext, options: PreviewDirectiveFormatOptions = {}) {
+  const manifest = await loadWorkspaceManifest(context, options.context)
   const service = new MasterCSSLanguageService(undefined, {
-    session: createToolingSessionSync({ manifest: defaultManifest })
+    session: createToolingSessionSync({ manifest: requireWorkspaceManifest(manifest) })
   })
   try {
     if (options.content !== undefined) {
@@ -44,6 +44,7 @@ export async function previewDirectiveFormat(context: MasterCSSMCPContext, optio
       const formatted = formatContent(service, filePath, options.content, options.range)
       return {
         version: DIRECTIVE_FORMAT_PREVIEW_VERSION,
+        manifest: manifestMetadata(manifest),
         root: context.root,
         mode: 'content',
         files: [
@@ -82,6 +83,7 @@ export async function previewDirectiveFormat(context: MasterCSSMCPContext, optio
     )
     return {
       version: DIRECTIVE_FORMAT_PREVIEW_VERSION,
+        manifest: manifestMetadata(manifest),
       root: context.root,
       mode: 'files',
       inputs: {

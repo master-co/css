@@ -62,3 +62,16 @@ export function createMasterCSSRuntimeBootstrapSource() {
     ``
   ].join('\n')
 }
+
+/** Resolve the public delivery contract before any adapter injects code. */
+export function resolveIntegrationRuntime(
+  mode: import('@master/css-schema/integration').MasterCSSRenderingMode,
+  runtime: boolean | import('@master/css-schema/integration').MasterCSSIntegrationRuntimeOptions | undefined
+) {
+  const options = typeof runtime === 'object' ? runtime : { enabled: runtime }
+  const enabled = mode === 'runtime' || mode === 'progressive'
+  if (options.enabled !== undefined && options.enabled !== enabled) {
+    throw new TypeError(`Master CSS mode "${mode}" requires runtime.enabled=${enabled}. Select a consistent rendering mode.`)
+  }
+  return { ...options, enabled }
+}

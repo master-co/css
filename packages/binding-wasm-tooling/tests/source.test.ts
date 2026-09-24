@@ -52,7 +52,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   )).toEqual(['grid', 'fg-red'])
 
   const scanner = new tooling.ToolingScannerSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -77,7 +77,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   scanner.free()
 
   const validator = new tooling.ToolingValidatorSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -90,17 +90,17 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(validator.generateClasses(['block', 'unknown'])).toMatchObject({
-    version: 1,
+    version: 2,
     classes: [
-      { className: 'block', matched: true, rules: [{ text: '.block{display:block}' }] },
-      { className: 'unknown', matched: false, rules: [] }
+      { className: 'block', matchStatus: 'matched', rules: [{ text: '.block{display:block}' }] },
+      { className: 'unknown', matchStatus: 'unmatched', rules: [] }
     ]
   })
   validator.dispose()
   validator.free()
 
   const lint = new tooling.ToolingLintSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     variables: {
       spacing: [{ key: 'md', type: 'number', value: '1rem' }]
     },
@@ -238,7 +238,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   lint.free()
 
   const language = new tooling.ToolingLanguageSession(JSON.stringify({
-    version: 1,
+    version: 1, languageVersion: 2,
     utilities: [{
       id: 'display-block',
       name: 'block',
@@ -248,33 +248,33 @@ test('loads the isolated source tooling Wasm surface', async () => {
     }]
   }))
   expect(language.classifyClassNames(['block:hover', 'unknown'], [])).toMatchObject({
-    version: 2,
+    version: 3,
     classes: [
       { className: 'block:hover', kind: 'semantic', stateToken: ':hover' },
       { className: 'unknown', kind: 'unknown' }
     ]
   })
   expect(language.inspectClassName('block:hover', [])).toMatchObject({
-    version: 2,
+    version: 3,
     className: 'block:hover',
     kind: 'semantic',
     text: '@layer utilities{.block\\:hover:hover{display:block}}'
   })
   expect(language.completionIndex()).toMatchObject({
-    version: 2,
+    version: 3,
     classEntries: expect.arrayContaining([
       expect.objectContaining({ label: 'block', kind: 'value' }),
       expect.objectContaining({ label: 'fg:', kind: 'property', triggerSuggest: true })
     ])
   })
   expect(language.colorPresentation('rgba(0|0|0/.5)')).toEqual({
-    version: 2,
+    version: 3,
     colorToken: 'rgba(0|0|0/.5)',
     editable: true,
     sourceFormat: { syntax: 'rgb' }
   })
   expect(language.colorTokens([{ className: 'color:#123', start: 2 }])).toEqual({
-    version: 2,
+    version: 3,
     tokens: [{
       range: { start: 8, end: 12 },
       expression: { kind: 'literal', value: '#123' }
@@ -284,7 +284,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
   language.free()
 
   expect(tooling.createInspectionReport({
-    version: 1,
+    version: 2,
     cwd: '/project',
     patterns: ['index.html'],
     files: [],
@@ -293,7 +293,7 @@ test('loads the isolated source tooling Wasm surface', async () => {
     stylesheets: {},
     css: { text: '😀' }
   })).toMatchObject({
-    version: 1,
+    version: 2,
     // UTF-8 bytes, not UTF-16 code units: '😀' is four bytes, which is the
     // contract mastercss-diagnostics tests as reports_utf8_css_bytes.
     css: { bytes: 4, included: false },

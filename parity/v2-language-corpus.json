@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "semanticBaseline": "v2-named-token-contract",
+  "semanticBaseline": "v2-final-semantics-contract",
   "publicBaseline": "Master CSS v2",
   "historicalSource": "parity/rust-semantic-corpus.json",
   "historicalSha256": "5cee0b4eb2b38dd8b08afc4042436d0de154af43046108bc9f6cdeeba65f0ac9",
@@ -31,7 +31,8 @@
       "sourceId": "rc87-28504c7efc2294a1",
       "kind": "condition",
       "input": "!print",
-      "expectedCanonical": "@media not print"
+      "expectedCanonical": "@media not print",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-c9332509fb0a43c3",
@@ -45,147 +46,168 @@
       "sourceId": "rc87-8def2a63c36141bf",
       "kind": "condition",
       "input": "and()",
-      "expectedCanonical": "@media and"
+      "expectedCanonical": "@media and",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-09cc8b7b4334f1dc",
       "sourceId": "rc87-09cc8b7b4334f1dc",
       "kind": "condition",
       "input": "or",
-      "expectedCanonical": "@media or"
+      "expectedCanonical": "@media or",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-76514e9a4f1efaf8",
       "sourceId": "rc87-76514e9a4f1efaf8",
       "kind": "condition",
       "input": "not",
-      "expectedCanonical": "@media not"
+      "expectedCanonical": "@media not",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-d0cbb50965f0cc3d",
       "sourceId": "rc87-d0cbb50965f0cc3d",
       "kind": "condition",
       "input": ",",
-      "expectedCanonical": "@media or"
+      "expectedCanonical": "@media or",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-76bbc72ab3707d91",
       "sourceId": "rc87-76bbc72ab3707d91",
       "kind": "condition",
       "input": "!",
-      "expectedCanonical": "@media not"
+      "expectedCanonical": "@media not",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-2df2f09622f07b54",
       "sourceId": "rc87-2df2f09622f07b54",
       "kind": "condition",
       "input": "&",
-      "expectedCanonical": "@media and"
+      "expectedCanonical": "@media and",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-20df4f7a223926ef",
       "sourceId": "rc87-20df4f7a223926ef",
       "kind": "condition",
       "input": ">=sm",
-      "expectedCanonical": "@media (width>=52.125rem)"
+      "expectedCanonical": "@media (width>=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-993d9a7e0530a526",
       "sourceId": "rc87-993d9a7e0530a526",
       "kind": "condition",
       "input": "<=sm",
-      "expectedCanonical": "@media (width<=52.125rem)"
+      "expectedCanonical": "@media (width<=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-ebba0d9a797a9ff3",
       "sourceId": "rc87-ebba0d9a797a9ff3",
       "kind": "condition",
       "input": ">sm",
-      "expectedCanonical": "@media (width>52.125rem)"
+      "expectedCanonical": "@media (width>52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-4803e1bddcdd0be1",
       "sourceId": "rc87-4803e1bddcdd0be1",
       "kind": "condition",
       "input": "<sm",
-      "expectedCanonical": "@media (width<52.125rem)"
+      "expectedCanonical": "@media (width<52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-d92b086d04d17b4e",
       "sourceId": "rc87-d92b086d04d17b4e",
       "kind": "condition",
       "input": "=sm",
-      "expectedCanonical": "@media (width=52.125rem)"
+      "expectedCanonical": "@media (width=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-dc9516907f133ebe",
       "sourceId": "rc87-dc9516907f133ebe",
       "kind": "condition",
       "input": "height>=sm",
-      "expectedCanonical": "@media (height>=52.125rem)"
+      "expectedCanonical": "@media (height>=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-6ad929666b6b9cca",
       "sourceId": "rc87-6ad929666b6b9cca",
       "kind": "condition",
       "input": "w>=sm",
-      "expectedCanonical": "@media (width>=52.125rem)"
+      "expectedCanonical": "@media (width>=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-18fefe8d6af39855",
       "sourceId": "rc87-18fefe8d6af39855",
       "kind": "condition",
       "input": "h>=sm",
-      "expectedCanonical": "@media (height>=52.125rem)"
+      "expectedCanonical": "@media (height>=52.125rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-ac827a631d0bfdea",
       "sourceId": "rc87-ac827a631d0bfdea",
       "kind": "condition",
       "input": "container(h>160)",
-      "expectedCanonical": "@container (height>10rem)"
+      "expectedCanonical": "@container (height>10rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-2a8c45db27ac6165",
       "sourceId": "rc87-2a8c45db27ac6165",
       "kind": "condition",
       "input": "sidebar(sm)",
-      "expectedCanonical": "@container sidebar (width>=24rem)"
+      "expectedCanonical": "@container sidebar (width>=24rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-c38ee72bdf82e32f",
       "sourceId": "rc87-c38ee72bdf82e32f",
       "kind": "condition",
       "input": "screen&print",
-      "expectedCanonical": "@media screen and print"
+      "expectedCanonical": "@media screen and print",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-8bf1d207e6ee449d",
       "sourceId": "rc87-8bf1d207e6ee449d",
       "kind": "condition",
       "input": "screen,print",
-      "expectedCanonical": "@media screen or print"
+      "expectedCanonical": "@media screen or print",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-72d0a2a759b0467c",
       "sourceId": "rc87-72d0a2a759b0467c",
       "kind": "condition",
       "input": "!screen",
-      "expectedCanonical": "@media not screen"
+      "expectedCanonical": "@media not screen",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-197914ffe79e30b8",
       "sourceId": "rc87-197914ffe79e30b8",
       "kind": "condition",
       "input": "sm&<=lg",
-      "expectedCanonical": "@media (width>=52.125rem) and (width<=80rem)"
+      "expectedCanonical": "@media (width>=52.125rem) and (width<=80rem)",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-7ce311ee0f038ad0",
       "sourceId": "rc87-7ce311ee0f038ad0",
       "kind": "condition",
       "input": "@media",
-      "expectedCanonical": "@media"
+      "expectedCanonical": "@media",
+      "historicalRejection": true
     },
     {
       "id": "rc87-selector-7672156d45b19824",
@@ -806,21 +828,21 @@
             "bg-red-60",
             "m-md"
           ],
-          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}.fg-red-60{color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
           "classes": [
             "fg-red-60"
           ],
-          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}.bg-red-60{background-color:var(--color-red-60)}}"
         },
         {
           "op": "delete",
           "classes": [
             "bg-red-60"
           ],
-          "expectedCss": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.m-md{margin:var(--spacing-md)}}"
         },
         {
           "op": "delete",
@@ -835,14 +857,6 @@
       "id": "engine-inline-theme-variable-dependencies",
       "manifest": {
         "version": 1,
-        "settings": {
-          "defaultMode": "light",
-          "modeTrigger": "class",
-          "modes": [
-            "light",
-            "dark"
-          ]
-        },
         "variables": {
           "color": [
             {
@@ -903,6 +917,27 @@
               }
             ]
           }
+        ],
+        "languageVersion": 2,
+        "modes": [
+          {
+            "name": "light",
+            "branches": [
+              {
+                "selector": ".light",
+                "conditions": []
+              }
+            ]
+          },
+          {
+            "name": "dark",
+            "branches": [
+              {
+                "selector": ".dark",
+                "conditions": []
+              }
+            ]
+          }
         ]
       },
       "steps": [
@@ -911,7 +946,7 @@
           "classes": [
             "surface-raised"
           ],
-          "expectedCss": "@layer theme{.light,:root{color-scheme:light;--color-surface-raised:oklch(100% 0 none)}:root{--color-gray-90:oklch(23.5% 0 none)}.dark{color-scheme:dark;--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
+          "expectedCss": "@layer theme{:root,:host{--color-gray-90:oklch(23.5% 0 none)}.light{--color-surface-raised:oklch(100% 0 none)}.dark{--color-surface-raised:var(--color-gray-90)}}@layer utilities{.surface-raised{background-color:var(--color-surface-raised)}}",
           "expectedResourceOrder": [
             "color-surface-raised",
             "color-gray-90"
@@ -961,7 +996,7 @@
             "fg-blue-60@dark",
             "bg-white@light"
           ],
-          "expectedCss": "@layer theme{:root{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:light){.bg-white\\@light{background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark{color:var(--color-blue-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-blue-60:oklch(51.83% .2687 266.1)}}@layer utilities{@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:root,:root *){color:var(--color-blue-60)}}@media (prefers-color-scheme:dark){.fg-blue-60\\@dark:where(:host,:host *){color:var(--color-blue-60)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:root,:root *){background-color:oklch(100% 0 none)}}@media (prefers-color-scheme:light){.bg-white\\@light:where(:host,:host *){background-color:oklch(100% 0 none)}}}"
         }
       ]
     },
@@ -976,7 +1011,7 @@
             "background-color:oklch(60%|.2|240/.5)",
             "-m-md"
           ],
-          "expectedCss": "@layer theme{:root{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-md:1rem}}@layer utilities{.-m-md{margin:calc(var(--spacing-md) * -1)}.background-color\\:oklch\\(60\\%\\|\\.2\\|240\\/\\.5\\){background-color:oklch(60% .2 240/.5)}.w\\:calc\\(100\\%-2rem\\){width:calc(100% - 2rem)}}"
         }
       ]
     },
@@ -1006,7 +1041,7 @@
             "-m-3xs",
             "-ml-3xs"
           ],
-          "expectedCss": "@layer theme{:root{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}"
+          "expectedCss": "@layer theme{:root,:host{--spacing-3xs:.25rem}}@layer utilities{.-m-3xs{margin:calc(var(--spacing-3xs) * -1)}.-ml-3xs{margin-left:calc(var(--spacing-3xs) * -1)}}"
         }
       ]
     },
@@ -1146,7 +1181,8 @@
               }
             ]
           }
-        ]
+        ],
+        "languageVersion": 2
       },
       "steps": [
         {
@@ -1208,7 +1244,7 @@
             "r-md",
             "rtl-lg"
           ],
-          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2);--color-blue-60:oklch(51.83% .2687 266.1);--radius-md:.375rem;--radius-lg:.5rem}}@layer utilities{.r-md{border-radius:var(--radius-md)}.bt\\:1px\\|solid\\|var\\(--color-blue-60\\){border-top:1px solid var(--color-blue-60)}.b\\:2px\\|solid\\|var\\(--color-red-60\\){border:2px solid var(--color-red-60)}.rtl-lg{border-top-left-radius:var(--radius-lg)}}"
         }
       ]
     },
@@ -1223,7 +1259,7 @@
             "block:nth-child(2n+1)",
             "bg-red-60:hover@sm"
           ],
-          "expectedCss": "@layer theme{:root{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
+          "expectedCss": "@layer theme{:root,:host{--color-red-60:oklch(60.94% .2501 29.2)}}@layer utilities{.block\\:nth-child\\(2n\\+1\\):nth-child(2n+1){display:block}.active>.block\\:of\\(\\.active\\>\\){display:block}@media (width>=52.125rem){.bg-red-60\\:hover\\@sm:hover{background-color:var(--color-red-60)}}}"
         }
       ]
     },
@@ -1314,7 +1350,8 @@
               }
             ]
           }
-        ]
+        ],
+        "languageVersion": 2
       },
       "steps": [
         {
@@ -1387,7 +1424,8 @@
               }
             ]
           }
-        ]
+        ],
+        "languageVersion": 2
       },
       "steps": [
         {
@@ -1438,7 +1476,8 @@
               }
             ]
           }
-        ]
+        ],
+        "languageVersion": 2
       },
       "steps": [
         {
@@ -1446,7 +1485,7 @@
           "classes": [
             "bg:var(--stripe)"
           ],
-          "expectedCss": "@layer theme{:root{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:0 / 7.5px 7.5px linear-gradient(red,blue) transparent}}@layer utilities{.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
         }
       ]
     },
@@ -1464,7 +1503,8 @@
             }
           ]
         },
-        "utilities": []
+        "utilities": [],
+        "languageVersion": 2
       },
       "steps": [
         {
@@ -1472,14 +1512,14 @@
           "classes": [
             "background:var(--stripe)"
           ],
-          "expectedCss": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}}"
         },
         {
           "op": "ensure",
           "classes": [
             "bg:var(--stripe)"
           ],
-          "expectedCss": "@layer theme{:root{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
+          "expectedCss": "@layer theme{:root,:host{--stripe:linear-gradient(red,blue)}}@layer utilities{.background\\:var\\(--stripe\\){background:var(--stripe)}.bg\\:var\\(--stripe\\){background:var(--stripe)}}"
         }
       ]
     },
@@ -2687,26 +2727,39 @@
     },
     {
       "id": "compiler-root-size-condition-order",
-      "source": "@settings { root-size:20; } .card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
+      "source": ".card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "@media (width>=800px){.card{display:flex}}@media (width>=42rem){.card{display:grid}}"
     },
     {
       "id": "rc87-compiler-variables-modes-dependencies",
       "sourceId": "rc87-5ae87bddfc5f375d",
-      "source": "@settings { mode-trigger: class; modes: light dark; } @theme static { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } @theme dark static { --color-brand: #123; }",
+      "source": "@mode light { .light { @slot; } } @mode dark { .dark { @slot; } } @theme static { --spacing-card: 12; --color-blue-50: #369; --color-brand: var(--color-blue-50); } @theme dark static { --color-brand: #123; }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
-        "settings": {
-          "modeTrigger": "class",
-          "modes": [
-            "light",
-            "dark"
-          ]
-        },
+        "languageVersion": 2,
+        "modes": [
+          {
+            "name": "light",
+            "branches": [
+              {
+                "selector": ".light"
+              }
+            ]
+          },
+          {
+            "name": "dark",
+            "branches": [
+              {
+                "selector": ".dark"
+              }
+            ]
+          }
+        ],
         "variables": {
           "spacing": [
             {
@@ -2753,7 +2806,8 @@
       "sourceId": "rc87-1ef0184cc6a4bd8e",
       "source": "@theme { --color-brand: $color-blue-50; }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedError": "Stylesheet values use native CSS variable references. Replace \"$color-blue-50\" with \"var(--color-blue-50)\"."
     },
@@ -2762,10 +2816,12 @@
       "sourceId": "rc87-58a8b9e387f59ddb",
       "source": "@theme static { --spacing--card: -12; }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "variables": {
           "spacing": [
             {
@@ -2787,10 +2843,12 @@
       "sourceId": "rc87-7d6ba9d28d83415c",
       "source": "@theme static { @keyframes fade { to { opacity: 1; } } }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "animations": {
           "fade": {
             "to": {
@@ -2823,10 +2881,12 @@
               "~spacing"
             ]
           }
-        ]
+        ],
+        "languageVersion": 2
       },
       "expectedManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       }
     },
     {
@@ -2834,10 +2894,12 @@
       "sourceId": "rc87-e793d99a43aa91ea",
       "source": "@theme { --breakpoint-card: 777px; --container-panel: 333px; }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "variables": {
           "breakpoint": [
             {
@@ -2870,8 +2932,8 @@
             "nodes": [
               {
                 "type": "number",
-                "value": 48.5625,
-                "unit": "rem"
+                "value": 777,
+                "unit": "px"
               }
             ]
           }
@@ -2882,8 +2944,8 @@
             "nodes": [
               {
                 "type": "number",
-                "value": 48.5625,
-                "unit": "rem"
+                "value": 777,
+                "unit": "px"
               }
             ]
           }
@@ -2894,8 +2956,8 @@
             "nodes": [
               {
                 "type": "number",
-                "value": 20.8125,
-                "unit": "rem"
+                "value": 333,
+                "unit": "px"
               }
             ]
           }
@@ -2907,10 +2969,12 @@
       "sourceId": "rc87-bce3dcbace35c62f",
       "source": "@theme { --spacing-card: 1.5rem; --radius-card: 8px; --breakpoint-card: 48rem; --container-panel: 512px; --shadow-card: 1rem; }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "variables": {
           "spacing": [
             {
@@ -2999,8 +3063,8 @@
             "nodes": [
               {
                 "type": "number",
-                "value": 32,
-                "unit": "rem"
+                "value": 512,
+                "unit": "px"
               }
             ]
           }
@@ -3012,10 +3076,12 @@
       "sourceId": "rc87-2763794c2aab6ae8",
       "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @components { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "variants": [
           {
             "token": "@motion-safe",
@@ -3093,10 +3159,12 @@
       "sourceId": "rc87-e9991ac8889c54d6",
       "source": "@components { card { display: grid; color: var(--color-primary); } }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "utilities": [
           {
             "id": ".card",
@@ -3130,10 +3198,12 @@
       "sourceId": "rc87-229f90c18e0fc001",
       "source": "@components { btn { display: flex; color: red; } }",
       "baseManifest": {
-        "version": 1
+        "version": 1,
+        "languageVersion": 2
       },
       "expectedManifest": {
         "version": 1,
+        "languageVersion": 2,
         "utilities": [
           {
             "id": ".btn",
@@ -3163,13 +3233,18 @@
       }
     }
   ],
-  "contract": "Named tokens, native declarations, explicit variables, no length x; see site/app/[locale]/guide/migration/v2-rc/content.mdx",
+  "contract": "Master CSS 2.0 final semantic contract: named tokens, preserved native declarations, explicit queries and modes",
   "intentionalDifferences": [
     "Named-token selectors use hyphens and explicit token priority metadata.",
     "RC value-dependent shorthand routing migrates to its explicit longhand; native aliases preserve native properties.",
     "Master length x converts using saved RC settings; ordinary decimal spelling is preserved.",
     "Explicit var() replaces implicit references inside raw values.",
     "Groups emit independently ordered rules for each value source, selector, layer and importance.",
-    "Existing static and enum names retain semantic ordering; declaration ordering uses emitted properties and values."
-  ]
+    "Existing static and enum names retain semantic ordering; declaration ordering uses emitted properties and values.",
+    "Require languageVersion: 2 on manifests and hydration.",
+    "Replace global mode settings with explicit ordered mode branches; do not infer default values or color-scheme.",
+    "Scope base variables to Document and ShadowRoot using :root,:host.",
+    "Preserve breakpoint and container units; reject historical inferred condition syntax."
+  ],
+  "languageVersion": 2
 }

@@ -46,7 +46,7 @@ export async function verifyDirectiveExamples() {
 
   const settings = deliveryFences(directiveSection('project-settings'))[0].text
   assert.match(configuredExampleCSS(settings, ['p:1rem']), /#app[^{}]*\{padding:1rem/)
-  assert.match(configuredExampleCSS(settings.replace('root-size: 16', 'root-size: 20'), ['p:1rem']), /padding:1rem/)
+  assert.throws(() => configuredExampleCSS('@settings { root-size: 20; }', ['p:1rem']), /root-size.*removed/)
   assert.match(configuredExampleCSS(settings.replace('important: off', 'important: on'), ['p:1rem']), /padding:1rem!important/)
   const entries = deliveryFences(directiveSection('entry-markers')).slice(0, 2)
   for (const entry of entries) assert.equal(inspectCSSSync(entry.text).hasMasterEntry, true)
@@ -66,17 +66,17 @@ export async function verifyDirectiveExamples() {
     const result = await compileRenderedStylesheet(file, source, { baseManifest: preset, projectDir: fixture.root, preserveNativeCSS: true })
     assert.deepEqual(result.diagnostics.filter(d => d.severity === 'error'), [])
     assert.match(result.css, /\.button\{display:inline-flex/)
-    assert.match(result.css, /\.button\{background-color:var\(--color-blue-60\)/)
+    assert.match(result.css, /\.button:where\(:root,:root \*\)\{background-color:var\(--color-blue-60\)/)
     assert.doesNotMatch(result.css, /\.reference-only|\.btn\{|@reference|@compose/)
     assert.match(result.css, /--spacing-md:1rem/)
   } finally { fixture.dispose() }
-  const preservation = deliveryFences(directiveSection('native-css-preservation'))[0].text
+  const preservation = deliveryFences(directiveSection('native-css-preservation')).find(fence => fence.text.includes('@preserve native;'))!.text
   const pruningFixture = deliveryFixture()
   const scanner = new MasterCSSScanner({ manifest: preset }, pruningFixture.root)
   const collection = createStylesheetCollection()
   try {
     const preserved = pruningFixture.write('preserved.css', preservation)
-    const prunedSource = preservation.replace('@preserve native;', '')
+    const prunedSource = preservation.replace('@preserve native;', '@prune native;')
     const pruned = pruningFixture.write('pruned.css', prunedSource)
     await scanner.init()
     await collection.register(scanner, preserved, preservation, { baseManifest: preset, projectDir: pruningFixture.root })

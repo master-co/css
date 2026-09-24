@@ -15,7 +15,7 @@ use mastercss_schema::{
 };
 use serde::Deserialize;
 use serde::Serialize;
-use serde_json::{Map, Value, json};
+use serde_json::{Map, Value};
 use thiserror::Error;
 
 const LAYER_COUNT: usize = 4;
@@ -47,6 +47,8 @@ impl EngineError {
             Self::SessionDisposed => ErrorCode::SessionDisposed,
         };
         Diagnostic {
+            phase: mastercss_schema::DiagnosticPhase::Match,
+            severity: mastercss_schema::DiagnosticSeverity::Error,
             code,
             message: self.to_string(),
             source: None,
@@ -59,6 +61,8 @@ impl EngineError {
 #[derive(Debug, Clone, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct ManifestProjection {
+    #[serde(default)]
+    modes: Vec<mastercss_schema::ModeDefinition>,
     version: u32,
     #[serde(default)]
     settings: EngineSettings,
@@ -68,10 +72,6 @@ struct ManifestProjection {
     variants: Vec<ManifestVariant>,
     #[serde(default)]
     conditions: HashMap<String, ManifestCondition>,
-    #[serde(default, rename = "breakpointConditions")]
-    breakpoint_conditions: HashMap<String, ManifestCondition>,
-    #[serde(default, rename = "containerConditions")]
-    container_conditions: HashMap<String, ManifestCondition>,
     #[serde(default)]
     selectors: HashMap<String, Vec<ManifestSelectorNode>>,
     #[serde(default)]
@@ -92,50 +92,13 @@ struct ManifestProjection {
     declaration_keys: HashSet<String>,
 }
 
-#[derive(Debug, Clone, Deserialize)]
-#[serde(rename_all = "camelCase")]
+#[derive(Debug, Clone, Default, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
 struct EngineSettings {
-    #[serde(default = "default_root_size")]
-    root_size: f64,
     #[serde(default)]
     scope: Option<String>,
     #[serde(default)]
     important: bool,
-    #[serde(default = "default_mode", rename = "defaultMode")]
-    default_mode: String,
-    #[serde(default = "default_mode_trigger")]
-    mode_trigger: String,
-    #[serde(default = "default_modes")]
-    modes: Vec<String>,
-}
-
-impl Default for EngineSettings {
-    fn default() -> Self {
-        Self {
-            root_size: default_root_size(),
-            scope: None,
-            important: false,
-            default_mode: default_mode(),
-            mode_trigger: default_mode_trigger(),
-            modes: default_modes(),
-        }
-    }
-}
-
-fn default_root_size() -> f64 {
-    16.0
-}
-
-fn default_mode() -> String {
-    "light".into()
-}
-
-fn default_mode_trigger() -> String {
-    "media".into()
-}
-
-fn default_modes() -> Vec<String> {
-    vec!["light".into(), "dark".into()]
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -337,6 +300,7 @@ struct StateBranch {
     condition_wrappers: Vec<(String, String)>,
     layer: Option<UtilityLayerName>,
     mode: Option<String>,
+    mode_guard: Option<String>,
     important: bool,
     features: Vec<ConditionFeature>,
 }
@@ -351,18 +315,8 @@ struct StoredRule {
     state_token: String,
 }
 
-#[derive(Debug)]
-struct ThemeBucket {
-    media_text: String,
-    selector_text: String,
-    mode: Option<String>,
-    order: usize,
-    declarations: Vec<String>,
-}
-
 struct NativeDeclarationCandidate {
     ir: NativeDeclarationCandidateIr,
-    match_name: String,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -458,7 +412,6 @@ pub struct EngineSession {
     theme_batch_depth: usize,
     animation_counts: HashMap<String, u32>,
     animation_names: Vec<String>,
-    native_declaration_support: HashMap<String, HashMap<(String, String), bool>>,
     disposed: bool,
 }
 
@@ -486,14 +439,14 @@ mod value_syntax;
 
 pub(crate) use completion::{collect_class_completion_candidates, collect_engine_color_tokens};
 pub(crate) use condition::{
-    add_condition_features, add_condition_wrapper, format_standard_number,
-    merge_condition_features, normalize_dynamic_value, parse_raw_condition_wrapper,
-    render_condition_token, render_manifest_condition, resolve_layer_condition,
+    add_condition_wrapper, format_standard_number, merge_condition_features,
+    normalize_dynamic_value, parse_raw_condition_wrapper, render_condition_token,
+    render_manifest_condition, resolve_layer_condition,
 };
 pub(crate) use manifest::{
     BUILTIN_KEY_ALIASES, BUILTIN_NATIVE_DECLARATION_PROPERTIES, BUILTIN_TOKEN_NAMESPACES,
-    add_unique_string, compile_manifest, engine_variable_ir, layer_name, push_theme_declaration,
-    serialize_literal_value, single_native_declaration, theme_bucket_rank,
+    add_unique_string, compile_manifest, engine_variable_ir, layer_name, serialize_literal_value,
+    single_native_declaration,
 };
 pub(crate) use render::{
     composition_conditions, composition_selector, create_selector_text, emit_declarations,
@@ -519,6 +472,7 @@ pub(crate) use value_syntax::{
     normalize_css_math_functions,
 };
 
+pub use condition::native_query_features;
 pub use manifest::{builtin_key_aliases, builtin_token_namespaces};
 pub use utility::{compare_rule_priority, natural_compare};
 

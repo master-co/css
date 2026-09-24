@@ -27,7 +27,7 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
              transition-property:transform
              transition-timing-function:linear
              transition:none@print
-             transition-duration-slowest@screen&motion">
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -53,8 +53,8 @@ Toggle each layer to compare an immediate start with a 300ms wait. Both movement
              transition-property:transform
              transition-timing-function:linear
              transition:none@print
-             transition-delay-slow@screen&motion
-             transition-duration-slowest@screen&motion">
+             transition-delay-slow@screen@motion
+             transition-duration-slowest@screen@motion">
       Layer 01
     </span>
   </span>
@@ -91,7 +91,7 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
              b:1px|solid|var(--color-blue-60) r-sm bg-blue-10
              fg-blue-80 transform:none
              transition:none@print
-             transition:transform|var(--duration-slowest)|linear@screen&motion">
+             transition:transform|var(--duration-slowest)|linear@screen@motion">
       First · no delay
     </span>
     <span id="target"
@@ -99,8 +99,8 @@ One checkbox changes both siblings. Each child owns its transition; the violet c
              b:1px|solid|var(--color-violet-60) r-sm bg-violet-10
              fg-violet-80 transform:none
              transition:none@print
-             transition:transform|var(--duration-slowest)|linear@screen&motion
-             transition-delay-slow@screen&motion">
+             transition:transform|var(--duration-slowest)|linear@screen@motion
+             transition-delay-slow@screen@motion">
       Second · 300ms
     </span>
   </span>
@@ -137,8 +137,8 @@ Define a named duration when a delay is shared across related interactions. This
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|var(--duration-slower)|var(--easing-smooth)@screen&motion
-             transition-delay-short@screen&motion">
+             transition:transform|var(--duration-slower)|var(--easing-smooth)@screen@motion
+             transition-delay-short@screen@motion">
       Layer 01
     </span>
   </span>
@@ -169,9 +169,9 @@ Below `sm`, the layer waits 300ms before moving. Widen the real viewport to remo
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition:none@print
-             transition:transform|var(--duration-slowest)|linear@screen&motion
-             transition-delay-slow@screen&motion
-             transition-delay:0ms@screen&sm">
+             transition:transform|var(--duration-slowest)|linear@screen@motion
+             transition-delay-slow@screen@motion
+             transition-delay:0ms@screen@sm">
       Layer 01
     </span>
   </span>
@@ -190,7 +190,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
 <label
   class="block w:280px max-w:100% font-sm
          transform:translateX(96px):has(input:checked)>span>span@screen
-         transition-delay-slow:has(input:checked)>span>span@screen&motion">
+         transition-delay-slow:has(input:checked)>span>span@screen@motion">
   <input type="checkbox" aria-label="Move layer"
     class="mr-xs accent-color-blue
            outline:2px|solid|var(--color-blue):focus-visible
@@ -204,7 +204,7 @@ Delay only the outward change. Check the box to wait 300ms before moving; unchec
              b:1px|solid|var(--color-blue-60) r-sm font-sm bg-blue-10
              fg-blue-80 opacity:1 transform:none
              transition-delay:0ms transition:none@print
-             transition:transform|var(--duration-slowest)|linear@screen&motion">
+             transition:transform|var(--duration-slowest)|linear@screen@motion">
       Layer 01
     </span>
   </span>

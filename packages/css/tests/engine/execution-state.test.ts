@@ -8,7 +8,7 @@ const manifest = defaultManifest as unknown as MasterCSSManifest
 test.each(['native', 'wasm'] as const)('%s executionState returns immutable stored references and current resources', async (binding) => {
   const engine = await createEngine({ manifest, binding })
   try {
-    expect(engine.inspect('block').valid).toBe(true)
+    expect(engine.inspect('block').matchStatus).toBe('matched')
     expect(engine.executionState(['block']).classes).toEqual([{ className: 'block', references: [] }])
     const classes = ['block', 'fg-red-60', 'block@base', 'unknown', 'block']
     engine.ensureClassRules(classes)
@@ -28,7 +28,7 @@ test.each(['native', 'wasm'] as const)('%s executionState returns immutable stor
     expect(engine.executionState(classes)).toEqual(state)
     engine.deleteClassRules(['block'])
     expect(engine.executionState(['block']).classes[0].references).toEqual([])
-    engine.refresh({ version: 1 })
+    engine.refresh({ version: 1, languageVersion: 2 })
     expect(engine.executionState(['block@base']).classes[0].references).toEqual([])
   } finally {
     engine.dispose()

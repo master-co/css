@@ -12,6 +12,7 @@ export interface MasterCSSRulePriority {
   /** Parsed declaration identity, independent of public aliases. */
   readonly sortKey?: string
   readonly features?: readonly (readonly [string, number, number])[]
+  readonly conditions?: readonly string[]
   readonly selector: number
 }
 
@@ -35,6 +36,7 @@ export interface MasterCSSHydrationRule {
 
 export interface MasterCSSHydrationManifest {
   readonly version: 1
+  readonly languageVersion: 2
   readonly rules: readonly MasterCSSHydrationRule[]
   readonly resourceOrder: readonly string[]
 }

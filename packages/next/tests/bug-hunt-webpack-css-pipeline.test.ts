@@ -4,7 +4,7 @@ import withMasterCSS from '../src'
 
 const nextLoader = (name: string) => `/node_modules/next/dist/build/webpack/loaders/${name}/src/index.js`
 
-for (const sass of [false, true]) for (const lightning of [false, true]) test(`BH-0051 preserves Next CSS processing, sass=${sass}, lightning=${lightning}`, () => {
+for (const sass of [false, true]) for (const lightning of [false, true]) test(`BH-0051 preserves Next CSS processing, sass=${sass}, lightning=${lightning}`, async () => {
   const cssLoader = { loader: nextLoader(lightning ? 'lightningcss-loader' : 'css-loader'), options: { importLoaders: sass ? 3 : 1, modules: { mode: 'pure' } } }
   const postcssOptions = { sourceMap: true, postcss: async () => ({}) }
   const use = [
@@ -16,7 +16,7 @@ for (const sass of [false, true]) for (const lightning of [false, true]) test(`B
   const hostMarker = Symbol('host-rule-marker')
   Object.defineProperty(css, hostMarker, { value: true })
   const original = { module: { rules: [{ oneOf: [css] }] } }
-  const config = (withMasterCSS({}) as NextConfig).webpack!(original, {} as never)
+  const config = (withMasterCSS({}, { mode: 'runtime' }) as NextConfig).webpack!(original, {} as never)
   const rules = config.module.rules
   expect(rules.some((rule: { test?: RegExp }) => rule.test?.test('/tmp/example.css'))).toBe(false)
   const group = rules[0], chain = group.oneOf[0].use
@@ -39,11 +39,11 @@ for (const sass of [false, true]) for (const lightning of [false, true]) test(`B
   expect(use).toHaveLength((lightning ? 2 : 3) + (sass ? 2 : 0))
 })
 
-test('BH-0051 preserves user rules, nested host conditions and manifest JavaScript route', () => {
+test('BH-0051 preserves user rules, nested host conditions and manifest JavaScript route', async () => {
   const custom = { test: /\.custom$/, use: ['user-loader'] }
   const originalQuery = /inline/
-  const config = (withMasterCSS({}) as NextConfig).webpack!({ module: { rules: [custom, { resourceQuery: originalQuery, rules: [{ oneOf: [{ use: [{ loader: nextLoader('postcss-loader') }] }] }] }] } }, {} as never)
+  const config = (withMasterCSS({}, { mode: 'runtime' }) as NextConfig).webpack!({ module: { rules: [custom, { resourceQuery: originalQuery, rules: [{ oneOf: [{ use: [{ loader: nextLoader('postcss-loader') }] }] }] }] } }, {} as never)
   expect(config.module.rules[0]).toBe(custom)
   expect(config.module.rules[1].resourceQuery).toEqual({ and: [originalQuery, { not: [/master-css-manifest/] }] })
-  expect(config.module.rules.find((rule: { resourceQuery?: unknown }) => rule.resourceQuery instanceof RegExp && rule.resourceQuery.source === 'master-css-manifest')?.use[0].options).toEqual({ module: true, external: true })
+  expect(config.module.rules.find((rule: { resourceQuery?: unknown }) => rule.resourceQuery instanceof RegExp && rule.resourceQuery.source === 'master-css-manifest')?.use[0].options).toEqual({ module: true })
 })

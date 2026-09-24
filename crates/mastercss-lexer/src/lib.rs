@@ -1,5 +1,10 @@
 #![forbid(unsafe_code)]
 
+mod query;
+mod selector;
+pub use query::{NativeQuery, canonical_native_content, decode_native_content, parse_native_query};
+pub use selector::{replace_nesting_selector, valid_mode_name, valid_mode_selector};
+
 use mastercss_schema::{LEXER_BATCH_VERSION, SourceRange};
 use serde::{Deserialize, Serialize};
 

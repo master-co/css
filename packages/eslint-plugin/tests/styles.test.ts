@@ -9,13 +9,13 @@ jsxTester.run('class matching main utilities', rule, {
   ],
   invalid: [
     {
-      code: 'const classes = "text-decoration:bad()"',
+      code: 'const classes = "text-decoration:1"',
       settings: { '@master/css': { classDeclarations: ['classes'] } },
       errors: [{ messageId: 'invalidClass' },
 { messageId: 'invalidClass' }]
     },
     {
-      code: 'const classes = { btn: ["text-decoration:bad()"] }',
+      code: 'const classes = { btn: ["text-decoration:1"] }',
       settings: { '@master/css': { classDeclarations: ['classes'] } },
       errors: [{ messageId: 'invalidClass' },
 { messageId: 'invalidClass' }]

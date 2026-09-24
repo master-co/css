@@ -1,9 +1,1 @@
-@layer theme {
-  .light, :root { color-scheme: light; --primary: #000000 }
-  .dark { color-scheme: dark; --primary: #ffffff }
-}
-@layer utilities {
-  .background-color\:var\(--primary\) { background-color: var(--primary) }
-  .fg\:var\(--primary\) { color: var(--primary) }
-  .fill\:var\(--primary\) { fill: var(--primary) }
-}
+@layer theme{@media (prefers-color-scheme:light){:root{--primary:#000000}}@media (prefers-color-scheme:light){:host{--primary:#000000}}@media (prefers-color-scheme:dark){:root{--primary:#ffffff}}@media (prefers-color-scheme:dark){:host{--primary:#ffffff}}}@layer utilities{.background-color\:var\(--primary\){background-color:var(--primary)}.fg\:var\(--primary\){color:var(--primary)}.fill\:var\(--primary\){fill:var(--primary)}}

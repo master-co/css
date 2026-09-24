@@ -4,7 +4,7 @@ import { ContainerNamespaceTable } from './components/ContainerNamespace'
 Containers define the size scale for reusable layout surfaces. In Master CSS, the container namespace has two related jobs:
 
 * Provide contextual size values such as `max-w-md`, `w-3xl`, `size-lg`, and `flex-basis-sm`.
-* Provide thresholds for `@container(<size>)` queries, so components can respond to the space they actually receive.
+* Provide a shared size vocabulary for explicit native container queries, so components can respond to the space they actually receive.
 
 Use [breakpoints](/guide/breakpoints) for viewport-level page changes. Use containers for component-level adaptation and shared width caps.
 
@@ -23,8 +23,7 @@ Container tokens belong in the theme layer and use the `container-*` namespace.
 }
 ```
 
-The same token can drive a width cap and a container query. That keeps component dimensions and responsive thresholds from drifting apart.
-Container scale tables read from manifest metadata, so the displayed size and generated query stay aligned when tokens use `rem`, `px`, or legacy unitless numbers.
+Use complete query values with explicit units. Container query preludes do not resolve theme tokens or `var()` references; use a named `@custom-variant` when a query is shared. The tables show the current token values as complete query examples, preserving their authored units.
 
 ---
 
@@ -33,7 +32,7 @@ The `container` variable namespace is shared by width, height, min and max const
 
 <ContainerNamespaceTable />
 
-This lets sizing utilities use `md`, `5xl`, or project token names without the `container-` prefix. Container query variants use the same namespace for thresholds.
+This lets sizing utilities use `md`, `5xl`, or project token names without the `container-` prefix. Native query values are explicit; they do not search this namespace.
 
 ---
 
@@ -64,12 +63,12 @@ The shorthand is contextual: `md` can mean a container value inside `max-w-md`, 
 ---
 
 ## Create a query container
-Add `container` to an ancestor whose inline size comes from the surrounding layout. Then apply `@container(<size>)` variants to its descendants. A size query cannot select the element itself as its query container.
+Add `container` to an ancestor whose inline size comes from the surrounding layout. Then apply full `@container((width>=28rem))` queries to its descendants. A size query cannot select the element itself as its query container.
 
 ```html
 <section class="container">
-  <!-- @MARK grid-cols:2@container(md) -->
-  <article class="grid-cols:1 gap-lg grid-cols:2@container(md)">
+  <!-- @MARK grid-cols:2@container((width>=28rem)) -->
+  <article class="grid-cols:1 gap-lg grid-cols:2@container((width>=28rem))">
     ...
   </article>
 </section>
@@ -78,7 +77,7 @@ Add `container` to an ancestor whose inline size comes from the surrounding layo
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'grid-cols:1', 'grid-cols:2@container(md)', 'gap-lg']}
+    {['container', 'grid-cols:1', 'grid-cols:2@container((width>=28rem))', 'gap-lg']}
   </Class2CSS>
 </details>
 
@@ -87,30 +86,30 @@ Container queries make components portable. The same card can be stacked in a si
 ---
 
 ## Container query scale
-Container query variants use the same `container-*` tokens as sizing utilities.
+The following complete queries use values from the preset container scale. Copy a value with its unit, or define a named custom variant for a reusable query.
 
 <ContainerQueries />
 
-This is different from viewport breakpoints on purpose. A component threshold is usually smaller than a page threshold. For example, `@container(md)` can represent a comfortable card width, while `@md` represents a desktop page shell.
+This is different from viewport breakpoints on purpose. A component threshold is usually smaller than a page threshold. For example, `@container((width>=28rem))` can represent a comfortable card width, while `@md` represents a desktop page shell.
 
 ---
 
 ## Query container ranges
-Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators when a component needs a bounded range.
+Use native CSS range and logical operators when a component needs a bounded range.
 
 ```html
-<!-- @MARK hidden@container(sm&<=md) -->
-<div class="hidden@container(sm&<=md)">...</div>
+<!-- @MARK hidden@container((24rem<=width<=28rem)) -->
+<div class="hidden@container((24rem<=width<=28rem))">...</div>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@container(sm&<=md)']}
+    {['hidden@container((24rem<=width<=28rem))']}
   </Class2CSS>
 </details>
 
-Prefer named container tokens for repeated component states. Use raw container query values only when the threshold belongs to one local component and is unlikely to become part of the shared design language.
+For repeated conditions, define `@custom-variant card-wide { @container (width>=28rem) { @slot; } }` and use `@card-wide`. Container names are explicit inside the full query; an unknown `@name` never becomes a container query.
 
 ---
 
@@ -120,15 +119,15 @@ Use named containers when a descendant should query a specific ancestor instead 
 ```html
 <!-- @MARK container:card/inline-size -->
 <section class="container:card/inline-size">
-  <!-- @MARK @card(3xs) -->
-  <article class="grid-cols:2@card(3xs)">...</article>
+  <!-- @MARK @container(card|(width>=16rem)) -->
+  <article class="grid-cols:2@container(card|(width>=16rem))">...</article>
 </section>
 ```
 
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container:card/inline-size', 'grid-cols:2@card(3xs)']}
+    {['container:card/inline-size', 'grid-cols:2@container(card|(width>=16rem))']}
   </Class2CSS>
 </details>
 
@@ -143,8 +142,8 @@ Container size values and container queries are related, but they solve differen
 | --- | --- | --- |
 | Cap a page wrapper | Container value | `w:100% max-w-7xl mx:auto` |
 | Cap a content measure | Local or container value | `max-w:72ch` or `max-w-5xl` |
-| Adapt a reusable component | Container query | `grid-cols:2@container(md)` |
-| Coordinate nested responsive regions | Named container | `grid-cols:2@card(3xs)` |
+| Adapt a reusable component | Container query | `grid-cols:2@container((width>=28rem))` |
+| Coordinate nested responsive regions | Named container | `grid-cols:2@container(card|(width>=16rem))` |
 | Change the whole page shell | Breakpoint | `grid-cols:12@md` |
 
 (x) A reusable card depends on the viewport, so it changes at the wrong time inside narrow parents.
@@ -157,7 +156,7 @@ Container size values and container queries are related, but they solve differen
 
 ```html
 <section class="container">
-  <article class="grid-cols:2@container(md)">...</article>
+  <article class="grid-cols:2@container((width>=28rem))">...</article>
 </section>
 ```
 

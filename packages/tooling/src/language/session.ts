@@ -4,7 +4,7 @@ import type {
 import { MASTER_CSS_LANGUAGE_BATCH_VERSION } from '@master/css-binding/tooling'
 import { MasterCSSError } from '@master/css-schema'
 import { freezeToolingResult } from '../immutable'
-import { matchesLanguageServiceNativeDeclaration } from './master-css'
+import { withCSSValueValidation } from '../value-validation'
 import type {
   MasterCSSDocumentAnalysis,
   MasterCSSDocumentAnalysisRequest,
@@ -75,20 +75,8 @@ export function bindLanguageSession(
   const dispose = () => {
     if (disposed) return
     disposed = true
-    nativeSupportCache.clear()
     completionIndexCache = undefined
     session.dispose()
-  }
-  const nativeSupportCache = new Map<string, boolean>()
-  const collectNativeSupport = (classNames: string[]) => {
-    const candidates = parse<MasterCSSNativeDeclarationCandidate[]>(
-      session.nativeDeclarationCandidates(classNames)
-    )
-    return candidates.map((candidate) => {
-      const supported = matchesLanguageServiceNativeDeclaration(candidate)
-      nativeSupportCache.set(candidate.className, supported)
-      return supported
-    })
   }
   let completionIndexCache: MasterCSSLanguageCompletionIndex | undefined
   return {
@@ -97,12 +85,7 @@ export function bindLanguageSession(
       assertActive()
       const prepared = session.prepareDocument(request)
       try {
-        const support = prepared.nativeCandidates.map((candidate) => {
-          const supported = matchesLanguageServiceNativeDeclaration(candidate)
-          nativeSupportCache.set(candidate.className, supported)
-          return supported
-        })
-        return validate(parse<MasterCSSDocumentAnalysis>(session.finishDocument(prepared.id, support)))
+        return validate(parse<MasterCSSDocumentAnalysis>(session.finishDocument(prepared.id, [])))
       } finally {
         session.cancelDocument(prepared.id)
       }
@@ -115,18 +98,14 @@ export function bindLanguageSession(
       assertActive()
       const values = [...classNames]
       return validate(parse<MasterCSSLanguageClassifications>(
-        session.classifyClassNames(values, collectNativeSupport(values))
+        session.classifyClassNames(values)
       ))
     },
     inspectClassName(className, mode) {
       assertActive()
-      const support = collectNativeSupport([className])
-      if (!support.length && nativeSupportCache.has(className)) {
-        support.push(nativeSupportCache.get(className) as boolean)
-      }
-      return validate(parse<MasterCSSLanguageInspection>(
-        session.inspectClassName(className, support, mode)
-      ))
+      return validate(withCSSValueValidation(parse<MasterCSSLanguageInspection>(
+        session.inspectClassName(className, undefined, mode)
+      )))
     },
     completionIndex() {
       assertActive()

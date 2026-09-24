@@ -1,10 +1,9 @@
 import { createToolingBinding } from '@master/css-binding/tooling'
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
-  MasterCSSNativeDeclarationCandidate,
   MasterCSSValidatorBatch
 } from '@master/css-binding/tooling'
-import { supportsNativeDeclaration } from '../host'
+import { withCSSValueValidation } from '../value-validation'
 import type { MasterCSSClassValidationResult } from './contracts'
 
 interface BindingValidatorSession {
@@ -31,13 +30,8 @@ export function bindValidatorSession(
     binding,
     generate(classNames) {
       const values = [...classNames]
-      const candidates = parse<MasterCSSNativeDeclarationCandidate[]>(
-        session.nativeDeclarationCandidates(values)
-      )
-      const nativeSupport = candidates.map(supportsNativeDeclaration)
-      return parse<MasterCSSValidatorBatch>(
-        session.generateClassRules(values, nativeSupport.length ? nativeSupport : undefined)
-      )
+      const result = parse<MasterCSSValidatorBatch>(session.generateClassRules(values))
+      return { ...result, classes: result.classes.map(withCSSValueValidation) }
     },
     dispose: () => session.dispose()
   }

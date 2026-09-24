@@ -63,9 +63,8 @@ Utilities is the last layer in the base order. Its normal declarations can overr
 ## A complete flow \{#a-complete-flow\}
 Add this configuration to the project CSS entry that imports `@master/css`. It defines mode-aware variables and a component; the markup below also generates base, defaults and utility rules.
 
-<ConfiguredExample source={`@settings {
-  mode-trigger: class;
-}
+<ConfiguredExample source={`@mode light { .light { @slot; } }
+@mode dark { .dark { @slot; } }
 
 @theme light {
   --color-primary: #000000;

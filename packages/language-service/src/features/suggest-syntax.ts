@@ -122,36 +122,15 @@ function selectorCompletionItems(
   return sortCompletionItems([...byLabel.values()])
 }
 
-function queryCompletionItems(
-  entries: readonly MasterCSSLanguageCompletionEntry[],
-  field: string
-) {
-  const operator = field.match(/(?:&)?(?:>=|<=|>|<)$/u)?.[0]?.replace(/^&/u, '')
-    || (field.endsWith('&') ? '&' : '@')
-  const comparisonsOnly = operator !== '@' && operator !== '&'
-  const items: CompletionItem[] = entries
-    .filter(({ label, sortText }) =>
-      label.startsWith('@') && (!comparisonsOnly || sortText?.startsWith('0000-'))
-    )
-    .map((entry) => ({
-      label: `${operator}${entry.label.slice(1)}`,
-      filterText: entry.label.slice(1),
-      insertText: entry.label.slice(1),
-      detail: entry.detail,
-      kind: CompletionItemKind.Keyword,
-      sortText: entry.sortText
-    } satisfies CompletionItem))
-  if (operator === '@') {
-    for (const name of ['container', 'media', 'supports']) {
-      items.push({
-        label: `@${name}()`,
-        filterText: `${name}()`,
-        insertText: `${name}()`,
-        sortText: `2000-${name}`
-      })
-    }
-  }
-  return sortCompletionItems(items)
+function queryCompletionItems(entries: readonly MasterCSSLanguageCompletionEntry[]) {
+  return sortCompletionItems(entries.filter(({ label }) => label.startsWith('@')).map(entry => ({
+    label: entry.label,
+    filterText: entry.label.slice(1),
+    insertText: entry.label.slice(1),
+    detail: entry.detail,
+    kind: entry.kind === 'function' ? CompletionItemKind.Function : CompletionItemKind.Keyword,
+    sortText: entry.sortText
+  })))
 }
 
 export default function suggestSyntax(
@@ -186,9 +165,11 @@ export default function suggestSyntax(
   if (field.endsWith(':') && component) return
 
   const atIndex = field.lastIndexOf('@')
-  if (atIndex > 0 && /[@&<>=]$/u.test(field)) {
+  if (atIndex > 0) {
     if (isGroup) return
-    return queryCompletionItems(entries, field)
+    if (field.endsWith('@')) return queryCompletionItems(entries)
+    // Native query contents and retired shorthand are not property or selector completions.
+    return []
   }
 
   const keyMatch = field.match(/^([^'":\s]+):/u)

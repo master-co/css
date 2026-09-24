@@ -1,17 +1,1 @@
-@layer theme {
-  :root {
-    --color-foo: oklch(0% 0 none);
-  }
-}
-
-@layer components {
-  .btn {
-    background-color: var(--color-foo);
-  }
-
-  @media (width >=52.125rem) {
-    .btn\@sm {
-      background-color: var(--color-foo);
-    }
-  }
-}
+@layer theme{:root,:host{--color-foo:oklch(0% 0 none)}}@layer components{.btn{background-color:var(--color-foo)}@media (width>=52.125rem){.btn\@sm{background-color:var(--color-foo)}}}

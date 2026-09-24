@@ -284,6 +284,7 @@ export class MasterCSSWebpackPlugin {
       baseManifest: this.scanner.css.manifest,
       classes: this.getScannerClasses(),
       projectDir: this.cwd,
+      pruneNativeCSS: this.pluginOptions.pruneNativeCSS,
       includeNativeCSS: options.includeNativeCSS,
       includeMasterBaseCSS: options.includeMasterBaseCSS,
       sourceIds: options.sourceIds,
@@ -312,6 +313,7 @@ export class MasterCSSWebpackPlugin {
       const result = await this.stylesheets.register(this.scanner, modulePath, source, {
         baseManifest: this.scanner.css.manifest,
         projectDir: this.cwd,
+      pruneNativeCSS: this.pluginOptions.pruneNativeCSS,
         delivery: this.usesStylesheetDelivery ? {
           ...getBuildStylesheetDelivery(),
           onDependency: file => { dependencies.add(file) }

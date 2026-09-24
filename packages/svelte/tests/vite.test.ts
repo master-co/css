@@ -6,6 +6,11 @@ describe('Svelte Vite integration', () => {
     expect(masterCSS).toBe(createMasterCSSVitePlugin)
   })
 
+  test('defaults to static and keeps runtime explicit', () => {
+    expect(masterCSS().map(plugin => plugin.name)).not.toContain('master-css:inject-runtime')
+    expect(masterCSS({ mode: 'runtime' }).map(plugin => plugin.name)).toContain('master-css:inject-runtime')
+  })
+
   test('includes the emittedGlobals virtual module from the wrapped Vite plugin', () => {
     expect(masterCSS().map((plugin) => plugin.name)).toContain('master-css:virtual-module:emitted-globals')
   })

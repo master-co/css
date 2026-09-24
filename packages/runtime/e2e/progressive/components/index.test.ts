@@ -13,6 +13,7 @@ test('components', async ({ page }) => {
   const prerenderHTML = readFileSync(resolve(__dirname, 'prerender.html'), 'utf-8')
   await page.evaluate((html) => document.body.innerHTML = html, prerenderHTML)
   await init(page, generatedCSS, manifest, 'auto')
+  expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.snapshot().hydration.state)).toBe('progressive')
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.native?.cssRules.length)).toEqual(2)
   expect((await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.rules)).map(({ name }) => name)).toEqual(['theme', 'components'])
   expect(await page.evaluate(() => globalThis.__MASTER_CSS_RUNTIME_TEST__.componentsLayer.rules.find((rule) => rule.name === 'btn')?.text))

@@ -27,7 +27,7 @@ it('matches generated CSS', async () => {
   if (!match) throw new Error('Expected a stylesheet link in Nuxt pre-render HTML.')
   const href = match[1]
   if (!href) throw new Error('Expected Nuxt pre-render stylesheet link to include an href.')
-  expect(html).toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
+  expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
   expect(html).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
   expect(html).toContain('.fg-host')
   expect(html).not.toContain('--color-host:')

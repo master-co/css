@@ -20,28 +20,15 @@ export function compactClassInspection(
 ) {
   const inspection = resolvedInspection ?? session.inspectClassName(className, mode)
   return {
-    valid: inspection.valid,
-    base: inspection.base,
-    suffix: inspection.suffix,
-    key: inspection.key,
-    value: inspection.value,
-    keyToken: inspection.keyToken,
-    valueToken: inspection.valueToken,
-    stateToken: inspection.stateToken,
-    important: inspection.important || undefined,
-    matcherTypes: inspection.matcherTypes,
+    ...inspection,
     variables: inspection.variables.map(({ key, variable }) => ({
       key,
-      variable: {
-        ...variable,
-        ...(variable.dependencies ? { dependencies: new Set(variable.dependencies) } : {})
-      }
+      variable: { ...variable, dependencies: [...(variable.dependencies ?? [])] }
     })),
-    rules: inspection.rules.map((rule) => ({
-      className: rule.className,
-      layer: rule.layer,
-      type: rule.type,
-      ...(includeRules ? { text: rule.text } : {})
-    }))
+    rules: inspection.rules.map((rule) => {
+      if (includeRules) return rule
+      const { text: _text, ...metadata } = rule
+      return metadata
+    })
   }
 }

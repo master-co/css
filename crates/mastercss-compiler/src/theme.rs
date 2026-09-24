@@ -86,23 +86,6 @@ pub(crate) fn lower_theme_keyframes(
     Ok(())
 }
 
-pub(crate) fn strict_css_number(value: &str) -> Option<f64> {
-    let number = value.parse::<f64>().ok()?;
-    let normalized = if number == 0.0 {
-        "0".to_owned()
-    } else {
-        number.to_string()
-    };
-    (normalized == value).then_some(number)
-}
-
-pub(crate) fn add_mode(manifest_input: &mut CssDirectiveManifestInput, mode: &str) {
-    let modes = manifest_input.modes.get_or_insert_default();
-    if !modes.iter().any(|existing| existing == mode) {
-        modes.push(mode.to_owned());
-    }
-}
-
 pub(crate) fn lower_settings_rule(
     source: &str,
     filename: &str,
@@ -148,45 +131,15 @@ pub(crate) fn lower_settings_rule(
                 filename: filename.to_owned(),
             })?;
         match property.as_str() {
-            "root-size" => {
-                manifest_input.root_size = Some(strict_css_number(&value).ok_or_else(|| {
-                    directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "root-size must be a number",
-                    )
-                })?);
-            }
-            "base-unit" => {
+            "root-size" | "base-unit" | "default-mode" | "mode-trigger" | "modes" => {
                 return Err(directive_error(
                     source,
                     filename,
                     rule.start_byte,
-                    "base-unit and Master length x units were removed; migrate lengths to CSS units or named tokens",
+                    format!(
+                        "@settings {property} was removed; use native CSS units and explicit @mode definitions"
+                    ),
                 ));
-            }
-            "default-mode" => {
-                if value == "false" {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "default-mode must be a mode name or none",
-                    ));
-                }
-                manifest_input.default_mode = Some(value);
-            }
-            "mode-trigger" => {
-                if !matches!(value.as_str(), "class" | "media" | "host") {
-                    return Err(directive_error(
-                        source,
-                        filename,
-                        rule.start_byte,
-                        "mode-trigger must be class, media, or host",
-                    ));
-                }
-                manifest_input.mode_trigger = Some(value);
             }
             "important" => {
                 manifest_input.important = Some(match value.as_str() {
@@ -201,15 +154,6 @@ pub(crate) fn lower_settings_rule(
                         ));
                     }
                 });
-            }
-            "modes" => {
-                for mode in value
-                    .split(',')
-                    .flat_map(str::split_whitespace)
-                    .filter(|mode| !mode.is_empty())
-                {
-                    add_mode(manifest_input, mode);
-                }
             }
             "scope" => manifest_input.scope = Some(value),
             _ => {
@@ -252,12 +196,6 @@ pub(crate) fn lower_theme_rule(
             "@theme requires a style block",
         )
     })?;
-    if let Some(mode) = &mode {
-        let modes = manifest_input.modes.get_or_insert_default();
-        if !modes.contains(mode) {
-            modes.push(mode.clone());
-        }
-    }
 
     let (declaration_source, keyframe_blocks) =
         extract_top_level_at_rule_blocks(body, &["keyframes", "-webkit-keyframes"]);

@@ -1,9 +1,3 @@
-@settings {
-  root-size: 16;
-  default-mode: light;
-  mode-trigger: media;
-}
-
 @theme {
   --color-primary: #0061ff;
   --color-surface-base: #f6f8fb;
@@ -12,10 +6,10 @@
   --color-muted: #637083;
   --color-panel: #f6f8fb;
   --color-ring: #d9e2ef;
-  --radius-card: 18;
-  --radius-pill: 999;
-  --spacing-card: 24;
-  --breakpoint-md: 768;
+  --radius-card: 18px;
+  --radius-pill: 999px;
+  --spacing-card: 24px;
+  --breakpoint-md: 48rem;
 }
 
 @theme dark {

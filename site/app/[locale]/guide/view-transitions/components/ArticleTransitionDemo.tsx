@@ -96,7 +96,7 @@ export default function ArticleTransitionDemo() {
     <Demo className="container w:100%">
       <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
       {!selectedArticle &&
-        <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container(3xs)">
+        <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container((width>=16rem))">
           {articles.map((article) => (
             <article className="app-panel flex overflow:hidden flex-col p:0" key={article.id}>
               <Image
@@ -137,11 +137,11 @@ export default function ArticleTransitionDemo() {
             sizes="100vw"
             src={selectedArticle.image}
           />
-          <div className="p-lg p-xl@container(3xs)">
+          <div className="p-lg p-xl@container((width>=16rem))">
             <time className={clsx(selectedArticle.dateTransition, sharedTransitionClassName, 'block mb-sm text-sm text-body')}>
               {selectedArticle.date}
             </time>
-            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'm:0 text-2xl font-semibold text-3xl@container(3xs)')}>
+            <h3 className={clsx(selectedArticle.titleTransition, sharedTransitionClassName, 'm:0 text-2xl font-semibold text-3xl@container((width>=16rem))')}>
               {selectedArticle.title}
             </h3>
             <p className="mx:0 mb:0 mt-md text-md text-body">

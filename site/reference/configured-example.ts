@@ -1,6 +1,5 @@
 import { compileManifestSync } from '@master/css-compiler/node'
 import { createRenderSessionSync } from '@master/css/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import { validateCSS } from '@master/css-tooling/css'
 import preset from '../utils/preset-manifest'
 
@@ -22,7 +21,7 @@ export function configuredExampleCSS(source: string, classes: string[]) {
   const result = compileManifestSync(source, { baseManifest: preset })
   const errors = result.diagnostics.filter(diagnostic => diagnostic.severity === 'error')
   if (errors.length) throw new Error(`Invalid documentation configuration: ${JSON.stringify(errors)}`)
-  const engine = createRenderSessionSync({ manifest: result.manifest, supportsNativeDeclaration })
+  const engine = createRenderSessionSync({ manifest: result.manifest })
   try {
     const snapshot = engine.ensureClassRules(classes)
     for (const className of classes) {

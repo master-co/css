@@ -146,9 +146,9 @@ function RootComponent() {
 
     const viteConfig = readProjectFile(root, 'vite.config.ts')
     expect(viteConfig).toContain("import masterCSS from '@master/css-vite'")
-    expect(viteConfig).toContain("masterCSS({ mode: 'runtime' })")
-    expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'runtime' })"))
-    expect(viteConfig.indexOf("masterCSS({ mode: 'runtime' })")).toBeLessThan(viteConfig.indexOf('react()'))
+    expect(viteConfig).toContain("masterCSS({ mode: 'static' })")
+    expect(viteConfig.indexOf('tanstackStart()')).toBeLessThan(viteConfig.indexOf("masterCSS({ mode: 'static' })"))
+    expect(viteConfig.indexOf("masterCSS({ mode: 'static' })")).toBeLessThan(viteConfig.indexOf('react()'))
     expect(readProjectFile(root, 'src/styles/app.css')).toBe("@import '@master/css';\n")
     expect(readProjectFile(root, 'src/routes/__root.tsx')).toContain("import '../styles/app.css'")
   })
@@ -517,7 +517,7 @@ export default defineConfig({
     })).toThrow('--mode runtime is not supported for laravel')
   })
 
-  test('plans Lit projects with runtime client types and shadow-root setup', () => {
+  test('plans Lit projects with static shadow styles and no runtime dependency', () => {
     const root = createTempProject('master-css-create-lit-', {
       dependencies: {
         lit: '^3.0.0',
@@ -542,8 +542,9 @@ export class MyElement extends LitElement {
     applySetup({ root, install: false })
 
     expect(readProjectFile(root, 'src/vite-env.d.ts')).toContain('@master/css/client')
-    expect(readProjectFile(root, 'src/my-element.ts')).toContain('@withMasterCSSRuntime({ manifest, emittedGlobals })')
-    expect(readProjectFile(root, 'src/my-element.ts')).toContain('masterCSSRuntime?: MasterCSSRuntime')
+    expect(readProjectFile(root, 'src/my-element.ts')).toContain('unsafeCSS(masterCSSStyles)')
+    expect(readProjectFile(root, 'src/my-element.ts')).not.toContain('@master/css-runtime')
+    expect(planMasterCSSSetup({ root, minimal: true }).dependencies.map(item => item.name)).not.toContain('@master/css-runtime')
   })
 
   test('plans Angular projects with runtime setup', () => {
@@ -559,7 +560,7 @@ import { AppComponent } from './app/app.component'
 bootstrapApplication(AppComponent)
 `)
 
-    const plan = planMasterCSSSetup({ root })
+    const plan = planMasterCSSSetup({ root, mode: 'runtime' })
 
     expect(plan.framework).toBe('angular')
     expect(plan.dependencies.map((dependency) => dependency.name)).toEqual([
@@ -571,7 +572,7 @@ bootstrapApplication(AppComponent)
       '@master/css-mcp'
     ])
 
-    applySetup({ root, install: false })
+    applySetup({ root, install: false, mode: 'runtime' })
 
     expect(readProjectFile(root, 'src/main.ts')).toContain("import { MasterCSSRuntime } from '@master/css-runtime'")
     expect(readProjectFile(root, 'src/main.ts')).toContain('MasterCSSRuntime.start({ manifest: defaultManifest })')
@@ -595,7 +596,7 @@ export default nextConfig;
     applySetup({ root, install: false })
 
     expect(readProjectFile(root, 'next.config.mjs')).toContain("import withMasterCSS from '@master/css-next'")
-    expect(readProjectFile(root, 'next.config.mjs')).toContain('export default withMasterCSS(nextConfig);')
+    expect(readProjectFile(root, 'next.config.mjs')).toContain('export default await withMasterCSS(nextConfig);')
   })
 
   test('writes async Next.js config for static mode', () => {
@@ -692,7 +693,7 @@ export default nextConfig;
   test('rejects rendering mode for unsupported setup targets', () => {
     const root = createTempProject('master-css-create-unsupported-mode-')
 
-    for (const framework of ['angular', 'svelte', 'none'] as const) {
+    for (const framework of ['svelte'] as const) {
       expect(() => planMasterCSSSetup({
         root,
         framework,
@@ -739,4 +740,17 @@ export default nextConfig;
     expect(command).toContain('sv add @master/css-svelte-addon')
     expect(command).not.toContain('@master/css-sv ')
   })
+})
+
+
+test('Angular and standalone setup default to CLI static CSS', () => {
+  for (const framework of ['angular', 'none'] as const) {
+    const root = createTempProject(`master-static-${framework}-`)
+    const plan = applySetup({ root, framework, minimal: true, install: false })
+    expect(plan.dependencies.map(item => item.name)).toEqual(['@master/css', '@master/css-cli'])
+    expect(plan.commands).toEqual([expect.objectContaining({ args: ['master-css', 'generate', '--output', 'src/master.generated.css'] })])
+    expect(readProjectFile(root, 'master.css')).toContain("@import '@master/css'")
+    if (framework === 'angular') expect(readProjectFile(root, 'src/styles.css')).toContain("@import './master.generated.css'")
+    expect(planMasterCSSSetup({ root, framework, minimal: true }).files.every(file => file.action === 'skip')).toBe(true)
+  }
 })

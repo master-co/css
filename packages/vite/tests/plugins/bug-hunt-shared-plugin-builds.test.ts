@@ -50,7 +50,7 @@ test.each(['static', 'runtime', 'pre-render', 'progressive'] as const)('BH-0004 
       if (mode === 'pre-render' || mode === 'progressive') {
         expect(html).toContain(`.card{color:${['#123456', '#abcdef'][index]}}`)
         expect(html).not.toContain(['#abcdef', '#123456'][index])
-        expect(assets.some(item => item.fileName.includes('master-css-hydration.'))).toBe(true)
+        expect(assets.some(item => item.fileName.includes('master-css-hydration.'))).toBe(mode === 'progressive')
       }
       if (mode === 'runtime') expect(html).toContain('as="json"')
     }

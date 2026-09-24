@@ -20,18 +20,18 @@ for (const operation of ['scan', 'extract', 'trace'] as const) {
         const expected = mode === 'default' ? ['control.js', 'entry.mjs'] : patterns!
         const className = mode === 'explicit-js' ? 'inline' : 'block'
         if (operation === 'scan') {
-          const report = await scanProject(context, { patterns, includeCss: true })
+          const report = await scanProject(context, { context: 'preset', patterns, includeCss: true })
           expect(report.files.map((f) => basename(f.filePath)).sort()).toEqual(expected)
           expect(report.scanner.classes.valid).toContain(className)
           expect(report.scanner.classes.valid).not.toContain('hidden')
           expect(report.css.text).toContain(`display:${className}`)
         } else if (operation === 'extract') {
-          const report = await extractClasses(context, { patterns })
+          const report = await extractClasses(context, { context: 'preset', patterns })
           expect(report.files.map((f) => basename(f.filePath)).sort()).toEqual(expected)
           expect(report.files.flatMap((f) => f.classes.map((c) => c.token))).toContain(className)
           expect(report.files.flatMap((f) => f.classes.map((c) => c.token))).not.toContain('hidden')
         } else {
-          const report = await traceClass(context, { patterns, className, includeCss: true })
+          const report = await traceClass(context, { context: 'preset', patterns, className, includeCss: true })
           expect(report.detected).toBe(true)
           expect(report.status).toBe('present')
           expect(report.occurrences.map((f) => basename(f.filePath))).toEqual([className === 'block' ? 'entry.mjs' : 'control.js'])

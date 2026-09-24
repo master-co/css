@@ -4,6 +4,8 @@ use super::*;
 #[serde(rename_all = "camelCase")]
 pub struct Diagnostic {
     pub code: ErrorCode,
+    pub phase: DiagnosticPhase,
+    pub severity: DiagnosticSeverity,
     pub message: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source: Option<String>,
@@ -13,10 +15,33 @@ pub struct Diagnostic {
     pub notes: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum DiagnosticPhase {
+    Match,
+    CssValue,
+    BrowserSupport,
+    Compiler,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum DiagnosticSeverity {
+    Error,
+    Warning,
+    Info,
+}
+
 #[derive(Debug, Error)]
 pub enum SchemaError {
     #[error("Unsupported MasterCSSManifest version. Expected version 1.")]
     UnsupportedManifestVersion,
+    #[error(
+        "Unsupported Master CSS languageVersion. Expected 2; recompile the manifest and hydration data with matching packages."
+    )]
+    UnsupportedLanguageVersion,
+    #[error("settings.{0} was removed; migrate to explicit native queries and @mode definitions.")]
+    RemovedSetting(String),
     #[error(
         "Unsupported MasterCSSManifest variables format. Expected namespace-grouped variables."
     )]
@@ -42,11 +67,14 @@ pub enum SchemaError {
 impl SchemaError {
     pub fn code(&self) -> ErrorCode {
         match self {
-            Self::UnsupportedManifestVersion => ErrorCode::UnsupportedManifestVersion,
+            Self::UnsupportedManifestVersion | Self::UnsupportedLanguageVersion => {
+                ErrorCode::UnsupportedManifestVersion
+            }
             Self::UnsupportedVariablesFormat
             | Self::UnsupportedUtilityBuckets
             | Self::InvalidJson(_)
             | Self::InvalidManifest
+            | Self::RemovedSetting(_)
             | Self::RemovedBaseUnit
             | Self::RemovedVariableMatcher => ErrorCode::InvalidManifest,
         }
@@ -71,6 +99,16 @@ impl MasterCssManifest {
         let object = value.as_object().ok_or(SchemaError::InvalidManifest)?;
         if object.get("version").and_then(Value::as_u64) != Some(MANIFEST_VERSION.into()) {
             return Err(SchemaError::UnsupportedManifestVersion);
+        }
+        if object.get("languageVersion").and_then(Value::as_u64) != Some(LANGUAGE_VERSION.into()) {
+            return Err(SchemaError::UnsupportedLanguageVersion);
+        }
+        if let Some(settings) = object.get("settings").and_then(Value::as_object) {
+            for key in ["rootSize", "defaultMode", "modeTrigger", "modes"] {
+                if settings.contains_key(key) {
+                    return Err(SchemaError::RemovedSetting(key.into()));
+                }
+            }
         }
         if object.get("variables").is_some_and(Value::is_array) {
             return Err(SchemaError::UnsupportedVariablesFormat);
@@ -115,4 +153,20 @@ impl MasterCssManifest {
     pub fn to_json(&self) -> Result<String, SchemaError> {
         Ok(serde_json::to_string(&self.0)?)
     }
+}
+
+/// Source order is cascade order; replacing a mode moves it to the last definition.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ModeDefinition {
+    pub name: String,
+    pub branches: Vec<ModeBranch>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase", deny_unknown_fields)]
+pub struct ModeBranch {
+    pub selector: String,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub conditions: Vec<String>,
 }

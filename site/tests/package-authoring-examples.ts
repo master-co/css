@@ -3,7 +3,6 @@ import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSyn
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
 import { createRenderSessionSync } from '@master/css/node'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import { loadProjectManifest } from '@master/css-compiler/project'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import preset from '../utils/preset-manifest'
@@ -63,7 +62,7 @@ export async function verifyPackageAuthoringExamples() {
     files.write('shared/master.css', authoringSource)
     files.write('app.css', "@import '@master/css';\n@import './shared/master.css';")
     const project = await loadProjectManifest({ root: files.root, baseManifest: preset })
-    const engine = createRenderSessionSync({ manifest: project.manifest, supportsNativeDeclaration })
+    const engine = createRenderSessionSync({ manifest: project.manifest })
     try { assert.deepEqual(engine.ensureClassRules(classes).invalidClassNames, []) }
     finally { engine.dispose() }
   } finally { files.dispose() }
@@ -81,7 +80,7 @@ export async function verifyMonorepoExamples() {
       const project = await loadProjectManifest({ root, baseManifest: preset })
       assert.equal(project.entries.length, 1)
       assert.ok(project.entries[0].endsWith(`/projects/${app}/index.css`))
-      const engine = createRenderSessionSync({ manifest: project.manifest, supportsNativeDeclaration })
+      const engine = createRenderSessionSync({ manifest: project.manifest })
       try {
         const snapshot = engine.ensureClassRules(classes)
         assert.deepEqual(snapshot.invalidClassNames, [])

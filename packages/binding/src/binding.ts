@@ -8,6 +8,7 @@ import {
   MASTER_CSS_SOURCE_BATCH_VERSION,
   MASTER_CSS_LINT_BATCH_VERSION,
   MASTER_CSS_MANIFEST_VERSION,
+  MASTER_CSS_LANGUAGE_VERSION,
   MASTER_CSS_VALIDATOR_BATCH_VERSION,
   type MasterCSSBindingFeature,
   type MasterCSSBindingInfo,
@@ -43,6 +44,7 @@ export function assertMasterCSSBindingInfo(
   const info = parseBindingInfo(value)
   const versionsMatch = info.bindingAbiVersion === MASTER_CSS_BINDING_ABI_VERSION
     && info.manifestVersion === MASTER_CSS_MANIFEST_VERSION
+    && info.languageVersion === MASTER_CSS_LANGUAGE_VERSION
     && info.hydrationManifestVersion === MASTER_CSS_HYDRATION_MANIFEST_VERSION
     && info.engineTransitionVersion === MASTER_CSS_ENGINE_TRANSITION_VERSION
     && info.validatorBatchVersion === MASTER_CSS_VALIDATOR_BATCH_VERSION

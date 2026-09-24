@@ -1,5 +1,7 @@
 //! Explicit RC migration. Legacy decoding is confined to the compiler; the
 //! runtime engine only receives ordinary, current-contract helper utilities.
+mod conditions;
+mod configuration;
 mod stylesheets;
 mod values;
 
@@ -14,6 +16,8 @@ use std::cell::RefCell;
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct RcMigrationRequest {
+    pub from: RcMigrationProfile,
+    pub source_version: String,
     /// The resolved manifest saved using the project's actual RC installation.
     pub manifest: Value,
     /// The new preset or a fully compiled, migrated project manifest.
@@ -28,10 +32,22 @@ pub struct RcMigrationRequest {
     pub documents: Vec<String>,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum RcMigrationProfile {
+    RcLegacy,
+    RcNamed,
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RcMigrationResult {
     pub version: u32,
+    pub from: RcMigrationProfile,
+    pub source_version: String,
+    #[serde(rename = "configurationCSS")]
+    pub configuration_css: String,
+    pub notes: Vec<String>,
     pub class_lists: Vec<Vec<RcClassMigration>>,
     pub stylesheets: Vec<stylesheets::RcStylesheetMigration>,
     pub documents: Vec<Vec<String>>,
@@ -61,6 +77,12 @@ struct StaticFamily {
 }
 
 struct Migration {
+    profile: RcMigrationProfile,
+    original: Value,
+    configuration_css: String,
+    notes: Vec<String>,
+    modes: Vec<String>,
+    unchanged_conditions: Vec<String>,
     helper: RefCell<EngineSession>,
     target: RefCell<EngineSession>,
     families: Vec<Family>,
@@ -116,7 +138,11 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
         .map(|source| migration.stylesheet(source))
         .collect();
     Ok(RcMigrationResult {
-        version: 1,
+        version: 2,
+        from: request.from,
+        source_version: request.source_version.clone(),
+        configuration_css: migration.configuration_css.clone(),
+        notes: migration.notes.clone(),
         class_lists,
         stylesheets,
         documents: request
@@ -150,7 +176,13 @@ impl Migration {
         }
         let base_unit = setting("baseUnit", 4.0)?;
         let root_size = setting("rootSize", 16.0)?;
-        let mut helper_manifest = request.manifest.clone();
+        if request.source_version.trim().is_empty() {
+            return Err(error(
+                "Record the actual source package version before migrating",
+            ));
+        }
+        let configuration = configuration::convert(&request.manifest)?;
+        let mut helper_manifest = configuration.manifest;
         if let Some(settings) = helper_manifest
             .get_mut("settings")
             .and_then(Value::as_object_mut)
@@ -252,7 +284,9 @@ impl Migration {
             "emit":{"type":"property","property":"margin"},"matchers":[{"type":"token","prefix":"migration-global-"}]}));
         utilities.push(json!({"id":"migration-parse","type":0,"emit":{"type":"property","property":"--migration-value"},
             "matchers":[{"type":"key","keys":["migration-parse"]}]}));
-        helper_manifest["utilities"] = Value::Array(utilities);
+        if request.from == RcMigrationProfile::RcLegacy {
+            helper_manifest["utilities"] = Value::Array(utilities);
+        }
         let mut target_manifest = request.target_manifest.clone();
         // Saved project resources retain their identities. Managed definitions
         // must be present in the migrated target manifest to prove equivalence.
@@ -263,6 +297,7 @@ impl Migration {
             "variants",
             "animations",
             "settings",
+            "modes",
         ] {
             if request.target_is_preset
                 && let Some(value) = helper_manifest.get(key)
@@ -271,6 +306,26 @@ impl Migration {
             }
         }
         Ok(Self {
+            profile: request.from,
+            original: request.manifest.clone(),
+            configuration_css: configuration.css,
+            notes: configuration.notes,
+            modes: configuration.modes,
+            unchanged_conditions: request
+                .manifest
+                .get("conditions")
+                .and_then(Value::as_object)
+                .into_iter()
+                .flatten()
+                .filter(|(name, value)| {
+                    request
+                        .target_manifest
+                        .get("conditions")
+                        .and_then(|conditions| conditions.get(*name))
+                        == Some(*value)
+                })
+                .map(|(name, _)| name.clone())
+                .collect(),
             helper: RefCell::new(
                 EngineSession::create(&helper_manifest.to_string())
                     .map_err(|err| error(err.to_string()))?,
@@ -308,11 +363,56 @@ impl Migration {
     }
 
     fn convert(&self, source: &str) -> Result<String, String> {
+        let important = source.ends_with('!');
+        let source = source.strip_suffix('!').unwrap_or(source);
+        let mut migrated = source.to_owned();
+        for (start, end) in conditions::suffixes(source).into_iter().rev() {
+            let token = &source[start + 1..end];
+            if self.unchanged_conditions.iter().any(|name| name == token)
+                || self.modes.iter().any(|mode| mode == token)
+                || self.original["variants"]
+                    .as_array()
+                    .into_iter()
+                    .flatten()
+                    .any(|variant| variant["token"] == format!("@{token}"))
+            {
+                continue;
+            }
+            // A complete query is also the idempotent target of migration.
+            let complete = token.split_once('(').is_some_and(|(_, body)| {
+                body.starts_with('(') || body.starts_with("selector(") || body.starts_with("style(")
+            });
+            let query = if complete {
+                token.into()
+            } else {
+                conditions::decode(&self.original, token)?
+            };
+            migrated.replace_range(start + 1..end, &query);
+        }
+        if important {
+            migrated.push('!');
+        }
+        self.convert_declaration(&migrated)
+    }
+
+    fn convert_declaration(&self, source: &str) -> Result<String, String> {
         if source.contains("${") || source.contains("{{") {
             return Err("Dynamic class construction cannot be migrated safely".into());
         }
         if source.starts_with('{') {
             return self.group(source);
+        }
+        if self.profile == RcMigrationProfile::RcNamed {
+            let diagnostics = self
+                .target
+                .borrow()
+                .inspect(source)
+                .map_err(|error| error.to_string())?
+                .diagnostics;
+            if let Some(diagnostic) = diagnostics.first() {
+                return Err(diagnostic.message.clone());
+            }
+            return Ok(source.into());
         }
         for family in &self.static_families {
             if let Some(rest) = source.strip_prefix(&family.source_prefix) {
@@ -343,16 +443,10 @@ impl Migration {
         {
             return Ok(source.into());
         }
-        let parsed = self
-            .helper
-            .borrow()
-            .inspect_class_semantics(&format!("migration-parse:{rest}"))
-            .map_err(|err| err.to_string())?;
-        let Some(value) = parsed.value_token else {
+        let (value, suffix) = values::split_rc_value_state(rest);
+        if value.is_empty() {
             return Ok(source.into());
-        };
-        let state = parsed.state_token.unwrap_or_default();
-        let suffix = format!("{state}{}", if parsed.important { "!" } else { "" });
+        }
         for family in self.families.iter().filter(|family| family.key == key) {
             let token_probe = token_class(&family.token, &value, &suffix);
             let token_rules = self.rules(&self.helper, &token_probe);
@@ -361,7 +455,8 @@ impl Migration {
                 self.equivalent(&token_rules, &candidate, true)?;
                 return Ok(candidate);
             }
-            let probe = format!("{}:{value}{suffix}", family.probe);
+            let probe_value = self.rewrite_value(&value, None, key == "image-resolution")?;
+            let probe = format!("{}:{probe_value}{suffix}", family.probe);
             if self.rules(&self.helper, &probe).is_empty() {
                 continue;
             }
@@ -405,19 +500,20 @@ impl Migration {
 
     fn rules(&self, engine: &RefCell<EngineSession>, class: &str) -> Vec<EngineCompositionRuleIr> {
         let mut engine = engine.borrow_mut();
-        let supported = engine
-            .native_declaration_candidates([class])
-            .unwrap_or_default()
-            .iter()
-            .map(|candidate| valid_saved_declaration(&candidate.property, &candidate.value))
-            .collect::<Vec<_>>();
-        if engine
-            .ensure_class_rules_with_native_support([class], &supported)
-            .is_err()
-        {
+        if engine.ensure_class_rules([class]).is_err() {
             return Vec::new();
         }
         let rules = engine.composition_rules(class).unwrap_or_default();
+        // A failed synthetic probe is not an unknown native declaration.
+        let rules = if rules.iter().any(|rule| {
+            rule.declarations
+                .keys()
+                .any(|property| property.starts_with("migration-"))
+        }) {
+            Vec::new()
+        } else {
+            rules
+        };
         let _ = engine.delete_class_rules([class]);
         rules
     }

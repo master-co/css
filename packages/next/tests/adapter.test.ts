@@ -1,6 +1,6 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { basename, join } from 'node:path'
+import { basename, dirname, join } from 'node:path'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createComposedAdapter, renderNextBuildOutputs } from '../src/adapter'
 import type { NextAdapter } from 'next'
@@ -151,7 +151,7 @@ describe('renderNextBuildOutputs', () => {
       return renderHTML.apply(this, args)
     })
 
-    await renderNextBuildOutputs(context)
+    await renderNextBuildOutputs(context, { mode: 'progressive' })
 
     const firstHTML = readFileSync(firstFile, 'utf-8')
     const secondHTML = readFileSync(secondFile, 'utf-8')
@@ -183,7 +183,7 @@ describe('renderNextBuildOutputs', () => {
 
     const outputs = await renderNextBuildOutputs(
       createBuildContext(projectDir, htmlFile),
-      { buildReport: true }
+      { mode: 'progressive', buildReport: true }
     )
     const html = readFileSync(htmlFile, 'utf-8')
 
@@ -205,6 +205,19 @@ describe('renderNextBuildOutputs', () => {
     const hydrationManifest = JSON.parse(readFileSync(hydrationManifestFile, 'utf-8'))
     expect(hydrationManifest.rules.map((rule: { className: string }) => rule.className)).toEqual(expect.arrayContaining(['font-size:40px', 'fg-red']))
     expect(hydrationManifest.rules).toHaveLength(2)
+  })
+
+  it('pre-renders CSS without publishing hydration resources', async () => {
+    const projectDir = createFixtureDir()
+    const htmlFile = join(projectDir, '.next/server/app/index.html')
+    mkdirSync(dirname(htmlFile), { recursive: true })
+    writeFileSync(htmlFile, '<html><head></head><body class="fg-red"></body></html>')
+    const [output] = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode: 'pre-render' })
+    expect(output.cssBytes).toBeGreaterThan(0)
+    expect(output.hydrationManifestBytes).toBe(0)
+    expect(output.hydrationManifestFile).toBeUndefined()
+    expect(readFileSync(htmlFile, 'utf8')).not.toContain(MASTER_CSS_HYDRATION_MANIFEST_ATTR)
+    expect(existsSync(join(projectDir, '.next/static/master-css/hydration'))).toBe(false)
   })
 
   it('does not duplicate globals already emitted by project CSS entries', async () => {
@@ -239,7 +252,7 @@ describe('renderNextBuildOutputs', () => {
         id: '/guides/getting-started.html',
         output: 'export',
         pathname: '/guides/getting-started'
-      })
+      }), { mode: 'progressive' }
     )
     const html = readFileSync(htmlFile, 'utf-8')
     const hydrationManifestFile = outputs[0].hydrationManifestFile
@@ -263,7 +276,7 @@ describe('renderNextBuildOutputs', () => {
         id: '/nested/index.html',
         output: 'export',
         pathname: '/nested/'
-      })
+      }), { mode: 'progressive' }
     )
     const hydrationManifestFile = outputs[0].hydrationManifestFile
     if (!hydrationManifestFile) throw new Error('Expected a custom export hydration manifest file.')
@@ -282,7 +295,7 @@ describe('renderNextBuildOutputs', () => {
       createBuildContext(projectDir, htmlFile, {
         id: '/nested/index.html',
         output: 'export'
-      })
+      }), { mode: 'progressive' }
     )).rejects.toThrow('Cannot resolve the static export root')
   })
 
@@ -374,7 +387,7 @@ describe('renderNextBuildOutputs', () => {
     ].join('\n'))
     writeFileSync(htmlFile, '<!doctype html><html><head></head><body><h1 class="root-native fg-red">Hello</h1></body></html>')
 
-    const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile))
+    const outputs = await renderNextBuildOutputs(createBuildContext(projectDir, htmlFile), { mode: 'progressive' })
     const html = readFileSync(htmlFile, 'utf-8')
     const masterStyle = readMasterStyle(html)
 

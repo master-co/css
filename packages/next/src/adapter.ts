@@ -200,7 +200,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
   const options = resolveOptions(rawOptions)
   if (!options.enabled) return []
 
-  const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir)
+  const buildStateResolver = await createMasterCSSBuildStateResolver(ctx.projectDir, { pruneNativeCSS: options.pruneNativeCSS })
   let renderer: ReturnType<typeof createServerRenderer> | undefined
   try {
     const baseBuildState = await buildStateResolver.resolve()
@@ -218,7 +218,7 @@ export async function renderNextBuildOutputs(ctx: BuildCompleteContext, rawOptio
       let hydrationManifestFile: string | undefined
       let hydrationManifestBytes = 0
       const rendered = renderer.renderHTML(sourceHTML)
-      if (rendered.hydrationManifest?.rules.length) {
+      if (options.mode === 'progressive' && rendered.hydrationManifest?.rules.length) {
         const json = serializeMasterCSSHydrationManifest(rendered.hydrationManifest)
         const fileName = toHashedManifestAssetFileName(json, MASTER_CSS_HYDRATION_MANIFEST_FILE_BASENAME)
         hydrationManifestFile = toNextHydrationManifestFilePath(ctx, output, fileName)

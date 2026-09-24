@@ -131,56 +131,39 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     })
     css.ensureClassRules('btn')
-    expect(css.themeLayer.text).toContain(':root{--color-primary:#ff0}')
+    expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#ff0}')
     expect(css.animationsNonLayer.text).toContain('@keyframes fade{to{background:var(--color-primary)}}')
     css.deleteClassRules('btn')
     expect(css.themeLayer.text).toBe('')
     expect(css.animationsNonLayer.text).toBe('')
   })
 
-  test('lowers class mode defaults without the old JS Config API', () => {
+  test('uses explicit base values and mode activation without implicit defaults', () => {
     const base = `
-      @settings {
-        mode-trigger: class;
-        modes: light dark;
-      }
-
-      @theme light {
-        --color-emphasis: #000;
-      }
-
-      @theme dark {
-        --color-emphasis: #fff;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
+      @theme light { --color-emphasis: #000; }
+      @theme dark { --color-emphasis: #fff; }
     `
-
-    const lightDefault = createTestCSS(compileCSSManifest(`
-      @settings {
-        default-mode: light;
-      }
-
+    const withBase = createTestCSS(compileCSSManifest(`
+      @theme { --color-emphasis: #000; }
       ${base}
     `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
-    expect(lightDefault.themeLayer.text).toContain('.light,:root{color-scheme:light;--color-emphasis:#000}')
-    expect(lightDefault.themeLayer.text).toContain('.dark{color-scheme:dark;--color-emphasis:#fff}')
+    expect(withBase.themeLayer.text).toContain(':root,:host{--color-emphasis:#000}')
+    expect(withBase.themeLayer.text).toContain('.light{--color-emphasis:#000}')
+    expect(withBase.themeLayer.text).toContain('.dark{--color-emphasis:#fff}')
+    expect(withBase.themeLayer.text).not.toContain('color-scheme')
 
-    const noDefault = createTestCSS(compileCSSManifest(`
-      @settings {
-        default-mode: none;
-      }
-
-      ${base}
-    `, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
-    expect(noDefault.themeLayer.text).toContain('.light{color-scheme:light;--color-emphasis:#000}')
-    expect(noDefault.themeLayer.text).not.toContain('.light,:root{--color-emphasis')
+    const withoutBase = createTestCSS(compileCSSManifest(base, { baseManifest: defaultManifest }).manifest).ensureClassRules('bg-emphasis')
+    expect(withoutBase.themeLayer.text).toContain('.light{--color-emphasis:#000}')
+    expect(withoutBase.themeLayer.text).not.toContain(':root,:host{--color-emphasis')
   })
 
   test('lowers color variables, mode values, aliases, and alpha references', () => {
     const { manifest } = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark chrisma;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
+      @mode chrisma { .chrisma { @slot; } }
 
       @theme {
         --color-black: #000000;
@@ -202,9 +185,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('bg-primary', 'bg-primary/.5', 'bg-alias')
 
-    expect(css.themeLayer.text).toContain(':root{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
-    expect(css.themeLayer.text).toContain('.light{color-scheme:light;--color-primary:#969696}')
-    expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--color-primary:#fff}')
+    expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#000;--color-black:#000;--color-alias:var(--color-primary)}')
+    expect(css.themeLayer.text).toContain('.light{--color-primary:#969696}')
+    expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
     expect(css.themeLayer.text).toContain('.chrisma{--color-primary:color-mix(in oklab,var(--color-black) 50%,transparent)}')
     expect(css.utilitiesLayer.text).toContain('.bg-primary{background-color:var(--color-primary)}')
     expect(css.utilitiesLayer.text).toContain('.bg-primary\\/\\.5{background-color:color-mix(in oklab,var(--color-primary) 50%,transparent)}')
@@ -498,10 +481,8 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
   test('executes CSS-first number variables and native value functions through engine semantics', () => {
     const { manifest } = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
 
       @theme {
         --spacing-x1: 1rem;
@@ -530,12 +511,12 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('w:calc(-2px+$(spacing-x1))')).toBeUndefined()
 
     css.ensureClassRules('m-x1', '-m-x1', 'line-height-x1')
-    expect(css.themeLayer.text).toContain(':root{')
+    expect(css.themeLayer.text).toContain(':root,:host{')
     expect(css.themeLayer.text).toContain('--spacing-x1:1rem')
     expect(css.themeLayer.text).not.toContain('---spacing-x1')
     expect(css.themeLayer.text).toContain('--leading-x1:1.5')
-    expect(css.themeLayer.text).toContain('.light{color-scheme:light;--spacing-x1:3rem;--leading-x1:3}')
-    expect(css.themeLayer.text).toContain('.dark{color-scheme:dark;--spacing-x1:2rem;--leading-x1:2}')
+    expect(css.themeLayer.text).toContain('.light{--spacing-x1:3rem;--leading-x1:3}')
+    expect(css.themeLayer.text).toContain('.dark{--spacing-x1:2rem;--leading-x1:2}')
   })
 
   test('executes CSS-first unitful numeric variables without double conversion', () => {
@@ -566,7 +547,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     })
     expect(manifest.containerConditions?.panel).toMatchObject({
       id: 'container',
-      nodes: [expect.objectContaining({ value: 32, unit: 'rem' })]
+      nodes: [expect.objectContaining({ value: 512, unit: 'px' })]
     })
     expect(css.createRule('m-card')?.text).toBe('.m-card{margin:var(--spacing-card)}')
     expect(css.createRule('-m-card')?.text).toBe('.-m-card{margin:calc(var(--spacing-card) * -1)}')
@@ -594,17 +575,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.utilitiesLayer.text).toContain('.fg-brand{color:#123}')
     expect(css.utilitiesLayer.text).toContain('.m-card{margin:1rem}')
     expect(css.utilitiesLayer.text).toContain('.fg-inline-regular{color:var(--color-inline-regular)}')
-    expect(css.themeLayer.text).toContain(':root{--color-inline-regular:var(--color-regular);--color-regular:#456}')
+    expect(css.themeLayer.text).toContain(':root,:host{--color-inline-regular:var(--color-regular);--color-regular:#456}')
     expect(css.themeLayer.text).not.toContain('--color-primary:#123')
     expect(css.themeLayer.text).not.toContain('--spacing-card:1rem')
   })
 
   test('lowers static theme variables and keyframes into initial resources', () => {
     const { manifest } = compileCSSManifest(`
-      @settings {
-        mode-trigger: class;
-        modes: light dark;
-      }
+      @mode light { .light { @slot; } }
+      @mode dark { .dark { @slot; } }
 
       @theme static {
         --color-primary: #123;
@@ -649,9 +628,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     }))
     expect(manifest.animationOptions?.fade).toEqual({ static: true })
     expect(css.text).toContain('@layer theme{')
-    expect(css.text).toContain(':root{--color-primary:#123}')
-    expect(css.text).toContain('.dark{color-scheme:dark;--color-primary:#456}')
-    expect(css.text).toContain('.light,:root{color-scheme:light;--color-secondary:#789}')
+    expect(css.text).toContain(':root,:host{--color-primary:#123}')
+    expect(css.text).toContain('.dark{--color-primary:#456}')
+    expect(css.text).toContain('.light{--color-secondary:#789}')
     expect(css.text).toContain('@keyframes fade{to{opacity:1}}')
   })
 

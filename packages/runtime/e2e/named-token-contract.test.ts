@@ -1,7 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { renderClassNamesSync } from '@master/css/node'
 import { createServerRenderer } from '@master/css-server'
-import { supportsNativeDeclaration } from '@master/css-tooling/node'
 import defaultManifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import init, { getRuntimeLoaderURL } from './init'
@@ -34,7 +33,7 @@ for (const mode of ['static', 'ssr', 'runtime', 'progressive'] as const) {
     await page.setViewportSize({ width: 1100, height: 720 })
     await page.emulateMedia({ colorScheme: 'light' })
     const classes = classLists.flatMap(value => value.split(' '))
-    const generated = renderClassNamesSync(classes, { manifest, supportsNativeDeclaration })
+    const generated = renderClassNamesSync(classes, { manifest })
     if (mode === 'static') {
       await page.setContent(html.replace('</head>', `<style>${generated.cssText}</style></head>`))
     } else if (mode === 'ssr' || mode === 'progressive') {

@@ -41,7 +41,6 @@ export interface NativeEngineSession {
   deleteClassRules(classNames: string[]): string
   registerEmittedGlobals(emittedGlobalsJSON: string): string
   nativeDeclarationCandidates(classNames: string[]): string
-  ensureClassRulesWithNativeSupport(classNames: string[], supported: boolean[]): string
   refresh(manifestJSON: string): string
   snapshot(): string
   executionState(classNames: string[]): string
@@ -74,7 +73,7 @@ export interface NativeScannerSession {
 
 export interface NativeRenderSession {
   nativeDeclarationCandidates(classNames: string[]): string
-  ensureClasses(classNames: string[], nativeSupport?: boolean[]): void
+  ensureClasses(classNames: string[]): void
   ensureStylesheetResources(nativeCSS: string): void
   emittedGlobals(): string
   snapshot(): string
@@ -156,7 +155,7 @@ export interface NativeBinding {
   normalizeManifestJson(manifestJSON: string): string
   normalizeDefaultManifestJson(manifestJSON: string): string
   compileDefaultPresetManifestJson(requestJSON: string): string
-  renderClassesJson(manifestJSON: string, classNames: string[], nativeSupport?: boolean[]): string
+  renderClassesJson(manifestJSON: string, classNames: string[]): string
   resolveCssImportGraphJson(requestJSON: string): string
   resolveCssStylesheetGraphJson(requestJSON: string): string
   prepareCssStylesheetBundleJson(requestJSON: string): string

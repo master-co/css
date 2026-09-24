@@ -143,17 +143,6 @@ export async function loadWasmEngine(
   }
 }
 
-function nativeSupport(candidates: readonly MasterCSSWasmNativeDeclarationCandidate[]) {
-  return Uint8Array.from(candidates, ({ property, value }) => {
-    if (typeof globalThis.CSS?.supports !== 'function') return 1
-    try {
-      return globalThis.CSS.supports(property, value) === true ? 1 : 0
-    } catch {
-      return 0
-    }
-  })
-}
-
 function emittedGlobalsJSON(options: MasterCSSWasmEngineSessionOptions) {
   return options.emittedGlobals === undefined
     ? undefined
@@ -184,10 +173,7 @@ export async function createWasmEngineSession(
     },
     ensureClassRules(classNames: string[]) {
       assertActive()
-      const candidates = session.nativeDeclarationCandidates(classNames) as MasterCSSWasmNativeDeclarationCandidate[]
-      return candidates.length
-        ? session.ensureClassRulesWithNativeSupport(classNames, nativeSupport(candidates))
-        : session.ensureClassRules(classNames)
+      return session.ensureClassRules(classNames)
     },
     deleteClassRules(classNames: string[]) {
       assertActive()
@@ -247,16 +233,9 @@ export async function createWasmRenderSession(
       assertActive()
       return session.nativeDeclarationCandidates([...classNames]) as readonly MasterCSSWasmNativeDeclarationCandidate[]
     },
-    ensureClassRules(classNames: readonly string[], supported?: readonly boolean[]) {
+    ensureClassRules(classNames: readonly string[]) {
       assertActive()
-      const classes = [...classNames]
-      const candidates = session.nativeDeclarationCandidates(classes) as MasterCSSWasmNativeDeclarationCandidate[]
-      const resolvedSupport = supported
-        ? [...supported]
-        : candidates.length
-          ? Array.from(nativeSupport(candidates), Boolean)
-          : undefined
-      session.ensureClasses(classes, resolvedSupport)
+      session.ensureClasses([...classNames])
     },
     ensureStylesheetResources(nativeCSS: string) {
       assertActive()

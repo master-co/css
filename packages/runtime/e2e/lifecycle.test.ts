@@ -200,7 +200,7 @@ test('observes static theme variables and keyframes without class references', a
   expect(cssRules.some((cssRule) => cssRule.includes('@keyframes static-fade'))).toBe(true)
 })
 
-test('generates browser native declarations through CSS.supports fallback', async ({ page }) => {
+test('preserves native declarations independently of browser support', async ({ page }) => {
   await page.evaluate(() => {
     document.body.innerHTML = [
       '<div class="float:left display:block field-sizing:content transition-behavior:allow-discrete color:oklch(63.7%|0.237|25.331)"></div>',
@@ -230,9 +230,11 @@ test('generates browser native declarations through CSS.supports fallback', asyn
   expect(result.cssRules.some((cssRule) => cssRule.includes('oklch'))).toBe(true)
   expect(result.rustText).toContain('.float\\:left{float:left}')
   expect(result.rustText).toContain('.display\\:block{display:block}')
-  expect(result.rustText).not.toContain('made-up')
-  expect(result.rustText).not.toContain('banana')
+  expect(result.rustText).toContain('made-up:left')
+  expect(result.rustText).toContain('display:banana')
 
+  expect(result.classUtilities).toContain('field-sizing:content')
+  expect(result.classUtilities).toContain('transition-behavior:allow-discrete')
   if (result.supports.fieldSizing) {
     expect(result.classUtilities).toContain('field-sizing:content')
     expect(result.cssRules.some((cssRule) => cssRule.includes('field-sizing: content'))).toBe(true)
@@ -242,9 +244,9 @@ test('generates browser native declarations through CSS.supports fallback', asyn
     expect(result.cssRules.some((cssRule) => cssRule.includes('transition-behavior: allow-discrete'))).toBe(true)
   }
 
-  expect(result.classUtilities).not.toContain('made-up:left')
-  expect(result.classUtilities).not.toContain('float:banana')
-  expect(result.classUtilities).not.toContain('display:banana')
+  expect(result.classUtilities).toContain('made-up:left')
+  expect(result.classUtilities).toContain('float:banana')
+  expect(result.classUtilities).toContain('display:banana')
 })
 
 test('hydrates progressive static theme variables and keyframes', async ({ page }) => {
@@ -252,7 +254,7 @@ test('hydrates progressive static theme variables and keyframes', async ({ page 
     document.body.innerHTML = '<div class="block"></div>'
   })
   await init(page, [
-    '@layer theme{:root{--color-static:#123}}',
+    '@layer theme{:root,:host{--color-static:#123}}',
     '@layer utilities{.block{display:block}}',
     '@keyframes static-fade{to{opacity:1}}'
   ].join(''), {

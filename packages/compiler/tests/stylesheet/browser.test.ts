@@ -105,24 +105,11 @@ describe('@master/css-compiler/stylesheet/browser', () => {
     expect(result.css).toMatch(/\.native\s*\{\s*animation-name:\s*fade;\s*animation-duration:\s*1s;\s*\}/)
   })
 
-  it('propagates directive warnings', async () => {
-    const result = await compileBrowserStylesheet(`
-      @settings {
-        mode-trigger: media;
-      }
-
-      @theme custom {
-        --color-warning-test: #ff0033;
-      }
-    `, {
+  it('rejects undefined theme modes with a structured diagnostic', async () => {
+    await expect(compileBrowserStylesheet('@theme custom { --color-warning-test: #ff0033; }', {
       baseManifest: defaultManifest
+    })).rejects.toMatchObject({
+      diagnostics: expect.arrayContaining([expect.objectContaining({ severity: 'error', message: expect.stringContaining('undefined mode custom') })])
     })
-
-    expect(result.diagnostics).toEqual([
-      expect.objectContaining({
-        severity: 'warning',
-        message: 'Custom mode "custom" will not work with mode-trigger: media. Browsers only support light and dark prefers-color-scheme values; use mode-trigger: class or host for custom modes.'
-      })
-    ])
   })
 })

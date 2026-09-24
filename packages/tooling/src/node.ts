@@ -11,10 +11,7 @@ import {
 import { bindValidatorSession } from './validator/binding-session'
 
 export type { MasterCSSToolingSession } from './tooling-session'
-export {
-  supportsNativeDeclaration,
-  type MasterCSSNativeDeclarationCandidate
-} from './host'
+export { cssValueStatus, validateRuleDeclarations, CSS_VALUE_CHECK } from './value-validation'
 
 export function createToolingSessionSync(options: {
   readonly manifest: MasterCSSManifest
@@ -37,4 +34,9 @@ export function createToolingSessionSync(options: {
     lint: bindLintSession(lint, lintValidator, lintLanguage),
     language: bindLanguageSession('native', language)
   })
+}
+
+/** Versions from the artifact that actually executes project semantics. */
+export function getToolingBindingInfo() {
+  return createToolingBindingSync().info
 }

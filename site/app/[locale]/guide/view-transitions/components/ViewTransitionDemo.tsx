@@ -70,7 +70,7 @@ export default function ViewTransitionDemo() {
   return (
     <Demo className="container w:100%">
       <span aria-hidden className={clsx(rootTransitionClassName, 'hidden')} />
-      <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container(3xs)">
+      <div className="grid grid-cols:1 gap-lg w:100% grid-cols:2@container((width>=16rem))">
         <div className="grid grid-cols:1 gap-sm">
           {views.map((view) => {
             const activeButton = view.id === activeId
@@ -94,12 +94,12 @@ export default function ViewTransitionDemo() {
           })}
         </div>
         <section className={clsx(
-          'app-panel rel overflow:hidden p-lg p-xl@container(3xs)',
+          'app-panel rel overflow:hidden p-lg p-xl@container((width>=16rem))',
           'flex flex-col view-transition-name:panel',
           active.tint
         )}>
           <p className="m:0 text-xs font-medium text-body">{active.eyebrow}</p>
-          <h3 className="mx:0 mb:0 mt-sm text-2xl font-semibold view-transition-name:title text-3xl@container(3xs)">
+          <h3 className="mx:0 mb:0 mt-sm text-2xl font-semibold view-transition-name:title text-3xl@container((width>=16rem))">
             {active.title}
           </h3>
           <div className={clsx('h:0.25rem w:2em mt-md rounded opacity:.8', active.accent)} />

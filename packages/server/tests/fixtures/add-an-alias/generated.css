@@ -1,1 +1,1 @@
-@layer theme{:root{--secondary:var(--color-white);--color-white:oklch(100% 0 none)}}@layer utilities{.fg\:var\(--secondary\){color:var(--secondary)}}
+@layer theme{:root,:host{--secondary:var(--color-white);--color-white:oklch(100% 0 none)}}@layer utilities{.fg\:var\(--secondary\){color:var(--secondary)}}

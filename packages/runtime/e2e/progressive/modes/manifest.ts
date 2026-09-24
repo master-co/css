@@ -2,5 +2,5 @@ export default {
   variables: [
     { namespace: 'content', key: 'external', value: '" ↗"' }
   ],
-  modeTrigger: 'class'
+  modes: ['light', 'dark'].map(name => ({ name, branches: [{ selector: `.${name}`, conditions: [] }] }))
 }

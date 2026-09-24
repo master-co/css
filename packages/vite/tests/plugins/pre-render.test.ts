@@ -22,9 +22,9 @@ async function resolveConfigHooks(plugins: any[], config: any) {
 afterEach(() => vi.restoreAllMocks())
 
 describe('PreRenderPlugin', () => {
-  it('renders HTML classes with the managed CSS manifest entry', async () => {
+  it.each(['pre-render', 'progressive'] as const)('renders HTML classes in %s with the managed CSS manifest entry', async (mode) => {
     const plugins = masterCSS({
-      mode: 'pre-render',
+      mode,
     })
     const viteConfig = {
       root: FIXTURE_DIR,
@@ -49,12 +49,18 @@ describe('PreRenderPlugin', () => {
 
     expect(viteConfig.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'app.css'))
     expect(html).toContain('<style id="master-css"')
-    expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
+    if (mode === 'progressive') expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
     expect(html).toContain('@layer components{.card{background-color:var(--color-brand);border-color:#456}')
     expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
     expect(html).toContain('@layer utilities{.p\\:0\\.125rem{padding:0.125rem}}')
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
+
+    if (mode === 'pre-render') {
+      expect(hydrationManifestSource).toBeUndefined()
+      expect(html).not.toContain('master-css-hydration')
+      return
+    }
 
     let middleware: ((request: { url?: string }, response: { statusCode?: number, setHeader: (name: string, value: string) => void, end: (source: string) => void }, next: () => void) => void) | undefined
     const middlewares = { use: vi.fn((handler) => { middleware = handler }) }

@@ -22,10 +22,13 @@ struct ParserParityCorpusCase {
     kind: String,
     input: String,
     expected_canonical: String,
+    #[serde(default)]
+    historical_rejection: bool,
 }
 
 const MANIFEST: &str = r##"{
-      "version":1,
+      "version":1,"languageVersion":2,
+      "modes":[{"name":"dark","branches":[{"selector":":root","conditions":["@media (prefers-color-scheme:dark)"]}]}],
       "conditions":{
         "sm":{"id":"media","nodes":[{"type":"number","value":52.125,"unit":"rem"}]}
       },

@@ -3,7 +3,7 @@ import { join } from 'node:path'
 import { tmpdir } from 'node:os'
 import { expect, test } from 'vitest'
 import { compileRenderedStylesheet, compileStylesheet } from '../src/stylesheet/index-public'
-const baseManifest = { version: 1 as const, utilities: [] }
+const baseManifest = { version: 1 as const, languageVersion: 2 as const, utilities: [] }
 
 test('rendered stylesheet includes lowered native compose declarations', async () => {
   const source = '@utilities{paint{padding:2rem}}.card{@compose paint;}'

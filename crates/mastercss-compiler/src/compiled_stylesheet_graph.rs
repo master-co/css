@@ -25,6 +25,8 @@ pub struct CompileCssStylesheetGraphRequest {
     pub relative_resource_urls: bool,
     #[serde(default)]
     pub classes_by_stylesheet: HashMap<String, Option<Vec<String>>>,
+    #[serde(default)]
+    pub prune_native_stylesheets: Option<Vec<String>>,
     /// Only these files emit native rules/compose and unresolved external imports.
     /// Local links from suppressed files only retain selected output descendants.
     #[serde(default)]
@@ -146,6 +148,40 @@ pub fn compile_css_stylesheet_graph(
         .native_stylesheets
         .as_ref()
         .map(|selected| selected.iter().map(String::as_str).collect::<HashSet<_>>());
+    for node in &graph.stylesheets {
+        for import in &node.imports {
+            if let Some(id) = &import.resolved {
+                // This graph retains native import topology instead of inlining it.
+                // Check all reachable definitions without treating nested native
+                // imports as unresolved inline CSS.
+                let mut pending = vec![id.as_str()];
+                let mut visited = HashSet::new();
+                while let Some(child) = pending.pop() {
+                    if !visited.insert(child) {
+                        continue;
+                    }
+                    let (_, definitions) = mastercss_lexer::extract_top_level_at_rule_blocks(
+                        &request.graph.files[child],
+                        &crate::imports::IMPORTED_DEFINITION_DIRECTIVES,
+                    );
+                    let definitions = definitions
+                        .iter()
+                        .map(|definition| definition.source.as_str())
+                        .collect::<Vec<_>>()
+                        .join("\n");
+                    crate::imports::imported_css_wrappers(&import.statement, &definitions, child)?;
+                    if let Some(index) = indexes.get(child) {
+                        pending.extend(
+                            graph.stylesheets[*index]
+                                .imports
+                                .iter()
+                                .filter_map(|edge| edge.resolved.as_deref()),
+                        );
+                    }
+                }
+            }
+        }
+    }
     let mut parsed = Vec::with_capacity(graph.stylesheets.len());
     let mut native_slots = Vec::with_capacity(graph.stylesheets.len());
     for node in &graph.stylesheets {
@@ -171,6 +207,12 @@ pub fn compile_css_stylesheet_graph(
             &CompileNativeCssOptions {
                 from: node.id.clone(),
                 preserve_native_css: request.options.preserve_native_css,
+                prune_native_css: request
+                    .prune_native_stylesheets
+                    .as_ref()
+                    .map_or(request.options.prune_native_css, |files| {
+                        files.contains(&node.id)
+                    }),
                 preserve_native_source: request.options.preserve_native_source,
                 classes: request
                     .classes_by_stylesheet

@@ -1,7 +1,6 @@
 import type {
-  MasterCSSManifestDefaultMode,
+  MasterCSSManifestMode,
   MasterCSSManifestUtilityKind,
-  MasterCSSManifestModeTrigger,
   MasterCSSManifestUtilityLayerName,
   MasterCSSManifestVariant
 } from './manifest.js'
@@ -12,9 +11,7 @@ export type CSSDirectiveDeclarations = Record<string, string>
 
 export type CSSDirectiveLayerName = MasterCSSManifestUtilityLayerName
 
-export type CSSDirectiveModeTrigger = MasterCSSManifestModeTrigger
 
-export type CSSDirectiveDefaultMode = MasterCSSManifestDefaultMode
 
 export type CSSDirectiveVariantDefinitions = Pick<MasterCSSManifestVariant, 'token' | 'branches'>[]
 
@@ -157,14 +154,11 @@ export interface CSSDirectiveManifestInput {
   variants?: CSSDirectiveVariantDefinitions
   variables?: CSSDirectiveVariableDefinition[]
   utilities?: CSSDirectiveUtilityDefinition[]
-  rootSize?: number
-  defaultMode?: CSSDirectiveDefaultMode
   scope?: string
   important?: boolean
   animations?: CSSDirectiveAnimationDefinitions
   animationOptions?: CSSDirectiveAnimationOptions
-  modes?: string[]
-  modeTrigger?: CSSDirectiveModeTrigger
+  modes?: MasterCSSManifestMode[]
 }
 
 export interface CSSDirectiveExtractionPolicy {
@@ -173,6 +167,7 @@ export interface CSSDirectiveExtractionPolicy {
   safelist: string[]
   blocklist: (string | RegExp)[]
   preserveNative: boolean
+  pruneNative: boolean
 }
 
 export interface CSSDirectiveReference {

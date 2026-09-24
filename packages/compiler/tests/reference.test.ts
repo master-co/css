@@ -133,7 +133,7 @@ describe('CSS @reference', () => {
       const result = compileProjectManifest([entryPath])
 
       expect(result.dependencies).toContain(entryPath)
-      expect(result.css).not.toContain('@import "fake-font/index.css"')
+      expect(result.css).toContain('@import "fake-font/index.css"')
       expect(flattenMasterCSSManifestVariables(result.manifest.variables)).toEqual(expect.arrayContaining([
         expect.objectContaining({
           name: 'color-primary',

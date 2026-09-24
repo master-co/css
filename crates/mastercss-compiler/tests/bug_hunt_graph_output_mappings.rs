@@ -19,7 +19,7 @@ fn compile(entry: &str, child: &str, resource_urls: Value) -> Value {
         "graph":{"entry":"/entry.css","files":{"/entry.css":entry,"/child.css":child},"edges":[{"from":"/entry.css","specifier":"./child.css","resolved":"/child.css"}]},
         "urls":{"/entry.css":"/entry.css","/child.css":"/assets/very-long-child-😀.css?version=abcdef"},
         "resourceURLs":resource_urls,
-        "baseManifest":{"version":1,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
     })).unwrap();
     serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap()
 }
@@ -33,8 +33,12 @@ fn graph_native_anchor_survives_import_url_length_change() {
 }
 #[test]
 fn graph_compose_and_native_siblings_keep_original_child_anchors() {
-    let child = "@utilities{paint{padding:2rem}}/* 😀 */\n@layer{.card{@compose paint;}.card{padding:3rem}}";
-    let result = compile("@import './child.css' layer;", child, Value::Null);
+    let child = "/* 😀 */\n@layer{.card{@compose paint;}.card{padding:3rem}}";
+    let result = compile(
+        "@import './child.css' layer;@utilities{paint{padding:2rem}}",
+        child,
+        Value::Null,
+    );
     let sheet = &result["stylesheets"][1];
     let selector = mapping(sheet, ".card");
     assert_eq!(selector["source"]["file"], "/child.css");
@@ -76,7 +80,7 @@ fn graph_native_suppression_keeps_composed_conditions_and_layer_identity() {
     let request: CompileCssStylesheetGraphRequest = serde_json::from_value(json!({
         "graph":{"entry":"/entry.css","files":{"/entry.css":source},"edges":[]},
         "urls":{"/entry.css":"/entry.css"},"options":{"preserveNativeCSS":false},
-        "baseManifest":{"version":1,"utilities":[]}
+        "baseManifest":{"version":1,"languageVersion":2,"utilities":[]}
     }))
     .unwrap();
     let result = serde_json::to_value(compile_css_stylesheet_graph(&request).unwrap()).unwrap();

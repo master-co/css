@@ -11,9 +11,9 @@ test.each([false, true])('BH-0004 local transform delivers imported compose with
   const root = realpathSync(mkdtempSync(join(tmpdir(), 'local-transform-')))
   const entry = join(root, 'entry.css'), child = join(root, 'child.css'), pixel = join(root, 'pixel.svg')
   try {
-    writeFileSync(child, '@import "https://external.test/style.css";@utilities{paint{color:blue}}.child{@compose p:2rem;background:url(pixel.svg?q=1#part)}')
+    writeFileSync(child, '@import "https://external.test/style.css";.child{@compose p:2rem;background:url(pixel.svg?q=1#part)}')
     writeFileSync(pixel, '<svg/>')
-    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);.root{@compose block paint;}`
+    const source = `@import "${custom ? 'child-alias' : './child.css'}" layer(guard) supports(display:grid);@utilities{paint{color:blue}}.root{@compose block paint;}`
     const result = await transformStylesheet(entry, source, { baseManifest, projectDir: root, delivery: {
       entryURL: '/assets/entry.css', stylesheetURL: file => '/assets/' + basename(file), resourceURL: () => '/assets/pixel.svg',
       ...(custom ? { resolveImport: async (specifier: string) => specifier === 'child-alias' ? child : undefined } : {})

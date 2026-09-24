@@ -104,6 +104,10 @@ function compileGraph(graph: PreparedCSSImportGraph, options: CompileStylesheetO
   try {
     const result = binding.compileCSSStylesheetGraph({
       graph,
+      pruneNativeStylesheets: Object.keys(graph.files).filter(file => {
+        const policy = collectStylesheetDirectives(graph.files[file], owners[file] ?? file, options.projectDir)
+        return !policy.preserveNative && (policy.pruneNative || (options.pruneNativeCSS === true && !graph.packageFiles?.includes(file)))
+      }),
       urls: prepared.urls,
       resourceURLs: inlineImports ? undefined : prepared.resourceURLs,
       inlineImports, hostImports,
@@ -196,13 +200,13 @@ export async function registerDeliveredStylesheet(
   const sourceDependencies = hasStylesheetSourceDirectives(directives)
     ? resolveStylesheetSourcePaths(scoped, scanner.cwd).map(file => resolve(scanner.cwd, file)) : []
   const dependencies = [...new Set([...result.directives.dependencies, ...sourceDependencies])]
-  const pruneNativeCSS = !directives.preserveNative && (!inlineImports || Object.values(graph.files).some(text => inspectCSS(text).hasMasterEntry))
+  const pruneNativeCSS = options.pruneNativeCSS === true || Object.values(graph.files).some(text => collectStylesheetDirectives(text).pruneNative)
   if (inlineImports && pruneNativeCSS && !scanner.registerNativeClasses) {
     throw new TypeError('Stylesheet scanner integrations require registerNativeClasses().')
   }
   const masterCSS = inlineImports && Object.values(graph.files).some(text => inspectCSS(text).hasMasterCSSImport)
   sources.set(filename, { source, graph, pruneNativeCSS, masterCSS, directives, dependencies, sourceDependencies })
-  if (pruneNativeCSS) scanner.registerNativeClasses?.(result.directives.nativeClassNames)
+  scanner.registerNativeClasses?.(result.directives.nativeClassNames)
   return { ...result.directives, dependencies }
 }
 
@@ -241,7 +245,9 @@ export function composeDeliveredStylesheets(
       if (source.graph.baseFiles?.[file]) (graph.baseFiles ??= {})[key] = source.graph.baseFiles[file]
       if (source.graph.sourceMaps?.[file]) (graph.sourceMaps ??= {})[key] = source.graph.sourceMaps[file]
       owners[key] = file
-      classesByStylesheet[key] = source.pruneNativeCSS && !source.graph.packageFiles?.includes(file) ? scopedClasses : null
+      const filePolicy = collectStylesheetDirectives(text, file, options.projectDir)
+      classesByStylesheet[key] = !filePolicy.preserveNative
+        && (filePolicy.pruneNative || (options.pruneNativeCSS === true && !source.graph.packageFiles?.includes(file))) ? scopedClasses : null
       if (masterFiles.has(file) ? options.includeMasterBaseCSS !== false : options.includeNativeCSS !== false) {
         nativeStylesheets.push(key)
       }

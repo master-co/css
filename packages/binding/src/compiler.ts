@@ -82,11 +82,10 @@ export function loadNativeCompilerBinding(
         parse(nativeBinding.compileCssStylesheetGraphJson(JSON.stringify(request))),
       createInspectionReport: (input) =>
         parse(nativeBinding.createInspectionReportJson(JSON.stringify(input))),
-      renderClassNames: (manifest, classNames, nativeSupport) =>
+      renderClassNames: (manifest, classNames) =>
         parse(nativeBinding.renderClassesJson(
           JSON.stringify(manifest),
-          [...classNames],
-          nativeSupport ? [...nativeSupport] : undefined
+          [...classNames]
         ))
     }
     return Object.freeze(compilerBinding)

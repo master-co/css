@@ -64,20 +64,6 @@ impl NodeEngineSession {
     }
 
     #[napi]
-    pub fn ensure_class_rules_with_native_support(
-        &mut self,
-        class_names: Vec<String>,
-        supported: Vec<bool>,
-    ) -> Result<String> {
-        to_json(
-            &self
-                .inner
-                .ensure_class_rules_with_native_support(class_names, &supported)
-                .map_err(to_napi_error)?,
-        )
-    }
-
-    #[napi]
     pub fn refresh(&mut self, manifest_json: String) -> Result<String> {
         to_json(&self.inner.refresh(&manifest_json).map_err(to_napi_error)?)
     }

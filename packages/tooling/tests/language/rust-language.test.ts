@@ -41,7 +41,7 @@ describe('Rust language session', () => {
     try {
       const classifications = session.classifyClassNames(['block', 'fg-red', 'unknown'])
       expect(classifications.classes.map(({ kind }) => kind)).toEqual(['semantic', 'token', 'unknown'])
-      expect(session.inspectClassName('fg-red')).toMatchObject({ valid: true, key: 'fg', value: 'red' })
+      expect(session.inspectClassName('fg-red')).toMatchObject({ matchStatus: 'matched', key: 'fg', value: 'red' })
       expect(session.completionIndex().classEntries.length).toBeGreaterThan(0)
       expect(session.colorTokens([{ className: 'fg:#fff', start: 4 }]).tokens.length).toBeGreaterThan(0)
     } finally {

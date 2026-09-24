@@ -10,7 +10,7 @@ export default function PageContentBlockMap() {
   const $ = useTranslation()
 
   return (
-    <nav aria-label={$('Page block map')} className="sticky top overflow-y:auto flex:0|0|2rem order:-1 h:100dvh py:8.75rem hidden@print hidden@<lg scrollbar scrollbar-concealed">
+    <nav aria-label={$('Page block map')} className="sticky top overflow-y:auto flex:0|0|2rem order:-1 h:100dvh py:8.75rem hidden@print hidden@media((width<80rem)) scrollbar scrollbar-concealed">
       <div className="flex flex-col items-center justify-center gap:1px w:100% min-h:100%">
         {items.map((item) => {
           const active = currentId === item.id

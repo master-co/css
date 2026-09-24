@@ -23,15 +23,15 @@ The syntax is `@<breakpoint>`, where `<breakpoint>` can be any [breakpoint theme
 ```
 
 ### Querying viewport ranges
-Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators to create more complex viewport range queries.
+Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex viewport range queries.
 ```html
-<!-- @MARK @sm&<=md -->
-<div class="hidden@sm&<=md">…</div>
+<!-- @MARK @media((52.125rem<=width<=64rem)) -->
+<div class="hidden@media((52.125rem<=width<=64rem))">…</div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@sm&<=md']}
+    {['hidden@media((52.125rem<=width<=64rem))']}
   </Class2CSS>
 </details>
 
@@ -48,14 +48,14 @@ Set fixed maximum widths from the container scale when a wrapper should step thr
 CSS [Container Queries](https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries) allow styles to be applied based on the *size of a container*, rather than the size of the *viewport*. This makes it easier to build responsive components that adapt to their parent containers.
 
 ### Using container queries
-The `container` class is a utility class that applies the `container-type: inline-size;` to the element, making it a `@container(<size>)` for container queries.
+The `container` class is a utility class that applies the `container-type: inline-size;` to the element, making it a query container for `@container((width>=18rem))` and other native container queries.
 
 (resize) Try making the container smaller.
 <ResizeZone width="100%" originX="center" showRuler>
   <Demo>
     <div className="overflow:hidden container w:100% b:1px|solid|var(--color-line-base) r-lg surface-raised">
-      <div className="flex flex-col@container(<=2xs)">
-        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-cover {w:100%;aspect-ratio:16/9}@container(<=2xs)" width={300} height={200} alt="container left" />
+      <div className="flex flex-col@container((width<=18rem))">
+        <Image src="/images/blur.png" className="w-3xs aspect-ratio:3/2 object-cover {w:100%;aspect-ratio:16/9}@container((width<=18rem))" width={300} height={200} alt="container left" />
         <div className='p:var(--spacing-lg)|var(--spacing-xl)'>
           <div className='text-md font-medium text-neutral'>Lorem ipsum</div>
           <div className='mt-3xs text-sm'>It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged.</div>
@@ -66,28 +66,28 @@ The `container` class is a utility class that applies the `container-type: inlin
 </ResizeZone>
 ```html
 <div class="container …">
-  <!-- @MARK @container(<=2xs) -->
-  <div class="flex flex-col@container(<=2xs)">…</div>
+  <!-- @MARK @container((width<=18rem)) -->
+  <div class="flex flex-col@container((width<=18rem))">…</div>
 </div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container', 'flex-col@container(<=2xs)']}
+    {['container', 'flex-col@container((width<=18rem))']}
   </Class2CSS>
 </details>
-Container queries use the [container scale](/guide/containers), which can use different values from viewport breakpoints.
+Native container queries preserve their explicit lengths. Choose values from your [container scale](/guide/containers) when appropriate; named custom variants can provide reusable queries.
 
 ### Querying container ranges
-Use [comparison](/reference/rules/conditions#comparison-operators) and [logical](/reference/rules/conditions#logical-operators) operators to create more complex container range queries.
+Use a complete [native media query](/reference/rules/conditions#media-queries) to create more complex container range queries.
 ```html
-<!-- @MARK @sm&<=md -->
-<div class="hidden@container(sm&<=md)">…</div>
+<!-- @MARK @media((52.125rem<=width<=64rem)) -->
+<div class="hidden@container((24rem<=width<=28rem))">…</div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['hidden@container(sm&<=md)']}
+    {['hidden@container((24rem<=width<=28rem))']}
   </Class2CSS>
 </details>
 
@@ -97,13 +97,13 @@ Use the `container:<name>/<type>` to create a named container with a specific ty
 <!-- @MARK container:card/inline-size -->
 <div class="container:card/inline-size">
   <!-- @MARK @container(card) -->
-  <div class="hidden@card(3xs)"></div>
+  <div class="hidden@container(card|(width>=16rem))"></div>
 </div>
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['container:card/inline-size', 'hidden@card(3xs)']}
+    {['container:card/inline-size', 'hidden@container(card|(width>=16rem))']}
   </Class2CSS>
 </details>
 
@@ -129,8 +129,8 @@ Gradually adjust the UI for larger viewports.
 ```html
 <!-- @MARK font-3xl@md -->
 <p class="font-2xl font-3xl@md …"> <!-- [!code focus] -->
-<!-- @MARK font-3xl@>=md -->
-<p class="font-2xl font-3xl@>=md …">
+<!-- @MARK font-3xl@md -->
+<p class="font-2xl font-3xl@md …">
 ```
 <details>
   <summary>Generated CSS</summary>
@@ -156,13 +156,13 @@ Gradually adjust the UI for smaller viewports.
 
 (wand) Decrease the font size to `24/16rem` when the viewport width is less than `1024/16rem`.
 ```html
-<!-- @MARK font-2xl@<md -->
-<p class="font-3xl font-2xl@<md …">
+<!-- @MARK font-2xl@media((width<64rem)) -->
+<p class="font-3xl font-2xl@media((width<64rem)) …">
 ```
 <details>
   <summary>Generated CSS</summary>
   <Class2CSS>
-    {['font-3xl', 'font-2xl@<md']}
+    {['font-3xl', 'font-2xl@media((width<64rem))']}
   </Class2CSS>
 </details>
 - Paragraph font size is `24/16rem` in viewport `<1024/16rem`
@@ -179,16 +179,16 @@ For example, set the background to white only on mobile.
 ```html
 <div class="bg-white background-color:transparent@md …">
 ```
-(o) Add `mcss @<md` directly to restrict to small viewports.
+(o) Add `mcss @media((width<64rem))` directly to restrict to small viewports.
 ```html
-<div class="bg-white@<md …">
+<div class="bg-white@media((width<64rem)) …">
 ```
 
 For example, set the background to white only on the desktop.
 
 (!) With desktop-first, it's necessary to revert to the original background on smaller viewports.
 ```html
-<div class="bg-white background-color:transparent@<md …">
+<div class="bg-white background-color:transparent@media((width<64rem)) …">
 ```
 (o) Add `mcss @md` directly to restrict to large viewports.
 ```html

@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { readFile, readdir, stat, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { loadProjectManifestSync } from '@master/css-compiler/project/sync'
 import { collectCSSVariableReferences } from './css-variable-references'
 
 type JSONValue = null | boolean | number | string | JSONValue[] | { [key: string]: JSONValue }
@@ -22,6 +23,7 @@ type HydrationRule = {
 
 type HydrationManifest = {
     version: number
+    languageVersion: number
     rules: HydrationRule[]
     resourceOrder: string[]
 }
@@ -39,13 +41,13 @@ type CSSContract = {
 }
 
 type SiteCSSContractSnapshot = {
-    version: 1
-    semanticBaseline: 'ef1a7c851'
-    publicBaseline: 'v2.0.0-rc.87'
+    version: 2
+    semanticBaseline: 'language-v2'
+    publicBaseline: 'v2-final-semantics'
     approval?: {
         reference: string
     }
-    globalManifest: {
+    projectManifest: {
         bytes: number
         sha256: string
         value: JSONValue
@@ -107,16 +109,19 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     }
 
     const files = await listFiles(outDir)
-    const manifestFiles = files.filter((file) =>
-        /[/\\]_next[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file)
-    )
-    if (manifestFiles.length !== 1) {
-        throw new Error(`Expected one production Master CSS manifest, found ${manifestFiles.length}.`)
+    // Static delivery does not ship a runtime manifest asset. Use the same
+    // project compiler for inline-token checks, and inspect delivered CSS below.
+    const projectManifest = loadProjectManifestSync({ root: siteDir, baseManifest: { version: 1, languageVersion: 2 } }).manifest as unknown as JSONValue
+    const projectManifestText = JSON.stringify(projectManifest)
+    const legacyManifestAssets = files.filter(file => /[/\\]static[/\\]media[/\\]master-css-manifest\.[^/\\]+\.json$/.test(file))
+    if (legacyManifestAssets.length) throw new Error('Site still contains legacy runtime manifest media assets; rebuild the output.')
+    const stylesheetCache = new Map<string, string>()
+    const stylesheetText = async (reference: string) => {
+        const file = publicOutputPath(reference)
+        if (!stylesheetCache.has(file)) stylesheetCache.set(file, await readFile(file, 'utf8'))
+        return stylesheetCache.get(file)!
     }
-
-    const globalManifestText = await readFile(manifestFiles[0], 'utf8')
-    const globalManifest = JSON.parse(globalManifestText) as JSONValue
-    const inlineVariableNames = collectInlineVariableNames(globalManifest)
+    const inlineVariableNames = collectInlineVariableNames(projectManifest)
     const cssSegments: Record<string, string> = {}
     const rules: Record<string, HydrationRule> = {}
     const contracts: Record<string, CSSContract> = {}
@@ -126,27 +131,23 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         const html = await readFile(htmlFile, 'utf8')
         const route = routeFromHTMLFile(htmlFile)
         const style = findMasterCSSStyle(html)
-        if (!style) {
-            routes[route] = null
-            continue
+        const deliveredCSS: string[] = []
+        for (const match of html.matchAll(/<link\b([^>]*)>|<style\b([^>]*)>([\s\S]*?)<\/style>/gi)) {
+            if (match[1] !== undefined) {
+                if (attributeValue(match[1], 'rel') !== 'stylesheet') continue
+                const href = attributeValue(match[1], 'href')
+                if (href && !/^(?:https?:)?\/\//.test(href)) deliveredCSS.push(await stylesheetText(href))
+            } else {
+                deliveredCSS.push(match[3])
+            }
         }
-        assertNoInlineVariableReferences(route, 'generated CSS', style.css, inlineVariableNames)
-
-        const hydrationReference = attributeValue(
-            style.attributes,
-            'data-master-css-hydration-manifest'
-        )
-        if (!hydrationReference) {
-            throw new Error(`${route} has style#master-css without hydration metadata.`)
-        }
-        const hydrationFile = publicOutputPath(hydrationReference)
-        const hydrationText = await readFile(hydrationFile, 'utf8')
-        const hydration = JSON.parse(hydrationText) as HydrationManifest
-        if (
-            hydration.version !== 1
-            || !Array.isArray(hydration.rules)
-            || !Array.isArray(hydration.resourceOrder)
-        ) {
+        const css = deliveredCSS.join('\n')
+        if (!css) { routes[route] = null; continue }
+        assertNoInlineVariableReferences(route, 'delivered CSS', css, inlineVariableNames)
+        const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
+        const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
+        const hydration: HydrationManifest = hydrationText ? JSON.parse(hydrationText) : { version: 1, languageVersion: 2, rules: [], resourceOrder: [] }
+        if (hydration.version !== 1 || hydration.languageVersion !== 2 || !Array.isArray(hydration.rules) || !Array.isArray(hydration.resourceOrder)) {
             throw new Error(`${route} references an invalid Master CSS hydration manifest.`)
         }
         for (const rule of hydration.rules) {
@@ -160,19 +161,19 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
 
         let segments: string[]
         try {
-            segments = splitCSSSegments(style.css)
+            segments = splitCSSSegments(css)
         } catch (error) {
             throw new Error(`${route} cannot split exact CSS segments: ${(error as Error).message}`)
         }
         const segmentIds = segments.map((segment) => addCatalogValue(cssSegments, segment))
         const reconstructedCSS = segmentIds.map((id) => cssSegments[id]).join('')
-        if (reconstructedCSS !== style.css) {
+        if (reconstructedCSS !== css) {
             throw new Error(`${route} CSS segment catalog did not preserve exact bytes.`)
         }
         const ruleIds = hydration.rules.map((rule) => addCatalogValue(rules, rule))
         const contract: CSSContract = {
-            cssBytes: Buffer.byteLength(style.css),
-            cssSha256: sha256(style.css),
+            cssBytes: Buffer.byteLength(css),
+            cssSha256: sha256(css),
             cssSegments: segmentIds,
             hydrationBytes: Buffer.byteLength(hydrationText),
             hydrationSha256: sha256(hydrationText),
@@ -186,13 +187,13 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
     }
 
     return {
-        version: 1,
-        semanticBaseline: 'ef1a7c851',
-        publicBaseline: 'v2.0.0-rc.87',
-        globalManifest: {
-            bytes: Buffer.byteLength(globalManifestText),
-            sha256: sha256(globalManifestText),
-            value: globalManifest
+        version: 2,
+        semanticBaseline: 'language-v2',
+        publicBaseline: 'v2-final-semantics',
+        projectManifest: {
+            bytes: Buffer.byteLength(projectManifestText),
+            sha256: sha256(projectManifestText),
+            value: projectManifest
         },
         cssSegments: sortRecord(cssSegments),
         rules: sortRecord(rules),
@@ -391,14 +392,14 @@ function firstSnapshotDifference(
     ) {
         return 'Snapshot version or historical baseline changed.'
     }
-    if (expected.globalManifest.sha256 !== actual.globalManifest.sha256) {
+    if (expected.projectManifest.sha256 !== actual.projectManifest.sha256) {
         const valueDifference = firstJSONDifference(
-            expected.globalManifest.value,
-            actual.globalManifest.value,
-            'globalManifest.value'
+            expected.projectManifest.value,
+            actual.projectManifest.value,
+            'projectManifest.value'
         )
         return [
-            `Global Manifest v1 bytes changed: ${expected.globalManifest.sha256} → ${actual.globalManifest.sha256}.`,
+            `Project Manifest v1 / language v2 bytes changed: ${expected.projectManifest.sha256} → ${actual.projectManifest.sha256}.`,
             valueDifference || 'Parsed Manifest JSON is equal; only exact serialization bytes changed.'
         ].join('\n')
     }
@@ -439,12 +440,12 @@ function contractDifference(
             const expectedText = expectedSnapshot.cssSegments[expectedId] || ''
             const actualText = actualSnapshot.cssSegments[actualId] || ''
             return [
-                `Inline CSS bytes changed: ${expected.cssSha256} → ${actual.cssSha256}.`,
+                `Delivered CSS bytes changed: ${expected.cssSha256} → ${actual.cssSha256}.`,
                 `First changed CSS segment: ${index} (${expectedId || '<missing>'} → ${actualId || '<missing>'}).`,
                 firstByteDifference(expectedText, actualText)
             ].join('\n')
         }
-        return `Inline CSS bytes changed: ${expected.cssSha256} → ${actual.cssSha256}.`
+        return `Delivered CSS bytes changed: ${expected.cssSha256} → ${actual.cssSha256}.`
     }
     if (expected.hydrationSha256 !== actual.hydrationSha256) {
         const length = Math.max(expected.rules.length, actual.rules.length)
@@ -561,7 +562,7 @@ function summary(label: string, snapshot: SiteCSSContractSnapshot) {
     return [
         `${label}:`,
         `  ${Object.keys(snapshot.routes).length} static HTML routes`,
-        `  ${Object.keys(snapshot.contracts).length} deduplicated hydration contracts`,
+        `  ${Object.keys(snapshot.contracts).length} deduplicated CSS delivery contracts`,
         `  ${Object.keys(snapshot.rules).length} deduplicated generated rules`,
         `  ${Object.keys(snapshot.cssSegments).length} deduplicated exact CSS segments`
     ].join('\n')

@@ -38,7 +38,7 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
   return (
     <div {...props} className={clsx('py-2xl bt:1px|solid|var(--color-line-muted)', className)}>
       <div className='container max-w:var(--breakpoint-2xl) mx:auto'>
-        <div className="grid-cols:2 flex:1 justify-between gap:2.5rem font-sm text-muted grid-cols:4@container(2xs) grid-cols:5@container(md)">
+        <div className="grid-cols:2 flex:1 justify-between gap:2.5rem font-sm text-muted grid-cols:4@container((width>=18rem)) grid-cols:5@container((width>=28rem))">
           {navGroups.map((group) => (
             <ul className='flex flex-col gap-lg' key={group.name}>
               <li><h4 className='text-strong'>{$(group.name)}</h4></li>
@@ -49,7 +49,7 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
               ))}
             </ul>
           ))}
-          <div className='hidden@container(<md)'>
+          <div className='hidden@container((width<28rem))'>
             <SearchButton className="flex items-center h:36px w:100% px-md r-lg font-sm bg-surface-base text-disabled" />
           </div>
         </div>
@@ -63,14 +63,14 @@ export default function Footer({ navGroups = [], legalLinks = [], copyright, cla
             {index < legalLinks.length - 1 && <div className='bl:1px|solid|var(--color-line-muted)'></div>}
           </Fragment>
         ))}
-        {legalLinks.length > 0 && <div className='bl:1px|solid|var(--color-line-muted) hidden@<md'></div>}
-        <label className='rel hidden@<md'>
+        {legalLinks.length > 0 && <div className='bl:1px|solid|var(--color-line-muted) hidden@media((width<64rem))'></div>}
+        <label className='rel hidden@media((width<64rem))'>
           <span className='pr-xs capitalize'>{$('Theme')}: {$(themeMode.preference?.charAt(0).toUpperCase() + themeMode.preference?.slice(1))}</span>
           <ThemeSelect />
           <IconChevronDown className='inline-block size:1em vertical-align:middle' />
         </label>
-        <div className='bl:1px|solid|var(--color-line-muted) hidden@<md'></div>
-        <label className='rel hidden@<md'>
+        <div className='bl:1px|solid|var(--color-line-muted) hidden@media((width<64rem))'></div>
+        <label className='rel hidden@media((width<64rem))'>
           <span className='pr-xs capitalize'>{$('Language')}: {localeName}</span>
           <LanguageSelect />
           <IconChevronDown className='inline-block size:1em vertical-align:middle' />

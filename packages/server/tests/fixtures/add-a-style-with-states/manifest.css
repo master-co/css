@@ -1,7 +1,3 @@
-@settings {
-  mode-trigger: media;
-  modes: light dark;
-}
 
 @theme {
   --color-black: oklch(0% 0 none);

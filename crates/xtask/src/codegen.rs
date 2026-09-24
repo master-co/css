@@ -15,6 +15,10 @@ pub(crate) fn generated_contract() -> String {
         .join("\n");
     GENERATED_CONTRACT_TEMPLATE
         .replace(
+            "{{MASTER_CSS_LANGUAGE_VERSION}}",
+            &mastercss_schema::LANGUAGE_VERSION.to_string(),
+        )
+        .replace(
             "{{MASTER_CSS_BINDING_ABI_VERSION}}",
             &mastercss_schema::BINDING_ABI_VERSION.to_string(),
         )

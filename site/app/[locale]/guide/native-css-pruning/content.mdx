@@ -1,15 +1,16 @@
 ## Overview [sr-only]
-Class scanning decides which classes are used. Native CSS pruning uses that usage graph to remove unused native CSS class rules from Master-managed stylesheets.
+Class scanning decides which classes are used. Native CSS is preserved by default. Explicit native CSS pruning uses that usage graph to remove unused class rules from selected stylesheets.
 
 ```txt
-source usage + @import "@master/css" stylesheet
+source usage + stylesheet with @prune native;
   -> used native class names
   -> pruned native CSS
 ```
 
-A stylesheet becomes Master-managed when it imports `@master/css`. Native class selector rules in that stylesheet are pruned by default.
+Importing `@master/css` supplies the preset and generated CSS entry. Add `@prune native;` to opt this source file into pruning; the directive does not affect its imports. Passing class names to a compiler API alone never enables pruning.
 
 ```css name=src/style.css
+@prune native;
 @import "@master/css";
 
 .card {
@@ -38,10 +39,11 @@ Use [Scanning latent classes](/guide/scanning-latent-classes) for the source sca
 
 ---
 
-## Default pruning
-Import `@master/css` from the CSS entry that should receive generated Master CSS. Ordinary class selector rules in that entry are pruned against detected source classes.
+## Explicit pruning
+Import `@master/css` from the CSS entry that should receive generated Master CSS. Native class selector rules remain intact unless this file declares `@prune native;` or the integration explicitly enables `pruneNativeCSS: true`. The integration option applies only to project-owned sources.
 
 ```css name=src/app.css
+@prune native;
 @import "@master/css";
 
 .app-shell {
@@ -83,9 +85,10 @@ For exact stylesheet directive syntax, see [CSS directives](/reference#directive
 ---
 
 ## Import graph
-When a Master-managed `.css` entry imports local relative `.css` files, those imports are expanded into the same pruning graph.
+Resolved CSS imports retain their own source boundaries. Each file opts in with `@prune native;`; an importing file cannot enable pruning in its dependencies. With the integration-wide `pruneNativeCSS: true` option, project-owned dependencies also participate unless they declare `@preserve native;`. Qualified native imports keep their media, supports and layer wrappers.
 
 ```css name=src/style.css
+@prune native;
 @import "@master/css";
 @import "./styles/cards.css";
 @import "./styles/buttons.css";
@@ -96,6 +99,7 @@ When a Master-managed `.css` entry imports local relative `.css` files, those im
 ```
 
 ```css name=src/styles/cards.css
+@prune native;
 .card {
   border: 1px solid rgb(0 0 0 / 12%);
 }
@@ -106,6 +110,7 @@ When a Master-managed `.css` entry imports local relative `.css` files, those im
 ```
 
 ```css name=src/styles/buttons.css
+@prune native;
 .button {
   display: inline-flex;
 }
@@ -134,15 +139,15 @@ src/style.css
   -> imports @master/css
   -> imports ./styles/cards.css
   -> imports ./styles/buttons.css
-  -> pruned as one root graph
+  -> each opted-in source pruned with root usage
 ```
 
-Only local relative `.css` imports are expanded this way. Bare package imports, remote imports, and non-CSS imports stay in the bundler's normal CSS pipeline unless they are one of the Master CSS entry imports.
+Package and remote styles do not become project-owned merely because the project imports them. Preserve files with externally controlled classes, or opt in only where the complete class vocabulary is available.
 
 ---
 
 ## Root scope
-Pruning is root-scoped. The stylesheet directly processed by the integration is the root; imported files are dependencies of that root.
+Pruning activation belongs to each source file. Once enabled, filtering uses the importing root’s usage scope. The same opted-in shared source can therefore retain different classes under different roots.
 
 ```txt
 app/a/a.css
@@ -153,6 +158,7 @@ app/b/b.css
 ```
 
 ```css name=app/a/a.css
+@prune native;
 @import "@master/css";
 @import "../shared.css";
 
@@ -162,6 +168,7 @@ app/b/b.css
 ```
 
 ```css name=app/b/b.css
+@prune native;
 @import "@master/css";
 @import "../shared.css";
 
@@ -171,6 +178,7 @@ app/b/b.css
 ```
 
 ```css name=app/shared.css
+@prune native;
 .shared-card {
   border: 1px solid rgb(0 0 0 / 12%);
 }
@@ -202,6 +210,7 @@ app/b/b.css
 ```
 
 ```css name=app/a/a.css
+@prune native;
 @import "@master/css";
 @source "./page.tsx";
 @import "../shared.css";
@@ -216,6 +225,7 @@ app/b/b.css
 ```
 
 ```css name=app/b/b.css
+@prune native;
 @import "@master/css";
 @source "./page.tsx";
 @import "../shared.css";
@@ -230,6 +240,7 @@ app/b/b.css
 ```
 
 ```css name=app/shared.css
+@prune native;
 @safelist "shared-card";
 @blocklist "debug-*";
 
@@ -272,6 +283,7 @@ If a root must scan a file, make sure no `@source not` pattern removes it.
 Native CSS pruning filters class selector rules by detected usage. A class rule is kept when its selector branch references a class that is used.
 
 ```css name=src/style.css
+@prune native;
 @import "@master/css";
 
 body {
@@ -343,6 +355,7 @@ Pruned native CSS can reference variables and keyframes from the project CSS ent
 ```
 
 ```css name=src/style.css
+@prune native;
 @import "@master/css";
 
 .notice {
@@ -368,6 +381,7 @@ The kept `.notice` rule pulls in `--color-primary` and `@keyframes fade-in`. `.u
 If a native class is used by a bounded external source, include it explicitly so pruning keeps the rule.
 
 ```css name=src/dialog.css
+@prune native;
 @import "@master/css";
 @safelist "dialog-open dialog-closing";
 
@@ -385,8 +399,9 @@ Use this for known class contracts. Do not use it as a replacement for putting n
 ---
 
 ## Checklist
-- Import `@master/css` from CSS entries that should receive generated Master CSS and native CSS pruning.
+- Import `@master/css` from CSS entries that should receive generated Master CSS.
+- Enable pruning separately with `@prune native;` or `pruneNativeCSS: true`.
 - Add `@preserve native;` to Master-managed entries whose native CSS must be preserved.
-- Remember that local relative `.css` imports follow the root's pruning decision.
+- Check every source boundary: `@prune native;` does not propagate to imports.
 - Use `@safelist` for native classes used by bounded external systems.
-- Keep vendor, CMS, or third-party styles outside Master-managed roots unless their class usage is visible to the scanner or protected with `@preserve native;`.
+- Use `@preserve native;` for files with external class vocabularies when project-wide pruning is enabled.

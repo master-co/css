@@ -37,7 +37,9 @@ export default function ManifestVirtualModulePlugin(
   return {
     ...plugin,
     async buildStart() {
-      if (context.config?.command === 'build') return
+      // A watch rebuild must refresh a failed manifest before HTML checks it.
+      // Otherwise assertReady() rethrows the previous build's error before load runs.
+      if (context.config?.command === 'build' && !recovery.failed) return
       // Retain the diagnostic and dependency set while allowing Vite to listen.
       try { await recovery.run(this) } catch { /* HTML and module requests report the original failure. */ }
     },

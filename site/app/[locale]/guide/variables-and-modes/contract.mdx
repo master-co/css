@@ -4,7 +4,7 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 ## Overview [sr-only] \{#overview\}
 Variables are the bridge between project vocabulary and generated CSS. Master CSS reads `@theme` blocks as manifest input, resolves token names into namespaces, and emits regular CSS custom properties when a generated rule needs them. Inline and static declarations follow the distinct rules described below.
 
-Modes are named buckets for alternate variable values. They let the same class string adapt to light, dark, high-contrast, or product-specific themes without duplicating markup. Start with the [working spacing and mode examples](/guide/variables-and-modes) when learning the authoring flow.
+Modes define activation selectors and conditions; named theme blocks supply alternate variable values. They let the same class string adapt to light, dark, high-contrast, or product-specific themes without duplicating markup. Start with the [working spacing and mode examples](/guide/variables-and-modes) when learning the authoring flow.
 
 ```css name=index.css
 @import '@master/css';
@@ -36,7 +36,7 @@ Compile the theme together with the class that uses it. This example adds a proj
 
 <ConfiguredExample source={'@theme { --spacing-card: 1.5rem; }'} classes={['p-card']} />
 
-`@theme`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then generates the required rules and their variable or keyframe dependencies. Static theme resources are an explicit exception to on-demand emission.
+`@theme`, `@mode`, `@settings`, and `@custom-variant` directives are manifest inputs. Master CSS reads them before class generation, then generates the required rules and their variable or keyframe dependencies. Static theme resources are an explicit exception to on-demand emission.
 
 ```css name=index.css
 @theme {
@@ -75,10 +75,10 @@ The utility decides which namespace it reads. The same key can mean different va
 </article>
 ```
 
-Full property names do not become token namespaces automatically. A namespace is available only when the preset registers it and a utility or native value namespace references it.
+Full property names do not become token namespaces automatically. A namespace is available only when the preset registers it and a utility or named token namespace references it.
 
 ### Default namespace sources \{#default-namespace-sources\}
-The following registry-backed table lists condition sources and every namespace consumed by default utilities or native value namespaces. It shows complete public keys, including aliases. These are consumers, not a list of defined token values; see the [token reference](/reference#tokens) for the preset inventory.
+The following registry-backed table lists condition sources and every namespace consumed by default utilities or named token namespaces. It shows complete public keys, including aliases. These are consumers, not a list of defined token values; see the [token reference](/reference#tokens) for the preset inventory.
 
 <VariableNamespaceSources />
 
@@ -126,7 +126,7 @@ Use `@theme static` when a variable or managed keyframes definition should be em
 `inline` and `static` cannot be combined.
 
 ## Mode buckets \{#mode-buckets\}
-`light` and `dark` are always available. Defining another mode adds it to the theme automatically.
+The preset explicitly defines `light` and `dark`. Every named theme must resolve an existing mode; declare activation separately for a custom mode.
 
 ```css name=index.css
 @theme light {
@@ -137,6 +137,10 @@ Use `@theme static` when a variable or managed keyframes definition should be em
 @theme dark {
   --color-surface-card: #111827;
   --color-text-card: #f9fafb;
+}
+
+@mode contrast {
+  [data-theme="contrast"] { @slot; }
 }
 
 @theme contrast {
@@ -153,7 +157,7 @@ Use `@theme static` when a variable or managed keyframes definition should be em
 When a token has mode-specific values, generated utilities reference the same CSS custom property. The active mode changes the variable value, not the class name.
 
 ### Derived mode-aware values \{#derived-mode-aware-values\}
-Default theme variables are emitted on `:root`. If a default variable references a mode-specific variable, the browser computes the derived custom property where it is declared. A local `.dark` or `:host(.dark)` island can override the referenced token, but it does not recompute an inherited derived token.
+Base theme variables are emitted on `:root,:host`, supporting a Document or a ShadowRoot. If a default variable references a mode-specific variable, the browser computes the derived custom property where it is declared. A local `.dark` or `:host(.dark)` island can override the referenced token, but it does not recompute an inherited derived token.
 
 ```css name=index.css
 @theme {
@@ -175,52 +179,86 @@ Define derived tokens inside each mode bucket when they must follow local mode i
 
 This is CSS custom property computed-value behavior, not a Master CSS selector issue.
 
-## Mode triggers \{#mode-triggers\}
-`mode-trigger` controls how mode buckets are emitted.
+## Mode activation \{#mode-triggers\}
+`@mode` defines where a mode activates. Each branch ends at an element selector containing `@slot`. Variables are declared on that selector. A class such as `bg-surface@ocean` applies to the activation element and its descendants through a zero-specificity guard.
+
+<ConfiguredExample source={'@mode ocean { [data-theme="ocean"] { @slot; } } @theme { --color-surface: white; } @theme ocean { --color-surface: #082f49; }'} classes={['bg-surface', 'bg-surface@ocean']} label="Mode activation and token values" />
+
+Multiple branches are alternatives. Media and supports conditions can wrap activation selectors. Redefining a mode replaces its entire activation definition; later theme blocks instead merge token values, with the last value for each token winning. Names cannot collide with breakpoints or custom variants.
+
+Mode definitions belong at the top level. They cannot contain ordinary declarations, pseudo-element activation selectors, layers, containers or recursive mode references. Use `@custom-variant` for utility selector transformations and general conditional combinations.
+
+### System preference with a manual override
+Override both preset modes together so a manual choice excludes the opposite system branch:
 
 ```css name=index.css
-@settings {
-  default-mode: light;
-  mode-trigger: media;
+@import '@master/css';
+
+@mode light {
+  @media (prefers-color-scheme: light) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="light"] { @slot; }
 }
-```
 
-- `media` uses `@media (prefers-color-scheme: <mode>)` for light and dark modes.
-- `class` uses class wrappers such as `.dark &`. Built-in `light` and `dark` mode buckets also emit native `color-scheme`.
-- `host` uses shadow host wrappers such as `:host(.dark) &`. Built-in `light` and `dark` host buckets also emit native `color-scheme`.
-
-`default-mode` controls which class-triggered or host-triggered mode also attaches to `:root` or `:host`. Set `default-mode: none;` when no mode should be applied by default. It has no effect with `mode-trigger: media`, because the browser decides the active color scheme from user or system preferences.
-
-For manual theme switches, set `mode-trigger` to `class`:
-
-```css name=index.css
-@settings {
-  mode-trigger: class;
-  default-mode: light;
+@mode dark {
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme]) { @slot; }
+  }
+  [data-theme="dark"] { @slot; }
 }
+
+@theme {
+  --color-surface: white;
+  --color-content: #222;
+}
+
+@theme dark {
+  --color-surface: #082f49;
+  --color-content: #e0f2fe;
+}
+
+:root { color-scheme: light dark; }
+[data-theme="light"] { color-scheme: light; }
+[data-theme="dark"] { color-scheme: dark; }
 ```
 
 ```html
-<!-- @MARK dark -->
-<html class="dark">
-  <body>
-    <div class="bg-surface-card text-card">...</div>
-  </body>
+<html data-theme="dark">
+  <body class="bg-surface fg-content">Page content</body>
 </html>
 ```
 
-Use `class` or `host` for custom modes. Browsers only support `light` and `dark` values for `prefers-color-scheme`, so custom modes cannot work as native media-triggered color schemes.
-
-## Project settings \{#project-settings\}
-Settings are not design tokens, but a few of them shape variable and class output.
-
-```css name=index.css
-@settings {
-  root-size: 16;
-  scope: #app;
-}
+```js
+// Choose a manual mode, or remove the attribute to follow the system.
+document.documentElement.dataset.theme = 'dark';
+document.documentElement.removeAttribute('data-theme');
 ```
 
-`root-size` supplies the root-size assumption used by conditions and tooling; declaration values keep their explicit units. `scope` prefixes generated selectors when Master CSS should only style a specific application root.
+The engine never adds `color-scheme`; the preset and project CSS declare it explicitly. Base `@theme` values replace the need for a global default mode.
 
-See the [settings directive](/reference/directives/settings) for accepted settings and the [theme directive](/reference/directives/theme) for declaration syntax. Use [Theme tokens](/guide/theme) for the project authoring workflow.
+### Local themes and overlap
+CSS variables inherit normally. A nested theme overrides variables on its own activation element. If different modes match simultaneously, ordinary CSS cascade rules decide the result. Ancestor mode guards still match descendants inside another mode; there is no “nearest mode wins” utility exclusion or JavaScript mode state machine.
+
+### Shadow DOM
+Define a shadow host branch explicitly inside the stylesheet compiled for the shadow root:
+
+```css
+@mode ocean {
+  :host([data-theme="ocean"]) { @slot; }
+}
+
+@theme { --color-surface: white; }
+@theme ocean { --color-surface: #082f49; }
+```
+
+Use `bg-surface` inside the shadow tree, or `bg-surface@ocean` for a conditional utility. Styles do not implicitly cross a shadow boundary or style assigned slot content. A document mode selector does not replace a shadow host branch.
+
+## Project settings \{#project-settings\}
+Settings are separate from design tokens. `scope` prefixes generated selectors when Master CSS should style a specific application root:
+
+```css
+@settings { scope: #app; }
+```
+
+There is no `root-size`, `mode-trigger` or `default-mode` setting in the v2 language contract. Keep CSS units explicit and use `@mode` for activation. See the [settings directive](/reference/directives/settings), [theme directive](/reference/directives/theme), and [v2 RC upgrade guide](/guide/migration/v2-rc).

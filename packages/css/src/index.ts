@@ -19,7 +19,6 @@ export type {
 } from './engine/binding'
 export type {
   MasterCSSNativeDeclaration,
-  MasterCSSNativeDeclarationSupport,
   MasterCSSRenderSessionOptions,
   MasterCSSRenderSnapshot
 } from './render-session'
