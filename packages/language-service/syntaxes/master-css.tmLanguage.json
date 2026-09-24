@@ -22,10 +22,7 @@
         {
           "begin": "(@)(source)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -44,10 +41,7 @@
         {
           "begin": "(@)(reference|blocklist)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -70,10 +64,7 @@
         {
           "begin": "(@)(preserve)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -92,10 +83,7 @@
         {
           "begin": "(@)(theme)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -117,10 +105,7 @@
         {
           "begin": "(@)(settings)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -143,10 +128,7 @@
         {
           "begin": "(@)(safelist)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -169,10 +151,7 @@
         {
           "begin": "(@)(defaults|components|utilities)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -195,10 +174,7 @@
         {
           "begin": "(@)(custom-variant)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -220,10 +196,7 @@
         {
           "begin": "(@)(compose)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -242,10 +215,7 @@
         {
           "begin": "(@)(variant|dark|light)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -267,10 +237,7 @@
         {
           "begin": "(@)(master)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -294,10 +261,7 @@
         {
           "begin": "(@)(slot)\\b",
           "beginCaptures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
+            "0": {
               "name": "keyword.control.at-rule.master-css"
             }
           },
@@ -358,6 +322,10 @@
       "patterns": [
         {
           "include": "#master-query"
+        },
+        {
+          "match": "(?<![@._a-zA-Z0-9-])[_a-zA-Z-][_a-zA-Z0-9-]*(?![-_a-zA-Z0-9])",
+          "name": "support.constant.property-value.master-css.query"
         },
         {
           "match": "[;{}]",
@@ -744,6 +712,9 @@
               "include": "#master-native-declaration"
             },
             {
+              "include": "source.css#at-rules"
+            },
+            {
               "include": "#master-query"
             },
             {
@@ -823,6 +794,9 @@
             },
             {
               "include": "#master-native-declaration"
+            },
+            {
+              "include": "source.css#at-rules"
             },
             {
               "include": "#master-query"
@@ -942,32 +916,22 @@
     "master-query": {
       "patterns": [
         {
-          "match": "(@)([a-zA-Z])?(>=|<=|>|<|=)([_a-zA-Z-][_a-zA-Z0-9-]*)",
+          "match": "(@[a-zA-Z]?)(>=|<=|>|<|=)([_a-zA-Z-][_a-zA-Z0-9-]*)",
           "captures": {
             "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
               "name": "keyword.control.at-rule.master-css.query"
             },
-            "3": {
+            "2": {
               "name": "keyword.operator.master-css.query"
             },
-            "4": {
+            "3": {
               "name": "support.constant.property-value.master-css.query"
             }
           }
         },
         {
-          "match": "(@)(media|container|supports|layer|starting-style|[_a-zA-Z-][_a-zA-Z0-9-]*)\\b",
-          "captures": {
-            "1": {
-              "name": "punctuation.definition.keyword.master-css"
-            },
-            "2": {
-              "name": "keyword.control.at-rule.master-css.query"
-            }
-          }
+          "match": "@[_a-zA-Z-][_a-zA-Z0-9-]*\\b",
+          "name": "keyword.control.at-rule.master-css.query"
         },
         {
           "match": "\\b([a-zA-Z])?(>=|<=|>|<|=)([_a-zA-Z-][_a-zA-Z0-9-]*)",

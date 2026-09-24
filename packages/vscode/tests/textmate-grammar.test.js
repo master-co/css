@@ -314,8 +314,9 @@ test('highlights every Master CSS directive keyword', () => {
     'dark',
     'light'
   ]) {
-    expectScope(tokens, directive, 'keyword.control.at-rule.master-css')
+    expectScope(tokens, `@${directive}`, 'keyword.control.at-rule.master-css')
   }
+  expectNoScope(tokens, '@', 'punctuation.definition.keyword.master-css')
   expectScope(tokens, 'entry', 'support.constant.property-value.master-css')
 })
 
@@ -353,9 +354,9 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
   expectScope(tokens, 'fg', 'support.type.property-name.master-css')
   expectScope(tokens, 'primary', 'support.constant.property-value.master-css')
   expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
-  expectScope(tokens, 'md', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, '@md', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, '!', 'keyword.operator.important.css')
-  expectScope(tokens, 'sm', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
   expectScope(tokens, 'font', 'support.type.property-name.master-css')
   expectScope(tokens, '~', 'keyword.operator.master-css')
   expectScope(tokens, 'font-size', 'variable.parameter.master-css')
@@ -367,7 +368,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
 })
 
 test('highlights custom variants, nested selectors, queries, and values', () => {
-  const tokens = tokenize(`
+  const tokens = tokenizeWith(injectedCSSGrammar, `
     @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
     @components {
       scroll-area {
@@ -380,10 +381,13 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
     }
   `)
 
-  expectScope(tokens, 'custom-variant', 'keyword.control.at-rule.master-css')
+  expectScope(tokens, '@custom-variant', 'keyword.control.at-rule.master-css')
   expectScope(tokens, 'motion-safe', 'variable.parameter.master-css')
-  expectScope(tokens, 'media', 'keyword.control.at-rule.master-css.query')
-  expectScope(tokens, 'slot', 'keyword.control.at-rule.master-css')
+  const nativeMedia = tokenizeWith(nativeCSSGrammar, '@media (prefers-reduced-motion: no-preference) {}').find((token) => token.text === 'media')
+  const nestedMedia = tokens.find((token) => token.text === 'media')
+  expect(nestedMedia?.scopes.at(-1)).toBe(nativeMedia?.scopes.at(-1))
+  expectNoScope(tokens, 'media', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, '@slot', 'keyword.control.at-rule.master-css')
   expectScope(tokens, '::', 'punctuation.definition.entity.master-css')
   expectScope(tokens, '.', 'punctuation.definition.entity.master-css')
   expectScope(tokens, 'active', 'entity.other.attribute-name.class.master-css')
@@ -394,8 +398,35 @@ test('highlights custom variants, nested selectors, queries, and values', () => 
   expectNoScope(tokens, '99% 0.0033 72', 'constant.numeric.master-css')
 })
 
+test('colors variant condition names and delegates nested native at-rules', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, `
+    @variant sm {}
+    @variant <sm {}
+    @variant h>=sm&h<lg {}
+    @custom-variant motion-safe {
+      @supports (display: grid) { @slot; }
+      @container (min-width: 30rem) { @slot; }
+    }
+  `)
+
+  expect(tokens.filter((token) => token.text === 'sm' && token.scopes.includes('support.constant.property-value.master-css.query'))).toHaveLength(3)
+  expectScope(tokens, 'lg', 'support.constant.property-value.master-css.query')
+  expectScope(tokens, '<', 'keyword.operator.master-css.query')
+  for (const [rule, condition] of [
+    ['@supports', '(display: grid)'],
+    ['@container', '(min-width: 30rem)']
+  ]) {
+    const name = rule.slice(1)
+    const native = tokenizeWith(nativeCSSGrammar, `${rule} ${condition} {}`).find((token) => token.text === name)
+    const nested = tokens.find((token) => token.text === name)
+    expect(nested?.scopes.at(-1)).toBe(native?.scopes.at(-1))
+    expectNoScope(tokens, name, 'keyword.control.at-rule.master-css.query')
+  }
+  expectScope(tokens, '@slot', 'keyword.control.at-rule.master-css')
+})
+
 test('highlights detailed Master directive syntax without misclassifying native pieces', () => {
-  const tokens = tokenize(`
+  const tokens = tokenizeWith(injectedCSSGrammar, `
     @theme static brand {
       /* Font families */
       --color-primary: --alpha(var(--color-blue-60) / 80%);
@@ -479,6 +510,6 @@ test('does not highlight directives inside comments or quoted strings', () => {
   const directiveTokens = tokens.filter((token) => token.scopes.includes('keyword.control.at-rule.master-css'))
 
   expect(directiveTokens).toEqual([
-    expect.objectContaining({ text: 'theme' })
+    expect.objectContaining({ text: '@theme' })
   ])
 })

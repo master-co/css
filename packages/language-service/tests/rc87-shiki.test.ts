@@ -127,9 +127,9 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(defaults|components|utilities)\\b')
   const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
 
-  expect(themeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(managedDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(composeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(composeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
   expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
   expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
   expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])

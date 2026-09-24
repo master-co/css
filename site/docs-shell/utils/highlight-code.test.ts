@@ -22,6 +22,34 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })
 
+test('highlightCode keeps directive and query colors aligned with native CSS in both themes', async () => {
+  const source = [
+    '@import "base.css";',
+    '@theme light { --color-brand: red; }',
+    '@components { btn { @compose fg:red@md; @variant <sm { color: red; } } }',
+    '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'css' })
+  const styleOf = (text: string, semantic = false) => {
+    let style: string | undefined
+    visitElements(hast.children, (element) => {
+      if (element.tagName === 'span' && getTextContent(element) === text
+        && (!semantic || hasClassName(element, 'mcss-semantic-keyword-query'))) {
+        style = element.properties?.style as string | undefined
+      }
+    })
+    assert.ok(style, text)
+    return style
+  }
+
+  assert.equal(highlightedCodeText(hast), source)
+  for (const keyword of ['@theme', '@components', '@compose', '@custom-variant', '@media', '@slot']) {
+    assert.equal(styleOf(keyword), styleOf('@import'), keyword)
+  }
+  assert.equal(styleOf('@md', true), styleOf('@import'))
+  assert.notEqual(styleOf('sm'), styleOf('<'))
+})
+
 test('highlightCode leaves guide theme native values to TextMate without marking comments', async () => {
   const hast = await highlightCode([
     '@theme light {',

@@ -59,6 +59,7 @@ interface ShikiToken {
   htmlStyle?: Record<string, string>
   htmlAttrs?: Record<string, unknown>
   explanation?: {
+    content?: string
     scopes?: {
       scopeName: string
     }[]
@@ -434,6 +435,7 @@ function collectScopeStyleEntries(tokens: ShikiToken[]): ScopeStyleEntry[] {
     const style = getTokenStyleObject(token)
     if (!style) continue
     for (const explanation of token.explanation ?? []) {
+      if (explanation.content && !token.content.includes(explanation.content)) continue
       const scopes = explanation.scopes ?? []
       const stringDelimiter = scopes.some(({ scopeName }) => scopeName.startsWith('punctuation.definition.string.'))
       for (const { scopeName } of scopes) {

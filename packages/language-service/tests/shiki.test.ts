@@ -155,9 +155,10 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
   const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(defaults|components|utilities)\\b')
   const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
 
-  expect(themeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(managedDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
-  expect(composeDirective.beginCaptures?.['2']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(managedDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(composeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
+  expect(directive.patterns.every((pattern) => pattern.beginCaptures?.['0']?.name === 'keyword.control.at-rule.master-css')).toBe(true)
   expectGrammarIncludes({ patterns: themeDirective.patterns ?? [] }, ['#master-theme-block', '#master-theme-prelude'])
   expectGrammarIncludes({ patterns: managedDirective.patterns ?? [] }, ['#master-managed-block'])
   expectGrammarIncludes({ patterns: composeDirective.patterns ?? [] }, ['#master-compose-prelude'])
@@ -178,6 +179,15 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
 
   const composePrelude = grammarEntry('master-compose-prelude')
   expectGrammarIncludes(composePrelude, ['#master-string', '#master-query', '#master-selector', '#master-class-fragment'])
+
+  const variantPrelude = grammarEntry('master-variant-prelude')
+  findGrammarPattern(variantPrelude, (pattern) => pattern.name === 'support.constant.property-value.master-css.query')
+  const query = grammarEntry('master-query')
+  findGrammarPattern(query, (pattern) => pattern.name === 'keyword.control.at-rule.master-css.query')
+
+  for (const block of ['master-block', 'master-managed-block']) {
+    expectGrammarIncludes({ patterns: grammarEntry(block).patterns[0]?.patterns ?? [] }, ['source.css#at-rules'])
+  }
 
   const classFragment = grammarEntry('master-class-fragment')
   findGrammarPattern(classFragment, (pattern) => pattern.name === 'support.constant.property-value.master-css')
