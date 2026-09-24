@@ -39,7 +39,7 @@ const visualComponents = new Set([
   'FoundationTransition', 'FoundationDialog', 'ShadowScaleDemo',
   // Original Guide specimens restored from HEAD. Each has adjacent teaching copy.
   'ResizeZone', 'IFrame', 'SurfacesDemo', 'LineRolesDemo', 'TextRolesDemo',
-  'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo'
+  'BaseHueDemo', 'TextHueDemo', 'SurfaceElevationDemo', 'NaturalMaterials'
 ])
 const namespaceGroups: Record<string, NamespaceUtilityGroup[]> = {
   SpacingHeirs: spacingGroups, ContainerNamespaceTable: containerGroups,

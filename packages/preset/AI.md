@@ -28,6 +28,7 @@
 ## Key Files
 
 - `src/theme.css`
+- `src/colors.css` (internal color source imported by `theme.css`)
 - `src/base.css`
 - `src/utilities.css`
 - `src/variants.css`

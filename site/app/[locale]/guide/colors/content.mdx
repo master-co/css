@@ -19,6 +19,38 @@ Choose palette steps directly for swatches, illustrations, brand accents, and st
 <div class="bg:blue-5 fg:blue-60">…</div>
 ```
 
+### Natural material colors
+
+Eight material-inspired families extend the palette with warm neutrals, botanical greens, mineral blue-green, and fired earth. Each has all thirteen fixed steps, a base hue alias such as `bg:petrol`, and a foreground alias such as `text:petrol`.
+
+| Family | Character | Pairing direction |
+| --- | --- | --- |
+| `sand` | Golden beige with warm umber shadows | Plaster, paper, and warm editorial surfaces |
+| `taupe` | Restrained red-brown gray | Quiet typography and architectural neutrals |
+| `olive` | Mature yellow-green | Botanical accents beside sand or taupe |
+| `sage` | Soft gray-green | Calm surfaces and natural lifestyle interfaces |
+| `moss` | Fuller leaf green | Plant imagery and accents beside sage |
+| `petrol` | Deep mineral blue-green | Cool backdrops beside warm materials |
+| `copper` | Golden orange-brown | Warm accents distinct from red clay |
+| `terracotta` | Muted red clay with peach tints | Ceramic, craft, and boutique compositions |
+
+The lightest steps retain a tint; the darkest retain the material's hue. Step numbers describe an ordered palette, not equal lightness or guaranteed contrast between families. The curves are individually tuned rather than shared across every hue.
+
+```html
+<article class="bg:sand-5 fg:taupe-80 bg:taupe-95@dark fg:sand-10@dark">
+  Warm materials, with explicit light and dark pairings.
+</article>
+<p class="surface:raised text:petrol">A mode-aware mineral accent.</p>
+```
+
+<NaturalMaterials />
+
+All eight families fit within Display P3. Petrol's `60` and `70` steps use a small extension beyond sRGB; other new steps fit sRGB. Browsers map colors to the display's available gamut. Copy the OKLCH value or CSS variable to preserve the authored color; a hex representation is an sRGB approximation.
+
+The new `text:<family>` aliases meet at least 4.5:1 against the matching preset `base`, `muted`, `raised`, and `overlay` surfaces in both modes, measured after sRGB gamut mapping. Check contrast again when changing the surface, adding transparency, or choosing a fixed step or base hue alias. See [WCAG's text contrast guidance](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+
+(!) `olive` now resolves to the mode-aware preset family, just as `red` and `blue` do. Existing classes such as `fg:olive` and `bg:olive` therefore change appearance. To retain the CSS named olive color, use a literal such as `fg:#808000` or `bg:#808000`.
+
 ---
 
 ## Choose a color token
