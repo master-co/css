@@ -108,7 +108,7 @@ jsxTester.run('prefer canonical classes', rule, {
             options: [{ preferConditionOrder: false }],
         },
 {
-            code: `<div class="block@sm:hover block:focus:hover block@start@sm block@print@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
+            code: `<div class="block@sm:hover block:focus:hover block@starting-style@sm block@print@sm block@supports((display:grid))@sm">Unsafe suffix order</div>`
         },
 {
 code: `<div class="text-align:center:hover@sm">Static pattern utility with variants</div>`

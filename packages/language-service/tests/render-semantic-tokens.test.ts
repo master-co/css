@@ -527,7 +527,7 @@ test.concurrent('does not render semantic tokens for custom variant directive sy
         @slot;
       }
     }
-    @custom-variant start {
+    @custom-variant starting-style {
       @starting-style {
         @slot;
       }

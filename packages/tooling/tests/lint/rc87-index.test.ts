@@ -698,7 +698,7 @@ describe('canonical class suggestions', () => {
   test('does not suggest unsafe condition or selector suffix order', () => {
     expect(suggestCanonicalClassName('block@sm:hover', css)).toBeUndefined()
     expect(suggestCanonicalClassName('block:focus:hover', css)).toBeUndefined()
-    expect(suggestCanonicalClassName('block@start@sm', css)).toBeUndefined()
+    expect(suggestCanonicalClassName('block@starting-style@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('block@print@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('block@supports(display:grid)@sm', css)).toBeUndefined()
     expect(suggestCanonicalClassName('font:error@dark@sm', css)).toBeUndefined()

@@ -70,12 +70,6 @@
   }
 }
 
-@custom-variant start {
-  @starting-style {
-    @slot;
-  }
-}
-
 @custom-variant starting-style {
   @starting-style {
     @slot;

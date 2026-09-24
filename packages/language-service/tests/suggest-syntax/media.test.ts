@@ -33,7 +33,6 @@ describe.concurrent('sorting', () => {
     '@reduce-motion',
     '@screen',
     '@speech',
-    '@start',
     '@starting-style',
     '@utility',
     '@container()',

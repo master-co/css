@@ -277,6 +277,17 @@ describe('@master/css-preset defaultManifest', () => {
     expect(variablesOf(defaultManifest).some((variable) => variable.name === 'px')).toBe(false)
   })
 
+  it('only publishes the full starting-style variant', () => {
+    const css = createTestCSS(defaultManifest)
+
+    expect(defaultManifest.variants?.some((variant) => variant.token === '@start')).toBe(false)
+    expect(defaultManifest.variants?.some((variant) => variant.token === '@starting-style')).toBe(true)
+    expect(css.createRule('opacity:0@start')).toBeUndefined()
+    expect(css.createRule('opacity:0@starting-style')?.text).toBe(
+      '@starting-style{.opacity\\:0\\@starting-style{opacity:0}}'
+    )
+  })
+
   it('does not publish removed static utility shortcuts', () => {
     const css = createTestCSS(defaultManifest)
 

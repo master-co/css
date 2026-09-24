@@ -22,7 +22,7 @@ The preset provides these named variants:
 | `@landscape`, `@portrait` | Viewport orientation |
 | `@motion`, `@reduce-motion` | Reduced-motion preference |
 | `@base`, `@default`, `@component`, `@utility` | The corresponding existing CSS layer |
-| `@start`, `@starting-style` | Native starting styles |
+| `@starting-style` | Native starting styles |
 
 These names come from preset definitions. A project can define its own descriptive entry:
 
@@ -58,13 +58,13 @@ See [modes and activation](/reference/rules/modes#mode-triggers).
 The preset's layer variants keep the stable order `theme, base, defaults, components, utilities`. Use `@custom-variant` with an explicit `@layer` wrapper for a named sublayer. See [cascade layers](/guide/cascade-layers).
 
 ### Starting styles \{#starting-style\}
-Use the preset's `@start` or `@starting-style` variant to define a transition's initial value.
+Use the preset's `@starting-style` variant to define a transition's initial value.
 
 ```html
-<div popover class="opacity:0@start transition:opacity|250ms@motion">Details</div>
+<div popover class="opacity:0@starting-style transition:opacity|250ms@motion">Details</div>
 ```
 
-<Class2CSS>{['opacity:0@start', 'transition:opacity|250ms@motion']}</Class2CSS>
+<Class2CSS>{['opacity:0@starting-style', 'transition:opacity|250ms@motion']}</Class2CSS>
 
 ## Complete native queries \{#arbitrary-conditions-and-queries\}
 

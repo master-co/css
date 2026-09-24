@@ -39,7 +39,8 @@
       "sourceId": "rc87-c9332509fb0a43c3",
       "kind": "condition",
       "input": "start",
-      "expectedCanonical": "@starting-style"
+      "expectedCanonical": "@starting-style",
+      "historicalRejection": true
     },
     {
       "id": "rc87-condition-8def2a63c36141bf",
