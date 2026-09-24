@@ -318,16 +318,10 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
 
   expect(tokens).toEqual(expect.arrayContaining([
     expect.objectContaining({
-      text: 'fg',
-      type: 'property',
+      text: 'fg-brand',
+      type: 'enumMember',
       modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-property', 'mcss-semantic-role-declaration-property'])
-    }),
-    expect.objectContaining({
-      text: 'brand',
-      type: 'variable',
-      modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-variable', 'mcss-semantic-role-value-variable'])
+      classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'block',
@@ -371,7 +365,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '        text-align: --value();',
     '    }',
     '',
-    '    font:<~font-size|number> {',
+    '    font-<~font-size> {',
     '        font-size: --value();',
     '    }',
     '',
@@ -404,16 +398,10 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
-      text: 'fg',
-      type: 'property',
+      text: 'fg-red',
+      type: 'enumMember',
       modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic-role-declaration-property'])
-    }),
-    expect.objectContaining({
-      text: 'red',
-      type: 'variable',
-      modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic-role-value-variable'])
+      classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'inline-flex',
@@ -422,10 +410,10 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
       classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
-      text: 'brand',
-      type: 'variable',
+      text: 'fg-brand',
+      type: 'enumMember',
       modifiers: [],
-      classNames: expect.arrayContaining(['mcss-semantic-role-value-variable'])
+      classNames: expect.arrayContaining(['mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'hover',
@@ -462,8 +450,7 @@ test.concurrent('creates Shiki decorations for raw Master CSS class lists', () =
   }))
 
   expect(tokens).toEqual(expect.arrayContaining([
-    { text: 'fg', type: 'property', modifiers: [] },
-    { text: 'brand', type: 'variable', modifiers: [] },
+    { text: 'fg-brand', type: 'enumMember', modifiers: [] },
     { text: 'hover', type: 'modifier', modifiers: ['pseudoClass'] },
     { text: '@sm', type: 'keyword', modifiers: ['query'] },
     { text: '{', type: 'operator', modifiers: [] },
@@ -479,8 +466,8 @@ test.concurrent('skips semantic token decorations inside host comments', () => {
   })
   const texts = decorations.map((decoration) => code.slice(decoration.start, decoration.end))
 
-  expect(texts).toContain('blue')
-  expect(texts).not.toContain('red')
+  expect(texts).toContain('fg-blue')
+  expect(texts).not.toContain('fg-red')
 })
 
 test.concurrent('applies semantic token styles by type and modifier', () => {
@@ -654,19 +641,9 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 
   expect(htmlTokens).toEqual(expect.arrayContaining([
     {
-      content: 'bg',
-      htmlStyle: { color: 'property' },
-      className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
-    },
-    {
-      content: '-',
-      htmlStyle: { color: 'operator' },
-      className: 'mcss-semantic mcss-semantic-operator mcss-semantic-role-declaration-separator'
-    },
-    {
-      content: 'blue',
-      htmlStyle: { color: 'variable' },
-      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
+      content: 'bg-blue',
+      htmlStyle: { color: 'value' },
+      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
       content: 'block',
@@ -691,19 +668,14 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
   ]))
   expect(cssTokens).toEqual(expect.arrayContaining([
     {
-      content: 'bg',
-      htmlStyle: { color: 'property' },
-      className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
+      content: 'bg-blue',
+      htmlStyle: { color: 'value' },
+      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
-      content: 'blue',
-      htmlStyle: { color: 'variable' },
-      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
-    },
-    {
-      content: 'brand',
-      htmlStyle: { color: 'variable' },
-      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
+      content: 'fg-brand',
+      htmlStyle: { color: 'value' },
+      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
       content: 'hover',
@@ -743,24 +715,14 @@ test.concurrent('uses semantic token scope styles for CSS directive class-list t
 
   expect(tokens).toEqual(expect.arrayContaining([
     {
-      content: 'p',
-      htmlStyle: { color: 'property' },
-      className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
+      content: 'p-md',
+      htmlStyle: { color: 'value' },
+      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
-      content: 'md',
-      htmlStyle: { color: 'variable' },
-      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
-    },
-    {
-      content: 'r',
-      htmlStyle: { color: 'property' },
-      className: 'mcss-semantic mcss-semantic-property mcss-semantic-role-declaration-property'
-    },
-    {
-      content: 'xl',
-      htmlStyle: { color: 'variable' },
-      className: 'mcss-semantic mcss-semantic-variable mcss-semantic-role-value-variable'
+      content: 'r-xl',
+      htmlStyle: { color: 'value' },
+      className: 'mcss-semantic mcss-semantic-enumMember mcss-semantic-role-utility-semantic'
     },
     {
       content: 'block',

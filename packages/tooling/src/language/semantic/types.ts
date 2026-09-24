@@ -19,8 +19,14 @@ export type HighlightTokenRole =
   | 'utility.component'
   | 'utility.semantic'
   | 'value.important'
+  | 'value.function'
+  | 'value.function.punctuation'
   | 'value.keyword'
   | 'value.number'
+  | 'value.operator'
+  | 'value.separator'
+  | 'value.string'
+  | 'value.unit'
   | 'value.variable'
 
 export interface SemanticTokenItem {

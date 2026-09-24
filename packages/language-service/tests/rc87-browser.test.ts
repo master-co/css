@@ -55,8 +55,7 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
   expect(mapped).toEqual(expect.arrayContaining([
     { text: 'text-align', type: 'property', modifiers: [] },
     { text: 'center', type: 'enumMember', modifiers: [] },
-    { text: 'fg', type: 'property', modifiers: [] },
-    { text: 'brand', type: 'variable', modifiers: [] },
+    { text: 'fg-brand', type: 'enumMember', modifiers: [] },
     { text: 'block', type: 'enumMember', modifiers: [] },
     { text: 'btn', type: 'class', modifiers: ['declaration', 'component'] }
   ]))
@@ -71,7 +70,7 @@ test.concurrent('encodes browser role-derived semantic token modifiers', () => {
 
   expect(tokens).toEqual(expect.arrayContaining([
     { text: '{', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
-    { text: '-', type: 'operator', modifiers: ['declarationSeparator'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('declarationSeparator') },
+    { text: 'fg-red', type: 'enumMember', modifiers: [], modifierBits: 0 },
     { text: ';', type: 'operator', modifiers: ['declarationTerminator'], modifierBits: 1 << declarationTerminatorIndex },
     { text: '}', type: 'operator', modifiers: ['blockBrace'], modifierBits: 1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('blockBrace') },
     { text: '>', type: 'operator', modifiers: ['selector', 'selectorCombinator'], modifierBits: (1 << SEMANTIC_TOKEN_MODIFIERS.indexOf('selector')) | (1 << selectorCombinatorIndex) },
@@ -113,10 +112,9 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
 
   expect(mapped).toEqual(expect.arrayContaining([
     { text: 'hidden', type: 'enumMember', modifiers: [] },
-    { text: 'fg', type: 'property', modifiers: [] },
-    { text: 'red', type: 'variable', modifiers: [] },
+    { text: 'fg-red', type: 'enumMember', modifiers: [] },
     { text: 'block', type: 'enumMember', modifiers: [] },
-    { text: 'brand', type: 'variable', modifiers: [] }
+    { text: 'fg-brand', type: 'enumMember', modifiers: [] }
   ]))
   expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable', modifiers: [] })
@@ -136,7 +134,7 @@ test.concurrent('does not collect browser semantic tokens for managed syntax wit
     }
 
     @utilities {
-      font:<~font-size|number> {
+      font-<~font-size> {
         font-size: --value();
 
         @light {

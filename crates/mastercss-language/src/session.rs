@@ -194,7 +194,35 @@ impl LanguageSession {
             ClassSemanticKind::Semantic | ClassSemanticKind::Pattern => {
                 push_semantic_token(tokens, token_start, base_end, "enumMember", &[])
             }
-            ClassSemanticKind::Declaration | ClassSemanticKind::Token => {
+            ClassSemanticKind::Token => {
+                if let (Some(key), Some(value)) = (
+                    semantics.key_token.as_deref(),
+                    semantics.value_token.as_deref(),
+                ) {
+                    let (name, opacity) = value
+                        .split_once('/')
+                        .map_or((value, None), |(name, alpha)| (name, Some(alpha)));
+                    let name_end = token_start + utf16_len(key) + utf16_len(name);
+                    push_semantic_token(tokens, token_start, name_end, "enumMember", &[]);
+                    if let Some(alpha) = opacity {
+                        push_semantic_token(
+                            tokens,
+                            name_end,
+                            name_end + 1,
+                            "operator",
+                            &["valueSeparator"],
+                        );
+                        push_semantic_token(
+                            tokens,
+                            name_end + 1,
+                            name_end + 1 + utf16_len(alpha),
+                            "number",
+                            &[],
+                        );
+                    }
+                }
+            }
+            ClassSemanticKind::Declaration => {
                 if let Some(key) = semantics.key_token.as_deref() {
                     let key_length = utf16_len(key.trim_end_matches([':', '-']));
                     push_semantic_token(
@@ -215,31 +243,7 @@ impl LanguageSession {
                     }
                     if let Some(value) = semantics.value_token.as_deref() {
                         let value_start = token_start + utf16_len(key);
-                        if semantics.kind == ClassSemanticKind::Token {
-                            let (name, opacity) = value
-                                .split_once('/')
-                                .map_or((value, None), |(name, alpha)| (name, Some(alpha)));
-                            push_semantic_token(
-                                tokens,
-                                value_start,
-                                value_start + utf16_len(name),
-                                "variable",
-                                &[],
-                            );
-                            if let Some(alpha) = opacity {
-                                let start = value_start + utf16_len(name);
-                                push_semantic_token(tokens, start, start + 1, "operator", &[]);
-                                push_semantic_token(
-                                    tokens,
-                                    start + 1,
-                                    start + 1 + utf16_len(alpha),
-                                    "number",
-                                    &[],
-                                );
-                            }
-                        } else {
-                            push_value_semantic_tokens(tokens, value, value_start);
-                        }
+                        push_value_semantic_tokens(tokens, value, value_start);
                     }
                 }
             }

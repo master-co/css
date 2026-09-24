@@ -69,9 +69,8 @@ test.concurrent('renders semantic tokens for class attributes', () => {
     }
   )
 
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, ':', 'operator', ['declarationSeparator'])
-  expectToken(tokens, 'brand', 'variable')
+  expectToken(tokens, 'fg-brand', 'enumMember')
+  expectToken(tokens, ':', 'operator', ['pseudoClass', 'selector', 'pseudoClassDelimiter'])
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@sm', 'keyword', ['query'])
   expectToken(tokens, 'block', 'enumMember')
@@ -201,8 +200,7 @@ test.concurrent('renders semantic tokens for internal styles dogfood directives'
   expectToken(tokens, '--vscode-editor-background', 'property')
   expectToken(tokens, 'transparent', 'enumMember')
   expectToken(tokens, '!', 'operator', ['important'])
-  expectToken(tokens, 'bg', 'property')
-  expectToken(tokens, 'blue', 'variable')
+  expectToken(tokens, 'bg-blue', 'enumMember')
   expectToken(tokens, 'filter', 'property')
   expectToken(tokens, 'drop-shadow', 'function')
   expectToken(tokens, 'rgba', 'function')
@@ -220,10 +218,8 @@ test.concurrent('renders semantic tokens for grouped declarations, strings, unit
   expectToken(tokens, ';', 'operator', ['declarationTerminator'])
   expectToken(tokens, '}', 'operator', ['blockBrace'])
   expectToken(tokens, ':', 'operator', ['declarationSeparator'])
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
-  expectToken(tokens, 'bg', 'property')
-  expectToken(tokens, 'blue', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
+  expectToken(tokens, 'bg-blue', 'enumMember')
   expectToken(tokens, 'transform', 'property')
   expectToken(tokens, 'translate', 'function')
   expectToken(tokens, '(', 'operator', ['functionPunctuation'])
@@ -318,11 +314,11 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
         text-align: --value();
       }
 
-      font:<~font-size|number> {
+      font-<~font-size> {
         font-size: --value();
       }
 
-      bg:<~color|color> {
+      bg-<~color> {
         background-color: --value();
       }
 
@@ -349,13 +345,12 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
-  expectToken(tokens, 'primary', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
+  expectToken(tokens, 'fg-primary', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
   expectToken(tokens, 'inline-flex', 'enumMember')
-  expectToken(tokens, 'blue', 'variable')
+  expectToken(tokens, 'bg-blue', 'enumMember')
 
   expect(tokens).not.toContainEqual({ text: '@master', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
@@ -494,8 +489,7 @@ test.concurrent('renders CSS directive ranges with quoted semicolons', () => {
   `, 'css')
 
   expectToken(tokens, 'block', 'enumMember')
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: ';', type: 'operator', modifiers: ['directive', 'directiveTerminator'] })

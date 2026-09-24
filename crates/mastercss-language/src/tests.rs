@@ -721,3 +721,53 @@ fn raw_value_semantics_mark_only_explicit_variable_references() {
         );
     }
 }
+
+#[test]
+fn named_tokens_keep_their_full_name_and_split_only_opacity() {
+    let session = LanguageSession::create(include_str!(
+        "../../../packages/preset/src/default-manifest.json"
+    ))
+    .unwrap();
+    for (class_name, expected) in [
+        ("fg-red", vec![("fg-red", "enumMember")]),
+        ("-m-sm", vec![("-m-sm", "enumMember")]),
+        (
+            "fg-red/0.5",
+            vec![
+                ("fg-red", "enumMember"),
+                ("/", "operator"),
+                ("0.5", "number"),
+            ],
+        ),
+        (
+            "fg-red/.5",
+            vec![
+                ("fg-red", "enumMember"),
+                ("/", "operator"),
+                (".5", "number"),
+            ],
+        ),
+        (
+            "color:red",
+            vec![
+                ("color", "property"),
+                (":", "operator"),
+                ("red", "enumMember"),
+            ],
+        ),
+    ] {
+        let mut tokens = Vec::new();
+        session
+            .push_class_semantic_tokens(class_name, 0, &mut tokens)
+            .unwrap();
+        let views = token_views(class_name, &tokens);
+        let actual = views
+            .iter()
+            .map(|(text, kind, _)| (text.as_str(), kind.as_str()))
+            .collect::<Vec<_>>();
+        assert_eq!(actual, expected, "{class_name}");
+        if class_name == "fg-red/0.5" {
+            assert_eq!(tokens[1].modifiers, ["valueSeparator"]);
+        }
+    }
+}

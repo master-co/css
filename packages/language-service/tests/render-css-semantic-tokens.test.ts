@@ -237,10 +237,9 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
   expect(tokens.every((token) => classListRanges.some((range) => range.start <= token.start && token.end <= range.end))).toBe(true)
   expect(tokens.map(({ text }) => text)).toEqual(expect.arrayContaining([
     'hidden',
-    'fg',
-    'blue',
+    'fg-blue',
     'block',
-    'red'
+    'fg-red'
   ]))
   expect(tokens.some((token) => token.start < themeEnd && token.end > themeStart)).toBe(false)
   expectNoTokenOverlaps('@keyframes')
@@ -310,14 +309,13 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   `, 'css', { manifest: createPresetManifest({ variables: [{ namespace: 'color', key: 'primary', value: '#4f46e5' }] }) })
 
   expectToken(tokens, 'block', 'enumMember')
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expectToken(tokens, '@md', 'keyword', ['query'])
   expectToken(tokens, 'inline-flex', 'enumMember')
   expectToken(tokens, 'align-items', 'property')
   expectToken(tokens, 'center', 'enumMember')
-  expectToken(tokens, 'primary', 'variable')
+  expectToken(tokens, 'fg-primary', 'enumMember')
   expect(tokens).not.toContainEqual({ text: '@source', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'not', type: 'modifier', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@reference', type: 'keyword', modifiers: ['directive'] })
@@ -394,8 +392,7 @@ test.concurrent('renders active semantic tokens for the class context at a posit
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
 })
@@ -407,12 +404,10 @@ test.concurrent('renders active semantic tokens for a class context when the cur
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf(' block')))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
-  expectToken(tokens, 'p', 'property')
-  expectToken(tokens, 'md', 'variable')
+  expectToken(tokens, 'p-md', 'enumMember')
 })
 
 test.concurrent('renders active semantic tokens only for the current class string context', () => {
@@ -422,10 +417,9 @@ test.concurrent('renders active semantic tokens only for the current class strin
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('flex') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-  expectToken(tokens, 'p', 'property')
-  expectToken(tokens, 'md', 'variable')
+  expectToken(tokens, 'p-md', 'enumMember')
   expectToken(tokens, 'flex', 'enumMember')
-  expect(tokens.some(({ text }) => text === 'fg' || text === 'red' || text === 'block')).toBe(false)
+  expect(tokens.some(({ text }) => text === 'fg-red' || text === 'block')).toBe(false)
 })
 
 test.concurrent('skips full embedded semantic tokens in active mode', () => {
@@ -453,8 +447,7 @@ test.concurrent('renders active semantic tokens for CSS directive class-list spa
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
   const tokens = decodeSemanticTokens(doc, semanticTokens?.data ?? [])
 
-  expectToken(tokens, 'fg', 'property')
-  expectToken(tokens, 'red', 'variable')
+  expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
   expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })

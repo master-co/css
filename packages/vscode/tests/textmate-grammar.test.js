@@ -54,6 +54,33 @@ test('keeps shared grammar asset in sync with the language Shiki registration', 
   expect(sharedGrammar).toEqual(MASTER_CSS_TEXTMATE_GRAMMAR)
 })
 
+test('scopes v2 named classes, opacity, and pattern forms in CSS directives', () => {
+  const tokens = tokenizeWith(injectedCSSGrammar, [
+    '@components { card { @compose fg-red/0.5 fg-blue/.5 block:hover@sm color:red; } }',
+    '@utilities { font-<~font-family> { font-family: --value(); } }',
+    '@utilities { size:<number|*> { width: --value(); } }',
+    '@utilities { font:<~font-size> { font-size: --value(); } }'
+  ].join('\n'))
+
+  expectScope(tokens, 'fg-red', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '/', 'keyword.operator.master-css')
+  expectScope(tokens, '0.5', 'constant.numeric.master-css')
+  expectScope(tokens, 'fg-blue', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, '.5', 'constant.numeric.master-css')
+  expectScope(tokens, 'block', 'entity.other.attribute-name.class.master-css')
+  expectScope(tokens, 'hover', 'entity.other.attribute-name.pseudo-class.master-css')
+  expectScope(tokens, '@sm', 'keyword.control.at-rule.master-css.query')
+  expectScope(tokens, 'color', 'support.type.property-name.master-css')
+  expectScope(tokens, 'red', 'support.constant.property-value.master-css')
+  expectScope(tokens, 'font', 'support.type.property-name.master-css')
+  expectScope(tokens, 'font-family', 'variable.parameter.master-css')
+  expectScope(tokens, 'size', 'support.type.property-name.master-css')
+  expectScope(tokens, 'number', 'variable.parameter.master-css')
+  expectSomeScope(tokens, 'font:<~font-size>', 'invalid.deprecated.master-css')
+  expectNoSomeScope(tokens, 'font-family', 'invalid.deprecated.master-css')
+  expectNoSomeScope(tokens, 'number', 'invalid.deprecated.master-css')
+})
+
 function tokenizeWith(targetGrammar, source) {
   const tokens = []
   let ruleStack = INITIAL

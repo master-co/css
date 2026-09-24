@@ -719,7 +719,13 @@ function resolveHighlightRole({
   if (type === 'type') return 'selector.type'
   if (modifierSet.has('component')) return 'utility.component'
   if (modifierSet.has('declaration')) return 'utility.semantic'
+  if (modifierSet.has('unit')) return 'value.unit'
+  if (modifierSet.has('valueSeparator')) return 'value.separator'
+  if (modifierSet.has('valueOperator')) return 'value.operator'
+  if (modifierSet.has('functionPunctuation')) return 'value.function.punctuation'
+  if (type === 'function') return 'value.function'
   if (type === 'number') return 'value.number'
+  if (type === 'string') return 'value.string'
   if (type === 'variable') return 'value.variable'
   return 'value.keyword'
 }
@@ -759,7 +765,7 @@ function analyzeMasterCSSShikiDocument(
     const classNames = [...new Set(classPositions.map(({ token }) => token))]
     const semanticClasses = new Set(classNames.length
       ? session.classifyClassNames(classNames).classes
-        .filter(({ kind }) => kind === 'semantic' || kind === 'pattern')
+        .filter(({ kind }) => kind === 'semantic' || kind === 'pattern' || kind === 'token')
         .map(({ className }) => className)
       : [])
     const semanticUtilityStarts = new Set(classPositions

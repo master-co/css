@@ -3,6 +3,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import { createLanguageSession } from '../../src/language'
 import { createLanguageSessionSync } from '../../src/language/node'
 import { createToolingSessionSync } from '../../src/node'
+import { createPresetManifest } from './helpers/create-preset-manifest'
 
 const manifest: MasterCSSManifest = {
   version: 1,
@@ -59,3 +60,31 @@ for (const [name, create] of Object.entries(factories)) {
     })
   })
 }
+
+it('keeps native and Wasm v2 semantic token ranges identical', async () => {
+  const tokenManifest = createPresetManifest({
+    variables: [{ namespace: 'color', key: 'brand', value: '#123456' }]
+  })
+  const native = createLanguageSessionSync({ manifest: tokenManifest })
+  const wasm = await createLanguageSession({ manifest: tokenManifest, binding: 'wasm' })
+  const request = {
+    source: '😀 <div class="fg-brand/0.5 -m-sm color:red block:hover@sm"></div>',
+    languageId: 'html'
+  }
+  try {
+    const nativeResult = native.analyzeDocument(request)
+    const wasmResult = wasm.analyzeDocument(request)
+    expect(wasmResult.semanticTokens).toEqual(nativeResult.semanticTokens)
+    const semanticText = nativeResult.semanticTokens.map(({ start, end }) => request.source.slice(start, end))
+    expect(semanticText).toContain('fg-brand')
+    expect(semanticText).toContain('/')
+    expect(semanticText).toContain('0.5')
+    expect(semanticText).toContain('-m-sm')
+    expect(semanticText).toContain('color')
+    expect(semanticText).toContain(':')
+    expect(semanticText).toContain('red')
+  } finally {
+    native.dispose()
+    wasm.dispose()
+  }
+})

@@ -17,7 +17,7 @@ test('highlightCode renders Master CSS semantic spans only for CSS directive cla
   assert.equal(hasSemanticClass(hast, 'mcss-semantic-keyword-directive'), false)
   assert.equal(hasSemanticClass(hast, 'mcss-semantic-role-theme-variable'), false)
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-selector-pseudoClass-name'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })
@@ -74,18 +74,38 @@ test('highlightCode renders Master CSS semantic spans in HTML class attributes',
   assert.ok(hostWrapper)
   assert.equal(getTextContent(hostWrapper), 'text-red:hover@md block')
   assert.equal(hostWrapper.properties?.['data-master-css-host-role'], 'class-attribute-value')
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-value-keyword'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-selector-pseudoClass-name'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
 })
 
+test('highlightCode keeps every named class in the colors guide whole and copyable', async () => {
+  const source = [
+    '<main class="bg-surface-base text-body">',
+    '  <section class="b:1px|solid|var(--color-line-base) surface-raised">',
+    '    <h2 class="text-strong">Project updates</h2>',
+    '    <p class="text-muted">Three milestones changed this week.</p>',
+    '    <a class="text-link" href="#">Continue</a>',
+    '  </section>',
+    '</main>'
+  ].join('\n')
+  const hast = await highlightCode(source, { lang: 'html' })
+  const utilityElements = collectElementsByClass(hast, 'mcss-semantic-role-utility-semantic')
+  const namedClasses = ['bg-surface-base', 'text-body', 'surface-raised', 'text-strong', 'text-muted', 'text-link']
+
+  assert.equal(highlightedCodeText(hast), source)
+  for (const name of namedClasses) {
+    assert.equal(utilityElements.filter((element) => getTextContent(element) === name).length, 1, name)
+  }
+  assert.equal(collectElementsByClass(hast, 'mcss-semantic-role-declaration-separator').filter((element) => getTextContent(element) === '-').length, 0)
+  assert.equal(collectElementsByClass(hast, 'mcss-semantic-role-declaration-property').filter((element) => getTextContent(element) === 'b').length, 1)
+})
+
 test('highlightCode renders Master CSS semantic spans in TSX class attributes', async () => {
   const hast = await highlightCode('<div className="text-red:hover@md block" />', { lang: 'tsx' })
 
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-value-keyword'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })
 
@@ -95,8 +115,7 @@ test('highlightCode treats mcss snippets as plaintext with class-list semantic o
     inline: true
   })
 
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-declaration-property'))
-  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-value-keyword'))
+  assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-utility-semantic'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-block-brace'))
   assert.ok(hasSemanticClass(hast, 'mcss-semantic-role-query-keyword'))
 })

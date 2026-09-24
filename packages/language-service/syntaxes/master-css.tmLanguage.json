@@ -552,6 +552,14 @@
     "master-managed-pattern": {
       "patterns": [
         {
+          "match": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*:<[~=][^>]*>)",
+          "captures": {
+            "3": {
+              "name": "invalid.deprecated.master-css"
+            }
+          }
+        },
+        {
           "begin": "(^|(?<=[{;]))(\\s*)([_a-zA-Z-][_a-zA-Z0-9-]*)(-)(<)(?=[~=])",
           "beginCaptures": {
             "3": {
@@ -846,6 +854,20 @@
     },
     "master-class-fragment": {
       "patterns": [
+        {
+          "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(/)(0(?:\\.[0-9]+)?|\\.[0-9]+|1(?:\\.0+)?)(?=[:@!_\\s;\\'\"}]|$)",
+          "captures": {
+            "1": {
+              "name": "entity.other.attribute-name.class.master-css"
+            },
+            "2": {
+              "name": "keyword.operator.master-css"
+            },
+            "3": {
+              "name": "constant.numeric.master-css"
+            }
+          }
+        },
         {
           "match": "(?<![:@._a-zA-Z0-9-])([_a-zA-Z-][_a-zA-Z0-9-]*)(:{1,2})(hover|focus-visible|focus-within|focus|active|visited|disabled|checked|first-child|last-child|before|after)(?=[:@!_\\s;\\'\"}]|$)",
           "captures": {

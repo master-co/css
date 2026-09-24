@@ -41,7 +41,7 @@ withFixture('basic', async (context) => {
     )).toBe(true)
     expect(semanticTokens.data.some((_: number, index: number) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
-    )).toBe(true)
+    )).toBe(false)
     await context.server.onDidClose({ document: textDocument })
   })
 
@@ -55,10 +55,10 @@ withFixture('basic', async (context) => {
     })
 
     expect(semanticTokens.data.length).toBeGreaterThan(0)
-    expect(hasTokenType(semanticTokens.data, 'property')).toBe(true)
+    expect(hasTokenType(semanticTokens.data, 'property')).toBe(false)
     expect(hasTokenType(semanticTokens.data, 'enumMember')).toBe(true)
     expect(hasTokenType(semanticTokens.data, 'keyword')).toBe(false)
-    expect(hasTokenType(semanticTokens.data, 'variable')).toBe(true)
+    expect(hasTokenType(semanticTokens.data, 'variable')).toBe(false)
     expect(hasTokenType(semanticTokens.data, 'class')).toBe(false)
     await context.server.onDidClose({ document: textDocument })
   })
@@ -163,7 +163,7 @@ withFixture('basic', async (context) => {
     expect(semanticTokens.data.length).toBeGreaterThan(0)
     expect(semanticTokens.data.some((_, index) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'property'
-    )).toBe(true)
+    )).toBe(false)
     expect(semanticTokens.data.some((_, index) =>
       index % 5 === 3 && SEMANTIC_TOKEN_TYPES[semanticTokens.data[index]] === 'enumMember'
     )).toBe(true)

@@ -206,6 +206,7 @@ function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): 
   const fallback = theme.colors['editor.foreground']?.replace(/^#/, '') || '212121'
   const string = getThemeRuleForeground(theme, ['string'], fallback)
   const value = getThemeRuleForeground(theme, ['entity.name.tag', 'string.quoted'], string)
+  const namedValue = getThemeRuleForeground(theme, ['support.constant.property-value', 'support.constant.color'], value)
   const property = getThemeRuleForeground(theme, ['meta.property-name', 'support.type.property-name', 'constant.numeric'], fallback)
   const keyword = getThemeRuleForeground(theme, ['keyword'], property)
   const variable = getThemeRuleForeground(theme, ['variable', 'meta.property-name', 'support.variable'], property)
@@ -230,7 +231,7 @@ function createMasterCSSSemanticTokenRules(theme: editor.IStandaloneThemeData): 
     { token: 'class.declaration', foreground: selector, fontStyle: normal },
     { token: 'class.component', foreground: selector, fontStyle: normal },
     { token: 'class.declaration.component', foreground: selector, fontStyle: normal },
-    { token: 'enumMember', foreground: value, fontStyle: normal },
+    { token: 'enumMember', foreground: namedValue, fontStyle: normal },
     { token: 'enumMember.directive', foreground: variable, fontStyle: normal },
     { token: 'function', foreground: fn, fontStyle: normal },
     { token: 'keyword', foreground: keyword, fontStyle: normal },
