@@ -158,28 +158,35 @@ function applyClassAttributeValueWrapperToLine(line: HastElement, start: number,
   ]
 }
 
-export function applyClassAttributeValueWrappers(root: unknown, source: string, decorations: ShikiDecoration[]) {
+export function applyClassAttributeValueWrappers(
+  root: unknown,
+  source: string,
+  decorations: ShikiDecoration[],
+  sourceLineNumbers?: WeakMap<object, number>
+) {
   if (!decorations.length) return
   const sourceLineRanges = createSourceLineRanges(source)
   const codeElements = collectCodeElements(root)
   for (const codeElement of codeElements) {
     const lines = (codeElement.children ?? [])
       .filter((child): child is HastElement => isHastElement(child) && hasHastClass(child, 'line'))
+    const linesBySourceIndex = new Map(lines.map((line, index) => [
+      (sourceLineNumbers?.get(line) ?? index + 1) - 1,
+      line
+    ]))
     for (const decoration of decorations) {
       const { start, end } = decoration
       if (typeof start !== 'number' || typeof end !== 'number') continue
-      const startLine = sourceLineRanges.findIndex((range) => range.start <= start && start <= range.end)
-      const endLine = sourceLineRanges.findIndex((range) => range.start <= end && end <= range.end)
-      if (startLine < 0 || startLine !== endLine) continue
-      const line = lines[startLine]
-      if (!line) continue
-      const lineRange = sourceLineRanges[startLine]
-      applyClassAttributeValueWrapperToLine(
-        line,
-        start - lineRange.start,
-        end - lineRange.start,
-        decoration
-      )
+      for (let lineIndex = 0; lineIndex < sourceLineRanges.length; lineIndex++) {
+        const lineRange = sourceLineRanges[lineIndex]
+        if (end <= lineRange.start || start >= lineRange.end) continue
+        const line = linesBySourceIndex.get(lineIndex)
+        if (!line) continue
+        const visibleLineEnd = lineRange.start + getHastText(line).length
+        const lineStart = Math.max(start, lineRange.start) - lineRange.start
+        const lineEnd = Math.min(end, lineRange.end, visibleLineEnd) - lineRange.start
+        if (lineStart < lineEnd) applyClassAttributeValueWrapperToLine(line, lineStart, lineEnd, decoration)
+      }
     }
   }
 }

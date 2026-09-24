@@ -608,6 +608,121 @@ test('can disable host class attribute value wrappers', async () => {
   }
 })
 
+test('wraps each visible line of multiline class values without changing code text', async () => {
+  const highlighter = await createHighlighter({
+    themes: [shikiSmokeTheme],
+    langs: ['html', 'tsx']
+  })
+
+  try {
+    for (const [lang, attribute] of [['html', 'class'], ['tsx', 'className']] as const) {
+      for (const newline of ['\n', '\r\n']) {
+        const code = `<div ${attribute}="fg:red${newline}  block"></div>`
+        const hast = highlighter.codeToHast(code, {
+          lang,
+          theme: shikiSmokeTheme,
+          transformers: [transformerMasterCSS({ manifest }) as any]
+        })
+        const wrappers = collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')
+        const lines = collectHastElementsByClass(hast, 'line')
+
+        expect(lines.map(getHastText)).toEqual(code.split(/\r?\n/))
+        expect(wrappers.map(getHastText)).toEqual(['fg:red', '  block'])
+        expect(wrappers.every((wrapper) => wrapper.properties?.style)).toBe(true)
+        expect(wrappers.every((wrapper) => wrapper.properties?.['data-master-css-host-role'] === 'class-attribute-value')).toBe(true)
+        expect(collectHastElementsByClass(wrappers[0], 'mcss-semantic-role-declaration-property')).toHaveLength(1)
+        expect(collectHastElementsByClass(wrappers[1], 'mcss-semantic-role-utility-semantic')).toHaveLength(1)
+      }
+    }
+  } finally {
+    await highlighter.dispose?.()
+  }
+})
+
+test('keeps caller decoration overlap behavior for multiline class values', async () => {
+  const highlighter = await createHighlighter({ themes: [shikiSmokeTheme], langs: ['html'] })
+  const code = '<div class="fg:red\n  block"></div>'
+
+  try {
+    const hast = highlighter.codeToHast(code, {
+      lang: 'html',
+      theme: shikiSmokeTheme,
+      decorations: [{ start: 10, end: 18, properties: { class: 'caller-decoration' } }],
+      transformers: [transformerMasterCSS({ manifest }) as any]
+    } as any)
+
+    expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value')).toHaveLength(0)
+    expect(collectHastElementsByClass(hast, 'caller-decoration')).toHaveLength(1)
+  } finally {
+    await highlighter.dispose?.()
+  }
+})
+
+test('keeps host wrappers aligned when an earlier transformer removes source lines', async () => {
+  const highlighter = await createHighlighter({ themes: [shikiSmokeTheme], langs: ['html'] })
+  const code = '<!-- marker -->\n<div class="fg:red"></div>'
+
+  try {
+    const hast = highlighter.codeToHast(code, {
+      lang: 'html',
+      theme: shikiSmokeTheme,
+      transformers: [
+        { code(element) { element.children = element.children.slice(2) } },
+        transformerMasterCSS({ manifest }) as any
+      ]
+    })
+
+    expect(collectHastElementsByClass(hast, 'line').map(getHastText)).toEqual(['<div class="fg:red"></div>'])
+    expect(collectHastElementsByClass(hast, 'mcss-host-role-class-attribute-value').map(getHastText)).toEqual(['fg:red'])
+  } finally {
+    await highlighter.dispose?.()
+  }
+})
+
+test('matches native CSS string body and quote colors in both Shiki themes', async () => {
+  const highlighter = await createHighlighter({
+    themes: ['dracula', 'min-light'],
+    langs: ['html', 'plaintext', 'css']
+  })
+  const options = { themes: { dark: 'dracula', light: 'min-light' }, defaultColor: false as const }
+  const styleOf = (root: any, text: string, semantic = false) => {
+    const element = collectHastElements(root).find((candidate) => (
+      candidate.tagName === 'span'
+      && getHastText(candidate) === text
+      && typeof candidate.properties?.style === 'string'
+      && (!semantic || candidate.properties?.['data-semantic-token-type'] === 'string')
+    ))
+    expect(element).toBeDefined()
+    return Object.fromEntries((element.properties.style as string).split(';').map((part: string) => part.split(':')))
+  }
+
+  try {
+    for (const [quote, lang, code] of [
+      ["'", 'html', '<div class="content:\'hello\'"></div>'],
+      ['"', 'plaintext', 'content:"hello"']
+    ] as const) {
+      const native = highlighter.codeToHast(`.x{content:${quote}hello${quote};}`, { ...options, lang: 'css' })
+      const semantic = highlighter.codeToHast(code, {
+        ...options,
+        lang,
+        transformers: [transformerMasterCSS({ manifest, classList: lang === 'plaintext' }) as any]
+      })
+      const nativeBody = styleOf(native, 'hello')
+      const nativeQuote = styleOf(native, quote)
+      const semanticBody = styleOf(semantic, 'hello', true)
+      const semanticQuote = styleOf(semantic, quote, true)
+
+      for (const theme of ['--shiki-light', '--shiki-dark']) {
+        expect(semanticBody[theme]).toBe(nativeBody[theme])
+        expect(semanticQuote[theme]).toBe(nativeQuote[theme])
+      }
+      expect(semanticBody['--shiki-dark']).not.toBe(semanticQuote['--shiki-dark'])
+    }
+  } finally {
+    await highlighter.dispose?.()
+  }
+})
+
 test('handles caller Shiki decorations around host class attribute value wrappers', async () => {
   const highlighter = await createHighlighter({
     themes: [shikiSmokeTheme],

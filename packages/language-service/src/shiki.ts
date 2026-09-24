@@ -101,6 +101,7 @@ interface ShikiTransformer {
   name: string
   enforce: 'post'
   tokens(this: ShikiTransformerContext, tokens: ShikiToken[][]): ShikiToken[][] | undefined
+  line?(this: ShikiTransformerContext, line: object, lineNumber: number): void
   root?(this: ShikiTransformerContext, root: unknown): unknown | undefined
 }
 
@@ -369,6 +370,7 @@ interface ScopeStyleEntry {
   scope: string
   normalizedScope: string
   style: Record<string, string>
+  stringDelimiter: boolean
 }
 
 const SEMANTIC_SCOPE_STYLE_PROBE = [
@@ -383,6 +385,7 @@ const SEMANTIC_SCOPE_STYLE_PROBE = [
   '  width: 1.5rem;',
   '  background: rgb(0 0 0 / .5);',
   '  content: "x";',
+  "  content: 'x';",
   '  --token: red;',
   '}',
   '@media (width >= 1px) { .y { color: var(--token); } }'
@@ -426,23 +429,52 @@ function getScopePrefixes(scope: string) {
 
 function collectScopeStyleEntries(tokens: ShikiToken[]): ScopeStyleEntry[] {
   const entries: ScopeStyleEntry[] = []
-  const seenScopes = new Set<string>()
+  const entryIndexes = new Map<string, number>()
   for (const token of tokens) {
     const style = getTokenStyleObject(token)
     if (!style) continue
     for (const explanation of token.explanation ?? []) {
-      for (const { scopeName } of explanation.scopes ?? []) {
-        if (seenScopes.has(scopeName)) continue
-        seenScopes.add(scopeName)
-        entries.push({
+      const scopes = explanation.scopes ?? []
+      const stringDelimiter = scopes.some(({ scopeName }) => scopeName.startsWith('punctuation.definition.string.'))
+      for (const { scopeName } of scopes) {
+        const existingIndex = entryIndexes.get(scopeName)
+        if (existingIndex !== undefined && !(scopeName.startsWith('string.quoted.') && entries[existingIndex].stringDelimiter && !stringDelimiter)) continue
+        const entry = {
           scope: scopeName,
           normalizedScope: normalizeScope(scopeName),
-          style
-        })
+          style,
+          stringDelimiter
+        }
+        if (existingIndex === undefined) {
+          entryIndexes.set(scopeName, entries.length)
+          entries.push(entry)
+        } else {
+          entries[existingIndex] = entry
+        }
       }
     }
   }
   return entries
+}
+
+function isQuotedStringDecoration(decoration: MasterCSSShikiDecoration) {
+  return decoration.type === 'string' && decoration.modifiers.includes('quoted')
+}
+
+function getQuotedStringContext(source: string, decoration: MasterCSSShikiDecoration, decorations: MasterCSSShikiDecoration[]) {
+  const index = decorations.indexOf(decoration)
+  if (index < 0) return
+  let first = index
+  let last = index
+  while (first > 0 && isQuotedStringDecoration(decorations[first - 1]) && decorations[first - 1].end === decorations[first].start) first--
+  while (last + 1 < decorations.length && isQuotedStringDecoration(decorations[last + 1]) && decorations[last].end === decorations[last + 1].start) last++
+  const quote = source[decorations[first].start]
+  if (quote !== '"' && quote !== "'") return
+  return {
+    kind: quote === '"' ? 'double' : 'single',
+    delimiter: index === first || index === last,
+    closing: index === last && index !== first
+  }
 }
 
 function findStyleByScope(entries: ScopeStyleEntry[], scope: string) {
@@ -474,7 +506,17 @@ function createSemanticScopeStyleResolver(
       includeExplanation: 'scopeName'
     }).tokens.flat())
 
-    return (_token: ShikiToken, decoration: MasterCSSShikiDecoration) => {
+    return (_token: ShikiToken, decoration: MasterCSSShikiDecoration, decorations: MasterCSSShikiDecoration[]) => {
+      if (isQuotedStringDecoration(decoration)) {
+        const quoted = getQuotedStringContext(context.source, decoration, decorations)
+        if (quoted) {
+          const scope = quoted.delimiter
+            ? `punctuation.definition.string.${quoted.closing ? 'end' : 'begin'}.css`
+            : `string.quoted.${quoted.kind}.css`
+          const style = findStyleByScope(scopeStyleEntries, scope)
+          if (style) return style
+        }
+      }
       for (const key of getMasterCSSSemanticTokenScopeKeys(decoration.type, decoration.modifiers)) {
         for (const scope of MASTER_CSS_SEMANTIC_TOKEN_SCOPE_MAP[key]) {
           const style = findStyleByScope(scopeStyleEntries, scope)
@@ -737,6 +779,7 @@ function analyzeMasterCSSShikiDocument(
 export function transformerMasterCSS(
   options: MasterCSSShikiOptions = {}
 ): ShikiTransformer {
+  const sourceLineNumbers = new WeakMap<object, number>()
   return {
     name: 'master-css',
     enforce: 'post',
@@ -765,11 +808,15 @@ export function transformerMasterCSS(
       const resolveSyntaxStyle = createSemanticScopeStyleResolver(this, resolvedOptions)
       return tokensSplitAtSemanticBoundaries.map((line) => line.map((token) => applySemanticDecorationToToken(token, decorations, resolveSyntaxStyle)))
     },
+    line(line, lineNumber) {
+      sourceLineNumbers.set(line, lineNumber)
+    },
     root(this: ShikiTransformerContext, root) {
       applyClassAttributeValueWrappers(
         root,
         this.source,
-        (this.options[classAttributeValueWrappersKey] as ShikiDecoration[] | undefined) ?? []
+        (this.options[classAttributeValueWrappersKey] as ShikiDecoration[] | undefined) ?? [],
+        sourceLineNumbers
       )
     }
   }
