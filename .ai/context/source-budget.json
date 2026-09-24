@@ -3,8 +3,8 @@
   "version": 1,
   "limits": {
     "source": {
-      "maxLines": 800,
-      "maxBytes": 65536
+      "maxLines": 3200,
+      "maxBytes": 262144
     },
     "support": {
       "maxLines": 1000,

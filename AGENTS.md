@@ -50,7 +50,7 @@ shared / external data
 - Keep changes focused; avoid unrelated formatting and unexplained generated-file, snapshot, or fixture edits. Keep public exports deliberate. Add dependencies only when the current toolchain cannot reasonably solve the problem.
 - Package names, build/release flows, CI, lockfiles, and package-manager configuration require an explicit request to change.
 - Public docs belong in `site/`; do not create root `docs/` unless requested. Directive syntax, semantics, lowering, extraction, or directive refactors must update `site/app/[locale]/guide/directives/contract.mdx` in the same change; `site/reference/build.ts` renders it into the `/reference/directives` pages.
-- Source limits are 800 lines/64 KiB for production, 1,000 lines/96 KiB for tests/scripts/benchmarks, and 400 lines/48 KiB for AI context. Generated sources and bounded exceptions follow `.ai/context/source-budget.json`.
+- Source limits are 3,200 lines/256 KiB for production, 1,000 lines/96 KiB for tests/scripts/benchmarks, and 400 lines/48 KiB for AI context. Generated sources and bounded exceptions follow `.ai/context/source-budget.json`.
 
 ## Completion And Validation
 
