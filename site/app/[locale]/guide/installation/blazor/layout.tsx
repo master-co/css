@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'blazor',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/blazor'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/blazor/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/blazor'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/blazor/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

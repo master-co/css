@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in PHP',
-  description: 'Guide to setting up Master CSS in plain PHP or CodeIgniter projects.',
+  title: 'Static Rendering in PHP',
+  description: 'Guide to setting up Master CSS static rendering in your PHP project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

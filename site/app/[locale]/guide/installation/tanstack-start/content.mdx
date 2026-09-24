@@ -16,7 +16,7 @@ TanStack Start supports Vite and Rsbuild. This guide uses the Vite setup path.
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the TanStack Start project root. The default TanStack Start setup uses static rendering.
+      Run the installer from the TanStack Start project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -42,7 +42,7 @@ TanStack Start supports Vite and Rsbuild. This guide uses the Vite setup path.
   <HelloWorld url="localhost:3000" />
 </StepSection>
 
-The installer registers `@master/css-vite` in runtime mode, creates `src/styles/app.css`, and imports it from `src/routes/__root.tsx`.
+The installer registers `@master/css-vite` in static mode, creates `src/styles/app.css`, and imports it from `src/routes/__root.tsx`.
 
 ```tsx name=src/routes/index.tsx
 import { createFileRoute } from '@tanstack/react-router'

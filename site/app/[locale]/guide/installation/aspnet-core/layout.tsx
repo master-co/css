@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'aspnet-core',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/aspnet-core'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/aspnet-core/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/aspnet-core'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/aspnet-core/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

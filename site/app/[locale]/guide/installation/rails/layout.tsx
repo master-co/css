@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'rails',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/rails'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/rails/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/rails'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/rails/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

@@ -14,7 +14,9 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Next.js project root.
+      Run the installer from the Next.js project root. Static is the default and writes the generated stylesheet before Next.js loads the config.
+
+      (i) Keep the installer-added `@import '@master/css';` in `app/globals.css`. Static mode replaces that import with the generated stylesheet and uses source scanning as the correctness baseline.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -49,7 +51,3 @@ export default function Home() {
   )
 }
 ```
-
----
-
-Use [Next.js runtime rendering](/guide/installation/nextjs/runtime-rendering) when CSS should be generated only in the browser. Use [Next.js static rendering](/guide/installation/nextjs/static-rendering) when classes are statically visible and you need build-time CSS output.

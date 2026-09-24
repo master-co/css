@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Webpack',
-  description: 'Guide to setting up Master CSS in your Webpack project.',
+  title: 'Static Rendering in Webpack',
+  description: 'Guide to setting up Master CSS static rendering in your Webpack project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

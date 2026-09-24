@@ -55,7 +55,7 @@ Master CSS uses different JSON files for different handoff points:
 | --- | --- | --- |
 | CDN default manifest | CDN runtime-only pages that use the packaged default preset manifest. | Yes, when using the CDN runtime. |
 | Project manifest asset | Official runtime integrations that emit `master-css-manifest.<hash>.json` for `virtual:master-css-manifest`. | Yes, in pure runtime mode when the integration injects the runtime. |
-| Page hydration manifest | Progressive and pre-rendered pages that already contain `style#master-css`. | No. The browser can paint without it. |
+| Page hydration manifest | Progressive pages that hand `style#master-css` rules to a browser runtime. | No. The browser can paint without it. |
 
 ---
 

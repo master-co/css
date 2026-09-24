@@ -1,8 +1,8 @@
 Today we are introducing `@master/css-next`, the official Master CSS integration for Next.js.
 
-The headline is Progressive Rendering through the Next.js Adapter API. The adapter plugs into the Next.js build pipeline, receives the final static and pre-rendered HTML outputs, renders the Master CSS rules each document needs, and writes them back into the page as `<style id="master-css">`.
+The integration defaults to Static Rendering: it scans complete source class names and builds an ordinary CSS asset. Progressive Rendering is an explicit option. In that mode, the Next.js Adapter API supplies final static and pre-rendered HTML so Master CSS can inject each document's first-page rules into `<style id="master-css">`.
 
-This release also includes Static Rendering for Turbopack, so teams that prefer a generated CSS asset can use a source-scanned workflow. That path is useful, but it is secondary to the larger integration: Master CSS can now render from the HTML that Next.js actually produced.
+Static Rendering works with Turbopack and Webpack. Progressive Rendering remains useful when first-page HTML and later browser-generated class names both matter.
 
 <ArticleTOC data={toc}/>
 
@@ -68,7 +68,7 @@ Progressive Rendering produces HTML shaped like this:
 <!doctype html>
 <html>
 <head>
-  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer utilities{.font-size\:48px{font-size:48px}}</style>
+  <style id="master-css" data-master-css-hydration-manifest="/_next/static/master-css/hydration/master-css-hydration.8f3a1c2d.json">@layer theme{:root,:host{--font-size-6xl:3rem}}@layer utilities{.font-6xl{font-size:var(--font-size-6xl)}}</style>
 </head>
 <body>
   <h1 class="font-6xl">Hello</h1>
@@ -76,7 +76,7 @@ Progressive Rendering produces HTML shaped like this:
 </html>
 ```
 
-The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, maps the native CSS rule back to `font-size:48px`, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
+The browser can paint the heading from `style#master-css` before the runtime does any work. When the runtime starts, it imports the hashed JSON manifest, adopts the generated `.font-6xl` rule, and continues handling later dynamic classes from the same managed stylesheet. If a page has no generated Master CSS rules, the adapter does not need to attach a manifest URL.
 
 This page hydration manifest is separate from the project manifest and from the `buildReport` option in `@master/css-next`. When enabled, `buildReport` writes `.next/master-css-build-report.json` with details about rendered files; it is not the route-level JSON used to hydrate `style#master-css` in the browser.
 
@@ -88,8 +88,10 @@ The new adapter is registered in `next.config.js`, and Next.js calls it when the
 import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withMasterCSS({
+const nextConfig = await withMasterCSS({
   // your Next.js config
+}, {
+  mode: 'progressive'
 })
 
 export default nextConfig
@@ -123,7 +125,7 @@ There is no second syntax and no separate critical CSS file to maintain. You sti
 
 ## Install it
 
-For the full setup, follow [Progressive Rendering in Next.js](/guide/installation/nextjs). If your project needs a source-scanned CSS build instead, use [Static Rendering in Next.js](/guide/installation/nextjs/static-rendering).
+For the default source-scanned setup, follow [Static Rendering in Next.js](/guide/installation/nextjs). To use the adapter handoff, follow [Progressive Rendering in Next.js](/guide/installation/nextjs/progressive).
 
 Import Master CSS from the stylesheet your app already loads. This stylesheet also serves as the project CSS entry:
 
@@ -161,8 +163,10 @@ Then register the adapter:
 import withMasterCSS from '@master/css-next'
 
 /** @type {import('next').NextConfig} */
-const nextConfig = withMasterCSS({
+const nextConfig = await withMasterCSS({
   /* your Next.js config */
+}, {
+  mode: 'progressive'
 })
 
 export default nextConfig
@@ -177,7 +181,7 @@ npm run start
 
 ---
 
-## Static Rendering for Turbopack
+## Static Rendering
 
 `@master/css-next` also supports a source-scanned CSS workflow for projects that do not need runtime rendering or route-level HTML pre-rendering.
 
@@ -210,9 +214,9 @@ const nextConfig = await withMasterCSS({
 export default nextConfig
 ```
 
-Under the hood, static mode scans the configured source files with `MasterCSSScanner` from `@master/css-tooling/scanner/node` and writes a generated CSS file under `.master/`. A Turbopack CSS loader replaces `@import "@master/css"` with that generated CSS, and stylesheets that import `@master/css` are treated as native CSS pruning roots by default.
+Under the hood, static mode scans configured source files and writes generated CSS under `.master/`. The Next.js integration replaces `@import "@master/css"` with that CSS in both Turbopack and Webpack builds. It preserves ordinary native CSS by default; `pruneNativeCSS: true` explicitly opts project-owned source into pruning.
 
-Ordinary class selectors in those roots are pruned against detected classes. References to `var(--*)` or manifest animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
+Managed utilities are generated for detected classes. References to `var(--*)` or manifest animation names can pull matching variables and keyframes from the project CSS entry graph. During Turbopack builds, a scanner loader also reads JavaScript and TypeScript modules that pass through the module graph, so imported files can incrementally feed additional class names into the scanner.
 
 This mode is intentionally source-scanned. It works best when complete class strings are visible in source files, and source-glob scanning remains the production correctness baseline.
 
@@ -283,7 +287,7 @@ That gives the integration a better long-term shape-outside:
 - it runs when all static and pre-rendered outputs are known;
 - it removes file-glob assumptions from the user setup;
 - it keeps runtime rendering available for the parts of the UI that cannot be known at build time;
-- it makes Progressive Rendering the default story for serious Next.js projects.
+- it keeps Static Rendering as the default and makes Progressive Rendering an explicit choice for pages that need runtime handoff.
 
 Master CSS has always treated markup as the styling interface. With the Next.js Adapter, the final HTML document becomes the bridge between Next.js rendering and Master CSS generation.
 

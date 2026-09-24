@@ -14,7 +14,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Rsbuild project root.
+      Run the installer from the Rsbuild project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -50,7 +50,7 @@ export default defineConfig({
   tools: {
     rspack(config) {
       config.plugins ||= []
-      config.plugins.push(new MasterCSSPlugin())
+      config.plugins.push(new MasterCSSPlugin({ mode: 'static' }))
       return config
     }
   }

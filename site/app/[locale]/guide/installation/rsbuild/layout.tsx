@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'rsbuild',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/rsbuild'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/rsbuild/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/rsbuild'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/rsbuild/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

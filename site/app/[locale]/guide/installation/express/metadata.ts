@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Express',
-  description: 'Guide to setting up Master CSS in Express server-rendered templates.',
+  title: 'Static Rendering in Express',
+  description: 'Guide to setting up Master CSS static rendering in your Express project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

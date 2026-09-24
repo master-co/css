@@ -17,6 +17,7 @@ import { validateCSS } from '@master/css-tooling/css'
 import apiCensusJSON from '../../.ai/contracts/api-census.json' with { type: 'json' }
 import publicAPIJSON from '../../.ai/contracts/public-api.json' with { type: 'json' }
 import { configuredExampleCSS } from '../reference/configured-example'
+import { installationGuideSlugs } from '../utils/installation-content'
 
 const siteRoot = fileURLToPath(new URL('../', import.meta.url))
 const appRoot = path.join(siteRoot, 'app/[locale]')
@@ -129,6 +130,65 @@ test('overview category references resolve to generated categories', async () =>
   }
 
   assert.deepEqual(failures, [])
+})
+
+test('installation routes use static entry points and explicit optional modes', async () => {
+  const root = path.join(appRoot, 'guide/installation')
+  const actual = new Set<string>(['', 'integrations', 'cli', 'cdn'])
+
+  for (const framework of await readdir(root, { withFileTypes: true })) {
+    if (!framework.isDirectory() || framework.name === '(main)') continue
+    const frameworkRoot = path.join(root, framework.name)
+    const entries = await readdir(frameworkRoot, { withFileTypes: true })
+    if (entries.some((entry) => entry.isFile() && entry.name === 'content.mdx')) actual.add(framework.name)
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue
+      const files = await readdir(path.join(frameworkRoot, entry.name))
+      if (files.includes('content.mdx')) actual.add(`${framework.name}/${entry.name}`)
+    }
+  }
+
+  assert.deepEqual([...actual].sort(), [...installationGuideSlugs].sort())
+  assert.ok([...actual].every((slug) => !/(?:static|runtime|progressive)-rendering/.test(slug)))
+  assert.ok(!actual.has('angular/progressive'))
+  assert.ok(!actual.has('laravel/runtime'))
+
+  for (const slug of actual) {
+    if (!slug || ['integrations', 'cli', 'cdn'].includes(slug)) continue
+    const [framework, mode] = slug.split('/')
+    const directory = path.join(root, slug)
+    const content = await readFile(path.join(directory, 'content.mdx'), 'utf8')
+    const metadata = await readFile(path.join(directory, 'metadata.ts'), 'utf8')
+    if (mode) {
+      assert.match(metadata, new RegExp(`title: '${mode === 'runtime' ? 'Runtime' : 'Progressive'} Rendering`), slug)
+      if (content.includes('npm create @master/css@rc')) assert.match(content, new RegExp(`--mode ${mode}\\b`), slug)
+      assert.doesNotMatch(content, /mode:\s*['"]runtime['"],\s*runtime:\s*false/, slug)
+    } else {
+      const layout = await readFile(path.join(directory, 'layout.tsx'), 'utf8').catch(() => '')
+      if (layout) {
+        assert.match(metadata, /title: 'Static Rendering/, slug)
+        assert.ok(layout.includes(`<Tab href='/guide/installation/${framework}'>{$('Static Rendering')}`), slug)
+        for (const line of layout.split('\n').filter((line) => line.includes('<TabBadge>'))) {
+          assert.ok(line.includes(`<Tab href='/guide/installation/${framework}'`), slug)
+        }
+      }
+      if (content.includes('npm create @master/css@rc') && framework !== 'laravel') {
+        assert.doesNotMatch(content, /npm create @master\/css@rc[^\n]*--mode\s+(?:runtime|progressive)/, slug)
+      }
+    }
+  }
+
+  const sourceFiles: string[] = []
+  await walk(appRoot, sourceFiles)
+  sourceFiles.push(path.join(siteRoot, 'utils/installation-content.ts'))
+  const staleLinks: string[] = []
+  for (const file of sourceFiles.filter((file) => /\.(?:mdx|ts|tsx)$/.test(file))) {
+    const content = await readFile(file, 'utf8')
+    if (/\/guide\/installation\/[a-z-]+\/(?:static|runtime|progressive)-rendering\b/.test(content)) {
+      staleLinks.push(path.relative(siteRoot, file))
+    }
+  }
+  assert.deepEqual(staleLinks, [])
 })
 
 test('docs example classes are valid default preset classes or locally defined custom classes', async () => {

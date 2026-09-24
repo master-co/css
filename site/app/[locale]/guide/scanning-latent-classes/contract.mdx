@@ -171,7 +171,7 @@ setHeadlineSize('3rem')
 
 The class `font-size:var(--headline-size)` is complete and visible to the scanner. The runtime value lives in `--headline-size`, which follows native CSS custom property behavior.
 
-Use `var()` for a value supplied only by the DOM. The `$name` shorthand looks up a variable registered in the active manifest; an inline custom property is not a manifest declaration.
+Use `var()` for a value supplied only by the DOM. The former `$name` shorthand is removed; explicit `var(--name)` works for both manifest tokens and inline custom properties.
 
 Use the same pattern for a data-driven progress value. Keep an accessible numeric value alongside the visual width:
 

@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'wordpress',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/wordpress'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/wordpress/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/wordpress'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/wordpress/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

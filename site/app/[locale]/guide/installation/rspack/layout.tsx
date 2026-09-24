@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'rspack',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/rspack'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/rspack/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/rspack'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/rspack/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Nuxt.js',
-  description: 'Guide to setting up Master CSS in your Nuxt.js project.',
+  title: 'Static Rendering in Nuxt.js',
+  description: 'Guide to setting up Master CSS static rendering in your Nuxt.js project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

@@ -16,7 +16,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Webpack project root. The default Webpack setup uses static rendering, registers the Webpack plugin, and creates the Master CSS entry stylesheet.
+      Run the installer from the Webpack project root. Static is the default; it registers the Webpack plugin and creates the Master CSS entry stylesheet.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -49,7 +49,7 @@ import MasterCSSPlugin from '@master/css-webpack'
 
 export default {
   plugins: [
-    new MasterCSSPlugin()
+    new MasterCSSPlugin({ mode: 'static' })
   ]
 }
 ```

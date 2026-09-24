@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'remix',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/react-router'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/react-router/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/react-router'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/react-router/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

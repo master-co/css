@@ -2,7 +2,20 @@ import path from 'node:path'
 import { extractReferenceMdx, portableMarkdown } from '../reference/markdown'
 import { installationGuidesMarkdown } from './installation-guides'
 
-export const installationGuideSlugs = ['', 'integrations', 'cli', 'cdn', 'vite', 'vite/static-rendering', 'vscode', 'react', 'react/static-rendering', 'vuejs', 'vuejs/static-rendering', 'lit', 'webpack', 'webpack/static-rendering', 'rspack', 'rspack/static-rendering', 'rsbuild', 'rsbuild/static-rendering', 'astro', 'astro/runtime-rendering', 'astro/static-rendering', 'svelte', 'express', 'express/static-rendering', 'php', 'php/static-rendering', 'rails', 'rails/static-rendering', 'laravel', 'wordpress', 'wordpress/static-rendering', 'shopify', 'aspnet-core', 'aspnet-core/static-rendering', 'blazor', 'blazor/runtime-rendering', 'blazor/static-rendering', 'storybook', 'angular', 'angular/runtime-rendering', 'angular/static-rendering', 'nextjs', 'nextjs/runtime-rendering', 'nextjs/static-rendering', 'nuxtjs', 'nuxtjs/runtime-rendering', 'nuxtjs/static-rendering', 'react-router', 'react-router/static-rendering', 'tanstack-start', 'tanstack-start/static-rendering'] as const
+export const installationGuideSlugs = [
+  '', 'integrations', 'cli', 'cdn',
+  'vite', 'vite/runtime', 'vscode',
+  'react', 'react/runtime', 'vuejs', 'vuejs/runtime', 'lit',
+  'webpack', 'webpack/runtime', 'rspack', 'rspack/runtime', 'rsbuild', 'rsbuild/runtime',
+  'astro', 'astro/runtime', 'astro/progressive', 'svelte',
+  'express', 'express/progressive', 'php', 'php/runtime', 'rails', 'rails/runtime',
+  'laravel', 'wordpress', 'wordpress/runtime', 'shopify',
+  'aspnet-core', 'aspnet-core/runtime', 'blazor', 'blazor/runtime',
+  'storybook', 'angular', 'angular/runtime',
+  'nextjs', 'nextjs/runtime', 'nextjs/progressive',
+  'nuxtjs', 'nuxtjs/runtime', 'nuxtjs/progressive',
+  'react-router', 'react-router/runtime', 'tanstack-start', 'tanstack-start/runtime'
+] as const
 
 export async function installationGuideContent(siteRoot: string, slug: string) {
   if (!installationGuideSlugs.includes(slug as typeof installationGuideSlugs[number])) throw new Error(`Unsupported installation guide: ${slug}`)

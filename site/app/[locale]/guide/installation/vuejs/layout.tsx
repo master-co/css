@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'vuejs',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/vuejs'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/vuejs/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/vuejs'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/vuejs/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

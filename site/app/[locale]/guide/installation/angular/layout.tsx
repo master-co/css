@@ -2,7 +2,7 @@ import createLayout from '~/site/docs-shell/factories/create-layout'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
-import Tabs, { Tab } from '~/site/docs-shell/components/Tabs'
+import Tabs, { Tab, TabBadge } from '~/site/docs-shell/components/Tabs'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   metadata: {
@@ -17,9 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'angular',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/angular'>{$('Progressive Rendering')}</Tab>
-      <Tab href='/guide/installation/angular/runtime-rendering'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/angular/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/angular'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/angular/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

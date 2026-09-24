@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'php',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/php'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/php/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/php'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/php/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

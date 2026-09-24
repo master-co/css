@@ -1,0 +1,58 @@
+Runtime rendering generates rules in the browser when Angular adds class names that were not known at build time. Select it explicitly; the Angular installer otherwise sets up static CSS generation.
+
+<StepSection>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Create an Angular project
+      If you do not have a project yet, create one with the Angular CLI.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      ng new my-app
+      cd my-app
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Add Master CSS in runtime mode
+      The installer adds the runtime and preset packages, initializes `MasterCSSRuntime` in `src/main.ts`, and adds the Master CSS import to `src/styles.css`.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm create @master/css@rc -- --framework angular --mode runtime --yes
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Check the stylesheet entry
+      Keep Angular's global stylesheet in its existing builder configuration. Runtime mode uses the project CSS entry and does not run the static CLI generator.
+    </StepL>
+    <StepR>
+      ```css name=src/styles.css
+      @import '@master/css';
+      ```
+    </StepR>
+  </Step>
+  <Step $row>
+    <StepL>
+      ### <StepNum />Start the app
+      Run the Angular development server.
+    </StepL>
+    <StepR>
+      ```bash name=Terminal
+      npm start
+      ```
+    </StepR>
+  </Step>
+  <Step>
+    ### <StepNum />Use a Master CSS class
+    The browser runtime observes connected elements and generates rules for their class names.
+  </Step>
+  <HelloWorld url="localhost:4200" />
+</StepSection>
+
+```html name=src/app/app.component.html
+<h1 class="m-2xl italic font-5xl font-heavy text-neutral">Hello World</h1>
+```

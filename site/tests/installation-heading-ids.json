@@ -64,7 +64,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/vite/static-rendering": [
+  "/guide/installation/vite/runtime": [
     {
       "id": "create-a-vite-project",
       "title": "Create a Vite project"
@@ -126,7 +126,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/react/static-rendering": [
+  "/guide/installation/react/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -162,7 +162,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/vuejs/static-rendering": [
+  "/guide/installation/vuejs/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -220,7 +220,7 @@
       "title": "Hello world"
     }
   ],
-  "/guide/installation/webpack/static-rendering": [
+  "/guide/installation/webpack/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -256,7 +256,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/rspack/static-rendering": [
+  "/guide/installation/rspack/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -292,7 +292,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/rsbuild/static-rendering": [
+  "/guide/installation/rsbuild/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -328,7 +328,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/astro/runtime-rendering": [
+  "/guide/installation/astro/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -346,7 +346,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/astro/static-rendering": [
+  "/guide/installation/astro/progressive": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -388,6 +388,32 @@
       "title": "Open your project"
     },
     {
+      "id": "install-vite-and-master-css",
+      "title": "Install Vite and Master CSS"
+    },
+    {
+      "id": "configure-vite",
+      "title": "Configure Vite"
+    },
+    {
+      "id": "create-the-asset-entry",
+      "title": "Create the asset entry"
+    },
+    {
+      "id": "serve-the-css",
+      "title": "Serve the CSS"
+    },
+    {
+      "id": "hello-world",
+      "title": "Hello world"
+    }
+  ],
+  "/guide/installation/express/progressive": [
+    {
+      "id": "open-your-project",
+      "title": "Open your project"
+    },
+    {
       "id": "install-master-css",
       "title": "Install Master CSS"
     },
@@ -412,7 +438,7 @@
       "title": "Hello world"
     }
   ],
-  "/guide/installation/express/static-rendering": [
+  "/guide/installation/php": [
     {
       "id": "open-your-project",
       "title": "Open your project"
@@ -430,15 +456,11 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "serve-the-css",
-      "title": "Serve the CSS"
-    },
-    {
       "id": "hello-world",
       "title": "Hello world"
     }
   ],
-  "/guide/installation/php": [
+  "/guide/installation/php/runtime": [
     {
       "id": "open-your-project",
       "title": "Open your project"
@@ -458,28 +480,6 @@
     {
       "id": "add-build-scripts",
       "title": "Add build scripts"
-    },
-    {
-      "id": "hello-world",
-      "title": "Hello world"
-    }
-  ],
-  "/guide/installation/php/static-rendering": [
-    {
-      "id": "open-your-project",
-      "title": "Open your project"
-    },
-    {
-      "id": "install-vite-and-master-css",
-      "title": "Install Vite and Master CSS"
-    },
-    {
-      "id": "configure-vite",
-      "title": "Configure Vite"
-    },
-    {
-      "id": "create-the-asset-entry",
-      "title": "Create the asset entry"
     },
     {
       "id": "hello-world",
@@ -504,19 +504,15 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "load-the-assets",
-      "title": "Load the assets"
-    },
-    {
-      "id": "add-build-scripts",
-      "title": "Add build scripts"
+      "id": "load-the-stylesheet",
+      "title": "Load the stylesheet"
     },
     {
       "id": "hello-world",
       "title": "Hello world"
     }
   ],
-  "/guide/installation/rails/static-rendering": [
+  "/guide/installation/rails/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -534,8 +530,12 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "load-the-stylesheet",
-      "title": "Load the stylesheet"
+      "id": "load-the-assets",
+      "title": "Load the assets"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
     },
     {
       "id": "hello-world",
@@ -578,19 +578,15 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "enqueue-the-assets",
-      "title": "Enqueue the assets"
-    },
-    {
-      "id": "prevent-unstyled-first-paint",
-      "title": "Prevent unstyled first paint"
+      "id": "enqueue-the-stylesheet",
+      "title": "Enqueue the stylesheet"
     },
     {
       "id": "hello-world",
       "title": "Hello world"
     }
   ],
-  "/guide/installation/wordpress/static-rendering": [
+  "/guide/installation/wordpress/runtime": [
     {
       "id": "open-your-theme",
       "title": "Open your theme"
@@ -608,8 +604,12 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "enqueue-the-stylesheet",
-      "title": "Enqueue the stylesheet"
+      "id": "enqueue-the-assets",
+      "title": "Enqueue the assets"
+    },
+    {
+      "id": "prevent-unstyled-first-paint",
+      "title": "Prevent unstyled first paint"
     },
     {
       "id": "hello-world",
@@ -660,19 +660,15 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "load-the-assets",
-      "title": "Load the assets"
-    },
-    {
-      "id": "add-build-scripts",
-      "title": "Add build scripts"
+      "id": "load-the-stylesheet",
+      "title": "Load the stylesheet"
     },
     {
       "id": "hello-world",
       "title": "Hello world"
     }
   ],
-  "/guide/installation/aspnet-core/static-rendering": [
+  "/guide/installation/aspnet-core/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -690,8 +686,12 @@
       "title": "Create the asset entry"
     },
     {
-      "id": "load-the-stylesheet",
-      "title": "Load the stylesheet"
+      "id": "load-the-assets",
+      "title": "Load the assets"
+    },
+    {
+      "id": "add-build-scripts",
+      "title": "Add build scripts"
     },
     {
       "id": "hello-world",
@@ -732,41 +732,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/blazor/runtime-rendering": [
-    {
-      "id": "create-a-blazor-project",
-      "title": "Create a Blazor project"
-    },
-    {
-      "id": "install-vite-and-master-css",
-      "title": "Install Vite and Master CSS"
-    },
-    {
-      "id": "configure-vite",
-      "title": "Configure Vite"
-    },
-    {
-      "id": "create-the-asset-entry",
-      "title": "Create the asset entry"
-    },
-    {
-      "id": "add-build-scripts",
-      "title": "Add build scripts"
-    },
-    {
-      "id": "load-the-built-assets",
-      "title": "Load the built assets"
-    },
-    {
-      "id": "launch-the-app",
-      "title": "Launch the app"
-    },
-    {
-      "id": "start-using-master-css",
-      "title": "Start using Master CSS"
-    }
-  ],
-  "/guide/installation/blazor/static-rendering": [
+  "/guide/installation/blazor/runtime": [
     {
       "id": "create-a-blazor-project",
       "title": "Create a Blazor project"
@@ -812,8 +778,20 @@
       "title": "Create a project"
     },
     {
-      "id": "add-master-css",
-      "title": "Add Master CSS"
+      "id": "install-master-css-and-others",
+      "title": "Install Master CSS and others"
+    },
+    {
+      "id": "set-up-static-rendering",
+      "title": "Set up static rendering"
+    },
+    {
+      "id": "configure-angular",
+      "title": "Configure Angular"
+    },
+    {
+      "id": "import-stylesheets",
+      "title": "Import stylesheets"
     },
     {
       "id": "launch-server",
@@ -824,7 +802,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/angular/runtime-rendering": [
+  "/guide/installation/angular/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -854,36 +832,6 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/angular/static-rendering": [
-    {
-      "id": "create-a-project",
-      "title": "Create a project"
-    },
-    {
-      "id": "install-master-css-and-others",
-      "title": "Install Master CSS and others"
-    },
-    {
-      "id": "set-up-static-rendering",
-      "title": "Set up static rendering"
-    },
-    {
-      "id": "configure-angular",
-      "title": "Configure Angular"
-    },
-    {
-      "id": "import-stylesheets",
-      "title": "Import stylesheets"
-    },
-    {
-      "id": "launch-server",
-      "title": "Launch server"
-    },
-    {
-      "id": "start-using-master-css",
-      "title": "Start using Master CSS"
-    }
-  ],
   "/guide/installation/nextjs": [
     {
       "id": "create-a-nextjs-project",
@@ -902,7 +850,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/nextjs/runtime-rendering": [
+  "/guide/installation/nextjs/runtime": [
     {
       "id": "create-a-nextjs-project",
       "title": "Create a Next.js project"
@@ -920,7 +868,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/nextjs/static-rendering": [
+  "/guide/installation/nextjs/progressive": [
     {
       "id": "create-a-nextjs-project",
       "title": "Create a Next.js project"
@@ -956,7 +904,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/nuxtjs/runtime-rendering": [
+  "/guide/installation/nuxtjs/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -974,7 +922,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/nuxtjs/static-rendering": [
+  "/guide/installation/nuxtjs/progressive": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -1010,7 +958,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/react-router/static-rendering": [
+  "/guide/installation/react-router/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"
@@ -1046,7 +994,7 @@
       "title": "Start using Master CSS"
     }
   ],
-  "/guide/installation/tanstack-start/static-rendering": [
+  "/guide/installation/tanstack-start/runtime": [
     {
       "id": "create-a-project",
       "title": "Create a project"

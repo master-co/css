@@ -405,17 +405,17 @@ preview does not run the host framework. Keep setup constraints in the lesson.
 
 ### Installation mode navigation
 
-`InstallationModeTabs` reuses the site’s navigation treatment for sibling setup guides. Pass translated labels, canonical destinations and any existing alias routes. One matching link receives `aria-current="page"`; aliases affect selection without changing the destination. These are ordinary links with native keyboard behavior, not an in-page tab panel. See [Blazor runtime rendering](/guide/installation/blazor/runtime-rendering) for an alias that selects the canonical runtime guide.
+`InstallationModeTabs` reuses the site’s navigation treatment for sibling setup guides. Pass translated labels and canonical destinations. One matching link receives `aria-current="page"`. These are ordinary links with native keyboard behavior, not an in-page tab panel. The [Blazor installation guide](/guide/installation/blazor) starts with static rendering; runtime rendering has its own route.
 
 <InstallationModeTabs items={[
-  { href: '/guide/installation/blazor', aliases: ['/guide/installation/blazor/runtime-rendering'], label: 'Runtime Rendering' },
-  { href: '/guide/installation/blazor/static-rendering', label: 'Static Rendering' },
+  { href: '/guide/installation/blazor', label: 'Static Rendering' },
+  { href: '/guide/installation/blazor/runtime', label: 'Runtime Rendering' },
 ]} />
 
 ```jsx
 <InstallationModeTabs items={[
-  { href: '/guide/installation/blazor', aliases: ['/guide/installation/blazor/runtime-rendering'], label: 'Runtime Rendering' },
-  { href: '/guide/installation/blazor/static-rendering', label: 'Static Rendering' },
+  { href: '/guide/installation/blazor', label: 'Static Rendering' },
+  { href: '/guide/installation/blazor/runtime', label: 'Runtime Rendering' },
 ]} />
 ```
 

@@ -14,7 +14,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Add Master CSS
-      Run the installer from the Rspack project root.
+      Run the installer from the Rspack project root. Static is the default: it scans complete class strings and emits ordinary CSS.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -55,7 +55,7 @@ export default {
     ]
   },
   plugins: [
-    new MasterCSSPlugin()
+    new MasterCSSPlugin({ mode: 'static' })
   ]
 }
 ```

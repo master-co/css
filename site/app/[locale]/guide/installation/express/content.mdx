@@ -1,4 +1,4 @@
-Use progressive rendering when Express owns the HTML response. Express renders the template, `@master/css-server` injects the first-response CSS, and the Vite runtime asset adopts that CSS in the browser for later dynamic classes.
+Use static rendering when Express templates contain complete class strings and you want Vite to build a generated CSS asset before the server responds.
 
 <StepSection>
   <Step $row>
@@ -15,12 +15,11 @@ Use progressive rendering when Express owns the HTML response. Express renders t
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Install Master CSS
-      Install the server renderer, Vite, and the Vite integration.
+      ### <StepNum />Install Vite and Master CSS
+      Install Vite and the Master CSS Vite integration.
     </StepL>
     <StepR>
       ```bash name=Terminal
-      npm install express ejs @master/css@rc @master/css-runtime@rc @master/css-server@rc @master/css-preset@rc
       npm install -D vite @master/css-vite@rc
       ```
     </StepR>
@@ -28,7 +27,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
   <Step $row>
     <StepL>
       ### <StepNum />Configure Vite
-      Build the browser runtime entry and base stylesheet into `public/assets`.
+      Build static CSS into `public/assets`.
     </StepL>
     <StepR>
       ```ts name=vite.config.ts
@@ -37,7 +36,7 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 
       export default defineConfig({
         plugins: [
-          masterCSS({ mode: 'runtime', runtime: false })
+          masterCSS({ mode: 'static' })
         ],
         build: {
           outDir: 'public/assets',
@@ -56,82 +55,34 @@ Use progressive rendering when Express owns the HTML response. Express renders t
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Create the browser entry
-      Import the Vite-managed runtime and the Master CSS stylesheet.
+      ### <StepNum />Create the asset entry
+      Import Master CSS and scan the server templates where classes are written.
     </StepL>
     <StepR>
       ```ts name=src/main.ts
-      import { MasterCSSRuntime } from '@master/css-runtime'
-      import manifest from 'virtual:master-css-manifest'
-      import emittedGlobals from 'virtual:master-css-emitted-globals'
       import './app.css'
-
-      const runtime = await MasterCSSRuntime.start({ manifest, emittedGlobals })
-      runtime.observe()
       ```
 
       ```css name=src/app.css
       @import "@master/css";
+
+      @source "../views/**/*.{ejs,hbs,pug}";
+      @source "../public/**/*.html";
       ```
     </StepR>
   </Step>
   <Step $row>
     <StepL>
-      ### <StepNum />Render with Master CSS
-      Render the template first, then pass the full document to `@master/css-server`.
+      ### <StepNum />Serve the CSS
+      Serve `public` from Express and link the generated stylesheet from your layout.
     </StepL>
     <StepR>
       ```js name=app.js
-      import express from 'express'
-      import ejs from 'ejs'
-      import { createServerRenderer } from '@master/css-server'
-      import manifest from '@master/css-preset/default-manifest.json' with { type: 'json' }
-
-      const app = express()
-      const renderer = createServerRenderer({ manifest })
-
-      app.use('/assets', express.static('public/assets'))
-
-      app.get('/', async (_request, response) => {
-        const body = await ejs.renderFile('views/index.ejs')
-        const document = `<!doctype html>
-      <html lang="en">
-      <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="/assets/app.css">
-      </head>
-      <body>
-        ${body}
-        <script type="module" src="/assets/app.js"></script>
-      </body>
-      </html>`
-
-        const rendered = renderer.renderHTML(document, {
-          hydrationManifest: 'inject'
-        })
-        response.send(rendered.html)
-      })
-
-      const server = app.listen(3000)
-      server.on('close', () => renderer.dispose())
+      app.use(express.static('public'))
       ```
-    </StepR>
-  </Step>
-  <Step $row>
-    <StepL>
-      ### <StepNum />Add build scripts
-      Build or watch the frontend assets beside the Express server.
-    </StepL>
-    <StepR>
-      ```json name=package.json
-      {
-        "scripts": {
-          "build:assets": "vite build",
-          "watch:assets": "vite build --watch",
-          "start": "node app.js"
-        }
-      }
+
+      ```html name=views/layout.ejs
+      <link rel="stylesheet" href="/assets/app.css">
       ```
     </StepR>
   </Step>
@@ -148,4 +99,4 @@ Use progressive rendering when Express owns the HTML response. Express renders t
 </h1>
 ```
 
-Progressive rendering sends the first response with `style#master-css`, then the runtime adopts the injected hydration manifest and keeps handling classes added after the initial response. Use [Express static rendering](/guide/installation/express/static-rendering) when templates contain complete class strings and you want a generated CSS asset instead.
+Static rendering depends on complete class strings in scanned source files. If a template assembles class names from fragments, map states to complete class strings or add bounded candidates with [`@safelist`](/reference/directives/candidates#safelist).

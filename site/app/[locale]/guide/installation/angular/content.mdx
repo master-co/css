@@ -25,7 +25,7 @@
   <Step $row>
     <StepL>
       ### <StepNum />Launch server
-      Generate CSS once, then keep the CSS watcher running in a separate terminal while the Angular server runs. See [static rendering](/guide/installation/angular/static-rendering) for the production build command.
+      Generate CSS once, then keep the CSS watcher running in a separate terminal while the Angular server runs.
     </StepL>
     <StepR>
       ```bash name=Terminal
@@ -47,4 +47,15 @@
 
 ---
 
-Use [Angular runtime rendering](/guide/installation/angular/runtime-rendering) or [Angular static rendering](/guide/installation/angular/static-rendering) when you need rendering-mode details.
+The installer creates `master.css` as the source entry and imports the generated `src/master.generated.css` from `src/styles.css`. Keep `src/styles.css` in Angular's global styles configuration. The generated file is build output; do not edit it or import it from `master.css`.
+
+Before each production build, regenerate the CSS:
+
+```bash
+npx master-css generate --output src/master.generated.css
+npm run build
+```
+
+During development, run `npx master-css generate --output src/master.generated.css --watch` in a separate terminal. Static rendering needs complete class strings in templates or an explicit safelist. CSS custom properties can still supply dynamic values.
+
+For class names created in the browser, use the [Angular runtime guide](/guide/installation/angular/runtime).

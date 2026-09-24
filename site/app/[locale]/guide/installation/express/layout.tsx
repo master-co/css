@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'express',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/express'>{$('Progressive Rendering')}</Tab>
-      <Tab href='/guide/installation/express/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/express'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/express/progressive'>{$('Progressive Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

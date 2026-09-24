@@ -93,15 +93,13 @@ Custom properties can use the same direct declaration form:
   </Class2CSS>
 </details>
 
-### Master CSS syntax first
-Native fallback is intentionally lower priority than Master CSS semantics. Curated aliases, token resolution, unit conversion, transform helpers, and shorthand utilities continue to use Master CSS semantics before a plain native declaration is considered.
+### Native declarations and Master utilities
+Complete CSS properties such as `margin:1rem` keep their native value semantics. Master CSS key aliases such as `mt:1rem` map to a specific property, while named utilities such as `mt-md` select theme tokens. Registered parameter utilities and transforms keep their documented behavior; colon values do not infer token names or convert the former Master length multiplier `x`.
 
-{/* eslint-disable @master/css/prefer-canonical-classes -- intentional native fallback precedence example */}
 ```html
 <!-- @MARK mt:1rem --><!-- @MARK margin:1rem --><!-- @MARK bg-red-60 -->
 <div class="mx-md mb-md mt:1rem bg-red-60">…</div>
 ```
-{/* eslint-enable @master/css/prefer-canonical-classes */}
 
 <details>
   <summary>Generated CSS</summary>
@@ -218,7 +216,7 @@ Use Master CSS classes in markup for styling that should be generated, validated
 <button class="h:40px px-md r-md bg-blue">Save</button>
 ```
 
-When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Keep vendor, CMS, or externally injected classes outside managed roots unless the class usage is visible to extraction or protected with [`@preserve native`](/guide/native-css-pruning#default-pruning).
+When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. Native vendor, CMS, and externally injected selectors are preserved by default. If you enable native pruning, keep those selectors outside pruned project sources or protect the file with [`@preserve native`](/guide/native-css-pruning#default-pruning).
 
 ---
 
@@ -227,7 +225,7 @@ When a CSS file imports `@master/css`, it becomes a Master-managed stylesheet. K
 - Treat native cascade layers as the main browser compatibility boundary for the default stylesheet.
 - Write standard unprefixed properties and selectors when Master CSS already prefixes them.
 - Use native declaration syntax for valid CSS declarations; reserve `{...}` groups for explicit raw escape hatches or multi-declaration groups.
-- Keep curated Master CSS aliases, tokens, unit conversion, and shorthands ahead of native declaration fallback.
+- Use named utilities for tokens and direct declarations for explicit CSS values. Master CSS no longer converts the former length multiplier `x` or infers token names from colon values.
 - Expect browser runtime validation and static validation to occasionally differ for the newest CSS grammar; test experimental declarations in the rendering mode you ship.
 - Put third-party CSS in `defaults` when you want components and utilities to override it.
 - Keep externally injected classes visible to extraction, outside managed roots, or protected from native CSS pruning.

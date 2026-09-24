@@ -17,9 +17,9 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'astro',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/astro'>{$('Progressive Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/astro/runtime-rendering'>{$('Runtime Rendering')}</Tab>
-      <Tab href='/guide/installation/astro/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/astro'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/astro/runtime'>{$('Runtime Rendering')}</Tab>
+      <Tab href='/guide/installation/astro/progressive'>{$('Progressive Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

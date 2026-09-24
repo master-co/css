@@ -460,7 +460,7 @@ For abstraction guidance, see [Global styles](/guide/global-styles#shared-vocabu
 ---
 
 ## Source boundaries \{#source-boundaries\}
-Integrations and CLI flows scan ordinary project sources with defaults. Use `@source` directives only when the stylesheet needs an explicit source exception, such as external content, shared workspace source, or a scoped native CSS pruning root.
+Integrations and CLI flows scan ordinary project sources with defaults. Use `@source` directives only when the stylesheet needs an explicit source exception, such as external content, shared workspace source, or a scoped source set for explicitly enabled native CSS pruning.
 
 ### `@source` \{#source\}
 Adds files that may contain classes to the stylesheet source set.
@@ -769,8 +769,8 @@ do not enable published source maps.
 
 Production CSS Modules, including Sass modules, retain Vite's scoped names,
 named/default exports, cross-file `composes`, global selectors and
-`localsConvention`. Exported scoped names participate in native CSS usage so
-the default pruning policy keeps their rules.
+`localsConvention`. Exported scoped names participate in native CSS usage. Native
+CSS is preserved by default; when pruning is enabled, that usage keeps their rules.
 
 Production build-watch tracks resolved CSS Modules `composes` dependencies,
 including nested compositions. Editing a composed file rebuilds its consumers;

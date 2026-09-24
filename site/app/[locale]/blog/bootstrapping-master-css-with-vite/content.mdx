@@ -60,7 +60,7 @@ dev
 
 ### Runtime
 
-Use runtime mode when you want the simplest integration and maximum flexibility. It is a strong default for SPAs, prototypes, internal tools, and applications where classes can appear after hydration.
+Use runtime mode when new class names must be interpreted in the browser, such as in visual editors or client-generated interfaces. Select it explicitly:
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
@@ -68,7 +68,7 @@ import masterCSS from '@master/css-vite'
 
 export default defineConfig({
   plugins: [
-    masterCSS()
+    masterCSS({ mode: 'runtime' })
   ]
 })
 ```
@@ -92,7 +92,7 @@ export default defineConfig({
 
 Use pre-render mode when Vite emits HTML that can be styled before the browser runs JavaScript. The plugin renders the matching CSS and injects it into the document.
 
-For rendered pages, the critical CSS stays inline in `style#master-css`. The page hydration manifest is externalized as a hashed JSON asset and referenced from `data-master-css-hydration-manifest`, so the HTML does not grow with the runtime handoff data.
+For rendered pages, the required CSS stays inline in `style#master-css`. Pre-render mode does not start a browser runtime or deliver a hydration manifest.
 
 ```js name=vite.config.js
 import { defineConfig } from 'vite'
@@ -136,7 +136,7 @@ In progressive mode, the runtime imports the page hydration manifest as a JSON m
 - injects the runtime where runtime behavior is enabled;
 - handles static rendering output;
 - pre-renders HTML when the selected mode requires it;
-- externalizes page hydration manifests for pre-rendered and progressive HTML;
+- externalizes page hydration manifests for progressive HTML;
 - applies FOUC avoidance for runtime-first rendering.
 
 That is the difference between "Master CSS works in a Vite app" and "Master CSS feels like a Vite-native tool."
@@ -152,8 +152,8 @@ Vite is also the build foundation for many frameworks. `@master/css-vite` is the
 ```ts name=nuxt.config.ts
 export default defineNuxtConfig({
   modules: [
-    '@master/css-nuxt' // progressive by default [!code highlight]
-    // ['@master/css-nuxt', { mode: 'static' }]
+    '@master/css-nuxt' // static by default [!code highlight]
+    // ['@master/css-nuxt', { mode: 'progressive' }]
     // ['@master/css-nuxt', { mode: 'runtime' }]
     // ['@master/css-nuxt', { mode: 'pre-render' }]
   ]
@@ -167,8 +167,8 @@ import masterCSS from '@master/css-astro'
 
 export default defineConfig({
   integrations: [
-    masterCSS() // 'progressive' [!code highlight]
-    // masterCSS({ mode: 'static' })
+    masterCSS() // 'static' [!code highlight]
+    // masterCSS({ mode: 'progressive' })
   ]
 })
 ```
@@ -179,7 +179,7 @@ export default defineConfig({
 
 The value of this release is not only that setup is shorter. It is that the rendering strategy is now explicit and local to the Vite config.
 
-Start with runtime mode when you want speed and flexibility. Move to Static Rendering when your class graph is source-visible and you want compiled CSS. Use Pre-rendering when the HTML is already available at build time. Choose Progressive Rendering when you want the first page response to be styled early without giving up runtime behavior.
+Start with the default Static Rendering when complete class names are visible in source. Choose Runtime Rendering when new class names appear in the browser, Pre-rendering when HTML is available before delivery, or Progressive Rendering when pre-rendered first-page CSS must hand off to a browser runtime.
 
 That is the kind of choice a build tool should enable: one integration, multiple delivery strategies, and no extra application code when you change modes.
 

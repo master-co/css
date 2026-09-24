@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'react',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/react'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/react/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/react'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/react/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

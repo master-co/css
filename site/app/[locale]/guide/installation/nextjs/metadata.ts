@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Progressive Rendering in Next.js',
-  description: 'Guide to setting up Master CSS progressive rendering in your Next.js project.',
+  title: 'Static Rendering in Next.js',
+  description: 'Guide to setting up Master CSS static rendering in your Next.js project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

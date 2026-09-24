@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'webpack',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/webpack'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/webpack/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/webpack'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/webpack/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

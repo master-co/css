@@ -17,8 +17,8 @@ export const { Page, dynamic, revalidate, generateMetadata } = createLayout({
   icon: 'tanstack-start',
   content: ({ $ }) =>
     <Tabs className="mb-xl">
-      <Tab href='/guide/installation/tanstack-start'>{$('Runtime Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
-      <Tab href='/guide/installation/tanstack-start/static-rendering'>{$('Static Rendering')}</Tab>
+      <Tab href='/guide/installation/tanstack-start'>{$('Static Rendering')} <TabBadge>{$('Default')}</TabBadge></Tab>
+      <Tab href='/guide/installation/tanstack-start/runtime'>{$('Runtime Rendering')}</Tab>
     </Tabs>,
   Layout,
 })

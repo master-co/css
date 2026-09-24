@@ -59,7 +59,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
     ```
     The runtime engine observes a new node with the class `text-center` and ensures the corresponding CSS rule:
     ```css
-    .text\:center { /* [!code ++] */
+    .text-center { /* [!code ++] */
       text-align: center /* [!code ++] */
     } /* [!code ++] */
     ```
@@ -81,7 +81,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
       font-size: 3rem /* [!code ++] */
     } /* [!code ++] */
 
-    .text\:center {
+    .text-center {
       text-align: center
     }
     ```
@@ -102,7 +102,7 @@ The following continuous DOM manipulation takes you to understand the behavior o
       font-size: 3rem
     }
 
-    .text\:center { /* [!code --] */
+    .text-center { /* [!code --] */
       text-align: center /* [!code --] */
     } /* [!code --] */
     ```
@@ -259,28 +259,20 @@ import manifest from 'virtual:master-css-manifest'
 const indexHTML = readFileSync('./index.html', 'utf-8')
 const renderer = createServerRenderer({ manifest, maxCachedClasses: Infinity })
 
-const rendered = renderer.renderHTML(indexHTML, {
-  hydrationManifest: {
-    type: 'external',
-    source: '/_master-css/hydration/master-css-hydration.<hash>.json'
-  }
-})
-const { html, hydrationManifest } = rendered
+const { html } = renderer.renderHTML(indexHTML)
 
 renderer.dispose()
 ```
-The manifest-scoped server renderer reuses generated class rules across pages while producing an isolated style sheet and hydration manifest for each page. Recreate it when the manifest changes and dispose it when the build ends. Official static and pre-render integrations write `hydrationManifest` to a hashed JSON asset and attach the URL to `style#master-css`:
+The manifest-scoped server renderer reuses generated class rules across pages while producing isolated CSS for each page. Recreate it when the manifest changes and dispose it when the build ends. Pre-render mode does not need a browser runtime or hydration manifest:
 ```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <script type="module" src="/main.js"></script>
-  <style id="master-css" data-master-css-hydration-manifest="/_master-css/hydration/master-css-hydration.<hash>.json"> /* [!code ++] */
-    .font-5xl { /* [!code ++] */
-      font-size: 2.5rem /* [!code ++] */
-    } /* [!code ++] */
+  <style id="master-css"> /* [!code ++] */
+    @layer theme { :root, :host { --font-size-5xl: 2.5rem } } /* [!code ++] */
+    @layer utilities { .font-5xl { font-size: var(--font-size-5xl) } } /* [!code ++] */
   </style> <!-- [!code ++] -->
 </head>
 <body>
@@ -288,9 +280,9 @@ The manifest-scoped server renderer reuses generated class rules across pages wh
   <h1 class="font-5xl">Hello World</h1>
 </body>
 ```
-What benefits does this bring? The server renderer generates the initial page CSS (**5kB**) based on the class names used in the HTML, instead of the entire application source code (**500kB**).
+The server renderer generates page CSS from the class names present in rendered HTML. The amount of CSS depends on the page and project manifest.
 
-This approach allows for a **minimal, deterministic CSS text** that is injected into the HTML, enabling fast page loads and minimal CSS output. Externalizing the hydration manifest does not make first paint faster by itself; the first paint still comes from the inline `style#master-css`. It reduces HTML transfer and parse pressure as the number of generated rules grows, and lets the route-level handoff data be cached separately.
+Progressive mode adds a hydration manifest when the browser runtime must adopt that inline CSS and continue generating rules. Externalizing the manifest does not make first paint faster by itself; the first paint still comes from `style#master-css`.
 
 ### CSS hydration
 Master CSS hydration is the process that restores the server-side or build-time rendered CSS on the client. This includes reusing the pre-rendered CSS structures, persisting the application CSS state, and reconstructing the style sheet into virtual memory.
@@ -317,7 +309,7 @@ Static rendering is a zero-runtime rendering mode where the build scans source f
 
 The source scanner does not observe the DOM and does not execute application code. Its input is source text, CSS entries, scanner options, and the compiled project manifest. Its output is a CSS asset that the browser loads like any other stylesheet.
 
-The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In static mode, integrations replace that import with generated CSS and treat the same stylesheet as a native CSS pruning root.
+The CSS entry point is explicit: import `@master/css` from the stylesheet that should receive generated Master CSS. In static mode, integrations replace that import with generated CSS and preserve native CSS by default.
 
 <StepSection>
   <Step>
@@ -328,7 +320,7 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     @import '@master/css';
     ```
 
-    Add `@source` only when this stylesheet must include source outside the integration's normal scan path or define a scoped native CSS pruning root.
+    Add `@source` only when this stylesheet must include source outside the integration's normal scan path or define a scoped source set.
   </Step>
   <Step>
     #### <StepNum />Scan source text
@@ -361,13 +353,12 @@ The CSS entry point is explicit: import `@master/css` from the stylesheet that s
     @layer components {
       .btn {
         display: inline-flex;
-        padding-left: 1rem;
-        padding-right: 1rem;
+        padding-inline: var(--spacing-md);
       }
     }
 
     @layer utilities {
-      .text\:center {
+      .text-center {
         text-align: center;
       }
     }
@@ -387,9 +378,9 @@ Use one `@import '@master/css'` entry for each generated stylesheet root. That i
 `@import '@master/css'` may be placed anywhere inside the top-level CSS import block. Ordinary CSS imports in that block are still emitted before generated Master CSS; keep the Master CSS import before normal style rules.
 
 ### Native CSS entries
-Regular CSS outside Master CSS directives remains native CSS. When a stylesheet imports `@master/css`, integrations treat that stylesheet as a pruning root by default and prune class selectors against detected source classes.
+Regular CSS outside Master CSS directives remains native CSS. Integrations preserve it by default, including selectors whose classes do not appear in scanned source. Enable `pruneNativeCSS: true` for project-owned sources when pruning is intentional, or use `@prune native;` for one source file.
 
-Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@theme` keyframes referenced by animation declarations. Add `@preserve native;` when native CSS must be preserved.
+Those native rules can also pull matching theme variables referenced by `var(--*)` and managed `@theme` keyframes referenced by animation declarations. When integration-level pruning is enabled, `@preserve native;` excludes one source file.
 
 ```css name=src/style.css
 @import '@master/css';
@@ -408,7 +399,7 @@ Those native rules can also pull matching theme variables referenced by `var(--*
 <article class="btn native-card">Card</article>
 ```
 
-The generated CSS contains `.native-card` and `.btn` when both classes are scanned. `.unused-card` is removed because no scanned source uses it.
+By default, the generated CSS contains `.native-card`, `.unused-card`, and the on-demand `.btn` rule. With native pruning enabled, `.unused-card` is removed because no scanned source uses it.
 
 ### Dynamic class limitations
 Static rendering depends on complete class strings that exist in scanned source files. It cannot evaluate conditions, run helper functions, resolve remote content, or predict classes assembled by string concatenation.

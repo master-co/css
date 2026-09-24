@@ -1,8 +1,8 @@
 import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
-  title: 'Set up Master CSS in Vite',
-  description: 'Guide to setting up Master CSS in your Vite project.',
+  title: 'Static Rendering in Vite',
+  description: 'Guide to setting up Master CSS static rendering in your Vite project.',
   category: 'Integrations',
   fileURL: import.meta.url
 })

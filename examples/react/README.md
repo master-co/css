@@ -14,4 +14,4 @@
 </div>
 
 ## Documentation
-Check out the official [documentation](https://rc.css.master.co/guide/installation/react/runtime-rendering).
+Check out the official [documentation](https://rc.css.master.co/guide/installation/react/runtime).
