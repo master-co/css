@@ -101,19 +101,19 @@ The nine lint warnings cover numeric spacing lesson aliases, teaching-source cla
 ordering, and existing blog/sponsor aliases. They are reported without automatic
 rewrites of instructional code. No lint errors remain.
 
-The original dogfood suite still reports **five passed, one skipped and six failed**.
+The original dogfood suite reported **five passed, one skipped and six failed**.
 These are the same three legacy assertions in both Chromium profiles recorded in
 the initial demo QA: white serializes as `lab(100 0 0)` rather than the expected
 `oklch(1 0 none)`; the guide assertion selects a heading outside the assumed prose
-margin rule; and the cascade test searches an obsolete heading title. They remain
-reported separately, without changing engine output or weakening those assertions.
+margin rule; and the cascade test searches an obsolete heading title. Those results
+were reported separately, without changing engine output or weakening those assertions.
 
 One LLM run overlapped prepare's generated search writes and read intermediate
 output. The stable post-build rerun passes all 32 tests. One final gallery run lost
 its artifact directory when the legacy dogfood configuration cleared the shared
 `site/test-results` root. It failed on artifact ENOENT, not a browser assertion;
-all three desktop-light production tests pass in a fresh isolated output directory.
-The legacy configuration now owns a dedicated dogfood output directory.
+all three desktop-light production tests passed in a fresh isolated output directory.
+The legacy configuration then owned a dedicated dogfood output directory.
 
 That cleanup removed earlier local screenshot directories after they had been
 visually reviewed. Their batch notes and logs remain, but those historical image
@@ -130,11 +130,8 @@ Current captures are under `site/test-results/production-load`,
 `docs-refinement.md`, `docs-refinement-layout-typography.md`,
 `docs-refinement-project-language.md`, `docs-refinement-final-pages.md` and `demo-qa.md`.
 
-Build and serve using the commands in `demo-qa.md`. Run browser checks with
-`DEMO_BASE_URL=http://127.0.0.1:4173` and an explicit dedicated `--output` directory.
-Use `production-load.config.ts` for the six-profile cold-load/gallery audit and
-`demo.config.ts` for native behavior. Set `DEMO_SWEEP=1` and select
-`reference visual sweep|migrated demo page` for the complete production sweep.
+The remaining build and non-browser checks are listed in `demo-qa.md`. The browser
+suite used for this audit has since been removed; the results above are historical.
 
 Final logs: `/tmp/master-site-final-build.log`, `/tmp/master-ds-full-lint.log`,
 `/tmp/master-final-audit-types.log`, `/tmp/master-site-final-sweep.log`,

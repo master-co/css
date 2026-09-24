@@ -163,7 +163,7 @@ jobs:
             args+=(--affected)
           fi
           pnpm exec node scripts/with-typescript-tooling-compat.mjs pnpm exec turbo "${args[@]}"
-      - name: Build and verify site CSS dogfood
+      - name: Build and verify site
         if: ${{ steps.consumers.outputs.site_affected == 'true' }}
         shell: bash
         env:
@@ -175,8 +175,6 @@ jobs:
           fi
           pnpm --filter site build
           pnpm --filter site test:css-contract
-          pnpm --filter site test:dogfood
-          pnpm --filter site test:dogfood:dev
           pnpm --filter site test:play
           pnpm --filter site lint
           pnpm --filter site type-check

@@ -23,6 +23,5 @@ The site owns its shell and dependency versions. The old root `internal` submodu
 | `pnpm --filter site test:reference` | Check reference catalog and syntax behavior. |
 | `pnpm --filter site test:llms` | Check generated LLM documentation. |
 | `pnpm --filter site test:assets` | After a build, check that public images, icons, and fonts exist and are used. |
-| `pnpm --filter site test:dogfood` | Run static-site browser checks after a build. |
 
 See [AI.md](./AI.md) for site architecture and authoring guidance.

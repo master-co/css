@@ -345,9 +345,9 @@ Brand asset metadata is exported through utils/brand-content.ts. Keep asset labe
 URLs and policy in portable/search output; preview components must preserve the
 original artwork and native download behavior. DocumentationIndex group IDs use
 canonical source names, independent of translated labels. Keep both category and
-A–Z destination sets complete. The final-pages dogfood matrix serializes the large
-Design System SSR workload; retain runtime error assertions and use production
-output for concurrent/cold-load validation.
+A–Z destination sets complete. Future browser validation of the large Design
+System SSR workload should run serially, check runtime errors, and use production
+output for concurrent and cold-load checks.
 
 Benchmarks uses utils/benchmark-content.ts to export the authored static chart
 models and complete tables to Markdown and search. Keep its explicit component

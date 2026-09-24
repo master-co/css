@@ -57,7 +57,7 @@ canvases beside stone, gray, brown, orange, lime, green, teal and slate. The col
 guide adds architecture, natural living and boutique object compositions using
 actual preset classes, with independent light/dark documents.
 
-Playwright checks cover 1280px Chromium and 390px WebKit in both host appearances:
+Playwright checks covered 1280px Chromium and 390px WebKit in both host appearances:
 104 visible color values, real clipboard copying in Chromium, keyboard focus,
 six independently themed specimens, resolved SVG paints, no horizontal overflow,
 and no page errors. Screenshots were inspected at desktop and phone sizes.
@@ -124,15 +124,14 @@ pnpm --filter site prepare-app
 pnpm --filter site test:reference
 pnpm --filter site lint
 pnpm --filter site type-check
-pnpm --filter site exec playwright test --config tests/dogfood/natural-colors.config.ts
 pnpm --filter @master/css-runtime build
 pnpm run check:runtime-size
 pnpm run check:ai-context
 ```
 
-The browser matrix uses the running site at `http://localhost:3000`; set
-`DEMO_BASE_URL` to use another local preview. Generate the review after browser
-tests, because Playwright clears its output directory when a run starts:
+The browser matrix above used a running site at `http://localhost:3000`. Its
+dogfood suite has since been removed, so the commands above reproduce only the
+remaining checks. The review can be generated with:
 
 ```sh
 mkdir -p site/test-results/natural-colors/review

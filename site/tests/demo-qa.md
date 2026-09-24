@@ -19,22 +19,13 @@ shared `internal` submodule sources were changed for this work.
   installation previews use the same chrome while retaining native iframe and
   existing resize behavior.
 
-## Reproduction
+## Remaining checks
 
-Run from the repository root. Build before the production browser tests:
+Run from the repository root:
 
 ```sh
 pnpm --filter site clean:next
 pnpm build:site
-node site/tests/dogfood/serve-static.mjs
-```
-
-In another terminal:
-
-```sh
-DEMO_SWEEP=1 DEMO_BASE_URL=http://127.0.0.1:4173 \
-  node node_modules/@playwright/test/cli.js test \
-  --config site/tests/dogfood/demo.config.ts
 pnpm --filter site exec tsx --test \
   components/demo/reference/reference-demo.test.ts utils/demo-mdx.test.ts
 pnpm --filter site lint
@@ -48,10 +39,9 @@ pnpm --filter site test:css-contract
 pnpm run check:ai-context
 ```
 
-The explicit Playwright CLI path avoids a stale workspace `.bin/playwright`
-symlink. A clean Next build was needed because incremental builds after development
-occasionally omitted the emitted Master CSS manifest asset. Neither workaround
-changes the repository's build or release scripts.
+The browser suite used for the results below has since been removed. A clean Next
+build was needed during the original review because incremental builds after
+development occasionally omitted the emitted Master CSS manifest asset.
 
 ## Browser checks
 
@@ -101,20 +91,20 @@ dialog presentation remain browser/OS dependent.
 - Media comparisons retain the same sizing classes and reset only the property
   under comparison. The SVG artwork does not introduce a second fitting policy.
 
-## Existing dogfood limitations
+## Historical dogfood limitations
 
-The existing full dogfood suite reports six failures, representing three assertions
-in both viewport projects. These checks were not weakened:
+The former full dogfood suite reported six failures, representing three assertions
+in both viewport projects. Those checks were not weakened:
 
-1. The prose cascade test selects the hidden `Overview` heading, whose margin is
+1. The prose cascade test selected the hidden `Overview` heading, whose margin was
    zero, while expecting the visible heading's desktop/mobile margin.
-2. The inline color test compares equivalent white colors as different serialized
+2. The inline color test compared equivalent white colors as different serialized
    strings: `lab(100 0 0)` and `oklch(1 0 none)`.
-3. The layer test looks for the obsolete heading “How layers control the cascade”.
+3. The layer test looked for the obsolete heading “How layers control the cascade”.
 
-The updated semantic demo test passes. The complete existing dogfood run finished
+The updated semantic demo test passed. The complete dogfood run finished
 with five passes, these six failures, and one intentionally skipped case. The
-remaining lint warnings concern existing canonical names and class ordering.
+remaining lint warnings concerned existing canonical names and class ordering.
 
 ## CSS contract review
 
