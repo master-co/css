@@ -1,6 +1,6 @@
-import Body from 'internal/layouts/body'
-import i18n from 'internal/common/i18n.config.js'
-import HTML from 'internal/layouts/html'
+import Body from '~/site/docs-shell/layouts/body'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
+import HTML from '~/site/docs-shell/layouts/html'
 
 export const metadata = {
   title: {

@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import OriginalDemo from 'internal/components/Demo'
-import OriginalDemoP from 'internal/components/DemoP'
+import OriginalDemo from '~/site/docs-shell/components/Demo'
+import OriginalDemoP from '~/site/docs-shell/components/DemoP'
 import Demo from '~/site/components/demo/Demo'
 import { DemoMedia, DemoSurface, DemoText } from '~/site/components/demo'
 import styles from './page.module.css'

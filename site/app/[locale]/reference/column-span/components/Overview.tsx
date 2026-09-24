@@ -1,5 +1,5 @@
 import syntaxes from '../syntaxes'
-import SyntaxTable from 'internal/components/SyntaxTable'
+import SyntaxTable from '~/site/docs-shell/components/SyntaxTable'
 import SyntaxTr from '~/site/components/SyntaxTr'
 import SyntaxPreview from './SyntaxPreview'
 

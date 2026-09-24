@@ -1,11 +1,11 @@
 'use client'
 
-import Modal from 'internal/components/Modal'
+import Modal from '~/site/docs-shell/components/Modal'
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { useTranslation } from 'internal/contexts/i18n'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 
 
 export default function DonationModal() {

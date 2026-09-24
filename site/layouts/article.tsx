@@ -1,4 +1,4 @@
-import Layout from 'internal/layouts/article'
+import Layout from '~/site/docs-shell/layouts/article'
 import { footerProps } from '~/site/navigation'
 
 export default function SiteArticleLayout(props: any) {

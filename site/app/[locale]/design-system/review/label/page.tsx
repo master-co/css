@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import OriginalDemo from 'internal/components/Demo'
-import OriginalDemoLabel from 'internal/components/DemoLabel'
+import OriginalDemo from '~/site/docs-shell/components/Demo'
+import OriginalDemoLabel from '~/site/docs-shell/components/DemoLabel'
 import Demo from '~/site/components/demo/Demo'
 import { DemoLabel, DemoSurface } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/app/[locale]/guide/elevation/components/ShadowTokens'

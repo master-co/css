@@ -1,10 +1,10 @@
 import RootClient from './root'
-import { createTranslation, importTranslations } from '~/internal/utils/i18n'
+import { createTranslation, importTranslations } from '~/site/docs-shell/utils/i18n'
 import dictionaries from '../dictionaries'
-import HTML from 'internal/layouts/html'
-import Body from 'internal/layouts/body'
-import DocHeader from 'internal/components/DocHeader'
-import SearchButton from 'internal/components/SearchButton'
+import HTML from '~/site/docs-shell/layouts/html'
+import Body from '~/site/docs-shell/layouts/body'
+import DocHeader from '~/site/docs-shell/components/DocHeader'
+import SearchButton from '~/site/docs-shell/components/SearchButton'
 
 export default async function NotFound() {
   const translations = await importTranslations('en', dictionaries)

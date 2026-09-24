@@ -1,4 +1,4 @@
-import define from 'internal/utils/metadata'
+import define from '~/site/docs-shell/utils/metadata'
 
 const metadata = define({
   title: 'Master CSS 2.0',

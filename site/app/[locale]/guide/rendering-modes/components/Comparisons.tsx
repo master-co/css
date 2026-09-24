@@ -1,7 +1,7 @@
-import InlineBad from '~/internal/components/InlineBad'
-import InlineGood from '~/internal/components/InlineGood'
-import InlineWarn from '~/internal/components/InlineWarn'
-import Link from '~/internal/components/Link'
+import InlineBad from '~/site/docs-shell/components/InlineBad'
+import InlineGood from '~/site/docs-shell/components/InlineGood'
+import InlineWarn from '~/site/docs-shell/components/InlineWarn'
+import Link from '~/site/docs-shell/components/Link'
 
 export default () => (
   <>

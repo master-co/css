@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import InlineCode from '~/internal/components/InlineCode'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import NamespaceUtilityTable, { type NamespaceUtilityGroup } from '~/site/components/NamespaceUtilityTable'
 import { ColorNamespaceTable } from '~/site/app/[locale]/guide/colors/components/ColorNamespaces'
 import styles from './page.module.css'

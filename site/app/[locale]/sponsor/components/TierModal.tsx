@@ -1,8 +1,8 @@
 import { Dispatch } from 'react'
 import Image from 'next/image'
-import Modal from 'internal/components/Modal'
-import Link from 'internal/components/Link'
-import { useTranslation } from 'internal/contexts/i18n'
+import Modal from '~/site/docs-shell/components/Modal'
+import Link from '~/site/docs-shell/components/Link'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 
 export default function TierModal({ tierState }: { tierState: [any, Dispatch<any>] }) {
   const $ = useTranslation()

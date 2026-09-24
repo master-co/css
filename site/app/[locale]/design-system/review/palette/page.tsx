@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import ColorPalette from 'internal/components/ColorPalette'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ColorPalette from '~/site/docs-shell/components/ColorPalette'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import DemoPalette from '~/site/components/demo/DemoPalette'
 import styles from './page.module.css'
 

@@ -23,9 +23,6 @@ jobs:
       head_sha: ${{ github.sha }}
       full: false
       release_build: true
-      trusted: true
-    secrets:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   release:
     needs: validation
@@ -41,7 +38,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
       - name: Download Tier-1 native artifacts
         uses: actions/download-artifact@v7
@@ -93,7 +89,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
       - name: Validate editor publishing configuration
         run: |

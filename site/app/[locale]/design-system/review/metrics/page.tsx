@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import clsx from 'clsx'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import { BenchmarkMetricTable, BenchmarkMetrics, type BenchmarkMetric } from '~/site/components/benchmarks'
 import { benchmarkToneTextClasses } from '~/site/components/benchmarks/utils'
 import { StaticComparisonSummary } from '~/site/app/[locale]/guide/benchmarks/components/StaticTailwindComparison'

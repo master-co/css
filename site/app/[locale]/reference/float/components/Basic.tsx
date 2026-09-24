@@ -1,4 +1,4 @@
-import Code from 'internal/components/Code'
+import Code from '~/site/docs-shell/components/Code'
 
 export default ({ className }: any) => {
   return (

@@ -1,5 +1,5 @@
 name: Setup pnpm workspace
-description: Configure pnpm and Node.js, fetch submodules, and install dependencies.
+description: Configure pnpm and Node.js, then install dependencies.
 inputs:
   node-version:
     description: Node.js version to install.
@@ -13,12 +13,6 @@ inputs:
   ignore-scripts:
     description: Whether to install with --ignore-scripts.
     default: "false"
-  submodules:
-    description: Whether to fetch repository submodules.
-    default: "true"
-  submodules-token:
-    description: Token used by pnpm submodules to fetch private submodules.
-    default: ""
   turbo-cache:
     description: Whether to restore and save the local Turbo cache.
     default: "true"
@@ -43,11 +37,6 @@ runs:
         restore-keys: |
           ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-${{ github.ref_name }}-
           ${{ runner.os }}-turbo-${{ inputs.turbo-cache-scope }}-
-    - if: ${{ inputs.submodules == 'true' }}
-      shell: bash
-      run: pnpm submodules
-      env:
-        GITHUB_TOKEN: ${{ inputs.submodules-token }}
     - if: ${{ inputs.install == 'true' && inputs.frozen-lockfile == 'true' }}
       shell: bash
       run: pnpm install --frozen-lockfile --prefer-offline ${{ inputs.ignore-scripts == 'true' && '--ignore-scripts' || '' }}

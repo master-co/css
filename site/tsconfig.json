@@ -47,9 +47,6 @@
       "@master/css-binding-wasm-engine": [ "../packages/binding-wasm-engine/src/provider.ts" ],
       "@master/css-binding-wasm-tooling": [ "../packages/binding-wasm-tooling/src/provider.ts" ],
       "@master/css-next": [ "../node_modules/@master/css-next/src" ],
-      "internal": [ "../internal" ],
-      "internal/*": [ "../internal/*" ],
-      "~/internal/*": [ "../internal/*" ],
       "~/packages/*": [ "../packages/*" ],
       "~/site/*": [ "./*" ],
       "~/*": [ "../*" ]
@@ -65,7 +62,5 @@
     "**/*.tsx",
     "**/*.js",
     "**/*.mdx",
-    "../internal/**/*.ts",
-    "../internal/**/*.tsx",
   ]
 }

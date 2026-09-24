@@ -1,5 +1,5 @@
-import colors from 'internal/data/colors'
-import baseColors from 'internal/data/base-colors'
+import colors from '~/site/docs-shell/data/colors'
+import baseColors from '~/site/docs-shell/data/base-colors'
 import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
 const textColors = getThemeModeVariables('color-text', 'light').map(({ key }) => key)

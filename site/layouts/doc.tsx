@@ -1,4 +1,4 @@
-import Layout from 'internal/layouts/doc'
+import Layout from '~/site/docs-shell/layouts/doc'
 import { footerProps } from '~/site/navigation'
 
 export default function SiteDocLayout(props: any) {

@@ -1,4 +1,4 @@
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 
 export default function BenchmarkSource({ generatedAt, href, label = 'Committed snapshot' }: {
   generatedAt: string

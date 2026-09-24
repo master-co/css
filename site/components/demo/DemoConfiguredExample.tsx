@@ -1,4 +1,4 @@
-import Code from 'internal/components/Code'
+import Code from '~/site/docs-shell/components/Code'
 import Demo from './Demo'
 import DemoViewport from './DemoViewport'
 import { demoDocument } from './reference/document'

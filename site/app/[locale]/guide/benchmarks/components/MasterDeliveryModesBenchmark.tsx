@@ -10,7 +10,7 @@ import {
   type BenchmarkSegment,
   type BenchmarkStackedBarItem
 } from '~/site/components/benchmarks'
-import ExpandContent from 'internal/components/ExpandContent'
+import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 
 type ModeId = 'master-static' | 'master-runtime' | 'master-progressive' | 'tailwind-static'
 type TimingMetricId =

@@ -11,7 +11,7 @@ export default function PreviewViewport({ html, breakpoint, responsive }: { html
   const frameRef = useRef<HTMLIFrameElement>(null)
   const width = wide ? Math.ceil(breakpoint) + 1 : Math.floor(breakpoint) - 1
   // The site theme is a class plus an inline color scheme on the host <html>; a srcDoc
-  // frame shares neither, so push both across the boundary the way internal/layouts/html.tsx
+  // frame shares neither, so push both across the boundary the way the site HTML layout does
   // writes them. Until this runs the frame keeps the srcDoc default of `light dark`.
   const syncFrameThemeMode = useCallback(() => {
     const frameRoot = frameRef.current?.contentDocument?.documentElement

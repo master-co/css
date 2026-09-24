@@ -1,7 +1,7 @@
-import i18n from '~/internal/common/i18n.config.js'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
 import RootClient from '../root'
-import { importTranslations } from '~/internal/utils/i18n'
-import HTML from 'internal/layouts/html'
+import { importTranslations } from '~/site/docs-shell/utils/i18n'
+import HTML from '~/site/docs-shell/layouts/html'
 import dictionaries from '~/site/dictionaries'
 
 export async function generateStaticParams() {

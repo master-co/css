@@ -1,4 +1,4 @@
-import createPage from '~/internal/factories/create-page'
+import createPage from '~/site/docs-shell/factories/create-page'
 import metadata from './metadata'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'

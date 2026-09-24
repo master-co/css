@@ -1,6 +1,6 @@
-import Body from 'internal/layouts/body'
+import Body from '~/site/docs-shell/layouts/body'
 import metadata from './metadata'
-import generate from 'internal/utils/generate-metadata'
+import generate from '~/site/docs-shell/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
 
 export async function generateMetadata(props: any, parent: any) {

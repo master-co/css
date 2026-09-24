@@ -1,6 +1,6 @@
-// The shared auto-import plugin emits lexical imports that take precedence over
+// The document shell auto-import plugin emits lexical imports that take precedence over
 // useMDXComponents. Leave site-owned demo names to the site's MDX provider.
-const legacyDemos = /^internal\/components\/(?:Demo|DemoPanel|DemoP|DemoLabel|BrowserHeader|IFrame|HelloWorld)$/
+const shellDemos = /^~\/site\/docs-shell\/components\/(?:Demo|DemoPanel|DemoP|DemoLabel|BrowserHeader|IFrame|HelloWorld)$/
 
 export default function remarkSiteDemos() {
   return tree => {
@@ -8,7 +8,7 @@ export default function remarkSiteDemos() {
       const statements = node.data?.estree?.body
       return !(node.type === 'mdxjsEsm' && statements?.length === 1
         && statements[0].type === 'ImportDeclaration'
-        && legacyDemos.test(statements[0].source.value))
+        && shellDemos.test(statements[0].source.value))
     })
   }
 }
@@ -28,7 +28,7 @@ function configureRule(rule) {
   return result
 }
 
-/** Extend the existing MDX pipeline without changing the shared submodule. */
+/** Extend the site-owned MDX pipeline with demo components. */
 export function withSiteDemos(config) {
   const webpack = config.webpack
   return {

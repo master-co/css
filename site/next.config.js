@@ -1,5 +1,5 @@
 import redirects from './redirects.js'
-import withCommonNextConfig from 'internal/common/with-next-config.js'
+import withCommonNextConfig from './docs-shell/common/with-next-config.js'
 import withMasterCSS from '@master/css-next'
 import { PHASE_DEVELOPMENT_SERVER } from 'next/constants.js'
 import { readPublicEnv } from './utils/public-env.js'

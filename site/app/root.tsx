@@ -1,7 +1,7 @@
 'use client'
 
-import RootLayout from 'internal/layouts/root'
-import i18n from '~/internal/common/i18n.config.js'
+import RootLayout from '~/site/docs-shell/layouts/root'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
 import app from '~/site/app'
 import redirects from '~/site/redirects.js'
 import units from '~/site/units'

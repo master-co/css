@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import DemoFeatureSupport from '~/site/components/demo/DemoFeatureSupport'
 import ProjectStyleExample from '~/site/components/demo/ProjectStyleExample'
 import styles from './page.module.css'

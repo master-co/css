@@ -1,4 +1,4 @@
-import highlightCode from '~/internal/utils/highlight-code'
+import highlightCode from '~/site/docs-shell/utils/highlight-code'
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'
 import { Fragment, jsxs, jsx } from 'react/jsx-runtime'
 import dedent from 'ts-dedent'

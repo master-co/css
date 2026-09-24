@@ -1,8 +1,8 @@
-import createLayout from '~/internal/factories/create-layout'
+import createLayout from '~/site/docs-shell/factories/create-layout'
 import Layout from '~/site/layouts/doc'
 import dictionaries from '~/site/dictionaries'
 import categories from '~/site/.categories/guide.json'
-import Tabs, { Tab } from '~/internal/components/Tabs'
+import Tabs, { Tab } from '~/site/docs-shell/components/Tabs'
 import metadata from './metadata'
 
 export const { Page, dynamic, revalidate, generateMetadata } = createLayout({

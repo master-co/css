@@ -1,8 +1,8 @@
 'use client'
 
 import { IconBook, IconLayersIntersect, IconPalette, IconPencil, IconRocket, IconRobot, IconSettings } from '@tabler/icons-react'
-import { useLocale } from 'internal/contexts/locale'
-import { useTranslation } from 'internal/contexts/i18n'
+import { useLocale } from '~/site/docs-shell/contexts/locale'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import DocumentationIndex from '~/site/components/DocumentationIndex'
 import { guideOverviewSections, type GuideCategory } from '~/site/utils/guide-overview'
 

@@ -2,13 +2,13 @@
 import Layout from '~/site/layouts/article'
 import metadata from './metadata'
 import Content from './content.mdx'
-import { getSponsorTiers } from 'internal/utils/get-sponsor-tiers'
+import { getSponsorTiers } from '~/site/docs-shell/utils/get-sponsor-tiers'
 import Backers from './components/Backers'
 import Donors from './components/Donors'
 import DonationModal from './components/DonationModal'
-import generate from 'internal/utils/generate-metadata'
+import generate from '~/site/docs-shell/utils/generate-metadata'
 import dictionaries from '~/site/dictionaries'
-import { default as openCollectiveToken } from 'internal/tokens/open-collective'
+import { default as openCollectiveToken } from '~/site/docs-shell/tokens/open-collective'
 
 export const dynamic = 'force-static'
 export const revalidate = false

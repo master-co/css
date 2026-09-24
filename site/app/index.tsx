@@ -1,7 +1,7 @@
 'use client'
 
-import type { App } from 'internal/contexts/app'
-import Logotype from 'internal/components/CSSLogotype'
+import type { App } from '~/site/docs-shell/contexts/app'
+import Logotype from '~/site/docs-shell/components/CSSLogotype'
 import { communityNavs, primaryNavs } from '~/site/navigation'
 
 export default {

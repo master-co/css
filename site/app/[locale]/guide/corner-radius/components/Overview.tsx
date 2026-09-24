@@ -1,4 +1,4 @@
-import InlineCode from '~/internal/components/InlineCode'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 
 const radiusRoles: Record<string, string> = {

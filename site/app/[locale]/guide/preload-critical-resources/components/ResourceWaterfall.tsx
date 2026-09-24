@@ -1,4 +1,4 @@
-import Demo from 'internal/components/Demo'
+import Demo from '~/site/docs-shell/components/Demo'
 
 type WaterfallBar = {
   label: string

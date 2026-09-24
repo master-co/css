@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import StepSection, { Step, StepL, StepNum, StepR } from 'internal/components/StepSection'
+import StepSection, { Step, StepL, StepNum, StepR } from '~/site/docs-shell/components/StepSection'
 import { DocumentStep, DocumentStepBody, DocumentStepNumber, DocumentSteps, DocumentStepText } from '~/site/components/DocumentSteps'
 import styles from './page.module.css'
 

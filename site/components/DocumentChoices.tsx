@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Link from 'internal/components/Link'
+import Link from '~/site/docs-shell/components/Link'
 import { IconArrowRight } from '@tabler/icons-react'
 
 export interface DocumentChoice {

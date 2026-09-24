@@ -25,9 +25,9 @@ const repoRoot = resolve(siteRoot, '..')
 const roots = [
   resolve(siteRoot, 'app'),
   resolve(siteRoot, 'components'),
-  resolve(repoRoot, 'internal/components'),
-  resolve(repoRoot, 'internal/layouts'),
-  resolve(repoRoot, 'internal/contexts')
+  resolve(siteRoot, 'docs-shell/components'),
+  resolve(siteRoot, 'docs-shell/layouts'),
+  resolve(siteRoot, 'docs-shell/contexts')
 ]
 
 const translatableAttributes = new Set(['alt', 'aria-label', 'title', 'placeholder'])

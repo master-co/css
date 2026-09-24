@@ -1,5 +1,5 @@
-import colors from 'internal/data/colors'
-import baseColors from 'internal/data/base-colors'
+import colors from '~/site/docs-shell/data/colors'
+import baseColors from '~/site/docs-shell/data/base-colors'
 
 const syntaxes = [
   ...baseColors.map(color => `bg:${color}`),

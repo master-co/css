@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import GuideIndex from '~/site/app/[locale]/guide/components/GuideIndex'
 import categories from '~/site/.categories/guide.json'
 import DemoCatalog from '~/site/components/demo/DemoCatalog'

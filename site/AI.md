@@ -6,11 +6,19 @@ These instructions apply to the `site/` workspace. They extend the repository ro
 
 The `site` workspace owns the public Master CSS documentation site, examples rendered inside docs, user-facing guide content, and site-specific visual demo implementation.
 
+## Document Shell Ownership
+
+- Keep reusable documentation navigation, layouts, contexts, MDX rendering, and page factories in `site/docs-shell/`.
+- Keep Master CSS-specific guides, reference rendering, examples, and demos in their existing `site/` owners. Put shell styles in `site/styles/docs-shell/` and retained public assets in `site/public/`.
+- The CSS site owns its implementation and dependency versions. Share brand and interaction principles across Master projects through written design guidance; do not reintroduce a cross-repository source submodule for the full site.
+- Extract a cross-project package only after another active site independently needs the same stable behavior, the API is explicit, and framework/version coupling has been checked. Keep a one-site need local.
+
 ## Owns
 
 - Public guide pages under `site/app/[locale]`.
 - Documentation copy, code examples, generated CSS examples, and interactive demos.
 - Site-local components, assets, dictionaries, category metadata, and docs verification scripts.
+- The document shell under `site/docs-shell/`, including layouts, MDX components, search, localization, and page factories.
 - Cloudflare/Next site build configuration.
 
 ## Does Not Own
@@ -69,7 +77,7 @@ components/
 ```
 
 - `metadata.ts` defines public title, description, category, reference links, and `fileURL`.
-- `page.tsx` uses `createPage`, `internal/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
+- `page.tsx` uses `createPage`, `site/docs-shell/layouts/doc`, `site/dictionaries`, and `site/.categories/guide.json`.
 - `content.mdx` contains guide copy, code examples, generated CSS examples, and imported local demos.
 - `components/` contains interactive demos and guide-local presentational components.
 

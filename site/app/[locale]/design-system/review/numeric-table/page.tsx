@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import InlineCode from '~/internal/components/InlineCode'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import ThemeNumberVariableTable from '~/site/components/ThemeNumberVariableTable'
 import { getThemeNumericVariableEntries } from '~/site/utils/theme-variables'
 import styles from './page.module.css'

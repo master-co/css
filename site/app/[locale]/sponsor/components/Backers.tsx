@@ -1,7 +1,11 @@
 import Image from 'next/image'
-import Link from 'internal/components/Link'
-import toSlug from 'internal/utils/toSlug'
+import Link from '~/site/docs-shell/components/Link'
 import clsx from 'clsx'
+
+const sourceIcons: Record<string, string> = {
+  'Open Collective': '/images/open-collective.svg',
+  'Github Sponsors': '/images/github-sponsors.svg'
+}
 
 export default function Backers({ backers }: any) {
   return <div className="grid-cols:6 gap:xs grid-cols:8@2xs grid-cols:10@xs grid-cols:14@sm">
@@ -12,12 +16,13 @@ export default function Backers({ backers }: any) {
         href = 'https://' + href // 或是 "http://" + url;
       }
       const className = `rel block round aspect-ratio:1/1 content:''::after`
+      const sourceIcon = sourceIcons[eachBacker.from]
       const Avatar = () =>
         <>
           <Image src={eachBacker.avatarUrl} alt="avatar" className="full round object-cover" width="64" height="64" />
-          <div className="abs bottom:-3px right:-3px size:22px round p:4xs surface:raised">
-            <Image src={'/images/' + toSlug(eachBacker.from) + '.svg'} alt="source" width="18" height="18" />
-          </div>
+          {sourceIcon && <div className="abs bottom:-3px right:-3px size:22px round p:4xs surface:raised">
+            <Image src={sourceIcon} alt="source" width="18" height="18" />
+          </div>}
         </>
       return (
         href

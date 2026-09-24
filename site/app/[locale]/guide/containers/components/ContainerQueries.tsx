@@ -1,5 +1,5 @@
 import { presetContainerConditions } from '~/site/common/preset-css'
-import InlineCode from '~/internal/components/InlineCode'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { getThemeNumericVariableEntries, type ThemeNumericVariableEntry } from '~/site/utils/theme-variables'
 import generateManifestCondition from '~/site/utils/generate-manifest-condition'
 

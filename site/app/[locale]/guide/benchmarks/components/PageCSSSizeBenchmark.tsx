@@ -1,9 +1,9 @@
 import snapshot from '~/site/../benchmarks/docs-page-css-size/snapshot.json'
-import brands from 'internal/data/brands'
-import Bar from 'internal/components/Bar'
-import Bars from 'internal/components/Bars'
-import Segments from 'internal/components/Segments'
-import Link from 'internal/components/Link'
+import brands from '~/site/docs-shell/data/brands'
+import Bar from '~/site/docs-shell/components/Bar'
+import Bars from '~/site/docs-shell/components/Bars'
+import Segments from '~/site/docs-shell/components/Segments'
+import Link from '~/site/docs-shell/components/Link'
 
 import clsx from 'clsx'
 

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import snapshot from '~/site/../benchmarks/build-path-diagnostics/snapshot.json'
 import { BenchmarkBars, BenchmarkMetricTable, type BenchmarkBarItem, type BenchmarkColor, type BenchmarkMetric } from '~/site/components/benchmarks'
-import ExpandContent from 'internal/components/ExpandContent'
+import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 
 type SummaryStats = {
   min: number

@@ -1,8 +1,8 @@
-import DemoDark from 'internal/components/DemoDark'
-import DemoLight from 'internal/components/DemoLight'
-import Demo from '~/internal/components/Demo'
-import DemoLabel from '~/internal/components/DemoLabel'
-import InlineCode from '~/internal/components/InlineCode'
+import DemoDark from '~/site/docs-shell/components/DemoDark'
+import DemoLight from '~/site/docs-shell/components/DemoLight'
+import Demo from '~/site/docs-shell/components/Demo'
+import DemoLabel from '~/site/docs-shell/components/DemoLabel'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { getThemeModeVariables } from '~/site/utils/theme-variables'
 
 const shadowRoles: Record<string, { utility: string, role: string, description: string }> = {

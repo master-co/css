@@ -1,6 +1,6 @@
-import i18n from '~/internal/common/i18n.config.js'
-import DocHeader from '~/internal/components/DocHeader'
-import Body from '~/internal/layouts/body'
+import i18n from '~/site/docs-shell/common/i18n.config.js'
+import DocHeader from '~/site/docs-shell/components/DocHeader'
+import Body from '~/site/docs-shell/layouts/body'
 
 export const dynamic = 'force-static'
 export const revalidate = false

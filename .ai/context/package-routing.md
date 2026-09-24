@@ -35,12 +35,11 @@ with the public host named by the Rust routing pack.
 
 | Path | Read | Notes |
 |---|---|---|
-| `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs and site behavior. |
+| `site/**` | `site/package.json`, `site/AI.md`, `docs.md` | Public docs, site-owned document shell, assets, and site behavior. |
 | `examples/<framework>/**` | example `package.json`, matching integration package `AI.md` when one exists | Map `astro`, `next.js`, `nuxt.js`, `react`, `svelte`, `vite`, `webpack`, and `eslint*` to their package peers; use `docs.md` for content-only examples. |
 | `benchmarks/**` | `benchmarks/package.json`, `benchmarks/AI.md`, `performance.md` | Do not commit benchmark history output. |
 | `crates/**`, `Cargo.toml`, `Cargo.lock` | root/affected `Cargo.toml`, `rust-routing.md` | Rust is the semantic source; use crate-local tests first. |
 | `parity/**`, `parity-exceptions.json`, `scripts/ts-test-migration/**` | `rust-routing.md`, `testing.md` | Evidence and digests are contracts; do not refresh blindly. |
-| `internal/**` | `internal/package.json`, `site/AI.md` when used by site | Root site support workspace; distinct from `packages/internal`. |
 | `shared/**` | `shared/package.json`, `package-boundaries.md` | Repo-internal test/build support only. |
 | `.github/prompts/**`, `AGENTS.md`, `CLAUDE.md`, `.ai/**` | `docs.md` | AI-facing docs and prompt routing. |
 | `.github/workflows/**`, release config, lockfiles | `accuracy-guardrails.md` | Do not modify unless explicitly requested. |

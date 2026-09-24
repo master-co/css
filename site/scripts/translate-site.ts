@@ -56,9 +56,9 @@ let rootEnvValues: Record<string, string> | undefined
 const uiRoots = [
     resolve(siteRoot, 'app'),
     resolve(siteRoot, 'components'),
-    resolve(siteRoot, '../internal/components'),
-    resolve(siteRoot, '../internal/layouts'),
-    resolve(siteRoot, '../internal/contexts')
+    resolve(siteRoot, 'docs-shell/components'),
+    resolve(siteRoot, 'docs-shell/layouts'),
+    resolve(siteRoot, 'docs-shell/contexts')
 ]
 
 const translatableAttributes = new Set(['alt', 'aria-label', 'title', 'placeholder'])

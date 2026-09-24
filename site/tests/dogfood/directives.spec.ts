@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test'
 import { readFileSync } from 'node:fs'
-import { markdownTree } from 'internal/utils/markdown-tree'
+import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 
 const catalog = JSON.parse(readFileSync(new URL('../../.generated/reference.json', import.meta.url), 'utf8'))
 const docs = catalog.documents.filter((doc: any) => doc.kind === 'directive') as { id: string, title: string, markdown: string, headings: { id: string }[] }[]

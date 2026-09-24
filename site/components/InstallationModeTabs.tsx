@@ -1,7 +1,7 @@
 'use client'
 
-import Tabs, { Tab } from '~/internal/components/Tabs'
-import useRewritedPathname from '~/internal/uses/rewrited-pathname'
+import Tabs, { Tab } from '~/site/docs-shell/components/Tabs'
+import useRewritedPathname from '~/site/docs-shell/uses/rewrited-pathname'
 
 export interface InstallationModeTab {
   href: string

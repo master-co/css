@@ -1,0 +1,42 @@
+@components {
+  doc-card {
+    @compose p:xl surface:raised shadow:lg w:full;
+  }
+
+  doc-table {
+    @compose bb:1px|solid|muted;
+    overflow-x: auto;
+
+    :is(tbody tr:last th, tbody tr:last td) {
+      @compose bb:0px!;
+    }
+
+    :is(thead th) {
+      @compose white-space:nowrap;
+    }
+
+    :is(td, th) p {
+      @compose m:0;
+    }
+
+    td p code {
+      @compose font:85%;
+    }
+
+    :is(tr, th, td, tbody, thead) {
+      contain: size;
+    }
+
+    :is(code) {
+      vertical-align: middle;
+    }
+  }
+
+  doc-pure-list {
+    @compose list-style:none pl:0;
+
+    li {
+      @compose pl:0;
+    }
+  }
+}

@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react'
-import InlineCode from '~/internal/components/InlineCode'
-import Translate from '~/internal/components/Translate'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
+import Translate from '~/site/docs-shell/components/Translate'
 import { filterNamespaceKeys } from '~/site/utils/manifest-utilities'
 
 export interface NamespaceUtilityGroup {

@@ -1,8 +1,8 @@
 'use client'
 
 import { useEffect } from 'react'
-import usePathname from 'internal/uses/rewrited-pathname'
-import DocSidebar from 'internal/components/DocSidebar'
+import usePathname from '~/site/docs-shell/uses/rewrited-pathname'
+import DocSidebar from '~/site/docs-shell/components/DocSidebar'
 import { referenceSections, type ReferenceDocument } from './types'
 
 type Entry = Pick<ReferenceDocument, 'id' | 'kind' | 'title' | 'category' | 'url'>

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import InlineCode from '~/internal/components/InlineCode'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
 
 export interface DemoTokenRow {
   token: string

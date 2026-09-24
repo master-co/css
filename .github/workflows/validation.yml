@@ -18,17 +18,7 @@ on:
         description: Whether to build every package before validation and warm the release cache.
         type: boolean
         default: false
-      trusted:
-        description: Whether the caller may access the private internal submodule.
-        type: boolean
-        default: false
-    secrets:
-      GH_TOKEN:
-        required: false
     outputs:
-      trusted:
-        description: Whether validation was allowed to access the private submodule.
-        value: ${{ jobs.preflight.outputs.trusted }}
       site_affected:
         description: Whether the site build is affected by this change.
         value: ${{ jobs.quality_linux.outputs.site_affected }}
@@ -44,28 +34,16 @@ jobs:
     name: preflight
     runs-on: ubuntu-latest
     outputs:
-      trusted: ${{ steps.trust.outputs.trusted }}
       base_sha: ${{ steps.range.outputs.base_sha }}
       head_sha: ${{ steps.range.outputs.head_sha }}
       full: ${{ steps.range.outputs.full }}
       range_valid: ${{ steps.range.outputs.range_valid }}
     steps:
-      - name: Resolve validation trust
-        id: trust
-        env:
-          TRUSTED: ${{ inputs.trusted }}
-        run: |
-          echo "trusted=$TRUSTED" >> "$GITHUB_OUTPUT"
-          if [ "$TRUSTED" != true ]; then
-            echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
-          fi
-      - if: ${{ inputs.trusted }}
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
       - name: Resolve affected range
-        if: ${{ inputs.trusted }}
         id: range
         shell: bash
         env:
@@ -111,7 +89,6 @@ jobs:
   quality_linux:
     name: quality-linux
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: ubuntu-latest
     outputs:
       site_affected: ${{ steps.consumers.outputs.site_affected }}
@@ -125,7 +102,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: build
       - name: Validate AI context budgets
         run: pnpm run check:ai-context
@@ -160,9 +136,6 @@ jobs:
               vscode_affected=true
             fi
 
-            if ! git diff --quiet "$TURBO_SCM_BASE...$TURBO_SCM_HEAD" -- internal; then
-              vscode_affected=true
-            fi
           fi
 
           {
@@ -233,7 +206,6 @@ jobs:
   rust_quality:
     name: rust-quality
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v6
@@ -258,7 +230,6 @@ jobs:
   native_tier1:
     name: native-${{ matrix.package }}
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -283,7 +254,6 @@ jobs:
       - uses: ./.github/actions/setup-pnpm
         with:
           install: "false"
-          submodules: "false"
           turbo-cache: "false"
       - uses: Swatinem/rust-cache@v2
         with:
@@ -311,7 +281,6 @@ jobs:
   native_musl:
     name: native-${{ matrix.package }}
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     strategy:
       fail-fast: false
       matrix:
@@ -356,7 +325,6 @@ jobs:
   e2e_linux:
     name: e2e-linux
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: ubuntu-latest
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
@@ -367,7 +335,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: e2e
       - name: Install E2E browsers
         run: pnpm exec playwright install --with-deps chromium firefox webkit
@@ -399,7 +366,6 @@ jobs:
   compat_windows:
     name: compat-windows
     needs: preflight
-    if: ${{ needs.preflight.outputs.trusted == 'true' }}
     runs-on: windows-latest
     env:
       TURBO_SCM_BASE: ${{ needs.preflight.outputs.base_sha }}
@@ -410,7 +376,6 @@ jobs:
           fetch-depth: 0
       - uses: ./.github/actions/setup-pnpm
         with:
-          submodules-token: ${{ secrets.GH_TOKEN }}
           turbo-cache-scope: compat
       - name: Install Chromium headless shell
         run: pnpm exec playwright install --only-shell chromium

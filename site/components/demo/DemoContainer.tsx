@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
-import ResizeZone from '~/internal/components/ResizeZone'
+import ResizeZone from '~/site/docs-shell/components/ResizeZone'
 import { DemoControls } from './primitives'
 
 /** Changes a real wrapper's width; children own their query container and layout. */

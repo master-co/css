@@ -1,4 +1,4 @@
-import Code from '~/internal/components/Code'
+import Code from '~/site/docs-shell/components/Code'
 import { generatePresetCSS } from '../common/generate-preset-css'
 
 function normalizeClasses(classes: unknown) {

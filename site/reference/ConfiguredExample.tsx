@@ -1,4 +1,4 @@
-import Code from 'internal/components/Code'
+import Code from '~/site/docs-shell/components/Code'
 import React from 'react'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses } from './configured-example'
 

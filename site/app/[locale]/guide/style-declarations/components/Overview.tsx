@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import Demo from 'internal/components/Demo'
+import Demo from '~/site/docs-shell/components/Demo'
 import mobileImage from '~/site/public/images/landscape-mobile-screen.png'
 
 export default () => (

@@ -1,6 +1,6 @@
 import { useId, type ReactNode } from 'react'
 import clsx from 'clsx'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkStackedBarItem } from './types'
 import { benchmarkColorClasses, benchmarkColors, clampPercent, formatMetricValue } from './utils'
 

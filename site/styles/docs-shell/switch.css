@@ -1,0 +1,43 @@
+@components {
+  switch-input {
+    @compose hidden;
+
+    &:checked + svg {
+      @compose bg:#30d158;
+    }
+
+    &[disabled] + svg {
+      opacity: 0.7;
+      cursor: no-drop;
+    }
+
+    &[disabled] + svg > rect {
+      @compose filter:none;
+    }
+
+    &:active:not([disabled]) + svg > rect {
+      @compose w:34px;
+    }
+
+    &:checked + svg > rect {
+      transform: translateX(19px);
+    }
+
+    &:checked:active:not([disabled]) + svg > rect {
+      transform: translateX(13px);
+    }
+  }
+
+  switch-toggle {
+    @compose rounded transition:background|.3s bg:slate-90 h:32px w:51px;
+    cursor: pointer;
+
+    @dark {
+      @compose bg:gray-20;
+    }
+  }
+
+  switch-button {
+    @compose transition:transform|.1s|ease-out,width|.1s|ease-out filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2)) fill:#fff size:28px;
+  }
+}

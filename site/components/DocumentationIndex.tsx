@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from 'react'
 import { IconArrowRight, type IconBook } from '@tabler/icons-react'
-import Link from 'internal/components/Link'
-import { useLocale } from 'internal/contexts/locale'
-import { useTranslation } from 'internal/contexts/i18n'
+import Link from '~/site/docs-shell/components/Link'
+import { useLocale } from '~/site/docs-shell/contexts/locale'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 
 export interface DocumentationIndexEntry {
   id: string

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from 'internal/components/Demo'
+import OriginalDemo from '~/site/docs-shell/components/Demo'
 import Demo from '~/site/components/demo/Demo'
 import { DemoItem } from '~/site/components/demo'
 import styles from './page.module.css'

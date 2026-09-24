@@ -1,6 +1,6 @@
 import BenchmarkBars from './BenchmarkBars'
 import type { BenchmarkBarItem } from './types'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 
 export default function BenchmarkChartGroup({ title, detail = 'Median', items, unit = 'ms' }: {
   title: string

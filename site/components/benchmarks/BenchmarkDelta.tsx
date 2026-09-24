@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import clsx from 'clsx'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkTone } from './types'
 import { benchmarkToneTextClasses } from './utils'
 

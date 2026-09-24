@@ -1,7 +1,7 @@
-import SyntaxTable from 'internal/components/SyntaxTable'
+import SyntaxTable from '~/site/docs-shell/components/SyntaxTable'
 import syntaxes from '../syntaxes'
 import SyntaxTr from '~/site/components/SyntaxTr'
-import Bg from 'internal/components/Bg'
+import Bg from '~/site/docs-shell/components/Bg'
 
 export default () => {
   const previewSyntax = 'bg:blue-60'

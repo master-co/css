@@ -10,7 +10,6 @@
     }
   },
   "scripts": {
-    "submodules": "node submodules.js",
     "postinstall": "husky install",
     "build": "pnpm run build:rust:wasm && node scripts/with-typescript-tooling-compat.mjs turbo run build --filter=\"./packages/*\"",
     "build:rust:native": "cargo xtask build-native --release",

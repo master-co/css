@@ -1,6 +1,6 @@
 import Link from 'next/link'
-import ThemeSelect from '~/internal/components/ThemeSelect'
-import ExpandContent from 'internal/components/ExpandContent'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
+import ExpandContent from '~/site/docs-shell/components/ExpandContent'
 import { BenchmarkDataTable } from '~/site/components/benchmarks'
 import BenchmarkScrollRegion from '~/site/components/benchmarks/BenchmarkScrollRegion'
 import { StaticCSSBytesTable } from '~/site/app/[locale]/guide/benchmarks/components/StaticTailwindComparison'

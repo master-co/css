@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkSampleSummaryStats } from './types'
 import { formatMetricValue } from './utils'
 

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import TierModal from './TierModal'
-import useRewritedPathname from 'internal/uses/rewrited-pathname'
+import useRewritedPathname from '~/site/docs-shell/uses/rewrited-pathname'
 
 export default function BackerTiers() {
   const pathname = useRewritedPathname()

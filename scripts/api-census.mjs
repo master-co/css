@@ -248,7 +248,6 @@ function collectWorkspaceManifests() {
   const files = globSync([
     'packages/*/package.json',
     'examples/*/package.json',
-    'internal/package.json',
     'site/package.json'
   ]).sort()
   return files.map((file) => ({

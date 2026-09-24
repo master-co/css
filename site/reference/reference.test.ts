@@ -4,15 +4,15 @@ import { readFile, readdir, mkdtemp, writeFile, rm } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createDocumentationSearch } from 'internal/utils/documentation-search'
-import { extractSearchNodesFromMdx } from 'internal/utils/search-pages'
+import { createDocumentationSearch } from '~/site/docs-shell/utils/documentation-search'
+import { extractSearchNodesFromMdx } from '~/site/docs-shell/utils/search-pages'
 import { generateReference, renderDocumentMarkdown } from './build'
 import { searchTasks } from './search-tasks'
 import type { ReferenceCatalog } from './types'
 import { generatePresetCSS } from '../common/generate-preset-css'
 import SyntaxTr from '../components/SyntaxTr'
 import { resolveSyntaxRow } from './syntax'
-import resolveHeading from 'internal/utils/resolve-heading'
+import resolveHeading from '~/site/docs-shell/utils/resolve-heading'
 import { extractReferenceMdx } from './markdown'
 import { configuredExampleCSS, configuredExampleHTML, configuredMarkupClasses } from './configured-example'
 import legacyAnchors from './legacy-anchors.json' with { type: 'json' }
@@ -22,7 +22,7 @@ import preset from '../utils/preset-manifest'
 import { compileManifestSync } from '@master/css-compiler/node'
 import { legacySyntaxPages, type LegacySyntaxSlug } from '../utils/legacy-syntax'
 import { syntaxTutorialContent } from '../utils/syntax-tutorial'
-import { markdownTree } from 'internal/utils/markdown-tree'
+import { markdownTree } from '~/site/docs-shell/utils/markdown-tree'
 import { tokenValueEntry } from './value-entry'
 import { documentHeadings } from './headings'
 import { variableNamespaceSources, variableNamespaceSourcesMarkdown } from '../utils/variable-namespace-sources'
@@ -32,10 +32,10 @@ let catalog: ReferenceCatalog
 before(async () => { catalog = await generateReference(root) })
 
 test('Reference and shared search styles use defined site theme variables', async () => {
-  const theme = await readFile(path.join(root, '../internal/styles/theme.css'), 'utf8')
+  const theme = await readFile(path.join(root, 'styles/docs-shell/theme.css'), 'utf8')
   const { manifest } = compileManifestSync(theme, { baseManifest: preset })
   const names = new Set(flattenMasterCSSManifestVariables(manifest.variables).map(variable => variable.name))
-  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/documentation-values.css', '../internal/styles/documentation-search.css']) {
+  for (const file of ['styles/reference.css', 'styles/documentation-index.css', 'styles/documentation-values.css', 'styles/docs-shell/documentation-search.css']) {
     const css = await readFile(path.join(root, file), 'utf8')
     for (const name of collectCSSVariableReferences(css)) assert.ok(names.has(name), `${file}: --${name}`)
   }

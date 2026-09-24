@@ -1,5 +1,5 @@
-import type { FooterLink, FooterNavGroup, FooterProps } from 'internal/components/Footer'
-import type { AppNavItem } from 'internal/contexts/app'
+import type { FooterLink, FooterNavGroup, FooterProps } from '~/site/docs-shell/components/Footer'
+import type { AppNavItem } from '~/site/docs-shell/contexts/app'
 import { IconBrandDiscord, IconBrandGithub, IconBrandX, IconCompass, IconFileText, IconMessages, IconSourceCode, IconWriting } from '@tabler/icons-react'
 
 const repoSlug = process.env.NEXT_PUBLIC_REPO_SLUG || 'css'

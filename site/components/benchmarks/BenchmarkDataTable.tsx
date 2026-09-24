@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import Translate from '~/internal/components/Translate'
+import Translate from '~/site/docs-shell/components/Translate'
 import BenchmarkScrollRegion from './BenchmarkScrollRegion'
 
 /** Native disclosure preserves the full server-rendered table; keyboard scrolling is isolated. */

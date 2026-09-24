@@ -1,4 +1,4 @@
-import brands from 'internal/data/brands'
+import brands from '~/site/docs-shell/data/brands'
 import DocumentChoices from './DocumentChoices'
 import { migrationGuides } from '../utils/migration-guides'
 

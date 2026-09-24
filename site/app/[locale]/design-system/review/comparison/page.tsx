@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from 'internal/components/Demo'
+import OriginalDemo from '~/site/docs-shell/components/Demo'
 import Demo from '~/site/components/demo/Demo'
 import { DemoComparison } from '~/site/components/demo'
 import { ShadowScaleDemo } from '~/site/app/[locale]/guide/elevation/components/ShadowTokens'

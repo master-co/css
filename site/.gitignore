@@ -10,9 +10,6 @@
 /.pnp
 .pnp.js
 /public/monaco-editor
-/public/images
-/public/icons
-/public/fonts
 /public/play-compiler
 /public/search
 /public/reference

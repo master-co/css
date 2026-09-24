@@ -1,0 +1,56 @@
+@layer components {
+  .documentation-search { position: fixed; inset: 0; display: flex; flex-direction: column; margin: min(14dvh, 8rem) auto auto; padding: 0; width: min(42.5rem, calc(100% - 2rem)); max-width: 100%; max-height: min(72dvh, 42rem); border: 1px solid var(--color-line-muted); border-radius: 1rem; background: color-mix(in srgb, var(--color-surface-raised) 96%, transparent); color: var(--color-text-body); box-shadow: 0 1.5rem 5rem #0003, 0 .25rem 1rem #0001; backdrop-filter: blur(24px); overflow: hidden; }
+  .documentation-search::backdrop { background: #0004; backdrop-filter: blur(3px); }
+  .documentation-search-input { display: flex; flex-shrink: 0; align-items: center; gap: .75rem; min-height: 4rem; padding: .75rem 1.25rem; border-bottom: 1px solid var(--color-line-subtle); }
+  .documentation-search-input > svg { flex-shrink: 0; color: var(--color-text-muted); }
+  .documentation-search-input input { min-width: 0; flex: 1; background: transparent; border: 0; outline: none; padding: .5rem 0; font: inherit; font-size: 1rem; color: var(--color-text-strong); appearance: none; }
+  .documentation-search-input input::placeholder { color: var(--color-text-subtle); }
+  .documentation-search-input input::-webkit-search-cancel-button { display: none; }
+  .documentation-search-input button { display: flex; flex-shrink: 0; align-items: center; justify-content: center; color: var(--color-text-muted); border-radius: .375rem; }
+  .documentation-search-input button:hover { color: var(--color-text-strong); background: var(--color-surface-muted); }
+  .documentation-search-clear { width: 1.75rem; height: 1.75rem; }
+  .documentation-search-close { padding: .25rem; }
+  .documentation-search-close span { display: none; }
+  .documentation-search kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.375rem; height: 1.375rem; padding-inline: .3rem; border: 1px solid var(--color-line-muted); border-radius: .25rem; font: inherit; font-size: .6875rem; line-height: 1; background: var(--color-surface-base); }
+  .documentation-search :is(button, a):focus-visible { outline: 2px solid var(--color-focus); outline-offset: -2px; }
+  .documentation-search-results { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+  .documentation-search-status { margin: 0; padding: 1rem 1.25rem .625rem; font-size: .75rem; font-weight: 500; color: var(--color-text-muted); }
+  .documentation-search-results ol { list-style: none; padding: 0 .5rem .5rem; margin: 0; }
+  .documentation-search-results ol:empty { display: none; }
+  .documentation-search-results a { display: flex; align-items: flex-start; gap: .875rem; margin-block: .125rem; padding: .875rem .75rem; border-radius: .625rem; color: var(--color-text-body); text-decoration: none; }
+  .documentation-search-results a:hover { background: var(--color-surface-base); }
+  .documentation-search-results a.is-selected { background: color-mix(in srgb, var(--color-accent) 9%, transparent); }
+  .documentation-search-icon { display: flex; flex: 0 0 2.25rem; align-items: center; justify-content: center; height: 2.25rem; border: 1px solid var(--color-line-subtle); border-radius: .5rem; color: var(--color-text-muted); background: var(--color-surface-raised); }
+  .documentation-search-copy { display: flex; flex: 1; min-width: 0; flex-direction: column; gap: .375rem; }
+  .documentation-search-title { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+  .documentation-search-title strong { font-size: .875rem; font-weight: 560; line-height: 1.5; color: var(--color-text-strong); overflow-wrap: anywhere; }
+  .documentation-search-title small { padding: .0625rem .375rem; border: 1px solid var(--color-line-subtle); border-radius: .25rem; font-size: .625rem; line-height: 1.5; color: var(--color-text-muted); }
+  .documentation-search-excerpt { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; font-size: .8125rem; line-height: 1.55; }
+  .documentation-search-context { font-size: .6875rem; line-height: 1.5; color: var(--color-text-muted); }
+  .documentation-search-context > span { margin-inline: .2rem; }
+  .documentation-search-enter { flex-shrink: 0; align-self: center; color: var(--color-text-muted); opacity: 0; }
+  .documentation-search .is-selected :is(.documentation-search-enter, .documentation-search-icon) { color: var(--color-accent); opacity: 1; }
+  .documentation-search mark { background: transparent; color: var(--color-text-strong); text-decoration: underline; text-decoration-color: var(--color-accent); text-underline-offset: .2em; }
+  .documentation-search-suggestions { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .375rem 1.25rem 1.5rem; }
+  .documentation-search-suggestions > span { width: 100%; margin-block: .125rem .25rem; font-size: .8125rem; color: var(--color-text-body); }
+  .documentation-search-suggestions button { display: flex; align-items: center; gap: .75rem; border: 1px solid var(--color-line-subtle); border-radius: .5rem; padding: .5rem .625rem; background: var(--color-surface-base); font-size: .75rem; }
+  .documentation-search-suggestions button:hover { border-color: var(--color-line-muted); color: var(--color-text-strong); }
+  .documentation-search-suggestions svg { color: var(--color-text-muted); }
+  .documentation-search-empty { display: flex; flex-direction: column; align-items: center; gap: .75rem; padding: 2rem 1.5rem 2.5rem; text-align: center; }
+  .documentation-search-empty > svg { color: var(--color-text-subtle); }
+  .documentation-search-empty strong { color: var(--color-text-strong); font-size: .875rem; font-weight: 500; }
+  .documentation-search-empty p { margin: 0; color: var(--color-text-muted); font-size: .8125rem; }
+  .documentation-search-footer { display: flex; flex-shrink: 0; align-items: center; gap: 1rem; padding: .75rem 1.25rem; border-top: 1px solid var(--color-line-subtle); color: var(--color-text-muted); font-size: .6875rem; }
+  .documentation-search-footer > span { display: flex; align-items: center; gap: .25rem; }
+  .documentation-search-footer > span:last-child { margin-left: auto; }
+  @media (width < 48rem) {
+    .documentation-search { margin: 0; width: 100%; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; background: var(--color-surface-raised); }
+    .documentation-search-input { padding: .625rem 1rem; min-height: 3.75rem; }
+    .documentation-search-close { font-size: .8125rem; padding: .5rem .25rem; }
+    .documentation-search-close span { display: inline; }
+    .documentation-search-close kbd, .documentation-search-footer { display: none; }
+    .documentation-search-results { flex: 1; }
+    .documentation-search-results a { padding-inline: .625rem; gap: .75rem; }
+    .documentation-search-enter { display: none; }
+  }
+}

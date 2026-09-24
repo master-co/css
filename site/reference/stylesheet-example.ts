@@ -1,6 +1,6 @@
 import { compileManifestSync } from '@master/css-compiler/node'
 import { createRenderSessionSync } from '@master/css/node'
-import { beautifyCSS } from 'internal/utils/beautify-css'
+import { beautifyCSS } from '~/site/docs-shell/utils/beautify-css'
 import preset from '../utils/preset-manifest'
 
 /** Compile trusted, standalone documentation CSS through the public rendering API. */

@@ -1,4 +1,4 @@
-import Code from 'internal/components/Code'
+import Code from '~/site/docs-shell/components/Code'
 import DemoConfiguredExample from './DemoConfiguredExample'
 import { authoringSource, authoringHTML, authoringCSS } from '../../utils/authoring-examples'
 

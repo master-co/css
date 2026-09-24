@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import { BenchmarkSource } from '~/site/components/benchmarks'
 import { benchmarkSnapshots } from '~/site/app/[locale]/guide/benchmarks/components/BenchmarkSnapshots'
 import styles from './page.module.css'

@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ThemeSelect from '~/internal/components/ThemeSelect'
+import ThemeSelect from '~/site/docs-shell/components/ThemeSelect'
 import GuideResourceWaterfall from '~/site/app/[locale]/guide/preload-critical-resources/components/ResourceWaterfall'
 import DemoWaterfall from '~/site/components/demo/DemoWaterfall'
 import { resourceWaterfalls } from '~/site/utils/first-paint-examples'

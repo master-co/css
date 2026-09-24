@@ -1,8 +1,8 @@
 'use client'
 
 import { IconBook, IconBraces, IconLayoutGrid, IconPalette, IconSettings, IconTerminal2 } from '@tabler/icons-react'
-import { useLocale } from 'internal/contexts/locale'
-import { useTranslation } from 'internal/contexts/i18n'
+import { useLocale } from '~/site/docs-shell/contexts/locale'
+import { useTranslation } from '~/site/docs-shell/contexts/i18n'
 import DocumentationIndex from '../components/DocumentationIndex'
 import { referenceSections, type ReferenceDocument } from './types'
 

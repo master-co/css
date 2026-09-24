@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import OriginalDemo from 'internal/components/Demo'
+import OriginalDemo from '~/site/docs-shell/components/Demo'
 import ButtonPreview from '~/site/app/[locale]/guide/syntax-tutorial/components/ButtonPreview'
 import Demo from '~/site/components/demo/Demo'
 import DemoExample from '~/site/components/demo/DemoExample'

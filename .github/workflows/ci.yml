@@ -27,9 +27,6 @@ jobs:
       head_sha: ${{ github.event.pull_request.head.sha || github.sha }}
       full: ${{ github.event_name != 'pull_request' }}
       release_build: false
-      trusted: ${{ github.event_name != 'pull_request' || (github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]') }}
-    secrets:
-      GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   required:
     name: required
@@ -41,13 +38,8 @@ jobs:
       - name: Require successful validation
         env:
           VALIDATION_RESULT: ${{ needs.validation.result }}
-          VALIDATION_TRUSTED: ${{ needs.validation.outputs.trusted }}
         run: |
           if [ "$VALIDATION_RESULT" != success ]; then
             echo "Validation finished with result: $VALIDATION_RESULT"
-            exit 1
-          fi
-          if [ "$VALIDATION_TRUSTED" != true ]; then
-            echo "Full CI requires the private internal submodule and is not available for untrusted pull requests."
             exit 1
           fi

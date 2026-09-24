@@ -7,15 +7,15 @@ function statement(value: string) {
   return { type: 'mdxjsEsm', value, data: { estree: parse(value, { ecmaVersion: 'latest', sourceType: 'module' }) } }
 }
 
-test('site demo registration takes precedence over shared MDX auto-imports', () => {
-  const keep = [statement("import Code from 'internal/components/Code'"), statement("import Demo from '~/site/components/demo/Demo'"), { type: 'mdxJsxFlowElement', name: 'Demo' }]
-  const tree = { children: [...['Demo', 'DemoPanel', 'DemoP', 'DemoLabel', 'BrowserHeader', 'IFrame', 'HelloWorld'].map(name => statement(`import ${name} from 'internal/components/${name}'`)), ...keep] }
+test('site demo registration takes precedence over document shell auto-imports', () => {
+  const keep = [statement("import Code from '~/site/docs-shell/components/Code'"), statement("import Demo from '~/site/components/demo/Demo'"), { type: 'mdxJsxFlowElement', name: 'Demo' }]
+  const tree = { children: [...['Demo', 'DemoPanel', 'DemoP', 'DemoLabel', 'BrowserHeader', 'IFrame', 'HelloWorld'].map(name => statement(`import ${name} from '~/site/docs-shell/components/${name}'`)), ...keep] }
   remarkSiteDemos()(tree)
   assert.deepEqual(tree.children, keep)
 })
 
 test('site demo MDX adapter preserves the existing pipeline in both bundlers', async () => {
-  const loader = { loader: 'mdx-js-loader', options: { remarkPlugins: ['/internal/remark/auto-imports.js'] } }
+  const loader = { loader: 'mdx-js-loader', options: { remarkPlugins: ['/site/docs-shell/remark/auto-imports.js'] } }
   const original = {
     turbopack: { rules: { mdx: [{ loaders: [loader], as: '*.tsx' }] } },
     webpack: (config: any) => ({ ...config, module: { rules: [{ use: [loader] }] } }),
@@ -26,5 +26,5 @@ test('site demo MDX adapter preserves the existing pipeline in both bundlers', a
   assert.deepEqual(turboPlugins, webpackPlugins)
   assert.equal(turboPlugins.length, 2)
   assert.match(turboPlugins[1], /site\/utils\/demo-mdx\.js$/)
-  assert.deepEqual(loader.options.remarkPlugins, ['/internal/remark/auto-imports.js'])
+  assert.deepEqual(loader.options.remarkPlugins, ['/site/docs-shell/remark/auto-imports.js'])
 })

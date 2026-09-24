@@ -1,4 +1,4 @@
-import InlineCode from '~/internal/components/InlineCode'
+import InlineCode from '~/site/docs-shell/components/InlineCode'
 import { builtinNativeValueNamespaces } from '@master/css-tooling/builtins'
 import { getUtilityVariableNamespaces, manifestUtilities } from '~/site/utils/manifest-utilities'
 

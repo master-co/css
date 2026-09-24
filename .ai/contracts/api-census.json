@@ -6477,7 +6477,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6496,7 +6496,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6515,7 +6515,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6534,7 +6534,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6553,7 +6553,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6572,7 +6572,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6591,7 +6591,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6610,7 +6610,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6629,7 +6629,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6648,7 +6648,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6667,7 +6667,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6686,7 +6686,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6705,7 +6705,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6724,7 +6724,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6743,7 +6743,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6762,7 +6762,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6781,7 +6781,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6800,7 +6800,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6819,7 +6819,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6838,7 +6838,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6857,7 +6857,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6876,7 +6876,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6895,7 +6895,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6914,7 +6914,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6933,7 +6933,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6952,7 +6952,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -6971,7 +6971,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -6990,7 +6990,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7009,7 +7009,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7028,7 +7028,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7047,7 +7047,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7066,7 +7066,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7085,7 +7085,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7104,7 +7104,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7123,7 +7123,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7142,7 +7142,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7161,7 +7161,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7180,7 +7180,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7199,7 +7199,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7218,7 +7218,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7237,7 +7237,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -7497,7 +7497,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7769,7 +7768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7810,7 +7808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7851,7 +7848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7892,7 +7888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7933,7 +7928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -7974,7 +7968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8015,7 +8008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8056,7 +8048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8097,7 +8088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8138,7 +8128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8179,7 +8168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8220,7 +8208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8261,7 +8248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8302,7 +8288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8343,7 +8328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8384,7 +8368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8425,7 +8408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8466,7 +8448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8507,7 +8488,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8548,7 +8528,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8589,7 +8568,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8630,7 +8608,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8671,7 +8648,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8712,7 +8688,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8753,7 +8728,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8794,7 +8768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8835,7 +8808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8876,7 +8848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8917,7 +8888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8958,7 +8928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -8999,7 +8968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9040,7 +9008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9081,7 +9048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9122,7 +9088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9163,7 +9128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9204,7 +9168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9245,7 +9208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9286,7 +9248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9327,7 +9288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9368,7 +9328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9409,7 +9368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9450,7 +9408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9491,7 +9448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9532,7 +9488,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9573,7 +9528,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9614,7 +9568,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9655,7 +9608,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9696,7 +9648,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9737,7 +9688,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9778,7 +9728,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9819,7 +9768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9860,7 +9808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9901,7 +9848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9942,7 +9888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -9983,7 +9928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10024,7 +9968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10065,7 +10008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10106,7 +10048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10147,7 +10088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10188,7 +10128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10229,7 +10168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10270,7 +10208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10311,7 +10248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10352,7 +10288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10393,7 +10328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10434,7 +10368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10475,7 +10408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10516,7 +10448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10557,7 +10488,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10598,7 +10528,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10639,7 +10568,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10680,7 +10608,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10721,7 +10648,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10762,7 +10688,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10803,7 +10728,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10844,7 +10768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10885,7 +10808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10926,7 +10848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -10967,7 +10888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11008,7 +10928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11049,7 +10968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11090,7 +11008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11131,7 +11048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11172,7 +11088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11213,7 +11128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11254,7 +11168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11295,7 +11208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11336,7 +11248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11377,7 +11288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11418,7 +11328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11459,7 +11368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11500,7 +11408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11541,7 +11448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11582,7 +11488,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11623,7 +11528,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11664,7 +11568,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11705,7 +11608,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11746,7 +11648,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11787,7 +11688,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11828,7 +11728,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11869,7 +11768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11910,7 +11808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11951,7 +11848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -11992,7 +11888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12033,7 +11928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12074,7 +11968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12115,7 +12008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12156,7 +12048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12197,7 +12088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12238,7 +12128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12279,7 +12168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12320,7 +12208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12361,7 +12248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12402,7 +12288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12443,7 +12328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12484,7 +12368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12525,7 +12408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12566,7 +12448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12607,7 +12488,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12648,7 +12528,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12689,7 +12568,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12730,7 +12608,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12771,7 +12648,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12812,7 +12688,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12853,7 +12728,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12894,7 +12768,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12935,7 +12808,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -12976,7 +12848,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13017,7 +12888,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13058,7 +12928,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13099,7 +12968,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13140,7 +13008,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13181,7 +13048,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13222,7 +13088,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13263,7 +13128,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13304,7 +13168,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13345,7 +13208,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13386,7 +13248,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13427,7 +13288,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13468,7 +13328,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13509,7 +13368,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13550,7 +13408,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -13591,7 +13448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -14003,7 +13859,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14031,7 +13886,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14059,7 +13913,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14087,7 +13940,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14115,7 +13967,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14143,7 +13994,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -14171,7 +14021,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -14199,7 +14048,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -14227,7 +14075,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -14255,7 +14102,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -14283,7 +14129,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14311,7 +14156,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14339,7 +14183,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14367,7 +14210,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14395,7 +14237,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14423,7 +14264,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14451,7 +14291,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14479,7 +14318,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14507,7 +14345,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14535,7 +14372,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14563,7 +14399,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14591,7 +14426,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14619,7 +14453,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14647,7 +14480,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14675,7 +14507,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14703,7 +14534,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14731,7 +14561,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14759,7 +14588,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14787,7 +14615,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14815,7 +14642,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14843,7 +14669,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14871,7 +14696,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14899,7 +14723,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14927,7 +14750,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14955,7 +14777,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -14983,7 +14804,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15011,7 +14831,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15039,7 +14858,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15067,7 +14885,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15095,7 +14912,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15123,7 +14939,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15151,7 +14966,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15179,7 +14993,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15207,7 +15020,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15235,7 +15047,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15263,7 +15074,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15291,7 +15101,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15319,7 +15128,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15347,7 +15155,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15375,7 +15182,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15403,7 +15209,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15431,7 +15236,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15459,7 +15263,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15487,7 +15290,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15515,7 +15317,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15543,7 +15344,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15571,7 +15371,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15599,7 +15398,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15627,7 +15425,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15655,7 +15452,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15683,7 +15479,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15711,7 +15506,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15739,7 +15533,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -15767,7 +15560,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15795,7 +15587,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15823,7 +15614,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15851,7 +15641,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15879,7 +15668,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15907,7 +15695,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15935,7 +15722,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15963,7 +15749,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -15991,7 +15776,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16019,7 +15803,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -16047,7 +15830,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16075,7 +15857,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16103,7 +15884,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16131,7 +15911,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16159,7 +15938,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16187,7 +15965,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16215,7 +15992,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16243,7 +16019,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16271,7 +16046,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16299,7 +16073,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16327,7 +16100,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16355,7 +16127,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16383,7 +16154,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16411,7 +16181,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16439,7 +16208,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16467,7 +16235,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16495,7 +16262,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16523,7 +16289,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16551,7 +16316,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16579,7 +16343,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16607,7 +16370,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16635,7 +16397,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16663,7 +16424,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16691,7 +16451,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16719,7 +16478,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16747,7 +16505,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16775,7 +16532,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16803,7 +16559,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16831,7 +16586,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16859,7 +16613,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16887,7 +16640,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16915,7 +16667,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16943,7 +16694,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16971,7 +16721,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -16999,7 +16748,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17027,7 +16775,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17055,7 +16802,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17083,7 +16829,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17111,7 +16856,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17139,7 +16883,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17167,7 +16910,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17195,7 +16937,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17223,7 +16964,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17251,7 +16991,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17279,7 +17018,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17307,7 +17045,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17335,7 +17072,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17363,7 +17099,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17391,7 +17126,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17419,7 +17153,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17447,7 +17180,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17475,7 +17207,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17503,7 +17234,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17531,7 +17261,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17559,7 +17288,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17587,7 +17315,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17615,7 +17342,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17643,7 +17369,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17671,7 +17396,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17699,7 +17423,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17727,7 +17450,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17755,7 +17477,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17783,7 +17504,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -17811,7 +17531,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17839,7 +17558,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17867,7 +17585,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17895,7 +17612,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17923,7 +17639,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17951,7 +17666,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -17979,7 +17693,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18007,7 +17720,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -18035,7 +17747,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18063,7 +17774,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18091,7 +17801,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18119,7 +17828,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18147,7 +17855,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18175,7 +17882,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18203,7 +17909,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18231,7 +17936,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18259,7 +17963,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18287,7 +17990,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18315,7 +18017,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18343,7 +18044,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -18523,7 +18223,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18564,7 +18263,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18605,7 +18303,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18646,7 +18343,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18687,7 +18383,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18728,7 +18423,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18769,7 +18463,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18810,7 +18503,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18851,7 +18543,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18892,7 +18583,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18933,7 +18623,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -18974,7 +18663,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19015,7 +18703,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19056,7 +18743,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19097,7 +18783,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19138,7 +18823,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19179,7 +18863,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19220,7 +18903,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19261,7 +18943,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19302,7 +18983,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19343,7 +19023,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19384,7 +19063,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19425,7 +19103,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19466,7 +19143,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19507,7 +19183,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19548,7 +19223,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19589,7 +19263,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19630,7 +19303,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19671,7 +19343,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19712,7 +19383,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19753,7 +19423,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19794,7 +19463,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19835,7 +19503,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19876,7 +19543,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -19906,13 +19572,13 @@
       "responsibility": "official ESLint flat configuration",
       "consumers": [
         "@master/css-language-service",
-        "internal",
         "master-css-eslint-example",
         "master-css-eslint-legacy-example",
         "master-css-laravel-example",
         "master-css-nextjs-example",
         "master-css-react-example",
-        "master-css-svelte-example"
+        "master-css-svelte-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "value",
@@ -19929,13 +19595,13 @@
       "responsibility": "official ESLint flat configuration",
       "consumers": [
         "@master/css-language-service",
-        "internal",
         "master-css-eslint-example",
         "master-css-eslint-legacy-example",
         "master-css-laravel-example",
         "master-css-nextjs-example",
         "master-css-react-example",
-        "master-css-svelte-example"
+        "master-css-svelte-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "value",
@@ -20374,7 +20040,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -20657,7 +20322,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -20726,7 +20391,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -20784,7 +20448,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -20856,7 +20519,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -20921,13 +20583,13 @@
       "responsibility": "official ESLint flat configuration",
       "consumers": [
         "@master/css-language-service",
-        "internal",
         "master-css-eslint-example",
         "master-css-eslint-legacy-example",
         "master-css-laravel-example",
         "master-css-nextjs-example",
         "master-css-react-example",
-        "master-css-svelte-example"
+        "master-css-svelte-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "value",
@@ -21829,7 +21491,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -21856,7 +21518,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -21883,7 +21545,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "node",
       "lifecycle": "service",
@@ -21910,7 +21572,7 @@
         "@master/css-language-server",
         "@master/css-mcp",
         "@master/css-vscode",
-        "internal"
+        "site"
       ],
       "platform": "universal",
       "lifecycle": "service",
@@ -22039,7 +21701,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22077,7 +21738,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22112,7 +21772,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22152,7 +21811,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22187,7 +21845,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22222,7 +21879,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22257,7 +21913,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22330,7 +21985,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22379,7 +22033,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22428,7 +22081,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22477,7 +22129,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22526,7 +22177,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22575,7 +22225,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22624,7 +22273,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22673,7 +22321,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22722,7 +22369,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22771,7 +22417,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22820,7 +22465,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -22869,7 +22513,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],
@@ -23005,7 +22648,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23041,7 +22683,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23077,7 +22718,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23113,7 +22753,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23149,7 +22788,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23185,7 +22823,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23221,7 +22858,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23257,7 +22893,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23293,7 +22928,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23329,7 +22963,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23365,7 +22998,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23401,7 +23033,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23437,7 +23068,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "universal",
@@ -23473,7 +23103,6 @@
         "@master/css-vscode",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "site"
       ],
       "platform": "node",
@@ -23601,7 +23230,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23652,7 +23280,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23696,7 +23323,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23742,7 +23368,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23786,7 +23411,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23835,7 +23459,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23879,7 +23502,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23923,7 +23545,6 @@
         "@master/css-vite",
         "@master/css-webpack",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "master-css-astro-example",
         "master-css-example",
@@ -23956,13 +23577,13 @@
       "responsibility": "official ESLint flat configuration",
       "consumers": [
         "@master/css-language-service",
-        "internal",
         "master-css-eslint-example",
         "master-css-eslint-legacy-example",
         "master-css-laravel-example",
         "master-css-nextjs-example",
         "master-css-react-example",
-        "master-css-svelte-example"
+        "master-css-svelte-example",
+        "site"
       ],
       "platform": "node",
       "lifecycle": "value",
@@ -24409,7 +24030,6 @@
         "@master/css-vite",
         "@master/css-vscode",
         "@master/eslint-plugin-css",
-        "internal",
         "master-css-angular-example",
         "site"
       ],

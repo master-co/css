@@ -1,4 +1,4 @@
-import Link from 'internal/components/Link'
+import Link from '~/site/docs-shell/components/Link'
 import { IconArrowUpRight } from '@tabler/icons-react'
 import DocumentIdentifier from './DocumentIdentifier'
 

@@ -1,7 +1,7 @@
 'use client'
 
 import clsx from 'clsx'
-import Demo from 'internal/components/Demo'
+import Demo from '~/site/docs-shell/components/Demo'
 import { useEffect, useState } from 'react'
 import { flushSync } from 'react-dom'
 

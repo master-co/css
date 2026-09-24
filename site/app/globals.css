@@ -1,5 +1,5 @@
 @import '@master/css';
-@import '../../internal/styles/main.css';
+@import '../styles/docs-shell/main.css';
 @import '../styles/base.css';
 @import '../styles/btn.css';
 @import '../styles/reference.css';
@@ -7,4 +7,4 @@
 @import '../styles/documentation-values.css';
 @import '../styles/demo.css';
 @import '../styles/benchmarks.css';
-@import '../../internal/styles/documentation-search.css';
+@import '../styles/docs-shell/documentation-search.css';
