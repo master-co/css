@@ -28,6 +28,7 @@ const CSS_MANIFEST_ENTRY_IGNORED_DIRECTORIES = new Set([
   'node_modules',
   'dist',
   'out',
+  '.master',
   '.next',
   '.nuxt',
   '.svelte-kit'

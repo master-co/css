@@ -416,7 +416,7 @@ fn collect_entries(directory: &Path, entries: &mut Vec<PathBuf>) {
             if child
                 .file_name()
                 .to_str()
-                .is_some_and(|name| IGNORED_DIRECTORIES.contains(&name))
+                .is_some_and(|name| name == ".master" || IGNORED_DIRECTORIES.contains(&name))
             {
                 continue;
             }

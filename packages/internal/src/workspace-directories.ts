@@ -6,6 +6,7 @@ const IGNORED_DIRECTORIES = new Set([
   'node_modules',
   'dist',
   'out',
+  '.master',
   '.next',
   '.nuxt',
   '.svelte-kit'

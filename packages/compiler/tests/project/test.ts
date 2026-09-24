@@ -339,6 +339,23 @@ test('loads project-level CSS manifest entries', async () => {
   }
 })
 
+test('ignores generated stylesheets during implicit discovery but accepts explicit entries', async () => {
+  const cwd = createFixture()
+  try {
+    const { entry } = writeCSSFixture(cwd)
+    const generated = join(cwd, '.master', 'stylesheets', 'revision', 'entry.css')
+    mkdirSync(join(cwd, '.master', 'stylesheets', 'revision'), { recursive: true })
+    writeFileSync(generated, '@master entry;')
+
+    await expect(findCSSManifestEntryFiles(cwd)).resolves.toStrictEqual([entry])
+    expect(loadProjectManifestSync({ root: cwd, baseManifest: defaultManifest }).entries).toStrictEqual([entry])
+    expect(loadProjectManifestSync({ root: cwd, entries: [generated], baseManifest: defaultManifest }).entries)
+      .toStrictEqual([generated])
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('finds Master CSS workspace directories from package and CSS entries', async () => {
   const cwd = createFixture()
   try {
@@ -351,6 +368,11 @@ test('finds Master CSS workspace directories from package and CSS entries', asyn
     }))
     writeFileSync(join(cwd, 'packages', 'app', 'index.css'), '@master entry;')
     writeFileSync(join(cwd, 'docs', 'styles', 'global.css'), '@import "@master/css";')
+    mkdirSync(join(cwd, '.master', 'stylesheets', 'revision'), { recursive: true })
+    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'entry.css'), '@master entry;')
+    writeFileSync(join(cwd, '.master', 'stylesheets', 'revision', 'package.json'), JSON.stringify({
+      dependencies: { '@master/css': 'workspace:*' }
+    }))
 
     await expect(findMasterCSSWorkspaceDirectories(cwd)).resolves.toStrictEqual([
       cwd,

@@ -63,6 +63,36 @@ fn discovers_entries_and_compiles_local_imports() {
 }
 
 #[test]
+fn excludes_generated_stylesheets_from_implicit_entries_only() {
+    let project = temp_project();
+    let entry = project.join("entry.css");
+    let generated = project.join(".master/stylesheets/revision/entry.css");
+    fs::create_dir_all(generated.parent().unwrap()).unwrap();
+    fs::write(&entry, "@master entry;").unwrap();
+    fs::write(&generated, "@master entry;").unwrap();
+
+    assert_eq!(
+        find_css_manifest_entries(&project),
+        vec![entry.canonicalize().unwrap()]
+    );
+
+    let explicit = load_project_manifest_entries(
+        std::slice::from_ref(&generated),
+        serde_json::json!({ "version": 1, "utilities": [] }),
+    )
+    .unwrap();
+    assert_eq!(
+        explicit.entries,
+        vec![normalize_path(&generated.canonicalize().unwrap())]
+    );
+
+    let css_extensions = HashSet::from(["css"]);
+    assert!(collect_project_files(&project, &css_extensions).contains(&generated));
+
+    fs::remove_dir_all(project).unwrap();
+}
+
+#[test]
 fn lowers_compose_definitions_against_the_base_manifest() {
     let project = temp_project();
     let entry = project.join("entry.css");
