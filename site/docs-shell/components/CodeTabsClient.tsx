@@ -3,7 +3,7 @@
 import CodeTabBar from './CodeTabBar'
 import clsx from 'clsx'
 import { CodeTab } from './CodeTabs'
-import { Dispatch, SetStateAction, useMemo, useState, useSyncExternalStore } from 'react'
+import { Dispatch, SetStateAction, useId, useMemo, useState, useSyncExternalStore } from 'react'
 import { useLocalStorage } from '../uses/use-local-storage'
 
 type CodeTabsClientProps = {
@@ -86,14 +86,16 @@ function CodeTabsFrame(props: CodeTabsClientProps & {
   renderAllPanels?: boolean
   setName: Dispatch<SetStateAction<string | undefined>>
 }) {
+  const idPrefix = useId()
   const current = useMemo(() => {
-    const tab = props.children.find((child: any) => child.name === props.name)
+    const tab = props.children.find((child) => child.name === props.name)
     if (!tab) return props.children[0]
     return tab
   }, [props.name, props.children])
+  const currentIndex = props.children.indexOf(current)
   return (
     <div
-      className={clsx('flex flex-col mt:5x {my:0;flex:1}_.code {bt:0px!;rtl:0px;rtr:0px}_pre codeTabs', props.className)}
+      className={clsx('flex flex-col mt:5x codeTabs', props.className)}
       data-code-tabs-current-name={current.name}
       data-code-tabs-storage-key={props.localStorageKey}
       suppressHydrationWarning={Boolean(props.localStorageKey)}
@@ -102,18 +104,23 @@ function CodeTabsFrame(props: CodeTabsClientProps & {
         {...props}
         className={props.tabbarClassName}
         currentName={current.name}
-        currentCode={current.code}
+        copyText={current.copyText ?? current.code}
         tabs={props.children}
-        onTabChange={(event: Event, name: string) => {
-          const tab = props.children.find((child: any) => child.name === name)
+        idPrefix={idPrefix}
+        onTabChange={(name: string) => {
+          const tab = props.children.find((child) => child.name === name)
           if (!tab) throw new Error(`Tab ${name} not found`)
           props.setName(tab.name)
         }} />
       {
         props.renderAllPanels
-          ? props.children.map((tab) => (
+          ? props.children.map((tab, index) => (
             <div
               className={clsx('code', { 'hidden': current.name !== tab.name })}
+              role="tabpanel"
+              id={`${idPrefix}-panel-${index}`}
+              aria-labelledby={`${idPrefix}-tab-${index}`}
+              tabIndex={0}
               data-code-tabs-panel-name={tab.name}
               hidden={current.name !== tab.name}
               key={tab.name}
@@ -122,7 +129,7 @@ function CodeTabsFrame(props: CodeTabsClientProps & {
               {tab.highlightedCode}
             </div>
           ))
-          : <div className={clsx('code')} key={current.name}>
+          : <div className="code" role="tabpanel" id={`${idPrefix}-panel-${currentIndex}`} aria-labelledby={`${idPrefix}-tab-${currentIndex}`} tabIndex={0} key={current.name}>
             {current.highlightedCode}
           </div>
       }

@@ -6,11 +6,6 @@ import { useSyncExternalStore } from 'react'
 const emptySubscribe = () => () => undefined
 
 function codeTabsBootstrap() {
-  const activeClasses = ['text:strong', 'untouchable', 'rbl:lg+div']
-  const inactiveClasses = ['bb:1px', 'text:body', 'text:strong:hover']
-  const activeNextClasses = ['br:1px', 'rbr:lg']
-  const activePreviousClasses = ['rbl:lg']
-  const indexedInactiveClasses = ['bl:1px']
   let attempts = 0
 
   const readStoredName = (key: string) => {
@@ -21,12 +16,6 @@ function codeTabsBootstrap() {
       return typeof parsed === 'string' ? parsed : undefined
     } catch {
       return
-    }
-  }
-
-  const toggleClasses = (element: Element, classes: string[], enabled: boolean) => {
-    for (const className of classes) {
-      element.classList.toggle(className, enabled)
     }
   }
 
@@ -46,26 +35,10 @@ function codeTabsBootstrap() {
     if (!currentName) return false
 
     root.dataset.codeTabsCurrentName = currentName
-    root.querySelector<HTMLElement>('[data-code-tabs-controls]')?.classList.toggle('rbr:lg', currentName === firstName)
-
-    triggers.forEach((trigger, index) => {
-      const name = trigger.dataset.codeTabsTabName
-      const active = currentName === name
-
-      trigger.classList.toggle('active', active)
-      trigger.classList.toggle('active-next', names[index + 1] === currentName)
-      trigger.classList.toggle('active-previous', names[index - 1] === currentName)
-      toggleClasses(trigger, activeClasses, active)
-      toggleClasses(trigger, inactiveClasses, !active)
-      toggleClasses(trigger, activeNextClasses, names[index + 1] === currentName)
-      toggleClasses(trigger, activePreviousClasses, names[index - 1] === currentName)
-      toggleClasses(trigger, indexedInactiveClasses, !active && index > 0)
-    })
-
-    root.querySelectorAll<HTMLElement>('[data-code-tabs-icon-name]').forEach((icon) => {
-      const active = icon.dataset.codeTabsIconName === currentName
-      icon.classList.toggle('active', active)
-      icon.classList.toggle('hidden', !active)
+    triggers.forEach((trigger) => {
+      const active = trigger.dataset.codeTabsTabName === currentName
+      trigger.setAttribute('aria-selected', String(active))
+      trigger.tabIndex = active ? 0 : -1
     })
 
     root.querySelectorAll<HTMLElement>('[data-code-tabs-panel-name]').forEach((panel) => {

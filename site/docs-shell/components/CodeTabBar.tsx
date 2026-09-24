@@ -1,71 +1,71 @@
 'use client'
 
-import CopySvg from '../../public/icons/copy.svg'
-import { snackbar } from '../utils/snackbar'
-import WindowControls from './WindowControls'
+import type { KeyboardEvent } from 'react'
 import clsx from 'clsx'
-import { useMemo } from 'react'
+import WindowControls from './WindowControls'
 import FileIcon from './FileIcon'
+import CodeCopyButton from './CodeCopyButton'
 
-export default function CodeTabBar({ tabs, onTabChange, currentName, currentCode, className, showControls }: any) {
-  const firstActive = useMemo(() => currentName === tabs[0].name, [currentName, tabs])
-  return (
-    <div className={clsx('code-bar', className)}>
-      {showControls && <div data-code-tabs-controls suppressHydrationWarning className={clsx('flex flex:0|0|auto items-center px:0.625rem b:subtle bb:1px br:1px', { 'rbr:lg': firstActive })}>
-        <WindowControls />
-      </div>}
-      {
-        tabs.map(({ name, lang, ext }: any, index: number) => {
-          const active = currentName === name || tabs.length === 1
-          const activeNext = tabs[index + 1]?.name === currentName && tabs.length > 1
-          const activePrevious = tabs[index - 1]?.name === currentName
-          return (
-            <button key={name}
-              className={clsx(
-                'flex flex:0|0|auto items-center max-w:250px px:sm b-solid b:subtle',
-                {
-                  'active': active,
-                  'active-next': activeNext,
-                  'active-previous': activePrevious,
-                  'text:strong untouchable rbl:lg+div': active,
-                  'bb:1px text:body text:strong:hover': !active,
-                  'br:1px rbr:lg': activeNext,
-                  'rbl:lg': activePrevious,
-                  'bl:1px': currentName !== name && index > 0
-                }
-              )}
-              data-code-tabs-tab-name={name}
-              onClick={
-                onTabChange
-                  ? (event) => onTabChange(event, name)
-                  : undefined
-              }
-              suppressHydrationWarning
-              type="button"
-            >
-              <FileIcon
-                name={name}
-                lang={lang}
-                ext={ext}
-                className={clsx('size:14px mb:-0.125rem ml:-1x mr:3xs', { 'active': active, 'hidden': !active })}
-                data-code-tabs-icon-name={name}
-                suppressHydrationWarning
-              />
-              <div className={clsx('block! line-clamp:1 flex:1 white-space:nowrap')}>{name}</div>
-            </button>
-          )
-        })
-      }
-      <div className="flex flex:1 items-center justify-end px:sm bb:1px|solid|subtle bl:1px|solid|subtle">
-        <CopySvg width="12" height="12" viewBox="0 0 24 24"
-          strokeWidth="1.2"
-          className="mr:-0.313rem cursor:pointer fg:slate-60:not(:hover)@light text:muted:not(:hover)@dark"
-          onClick={() => {
-            snackbar('Copied' + (currentName ? ` <b>${currentName}</b>` : ''))
-            navigator.clipboard.writeText(currentCode)
-          }}
-        />
+type Tab = { name?: string, lang: string, ext?: string }
+
+type Props = {
+  tabs: Tab[]
+  currentName?: string
+  copyText: string
+  className?: string
+  showControls?: boolean
+  copyable?: boolean
+  idPrefix?: string
+  onTabChange?: (name: string) => void
+}
+
+export default function CodeTabBar({ tabs, currentName, copyText, className, showControls, copyable = true, idPrefix, onTabChange }: Props) {
+  const interactive = Boolean(onTabChange)
+
+  function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    let nextIndex: number
+    switch (event.key) {
+      case 'ArrowRight': nextIndex = (index + 1) % tabs.length; break
+      case 'ArrowLeft': nextIndex = (index - 1 + tabs.length) % tabs.length; break
+      case 'Home': nextIndex = 0; break
+      case 'End': nextIndex = tabs.length - 1; break
+      default: return
+    }
+    event.preventDefault()
+    onTabChange?.(tabs[nextIndex].name ?? tabs[nextIndex].lang)
+    event.currentTarget.closest('[role="tablist"]')?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[nextIndex]?.focus()
+  }
+
+  return <div className={clsx('code-bar', className)}>
+    {showControls && <div className="code-window-controls" aria-hidden="true"><WindowControls /></div>}
+    {interactive
+      ? <div className="code-bar-tabs" role="tablist" aria-label="Code examples">
+        {tabs.map(({ name, lang, ext }, index) => {
+          const tabName = name ?? lang
+          const active = currentName === tabName
+          return <button
+            key={tabName}
+            type="button"
+            className="code-tab"
+            role="tab"
+            id={`${idPrefix}-tab-${index}`}
+            aria-controls={`${idPrefix}-panel-${index}`}
+            aria-selected={active}
+            tabIndex={active ? 0 : -1}
+            data-code-tabs-tab-name={tabName}
+            suppressHydrationWarning
+            onClick={() => onTabChange?.(tabName)}
+            onKeyDown={event => onTabKeyDown(event, index)}
+          >
+            <FileIcon name={tabName} lang={lang} ext={ext} className="code-tab-icon" />
+            <span>{tabName}</span>
+          </button>
+        })}
       </div>
-    </div>
-  )
+      : <div className="code-file-label">
+        <FileIcon name={tabs[0]?.name ?? tabs[0]?.lang ?? ''} lang={tabs[0]?.lang} ext={tabs[0]?.ext} className="code-tab-icon" />
+        <span>{tabs[0]?.name}</span>
+      </div>}
+    {copyable && <div className="code-bar-actions"><CodeCopyButton key={currentName} text={copyText} name={currentName} /></div>}
+  </div>
 }

@@ -18,7 +18,7 @@ export default function DocumentCodeExample({ title, language, source, result, r
     <figcaption>{title}</figcaption>
     <div className="doc-code-example-part">
       <div className="doc-code-example-bar"><span>{sourceLabel}</span><DocumentCopyButton text={source} label={`${title} — ${sourceLabel}`} /></div>
-      <Code lang={language}>{source}</Code>
+      <Code lang={language} copyable={false}>{source}</Code>
     </div>
     {diagnostic && <div className="doc-code-diagnostic" data-severity={diagnostic.severity.toLowerCase()}>
       <span className="doc-code-severity">{diagnostic.severity}</span>
@@ -27,7 +27,7 @@ export default function DocumentCodeExample({ title, language, source, result, r
     </div>}
     {result !== undefined && <div className="doc-code-example-part">
       <div className="doc-code-example-bar"><span>{resultLabel}</span><DocumentCopyButton text={result} label={`${title} — ${resultLabel}`} /></div>
-      <Code lang={resultLanguage}>{result}</Code>
+      <Code lang={resultLanguage} copyable={false}>{result}</Code>
     </div>}
   </figure>
 }

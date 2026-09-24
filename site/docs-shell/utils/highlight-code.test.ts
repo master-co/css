@@ -2,6 +2,7 @@ import { strict as assert } from 'node:assert'
 import { test } from 'node:test'
 import type { Element, Root, RootContent } from 'hast'
 import highlightCode from './highlight-code'
+import highlightedCodeText from './highlighted-code-text'
 
 test('highlightCode renders Master CSS semantic spans only for CSS directive class lists', async () => {
   const hast = await highlightCode([
@@ -115,6 +116,20 @@ test('highlightCode removes incidental outer indentation for indented code block
     'import "./home.css"',
     'export default function Page() {}'
   ])
+})
+
+test('copy text follows rendered indentation, formatting, and removed mark directives', async () => {
+  const indented = await highlightCode('    <div>\n      <span>Text</span>\n    </div>', { lang: 'html', dedent: 'block' })
+  assert.equal(highlightedCodeText(indented), '<div>\n  <span>Text</span>\n</div>')
+
+  const formatted = await highlightCode('a{color:red}', { lang: 'css', beautify: true })
+  assert.equal(highlightedCodeText(formatted), 'a {\n  color: red\n}')
+
+  const marked = await highlightCode('<!-- @MARK text:red -->\n<div class="text:red">Text</div>', { lang: 'html' })
+  assert.equal(highlightedCodeText(marked), '<div class="text:red">Text</div>')
+
+  const diff = await highlightCode('color: red; /* [!code ++] */', { lang: 'css' })
+  assert.equal(highlightedCodeText(diff), 'color: red;')
 })
 
 function hasSemanticClass(root: Root, className: string): boolean {
