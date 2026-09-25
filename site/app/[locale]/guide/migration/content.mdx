@@ -67,7 +67,7 @@ Then migrate incrementally:
 3. Choose the rendering mode that matches this project: static rendering, runtime rendering, or progressive rendering.
 4. Convert repeated visual styles into Master CSS classes in markup where that improves clarity.
 5. Move shared design values into `@theme` tokens.
-6. Use `@components` and `@compose` for reusable component classes only when markup classes would become hard to maintain.
+6. Use `@layer components` and `@compose` for reusable component classes only when markup classes would become hard to maintain.
 7. Keep vendor CSS, generated CSS, complex animation CSS, and hard-to-read one-off CSS in regular CSS unless converting it improves maintainability.
 8. Remove the old styling dependency only after the migrated screens build and match the previous UI.
 

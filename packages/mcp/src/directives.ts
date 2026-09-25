@@ -42,6 +42,7 @@ function summarizeCompileResult(result: MasterCSSCompileManifestResult) {
     .map((diagnostic) => diagnostic.message)
   return {
     manifest: summarizeManifest(result.manifest),
+    compositions: result.compositions ?? [],
     directives: {
       manifestInput: result.directiveSummary.manifestInput,
       classNames: result.classNames,

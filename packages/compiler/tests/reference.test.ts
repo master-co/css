@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { describe, expect, test } from 'vitest'
@@ -28,7 +28,7 @@ describe('CSS @reference', () => {
           }
         }
 
-        @components {
+        @utilities {
           brand {
             color: var(--color-brand);
           }
@@ -59,6 +59,8 @@ describe('CSS @reference', () => {
       expect(result.manifest.utilities?.some((utility) => utility.name === 'brand') ?? false).toBe(false)
       expect(result.dependencies).toContain(entryPath)
       expect(result.dependencies).toContain(tokensPath)
+      expect(result.compositions?.[0].definitionSources).toEqual(expect.arrayContaining([expect.objectContaining({ file: tokensPath })]))
+      expect(result.compositions?.[0].source?.file).toBe(entryPath)
     } finally {
       rmSync(root, { recursive: true, force: true })
     }
@@ -69,11 +71,11 @@ describe('CSS @reference', () => {
     try {
       const tokensPath = join(root, 'tokens.css')
       const entryPath = join(root, 'src/component.css')
-      writeFileSync(tokensPath, '@components { brand { color: red; } }')
+      writeFileSync(tokensPath, '@utilities { brand { color: red; } }')
       writeFileSync(entryPath, `
         @reference "../tokens.css";
 
-        @components {
+        @utilities {
           brand {
             color: blue;
           }
@@ -103,7 +105,7 @@ describe('CSS @reference', () => {
         '@reference "./b.css";',
         '.a { @compose b; }'
       ].join('\n'))
-      writeFileSync(bPath, '@components { b { display: block; } }')
+      writeFileSync(bPath, '@utilities { b { display: block; } }')
 
       const result = compileProjectManifest([aPath])
       expect(result.css).toContain('.a{display:block}')
@@ -144,4 +146,21 @@ describe('CSS @reference', () => {
       rmSync(root, { recursive: true, force: true })
     }
   })
+})
+
+
+test('references exported CSS authoring packages with compiler-only definition locations', () => {
+  const root = createFixture()
+  try {
+    const packageDir = join(root, 'node_modules', '@acme', 'theme')
+    mkdirSync(packageDir, { recursive: true })
+    writeFileSync(join(packageDir, 'package.json'), JSON.stringify({ name: '@acme/theme', exports: { '.': './master.css' } }))
+    writeFileSync(join(packageDir, 'master.css'), '@utilities{paint{color:red}}@layer components{.button{display:flex}}')
+    const file = join(root, 'src', 'local.css')
+    writeFileSync(file, '@reference "@acme/theme";.local{@compose paint;}')
+    const result = compileCSSManifestFile(file)
+    expect(result.css).toContain('.local{color:red}')
+    expect(result.css).not.toContain('.button')
+    expect(result.compositions?.[0].definitionSources[0].file).toBe(realpathSync(join(packageDir, 'master.css')))
+  } finally { rmSync(root, { recursive: true, force: true }) }
 })

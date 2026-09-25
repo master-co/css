@@ -251,18 +251,33 @@ fn compile_css_directives_impl(
                     directive,
                     &mut manifest_input,
                 )?,
-                DirectiveName::Defaults | DirectiveName::Components | DirectiveName::Utilities => {
-                    lower_managed_definition_rule(
+                DirectiveName::Defaults | DirectiveName::Components => {
+                    let name = if matches!(directive.name, DirectiveName::Defaults) {
+                        "defaults"
+                    } else {
+                        "components"
+                    };
+                    return Err(crate::syntax::ranged_directive_diagnostic(
                         source,
                         &options.from,
-                        directive,
-                        &mut manifest_input,
-                        &mut class_names,
-                        &mut style_definitions,
-                        &mut style_order,
-                        &stylesheet_variant_rule_offsets,
-                    )?
+                        directive.start_byte,
+                        directive.start_byte + name.len() + 1,
+                        mastercss_schema::ErrorCode::RemovedManagedDirective,
+                        format!(
+                            "@{name} has been removed; use native @layer {name} with class selectors. Run master-css migrate --from rc-managed"
+                        ),
+                    ));
                 }
+                DirectiveName::Utilities => lower_managed_definition_rule(
+                    source,
+                    &options.from,
+                    directive,
+                    &mut manifest_input,
+                    &mut class_names,
+                    &mut style_definitions,
+                    &mut style_order,
+                    &stylesheet_variant_rule_offsets,
+                )?,
             },
             rule => {
                 let mut lowerer = crate::native_conditionals::NativeConditionalLowerer {
@@ -378,6 +393,8 @@ fn compile_css_directives_impl(
         )
     };
     Ok(CompileCssDirectivesResult {
+        utility_sources: crate::utility_sources::collect(source, &options.from),
+        compositions: Vec::new(),
         native_output,
         native_mappings,
         manifest_input,

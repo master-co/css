@@ -1,7 +1,7 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssRule, HashMap, PrinterOptions, StyleRule,
-    ToCss, UtilityLayerName, Value, collect_declarations, combine_managed_selectors,
-    css_comment_end, css_quote_end, next_char_end, preserve_compatible_literal_spelling,
+    ToCss, UtilityLayerName, Value, collect_ordered_declarations, combine_managed_selectors,
+    css_comment_end, css_quote_end, next_char_end, preserve_ordered_literal_spelling,
     printed_selectors,
 };
 use crate::source_index::SourceIndex;
@@ -529,6 +529,17 @@ pub(crate) fn insert_condition_properties(
 
 pub(crate) fn push_pattern_declarations(
     definition: &mut serde_json::Map<String, Value>,
+    declarations: Vec<super::CssDeclaration>,
+    selector: &str,
+    condition_path: &[CssDirectiveConditionPathEntry],
+) {
+    for run in super::declaration_runs(declarations) {
+        push_pattern_declaration_run(definition, run, selector, condition_path);
+    }
+}
+
+fn push_pattern_declaration_run(
+    definition: &mut serde_json::Map<String, Value>,
     declarations: serde_json::Map<String, Value>,
     selector: &str,
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -593,7 +604,15 @@ pub(crate) fn lower_managed_pattern_rule_list(
                 )?;
             }
             CssRule::NestedDeclarations(child) => {
-                let declarations = collect_declarations(&child.declarations, filename)?;
+                let mut declarations = collect_ordered_declarations(&child.declarations, filename)?;
+                if let Some(start) = body.byte_offset_for_location(child.loc.line, child.loc.column)
+                {
+                    crate::declarations::preserve_ordered_declaration_sequence(
+                        body.text(),
+                        start,
+                        &mut declarations,
+                    );
+                }
                 for selector in selectors {
                     push_pattern_declarations(
                         definition,
@@ -729,9 +748,9 @@ pub(crate) fn lower_managed_pattern_style(
     variant_rule_offsets: &HashMap<usize, String>,
     definition: &mut serde_json::Map<String, Value>,
 ) -> Result<(), CompilerError> {
-    let mut declarations = collect_declarations(&style.declarations, filename)?;
+    let mut declarations = collect_ordered_declarations(&style.declarations, filename)?;
     if let Some(start) = body.byte_offset_for_location(style.loc.line, style.loc.column) {
-        preserve_compatible_literal_spelling(body.text(), start, &mut declarations);
+        preserve_ordered_literal_spelling(body.text(), start, &mut declarations);
     }
     for selector in selectors {
         push_pattern_declarations(definition, declarations.clone(), selector, condition_path);

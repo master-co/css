@@ -130,6 +130,7 @@ impl EngineSession {
                         conditions.extend(rule_conditions);
                         generated.push(EngineCompositionRuleIr {
                             class_name: class_name.to_owned(),
+                            utility_name: utility.name.clone(),
                             key: key.clone(),
                             layer,
                             explicit_layer: branch.layer,

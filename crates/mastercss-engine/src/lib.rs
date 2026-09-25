@@ -8,10 +8,10 @@ use mastercss_lexer::{
     transform_css_variable_references, utf16_len,
 };
 use mastercss_schema::{
-    Diagnostic, EmittedGlobals, EngineAnimationResourceIr, EngineInspectionIr, EngineResourcesIr,
-    EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode, GeneratedRuleIr,
-    GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr, RuleMutationIr,
-    RulePriorityIr, RuleTarget, UtilityLayerName,
+    CssDeclaration, Diagnostic, EmittedGlobals, EngineAnimationResourceIr, EngineInspectionIr,
+    EngineResourcesIr, EngineSnapshotIr, EngineTransitionIr, EngineVariableResourceIr, ErrorCode,
+    GeneratedRuleIr, GeneratedRuleNodeIr, MasterCssManifest, NativeDeclarationCandidateIr,
+    RuleMutationIr, RulePriorityIr, RuleTarget, UtilityLayerName,
 };
 use serde::Deserialize;
 use serde::Serialize;
@@ -380,6 +380,9 @@ pub struct EngineClassVariableIr {
 #[serde(rename_all = "camelCase")]
 pub struct EngineCompositionRuleIr {
     pub class_name: String,
+    /// Exact matched definition, retained only for compiler provenance.
+    #[serde(skip)]
+    pub utility_name: Option<String>,
     pub key: String,
     pub layer: UtilityLayerName,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -389,7 +392,7 @@ pub struct EngineCompositionRuleIr {
     pub sort_tier: i32,
     pub priority: RulePriorityIr,
     pub selector: String,
-    pub declarations: Map<String, Value>,
+    pub declarations: Vec<CssDeclaration>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub conditions: Vec<String>,
 }

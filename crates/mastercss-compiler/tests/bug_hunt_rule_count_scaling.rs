@@ -17,7 +17,7 @@ enum Shape {
     Resources,
     /// `@theme` variables merged into the manifest, with a base manifest holding as many.
     Theme,
-    /// `@components` definitions merged into the manifest utilities.
+    /// `@utilities` definitions merged into the manifest utilities.
     Components,
 }
 
@@ -25,7 +25,7 @@ fn stylesheet(shape: Shape, rules: usize, multiline: bool) -> String {
     let prefix = match shape {
         Shape::Compose => "@master entry;",
         Shape::Theme => "@master entry;@theme{",
-        Shape::Components => "@master entry;@components{",
+        Shape::Components => "@master entry;@utilities{",
         Shape::Media | Shape::Resources => "",
     };
     let suffix = match shape {

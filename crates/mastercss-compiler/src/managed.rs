@@ -2,9 +2,9 @@ use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
     CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap,
     ParsedManagedPattern, StyleRule, UnknownAtRule, UtilityLayerName, Value,
-    collect_class_list_token_ranges, collect_declarations, combine_managed_selectors,
+    collect_class_list_token_ranges, collect_ordered_declarations, combine_managed_selectors,
     condition_properties, css_statement_delimiter, directive_error, lower_managed_pattern_style,
-    managed_selector_definition, minified_css, next_char_end, preserve_compatible_literal_spelling,
+    managed_selector_definition, minified_css, next_char_end, preserve_ordered_literal_spelling,
     printed_selectors, trim_byte_range, utf16_to_byte_offset,
 };
 use crate::source_index::SourceIndex;
@@ -17,8 +17,9 @@ pub(crate) struct ManagedStyleContext {
 }
 
 pub(crate) fn push_managed_declarations(
-    declarations: serde_json::Map<String, Value>,
+    declarations: Vec<super::CssDeclaration>,
     context: &ManagedStyleContext,
+    declaration_source: Option<CssDirectiveSourceReference>,
     condition_path: &[CssDirectiveConditionPathEntry],
     layer: UtilityLayerName,
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
@@ -33,7 +34,7 @@ pub(crate) fn push_managed_declarations(
         order: *style_order,
         selector: context.selectors.join(","),
         declarations,
-        source: None,
+        source: declaration_source,
         selector_source: context.selector_source.clone(),
         conditions,
         condition_path,
@@ -105,6 +106,7 @@ pub(crate) fn lower_compose_rule(
         body_start_byte + directive_end,
     );
     let (conditions, path) = condition_properties(condition_path);
+    *style_order += 1;
     for token in collect_class_list_token_ranges(class_list) {
         if token.token.starts_with('{') {
             return Err(CompilerError::DirectiveDiagnostic {
@@ -118,7 +120,6 @@ pub(crate) fn lower_compose_rule(
             .expect("lexer ranges are valid UTF-16 boundaries");
         let token_end = utf16_to_byte_offset(class_list, token.range.end)
             .expect("lexer ranges are valid UTF-16 boundaries");
-        *style_order += 1;
         style_definitions.push(CssDirectiveStyleDefinition::Compose {
             order: *style_order,
             class_name: token.token,
@@ -156,17 +157,24 @@ pub(crate) fn lower_managed_style(
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
-    let mut declarations = collect_declarations(&style.declarations, filename)?;
+    let mut declarations = collect_ordered_declarations(&style.declarations, filename)?;
     if let Some(start) = context
         .selector_source
         .as_ref()
         .and_then(|selector| source.byte_offset(selector.range.end))
     {
-        preserve_compatible_literal_spelling(source.text(), start, &mut declarations);
+        preserve_ordered_literal_spelling(source.text(), start, &mut declarations);
     }
     push_managed_declarations(
         declarations,
         &context,
+        context.selector_source.as_ref().and_then(|selector| {
+            let start = source.byte_offset(selector.range.end)?;
+            let open = start + source.text()[start..].find('{')?;
+            let first = open + 1 + source.text()[open + 1..].len()
+                - source.text()[open + 1..].trim_start().len();
+            source.reference(filename, first, first)
+        }),
         condition_path,
         layer,
         style_definitions,
@@ -289,10 +297,18 @@ pub(crate) fn lower_managed_rule_list(
                         "Managed definition directives only accept bare managed names and nested at-rules",
                     ));
                 };
-                let declarations = collect_declarations(&child.declarations, filename)?;
+                let declarations = collect_ordered_declarations(&child.declarations, filename)?;
                 push_managed_declarations(
                     declarations,
                     context,
+                    body.byte_offset_for_location(child.loc.line, child.loc.column)
+                        .and_then(|offset| {
+                            source.reference(
+                                filename,
+                                body_start_byte + offset,
+                                body_start_byte + offset,
+                            )
+                        }),
                     condition_path,
                     layer,
                     style_definitions,

@@ -89,12 +89,12 @@ After candidate scanning, Master CSS validates each class against the active man
 - It matches a native class collected from a stylesheet; this retains usage when [native pruning](/guide/native-css-pruning) is explicitly enabled.
 
 ```css name=index.css
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose inline-flex items-center h:40px px-md r-md;
   }
 
-  hero-title {
+  .hero-title {
     @compose m:0 font-5xl font-heavy text-neutral;
   }
 }

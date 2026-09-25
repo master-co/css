@@ -41,9 +41,13 @@ fn declarations(engine: &EngineSession, class: &str) -> String {
         .unwrap()
         .into_iter()
         .flat_map(|rule| {
-            rule.declarations
-                .into_iter()
-                .map(|(property, value)| format!("{property}:{}", value.as_str().unwrap()))
+            rule.declarations.into_iter().map(|declaration| {
+                format!(
+                    "{}:{}",
+                    declaration.property,
+                    declaration.value.as_str().unwrap()
+                )
+            })
         })
         .collect::<Vec<_>>()
         .join(";")

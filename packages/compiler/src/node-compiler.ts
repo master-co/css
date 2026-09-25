@@ -11,7 +11,8 @@ import {
 import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import type {
   CSSDirectiveExtractionPolicy,
-  CSSDirectiveReference
+  CSSDirectiveReference,
+  CSSUtilitySource
 } from '@master/css-schema/css-directives'
 import {
   setCompilerDiagnosticCount,
@@ -29,6 +30,7 @@ import {
 import {
   isExpandableImportSource,
   resolveRelativeCSSFile,
+  resolveNodePackageCSS,
   resolveMasterCSSPackageEntryFile,
   prepareCSSImportGraph,
   type PreparedCSSImportGraph
@@ -369,6 +371,7 @@ function compileManifestInputWithBinding(
 }
 
 interface BindingLowerCSSDirectivesResult {
+  compositions: NonNullable<CompileCSSResult['compositions']>
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: CompileCSSResult['generatedMappings']
@@ -394,6 +397,7 @@ function lowerCSSDirectivesWithBinding(
     nativeCompiler().lowerCSSDirectives(
       {
         manifestInput: result.manifestInput,
+        utilitySources: result.utilitySources || [],
         nativeOutput: result.nativeOutput,
         styleDefinitions: result.styleDefinitions || [],
         warnings: result.warnings
@@ -429,8 +433,10 @@ export function resolveCSSReferenceFile(reference: CSSDirectiveReference, option
     : resolve(options.root || process.cwd(), 'master.css')
   const packageFile = resolveMasterCSSPackageEntryFile(reference.source, fromFile, options.root)
   if (packageFile) return packageFile
+  const exportedCSS = resolveNodePackageCSS(reference.source, fromFile)
+  if (exportedCSS) return exportedCSS
   if (isExpandableImportSource(reference.source, fromFile)) return resolveRelativeCSSFile(reference.source, fromFile)
-  throw new Error(`@reference only supports relative CSS files or Master CSS package entries: ${reference.source}`)
+  throw new Error(`@reference only supports relative CSS files or exported package CSS entries: ${reference.source}`)
 }
 
 function normalizeReferenceStack(stack: string[] | undefined) {
@@ -445,6 +451,7 @@ function resolveCSSReferenceContext(
   const warnings: string[] = []
   let manifest = options.baseManifest
   let hasReferences = false
+  const utilitySources: CSSUtilitySource[] = []
 
   for (const reference of references || []) {
     const referenceFile = resolveCSSReferenceFile(reference, options)
@@ -460,6 +467,7 @@ function resolveCSSReferenceContext(
       preserveNativeCSS: false,
       referenceStack: options.referenceStack
     })
+    utilitySources.push(...(result.utilitySources || []))
     hasReferences = true
     manifest = result.manifest
     addUnique(dependencies, result.dependencies)
@@ -469,6 +477,7 @@ function resolveCSSReferenceContext(
   return {
     dependencies,
     warnings,
+    utilitySources,
     ...(hasReferences ? { manifest } : {})
   }
 }
@@ -479,7 +488,8 @@ function toCompileCSSManifestResult(
 ): CompileCSSManifestResult {
   const { manifestInput: _directiveManifestInput, ...directiveData } = result
   const referenceContext = resolveCSSReferenceContext(result.references, options)
-  const lowerResult = lowerCSSDirectivesWithBinding(result, {
+  const utilitySources = [...referenceContext.utilitySources, ...(result.utilitySources || [])]
+  const lowerResult = lowerCSSDirectivesWithBinding({ ...result, utilitySources }, {
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
     onDiagnostic: options.onDiagnostic,
@@ -499,6 +509,8 @@ function toCompileCSSManifestResult(
   ].filter(Boolean).join('\n')
   return {
     ...directiveData,
+    utilitySources,
+    compositions: lowerResult.compositions,
     ...(lowerResult.css === undefined ? {} : { outputMappings: lowerResult.outputMappings ?? [] }),
     dependencies,
     manifest: lowerResult.manifest,
@@ -529,6 +541,7 @@ export function compileCSSManifestGraph(
     urls: Object.fromEntries(Object.keys(graph.files).map(file => [file, pathToFileURL(file).href])),
     baseManifest: options.baseManifest,
     resolutionManifest: referenceContext.manifest,
+    utilitySources: referenceContext.utilitySources,
     options: { from: graph.entry, preserveNativeCSS: options.preserveNativeCSS !== false,
         pruneNativeCSS: options.pruneNativeCSS === true,
         ...(options.preserveNativeSource === undefined ? {} : { preserveNativeSource: options.preserveNativeSource }), ...(options.classes ? { classes: options.classes } : {}) },

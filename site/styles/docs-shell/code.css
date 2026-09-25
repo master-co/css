@@ -1,5 +1,5 @@
-@components {
-  monaco-editor {
+@layer components {
+  .monaco-editor {
     --vscode-editor-background: transparent !important;
     --vscode-editorGutter-background: transparent !important;
     --vscode-focusBorder: transparent !important;
@@ -9,7 +9,7 @@
     }
   }
 
-  shiki {
+  .shiki {
     @compose rel z:0;
 
     &.has-focused .line {
@@ -22,13 +22,13 @@
     }
   }
 
-  code {
+  .code {
     @compose flex flex-col;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
   }
 
-  code-wrapper {
+  .code-wrapper {
     @compose rel flex:1|1|auto overflow:auto p:1rem|0 r-lg surface-muted leading:20px white-space:nowrap;
     counter-reset: line;
     hyphens: none;
@@ -53,7 +53,7 @@
     }
   }
 
-  code-block {
+  .code-block {
     @compose block font-size:inherit font-regular leading:inherit min-w:100% w:max-content white-space:pre word-spacing:normal;
     word-break: normal;
 
@@ -63,11 +63,11 @@
     }
   }
 
-  code-bar {
+  .code-bar {
     @compose flex surface-muted font-xs;
   }
 
-  code-line-add {
+  .code-line-add {
     @compose block border-left-width:2px pl:calc(1.25rem-2px) text-success;
 
     &:not(:only-child):before {
@@ -87,7 +87,7 @@
     }
   }
 
-  code-line-remove {
+  .code-line-remove {
     @compose block border-left-width:2px pl:calc(1.25rem-2px) text-danger;
 
     &:not(:only-child):before {
@@ -107,7 +107,7 @@
     }
   }
 
-  code-line-active {
+  .code-line-active {
     @compose block;
 
     @dark {
@@ -119,7 +119,7 @@
     }
   }
 
-  line {
+  .line {
     @compose block px:1.25rem;
 
     &:not(:only-child):before {
@@ -129,7 +129,7 @@
     }
   }
 
-  mark {
+  .mark {
     @compose box-decoration-break:clone m:-2px|0 p:2px|0 r-sm;
 
     &:has(+ .mark) {
@@ -149,15 +149,15 @@
     }
   }
 
-  code-mark-warn {
+  .code-mark-warn {
     @compose background-color:transparent! text-decoration:underline|var(--color-text-yellow)|wavy|1px text-underline-offset:2px;
   }
 
-  code-mark-error {
+  .code-mark-error {
     @compose background-color:transparent! text-decoration:underline|var(--color-text-red)|wavy|1px text-underline-offset:2px;
   }
 
-  flash {
+  .flash {
     @compose animation:flash|1s|forwards|ease-in m:-2px|-3px outline:1px|solid|transparent p:2px|3px r-sm;
     contain: strict;
   }
@@ -207,8 +207,8 @@
   .code[role="tabpanel"]:focus-visible { outline: 2px solid var(--color-text-link); outline-offset: -2px; }
 }
 
-@defaults {
-  shiki {
+@layer defaults {
+  .shiki {
     @dark {
       span {
         @compose fg:var(--shiki-dark);

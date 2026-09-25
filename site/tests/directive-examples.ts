@@ -40,7 +40,7 @@ export async function verifyDirectiveExamples() {
   assert.match(output.get('Map a class suffix to a CSS value')!, /background-origin:padding-box/)
   assert.match(output.get('Reuse one value for both dimensions')!, /width:1rem;height:1rem/)
   assert.match(output.get('Native declarations keep their position')!, /padding:var\(--spacing-md\);padding-inline:3rem/)
-  assert.doesNotMatch(output.get('Native declarations keep their position')!, /padding:2rem/)
+  assert.match(output.get('Native declarations keep their position')!, /padding:2rem/)
   assert.match(output.get('A condition around the current selector')!, /@media\(width<52\.125rem\)\{\.notice/)
   await assert.rejects(stylesheetExampleCSS('@theme inline static { --color-brand: red; }'), /inline and static cannot be combined/)
 

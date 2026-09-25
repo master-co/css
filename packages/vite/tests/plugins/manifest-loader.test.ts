@@ -72,7 +72,7 @@ describe('ManifestLoaderPlugin', () => {
     try {
       mkdirSync(root, { recursive: true })
       writeFileSync(manifestPath, [
-        '@components {',
+        '@utilities {',
         '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
@@ -82,12 +82,12 @@ describe('ManifestLoaderPlugin', () => {
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, resolvedId))
-        .rejects.toThrow('Invalid @compose class')
+        .rejects.toThrow('Invalid @compose utility')
       expect(addWatchFile).toHaveBeenCalledWith(manifestPath)
       expect(context.config.server.fs.allow).toContain(manifestPath)
 
       writeFileSync(manifestPath, [
-        '@components {',
+        '@utilities {',
         '    card { @compose block; }',
         '}'
       ].join('\n'))

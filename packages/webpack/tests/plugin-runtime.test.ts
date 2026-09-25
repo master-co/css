@@ -271,7 +271,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, '@components { card { color: #123456; } }')
+      writeFileSync(themePath, '@utilities { card { color: #123456; } }')
       writeFileSync(entryPath, [
         '@master entry;',
         '@import "./theme.css";'
@@ -328,7 +328,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '    --color-primary: #123456;',
         '}',
         '',
-        '@components {',
+        '@utilities {',
         '    btn {',
         '        display: grid;',
         '    }',
@@ -389,7 +389,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       const source = [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n')
@@ -399,13 +399,13 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }, root).init()
 
       await expect((plugin as any).processModuleContents([[entryPath, source]], () => false))
-        .rejects.toThrow('Invalid @compose class')
+        .rejects.toThrow('Invalid @compose utility')
 
       expect((plugin as any).getResetDependencyPaths()).toContain(entryPath)
 
       const validSource = [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '  card { display: block; }',
         '}'
       ].join('\n')
@@ -446,7 +446,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const configPath = path.join(root, 'app.css')
     const tokenPath = path.join(root, 'theme.css')
     try {
-      writeFileSync(tokenPath, '@components { card { color: #123456; } }')
+      writeFileSync(tokenPath, '@utilities { card { color: #123456; } }')
       writeFileSync(configPath, '@master entry;\n@import "./theme.css";')
 
       const plugin = makePlugin({}, root)

@@ -8,7 +8,7 @@ const defaultManifest = defaultManifestJSON as unknown as MasterCSSManifest
 
 test.concurrent('universal compileManifest lowers directives with a base manifest', async () => {
   const result = await compileManifest(`
-    @components {
+    @utilities {
       btn {
         @compose flex;
         color: red;
@@ -22,7 +22,7 @@ test.concurrent('universal compileManifest lowers directives with a base manifes
   css.ensureClassRules('btn')
 
   expect(result.diagnostics).toEqual([])
-  expect(result.manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
+  expect(result.manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'utilities')).toBe(true)
   expect(css.text).toContain('.btn')
   expect(css.text).toContain('display:flex')
   expect(css.text).toContain('color:red')

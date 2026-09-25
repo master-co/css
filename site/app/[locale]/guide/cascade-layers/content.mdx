@@ -4,7 +4,7 @@ import ConfiguredExample from '~/site/reference/ConfiguredExample'
 
 CSS cascade layers give groups of declarations an order before selector specificity is compared. Keep reusable component styling in the components layer, then apply a utility when one instance needs a different value:
 
-<ConfiguredExample source={'@components { btn { display: inline-flex; } }'} classes={['btn', 'flex']} />
+<ConfiguredExample source={'@layer components { .btn { display: inline-flex; } }'} classes={['btn', 'flex']} />
 
 With the base layer order loaded, the normal `display` declaration in utilities takes precedence over the component declaration. The [cascade contract](/reference/rules/layers#how-layers-control-the-cascade) describes the order and its scope.
 

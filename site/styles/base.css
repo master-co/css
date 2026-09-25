@@ -12,14 +12,14 @@
   --color-yellow-line: color-mix(in oklab, var(--color-white) 30%, transparent);
 }
 
-@components {
-  yellow {
+@layer components {
+  .yellow {
     outline: 0.0625rem var(--color-yellow-line) solid;
     background-color: var(--color-yellow);
     color: var(--color-on-yellow);
   }
 
-  touch-yellow {
+  .touch-yellow {
     &:hover {
       background-color: var(--color-yellow-hover);
     }

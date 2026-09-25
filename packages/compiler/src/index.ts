@@ -31,6 +31,7 @@ export interface MasterCSSCompileOptions {
 }
 
 export interface MasterCSSCompileResult {
+  readonly compositions?: readonly import('@master/css-schema/css-directives').CSSCompositionTrace[]
   /** Serialized map v3 for css when produced by a stylesheet host. */
   readonly sourceMap?: string
   readonly css: string

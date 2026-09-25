@@ -16,6 +16,7 @@ fn request(source: &str, preserve: bool) -> LowerCssDirectivesRequest {
     )
     .unwrap();
     LowerCssDirectivesRequest {
+        utility_sources: Vec::new(),
         manifest_input: parsed.manifest_input,
         style_definitions: parsed.style_definitions.unwrap_or_default(),
         warnings: parsed.warnings,

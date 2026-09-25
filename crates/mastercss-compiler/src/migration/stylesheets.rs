@@ -25,7 +25,12 @@ pub struct RcMigrationEdit {
 }
 
 impl Migration {
-    pub(super) fn stylesheet(&self, source: &str) -> RcStylesheetMigration {
+    pub(super) fn stylesheet(
+        &self,
+        source: &str,
+        file_index: usize,
+        previous: &mut super::managed::PreviousStyles,
+    ) -> RcStylesheetMigration {
         let tokens = tokenize_css_syntax(source);
         let statements = collect_css_syntax_statements(&tokens);
         let mut result = RcStylesheetMigration {
@@ -35,6 +40,9 @@ impl Migration {
         // Only declaration values were RC macros. A native function declaration
         // anywhere in the selected source set makes the name ambiguous.
         for statement in &statements {
+            if self.profile == super::RcMigrationProfile::RcManaged {
+                break;
+            }
             let Some(colon) = tokens
                 .get(statement.tokens.start + 1)
                 .filter(|token| token.kind == CssSyntaxKind::Delim(':'))
@@ -149,7 +157,7 @@ impl Migration {
             }
             if !self.native_profile()
                 && statement.has_block
-                && matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if matches!(name.as_ref(), "utilities" | "components" | "defaults"))
+                && matches!(parent.map(|token| &token.kind), Some(CssSyntaxKind::AtKeyword(name)) if matches!(name.as_ref(), "utilities"))
             {
                 let Some((key, pattern)) = prelude.trim().split_once(":<") else {
                     continue;
@@ -210,6 +218,17 @@ impl Migration {
                         result.notes.push("Blocklist patterns must be reviewed against the new generated selectors".into());
                         continue;
                     }
+                    if let Some(managed) = self.managed_reference(class) {
+                        let line = source[..body_start + start]
+                            .bytes()
+                            .filter(|byte| *byte == b'\n')
+                            .count()
+                            + 1;
+                        if name == "compose" || name == "safelist" || name == "blocklist" {
+                            result.notes.push(format!("line {line}, UTF-16 {}: @{name} references removed managed class `{managed}`; write native declarations/selectors, or explicitly extract shared behavior into @utilities after reviewing its layer and emission", byte_to_utf16_offset(source, body_start + start).unwrap()));
+                            continue;
+                        }
+                    }
                     match self.convert(class) {
                         Ok(after) => {
                             classes.push(after.clone());
@@ -245,6 +264,7 @@ impl Migration {
         if !self.native_profile() && source.contains("@settings") && !source.contains("@mode ") {
             add_edit(&mut result, source, 0, 0, self.configuration_css.clone());
         }
+        self.managed_stylesheet(source, &mut result, file_index, previous);
         result.edits.sort_by_key(|edit| edit.range.start);
         if result
             .edits
@@ -261,7 +281,7 @@ impl Migration {
     }
 }
 
-fn add_edit(
+pub(super) fn add_edit(
     result: &mut RcStylesheetMigration,
     source: &str,
     start: usize,

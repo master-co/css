@@ -260,7 +260,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const entryPath = path.join(root, 'app.css')
     const themePath = path.join(root, 'theme.css')
     try {
-      writeFileSync(themePath, '@layer components { .card { display: grid; } }')
+      writeFileSync(themePath, '@layer utilities { .card { display: grid; } }')
       writeFileSync(entryPath, [
         '@master entry;',
         '@import "./theme.css";',
@@ -289,7 +289,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(homePath, [
         '@theme { --color-active: #ff0000; }',
-        '@components { active-card { animation: active-spin 1s infinite; } }',
+        '@utilities { active-card { animation: active-spin 1s infinite; } }',
         '@keyframes active-spin { to { opacity: .5; } }',
         '.native-card { color: var(--color-active); }'
       ].join('\n'))
@@ -321,7 +321,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       expect(virtualCSS).toContain('.native-card')
       expect(virtualCSS).toContain('--color-active:red')
       expect(virtualCSS).toContain('.active-card')
-      expect(virtualCSS).not.toContain('@components')
+      expect(virtualCSS).not.toContain('@utilities')
       expect(virtualCSS).not.toContain('@import "./home.css"')
     } finally {
       rmSync(root, { recursive: true, force: true })
@@ -360,7 +360,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(entryPath, [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '  brand { background-color: #123456; }',
         '}'
       ].join('\n'))
@@ -420,7 +420,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
       }
 
       expect(error).toBeInstanceOf(Error)
-      expect(error?.message).toContain('Invalid @compose class')
+      expect(error?.message).toContain('Invalid @compose utility')
       expect(error?.dependencies).toContain(modulePath)
 
       const result = await runStylesheetLoader(root, modulePath, '.button { @compose block; }')
@@ -444,7 +444,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         '    to { opacity: 1; }',
         '  }',
         '}',
-        '@components {',
+        '@utilities {',
         '  brand {',
         '    padding: var(--spacing-card);',
         '    animation: pop 1s;',
@@ -574,7 +574,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     try {
       writeFileSync(entryPath, [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
@@ -592,12 +592,12 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose class')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
       expect(resolveData.fileDependencies.has(entryPath)).toBe(true)
 
       writeFileSync(entryPath, [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '  card { @compose block; }',
         '}'
       ].join('\n'))
@@ -695,7 +695,7 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
     const manifestPath = path.join(root, 'theme.css')
     try {
       writeFileSync(manifestPath, [
-        '@components {',
+        '@utilities {',
         '  card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
@@ -713,11 +713,11 @@ describe('MasterCSSWebpackPlugin (C1 race fix)', () => {
         fileDependencies: new Set<string>()
       }
 
-      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose class')
+      await expect(resolveBefore(normalModuleFactory, resolveData)).rejects.toThrow('Invalid @compose utility')
       expect(resolveData.fileDependencies.has(manifestPath)).toBe(true)
 
       writeFileSync(manifestPath, [
-        '@components {',
+        '@utilities {',
         '  card { @compose block; }',
         '}'
       ].join('\n'))

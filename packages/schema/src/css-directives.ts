@@ -189,11 +189,17 @@ export interface CSSDirectiveStyleComposeDefinition {
   name?: string
 }
 
+export interface CSSOrderedDeclaration {
+  property: string
+  value: string
+  source?: CSSDirectiveSourceReference
+}
+
 export interface CSSDirectiveStyleNativeDefinition {
   type: 'native'
   order: number
   selector: string
-  declarations: CSSDirectiveDeclarations
+  declarations: CSSOrderedDeclaration[]
   source?: CSSDirectiveSourceReference
   selectorSource?: CSSDirectiveSourceReference
   conditions?: string[]
@@ -220,7 +226,24 @@ export interface CSSNativeOutput {
   slots: { start: number, end: number, marker: string, definitions: CSSDirectiveStyleDefinition[] }[]
 }
 
+export interface CSSUtilitySource {
+  name: string
+  source: CSSDirectiveSourceReference
+}
+
+export interface CSSCompositionTrace {
+  order: number
+  classes: string[]
+  source?: CSSDirectiveSourceReference
+  definitionSources: CSSDirectiveSourceReference[]
+  css: string
+  variableNames: string[]
+  animationNames: string[]
+}
+
 export interface CSSDirectiveResult {
+  utilitySources?: CSSUtilitySource[]
+  compositions?: CSSCompositionTrace[]
   nativeOutput?: CSSNativeOutput
   outputMappings?: CSSOutputMapping[]
   /** Serialized source map v3 for the final CSS, when produced by the stylesheet host. */

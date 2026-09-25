@@ -6,8 +6,8 @@
   --global: #ff00ff;
 }
 
-@components {
-  btn {
+@layer components {
+  .btn {
     display: inline-flex;
     text-align: center;
   }

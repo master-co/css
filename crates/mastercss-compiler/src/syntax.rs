@@ -1,7 +1,7 @@
 use super::{
     CompilerError, CssDirectiveManifestInput, CssDirectiveVariableDefinition, DeclarationBlock,
     ErrorCode, PrinterError, PrinterOptions, Property, SourceRange, ThemeAtRule, ToCss, Value,
-    byte_to_utf16_offset, css_block_end,
+    byte_to_utf16_offset,
 };
 
 pub(crate) fn directive_range(source: &str, byte_offset: usize) -> Option<SourceRange> {
@@ -269,75 +269,4 @@ pub(crate) fn scientific_dimension_literal(value: &str) -> bool {
         && value[unit_start..]
             .chars()
             .all(|character| character.is_ascii_alphabetic() || character == '%')
-}
-
-pub(crate) fn raw_top_level_declarations(source: &str) -> Vec<(&str, &str)> {
-    let mut declarations = Vec::new();
-    let mut statement_start = 0;
-    let mut index = 0;
-    let mut parenthesis_depth = 0_u32;
-    let mut bracket_depth = 0_u32;
-    while index < source.len() {
-        let character = source[index..].chars().next().unwrap_or_default();
-        if matches!(character, '\'' | '"') {
-            index = css_quote_end(source, index, character);
-            continue;
-        }
-        if source[index..].starts_with("/*") {
-            index = css_comment_end(source, index);
-            continue;
-        }
-        match character {
-            '(' => parenthesis_depth += 1,
-            ')' => parenthesis_depth = parenthesis_depth.saturating_sub(1),
-            '[' => bracket_depth += 1,
-            ']' => bracket_depth = bracket_depth.saturating_sub(1),
-            '{' if parenthesis_depth == 0 && bracket_depth == 0 => {
-                index = css_block_end(source, index, source.len()).unwrap_or(source.len());
-                statement_start = index;
-                continue;
-            }
-            ';' if parenthesis_depth == 0 && bracket_depth == 0 => {
-                let statement = source[statement_start..index].trim();
-                if let Some((property, value)) = statement.split_once(':') {
-                    declarations.push((property.trim(), value.trim()));
-                }
-                statement_start = index + 1;
-            }
-            _ => {}
-        }
-        index = next_char_end(source, index);
-    }
-    let statement = source[statement_start..].trim();
-    if let Some((property, value)) = statement.split_once(':') {
-        declarations.push((property.trim(), value.trim()));
-    }
-    declarations
-}
-
-pub(crate) fn preserve_compatible_literal_spelling(
-    source: &str,
-    start: usize,
-    declarations: &mut serde_json::Map<String, Value>,
-) {
-    let Some(open) = source[start..].find('{').map(|offset| start + offset) else {
-        return;
-    };
-    let Some(end) = css_block_end(source, open, source.len()) else {
-        return;
-    };
-    for (property, raw_value) in raw_top_level_declarations(&source[open + 1..end - 1]) {
-        let raw_value = raw_value
-            .strip_suffix("!important")
-            .map(str::trim_end)
-            .unwrap_or(raw_value);
-        if simple_ratio_literal(raw_value) {
-            declarations.insert(
-                property.into(),
-                Value::String(raw_value.split_whitespace().collect()),
-            );
-        } else if scientific_dimension_literal(raw_value) {
-            declarations.insert(property.into(), Value::String(raw_value.into()));
-        }
-    }
 }

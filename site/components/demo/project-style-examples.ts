@@ -64,8 +64,8 @@ export const projectStyleExamples = {
   },
   components: {
     title: 'A component with native interaction states',
-    source: `@components {
-  btn {
+    source: `@layer components {
+  .btn {
     @compose inline-flex items-center justify-center px-md py-xs r-md border-width:0 font-sm font-medium bg-blue-60 fg-white;
 
     &:hover {
@@ -83,8 +83,8 @@ export const projectStyleExamples = {
   },
   layers: {
     title: 'A local utility overrides the component',
-    source: `@components {
-  card {
+    source: `@layer components {
+  .card {
     @compose p-lg r-lg b:1px|solid|var(--color-line-base) surface-raised text-body;
   }
 }`,

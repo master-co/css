@@ -130,7 +130,7 @@ fn external_native_imports_do_not_block_manifest_and_compose() {
 #[test]
 fn references_resolve_compose_without_exporting_reference_definitions_or_sources() {
     let project = Project::new();
-    project.file("entry.css", "@master entry;@reference './tokens.css';@components{button{@compose paint;}}.card{@compose paint;}");
+    project.file("entry.css", "@master entry;@reference './tokens.css';@utilities{button{@compose paint;}}.card{@compose paint;}");
     let tokens = project.file(
         "tokens.css",
         "@source './ignored/*.html';@utilities{paint{color:red}}",

@@ -46,13 +46,13 @@ In each workspace, import shared project CSS files and add workspace-specific de
   --color-primary: #4f46e5;
 }
 
-@components {
-  app-shell {
+@layer components {
+  .app-shell {
     @compose min-h:100vh bg-surface-base;
   }
 }
 ```
-Later definitions in the workspace file can override root options, variables, tokens, utilities, and matching component buckets.
+Later workspace definitions can override shared options, tokens and utilities. Native component rules in the same layer follow CSS source order.
 
 (x) Keep multiple application static rendering targets inside one package project.
 <ExplorerView>

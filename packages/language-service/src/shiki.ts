@@ -378,7 +378,7 @@ const SEMANTIC_SCOPE_STYLE_PROBE = [
   '@theme light inline {',
   '  --token: var(--value);',
   '}',
-  '@components {',
+  '@utilities {',
   '  btn { @compose block fg-red:hover@md; }',
   '}',
   '.x, div > li:hover::before {',

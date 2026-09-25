@@ -11,7 +11,7 @@ Start from the Sass entry files your app already builds.
 2. Audit Sass variables, maps, mixins, functions, placeholders, partials, and generated selectors.
 3. Move shared design values into Master CSS `@theme`.
 4. Convert local visual rules to markup classes when the markup stays readable.
-5. Convert reusable Sass patterns to `@components`, `@utilities`, `@compose`, or native CSS.
+5. Convert reusable Sass patterns to `@layer components`, `@utilities`, `@compose`, or native CSS.
 6. Keep vendor imports, generated CSS, complex animation CSS, and hard-to-read selectors in Sass or regular CSS.
 7. Remove Sass only after converted screens no longer depend on it.
 
@@ -27,7 +27,7 @@ Inspect the Sass surface before changing files.
 | Entry files | `.scss` and `.sass` entries, partials, `@use`, `@forward`, and app imports | Add Master CSS beside the current entry first. |
 | Variables and maps | Colors, spacing, radius, typography, shadows, breakpoints, and z-index scales | Move product-owned values into `@theme`. |
 | Mixins and functions | Responsive helpers, fluid calculations, color helpers, and repeated declarations | Replace with utilities, tokens, native CSS functions, or keep in CSS when clearer. |
-| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@components`; convert primitives to `@utilities`. |
+| Placeholders | `%button`, `%card`, `%stack`, and `@extend` usage | Convert real product roles to `@layer components`; convert primitives to `@utilities`. |
 | Nesting | Component states, descendant selectors, media queries, and structural selectors | Move simple states into classes; keep complex selectors as CSS. |
 | Generated CSS | Loops, maps, vendor output, icon fonts, and theme packages | Keep generated output until a deliberate replacement exists. |
 
@@ -108,17 +108,17 @@ Keep Sass or regular CSS when the selector describes document structure, generat
 ## Replace placeholders and mixins intentionally
 Sass placeholders and mixins often represent either product roles or low-level primitives. Choose the Master CSS target based on ownership.
 
-Use `@components` for product roles:
+Use `@layer components` for product roles:
 
 ```css name=app.css
 @import "@master/css";
 
-@components {
-  card {
+@layer components {
+  .card {
     @compose grid gap-md b:1px|solid|var(--color-line-base) r-card bg-white shadow-sm p-card;
   }
 
-  btn {
+  .btn {
     @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-primary fg-white;
   }
 }
@@ -196,6 +196,6 @@ If that stylesheet uses `@compose`, add `@reference` instead of importing the ap
 - [Rendering modes](/guide/rendering-modes) for choosing static, runtime, or progressive rendering.
 - [Style declarations](/reference/rules/declarations) for class syntax.
 - [Theme Tokens](/guide/theme) for tokens, [Variables and Modes](/guide/variables-and-modes) for modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@theme`, `@components`, `@utilities`, `@reference`, and `@compose`.
+- [CSS directives](/reference#directives) for `@theme`, `@layer components`, `@utilities`, `@reference`, and `@compose`.
 - [Route-level styles](/guide/route-level-styles) for local CSS files that use `@reference` and `@compose`.
 - [Global styles](/guide/global-styles#shared-vocabulary) for deciding between markup classes, theme tokens, custom utilities, and component classes.

@@ -3,8 +3,9 @@ use std::collections::{HashMap, HashSet};
 
 use mastercss_engine::{EngineCompositionRuleIr, EngineSession, natural_compare};
 use mastercss_schema::{
-    CssDirectiveConditionPathEntry, CssDirectiveManifestInput, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssOutputMapping, ErrorCode, RulePriorityIr, UtilityLayerName,
+    CssDeclaration, CssDirectiveConditionPathEntry, CssDirectiveManifestInput,
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssOutputMapping, ErrorCode,
+    RulePriorityIr, UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value, json};
@@ -24,6 +25,8 @@ pub struct LowerCssDirectivesOptions {
 #[serde(rename_all = "camelCase")]
 pub struct LowerCssDirectivesRequest {
     #[serde(default)]
+    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    #[serde(default)]
     pub native_output: Option<crate::NativeCssOutput>,
     #[serde(default)]
     pub manifest_input: CssDirectiveManifestInput,
@@ -38,6 +41,7 @@ pub struct LowerCssDirectivesRequest {
 pub struct LowerCssDirectivesResult {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub css: Option<String>,
+    pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub output_mappings: Vec<CssOutputMapping>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -61,47 +65,13 @@ struct ResolvedStyleBranch {
 #[derive(Debug, Clone)]
 struct MergedStyleDefinition {
     selector_source: Option<CssDirectiveSourceReference>,
-    declaration_sources: HashMap<String, CssDirectiveSourceReference>,
     selector: String,
-    declarations: Map<String, Value>,
+    declarations: Vec<CssDeclaration>,
     conditions: Vec<String>,
 }
-
-#[derive(Debug, Clone)]
-enum StyleMergeEvent {
-    Compose {
-        source: Option<CssDirectiveSourceReference>,
-        order: u32,
-        rule: EngineCompositionRuleIr,
-    },
-    Native {
-        source: Option<CssDirectiveSourceReference>,
-        order: u32,
-        declarations: Map<String, Value>,
-    },
-}
-
-impl StyleMergeEvent {
-    fn order(&self) -> u32 {
-        match self {
-            Self::Compose { order, .. } | Self::Native { order, .. } => *order,
-        }
-    }
-}
-
-#[derive(Debug, Clone)]
-struct StyleMergeBucket {
-    selector_source: Option<CssDirectiveSourceReference>,
-    selector: String,
-    conditions: Vec<String>,
-    layer: Option<UtilityLayerName>,
-    order: u32,
-    events: Vec<StyleMergeEvent>,
-}
-
-type StyleConditionFeature = mastercss_schema::ConditionRangeIr;
 
 mod api;
+pub(crate) mod inspection;
 mod merge;
 mod output;
 mod render;

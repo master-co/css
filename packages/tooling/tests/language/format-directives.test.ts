@@ -57,7 +57,7 @@ test('formats @safelist quoted class lists while preserving quote style', () => 
 
 test('leaves internal styles dogfood directives unchanged', () => {
   const source = [
-    '@components {',
+    '@utilities {',
     '    monaco-editor {',
     '        @compose --vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
     '    }',

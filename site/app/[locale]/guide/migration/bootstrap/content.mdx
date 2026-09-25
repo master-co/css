@@ -119,14 +119,14 @@ Buttons, cards, alerts, and badges are often app-owned visual patterns. Convert 
 ```css name=app.css
 @import "@master/css";
 
-@components {
-  btn-primary {
+@layer components {
+  .btn-primary {
     @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md bg-primary fg-white r-control;
     &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }
   }
 
-  panel {
+  .panel {
     @compose p-lg b:1px|solid|var(--color-line-base) r-lg bg-white fg-body shadow-sm;
   }
 }

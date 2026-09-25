@@ -38,7 +38,7 @@ Marks the stylesheet as a full Master CSS entry, loads the package stylesheet gr
 @import "@master/css";
 ```
 
-Other directive families such as `@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, `@prune native`, and `@preserve native` are not entry markers by themselves.
+Other directive families such as `@settings`, `@theme`, `@mode`, `@custom-variant`, `@utilities`, `@source`, `@reference`, `@safelist`, `@blocklist`, `@compose`, `@variant`, `@prune native`, and `@preserve native` are not entry markers by themselves.
 
 ### Local file URLs
 
@@ -116,13 +116,13 @@ resources while preserving plugin ordering and source ownership.
 
 ## Reference context \{#reference-context\}
 ### `@reference` \{#reference\}
-Use `@reference` to load another Master CSS stylesheet as compile-time context without including that stylesheet's CSS in the current output. This is useful in CSS Modules and SFC `<style>` blocks that need project tokens, component classes, utility definitions, or custom variants for `@compose` and `@variant`.
+Use `@reference` to load another Master CSS stylesheet as compile-time context without including that stylesheet's CSS in the current output. This is useful in CSS Modules and SFC `<style>` blocks that need project tokens, utility definitions, or custom variants for `@compose` and `@variant`.
 
 ```css name=Button.module.css
 @reference "../app.css";
 
 .button {
-  @compose btn;
+  @compose button-layout;
 
   @dark {
     @compose bg-blue-60;
@@ -130,13 +130,13 @@ Use `@reference` to load another Master CSS stylesheet as compile-time context w
 }
 ```
 
-Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
+Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-variant`, and `@utilities`. Their definitions are available while compiling the current stylesheet, but their native CSS, generated CSS, and managed class definitions are not emitted just because they were referenced.
 
 ```css name=app.css
 @import "@master/css";
 
-@components {
-  btn {
+@utilities {
+  button-layout {
     @compose inline-flex align-items:center;
     @compose px-md h:2.5rem r-lg;
   }
@@ -151,7 +151,7 @@ Referenced stylesheets can define `@settings`, `@theme`, `@mode`, `@custom-varia
 @reference "@master/css-preset";
 ```
 
-Relative references resolve from the stylesheet that declares them. Package references are limited to Master CSS package stylesheet entries. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
+Relative references resolve from the stylesheet that declares them. Package references resolve Master CSS package stylesheet entries or a CSS file exposed by a package export. `@reference` is not an entry marker, does not insert a generated CSS slot, and does not replace `@master entry;` or `@import "@master/css"` in app entry stylesheets.
 
 (!) Because `@reference` is context-only, it does not copy referenced native CSS or generated class output. If the current stylesheet lowers to CSS that uses `var(--*)` tokens or animation names from the referenced context, local output includes the required theme variables or managed keyframes that the loaded global entry has not already emitted.
 
@@ -187,7 +187,7 @@ Defines theme tokens and managed keyframes. Token names keep their leading `--`;
 
 <StylesheetExample
   title="A token used by a native rule"
-  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  @compose bg-brand;\n}"}
+  source={"@theme {\n  --color-brand: #4f46e5;\n}\n\n.card {\n  background-color: var(--color-brand);\n}"}
 />
 
 ### `@theme <mode>` \{#theme-mode\}
@@ -195,7 +195,7 @@ Defines mode-specific token values. The final manifest must contain a matching `
 
 <StylesheetExample
   title="One token in two modes"
-  source={"@mode dark {\n  @media (prefers-color-scheme: dark) {\n    :root, :host { @slot; }\n  }\n}\n\n@theme {\n  --color-panel: white;\n}\n\n@theme dark {\n  --color-panel: #111827;\n}\n\n.card {\n  @compose bg-panel;\n}"}
+  source={"@mode dark {\n  @media (prefers-color-scheme: dark) {\n    :root, :host { @slot; }\n  }\n}\n\n@theme {\n  --color-panel: white;\n}\n\n@theme dark {\n  --color-panel: #111827;\n}\n\n.card {\n  background-color: var(--color-panel);\n}"}
 />
 
 ### `@mode` \{#mode\}
@@ -276,35 +276,40 @@ For token authoring, see [Theme Tokens](/guide/theme). For mode behavior, see [V
 
 ---
 
-## Managed definitions \{#managed-definitions\}
-Managed definition directives create generated classes in the matching cascade layer. The first level inside each block is a bare class name, not a selector.
+## Utilities and native styles \{#managed-definitions\}
+Use native CSS for broad defaults and product components. Register only classes that need on-demand generation and Master suffixes with `@utilities`.
 
-### `@defaults` \{#defaults\}
-Defines managed classes in the `defaults` layer.
+### Native defaults \{#defaults\}
+Write broad styles in `@layer defaults`. The removed `@defaults` directive produces an error with a migration hint.
 
 ```css
-@defaults {
-  prose {
-    @compose text-neutral leading-lg;
+@layer defaults {
+  .prose {
+    color: var(--color-text-body);
+    line-height: 1.6;
   }
 }
 ```
 
-### `@components` \{#components\}
-Defines managed component classes in the `components` layer.
+### Native components \{#components\}
+Write product styles in `@layer components`. The removed `@components` directive produces an error with a migration hint.
 
 ```css
-@components {
-  btn {
-    @compose inline-flex;
+@layer components {
+  .button {
+    display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 }
 ```
 
+Native rules are emitted even when unused unless native pruning is explicitly enabled. Rules in the same layer follow CSS source order. A native `.button` is not registered as a Master utility: it cannot be referenced by `@compose button` or derive `button:hover@sm`. Write the selector or condition in CSS. The scanner recognizes native class names without reporting them as invalid.
+
+The layer order remains `theme, base, defaults, components, utilities`. Removing authoring directives does not remove layer suffixes from markup or layer execution from the engine.
+
 ### `@utilities` \{#utilities\}
-Defines managed utility classes in the `utilities` layer. Utilities still win over components because `@master/css/base.css` declares `@layer theme, base, defaults, components, utilities;`.
+Registers on-demand Master utilities in the `utilities` layer. The first level contains bare utility names, not class selectors.
 
 ```css
 @utilities {
@@ -314,7 +319,7 @@ Defines managed utility classes in the `utilities` layer. Utilities still win ov
 }
 ```
 
-Managed definitions accept native declarations, `@compose`, nested selectors, native nested at-rules, and `@variant` condition blocks. Entry names can be bare identifiers like `content-auto` or enum patterns like `text-<left|center|right>`.
+Static utilities accept native declarations, `@compose`, nested selectors, native conditional at-rules, and `@variant`. Enum, token and dynamic patterns accept declarations and nested rules; `@compose` inside a pattern body is unsupported and reports an error. The existing pattern grammar is unchanged.
 
 ### Named and enumerated classes \{#named-and-enumerated-classes\}
 
@@ -436,7 +441,7 @@ Literal enum values can stand alone when at least two values are provided, such 
 
 ### Definition scope and imports \{#definition-scope-and-imports\}
 
-`@settings`, `@theme`, `@mode`, `@custom-variant`, `@defaults`, `@components`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. A resolved import qualified with `layer()`, `supports()`, or a media query must not contain global Master definitions, including definitions in its local import graph. Compilation reports the source and rejects the import. Move the definitions to an unqualified import or a separate `@reference` input; qualified pure native CSS retains native semantics.
+`@settings`, `@theme`, `@mode`, `@custom-variant`, and `@utilities` declare definitions for the whole stylesheet, so they must be written at the top level. Writing one inside a style rule or inside a native at-rule such as `@layer`, `@media`, or `@supports` is reported as `@<name> must be top-level`; it does not make the definition conditional. A resolved import qualified with `layer()`, `supports()`, or a media query must not contain global Master definitions, including definitions in its local import graph. Compilation reports the source and rejects the import. Move the definitions to an unqualified import or a separate `@reference` input; qualified pure native CSS retains native semantics.
 
 An import Master cannot resolve, such as one addressing a remote stylesheet, stays an `@import` and moves to the top of the expanded stylesheet, because CSS requires every `@import` to precede the other rules. Moving it also moves the first appearance of any layer it names, and first appearance is what orders layers, so expansion leads with the authored order:
 
@@ -533,26 +538,44 @@ A safelist contains complete class names. Wildcard policy belongs in the blockli
 
 ## Rule-local composition \{#rule-local-composition\}
 ### `@compose` \{#compose\}
-Use `@compose` inside a style rule to lower an unquoted Master CSS class list into native declarations for the current selector.
+Use native declarations by default. Use `@compose` when an existing Master utility encapsulates behavior worth maintaining in one place. It expands an unquoted utility list at the statement's position.
 
 ```css
-.card {
-  @compose grid gap-md p-lg r-xl;
-  @compose surface-raised b:1px|solid|var(--color-line-base);
-}
-
-@components {
-  btn {
-    @compose inline-flex px-md py-xs r-lg;
-    align-items: center;
-    justify-content: center;
-
-    &:hover {
-      @compose bg-blue-60/.9;
+@utilities {
+  focus-ring {
+    &:focus-visible {
+      outline: 2px solid var(--color-accent);
+      outline-offset: 2px;
     }
   }
 }
+
+@layer components {
+  .button {
+    display: inline-flex;
+    @compose focus-ring;
+  }
+}
 ```
+
+One statement uses Master rule priority; reversing its class list does not change conflict resolution. Separate statements retain stylesheet order:
+
+```css
+.example {
+  @compose color:red;
+  display: block;
+  display: made-up-value;
+  @compose color:blue;
+}
+```
+
+The final color is blue. Both `display` declarations remain, so a browser that rejects `made-up-value` keeps `block`. Repeated properties, shorthand/longhand interleaving, nested selectors and conditions retain their authored positions. The browser decides the cascade, including `!important`.
+
+Composed selectors, conditions and importance are preserved. The expansion belongs to the destination rule's layer; it does not import the utility's layer. A composed variant that explicitly changes layer is rejected: put the destination rule inside native `@layer` instead. Composition does not promise identical cascade behavior to markup in a different layer.
+
+Only resolvable Master utilities may be composed. Native selectors, native classes and native mixins are not targets. Unknown utilities, cycles and failed expansions reject the complete stylesheet; there is no partial successful output. `@compose` is supported in native rules and static `@utilities` definitions, including their supported nested contexts, but not inside enum, token or dynamic pattern bodies. It does not introduce parameters, slots or component inheritance.
+
+Compiler inspection reports show statement expansions, referenced utilities, source locations and token/animation dependencies. This provenance stays in compiler/tooling output, outside the runtime manifest.
 
 ### Selectors and class lists \{#selectors-and-class-lists\}
 
@@ -618,14 +641,14 @@ Top-level `@compose` is invalid because there is no selector context to receive 
 
 Use `@compose` in these contexts:
 
-- Managed class definitions inside `@defaults`, `@components`, or `@utilities`.
+- Managed class definitions inside or `@utilities`.
 - Native style rules such as `.card { ... }`.
 - Nested selectors and nested native at-rules inside those style rules.
 - CSS Modules and SFC `<style>` blocks handled by build integrations.
 
 The Vite integration preserves CSS Modules scoped names and exports when lowering `@compose`. A local stylesheet that contains `@compose`, `@reference`, or rule-local `@variant` does not need `@master entry;`, does not import `@master/css`, does not add globally generated utility CSS, and does not become a native CSS pruning root.
 
-Composed declarations are merged by Master CSS rule priority. Native declarations follow normal source order: declarations after `@compose` override earlier composed declarations, and a later `@compose` can override earlier native declarations unless the earlier declaration is `!important`.
+Utilities within one `@compose` statement follow Master CSS rule priority. Separate statements and native declarations retain source order. The final result follows the CSS cascade, including layers, selector specificity, conditions, and `!important`.
 
 ---
 

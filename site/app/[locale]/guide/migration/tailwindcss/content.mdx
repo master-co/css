@@ -11,7 +11,7 @@ Run both systems while you migrate. Tailwind can keep styling existing screens w
 2. Keep the Tailwind CSS entry loaded until converted screens no longer depend on it.
 3. Move shared design values into Master CSS `@theme` tokens.
 4. Convert markup classes where the class list stays readable.
-5. Replace reusable `@apply` rules with `@compose`, `@components`, `@utilities`, or native CSS.
+5. Replace reusable `@apply` rules with `@compose`, `@layer components`, `@utilities`, or native CSS.
 6. Run project checks and compare important screens before deleting Tailwind.
 
 Avoid global search-and-replace. Tailwind class names encode a different vocabulary, default theme, Preflight reset, container model, ring model, and variant syntax. A reviewable migration preserves intent instead of preserving spelling.
@@ -272,7 +272,7 @@ Do not quote `@compose` values. Keep quoted strings, complex content values, and
 ---
 
 ## Migrate custom utilities and components
-Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utilities` for reusable primitives and `@components` for product roles.
+Tailwind `@utility` creates custom utilities that work with variants. In Master CSS, use `@utilities` for reusable primitives and `@layer components` for product roles.
 
 ```css name=tailwind.css
 @utility content-auto {
@@ -298,11 +298,11 @@ Tailwind `@utility` creates custom utilities that work with variants. In Master 
 </section>
 ```
 
-Use `@components` when the name describes a product UI role rather than a low-level primitive.
+Use `@layer components` when the name describes a product UI role rather than a low-level primitive.
 
 ```css name=app.css
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose inline-flex align-items:center justify-content:center gap-xs px-md py-xs r-md font-sm font-medium;
     @compose bg-blue-60 fg-white;
 
@@ -426,7 +426,7 @@ If a third-party plugin or vendor stylesheet still supplies useful CSS, keep it 
 | Tailwind capability | Master CSS status | Migration path |
 | --- | --- | --- |
 | Tailwind class syntax and drop-in compatibility | Master CSS does not read Tailwind class syntax. | Rewrite classes to Master CSS syntax or keep Tailwind loaded until each area is migrated. |
-| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utilities`, or `@components`; keep plugin CSS temporarily when needed. |
+| Tailwind CSS plugin loading through `@plugin` | Master CSS does not execute Tailwind plugins. | Recreate needed output with native CSS, `@theme`, `@utilities`, or `@layer components`; keep plugin CSS temporarily when needed. |
 | Tailwind CSS-first theme resolver behavior | Master CSS has its own token namespaces and utility matching. | Move shared values into Master CSS `@theme` directives and review generated class names. |
 | Tailwind `prefix(...)` | Master CSS has no class-prefix mode. | Use Master CSS syntax directly; use `@settings scope` only when generated selectors should be scoped to an app root. |
 | Tailwind `@source inline()` brace-expansion safelisting | Master CSS does not provide an equivalent brace-expansion directive. | Use explicit `@safelist` entries and complete class strings. |

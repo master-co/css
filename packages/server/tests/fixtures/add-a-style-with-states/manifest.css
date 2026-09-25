@@ -15,7 +15,7 @@
   --color-focus: var(--color-white);
 }
 
-@components {
+@utilities {
   btn {
     &:focus {
     outline: 0.125rem var(--color-focus) solid;

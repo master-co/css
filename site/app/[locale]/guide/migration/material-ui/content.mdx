@@ -132,12 +132,12 @@ When many `sx` blocks encode the same product role, move that role into a Master
 ```css name=app.css
 @import "@master/css";
 
-@components {
-  panel {
+@layer components {
+  .panel {
     @compose p-lg b:1px|solid|var(--color-line-base) r-lg fg-body shadow-sm bg-surface;
   }
 
-  toolbar {
+  .toolbar {
     @compose flex items-center gap-sm min-h:3rem;
   }
 }

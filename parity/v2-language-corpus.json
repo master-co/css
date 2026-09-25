@@ -2643,7 +2643,7 @@
   "compilerCases": [
     {
       "id": "compiler-prose-base-responsive-order",
-      "source": "@defaults { prose { @variant sm { :is(h1,h2) { @compose mt-2xl scroll-mt:100px; } } :is(h1,h2) { @compose mt-lg scroll-mt:60px; } } }",
+      "source": "@utilities { prose { @variant sm { :is(h1,h2) { @compose mt-2xl scroll-mt:100px; } } :is(h1,h2) { @compose mt-lg scroll-mt:60px; } } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2652,17 +2652,10 @@
           "name": "prose",
           "type": -2,
           "order": 0,
-          "layer": "defaults",
+          "layer": "utilities",
           "emit": {
             "type": "static",
             "rules": [
-              {
-                "declarations": {
-                  "margin-top": "var(--spacing-lg)",
-                  "scroll-margin-top": "60px"
-                },
-                "selector": "& :is(h1,h2)"
-              },
               {
                 "declarations": {
                   "margin-top": "var(--spacing-2xl)",
@@ -2671,6 +2664,13 @@
                 "conditions": [
                   "@media (width>=52.125rem)"
                 ],
+                "selector": "& :is(h1,h2)"
+              },
+              {
+                "declarations": {
+                  "margin-top": "var(--spacing-lg)",
+                  "scroll-margin-top": "60px"
+                },
                 "selector": "& :is(h1,h2)"
               }
             ]
@@ -2688,11 +2688,11 @@
       "id": "compiler-native-condition-order",
       "source": ".card { @media (width>=40rem) { @compose grid; } @compose block; @container panel (inline-size>30rem) { @compose flex; } @starting-style { @compose hidden; } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": ".card{display:block}@media (width>=40rem){.card{display:grid}}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
+      "expectedGeneratedCss": "@media (width>=40rem){.card{display:grid}}.card{display:block}@container panel (inline-size>30rem){.card{display:flex}}@starting-style{.card{display:none}}"
     },
     {
       "id": "compiler-managed-compose-order",
-      "source": "@components { btn { @variant sm { @compose grid; } @compose block; } }",
+      "source": "@utilities { btn { @variant sm { @compose grid; } @compose block; } }",
       "baseManifest": "default",
       "expectedGeneratedCss": "",
       "expectedUtilities": [
@@ -2701,15 +2701,10 @@
           "name": "btn",
           "type": -2,
           "order": 0,
-          "layer": "components",
+          "layer": "utilities",
           "emit": {
             "type": "static",
             "rules": [
-              {
-                "declarations": {
-                  "display": "block"
-                }
-              },
               {
                 "declarations": {
                   "display": "grid"
@@ -2717,6 +2712,11 @@
                 "conditions": [
                   "@media (width>=52.125rem)"
                 ]
+              },
+              {
+                "declarations": {
+                  "display": "block"
+                }
               }
             ]
           },
@@ -2733,7 +2733,7 @@
       "id": "compiler-root-size-condition-order",
       "source": ".card { @media (width>=42rem) { @compose grid; } @media (width>=800px) { @compose flex; } }",
       "baseManifest": "default",
-      "expectedGeneratedCss": "@media (width>=800px){.card{display:flex}}@media (width>=42rem){.card{display:grid}}"
+      "expectedGeneratedCss": "@media (width>=42rem){.card{display:grid}}@media (width>=800px){.card{display:flex}}"
     },
     {
       "id": "rc87-compiler-variables-modes-dependencies",
@@ -3091,7 +3091,7 @@
     {
       "id": "rc87-compiler-variant-branches",
       "sourceId": "rc87-2763794c2aab6ae8",
-      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @components { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
+      "source": "@custom-variant motion-safe { @media (prefers-reduced-motion:no-preference) { @slot; } } @utilities { hocus { &:is(:hover,:focus) { display: block; } @variant motion-safe { display: grid; } } }",
       "baseManifest": {
         "version": 1,
         "languageVersion": 2
@@ -3141,7 +3141,7 @@
             "name": "hocus",
             "type": -2,
             "order": 0,
-            "layer": "components",
+            "layer": "utilities",
             "emit": {
               "type": "static",
               "rules": [
@@ -3174,7 +3174,7 @@
     {
       "id": "rc87-compiler-semantic-utility",
       "sourceId": "rc87-e9991ac8889c54d6",
-      "source": "@components { card { display: grid; color: var(--color-primary); } }",
+      "source": "@utilities { card { display: grid; color: var(--color-primary); } }",
       "baseManifest": {
         "version": 1,
         "languageVersion": 2
@@ -3188,7 +3188,7 @@
             "name": "card",
             "type": -2,
             "order": 0,
-            "layer": "components",
+            "layer": "utilities",
             "emit": {
               "type": "static",
               "rules": [
@@ -3213,7 +3213,7 @@
     {
       "id": "rc87-compiler-browser-manifest",
       "sourceId": "rc87-229f90c18e0fc001",
-      "source": "@components { btn { display: flex; color: red; } }",
+      "source": "@utilities { btn { display: flex; color: red; } }",
       "baseManifest": {
         "version": 1,
         "languageVersion": 2
@@ -3227,7 +3227,7 @@
             "name": "btn",
             "type": -2,
             "order": 0,
-            "layer": "components",
+            "layer": "utilities",
             "emit": {
               "type": "static",
               "rules": [

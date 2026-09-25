@@ -56,7 +56,7 @@ test('keeps shared grammar asset in sync with the language Shiki registration', 
 
 test('scopes v2 named classes, opacity, and pattern forms in CSS directives', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, [
-    '@components { card { @compose fg-red/0.5 fg-blue/.5 block:hover@sm color:red; } }',
+    '@utilities { card { @compose fg-red/0.5 fg-blue/.5 block:hover@sm color:red; } }',
     '@utilities { font-<~font-family> { font-family: --value(); } }',
     '@utilities { size:<number|*> { width: --value(); } }',
     '@utilities { font:<~font-size> { font-size: --value(); } }'
@@ -208,7 +208,7 @@ test('does not change native CSS TextMate scopes when injected', () => {
     '',
     '@supports (container-type: inline-size) {',
     '    @container card (width > 30rem) {',
-    '        @layer components {',
+    '        @layer utilities {',
     '            .card:is(.active, #featured) {',
     '                animation: fade 1s ease-in-out;',
     '            }',
@@ -311,8 +311,6 @@ test('highlights every Master CSS directive keyword', () => {
     @preserve native;
     @reference "./tokens.css";
     @theme {}
-    @defaults {}
-    @components {}
     @utilities {}
     @custom-variant motion-safe {}
     @compose block;
@@ -331,8 +329,6 @@ test('highlights every Master CSS directive keyword', () => {
     'preserve',
     'reference',
     'theme',
-    'defaults',
-    'components',
     'utilities',
     'custom-variant',
     'compose',
@@ -396,7 +392,7 @@ test('highlights directive preludes, strings, class lists, and dynamic patterns'
 test('highlights custom variants, nested selectors, queries, and values', () => {
   const tokens = tokenizeWith(injectedCSSGrammar, `
     @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
-    @components {
+    @utilities {
       scroll-area {
         ::scrollbar:is(.active, #thumb) { @compose block; }
       }
@@ -467,7 +463,7 @@ test('highlights detailed Master directive syntax without misclassifying native 
 
     @custom-variant headings { @media all { @slot; } }
 
-    @components {
+    @utilities {
       btn:hover {
         @compose static native inline-flex align-items:center fg-primary:hover@md w:var(--size);
         @variant h>=sm&h<lg {

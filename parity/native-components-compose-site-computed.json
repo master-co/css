@@ -1,0 +1,498 @@
+[
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "light",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "light",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "light",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "32px",
+        "padding": "0px 12px",
+        "fontSize": "12px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "light",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "dark",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "dark",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "dark",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "32px",
+        "padding": "0px 12px",
+        "fontSize": "12px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 390,
+    "theme": "dark",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "light",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "light",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "light",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "40px",
+        "padding": "0px 16px",
+        "fontSize": "14px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "light",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "dark",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "dark",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "dark",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "40px",
+        "padding": "0px 16px",
+        "fontSize": "14px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "baseline",
+    "width": 1280,
+    "theme": "dark",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "light",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "light",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "light",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "32px",
+        "padding": "0px 12px",
+        "fontSize": "12px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "light",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "dark",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "dark",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 350,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "dark",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "32px",
+        "padding": "0px 12px",
+        "fontSize": "12px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 390,
+    "theme": "dark",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "light",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "light",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(98.1184 -0.366926 -1.18192)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "light",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "40px",
+        "padding": "0px 16px",
+        "fontSize": "14px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "light",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "dark",
+    "route": "guide/global-styles",
+    "errors": [],
+    "title": "Global Styles - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "dark",
+    "route": "reference/directives/compose",
+    "errors": [],
+    "title": "Rule-local composition - Master CSS",
+    "overflow": false,
+    "body": "lab(5.71933 0 0)",
+    "buttons": [],
+    "article": {
+      "width": 664,
+      "fontSize": "16px"
+    }
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "dark",
+    "route": "examples/responsive-button",
+    "errors": [],
+    "title": "Master CSS - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [
+      {
+        "text": "Submit",
+        "display": "flex",
+        "height": "40px",
+        "padding": "0px 16px",
+        "fontSize": "14px"
+      }
+    ],
+    "article": null
+  },
+  {
+    "revision": "current",
+    "width": 1280,
+    "theme": "dark",
+    "route": "index",
+    "errors": [],
+    "title": "Master CSS - The CSS language and framework - Master CSS",
+    "overflow": false,
+    "body": "rgba(0, 0, 0, 0)",
+    "buttons": [],
+    "article": null
+  }
+]

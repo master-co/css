@@ -6,7 +6,7 @@
 
 ## Owns
 
-- CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, managed `@defaults`, `@components`, and `@utilities`.
+- CSS directive parsing and lowering for `@settings`, `@theme`, `@custom-variant`, `@utilities` and rule-local `@compose`.
 - Provider-neutral CSS import graph semantics; TypeScript supplies Node package exports and file contents.
 - `compileProjectManifest()` for project entry CSS files.
 - Native CSS output with consumed Master directives removed.
@@ -50,7 +50,7 @@
 ## Risk Areas
 
 - `@master entry;` and `@import "@master/css"` are equivalent user project entry markers; package CSS files must not contain `@master entry;`.
-- Defining components, utilities, variables, variants, or animations does not emit CSS by itself; classes still need use or extraction.
+- Native defaults/components use CSS layers and ship by default. Defining utilities, variables, variants, or animations does not emit CSS by itself; classes still need use or extraction.
 - Directive syntax changes may require language token updates and docs updates.
 - Native `@layer` blocks are not compiler-managed; use managed directives for generated definitions.
 - Top-level native `@keyframes` remain native CSS unless placed inside an appropriate `@theme` block.
@@ -81,4 +81,4 @@ pnpm --filter @master/css-compiler build
 
 ## Directive Notes
 
-Managed definition directives use first-level bare names, not selectors. Put selector states and descendants in nested selectors inside the named block. `@compose` is allowed in managed class definitions and native style rules, including inside `@variant`. If directive syntax, semantics, lowering, or extraction changes, update `site/app/[locale]/guide/directives/contract.mdx`.
+`@utilities` uses first-level bare names. `@defaults` and `@components` are removed; diagnose them and recommend native `@layer defaults/components` with class selectors. Put selector states and descendants in nested selectors inside the named block. `@compose` is allowed in static utility definitions and native style rules, including inside `@variant`. Pattern bodies do not accept `@compose`. Preserve declaration order and duplicates; sort utilities only within a single compose statement, never across statements. Prefer native CSS authoring and use composition only for shared utility behavior. If directive syntax, semantics, lowering, or extraction changes, update `site/app/[locale]/guide/directives/contract.mdx`.

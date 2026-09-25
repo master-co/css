@@ -12,7 +12,7 @@ const manifest = createPresetManifest({
   utilities: [
     {
       name: 'btn',
-      layer: 'components',
+      layer: 'utilities',
       rules: [
         { selector: '&', declarations: { display: 'block' } }
       ]
@@ -57,7 +57,7 @@ test.concurrent('collects browser semantic tokens for HTML class attributes', ()
     { text: 'center', type: 'enumMember', modifiers: [] },
     { text: 'fg-brand', type: 'enumMember', modifiers: [] },
     { text: 'block', type: 'enumMember', modifiers: [] },
-    { text: 'btn', type: 'class', modifiers: ['declaration', 'component'] }
+    { text: 'btn', type: 'enumMember', modifiers: [] }
   ]))
 })
 
@@ -94,7 +94,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
       }
     }
 
-    @components {
+    @utilities {
       btn {
         @compose block fg-brand;
         &:hover {
@@ -118,7 +118,7 @@ test.concurrent('collects browser semantic tokens only for CSS directive class-l
   ]))
   expect(mapped).not.toContainEqual({ text: '@theme', type: 'keyword', modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: '--color-brand', type: 'variable', modifiers: [] })
-  expect(mapped).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(mapped).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(mapped).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
   expect(mapped).not.toContainEqual({ text: 'var', type: 'function', modifiers: [] })
@@ -152,11 +152,9 @@ test.concurrent('encodes browser semantic tokens', () => {
   const source = '<div class="btn"></div>'
   const semanticTokens = renderBrowserSemanticTokens(source, 'html', { manifest })
   const data = [...(semanticTokens?.data || [])]
-  const typeIndex = SEMANTIC_TOKEN_TYPES.indexOf('class')
-  const declarationIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('declaration')
-  const componentIndex = SEMANTIC_TOKEN_MODIFIERS.indexOf('component')
+  const typeIndex = SEMANTIC_TOKEN_TYPES.indexOf('enumMember')
 
   expect(data).toHaveLength(5)
   expect(data[3]).toBe(typeIndex)
-  expect(data[4]).toBe((1 << declarationIndex) | (1 << componentIndex))
+  expect(data[4]).toBe(0)
 })

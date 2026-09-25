@@ -55,8 +55,8 @@ pub(crate) fn composition_conditions(branch: &StateBranch) -> Vec<String> {
         .collect()
 }
 
-pub(crate) fn parse_serialized_declarations(source: &str) -> Map<String, Value> {
-    let mut declarations = Map::new();
+pub(crate) fn parse_serialized_declarations(source: &str) -> Vec<super::CssDeclaration> {
+    let mut declarations = Vec::new();
     for declaration in split_top_level(source, ';') {
         let mut quote = None;
         let mut escaped = false;
@@ -94,7 +94,11 @@ pub(crate) fn parse_serialized_declarations(source: &str) -> Map<String, Value> 
         let property = declaration[..separator].trim();
         let value = declaration[separator + 1..].trim();
         if !property.is_empty() {
-            declarations.insert(property.into(), Value::String(value.into()));
+            declarations.push(super::CssDeclaration {
+                property: property.into(),
+                value: Value::String(value.into()),
+                source: None,
+            });
         }
     }
     declarations

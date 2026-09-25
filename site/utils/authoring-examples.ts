@@ -20,13 +20,21 @@ export const authoringSource = `@theme {
   }
 }
 
-@components {
-  btn {
-    @compose inline-flex gap-xs items-center justify-center;
-    @compose px-action-x py-xs r-action font-medium font-sm bg-brand fg-white;
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-action-x);
+    border-radius: var(--radius-action);
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    background-color: var(--color-brand);
+    color: var(--color-white);
 
     &:hover {
-      @compose bg-brand/.85;
+      background-color: color-mix(in oklab, var(--color-brand) 85%, transparent);
     }
 
     &:focus-visible {

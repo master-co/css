@@ -171,3 +171,22 @@ fn authored_unknown_at_rules_cannot_collide_with_private_compose_slots() {
     assert!(!css.contains("@--master-css-compose-slot-2;"), "{css}");
     assert!(css.contains("color:red"));
 }
+
+#[test]
+fn graph_preserves_compose_statement_boundaries_in_utility_definitions() {
+    let compile = |classes: &str| {
+        let entry = format!(
+            "@import './child.css';@utilities{{combo{{@compose {classes};}}}}.a{{@compose combo;}}"
+        );
+        compile_css_stylesheet_graph(&request(
+            &entry,
+            ".child{@compose color:red;@compose color:blue;}",
+        ))
+        .unwrap()
+    };
+    let first = compile("color:red color:blue");
+    let second = compile("color:blue color:red");
+    assert_eq!(first.manifest, second.manifest);
+    assert_eq!(first.stylesheets, second.stylesheets);
+    assert!(first.stylesheets[1].css.contains("color:red;color:blue"));
+}

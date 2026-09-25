@@ -96,8 +96,14 @@ impl RelocatedStylesheet {
             CssDirectiveStyleDefinition::Native {
                 source,
                 selector_source,
+                declarations,
                 ..
             } => {
+                for declaration in declarations {
+                    if let Some(reference) = &mut declaration.source {
+                        self.restore_reference(original, reference);
+                    }
+                }
                 for reference in [source, selector_source].into_iter().flatten() {
                     self.restore_reference(original, reference);
                 }

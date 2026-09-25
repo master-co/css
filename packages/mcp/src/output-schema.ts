@@ -1,5 +1,5 @@
 import * as z from 'zod/v4'
-import { lintFile, lintSummary, formatFile, formatSummary, extractedFile, extractSummary, scannedFile, scanner, stylesheets, scanSummary, previewSummary } from './source-schema'
+import { compositionTrace, lintFile, lintSummary, formatFile, formatSummary, extractedFile, extractSummary, scannedFile, scanner, stylesheets, scanSummary, previewSummary } from './source-schema'
 
 import { strings, diagnostic, metadata, inspection, envelopeMetadata, manifestResults, change, completion, classDiff, ruleDiff, range } from './semantic-schema'
 
@@ -26,7 +26,7 @@ const fields: Record<string, z.ZodRawShape> = {
   mastercss_trace_class: { manifest: metadata, inspection, occurrences: z.array(z.object({ filePath: z.string(), source: z.string(), statuses: strings })), status: z.string(), css },
   mastercss_extract_classes: { manifest: metadata, files: z.array(extractedFile), summary: extractSummary },
   mastercss_scan_project: { manifest: metadata, files: z.array(scannedFile), scanner, stylesheets, css, summary: scanSummary },
-  mastercss_inspect_directives: { context: metadata, manifest: object, directiveEntries: z.array(z.object({ name: z.string(), range, prelude: z.string(), hasBlock: z.boolean(), quotedStrings: z.number() }).passthrough()), dependencies: strings, css, summary: object },
+  mastercss_inspect_directives: { compositions: z.array(compositionTrace), context: metadata, manifest: object, directiveEntries: z.array(z.object({ name: z.string(), range, prelude: z.string(), hasBlock: z.boolean(), quotedStrings: z.number() }).passthrough()), dependencies: strings, css, summary: object },
   mastercss_manifest_query: { manifest: metadata, results: manifestResults, summary: object },
   mastercss_css_compare: { manifest: metadata, classes: classDiff, css: z.object({ changed: z.boolean(), before: css, after: css, bytesDelta: z.number(), diff: z.string() }), rules: ruleDiff, summary: object },
   mastercss_suggest_syntax: { manifest: metadata, completions: z.array(completion), total: z.number() }

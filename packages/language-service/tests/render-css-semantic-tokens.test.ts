@@ -143,7 +143,7 @@ test.concurrent('does not render semantic tokens for native CSS-only documents',
 
     @supports (container-type: inline-size) {
       @container card (width > 30rem) {
-        @layer components {
+        @layer utilities {
           .card:is(.active, #featured) {
             animation: fade 1s ease-in-out;
           }
@@ -187,7 +187,7 @@ test.concurrent('renders CSS document semantic tokens only inside directive clas
     '}',
     '@supports (container-type: inline-size) {',
     '    @container card (width > 30rem) {',
-    '        @layer components {',
+    '        @layer utilities {',
     '            .panel:is(.active, #featured) { animation: fade 1s ease-in-out; }',
     '        }',
     '    }',
@@ -285,7 +285,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
 
     @custom-variant headings { @media all { @slot; } }
 
-    @components {
+    @utilities {
       btn {
         @compose inline-flex align-items:center fg-primary:hover@md;
 
@@ -329,7 +329,7 @@ test.concurrent('renders detailed CSS directive semantic tokens only for class-l
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'headings', type: 'variable', modifiers: ['directive', 'query'] })
   expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@variant', type: 'keyword', modifiers: ['directive'] })
@@ -441,7 +441,7 @@ test.concurrent('does not render active semantic tokens for CSS directive syntax
 })
 
 test.concurrent('renders active semantic tokens for CSS directive class-list spans', () => {
-  const content = '@components { btn { @compose fg-red block:hover; } }'
+  const content = '@utilities { btn { @compose fg-red block:hover; } }'
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService()
   const semanticTokens = languageService.renderSemanticTokensAtPosition(doc, doc.positionAt(content.indexOf('block') + 1))
@@ -450,7 +450,7 @@ test.concurrent('renders active semantic tokens for CSS directive class-list spa
   expectToken(tokens, 'fg-red', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
   expectToken(tokens, 'hover', 'modifier', ['pseudoClass'])
-  expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })
@@ -486,7 +486,7 @@ test.concurrent('skips embedded semantic tokens when syntax highlighting is off'
 })
 
 test.concurrent('renders CSS directive class-list semantic tokens when embedded highlighting is off', () => {
-  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose block; } }'
+  const content = '@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @compose block; } }'
   const doc = createDoc('css', content)
   const languageService = new CSSLanguageService({ embeddedSyntaxHighlighting: 'off' })
   const semanticTokens = languageService.renderSemanticTokens(doc)
@@ -497,7 +497,7 @@ test.concurrent('renders CSS directive class-list semantic tokens when embedded 
   expect(tokens).not.toContainEqual({ text: 'dark', type: 'enumMember', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '--color-primary', type: 'variable', modifiers: [] })
   expect(tokens).not.toContainEqual({ text: '--color-blue-60', type: 'variable', modifiers: [] })
-  expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
 })

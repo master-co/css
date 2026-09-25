@@ -58,7 +58,7 @@ test.concurrent('renders semantic tokens for class attributes', () => {
         utilities: [
           {
             name: 'btn',
-            layer: 'components',
+            layer: 'utilities',
             rules: [
               { selector: '&', declarations: { color: 'var(--color-brand)' } },
               { selector: '&', declarations: { display: 'block' } }
@@ -87,8 +87,8 @@ test.concurrent('renders semantic tokens for class attributes', () => {
   expectToken(tokens, 'rem', 'enumMember', ['unit'])
   expectToken(tokens, 'rgb', 'function')
   expectToken(tokens, 'scrollbar', 'modifier', ['pseudoElement'])
-  expectToken(tokens, 'btn', 'class', ['declaration', 'component'])
-  expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration') && modifiers.includes('component'))).toHaveLength(3)
+  expectToken(tokens, 'btn', 'enumMember', [])
+  expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'enumMember' && modifiers.length === 0)).toHaveLength(3)
 })
 
 test.concurrent('renders semantic tokens for CSS-like values', () => {
@@ -190,7 +190,7 @@ test.concurrent('renders semantic tokens for container queries and slash-separat
 
 test.concurrent('renders semantic tokens for internal styles dogfood directives', () => {
   const { tokens } = renderTokens([
-    '@components {',
+    '@utilities {',
     '    monaco-editor {',
     '        @compose --vscode-editor-background:transparent! bg-blue filter:drop-shadow(0|2px|2px|rgba(0,0,0,.2px));',
     '    }',
@@ -282,13 +282,13 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
 
     @custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }
 
-    @defaults {
+    @utilities {
       reset {
         @compose block;
       }
     }
 
-    @components {
+    @utilities {
       btn {
         @compose inline-flex fg-primary:hover@md;
         @dark {
@@ -363,9 +363,9 @@ test.concurrent('renders semantic tokens only for CSS directive class-list spans
   expect(tokens).not.toContainEqual({ text: '@custom-variant', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@motion-safe', type: 'keyword', modifiers: ['query'] })
   expect(tokens).not.toContainEqual({ text: '@slot', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@defaults', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
-  expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '<', type: 'operator', modifiers: ['query', 'queryOperator'] })
@@ -411,7 +411,7 @@ test.concurrent('does not render semantic tokens for theme directive declaration
 
 test.concurrent('renders semantic tokens only for compose class lists inside managed definition directives', () => {
   const { tokens } = renderTokens(`
-    @defaults {
+    @utilities {
       reset {
         @light {
           color: var(--text, black);
@@ -419,7 +419,7 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
       }
     }
 
-    @components {
+    @utilities {
       btn {
         @compose inline-flex;
         @dark {
@@ -453,10 +453,10 @@ test.concurrent('renders semantic tokens only for compose class lists inside man
 
   expectToken(tokens, 'inline-flex', 'enumMember')
   expectToken(tokens, 'block', 'enumMember')
-  expect(tokens).not.toContainEqual({ text: '@defaults', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'reset', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@light', type: 'keyword', modifiers: ['directive'] })
-  expect(tokens).not.toContainEqual({ text: '@components', type: 'keyword', modifiers: ['directive'] })
+  expect(tokens).not.toContainEqual({ text: '@utilities', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: 'btn', type: 'class', modifiers: ['selector'] })
   expect(tokens).not.toContainEqual({ text: '@compose', type: 'keyword', modifiers: ['directive'] })
   expect(tokens).not.toContainEqual({ text: '@dark', type: 'keyword', modifiers: ['directive'] })
@@ -523,7 +523,7 @@ test.concurrent('does not render semantic tokens for custom variant directive sy
       }
     }
     @custom-variant component {
-      @layer components {
+      @layer utilities {
         @slot;
       }
     }

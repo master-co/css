@@ -9,7 +9,7 @@ import type { MasterCSSManifest } from '@master/css-schema/manifest'
 import defaultManifestJSON from '@master/css-preset/default-manifest.json' with { type: 'json' }
 
 export interface MigrateOptions {
-  from?: 'rc-legacy' | 'rc-named' | 'rc-native'
+  from?: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed'
   sourceVersion?: string
   cwd?: string
   manifest?: string
@@ -28,7 +28,7 @@ const languageByExtension: Record<string, string> = {
 
 /** Filesystem orchestration only. All syntax and equivalence decisions are Rust-owned. */
 export default function runMigrate(sourcePaths: string[], options: MigrateOptions = {}) {
-  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named or rc-native.')
+  if (!options.from) throw new Error('Migration requires --from rc-legacy, rc-named, rc-native or rc-managed.')
   const cwd = path.resolve(options.cwd || process.cwd())
   const manifestPath = path.resolve(cwd, options.manifest || 'master.rc.manifest.json')
   // An unreadable original manifest is fatal. Never substitute the new preset
@@ -154,7 +154,7 @@ export default function runMigrate(sourcePaths: string[], options: MigrateOption
       report.written = true
     }
   }
-  const report = { version: 2, from: options.from, sourceVersion, configurationCSS: result.configurationCSS, notes: result.notes, mode: options.write ? 'write' : 'preview', manifest: manifestPath, files: reports }
+  const report = { version: 2, from: options.from, sourceVersion, configurationCSS: result.configurationCSS, notes: result.notes, behaviorChanges: result.behaviorChanges, mode: options.write ? 'write' : 'preview', manifest: manifestPath, files: reports }
   console.log(JSON.stringify(report, null, 2))
   return report
 }

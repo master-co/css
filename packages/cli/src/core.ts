@@ -20,7 +20,7 @@ export default async function runProgram(argv: string[] = process.argv) {
     .command('migrate')
     .description('Preview migration from the saved Master CSS v2 RC manifest.')
     .argument('[paths...]', 'Source files, directories, or glob patterns')
-    .addOption(new Option('--from <profile>', 'Saved RC language profile.').choices(['rc-legacy', 'rc-named', 'rc-native']).makeOptionMandatory())
+    .addOption(new Option('--from <profile>', 'Saved RC language profile.').choices(['rc-legacy', 'rc-named', 'rc-native', 'rc-managed']).makeOptionMandatory())
     .option('--source-version <version>', 'Actual saved RC package version, unless present in the manifest metadata.')
     .option('--manifest <path>', 'Original resolved RC manifest, saved before upgrading.', 'master.rc.manifest.json')
     .option('--entry <path>', 'Master CSS entry for generated migration variants; required when multiple entries exist.')

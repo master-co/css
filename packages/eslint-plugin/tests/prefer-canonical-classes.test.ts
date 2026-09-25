@@ -63,7 +63,7 @@ const customManifest = createPresetManifest({
         {
             name: 'btn',
             type: UtilityType.Semantic,
-            layer: 'components',
+            layer: 'utilities',
             declarations: { display: 'block' }
         }
     ]
@@ -217,7 +217,7 @@ createTester({
                     {
                         name: 'btn',
                         type: UtilityType.Semantic,
-                        layer: 'components',
+                        layer: 'utilities',
                         declarations: { display: 'block' }
                     }
                 ]
@@ -345,8 +345,8 @@ createTester({
             ]
         },
         {
-            code: `@components {\n    btn {\n        @compose bg-blue-60:hover@sm block@dark;\n    }\n}`,
-            output: `@components {\n    btn {\n        &:hover { @variant sm { @compose bg-blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
+            code: `@utilities {\n    btn {\n        @compose bg-blue-60:hover@sm block@dark;\n    }\n}`,
+            output: `@utilities {\n    btn {\n        &:hover { @variant sm { @compose bg-blue-60; } }\n        @dark { @compose block; }\n    }\n}`,
             filename: 'test.css',
             errors: [
                 { messageId: 'preferClass' },

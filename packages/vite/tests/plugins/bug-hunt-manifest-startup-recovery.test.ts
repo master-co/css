@@ -13,7 +13,7 @@ function fixture() {
   const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-startup-'))), root = join(parent, 'app'), external = join(parent, 'external')
   mkdirSync(root);mkdirSync(external)
   const dependency = join(external, 'nested/tokens.css')
-  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/nested/tokens.css";@components{card{@compose paint;}}')
+  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/nested/tokens.css";@utilities{card{@compose paint;}}')
   writeFileSync(join(root, 'entry.js'), 'import "./style.css";import manifest from "virtual:master-css-manifest";window.manifest=manifest;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div><script type="module" src="./entry.js"></script></body></html>')
   return { parent, root, dependency, write(value = '@utilities{paint{padding:7rem}}') { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, value) } }

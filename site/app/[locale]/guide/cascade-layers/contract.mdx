@@ -33,14 +33,14 @@ Use the `@base` class suffix for a generated rule, or write native CSS inside `@
 ### Defaults \{#defaults\}
 Use `defaults` for broad element defaults such as typography inside an article, code styling, or vendor defaults you want to keep below app-level styles.
 
-Use the `@default` class suffix, `@defaults` managed definitions, or native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
+Use the `@default` class suffix, native CSS inside `@layer defaults`. Normal declarations in `components` and `utilities` take precedence over normal declarations in this layer.
 
 ### Components \{#components\}
-Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write these managed class definitions in `@components`.
+Use `components` for project styles that carry product meaning: `.btn`, `.card`, `.field`, `.toolbar`, `.app-shell`. In project CSS, write native class selectors inside `@layer components`.
 
-<ConfiguredExample source={'@components { btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn']} element="button" label="Preview button" />
 
-The compiler records these definitions in the manifest with the components layer. They remain on-demand: defining `btn` does not emit its CSS until the class is used or composed by another generated style.
+These native rules are emitted by default, even when unused. They follow CSS source order within the layer. Only explicit native pruning can remove unused selectors; `.btn` does not acquire Master suffixes or become a composition target.
 
 ### Utilities \{#utilities\}
 Use `utilities` for built-in utilities, animation utilities, and custom static utilities written in `@utilities`. Custom utilities can use native declarations, `@compose`, nested selectors, and `@variant` blocks.
@@ -74,8 +74,8 @@ Add this configuration to the project CSS entry that imports `@master/css`. It d
   --color-primary: #ffffff;
 }
 
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose inline-flex;
     background-color: var(--color-primary);
   }
@@ -127,7 +127,7 @@ With the base order loaded, normal utility declarations take precedence over nor
 
 Here, `btn` defines `display: inline-flex`. The same button also uses `flex`, so the utilities layer sets its final display to `flex`:
 
-<ConfiguredExample source={'@components { btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
+<ConfiguredExample source={'@layer components { .btn { @compose inline-flex bg-blue-60 fg-white; } }'} classes={['btn', 'flex']} element="button" label="Preview button" />
 
 Use this as the normal override path: keep reusable product styles in `components`, then use utilities in `utilities` for local adjustments.
 
@@ -166,8 +166,8 @@ Native `@layer` blocks remain ordinary stylesheet output; they do not define on-
   }
 }
 
-@components {
-  card {
+@layer components {
+  .card {
     @compose block;
     border-radius: .75rem;
   }

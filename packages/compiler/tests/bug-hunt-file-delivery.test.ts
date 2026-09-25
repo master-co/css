@@ -9,7 +9,7 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) print
     const root = mkdtempSync(join(tmpdir(), 'master-css-file-delivery-'))
     try {
       const entry = join(root, 'entry.css'), child = join(root, 'child.css'), tokens = join(root, 'tokens.css')
-      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@components{button{@compose paint;}}.example{color:green}`)
+      writeFileSync(entry, `@import './child.css' ${condition};@reference './tokens.css';@utilities{button{@compose paint;}}.example{color:green}`)
       writeFileSync(child, "@import 'https://remote.test/external.css';@reference './tokens.css';.example{@compose paint;}")
       writeFileSync(tokens, '@utilities{paint{color:red}}.reference-only{color:blue}')
       const options = {

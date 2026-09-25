@@ -66,7 +66,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }
       }
 
-      @components {
+      @utilities {
         btn {
           display: inline-flex;
           color: var(--color-primary);
@@ -110,17 +110,17 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       id: 'media',
       nodes: [expect.objectContaining({ type: 'string', value: 'print' })]
     })
-    expect(manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'components')).toBe(true)
+    expect(manifest.utilities?.some((utility) => utility.name === 'btn' && utility.layer === 'utilities')).toBe(true)
     expect(manifest.utilities?.some((utility) => utility.name === 'content-auto' && utility.layer === 'utilities')).toBe(true)
 
     const css = createTestCSS(manifest)
     css.ensureClassRules('btn', 'content-auto', 'm-card')
     expect(css.themeLayer.text).toContain(':root,:host{--color-primary:#000;--spacing-card:1rem}')
     expect(css.themeLayer.text).toContain('.dark{--color-primary:#fff}')
-    expect(css.componentsLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
-    expect(css.componentsLayer.text).toContain('@media print{.btn{display:none}}')
-    expect(css.componentsLayer.text).toContain('.btn:disabled>span{display:block}')
-    expect(css.componentsLayer.text).toContain('.btn:nth-child(2n){display:grid}')
+    expect(css.utilitiesLayer.text).toContain('.btn{display:inline-flex;color:var(--color-primary)}')
+    expect(css.utilitiesLayer.text).toContain('@media print{.btn{display:none}}')
+    expect(css.utilitiesLayer.text).toContain('.btn:disabled>span{display:block}')
+    expect(css.utilitiesLayer.text).toContain('.btn:nth-child(2n){display:grid}')
     expect(css.utilitiesLayer.text).toContain('.content-auto{content-visibility:auto}')
     expect(css.utilitiesLayer.text).toContain('.m-card{margin:var(--spacing-card)}')
   })
@@ -150,7 +150,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }
       }
 
-      @components {
+      @utilities {
         badge-<success|danger> {
           color: --value();
         }
@@ -189,7 +189,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('text-center')?.text).toBe('.text-center{text-align:start}')
     expect(css.createRule('badge-success')?.text).toBe('.badge-success{color:success}')
     expect(css.createRule('badge-success')?.type).toBe(UtilityType.Semantic)
-    expect(css.createRule('badge-success')?.layerName).toBe('components')
+    expect(css.createRule('badge-success')?.layerName).toBe('utilities')
   })
 
   test('lowers separate named token and raw parameter entries', () => {
@@ -483,7 +483,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const explicit = compileCSSManifest(`
       ${settings}
 
-      @components {
+      @utilities {
         panel {
           @variant dark {
             color: white;
@@ -511,7 +511,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const shorthand = compileCSSManifest(`
       ${settings}
 
-      @components {
+      @utilities {
         panel {
           @dark {
             color: white;
@@ -541,19 +541,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const shorthandCSS = createTestCSS(shorthand.manifest).ensureClassRules('panel')
 
     expect(shorthand.css).toBe(explicit.css)
-    expect(shorthandCSS.componentsLayer.text).toBe(explicitCSS.componentsLayer.text)
+    expect(shorthandCSS.utilitiesLayer.text).toBe(explicitCSS.utilitiesLayer.text)
     expect(shorthand.css).toContain('.card:where(.dark,.dark *){display:block;color:#fff}')
     expect(shorthand.css).toContain('.banner:where(.light,.light *){display:none}')
-    expect(shorthandCSS.componentsLayer.text).toContain('.panel:where(.dark,.dark *){color:#fff}')
-    expect(shorthandCSS.componentsLayer.text).toContain('.panel:where(.light,.light *){color:#000}')
+    expect(shorthandCSS.utilitiesLayer.text).toContain('.panel:where(.dark,.dark *){color:#fff}')
+    expect(shorthandCSS.utilitiesLayer.text).toContain('.panel:where(.light,.light *){color:#000}')
   })
 
-  test('keeps compose canonicalization rewrites output-equivalent', () => {
+  test('keeps rewritten compose blocks in their authored condition order', () => {
     const before = compileCSSManifest(`
       @mode light { .light { @slot; } }
       @mode dark { .dark { @slot; } }
 
-      @components {
+      @utilities {
         btn {
           @compose text-align:center contain:content bg-blue-60:hover@sm block@dark;
         }
@@ -567,7 +567,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       @mode light { .light { @slot; } }
       @mode dark { .dark { @slot; } }
 
-      @components {
+      @utilities {
         btn {
           @compose text-center;
           contain: content;
@@ -600,14 +600,19 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       }
     `, { baseManifest: defaultManifest })
 
-    expect(normalizeDeclarationOrder(after.css)).toBe(normalizeDeclarationOrder(before.css))
-    expect(normalizeDeclarationOrder(createTestCSS(after.manifest).ensureClassRules('btn').componentsLayer.text))
-      .toBe(normalizeDeclarationOrder(createTestCSS(before.manifest).ensureClassRules('btn').componentsLayer.text))
+    expect(after.css.indexOf('@media')).toBeLessThan(after.css.indexOf('.card:where(.dark'))
+    expect(before.css.indexOf('.card:where(.dark')).toBeLessThan(before.css.indexOf('@media'))
+    for (const result of [before, after]) {
+      expect(result.css).toContain('text-align:center')
+      expect(result.css).toContain('contain:content')
+      expect(result.css).toContain('display:block')
+      expect(result.css).toContain('background-color:var(--color-blue-60)')
+    }
   })
 
-  test('keeps base declarations before matching responsive declarations', () => {
+  test('keeps authored responsive declarations before later base declarations', () => {
     const { manifest } = compileCSSManifest(`
-      @defaults {
+      @utilities {
         prose {
           @variant sm {
             :is(h1, h2, h3, h4, h5, h6) {
@@ -623,9 +628,9 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })
     const css = createTestCSS(manifest).ensureClassRules('prose')
 
-    expect(css.defaultsLayer.text).toContain(
-      '.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-lg);scroll-margin-top:60px}'
-      + '@media (width>=52.125rem){.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-2xl);scroll-margin-top:100px}}'
+    expect(css.utilitiesLayer.text).toContain(
+      '@media (width>=52.125rem){.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-2xl);scroll-margin-top:100px}}'
+      + '.prose :is(h1,h2,h3,h4,h5,h6){margin-top:var(--spacing-lg);scroll-margin-top:60px}'
     )
   })
 
@@ -685,7 +690,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     `, { baseManifest: defaultManifest })).toThrow('@variant only applies condition variants')
 
     const result = compileCSSManifest(`
-      @components {
+      @utilities {
         card {
           &:is(:hover, :focus-visible) {
             color: blue;
@@ -696,7 +701,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     const css = createTestCSS(result.manifest)
     css.ensureClassRules('card')
-    expect(css.componentsLayer.text).toContain('.card:is(:hover,:focus-visible){color:#00f}')
+    expect(css.utilitiesLayer.text).toContain('.card:is(:hover,:focus-visible){color:#00f}')
   })
 
 })

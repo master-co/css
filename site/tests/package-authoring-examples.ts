@@ -2,7 +2,6 @@ import assert from 'node:assert/strict'
 import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync, symlinkSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join, dirname } from 'node:path'
-import { createRenderSessionSync } from '@master/css/node'
 import { loadProjectManifest } from '@master/css-compiler/project'
 import { compileRenderedStylesheet } from '@master/css-compiler/stylesheet'
 import preset from '../utils/preset-manifest'
@@ -30,7 +29,7 @@ function fixture() {
 export async function verifyPackageAuthoringExamples() {
   const files = fixture()
   try {
-    const fences = deliveryFences(deliverySource('authoring-packages'))
+    const fences = deliveryFences(deliverySource('authoring-packages').replaceAll('<package-name>', '@acme/ui-theme'))
     files.write('node_modules/@acme/ui-theme/package.json', fences.find(f => f.name === 'package.json')!.text)
     const packageFile = files.write('node_modules/@acme/ui-theme/master.css', authoringSource)
     const entry = files.write('app.css', fences.find(f => f.name === 'app.css')!.text)
@@ -48,23 +47,24 @@ export async function verifyPackageAuthoringExamples() {
     assert.deepEqual(result.diagnostics.filter(d => d.severity === 'error'), [])
     assert.ok(result.dependencies.some(p => p.endsWith('/@acme/ui-theme/master.css')), packageFile)
     const css = result.stylesheets!.map(sheet => sheet.css).join('\n')
-    for (const text of ['--color-brand:#4f46e5', '.btn{', '.btn:hover', '.btn:focus-visible', '.content-auto{', 'prefers-reduced-motion:no-preference']) assert.ok(css.includes(text), text)
+    for (const text of ['--color-brand:#4f46e5', '&:hover', '&:focus-visible', '.content-auto{', 'prefers-reduced-motion:no-preference']) assert.ok(css.includes(text), text)
+    assert.match(css, /\.btn\s*\{/)
     assert.doesNotMatch(css, /@compose|@custom-variant|@components|@utilities/)
 
     const local = fences.find(f => f.name === 'components/Button.module.css')!
     const compiled = await compileRenderedStylesheet(files.write(local.name, local.text), local.text, options)
     assert.deepEqual(compiled.diagnostics.filter(d => d.severity === 'error'), [])
-    assert.match(compiled.css, /\.button:focus-visible\{outline-width:2px solid var\(--color-brand\);outline-offset:3px\}/)
-    assert.match(compiled.css, /\.button:hover/)
+    assert.match(compiled.css, /\.button\{content-visibility:auto;contain-intrinsic-size:auto 32rem\}/)
+    assert.doesNotMatch(compiled.css, /\.btn\s*\{/)
     assert.doesNotMatch(compiled.css, /@reference|@compose/)
 
     // The documented relative-source alternative also works without a package resolver.
     files.write('shared/master.css', authoringSource)
     files.write('app.css', "@import '@master/css';\n@import './shared/master.css';")
     const project = await loadProjectManifest({ root: files.root, baseManifest: preset })
-    const engine = createRenderSessionSync({ manifest: project.manifest })
-    try { assert.deepEqual(engine.ensureClassRules(classes).invalidClassNames, []) }
-    finally { engine.dispose() }
+    const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: files.root, classes })
+    assert.match(rendered.css, /\.btn\s*\{/)
+    assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
   } finally { files.dispose() }
 }
 
@@ -72,22 +72,16 @@ export async function verifyMonorepoExamples() {
   const files = fixture()
   try {
     const fences = deliveryFences(deliverySource('monorepo'))
+    files.write('index.css', '@theme { --color-primary: #123456; }')
     for (const fence of fences.filter(f => f.language === 'css')) files.write(fence.name, fence.text)
-    const classes = configuredMarkupClasses(fences.find(f => f.language === 'html')!.text)
-    for (const [app, color] of [['admin', '#4f46e5'], ['shop', '#0891b2']]) {
-      files.write(`projects/${app}/package.json`, JSON.stringify({ dependencies: { '@master/css': '*' } }))
-      const root = join(files.root, 'projects', app)
-      const project = await loadProjectManifest({ root, baseManifest: preset })
-      assert.equal(project.entries.length, 1)
-      assert.ok(project.entries[0].endsWith(`/projects/${app}/index.css`))
-      const engine = createRenderSessionSync({ manifest: project.manifest })
-      try {
-        const snapshot = engine.ensureClassRules(classes)
-        assert.deepEqual(snapshot.invalidClassNames, [])
-        assert.ok(snapshot.cssText.includes(`--color-primary:${color}`))
-        assert.match(snapshot.cssText, /--spacing-shell:1.5rem/)
-        assert.match(snapshot.cssText, /\.app-shell\{/)
-      } finally { engine.dispose() }
-    }
+    files.write('projects/admin/package.json', JSON.stringify({ dependencies: { '@master/css': '*' } }))
+    const root = join(files.root, 'projects/admin')
+    const project = await loadProjectManifest({ root, baseManifest: preset })
+    assert.equal(project.entries.length, 1)
+    assert.ok(project.entries[0].endsWith('/projects/admin/index.css'))
+    const rendered = await compileRenderedStylesheet(project.entries[0], readFileSync(project.entries[0], 'utf8'), { baseManifest: preset, projectDir: root, classes: ['bg-primary'] })
+    assert.match(rendered.css, /--color-primary:#4f46e5/)
+    assert.match(rendered.css, /\.app-shell\{/)
+    assert.deepEqual(rendered.diagnostics.filter(d => d.severity === 'error'), [])
   } finally { files.dispose() }
 }

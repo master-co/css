@@ -39,7 +39,7 @@ test('uses explicit Master CSS manifest objects from ESLint settings', async () 
                   {
                     name: 'fixture-card',
                     type: UtilityType.Semantic,
-                    layer: 'components',
+                    layer: 'utilities',
                     rules: [
                       { selector: '&', declarations: { display: 'block' } }
                     ]
@@ -47,7 +47,7 @@ test('uses explicit Master CSS manifest objects from ESLint settings', async () 
                   {
                     name: 'fixture-button',
                     type: UtilityType.Semantic,
-                    layer: 'components',
+                    layer: 'utilities',
                     rules: [
                       { selector: '&', declarations: { display: 'inline-flex' } }
                     ]
@@ -85,7 +85,7 @@ test('uses project-level CSS manifest entries from the ESLint workspace', async 
     writeFileSync(join(cwd, 'index.css'), `
       @master entry;
 
-      @components {
+      @utilities {
         fixture-button {
           display: inline-flex;
         }
@@ -140,7 +140,7 @@ test('uses the project manifest for files that have not been written yet', async
     writeFileSync(join(cwd, 'index.css'), `
       @master entry;
 
-      @components {
+      @utilities {
         fixture-button {
           display: inline-flex;
         }
@@ -234,7 +234,7 @@ function writeProjectUtility(filename: string, utility: string) {
   writeFileSync(filename, `
     @master entry;
 
-    @components {
+    @utilities {
       ${utility} {
         display: inline-flex;
       }

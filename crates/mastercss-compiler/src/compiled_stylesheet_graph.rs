@@ -15,6 +15,8 @@ use crate::{
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssStylesheetGraphRequest {
     pub graph: CssImportGraphRequest,
+    #[serde(default)]
+    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
     /// Final URLs chosen by the host, keyed by source file ID.
     pub urls: HashMap<String, String>,
     /// Supplying this enables strict relocation of every relative resource URL.
@@ -240,6 +242,9 @@ pub fn compile_css_stylesheet_graph(
             *definition = refined.next().expect("one refined slot definition");
         }
         if let Some(css) = &relocated {
+            for definition in &mut result.utility_sources {
+                css.restore_reference(original_source, &mut definition.source);
+            }
             for mapping in &mut result.native_mappings {
                 css.restore_reference(original_source, &mut mapping.source);
             }
@@ -277,18 +282,29 @@ pub fn compile_css_stylesheet_graph(
             continue;
         }
         let result = &parsed[index];
+        combined
+            .utility_sources
+            .extend(result.utility_sources.clone());
         merge_input(&mut input, &result.manifest_input);
         append_unique(&mut combined.class_names, &result.class_names);
         append_unique(&mut combined.native_class_names, &result.native_class_names);
         append_unique(&mut combined.warnings, &result.warnings);
         policies.push(result.extraction_policy.clone());
+        let order_offset = all_definitions
+            .last()
+            .map_or(0, |definition| match definition {
+                CssDirectiveStyleDefinition::Native { order, .. }
+                | CssDirectiveStyleDefinition::Compose { order, .. } => *order,
+            });
         for definition in result.style_definitions.as_deref().unwrap_or_default() {
             let mut definition = definition.clone();
-            let next_order = u32::try_from(all_definitions.len() + 1)
-                .map_err(|_| graph_error(&graph.entry, "Too many style definitions"))?;
             match &mut definition {
                 CssDirectiveStyleDefinition::Native { order, .. }
-                | CssDirectiveStyleDefinition::Compose { order, .. } => *order = next_order,
+                | CssDirectiveStyleDefinition::Compose { order, .. } => {
+                    *order = order
+                        .checked_add(order_offset)
+                        .ok_or_else(|| graph_error(&graph.entry, "Too many style definitions"))?
+                }
             }
             all_definitions.push(definition.clone());
             if is_managed(&definition) {
@@ -315,6 +331,7 @@ pub fn compile_css_stylesheet_graph(
             resolution_manifest: request.resolution_manifest.clone(),
         },
     )?;
+    combined.compositions = lowered.compositions;
     combined.warnings = lowered.warnings;
     // lower_css_directives resolves its own native rules after finalizing managed
     // definitions, but its resolution_manifest field predates that finalization.
@@ -332,6 +349,7 @@ pub fn compile_css_stylesheet_graph(
 
     let mut generated = Vec::new();
     let mut raw_sources = Vec::new();
+    let mut provenance_engine = None;
     for ((node, result), slots) in graph.stylesheets.iter().zip(&parsed).zip(&native_slots) {
         let emit_native = native_stylesheets
             .as_ref()
@@ -347,6 +365,20 @@ pub fn compile_css_stylesheet_graph(
                     resolution_manifest: Some(resolution_manifest.clone()),
                 },
             )?;
+            for mut trace in native_lowered.compositions {
+                if provenance_engine.is_none() {
+                    provenance_engine = Some(
+                        mastercss_engine::EngineSession::create(&resolution_manifest.to_string())
+                            .map_err(|error| graph_error(&node.id, error.to_string()))?,
+                    );
+                }
+                crate::lower::inspection::attach_definition_sources(
+                    &mut trace,
+                    combined.style_definitions.as_deref().unwrap_or_default(),
+                    provenance_engine.as_ref().unwrap(),
+                )?;
+                combined.compositions.push(trace);
+            }
             append_unique(&mut combined.warnings, &native_lowered.warnings);
             if emit_native {
                 replacements.push((
@@ -534,6 +566,12 @@ pub fn compile_css_stylesheet_graph(
         })
         .collect::<Result<Vec<_>, CompilerError>>()?;
     let entry = &stylesheets[indexes[graph.entry.as_str()]];
+    combined
+        .utility_sources
+        .splice(0..0, request.utility_sources.clone());
+    for trace in &mut combined.compositions {
+        crate::utility_sources::attach(trace, &combined.utility_sources);
+    }
     combined.css = entry.css.clone();
     combined.native_css = entry.native_css.clone();
     combined.generated_css = entry.generated_css.clone();

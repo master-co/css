@@ -137,7 +137,7 @@ describe('style CSS extraction helpers', () => {
     const homePath = join(root, 'app/home.css')
     writeFileSync(homePath, [
       '@theme { --color-active: #ff0000; }',
-      '@components { active-card { animation: active-spin 1s infinite; } }',
+      '@utilities { active-card { animation: active-spin 1s infinite; } }',
       '@keyframes active-spin { to { opacity: .5; } }',
       '.native-card { color: var(--color-active); }'
     ].join('\n'))
@@ -156,7 +156,7 @@ describe('style CSS extraction helpers', () => {
     expect(result.css).toContain('@keyframes active-spin')
     expect(result.css).toContain('.native-card')
     expect(result.css).toContain('--color-active:red')
-    expect(result.css).not.toContain('@components')
+    expect(result.css).not.toContain('@utilities')
     expect(result.css).not.toContain('@import "./home.css"')
     expect(result.generatedCSS).toContain('--color-active:red')
     expect(result.emittedGlobals.variables).toMatchObject({
@@ -228,7 +228,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const entryPath = join(root, 'app/globals.css')
     const tokenPath = join(root, 'app/tokens.css')
-    writeFileSync(tokenPath, '@components { card { display: block; } }')
+    writeFileSync(tokenPath, '@utilities { card { display: block; } }')
     writeFileSync(entryPath, '@master entry;\n@import "./tokens.css";')
 
     expect(collectStylesheetDependencies(entryPath, undefined, root)).toEqual([
@@ -274,7 +274,7 @@ describe('style CSS extraction helpers', () => {
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Button.module.css')
     writeFileSync(tokenPath, [
-      '@components {',
+      '@utilities {',
       '  brand { background-color: #123456; }',
       '}',
       '.referenced-native { color: red; }'
@@ -311,7 +311,7 @@ describe('style CSS extraction helpers', () => {
       '    to { opacity: 1; }',
       '  }',
       '}',
-      '@components {',
+      '@utilities {',
       '  panel {',
       '    padding: var(--spacing-card);',
       '    animation: pop 1s;',
@@ -353,7 +353,7 @@ describe('style CSS extraction helpers', () => {
       '    to { opacity: 1; }',
       '  }',
       '}',
-      '@components {',
+      '@utilities {',
       '  panel {',
       '    padding: var(--spacing-card);',
       '    animation: pop 1s;',
@@ -446,7 +446,7 @@ describe('style CSS extraction helpers', () => {
     const root = createFixture()
     const tokenPath = join(root, 'app/tokens.css')
     const modulePath = join(root, 'app/Empty.module.css')
-    writeFileSync(tokenPath, '@components { brand { display: block; } }')
+    writeFileSync(tokenPath, '@utilities { brand { display: block; } }')
 
     const result = await transformLocalStylesheet(modulePath, '@reference "./tokens.css";', {
       baseManifest: defaultManifest,

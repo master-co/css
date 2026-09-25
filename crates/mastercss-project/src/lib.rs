@@ -582,6 +582,7 @@ fn load_project_manifest_graphs(
         )?;
         let lowered = lower_css_directives_request(
             &LowerCssDirectivesRequest {
+                utility_sources: Vec::new(),
                 manifest_input: result.manifest_input,
                 style_definitions: result.style_definitions.unwrap_or_default(),
                 warnings: result.warnings,

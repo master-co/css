@@ -20,7 +20,7 @@ function reportBrowserErrors(page: import('@playwright/test').Page) {
 function writeStyle(root: string, displayClass: string) {
   writeFileSync(path.join(root, 'app.css'), [
     '@master entry;',
-    '@components {',
+    '@utilities {',
     '    probe {',
     `        @compose ${displayClass};`,
     '        width: 4px;',
@@ -61,7 +61,7 @@ describe('Vite dev HMR', () => {
       '@import "@master/css";',
       '@source "../index.html";',
       '',
-      '@layer components {',
+      '@layer utilities {',
       '    .box {',
       '        display: flex;',
       '        color: red;',

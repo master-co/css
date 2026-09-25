@@ -2,7 +2,7 @@
   --breakpoint-sm: 52.125rem;
 }
 
-@components {
+@utilities {
   btn {
     display: inline-flex;
     font-weight: 600;

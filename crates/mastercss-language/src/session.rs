@@ -460,7 +460,7 @@ impl LanguageSession {
             Vec::new()
         };
         let replacement_prefix = (rules.len() == 1 && rules[0].declarations.len() == 1)
-            .then(|| format!("{}:", rules[0].declarations.keys().next().unwrap()));
+            .then(|| format!("{}:", rules[0].declarations.first().unwrap().property));
         Ok(LanguageColorPresentationIr {
             version: LANGUAGE_BATCH_VERSION,
             editable: !named || replacement_prefix.is_some(),

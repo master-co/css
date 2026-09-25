@@ -48,7 +48,7 @@ function compileCSSManifestWithDiagnostics(source: string) {
 describe.concurrent('CSS-first lowering for migrated core tests', () => {
   test('keeps nested selectors aligned with native CSS descendant and compound behavior', () => {
     const result = compileCSSManifest(`
-      @components {
+      @utilities {
         card {
           p {
             color: red;
@@ -71,15 +71,15 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     const css = createTestCSS(result.manifest)
     css.ensureClassRules('card')
-    expect(css.componentsLayer.text).toContain('.card p{color:red}')
-    expect(css.componentsLayer.text).toContain('.card :is(p,li){color:#00f}')
-    expect(css.componentsLayer.text).toContain('.card :is(code,kbd){color:green}')
-    expect(css.componentsLayer.text).toContain('.card:hover{color:#000}')
+    expect(css.utilitiesLayer.text).toContain('.card p{color:red}')
+    expect(css.utilitiesLayer.text).toContain('.card :is(p,li){color:#00f}')
+    expect(css.utilitiesLayer.text).toContain('.card :is(code,kbd){color:green}')
+    expect(css.utilitiesLayer.text).toContain('.card:hover{color:#000}')
   })
 
   test('replaces old JS merging intent with ordered CSS imports through baseManifest lowering', () => {
     const first = compileCSSManifest(`
-      @components {
+      @utilities {
         a { order: 1; }
         b { order: 2; }
       }
@@ -87,7 +87,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
       baseManifest: defaultManifest
     })
     const second = compileCSSManifest(`
-      @components {
+      @utilities {
         b { order: 22; }
         c { order: 3; }
       }
@@ -97,10 +97,10 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(second.manifest)
 
     css.ensureClassRules('a', 'b', 'c')
-    expect(css.componentsLayer.text).toContain('.a{order:1}')
-    expect(css.componentsLayer.text).toContain('.b{order:22}')
-    expect(css.componentsLayer.text).toContain('.c{order:3}')
-    expect(css.componentsLayer.text).not.toContain('.b{order:2}')
+    expect(css.utilitiesLayer.text).toContain('.a{order:1}')
+    expect(css.utilitiesLayer.text).toContain('.b{order:22}')
+    expect(css.utilitiesLayer.text).toContain('.c{order:3}')
+    expect(css.utilitiesLayer.text).not.toContain('.b{order:2}')
   })
 
   test('lowers managed animations and removes them when no class references remain', () => {
@@ -115,7 +115,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         }
       }
 
-      @components {
+      @utilities {
         btn {
           animation: fade 1s;
         }
@@ -201,7 +201,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-muted: --alpha(var(--color-primary) / 50%);
       }
 
-      @components {
+      @utilities {
         btn {
           background-color: --alpha(var(--color-primary) / .5);
         }
@@ -215,7 +215,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
     css.ensureClassRules('btn', 'bg-muted')
     expect(css.themeLayer.text).toContain('--color-muted:--alpha(var(--color-primary) / 50%)')
-    expect(css.componentsLayer.text).toContain('.btn{background-color:--alpha(var(--color-primary) / .5)}')
+    expect(css.utilitiesLayer.text).toContain('.btn{background-color:--alpha(var(--color-primary) / .5)}')
     expect(result.nativeCSS).toContain('color: --alpha(var(--color-muted) / var(--opacity-muted));')
   })
 
@@ -252,7 +252,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-primary: #123456;
       }
 
-      @defaults {
+      @utilities {
         demo {
           @compose content-stripe;
         }
@@ -307,7 +307,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     expect(css.createRule('shadow-sm')?.text).toBe('.shadow-sm{box-shadow:var(--shadow-sm)}')
 
     css.ensureClassRules('demo')
-    expect(css.defaultsLayer.text).toContain('.demo{content:var(--content-stripe)}')
+    expect(css.utilitiesLayer.text).toContain('.demo{content:var(--content-stripe)}')
     expect(css.themeLayer.text).toContain('--content-stripe:"stripe"')
   })
 
@@ -317,7 +317,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
         --color-primary: #123456;
       }
 
-      @components {
+      @utilities {
         card {
           @compose inline-flex bg-primary/.9 opacity:.7 translate:-5px;
         }
@@ -359,7 +359,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
   test('batches independent managed style refreshes before native compose', () => {
     const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @components {
+      @utilities {
         alpha {
           color: red;
         }
@@ -380,7 +380,7 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
 
   test('refreshes once before a managed compose dependency', () => {
     const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @components {
+      @utilities {
         alpha {
           color: red;
         }
@@ -394,13 +394,13 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(result.manifest)
 
     css.ensureClassRules('beta')
-    expect(css.componentsLayer.text).toContain('.beta{color:red;background:#00f}')
+    expect(css.utilitiesLayer.text).toContain('.beta{color:red;background:#00f}')
     expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
   })
 
   test('refreshes once for a multi-dependency managed compose group', () => {
     const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @components {
+      @utilities {
         alpha {
           color: red;
         }
@@ -418,13 +418,13 @@ describe.concurrent('CSS-first lowering for migrated core tests', () => {
     const css = createTestCSS(result.manifest)
 
     css.ensureClassRules('gamma')
-    expect(css.componentsLayer.text).toContain('.gamma{color:red;background:#00f;border-color:green}')
+    expect(css.utilitiesLayer.text).toContain('.gamma{color:red;background:#00f;border-color:green}')
     expect(diagnostics.counts['lower-managed-style-refresh-count']).toBe(1)
   })
 
   test('refreshes pending managed definitions before native compose', () => {
     const { result, diagnostics } = compileCSSManifestWithDiagnostics(`
-      @components {
+      @utilities {
         alpha {
           color: red;
         }

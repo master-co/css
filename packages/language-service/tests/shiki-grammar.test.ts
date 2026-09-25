@@ -53,7 +53,7 @@ test.concurrent('defines deterministic TextMate grammar scopes for CSS directive
 
   const directive = grammarEntry('master-directive')
   const themeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(theme)\\b')
-  const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(defaults|components|utilities)\\b')
+  const managedDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(utilities)\\b')
   const composeDirective = findGrammarPattern(directive, (pattern) => pattern.begin === '(@)(compose)\\b')
 
   expect(themeDirective.beginCaptures?.['0']?.name).toBe('keyword.control.at-rule.master-css')
@@ -135,7 +135,7 @@ test('registers a real Shiki TextMate injection grammar for CSS directives', asy
       '@theme {',
       '    --color-primary: var(--color-blue-60);',
       '}',
-      '@components {',
+      '@utilities {',
       '    btn {',
       '        @compose inline-flex fg-primary:hover@md;',
       '    }',

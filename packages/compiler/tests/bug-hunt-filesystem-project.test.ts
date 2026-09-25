@@ -14,7 +14,7 @@ for (const explicit of [false, true]) {
         const entry = join(root, 'entry.css'), child = join(root, 'styles/child.css'), tokens = join(root, 'tokens.css')
         const view = join(root, 'styles/views/view.html')
         mkdirSync(join(root, 'styles/views'), { recursive: true })
-        writeFileSync(entry, `@import './styles/child.css'${qualifier};@master entry;@reference './tokens.css';@components{button{@compose paint;}}`)
+        writeFileSync(entry, `@import './styles/child.css'${qualifier};@master entry;@reference './tokens.css';@utilities{button{@compose paint;}}`)
         writeFileSync(child, "@import 'https://invalid.invalid/external.css';@reference '../tokens.css';@source './views/*.html';.card{@compose paint;}.ordinary{color:blue}")
         writeFileSync(tokens, '@utilities{paint{color:red}}')
         writeFileSync(view, '<div class="button card"></div>')

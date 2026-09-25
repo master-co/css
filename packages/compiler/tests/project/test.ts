@@ -88,7 +88,7 @@ function writeCSSFixture(cwd: string) {
     @master entry;
     @import './styles/tokens.css';
 
-    @components {
+    @utilities {
       btn {
         color: var(--color-primary);
         display: inline-flex;
@@ -154,7 +154,7 @@ test('compiles explicit CSS project entries', async () => {
     }))
     expect(result.manifest.utilities).toContainEqual(expect.objectContaining({
       name: 'btn',
-      layer: 'components',
+      layer: 'utilities',
     }))
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -186,7 +186,7 @@ test('loads CSS manifest resources', async () => {
     }))
     expect(result.manifest.utilities).toContainEqual(expect.objectContaining({
       name: 'btn',
-      layer: 'components',
+      layer: 'utilities',
     }))
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -256,7 +256,7 @@ test('loads package entry preset manifest from CSS imports', async () => {
     writeFileSync(entry, `
       @import "@master/css";
 
-      @components {
+      @utilities {
         card {
           @variant sm {
             color: red;
@@ -303,7 +303,7 @@ test('loads project-level CSS manifest entries', async () => {
     const { entry } = writeCSSFixture(cwd)
     writeFileSync(join(cwd, 'ignored.css'), `
       @preserve native;
-      @layer components {
+      @layer utilities {
         .ignored {
           color: red;
         }

@@ -10,8 +10,8 @@
   --color-master-ink: var(--color-yellow-95);
 }
 
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose rel w:100% h:48px box-border mt-md inline-flex items-center justify-center px-lg bg-master fg-master-ink b:1px|solid|var(--color-master-hover) r-sm font-sm font-medium text-center text-decoration:none transition:all|var(--duration-fast)|var(--easing-smooth);
 
     &:hover {
@@ -24,11 +24,11 @@
     }
   }
 
-  btn-icon {
+  .btn-icon {
     @compose abs right-md;
   }
 
-  btn-arrow-line {
+  .btn-arrow-line {
     @compose transform-origin:1.25rem|center transition:all|var(--duration-fast)|var(--easing-smooth);
     opacity: 0;
     transform: scale(0);

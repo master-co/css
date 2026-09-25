@@ -149,7 +149,7 @@
           ]
         },
         {
-          "begin": "(@)(defaults|components|utilities)\\b",
+          "begin": "(@)(utilities)\\b",
           "beginCaptures": {
             "0": {
               "name": "keyword.control.at-rule.master-css"

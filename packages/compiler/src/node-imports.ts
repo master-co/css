@@ -177,7 +177,7 @@ export interface PreparedCSSImportGraph {
   sourceMaps?: Record<string, string>
 }
 
-function resolveNodePackageCSS(importSource: string, fromFile: string) {
+export function resolveNodePackageCSS(importSource: string, fromFile: string) {
   if (importSource.startsWith('.') || importSource.startsWith('/') || /^[a-z][a-z\d+.-]*:/i.test(importSource)) return
   try {
     const file = createRequire(fromFile).resolve(importSource)

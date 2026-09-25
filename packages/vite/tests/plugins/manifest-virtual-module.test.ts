@@ -55,7 +55,7 @@ describe('ManifestVirtualModulePlugin', () => {
       mkdirSync(root, { recursive: true })
       writeFileSync(entryPath, [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'))
@@ -64,13 +64,13 @@ describe('ManifestVirtualModulePlugin', () => {
       const addWatchFile = vi.fn()
 
       await expect((plugin.load as any).call({ addWatchFile }, RESOLVED_VIRTUAL_MANIFEST_ID))
-        .rejects.toThrow('Invalid @compose class')
+        .rejects.toThrow('Invalid @compose utility')
       expect(addWatchFile).toHaveBeenCalledWith(entryPath)
       expect(viteConfig.server.fs.allow).toContain(entryPath)
 
       writeFileSync(entryPath, [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '    card { @compose block; }',
         '}'
       ].join('\n'))

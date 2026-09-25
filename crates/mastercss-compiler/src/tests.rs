@@ -303,50 +303,30 @@ fn lowers_settings_into_the_canonical_manifest_input() {
 #[test]
 fn lowers_static_managed_definitions_with_utf16_source_ranges() {
     let result = compile_css_directives(
-            "/* 😀 */\n@components {\n  btn { display: inline-flex; color: red; }\n}\n@utilities { content-auto { content-visibility: auto; } }",
+            "/* 😀 */\n@utilities {\n  btn { display: inline-flex; color: red; }\n}\n@utilities { content-auto { content-visibility: auto; } }",
             &CompileNativeCssOptions::default(),
         )
         .unwrap();
-    assert_eq!(result.class_names, ["btn", "content-auto"]);
+    let definitions = serde_json::to_value(result.style_definitions.unwrap()).unwrap();
+    assert_eq!(definitions[0]["layer"], "utilities");
+    assert_eq!(definitions[0]["declarations"][0]["property"], "display");
+    assert_eq!(definitions[0]["declarations"][0]["value"], "inline-flex");
     assert_eq!(
-        serde_json::to_value(result.style_definitions).unwrap(),
-        serde_json::json!([
-            {
-                "type": "native",
-                "order": 1,
-                "selector": "&",
-                "declarations": {
-                    "display": "inline-flex",
-                    "color": "red"
-                },
-                "selectorSource": {
-                    "file": "master.css",
-                    "range": { "start": 25, "end": 28 },
-                    "loc": {
-                        "start": { "line": 3, "column": 3 },
-                        "end": { "line": 3, "column": 6 }
-                    }
-                },
-                "layer": "components",
-                "name": "btn"
-            },
-            {
-                "type": "native",
-                "order": 2,
-                "selector": "&",
-                "declarations": { "content-visibility": "auto" },
-                "selectorSource": {
-                    "file": "master.css",
-                    "range": { "start": 82, "end": 94 },
-                    "loc": {
-                        "start": { "line": 5, "column": 14 },
-                        "end": { "line": 5, "column": 26 }
-                    }
-                },
-                "layer": "utilities",
-                "name": "content-auto"
-            }
-        ])
+        definitions[0]["declarations"][0]["source"]["range"],
+        serde_json::json!({"start":30,"end":50})
+    );
+    assert_eq!(
+        definitions[0]["declarations"][1]["source"]["range"],
+        serde_json::json!({"start":52,"end":62})
+    );
+    assert_eq!(
+        definitions[0]["selectorSource"]["range"],
+        serde_json::json!({"start":24,"end":27})
+    );
+    assert_eq!(definitions[1]["name"], "content-auto");
+    assert_eq!(
+        definitions[1]["declarations"][0]["source"]["range"],
+        serde_json::json!({"start":96,"end":120})
     );
 }
 
@@ -354,7 +334,7 @@ fn lowers_static_managed_definitions_with_utf16_source_ranges() {
 fn lowers_native_compose_and_variant_styles() {
     let result = compile_css_directives(
         "@custom-variant wide { @media (width >= 640px) { @slot; } }\n\
-             @components { brand { color: red; } }\n\
+             @utilities { brand { color: red; } }\n\
              .button { @compose brand; @variant wide { @compose brand; } }",
         &CompileNativeCssOptions::default(),
     )

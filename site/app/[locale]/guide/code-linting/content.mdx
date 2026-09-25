@@ -97,8 +97,8 @@ export default defineConfig([
 Define project classes in the CSS entry when they are intentional:
 
 ```css name=index.css
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose inline-flex px-md;
   }
 }

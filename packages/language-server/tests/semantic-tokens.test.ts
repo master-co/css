@@ -46,7 +46,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens in active mode', async ({ expect }) => {
-    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose fg-red block; } }', { lang: 'css' })
+    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @compose fg-red block; } }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {
@@ -119,7 +119,7 @@ withFixture('basic', async (context) => {
       '}',
       '@supports (container-type: inline-size) {',
       '    @container card (width > 30rem) {',
-      '        @layer components {',
+      '        @layer utilities {',
       '            .btn:is(.active, #featured) { animation: fade 1s ease-in-out; }',
       '        }',
       '    }',
@@ -184,7 +184,7 @@ withFixture('basic', async (context) => {
   })
 
   test('returns CSS directive class-list semantic tokens when highlighting is off', async ({ expect }) => {
-    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@components { btn { @compose block; } }', { lang: 'css' })
+    const textDocument = context.createDocument('@theme dark { --color-primary: --alpha(var(--color-blue-60) / 80%); }\n@utilities { btn { @compose block; } }', { lang: 'css' })
     await context.server.onDidOpen({ document: textDocument })
     const semanticTokens = await context.clientConnection.sendRequest<{ data: number[] }>(DOCUMENT_SEMANTIC_TOKENS_REQUEST, {
       textDocument: {

@@ -1,5 +1,5 @@
-@components {
-  scrollbar {
+@layer components {
+  .scrollbar {
     &::scrollbar {
       @compose size:0.25rem rounded bg-line-subtle;
     }
@@ -25,7 +25,7 @@
     }
   }
 
-  scrollbar-concealed {
+  .scrollbar-concealed {
     &:not(:hover)::scrollbar {
       @compose invisible;
     }

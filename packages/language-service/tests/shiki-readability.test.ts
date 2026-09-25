@@ -49,8 +49,6 @@ test('colors every complete Master directive like a native CSS at-rule', async (
     ['preserve', '@preserve native;'],
     ['reference', '@reference "./tokens.css";'],
     ['theme', '@theme {}'],
-    ['defaults', '@defaults {}'],
-    ['components', '@components {}'],
     ['utilities', '@utilities {}'],
     ['custom-variant', '@custom-variant motion-safe {}'],
     ['compose', '@compose btn;'],
@@ -83,7 +81,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
     expect(nativeKeyword).toBeDefined()
     expect(themeMode).toBeDefined()
 
-    const compose = highlighter.codeToTokens('@components { btn { @compose fg-red:hover@md; } }', options).tokens[0]
+    const compose = highlighter.codeToTokens('@utilities { btn { @compose fg-red:hover@md; } }', options).tokens[0]
     const query = compose.find((token) => token.content === '@md')
     expect(query).toBeDefined()
     expect(hasScope(query, 'keyword.control.at-rule.master-css.query')).toBe(true)
@@ -117,7 +115,7 @@ test('colors query names and keeps nested native at-rules in the CSS grammar', a
       expect(tokens.some((token) => token.content.includes('no-preference') && hasScope(token, 'entity.name.tag.master-css')), atRule).toBe(false)
     }
 
-    const managed = highlighter.codeToTokens('@components { btn { @media (width > 30rem) { @compose block; } } }', options).tokens[0]
+    const managed = highlighter.codeToTokens('@utilities { btn { @media (width > 30rem) { @compose block; } } }', options).tokens[0]
     expect(colors(managed.find((token) => token.content === '@media'))).toEqual(colors(nativeKeyword))
     expect(managed.some((token) => token.content === '@compose' && hasScope(token, 'keyword.control.at-rule.master-css'))).toBe(true)
   } finally {
@@ -132,7 +130,7 @@ test('keeps semantic query colors aligned in CSS, HTML, and TSX', async () => {
 
   try {
     for (const [lang, source] of [
-      ['css', '@components { btn { @compose fg-red@md; } }'],
+      ['css', '@utilities { btn { @compose fg-red@md; } }'],
       ['html', '<div class="fg-red@md"></div>'],
       ['tsx', '<div className="fg-red@md" />']
     ] as const) {

@@ -27,7 +27,7 @@ Inspect the v1 project before changing files.
 | Packages | `@master/css`, runtime, server, framework packages, language tooling, and ESLint packages | Replace v1 packages with the current package or integration that owns the behavior. |
 | Runtime setup | Manual runtime initialization, framework runtime helpers, server rendering hooks, and virtual modules | Move to the current integration guide for the app framework. |
 | CSS entries | Imported Master CSS files, generated CSS files, global styles, and old config references | Create a current CSS entry with `@import "@master/css";`. |
-| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@settings`, `@custom-variant`, `@components`, and `@utilities`. |
+| Config and theme | Legacy config files, theme values, breakpoints, modes, aliases, and component definitions | Move project-owned values into `@theme`, `@settings`, `@custom-variant`, `@layer components`, and `@utilities`. |
 | Class syntax | Old class strings, dynamic class builders, custom utilities, selectors, variables, and important flags | Convert intentionally and validate generated CSS. |
 | Tooling | Editor extension, language service, lint rules, build commands, and CI scripts | Update after the app compiles with current packages. |
 
@@ -89,15 +89,15 @@ Keep non-CSS application configuration in JavaScript or TypeScript. Move only va
 ---
 
 ## Move reusable classes into managed definitions
-If the v1 project had reusable component abstractions, migrate them to `@components` when the name describes a product UI role.
+If the v1 project had reusable component abstractions, migrate them to `@layer components` when the name describes a product UI role.
 
 ```css name=app.css
-@components {
-  card {
+@layer components {
+  .card {
     @compose grid gap-md b:1px|solid|var(--color-line-base) r-card bg-white shadow-sm p-card;
   }
 
-  btn-primary {
+  .btn-primary {
     @compose inline-flex items-center justify-center gap-xs h:2.5rem px-md r-md bg-primary fg-white;
     &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }
@@ -178,5 +178,5 @@ After replacing setup code, remove old imports, virtual module names, config loa
 - [Rendering modes](/guide/rendering-modes) for runtime, static, server, and progressive delivery.
 - [Style declarations](/reference/rules/declarations) for current class syntax.
 - [Theme Tokens](/guide/theme) for `@theme` tokens, [Variables and Modes](/guide/variables-and-modes) for `@settings` and modes, and [Conditional Queries](/reference/rules/conditions) for custom variants.
-- [CSS directives](/reference#directives) for `@components`, `@utilities`, `@compose`, `@reference`, and source exceptions.
+- [CSS directives](/reference#directives) for `@layer components`, `@utilities`, `@compose`, `@reference`, and source exceptions.
 - [Scanning latent classes](/guide/scanning-latent-classes) for static-safe complete class strings.

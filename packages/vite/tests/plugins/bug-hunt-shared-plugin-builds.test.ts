@@ -11,7 +11,7 @@ async function rootsFixture(run: (roots: string[]) => Promise<void>, qualified =
   try {
     for (const [index, root] of roots.entries()) {
       const color = ['#123456', '#abcdef'][index]
-      writeFileSync(join(root, 'style.css'), `@import "./child.css" layer(shared);@master entry;@preserve native;@components{card{color:${color}}}.example{color:${color};background:url(pixel.svg)}`)
+      writeFileSync(join(root, 'style.css'), `@import "./child.css" layer(shared);@master entry;@preserve native;@utilities{card{color:${color}}}.example{color:${color};background:url(pixel.svg)}`)
       writeFileSync(join(root, 'child.css'), (qualified ? '@import "https://external.test/style.css";' : '') + '.child{background:url(pixel.svg)}')
       writeFileSync(join(root, 'pixel.svg'), `<svg xmlns="http://www.w3.org/2000/svg"><title>root-${index}</title></svg>`)
       writeFileSync(join(root, 'index.html'), '<div class="example card"></div><script type="module" src="./client.js"></script>')

@@ -35,9 +35,9 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
     const classNames = [...new Set([...`${scene.html}<body class="${scene.bodyClass ?? ''}">`.matchAll(/\bclass="([\s\S]*?)"/g)].flatMap(match => match[1].replaceAll('&quot;', '"').replaceAll('&amp;', '&').replaceAll('&lt;', '<').replaceAll('&gt;', '>').split(/\s+/)).filter(Boolean))]
     const tokenClasses = ['bg-demo-canvas', 'bg-demo-surface', 'fg-demo-text', 'fg-demo-muted', 'fg-demo-blue', 'fg-demo-violet', 'fg-demo-amber', 'fg-demo-neutral', 'b-demo-line', 'bg-demo-grid', 'font-sans', 'font-mono']
     const rendered = engine.ensureClassRules([...classNames, ...tokenClasses])
-    const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value))
+    const invalid = rendered.invalidClassNames.filter(value => classNames.includes(value) && !compiled?.nativeClassNames.includes(value))
     if (invalid.length) throw new Error(`${section.page}#${section.id}: invalid demo classes ${invalid.join(', ')}`)
-    const css = `${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.nativeCSS ?? ''}\n${rendered.cssText}`
+    const css = `${developing ? readFileSync(frameFile, 'utf8') : frameCSS}\n${compiled?.css ?? ''}\n${rendered.cssText}`
     return `<!doctype html><html lang="en" class="light"${scene.motion ? ' data-demo-paused' : ''}><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">${scene.head ?? ''}<style>@layer theme,base,defaults,components,utilities;${css.replaceAll('</style', '<\\/style')}</style></head><body${scene.bodyClass ? ` class="${escape(scene.bodyClass)}"` : ''}>${html}</body></html>`
   } finally { engine.dispose() }
 }

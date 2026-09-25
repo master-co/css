@@ -214,7 +214,7 @@ fn expanded_import_graph_retains_copied_spans_through_references_wrappers_and_ho
 }
 
 #[test]
-fn composed_declaration_mapping_follows_the_winner_of_important_cascade() {
+fn composed_declaration_mappings_preserve_the_important_and_fallback_declarations() {
     let source = "@utilities{low{padding:2rem}high{padding:3rem!important}}\n.card{@compose high low;padding:4rem}";
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives(
@@ -224,7 +224,10 @@ fn composed_declaration_mapping_follows_the_winner_of_important_cascade() {
         &Default::default(),
     )
     .unwrap();
-    assert_eq!(lowered.generated_css, ".card{padding:3rem !important}");
+    assert_eq!(
+        lowered.generated_css,
+        ".card{padding:3rem !important;padding:2rem;padding:4rem}"
+    );
     let mapping = lowered
         .generated_mappings
         .iter()

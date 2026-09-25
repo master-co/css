@@ -157,55 +157,85 @@ pub(crate) fn native_output_mappings(
     mapper.mappings
 }
 
-/// Lightning CSS nested-declaration locations point into the first value.
-/// Recover that declaration's authored range from the shared syntax lexer.
+/// Recover authored declaration order (including importance) and individual
+/// source ranges after Lightning CSS separates important declarations.
 pub(crate) fn refine_native_declaration_sources(
     source: &str,
     definitions: &mut [crate::CssDirectiveStyleDefinition],
 ) {
-    use mastercss_lexer::{collect_css_syntax_statements, tokenize_css_syntax};
-    if !definitions.iter().any(|definition| {
-        matches!(
-            definition,
-            crate::CssDirectiveStyleDefinition::Native {
-                source: Some(_),
-                ..
-            }
-        )
-    }) {
-        return;
-    }
+    use mastercss_lexer::{CssSyntaxKind, collect_css_syntax_statements, tokenize_css_syntax};
     let source_index = SourceIndex::new(source);
     let tokens = tokenize_css_syntax(source);
-    let mut ranges = collect_css_syntax_statements(&tokens)
-        .into_iter()
-        .filter(|statement| statement.declaration && !statement.tokens.is_empty())
+    let statements = collect_css_syntax_statements(&tokens);
+    let mut ranges = statements.iter().filter(|statement| statement.declaration)
         .filter_map(|statement| {
-            let start = tokens[statement.tokens.start].bytes.start;
-            let end = tokens[statement.tokens.end - 1].bytes.end;
-            Some((source_index.utf16_offset(start)?, start, end))
-        })
-        .collect::<Vec<_>>();
-    ranges.sort_by_key(|range| range.0);
+            let first = &tokens[statement.tokens.start];
+            let CssSyntaxKind::Ident(property) = &first.kind else { return None };
+            let last = &tokens[statement.tokens.end - 1];
+            let important = matches!(&last.kind, CssSyntaxKind::Ident(value) if value.eq_ignore_ascii_case("important"))
+                && statement.tokens.len() >= 3
+                && tokens[statement.tokens.end - 2].kind == CssSyntaxKind::Delim('!');
+            Some((first.bytes.start, last.bytes.end, property.as_ref(), important, statement.parent))
+        }).collect::<Vec<_>>();
+    ranges.sort_by_key(|entry| entry.0);
     for definition in definitions {
         let crate::CssDirectiveStyleDefinition::Native {
             source: Some(reference),
+            declarations,
             ..
         } = definition
         else {
             continue;
         };
-        let index = ranges.partition_point(|(start, _, _)| *start <= reference.range.start);
-        let Some((_, start, end)) = index.checked_sub(1).and_then(|index| ranges.get(index)) else {
+        let Some(anchor) = source_index.byte_offset(reference.range.start) else {
             continue;
         };
-        if source_index
-            .utf16_offset(*end)
-            .is_some_and(|end| end >= reference.range.start)
-            && let Some(mapped) =
-                source_index.reference(reference.file.as_deref().unwrap_or_default(), *start, *end)
-        {
-            *reference = mapped;
+        let index = ranges.partition_point(|(start, ..)| *start <= anchor);
+        let first = index
+            .checked_sub(1)
+            .filter(|index| ranges[*index].1 >= anchor)
+            .unwrap_or(index);
+        let Some(candidates) = ranges.get(first..first + declarations.len()) else {
+            continue;
+        };
+        if candidates.iter().any(|entry| entry.4 != candidates[0].4) {
+            continue;
+        }
+        let mut used = std::collections::HashSet::new();
+        for declaration in declarations.iter_mut() {
+            let important = declaration
+                .value
+                .as_str()
+                .is_some_and(|value| value.ends_with("!important"));
+            if let Some((index, (start, end, _, _, _))) =
+                candidates.iter().enumerate().find(|(index, entry)| {
+                    !used.contains(index)
+                        && (if entry.2.starts_with("--") {
+                            entry.2 == declaration.property
+                        } else {
+                            entry.2.eq_ignore_ascii_case(&declaration.property)
+                        })
+                        && entry.3 == important
+                })
+            {
+                used.insert(index);
+                declaration.source = source_index.reference(
+                    reference.file.as_deref().unwrap_or_default(),
+                    *start,
+                    *end,
+                );
+            }
+        }
+        if used.len() == declarations.len() {
+            declarations.sort_by_key(|declaration| {
+                declaration.source.as_ref().map(|source| source.range.start)
+            });
+            if let Some(source) = declarations
+                .first()
+                .and_then(|declaration| declaration.source.as_ref())
+            {
+                *reference = source.clone();
+            }
         }
     }
 }

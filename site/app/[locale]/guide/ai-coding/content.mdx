@@ -26,9 +26,16 @@ Then give the project a vocabulary the agent can reuse. Theme tokens make repeat
   --radius-card: 0.75rem;
 }
 
-@components {
-  btn {
-    @compose inline-flex align-items:center justify-content:center gap:0.5rem px-md h:2.5rem r-md font-medium;
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding-inline: var(--spacing-md);
+    height: 2.5rem;
+    border-radius: var(--radius-md);
+    font-weight: 500;
   }
 }
 ```
@@ -56,7 +63,7 @@ Good context includes:
 - The official documentation URL: `https://rc.css.master.co`
 - The framework, build tool, package manager, and rendering mode.
 - The CSS entry that imports `@master/css`.
-- Existing `@theme`, `@components`, `@utilities`, and `@custom-variant` definitions.
+- Existing `@theme`, `@layer components`, `@utilities`, and `@custom-variant` definitions.
 - Existing component, template, and design-system patterns near the target UI.
 - The formatter, lint, type-check, test, build, and visual review commands.
 
@@ -99,7 +106,7 @@ When your AI client supports the Model Context Protocol, connect it to the [Mast
 
 Use MCP for project-aware AI tool calls. Read `matchStatus`, `cssSyntaxStatus`, `cssValueStatus` and `browserSupport` separately; an unknown value is not a failed match, and an unchecked browser is not verified support. Manifest load failure requires fixing the project context rather than silently answering from a preset.
 
-Keep complex queries in CSS `@custom-variant` definitions. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes. See the three saved-version profiles in the [v2 RC migration guide](/guide/migration/v2-rc).
+Keep complex queries in CSS `@custom-variant` definitions. Classes accept only the [simple query subset](/reference/rules/conditions). Markdown/MDX code fences are display content; register executable examples or safelist bounded classes. See the four saved-version profiles in the [v2 RC migration guide](/guide/migration/v2-rc).
 
 The shared CLI/editor/MCP workflow fixtures check tool consistency. They do not measure model generation accuracy.
 
@@ -114,7 +121,8 @@ For recurring work, add a short Master CSS rules block to the project's agent in
 When editing Master CSS:
 - Use https://rc.css.master.co as the source of truth.
 - Before editing, inspect the framework, package manager, CSS entry, rendering mode, theme tokens, component classes, utilities, custom variants, and validation commands.
-- Prefer existing @theme tokens, @components, @utilities, and @custom-variant definitions.
+- Prefer existing @theme tokens and native CSS in @layer defaults/components. Use @utilities for on-demand primitives.
+- Use @compose only when a utility encapsulates shared behavior; native component classes cannot be composition targets or derive Master suffixes.
 - Use the Master CSS MCP server when available. Without MCP, use CLI JSON fallback commands such as `npx @master/css-cli lint --format json --exit-code never` and `npx @master/css-cli inspect --format json --exit-code never`.
 - Use ESLint for class policy diagnostics and the Master CSS Language Service for completion, hover, colors, highlighting, and directive formatting.
 - Do not invent Master CSS APIs, directives, package names, or Tailwind-style syntax.
@@ -141,7 +149,7 @@ Readable Master CSS usually follows these habits:
 - Prefer project tokens such as `bg-brand`, `p-card`, and `r-card` when they exist.
 - Use native declaration syntax such as `scroll-margin-top:4rem` when it is clearer than a custom abstraction.
 - Keep selector states and conditions attached to the class they affect, such as `bg-blue-70:hover` and `grid-cols:3@md`.
-- Move repeated product values into `@theme`; move repeated product patterns into `@components` only when a named abstraction improves maintainability.
+- Move repeated product values into `@theme`; move repeated product patterns into `@layer components` only when a named abstraction improves maintainability.
 
 Use [Global styles](/guide/global-styles#shared-vocabulary) for abstraction decisions and [Code linting](/guide/code-linting) for the class policy that keeps AI-generated markup reviewable.
 
@@ -165,7 +173,7 @@ Check the class strings:
 - Are all classes valid Master CSS syntax?
 - Did the agent use Tailwind, Bootstrap, or another framework's class syntax by mistake?
 - Do repeated colors, spacing, radius, shadow, or typography values belong in `@theme`?
-- Do reusable product patterns belong in `@components`, or are local utility classes clearer?
+- Do reusable product patterns belong in `@layer components`, or are local utility classes clearer?
 - Are responsive conditions, mode conditions, selector states, and disabled states attached to the correct declarations?
 - Did the generated CSS preview match the intended CSS?
 
@@ -226,7 +234,7 @@ After editing, explain the class choices and run the available checks.
 ```text name=prompt
 Find repeated visual values in this component or route.
 
-Recommend which values should become Master CSS `@theme` tokens, which repeated patterns should become `@components`, and which values should stay local. Do not edit until you explain the proposed token names and why they are product vocabulary.
+Recommend which values should become Master CSS `@theme` tokens, which repeated patterns should become `@layer components`, and which values should stay local. Do not edit until you explain the proposed token names and why they are product vocabulary.
 ```
 
 ### Class review

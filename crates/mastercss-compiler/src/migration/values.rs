@@ -136,7 +136,11 @@ impl Migration {
             if let Some(value) = self
                 .rules(&self.helper, &class)
                 .first()
-                .and_then(|rule| rule.declarations.values().next())
+                .and_then(|rule| {
+                    rule.declarations
+                        .first()
+                        .map(|declaration| &declaration.value)
+                })
                 .and_then(|value| value.as_str())
             {
                 return Some(value.into());

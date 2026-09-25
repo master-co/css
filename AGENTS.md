@@ -23,6 +23,8 @@ Master CSS turns markup classes such as `fg:red:hover@sm` into layered CSS acros
 @layer theme, base, defaults, components, utilities;
 ```
 
+Native defaults and components use `@layer` with class selectors; removed `@defaults`/`@components` are errors. Only `@utilities` registers on-demand Master classes. Prefer native CSS, with `@compose` for shared utility behavior; preserve ordered declarations, duplicates and compose statement boundaries.
+
 Generated rules use those layer blocks without dynamically adding the layer statement. Keyframes remain outside layers. Any CSS output difference is an intentional, explained behavior change covered by tests or fixtures.
 
 Rust is the single semantic source. TypeScript supplies platform loading, filesystem/package resolution, editor adaptation, and diagnostic capability checks; it must not implement semantic fallbacks.

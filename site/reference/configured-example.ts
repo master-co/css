@@ -25,10 +25,10 @@ export function configuredExampleCSS(source: string, classes: string[]) {
   try {
     const snapshot = engine.ensureClassRules(classes)
     for (const className of classes) {
-      if (snapshot.invalidClassNames.includes(className) || snapshot.classRules[className].some(rule => validateCSS(rule.text).length)) {
+      if (!result.nativeClassNames.includes(className) && (snapshot.invalidClassNames.includes(className) || snapshot.classRules[className].some(rule => validateCSS(rule.text).length))) {
         throw new Error(`Invalid configured documentation class: ${className}`)
       }
     }
-    return result.nativeCSS + snapshot.cssText
+    return result.css + snapshot.cssText
   } finally { engine.dispose() }
 }

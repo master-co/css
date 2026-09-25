@@ -8,7 +8,7 @@ test.each(['pre-render', 'progressive'] as const)('manifest HMR refreshes server
   const parent = join(process.cwd(), 'tmp')
   mkdirSync(parent, { recursive: true })
   const root = mkdtempSync(join(parent, 'prerender-manifest-hmr-')), file = join(root, 'style.css')
-  const source = (theme: string, native: string) => `@master entry;@theme{--color-accent:${theme}}@components{card{color:var(--color-accent)}}.native{color:${native}}`
+  const source = (theme: string, native: string) => `@master entry;@theme{--color-accent:${theme}}@utilities{card{color:var(--color-accent)}}.native{color:${native}}`
   let server: Awaited<ReturnType<typeof createServer>> | undefined
   try {
     writeFileSync(file, source('#123456', 'red'))

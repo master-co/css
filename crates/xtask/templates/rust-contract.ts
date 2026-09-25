@@ -15,7 +15,7 @@ export const MASTER_CSS_SOURCE_BATCH_VERSION = {{MASTER_CSS_SOURCE_BATCH_VERSION
 export type MasterCSSBindingSurface = 'native' | 'runtime' | 'compiler' | 'tooling' | 'cli'
 
 export interface MasterCSSRCMigrationRequest {
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed'
   readonly sourceVersion: string
   readonly manifest: Readonly<Record<string, unknown>>
   readonly targetManifest: import('@master/css-schema/manifest').MasterCSSManifest
@@ -34,8 +34,9 @@ export interface MasterCSSRCClassMigration {
 
 export interface MasterCSSRCMigrationResult {
   readonly version: 2
-  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native'
+  readonly from: 'rc-legacy' | 'rc-named' | 'rc-native' | 'rc-managed'
   readonly sourceVersion: string
+  readonly behaviorChanges: readonly string[]
   readonly configurationCSS: string
   readonly notes: readonly string[]
   readonly classLists: readonly (readonly MasterCSSRCClassMigration[])[]
@@ -359,6 +360,7 @@ export interface MasterCSSSourceInspection {
 }
 
 export interface MasterCSSStylesheetInspection {
+  compositions?: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   filePath: string
   masterCSS: boolean
   pruneNativeCSS: boolean
@@ -825,6 +827,8 @@ export interface MasterCSSDirectiveExtractionPolicy {
 }
 
 export interface MasterCSSDirectiveCompilation {
+  compositions?: import('@master/css-schema/css-directives').CSSCompositionTrace[]
+  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   extractionPolicy: MasterCSSDirectiveExtractionPolicy
@@ -908,6 +912,7 @@ export interface MasterCSSCompileDefaultPresetResult {
 }
 
 export interface MasterCSSLowerDirectivesRequest {
+  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
   nativeOutput?: import('@master/css-schema/css-directives').CSSNativeOutput
   manifestInput: MasterCSSDirectiveManifestInput
   styleDefinitions?: readonly import('@master/css-schema/css-directives').CSSDirectiveStyleDefinition[]
@@ -920,6 +925,7 @@ export interface MasterCSSLowerDirectivesOptions {
 }
 
 export interface MasterCSSLowerDirectivesResult {
+  compositions: import('@master/css-schema/css-directives').CSSCompositionTrace[]
   css?: string
   outputMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
   generatedMappings?: import('@master/css-schema/css-directives').CSSOutputMapping[]
@@ -956,6 +962,7 @@ export interface MasterCSSResolvedImportGraph {
 }
 
 export interface MasterCSSCompileStylesheetGraphRequest {
+  utilitySources?: import('@master/css-schema/css-directives').CSSUtilitySource[]
   /** Unresolved imports already emitted by the host, keyed by original stylesheet ID. */
   hostImports?: Record<string, string[]>
   /** Inline compatible local children; retained boundaries still require asset delivery. */

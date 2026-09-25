@@ -60,6 +60,15 @@ pub enum CssDirectiveConditionPathEntry {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssDeclaration {
+    pub property: String,
+    pub value: Value,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub source: Option<CssDirectiveSourceReference>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(
     tag = "type",
     rename_all = "lowercase",
@@ -69,7 +78,7 @@ pub enum CssDirectiveStyleDefinition {
     Native {
         order: u32,
         selector: String,
-        declarations: Map<String, Value>,
+        declarations: Vec<CssDeclaration>,
         #[serde(skip_serializing_if = "Option::is_none")]
         source: Option<CssDirectiveSourceReference>,
         #[serde(skip_serializing_if = "Option::is_none")]
@@ -121,6 +130,10 @@ pub enum ErrorCode {
     CssDirectiveError,
     #[serde(rename = "invalid-compose-class")]
     InvalidComposeClass,
+    #[serde(rename = "invalid-compose-layer")]
+    InvalidComposeLayer,
+    #[serde(rename = "removed-managed-directive")]
+    RemovedManagedDirective,
     #[serde(rename = "compose-quoted-syntax")]
     ComposeQuotedSyntax,
     #[serde(rename = "compose-group-syntax")]
@@ -139,7 +152,7 @@ pub enum ErrorCode {
 }
 
 impl ErrorCode {
-    pub const ALL: [Self; 26] = [
+    pub const ALL: [Self; 28] = [
         Self::InvalidManifest,
         Self::UnsupportedManifestVersion,
         Self::InvalidHydrationManifest,
@@ -153,6 +166,8 @@ impl ErrorCode {
         Self::CssPrintError,
         Self::CssDirectiveError,
         Self::InvalidComposeClass,
+        Self::InvalidComposeLayer,
+        Self::RemovedManagedDirective,
         Self::ComposeQuotedSyntax,
         Self::ComposeGroupSyntax,
         Self::CssImportError,
@@ -183,6 +198,8 @@ impl ErrorCode {
             Self::CssPrintError => "CSS_PRINT_ERROR",
             Self::CssDirectiveError => "CSS_DIRECTIVE_ERROR",
             Self::InvalidComposeClass => "invalid-compose-class",
+            Self::InvalidComposeLayer => "invalid-compose-layer",
+            Self::RemovedManagedDirective => "removed-managed-directive",
             Self::ComposeQuotedSyntax => "compose-quoted-syntax",
             Self::ComposeGroupSyntax => "compose-group-syntax",
             Self::CssImportError => "CSS_IMPORT_ERROR",
@@ -418,4 +435,28 @@ fn css_blocklist_pattern_matches(source: &str, value: &str) -> bool {
             matches(&tokens, &value, 0, value_index, anchored_end, &mut matched)
         })
     }
+}
+
+/// Build-time composition inspection; deliberately absent from Manifest v1.
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssCompositionTrace {
+    pub order: u32,
+    pub classes: Vec<String>,
+    /// Resolved definition identities used while attaching compiler sources.
+    #[serde(skip)]
+    pub resolved_utilities: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub source: Option<CssDirectiveSourceReference>,
+    pub definition_sources: Vec<CssDirectiveSourceReference>,
+    pub css: String,
+    pub variable_names: Vec<String>,
+    pub animation_names: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CssUtilitySource {
+    pub name: String,
+    pub source: CssDirectiveSourceReference,
 }

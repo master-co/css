@@ -155,3 +155,23 @@ it('reads imported native functions as context without writing unselected depend
   expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(source)
   expect(fs.readFileSync(path.join(cwd, 'functions.css'), 'utf8')).toBe(functions)
 })
+
+it('migrates rc-managed native components in preview and atomically blocks unsafe references', () => {
+  const cwd = nativeProject()
+  const source = '@master entry;@components{card{display:block}}'
+  fs.writeFileSync(path.join(cwd, 'app.css'), source)
+  fs.writeFileSync(path.join(cwd, 'index.html'), '<div class="card"></div>')
+  const preview = runMigrate(['app.css', 'index.html'], { cwd, from: 'rc-managed' })
+  expect(preview.behaviorChanges.join(' ')).toContain('source order')
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(source)
+  const written = runMigrate(['app.css', 'index.html'], { cwd, from: 'rc-managed', write: true })
+  expect(written.files.some(file => file.written)).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toContain('@layer components{.card{')
+  expect(runMigrate(['app.css'], { cwd, from: 'rc-managed' }).files.every(file => !file.edits.length)).toBe(true)
+  fs.writeFileSync(path.join(cwd, 'app.css'), source)
+  fs.writeFileSync(path.join(cwd, 'local.css'), '.local{@compose card;}')
+  const blocked = runMigrate(['*.css'], { cwd, from: 'rc-managed', write: true })
+  expect(blocked.files.some(file => file.review.length)).toBe(true)
+  expect(blocked.files.every(file => !file.written)).toBe(true)
+  expect(fs.readFileSync(path.join(cwd, 'app.css'), 'utf8')).toBe(source)
+})

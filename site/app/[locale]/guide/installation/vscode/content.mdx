@@ -43,8 +43,8 @@ The full Master CSS experience in Visual Studio Code uses two extensions togethe
         --color-primary: #4f46e5;
       }
 
-      @components {
-        btn {
+      @layer components {
+        .btn {
           @compose inline-flex items-center gap-xs px-md py-xs r-md fg-primary;
         }
       }

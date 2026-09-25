@@ -148,12 +148,12 @@ describe('StyleEntryPlugin', () => {
       { addWatchFile },
       [
         '@master entry;',
-        '@components {',
+        '@utilities {',
         '    card { @compose bg-missing-token; }',
         '}'
       ].join('\n'),
       '/project/src/style.css'
-    )).rejects.toThrow('Invalid @compose class')
+    )).rejects.toThrow('Invalid @compose utility')
 
     expect(addWatchFile).toHaveBeenCalledWith(resolve('/project/src/style.css'))
   })

@@ -2,6 +2,7 @@
 //! runtime engine only receives ordinary, current-contract helper utilities.
 mod conditions;
 mod configuration;
+mod managed;
 mod native;
 mod stylesheets;
 mod values;
@@ -39,6 +40,7 @@ pub enum RcMigrationProfile {
     RcLegacy,
     RcNamed,
     RcNative,
+    RcManaged,
 }
 
 #[derive(Debug, Serialize)]
@@ -50,6 +52,7 @@ pub struct RcMigrationResult {
     #[serde(rename = "configurationCSS")]
     pub configuration_css: String,
     pub notes: Vec<String>,
+    pub behavior_changes: Vec<String>,
     pub class_lists: Vec<Vec<RcClassMigration>>,
     pub stylesheets: Vec<stylesheets::RcStylesheetMigration>,
     pub documents: Vec<Vec<String>>,
@@ -90,6 +93,7 @@ struct Migration {
     target_manifest: RefCell<Value>,
     query_definitions: RefCell<std::collections::BTreeMap<String, String>>,
     native_alpha: bool,
+    managed_names: Vec<String>,
     families: Vec<Family>,
     static_families: Vec<StaticFamily>,
     base_unit: f64,
@@ -124,7 +128,7 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
                     .after
                     .as_deref()
                     .unwrap_or(&proposals[right].before);
-                if migration.overlap(a, b) {
+                if request.from != RcMigrationProfile::RcManaged && migration.overlap(a, b) {
                     for index in [left, right] {
                         proposals[index].status = "review";
                         let note = "Overlapping declarations require a cascade review against the saved RC result".to_owned();
@@ -137,10 +141,12 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
         }
         class_lists.push(proposals);
     }
+    let mut previous_styles = Vec::new();
     let stylesheets = request
         .stylesheets
         .iter()
-        .map(|source| migration.stylesheet(source))
+        .enumerate()
+        .map(|(index, source)| migration.stylesheet(source, index, &mut previous_styles))
         .collect();
     Ok(RcMigrationResult {
         version: 2,
@@ -157,12 +163,17 @@ pub fn migrate_rc(request: &RcMigrationRequest) -> Result<RcMigrationResult, Com
                 .collect::<String>()
         ),
         notes: migration.notes.clone(),
+        behavior_changes: vec!["Native @layer defaults/components styles are emitted even when unused; pruning remains opt-in".into(), "Native styles in the same layer follow CSS source order, including shorthand/longhand and importance".into()],
         class_lists,
         stylesheets,
         documents: request
             .documents
             .iter()
-            .map(|source| values::audit_source(source))
+            .map(|source| if request.from == RcMigrationProfile::RcManaged {
+                if migration.managed_names.is_empty() { Vec::new() } else {
+                    source.lines().enumerate().flat_map(|(line, source)| values::audit_source(source).into_iter().map(move |note| format!("line {}: {note}; verify native selectors and explicitly enumerate any managed suffix variants", line + 1))).collect()
+                }
+            } else { values::audit_source(source) })
             .collect(),
     })
 }
@@ -195,7 +206,10 @@ impl Migration {
                 "Record the actual source package version before migrating",
             ));
         }
-        let configuration = if request.from == RcMigrationProfile::RcNative {
+        let configuration = if matches!(
+            request.from,
+            RcMigrationProfile::RcNative | RcMigrationProfile::RcManaged
+        ) {
             configuration::Configuration {
                 manifest: request.manifest.clone(),
                 css: String::new(),
@@ -338,6 +352,7 @@ impl Migration {
         }
         Ok(Self {
             profile: request.from,
+            managed_names: managed::names(&request.stylesheets, &request.manifest),
             original: request.manifest.clone(),
             configuration_css: configuration.css,
             notes: configuration.notes,
@@ -400,6 +415,19 @@ impl Migration {
     }
 
     fn convert(&self, source: &str) -> Result<String, String> {
+        if let Some(name) = self.managed_reference(source) {
+            return if name == source {
+                Ok(source.into())
+            } else {
+                Err(format!(
+                    "Managed class `{name}` becomes native and cannot derive `{source}`; write the selector/condition explicitly inside its native layer"
+                ))
+            };
+        }
+        if self.profile == RcMigrationProfile::RcManaged {
+            return Ok(source.into());
+        }
+
         let important = source.ends_with('!');
         let source = source.strip_suffix('!').unwrap_or(source);
         let mut migrated = source.to_owned();
@@ -512,7 +540,7 @@ impl Migration {
             let output_key = if key == "line-clamp" && family.managed {
                 "clamp-lines".to_owned()
             } else if old.len() == 1 && old[0].declarations.len() == 1 && family.managed {
-                let property = old[0].declarations.keys().next().unwrap();
+                let property = &old[0].declarations[0].property;
                 let canonical = builtin_key_aliases()
                     .iter()
                     .find_map(|(alias, property)| (*alias == key).then_some(*property))
@@ -551,7 +579,8 @@ impl Migration {
         // A failed synthetic probe is not an unknown native declaration.
         let rules = if rules.iter().any(|rule| {
             rule.declarations
-                .keys()
+                .iter()
+                .map(|declaration| &declaration.property)
                 .any(|property| property.starts_with("migration-"))
         }) {
             Vec::new()
@@ -569,7 +598,9 @@ impl Migration {
         validate: bool,
     ) -> Result<(), String> {
         for rule in expected {
-            for (property, value) in &rule.declarations {
+            for declaration in &rule.declarations {
+                let property = &declaration.property;
+                let value = &declaration.value;
                 let Some(value) = value.as_str() else {
                     return Err("Cannot validate the saved declaration value".into());
                 };
@@ -610,8 +641,14 @@ impl Migration {
                     && a.selector == b.selector
                     && a.conditions == b.conditions
                     && a.declarations
-                        .keys()
-                        .any(|a| b.declarations.keys().any(|b| properties_overlap(a, b)))
+                        .iter()
+                        .map(|declaration| &declaration.property)
+                        .any(|a| {
+                            b.declarations
+                                .iter()
+                                .map(|declaration| &declaration.property)
+                                .any(|b| properties_overlap(a, b))
+                        })
             })
         })
     }

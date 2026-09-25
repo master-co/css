@@ -17,7 +17,7 @@ for (const condition of ['layer(shared)', 'layer', 'supports(display:grid) scree
       const child = join(cwd, 'styles/child.css')
       const tokens = join(cwd, 'tokens.css')
       const template = join(cwd, 'styles/templates/view.html')
-      writeFileSync(entry, `@import './styles/child.css' ${condition};@master entry;@reference './tokens.css';@components{widget{@compose paint;}button{@compose widget;}}`)
+      writeFileSync(entry, `@import './styles/child.css' ${condition};@master entry;@reference './tokens.css';@utilities{widget{@compose paint;}button{@compose widget;}}`)
       writeFileSync(child, `@import 'https://remote.test/external.css';@reference '../tokens.css';@source './templates/*.html';.native{color:blue}`)
       writeFileSync(tokens, '@utilities{paint{color:red}}.reference-native{color:green}')
       writeFileSync(template, '<div class="widget button"></div>')

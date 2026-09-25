@@ -40,8 +40,8 @@ for (const [name, create] of Object.entries(factories)) {
         const classes = ['block', 'display:flex', 'unknown']
         expect(session.classifyClassNames(classes)).toEqual(full.classifyClassNames(classes))
         expect(session.inspectClassName('block')).toEqual(full.inspectClassName('block'))
-        expect(session.formatDirectives({ source: '@components { box { @compose block; } }' })).toEqual(
-          full.formatDirectives({ source: '@components { box { @compose block; } }' })
+        expect(session.formatDirectives({ source: '@utilities { box { @compose block; } }' })).toEqual(
+          full.formatDirectives({ source: '@utilities { box { @compose block; } }' })
         )
       } finally {
         session.dispose()

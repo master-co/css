@@ -10,7 +10,7 @@ Run both systems during migration.
 1. Add Master CSS to the app CSS entry and choose a rendering mode.
 2. Audit styled wrappers, `css` helpers, object styles, global styles, theme providers, and variant props.
 3. Move project-owned theme values into Master CSS `@theme`.
-4. Convert static styles to class strings or `@components`.
+4. Convert static styles to class strings or `@layer components`.
 5. Convert variant props to complete class maps.
 6. Pass truly dynamic values through CSS variables.
 7. Remove CSS-in-JS packages only after no converted surface depends on their runtime.
@@ -79,8 +79,8 @@ If the project needs a named component class, define it once in CSS.
 ```css name=app.css
 @import "@master/css";
 
-@components {
-  btn {
+@layer components {
+  .btn {
     @compose inline-flex items-center justify-center gap-xs min-h:2.5rem px-md r-md bg-primary fg-white;
     &:hover { @compose bg-blue-70; }
     &:disabled { opacity: 0.5; }

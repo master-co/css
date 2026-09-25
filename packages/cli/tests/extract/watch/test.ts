@@ -35,7 +35,7 @@ const originConfigText = `@master entry;
   --color-primary: var(--color-blue);
 }
 
-@components {
+@utilities {
   btn {
     background-color: oklch(63.7% 0.237 25.331);
   }

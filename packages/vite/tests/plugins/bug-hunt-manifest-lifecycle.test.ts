@@ -25,7 +25,7 @@ const modes = ['static', 'runtime', 'pre-render', 'progressive'] as const
 function fixture(initiallyMissing = false) {
   const parent = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-manifest-lifecycle-'))), root = join(parent, 'app'), dependency = join(parent, 'external/deep/tokens.css')
   mkdirSync(root);mkdirSync(join(parent, 'external'))
-  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/deep/tokens.css";@components{card{@compose paint;}}')
+  writeFileSync(join(root, 'style.css'), '@master entry;@reference "../external/deep/tokens.css";@utilities{card{@compose paint;}}')
   writeFileSync(join(root, 'entry.js'), 'export const ready=true;')
   writeFileSync(join(root, 'index.html'), '<!doctype html><html><body><div class="card"></div></body></html>')
   const write = (padding = '7rem') => { mkdirSync(dirname(dependency), { recursive: true });writeFileSync(dependency, `@utilities{paint{padding:${padding}}}`) }

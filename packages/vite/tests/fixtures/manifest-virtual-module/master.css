@@ -5,7 +5,7 @@
   --breakpoint-md: 48;
 }
 
-@components {
+@utilities {
   btn {
     @compose bg-primary;
     display: inline-flex;

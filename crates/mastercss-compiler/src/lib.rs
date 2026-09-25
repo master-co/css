@@ -42,10 +42,11 @@ use mastercss_lexer::{
     remove_standalone_css_directives, utf16_to_byte_offset,
 };
 use mastercss_schema::{
-    CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry, CssDirectiveExtractionPolicy,
-    CssDirectiveManifestInput, CssDirectiveReferenceStatement, CssDirectiveSourceReference,
-    CssDirectiveStyleDefinition, CssDirectiveVariableDefinition, CssOutputMapping, Diagnostic,
-    ErrorCode, SourceLocation, SourceLocationRange, SourceRange, UtilityLayerName,
+    CssDeclaration, CssDirectiveBlocklistEntry, CssDirectiveConditionPathEntry,
+    CssDirectiveExtractionPolicy, CssDirectiveManifestInput, CssDirectiveReferenceStatement,
+    CssDirectiveSourceReference, CssDirectiveStyleDefinition, CssDirectiveVariableDefinition,
+    CssOutputMapping, Diagnostic, ErrorCode, SourceLocation, SourceLocationRange, SourceRange,
+    UtilityLayerName,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -111,6 +112,10 @@ pub struct CompileNativeCssResult {
 #[derive(Debug, Clone, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CompileCssDirectivesResult {
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub utility_sources: Vec<mastercss_schema::CssUtilitySource>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub native_output: Option<NativeCssOutput>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
@@ -689,7 +694,7 @@ pub(crate) use pattern::{
 pub(crate) use syntax::{
     collect_declarations, css_comment_end, css_quote_end, declaration_name, define_theme_variable,
     directive_error, directive_range, is_alias_character, next_char_end, parse_theme_prelude,
-    preserve_compatible_literal_spelling, ranged_directive_diagnostic, theme_value,
+    ranged_directive_diagnostic, theme_value,
 };
 pub(crate) use theme::{lower_settings_rule, lower_theme_rule};
 pub(crate) use variant::{
@@ -720,3 +725,9 @@ pub use stylesheet_graph::{
 
 #[cfg(test)]
 mod tests;
+
+mod declarations;
+mod utility_sources;
+use declarations::{
+    collect_ordered_declarations, declaration_runs, preserve_ordered_literal_spelling,
+};

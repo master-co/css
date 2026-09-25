@@ -30,7 +30,7 @@ fn discovers_entries_and_compiles_local_imports() {
     .unwrap();
     fs::write(
         project.join("components.css"),
-        "@components { btn { display: block; } }",
+        "@utilities { btn { display: block; } }",
     )
     .unwrap();
     fs::create_dir_all(project.join("node_modules/ignored")).unwrap();

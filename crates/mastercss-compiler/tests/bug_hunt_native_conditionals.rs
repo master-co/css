@@ -8,6 +8,7 @@ fn direct(source: &str) -> String {
     let parsed = compile_css_directives(source, &CompileNativeCssOptions::default()).unwrap();
     let lowered = mastercss_compiler::lower_css_directives_request(
         &mastercss_compiler::LowerCssDirectivesRequest {
+            utility_sources: Vec::new(),
             manifest_input: parsed.manifest_input,
             style_definitions: parsed.style_definitions.unwrap_or_default(),
             warnings: parsed.warnings,

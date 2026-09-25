@@ -26,6 +26,7 @@ pub fn lower_css_directives(
         let warnings = initial_warnings.to_vec();
         return Ok(LowerCssDirectivesResult {
             css: None,
+            compositions: Vec::new(),
             output_mappings: Vec::new(),
             input,
             manifest,
@@ -108,8 +109,27 @@ pub fn lower_css_directives(
             !native_definitions.is_empty(),
         ),
     )]);
+    let compositions = if style_definitions
+        .iter()
+        .any(|definition| matches!(definition, CssDirectiveStyleDefinition::Compose { .. }))
+    {
+        let final_manifest = compile_with_base(
+            &input,
+            options
+                .resolution_manifest
+                .clone()
+                .or_else(|| options.base_manifest.clone()),
+        )?;
+        super::inspection::inspect_compositions(
+            style_definitions,
+            &mut engine_for_manifest(&final_manifest)?,
+        )?
+    } else {
+        Vec::new()
+    };
     Ok(LowerCssDirectivesResult {
         css: None,
+        compositions,
         output_mappings: Vec::new(),
         input,
         manifest,
@@ -131,6 +151,9 @@ pub fn lower_css_directives_request(
         &request.warnings,
         options,
     )?;
+    for trace in &mut result.compositions {
+        crate::utility_sources::attach(trace, &request.utility_sources);
+    }
     if let Some(output) = &request.native_output {
         super::output::assemble_native_output(output, options, &mut result)?;
     }

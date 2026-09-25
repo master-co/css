@@ -152,8 +152,8 @@ fn qualified_imports_reject_global_master_definitions() {
         "@theme { --color-card: red; }",
         "@mode ocean { .ocean { @slot; } }",
         "@custom-variant print { @media print { @slot; } }",
-        "@defaults { card { padding: 1rem; } }",
-        "@components { card { padding: 1rem; } }",
+        "@utilities { card { padding: 1rem; } }",
+        "@utilities { card { padding: 1rem; } }",
         "@utilities { card { padding: 1rem; } }",
     ] {
         let error = resolve_css_import_graph("entry", &DefiningChild(source)).unwrap_err();

@@ -113,7 +113,7 @@ Use this order:
 3. Write native global CSS for global selectors and app-wide stylesheet surfaces.
 4. Create custom utilities for reusable low-level primitives.
 5. Create component classes for repeated product UI roles.
-6. Use defaults sparingly for early-layer generated classes that intentionally sit before components.
+6. Write broad native defaults in `@layer defaults`.
 
 Start with utilities when the style belongs to one element or one usage site:
 
@@ -146,7 +146,13 @@ Write native CSS when the selector itself is global output you always ship:
 
 ```css name=app.css
 .skip-link {
-  @compose fixed left:0 top:0 z:1 px-md py-xs bg-blue fg-white;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  padding: var(--spacing-xs) var(--spacing-md);
+  background-color: var(--color-blue);
+  color: white;
   transform: translateY(-100%);
 }
 
@@ -160,13 +166,19 @@ Native global CSS is emitted as part of the app stylesheet. It is not generated 
 ---
 
 ## Component classes
-Use component classes when a repeated UI role should behave like a generated Master CSS class. Define them in the global entry graph and apply them from markup:
+Use native component classes for repeated product roles. Define class selectors in `@layer components` and apply them from markup:
 
 ```css name=app.css
-@components {
-  btn {
-    @compose inline-flex items-center justify-center gap-xs px-md py-xs r-lg font-medium font-sm;
-    @compose bg-blue fg-white;
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-md);
+    border-radius: var(--radius-lg);
+    background: var(--color-blue);
+    color: white;
   }
 }
 ```
@@ -175,26 +187,36 @@ Use component classes when a repeated UI role should behave like a generated Mas
 <button class="btn">Save changes</button>
 ```
 
-Component definitions are manifest inputs, not immediate CSS output. Defining `btn` does not generate `.btn` until the class appears in scanned source or is composed by another generated style.
+Native component rules are emitted by default and follow source order within their layer. They do not become utilities: `@compose btn` and `btn:hover@sm` cannot reuse this definition. Write states and conditions inside the native rule. Native pruning is an explicit opt-in.
 
 Keep component classes small enough to combine:
 
 ```css name=app.css
-@components {
-  btn {
-    @compose inline-flex items-center justify-center font-medium;
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
   }
 
-  btn-sm {
-    @compose h:2rem px-sm r-md font-xs;
+  .btn-sm {
+    height: 2rem;
+    padding-inline: var(--spacing-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-xs);
   }
 
-  btn-md {
-    @compose h:2.5rem px-md r-md font-sm;
+  .btn-md {
+    height: 2.5rem;
+    padding-inline: var(--spacing-md);
+    border-radius: var(--radius-md);
+    font-size: var(--font-size-sm);
   }
 
-  btn-primary {
-    @compose bg-blue fg-white;
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
   }
 }
 ```
@@ -206,16 +228,18 @@ Keep component classes small enough to combine:
 Put state behavior inside the component only when it belongs to every usage:
 
 ```css name=app.css
-@components {
-  btn-primary {
-    @compose bg-blue fg-white;
+@layer components {
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
 
     &:hover {
-      @compose bg-blue-60;
+      background: var(--color-blue-60);
     }
 
     &:focus-visible {
-      @compose outline:2px|solid|var(--color-blue) outline-offset-4xs;
+      outline: 2px solid var(--color-blue);
+      outline-offset: var(--spacing-4xs);
     }
   }
 }
@@ -231,7 +255,8 @@ Use custom utilities for reusable primitives that are lower-level than product c
 ```css name=app.css
 @utilities {
   flow {
-    @compose grid gap-md;
+    display: grid;
+    gap: var(--spacing-md);
   }
 
   content-auto {
@@ -276,15 +301,21 @@ styles/
 ```
 
 ```css name=styles/buttons.css
-@components {
-  btn {
-    @compose inline-flex items-center justify-center font-medium;
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 500;
   }
 
-  btn-primary {
-    @compose bg-blue fg-white;
+  .btn-primary {
+    background: var(--color-blue);
+    color: white;
   }
 }
 ```
 
 Keep project-wide tokens, variants, generated vocabulary, and native global CSS in the global entry graph. Keep route-specific selectors in [Route-level styles](/guide/route-level-styles), and promote them here only after they become shared.
+
+Use `@compose` only when a shared utility owns behavior that should stay synchronized, such as a reusable focus ring. Native CSS is the default for component declarations; composition is optional.

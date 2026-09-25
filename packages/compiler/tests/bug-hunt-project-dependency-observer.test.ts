@@ -11,7 +11,7 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-dependency-')))
     const entry = join(root, 'app.css'), child = join(root, 'child.css'), missing = join(root, 'nested/tokens.css')
     try {
-      writeFileSync(entry, '@master entry;@import "./child.css";@components{card{@compose paint;}}')
+      writeFileSync(entry, '@master entry;@import "./child.css";@utilities{card{@compose paint;}}')
       writeFileSync(child, `@${directive} "./nested/tokens.css";`)
       const dependencies: string[] = []
       await expect(Promise.resolve().then(() => load({ root, entries: [entry], baseManifest: defaultBuildManifest, onDependency: file => dependencies.push(file) }))).rejects.toThrow('tokens.css')
@@ -28,7 +28,7 @@ for (const [kind, load] of [['async', loadProjectManifest], ['sync', loadProject
     const root = realpathSync(mkdtempSync(join(tmpdir(), 'master-css-project-before-read-')))
     const entries = [join(root, 'first.css'), join(root, 'second.css')], target = join(root, 'tokens.css'), observed: string[] = []
     try {
-      for (const entry of entries) writeFileSync(entry, '@master entry;@reference "./tokens.css";@components{card{@compose paint;}}')
+      for (const entry of entries) writeFileSync(entry, '@master entry;@reference "./tokens.css";@utilities{card{@compose paint;}}')
       const result = await load({ root, entries, baseManifest: defaultBuildManifest, onDependency(file) {
         observed.push(file)
         if (file === target) writeFileSync(target, '@utilities{paint{padding:7rem}}')

@@ -1,9 +1,9 @@
 use super::{
     CompilerError, CssDirectiveConditionPathEntry, CssDirectiveSourceReference,
     CssDirectiveStyleDefinition, CssRule, ErrorCode, HashMap, StyleRule, ThemeAtRule,
-    UnknownAtRule, Value, collect_class_list_token_ranges, collect_declarations,
+    UnknownAtRule, collect_class_list_token_ranges, collect_ordered_declarations,
     combine_managed_selectors, condition_properties, css_statement_delimiter, minified_css,
-    next_char_end, preserve_compatible_literal_spelling, printed_selectors, trim_byte_range,
+    next_char_end, preserve_ordered_literal_spelling, printed_selectors, trim_byte_range,
     utf16_to_byte_offset,
 };
 use crate::source_index::SourceIndex;
@@ -47,7 +47,7 @@ pub(crate) fn native_rule_list_has_directives(
 }
 
 pub(crate) fn push_native_style_declarations(
-    declarations: serde_json::Map<String, Value>,
+    declarations: Vec<super::CssDeclaration>,
     source: Option<CssDirectiveSourceReference>,
     context: &NativeStyleContext,
     condition_path: &[CssDirectiveConditionPathEntry],
@@ -130,6 +130,7 @@ pub(crate) fn lower_native_compose_rule(
     }
     let directive_source = source.reference(filename, local_start, directive_end);
     let (conditions, path) = condition_properties(condition_path);
+    *style_order += 1;
     for token in collect_class_list_token_ranges(class_list) {
         if token.token.starts_with('{') {
             return Err(CompilerError::DirectiveDiagnostic {
@@ -143,7 +144,6 @@ pub(crate) fn lower_native_compose_rule(
             .expect("lexer ranges are valid UTF-16 boundaries");
         let token_end = utf16_to_byte_offset(class_list, token.range.end)
             .expect("lexer ranges are valid UTF-16 boundaries");
-        *style_order += 1;
         style_definitions.push(CssDirectiveStyleDefinition::Compose {
             order: *style_order,
             class_name: token.token,
@@ -176,14 +176,14 @@ pub(crate) fn lower_native_style_rule(
     style_definitions: &mut Vec<CssDirectiveStyleDefinition>,
     style_order: &mut u32,
 ) -> Result<(), CompilerError> {
-    let mut declarations = collect_declarations(&style.declarations, filename)?;
+    let mut declarations = collect_ordered_declarations(&style.declarations, filename)?;
     let text = source.text();
     let selector_end = context
         .selector_source
         .as_ref()
         .and_then(|selector| source.byte_offset(selector.range.end));
     if let Some(start) = selector_end {
-        preserve_compatible_literal_spelling(text, start, &mut declarations);
+        preserve_ordered_literal_spelling(text, start, &mut declarations);
     }
     let declaration_source = selector_end
         .and_then(|start| css_statement_delimiter(text, start, text.len()))
@@ -274,7 +274,7 @@ pub(crate) fn lower_native_rule_list(
                     });
                 };
                 push_native_style_declarations(
-                    collect_declarations(&child.declarations, filename)?,
+                    collect_ordered_declarations(&child.declarations, filename)?,
                     rewritten
                         .byte_offset_for_location(child.loc.line, child.loc.column)
                         .and_then(|start| source.reference(filename, start, start)),

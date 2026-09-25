@@ -50,7 +50,7 @@ fn preserves_siblings_and_containers_around_lowered_slots() {
 
 #[test]
 fn consumed_definitions_and_composes_have_no_native_whitespace_output() {
-    let source = "@theme{--color-x:red}\n@components{brand{color:red}}\n.button{@compose brand;}";
+    let source = "@theme{--color-x:red}\n@utilities{brand{color:red}}\n.button{@compose brand;}";
     let result = compile_css_directives(
         source,
         &CompileNativeCssOptions {

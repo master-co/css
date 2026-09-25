@@ -150,6 +150,8 @@ pub struct SourceInspection {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct StylesheetInspection {
+    #[serde(default)]
+    pub compositions: Vec<mastercss_schema::CssCompositionTrace>,
     pub file_path: String,
     #[serde(rename = "masterCSS")]
     pub master_css: bool,

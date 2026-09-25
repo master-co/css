@@ -20,6 +20,19 @@ pub(super) fn push_static_utility_rule(
     layer: UtilityLayerName,
     style: MergedStyleDefinition,
 ) -> Result<(), CompilerError> {
+    for declarations in crate::declaration_runs(style.declarations.clone()) {
+        push_static_utility_run(input, name, layer, &style, declarations)?;
+    }
+    Ok(())
+}
+
+fn push_static_utility_run(
+    input: &mut CssDirectiveManifestInput,
+    name: &str,
+    layer: UtilityLayerName,
+    style: &MergedStyleDefinition,
+    declarations: Map<String, Value>,
+) -> Result<(), CompilerError> {
     let utilities = input.utilities.get_or_insert_default();
     let layer_value = layer_name(layer);
     let index = utilities.iter().position(|utility| {
@@ -40,14 +53,21 @@ pub(super) fn push_static_utility_rule(
     utility.insert("type".into(), Value::String("static".into()));
     utility.insert("layer".into(), Value::String(layer_value.into()));
     let mut rule = Map::new();
-    rule.insert("declarations".into(), Value::Object(style.declarations));
+    rule.insert("declarations".into(), Value::Object(declarations));
     if style.selector != "&" {
-        rule.insert("selector".into(), Value::String(style.selector));
+        rule.insert("selector".into(), Value::String(style.selector.clone()));
     }
     if !style.conditions.is_empty() {
         rule.insert(
             "conditions".into(),
-            Value::Array(style.conditions.into_iter().map(Value::String).collect()),
+            Value::Array(
+                style
+                    .conditions
+                    .iter()
+                    .cloned()
+                    .map(Value::String)
+                    .collect(),
+            ),
         );
     }
     if !utility.contains_key("declarations")
@@ -84,6 +104,7 @@ pub(super) fn managed_style_groups(
 ) -> Vec<((String, UtilityLayerName), Vec<CssDirectiveStyleDefinition>)> {
     let mut groups: Vec<((String, UtilityLayerName), Vec<CssDirectiveStyleDefinition>)> =
         Vec::new();
+    let mut indexes = HashMap::new();
     for definition in definitions {
         let (name, layer) = match definition {
             CssDirectiveStyleDefinition::Native { name, layer, .. }
@@ -92,17 +113,12 @@ pub(super) fn managed_style_groups(
                 (name.clone(), layer.unwrap_or(UtilityLayerName::Components))
             }
         };
-        if let Some((_, definitions)) =
-            groups
-                .iter_mut()
-                .find(|((current_name, current_layer), _)| {
-                    *current_name == name && *current_layer == layer
-                })
-        {
-            definitions.push(definition.clone());
-        } else {
-            groups.push(((name, layer), vec![definition.clone()]));
-        }
+        let index = *indexes.entry((name.clone(), layer)).or_insert_with(|| {
+            let index = groups.len();
+            groups.push(((name, layer), Vec::new()));
+            index
+        });
+        groups[index].1.push(definition.clone());
     }
     groups
 }
@@ -257,20 +273,17 @@ pub(super) fn render_style_definitions(
         css.push_str(&definition.selector);
         css.push('{');
         offset = selector_end + 1;
-        for (index, (property, value)) in definition.declarations.into_iter().enumerate() {
+        for (index, declaration) in definition.declarations.into_iter().enumerate() {
+            let property = declaration.property;
+            let value = declaration.value;
             if index > 0 {
                 css.push(';');
                 offset += 1;
             }
-            let declaration = format!("{property}:{}", value.as_str().unwrap_or_default());
-            let end = offset + declaration.encode_utf16().count() as u32;
-            anchor(
-                &mut mappings,
-                offset,
-                end,
-                definition.declaration_sources.get(&property),
-            );
-            css.push_str(&declaration);
+            let text = format!("{property}:{}", value.as_str().unwrap_or_default());
+            let end = offset + text.encode_utf16().count() as u32;
+            anchor(&mut mappings, offset, end, declaration.source.as_ref());
+            css.push_str(&text);
             offset = end;
         }
         css.push('}');

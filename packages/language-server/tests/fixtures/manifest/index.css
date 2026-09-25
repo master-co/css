@@ -1,7 +1,7 @@
 @master entry;
 @import './preset.css';
 
-@components {
+@utilities {
   fixture-button {
     display: inline-flex;
     color: oklch(100% 0 none);

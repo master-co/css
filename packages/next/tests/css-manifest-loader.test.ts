@@ -128,7 +128,7 @@ describe('css manifest loader', () => {
       '@theme {',
       '    --color-primary: #123;',
       '}',
-      '@components {',
+      '@utilities {',
       '    btn {',
       '        color: var(--color-primary);',
       '    }',
@@ -159,7 +159,7 @@ describe('css manifest loader', () => {
       '@theme {',
       '    --color-primary: #123;',
       '}',
-      '@components {',
+      '@utilities {',
       '    btn { color: var(--color-primary); }',
       '}'
     ].join('\n'))
@@ -219,7 +219,7 @@ describe('css manifest loader', () => {
     mkdirSync(join(projectDir, 'app'), { recursive: true })
     writeFileSync(entryPath, [
       '@import "@master/css";',
-      '@components {',
+      '@utilities {',
       '    card {',
       '        @compose bg-missing-token;',
       '    }',
@@ -231,12 +231,12 @@ describe('css manifest loader', () => {
       rootContext: projectDir,
       getOptions: () => ({ virtual: true, module: true }),
       addDependency: (dependency: string) => dependencies.push(dependency)
-    })).rejects.toThrow('Invalid @compose class')
+    })).rejects.toThrow('Invalid @compose utility')
     expect(dependencies).toContain(entryPath)
 
     writeFileSync(entryPath, [
       '@import "@master/css";',
-      '@components {',
+      '@utilities {',
       '    card {',
       '        @compose block;',
       '    }',

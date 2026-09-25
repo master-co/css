@@ -1,5 +1,5 @@
-@defaults {
-  prose {
+@layer defaults {
+  .prose {
     h2:has(+:is(h3, section)) {
       @compose font-sm tracking-wide text-body;
     }

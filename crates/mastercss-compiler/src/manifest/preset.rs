@@ -68,42 +68,44 @@ pub(super) fn append_default_preset_styles(
                 .and_then(Value::as_object_mut)
                 .expect("managed utility definition was inserted")
         };
-        let can_inline = selector == "&"
-            && conditions.as_ref().is_none_or(Vec::is_empty)
-            && !utility.contains_key("declarations")
-            && !utility.contains_key("rules");
-        if can_inline {
-            utility.insert("declarations".into(), Value::Object(declarations.clone()));
-            continue;
-        }
-        if let Some(previous) = utility.shift_remove("declarations") {
+        for declarations in crate::declaration_runs(declarations.clone()) {
+            let can_inline = selector == "&"
+                && conditions.as_ref().is_none_or(Vec::is_empty)
+                && !utility.contains_key("declarations")
+                && !utility.contains_key("rules");
+            if can_inline {
+                utility.insert("declarations".into(), Value::Object(declarations.clone()));
+                continue;
+            }
+            if let Some(previous) = utility.shift_remove("declarations") {
+                utility
+                    .entry("rules")
+                    .or_insert_with(|| Value::Array(Vec::new()))
+                    .as_array_mut()
+                    .expect("managed utility rules are an array")
+                    .push(json!({ "declarations": previous }));
+            }
+            let mut rule = Map::new();
+            rule.insert("declarations".into(), Value::Object(declarations.clone()));
+            if selector != "&" {
+                rule.insert("selector".into(), Value::String(selector.clone()));
+            }
+            if let Some(conditions) = conditions
+                .as_ref()
+                .filter(|conditions| !conditions.is_empty())
+            {
+                rule.insert(
+                    "conditions".into(),
+                    Value::Array(conditions.iter().cloned().map(Value::String).collect()),
+                );
+            }
             utility
                 .entry("rules")
                 .or_insert_with(|| Value::Array(Vec::new()))
                 .as_array_mut()
                 .expect("managed utility rules are an array")
-                .push(json!({ "declarations": previous }));
+                .push(Value::Object(rule));
         }
-        let mut rule = Map::new();
-        rule.insert("declarations".into(), Value::Object(declarations.clone()));
-        if selector != "&" {
-            rule.insert("selector".into(), Value::String(selector.clone()));
-        }
-        if let Some(conditions) = conditions
-            .as_ref()
-            .filter(|conditions| !conditions.is_empty())
-        {
-            rule.insert(
-                "conditions".into(),
-                Value::Array(conditions.iter().cloned().map(Value::String).collect()),
-            );
-        }
-        utility
-            .entry("rules")
-            .or_insert_with(|| Value::Array(Vec::new()))
-            .as_array_mut()
-            .expect("managed utility rules are an array")
-            .push(Value::Object(rule));
     }
     Ok(())
 }

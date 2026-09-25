@@ -32,13 +32,13 @@
 }
 
 /* Components */
-@components {
-  page {
+@layer components {
+  .page {
     @compose grid items-center justify-center min-h:100vh p:1.25rem bg-panel fg-ink;
     font-family: Inter, ui-sans-serif, system-ui, sans-serif;
   }
 
-  card {
+  .card {
     @compose grid gap:1rem p-card surface-raised r-card max-w:42rem content-auto;
     @variant motion-safe {
       @compose animation:demo-fade-in|.55s;
@@ -47,7 +47,7 @@
     box-shadow: 0 22px 70px rgb(17 24 39 / 12%);
   }
 
-  live-label {
+  .live-label {
     @compose inline-flex items-center justify-center h:1.5rem px:.75rem bg-primary r-pill font-size:.75rem font-semibold;
     @variant motion-safe {
       @compose animation:demo-pulse|1.4s|infinite;
@@ -58,7 +58,7 @@
     text-transform: uppercase;
   }
 
-  title {
+  .title {
     @compose m:0 font-size:2.5rem leading:1 fg-ink;
     @variant md {
       @compose font-size:3.5rem;
@@ -66,11 +66,11 @@
     max-width: 12ch;
   }
 
-  desc {
+  .desc {
     @compose m:0 font-size:1.125rem leading:1.7 fg-muted max-w:34rem;
   }
 
-  btn {
+  .btn {
     @compose inline-flex items-center justify-center h:2.75rem px:1rem bg-primary r-pill font-semibold;
     border: 0;
     box-shadow: 0 14px 28px rgb(17 34 51 / 18%);

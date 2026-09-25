@@ -244,7 +244,9 @@ pub(super) fn placeholder_property_count(rules: &[Value]) -> usize {
                     .as_array()
                     .is_some_and(|parts| parts.contains(&Value::Null))
         })
-        .count()
+        .map(|(property, _)| property)
+        .collect::<std::collections::HashSet<_>>()
+        .len()
 }
 
 pub(super) fn utility_type_from_rules(rules: &[Value]) -> i64 {

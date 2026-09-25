@@ -5,7 +5,7 @@
   --breakpoint-md: 48rem;
 }
 
-@components {
+@utilities {
   card {
     @compose bg-brand;
     @variant md {

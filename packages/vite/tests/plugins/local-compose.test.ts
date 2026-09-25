@@ -10,7 +10,7 @@ function createFixture() {
   writeFileSync(path.join(root, 'app.css'), `
     @master entry;
 
-    @components {
+    @utilities {
       brand {
         background-color: #123456;
       }
@@ -137,7 +137,7 @@ describe('LocalComposePlugin', () => {
         '    to { opacity: 1; }',
         '  }',
         '}',
-        '@components {',
+        '@utilities {',
         '  brand {',
         '    padding: var(--spacing-card);',
         '    animation: pop 1s;',
@@ -179,7 +179,7 @@ describe('LocalComposePlugin', () => {
         { addWatchFile },
         '.button { @compose bg-missing-token; }',
         modulePath
-      )).rejects.toThrow('Invalid @compose class')
+      )).rejects.toThrow('Invalid @compose utility')
       expect(addWatchFile).toHaveBeenCalledWith(modulePath)
 
       const result = await (plugin as any).transform.call(

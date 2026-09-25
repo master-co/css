@@ -1,3 +1,4 @@
+import { verifyPackageAuthoringExamples, verifyMonorepoExamples } from '../tests/package-authoring-examples'
 import { stylesheetExamples } from '../tests/stylesheet-examples'
 import { stylesheetExampleCSS } from '../reference/stylesheet-example'
 import { verifyDirectiveExamples } from '../tests/directive-examples'
@@ -560,8 +561,11 @@ function extractCandidatesFromSnippet(input: {
     }
   }
 
-  for (const each of extractDirectiveValues(input.text, '@compose')) {
-    add(each.value, each.index, `${input.kind}:compose`)
+  // Prose and agent-instruction fences mention directives without authoring CSS.
+  if (input.kind === 'fenced:css') {
+    for (const each of extractDirectiveValues(input.text, '@compose')) {
+      add(each.value, each.index, `${input.kind}:compose`)
+    }
   }
 
   for (const each of extractDirectiveValues(input.text, '@safelist')) {
@@ -932,3 +936,17 @@ test('all MCP reference requests match actual tool behavior', verifyToolContract
 test('all CLI reference commands use the documented output and file effects', verifyCLIContractExamples)
 
 test('directive examples compile their actual native rules, resources, settings and reference files', verifyDirectiveExamples)
+
+
+test('compose examples are extracted from CSS fences without treating prose as CSS', () => {
+  const snippet = (kind: string, text: string) => extractCandidatesFromSnippet({ content: text, file: 'guide.mdx', index: 0, kind, scanClassAttributes: false, text }).filter(candidate => candidate.kind.endsWith(':compose'))
+  assert.deepEqual(snippet('mdx', 'Replace `@compose button` with native declarations.'), [])
+  assert.deepEqual(snippet('fenced:text', 'Use @compose only for shared behavior;'), [])
+  assert.deepEqual(snippet('fenced:css', '.a { @compose block; }').map(candidate => candidate.candidate), ['block'])
+})
+
+
+test('authoring packages and monorepo examples retain native components and utility references', async () => {
+  await verifyPackageAuthoringExamples()
+  await verifyMonorepoExamples()
+})

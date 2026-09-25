@@ -50,9 +50,9 @@ describe('PreRenderPlugin', () => {
     expect(viteConfig.server.fs.allow).toContain(path.join(FIXTURE_DIR, 'app.css'))
     expect(html).toContain('<style id="master-css"')
     if (mode === 'progressive') expect(hydrationManifestSource).toMatch(/^\/_master-css\/hydration\/master-css-hydration\.[0-9a-f]{8}\.json$/)
-    expect(html).toContain('@layer components{.card{background-color:var(--color-brand);border-color:#456}')
+    expect(html).toContain('@layer utilities{.card{background-color:var(--color-brand)}@media (width>=48rem){.card{font-size:1.125rem}}.card{border-color:#456}')
     expect(html).toContain('@media (width>=48rem){.card{font-size:1.125rem}}')
-    expect(html).toContain('@layer utilities{.p\\:0\\.125rem{padding:0.125rem}}')
+    expect(html).toContain('.p\\:0\\.125rem{padding:0.125rem}}')
     expect(html).not.toContain(`id="${MASTER_CSS_HYDRATION_MANIFEST_SCRIPT_ID}"`)
     expect(html).not.toContain('rel="preload"')
 
@@ -118,7 +118,7 @@ describe('PreRenderPlugin', () => {
     const dispose = vi.spyOn(MasterCSSServerRenderer.prototype, 'dispose')
     try {
       writeFileSync(themePath, [
-        '@components {',
+        '@utilities {',
         '    card { color: #123456; }',
         '}'
       ].join('\n'))
@@ -156,7 +156,7 @@ describe('PreRenderPlugin', () => {
       expect(html).toContain('.card{color:#123456}')
 
       writeFileSync(themePath, [
-        '@components {',
+        '@utilities {',
         '    card { color: #abcdef; }',
         '}'
       ].join('\n'))

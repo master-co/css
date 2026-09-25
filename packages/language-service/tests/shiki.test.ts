@@ -17,7 +17,7 @@ const manifest: MasterCSSShikiOptions['manifest'] = createPresetManifest({
   utilities: [
     {
       name: 'btn',
-      layer: 'components',
+      layer: 'utilities',
       rules: [
         { selector: '&', declarations: { display: 'block' } }
       ]
@@ -194,9 +194,9 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
     }),
     expect.objectContaining({
       text: 'btn',
-      type: 'class',
-      modifiers: ['declaration', 'component'],
-      classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-class', 'mcss-semantic-role-utility-component', 'mcss-semantic-class-declaration', 'mcss-semantic-class-component'])
+      type: 'enumMember',
+      modifiers: [],
+      classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-enumMember', 'mcss-semantic-role-utility-semantic'])
     }),
     expect.objectContaining({
       text: 'div',
@@ -217,7 +217,7 @@ test.concurrent('creates Shiki decorations from Master CSS semantic tokens', () 
       classNames: expect.arrayContaining(['mcss-semantic', 'mcss-semantic-keyword', 'mcss-semantic-role-query-keyword', 'mcss-semantic-keyword-query'])
     })
   ]))
-  expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'class' && modifiers.includes('declaration') && modifiers.includes('component'))).toHaveLength(3)
+  expect(tokens.filter(({ text, type, modifiers }) => text === 'btn' && type === 'enumMember' && modifiers.length === 0)).toHaveLength(3)
 })
 
 test('keeps v2 named classes whole in the colors guide example across both themes', async () => {
@@ -274,7 +274,7 @@ test.concurrent('separates named opacity and native values without coloring unre
   const samples = [
     { lang: 'html', code: '<!-- fg-red -->\n<div class="fg-red/0.5! block:hover@sm unknown-widget"></div>' },
     { lang: 'tsx', code: 'const label = "fg-blue";\n<div className="-m-sm fg-red/0.5" />' },
-    { lang: 'css', code: '@components { card { @compose fg-red/0.5 b:1px|solid|var(--color-line-base) unknown-widget; } }' },
+    { lang: 'css', code: '@utilities { card { @compose fg-red/0.5 b:1px|solid|var(--color-line-base) unknown-widget; } }' },
     { lang: 'mcss', code: 'fg-red/0.5 block:hover@sm color:red unknown-widget' }
   ]
   for (const { lang, code } of samples) {
@@ -350,7 +350,7 @@ test.concurrent('creates Shiki decorations for CSS directive class-list spans', 
     '        grid-template-columns: repeat(--value(), minmax(0, 1fr));',
     '    }',
     '}',
-    '@components {',
+    '@utilities {',
     '    btn {',
     '        @compose inline-flex fg-brand:hover@sm;',
     '    }',
@@ -467,7 +467,7 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
     }
   })
   const enumMemberDecorations = decorations.filter((decoration) => decoration.type === 'enumMember')
-  const classDecorations = decorations.filter((decoration) => decoration.type === 'class')
+  const classDecorations = decorations.filter((decoration) => decoration.type === 'enumMember')
   const blockStyles = enumMemberDecorations
     .filter((decoration) => code.slice(decoration.start, decoration.end) === 'block')
     .map((decoration) => decoration.properties?.style)
@@ -477,7 +477,7 @@ test.concurrent('applies semantic token styles by type and modifier', () => {
     'color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)',
     'color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)'
   ])
-  expect(btnStyle).toBe('color:var(--mcss-semantic-class);--shiki-dark:var(--mcss-semantic-class-dark);font-weight:600')
+  expect(btnStyle).toBe('color:var(--mcss-semantic-value);--shiki-dark:var(--mcss-semantic-value-dark)')
 })
 
 test('wraps host class attribute values around Master CSS semantic spans', async () => {
@@ -738,11 +738,9 @@ test.concurrent('applies semantic decorations in the Shiki tokens hook', () => {
     expect.objectContaining({
       content: 'btn',
       htmlAttrs: {
-        class: 'master-css-token master-css-token-class master-css-token-role-utility-component master-css-token-class-declaration master-css-token-class-component'
+        class: 'master-css-token master-css-token-enumMember master-css-token-role-utility-semantic'
       },
-      htmlStyle: {
-        'font-weight': '600'
-      }
+      htmlStyle: {}
     }),
     expect.objectContaining({
       content: 'hover',
@@ -812,7 +810,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
     '  --color-primary: #4f46e5;',
     '  --spacing-card: 24;',
     '}',
-    '@components {',
+    '@utilities {',
     '  card { @compose bg-blue fg-brand:hover; }',
     '}'
   ].join('\n')
@@ -897,7 +895,7 @@ test.concurrent('uses semantic token scope styles for documentation Master CSS t
 test.concurrent('uses semantic token scope styles for CSS directive class-list tokens', () => {
   const code = [
     '@custom-variant motion-safe { @media (prefers-reduced-motion: no-preference) { @slot; } }',
-    '@components {',
+    '@utilities {',
     '    card {',
     '        @compose p-md r-xl;',
     '        @variant <sm {',
