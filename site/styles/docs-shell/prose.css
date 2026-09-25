@@ -1,103 +1,123 @@
+@reference "../../app/globals.css";
+
 @layer defaults {
   .prose {
     h2:has(+:is(h3, section)) {
-      @compose font-sm tracking-wide text-body;
+      color: var(--color-text-body);
+      font-size: var(--font-size-sm);
+      letter-spacing: var(--tracking-wide);
     }
 
     @light {
       :is(p, li, table) code {
-        @compose bg-neutral-0;
+        background-color: var(--color-neutral-0);
       }
     }
 
     @dark {
       :is(blockquote) p {
-        @compose fg:inherit;
+        color: inherit;
       }
     }
 
     :is(p) {
-      @compose font-md;
+      font-size: var(--font-size-md);
     }
 
     :is(li) {
-      @compose font-sm;
+      font-size: var(--font-size-sm);
     }
 
     :is(p, li) {
-      @compose leading-xl;
+      line-height: var(--leading-xl);
     }
 
     summary {
-      @compose text-sm;
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
     }
 
     :is(p, li) {
-      @compose max-w:var(--breakpoint-sm);
+      max-width: var(--breakpoint-sm);
     }
 
     :is(h2)+*>h3:first-child {
-      @compose mt:1em;
+      margin-top: 1em;
     }
 
     :is(h2, h3) {
-      @compose rel;
+      position: relative;
     }
 
     :is(h2, h3):hover>svg {
-      @compose visible;
+      visibility: visible;
     }
 
     :is(h2, h3) {
-      @compose w:fit-content;
+      width: fit-content;
     }
 
     :is(a, mark, u) {
-      @compose text-underline-3xs;
+      text-underline-offset: var(--spacing-3xs);
     }
 
     :is(p, li, figcaption, summary, td, th) :is(a, u) {
-      @compose text-decoration:from-font|underline|color-mix(in|oklab,var(--color-accent)|50%,transparent)|dotted;
+      -webkit-text-decoration: from-font underline color-mix(in oklab,var(--color-accent) 50%,transparent) dotted;
+      text-decoration: from-font underline color-mix(in oklab,var(--color-accent) 50%,transparent) dotted;
     }
 
     :is(p, li, figcaption, td, th) :is(a):hover {
-      @compose decoration-solid fg-accent;
+      text-decoration-style: solid;
+      color: var(--color-accent);
     }
 
     :is(del) {
-      @compose text-decoration:from-font|line-through|var(--color-crimson-60);
+      -webkit-text-decoration: from-font line-through var(--color-crimson-60);
+      text-decoration: from-font line-through var(--color-crimson-60);
     }
 
     :is(mark) {
-      @compose background-color:transparent;
+      background-color: transparent;
     }
 
     :is(h2, h3) a {
-      @compose contents font-weight:inherit;
+      display: contents;
+      font-weight: inherit;
     }
 
     :is(h2) {
-      @compose text-2xl;
+      font-size: var(--font-size-2xl);
+      line-height: max(1.8em - max(0rem, var(--font-size-2xl) - 1rem) * 1.12, var(--font-size-2xl));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-2xl) - 1rem) * -.048), 0em);
     }
 
     :is(h3) {
-      @compose text-xl;
+      font-size: var(--font-size-xl);
+      line-height: max(1.8em - max(0rem, var(--font-size-xl) - 1rem) * 1.12, var(--font-size-xl));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-xl) - 1rem) * -.048), 0em);
     }
 
     :is(h4) {
-      @compose text-md;
+      font-size: var(--font-size-md);
+      line-height: max(1.8em - max(0rem, var(--font-size-md) - 1rem) * 1.12, var(--font-size-md));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-md) - 1rem) * -.048), 0em);
     }
 
     :is(h5) {
-      @compose text-sm;
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
     }
 
     :is(h6) {
-      @compose text-sm;
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
     }
 
     :is(h2, h3):not(.sr-only)+ :is(h2, h3) {
-      @compose mt:.75em;
+      margin-top: .75em;
     }
 
     :is(h2, h3, h4, h5, h6) code::before {
@@ -109,177 +129,193 @@
     }
 
     :is(h2, h3, h4, h5, h6) {
-      @compose font-weight:460;
+      font-weight: 460;
     }
 
     :is(code, th, strong, b) {
-      @compose font-weight:460;
+      font-weight: 460;
     }
 
     :is(h2, h3, h4, h5, h6, td, th) :is(a, code):not(.code-block) {
-      @compose font-weight:inherit;
+      font-weight: inherit;
     }
 
     :is(p, li, table) code:not(.code-block) {
-      @compose p:var(--spacing-4xs)|var(--spacing-3xs) r-sm b:1px|solid|var(--color-line-muted);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-line-muted);
+      padding: var(--spacing-4xs) var(--spacing-3xs);
       font-size: small;
     }
 
     :is(th) {
-      @compose text-strong;
+      color: var(--color-text-strong);
     }
 
     :is(pre) {
-      @compose p:20px|25px;
+      padding: 20px 25px;
     }
 
     :is(ul, ol, blockquote) {
-      @compose pl:1.25em;
+      padding-left: 1.25em;
     }
 
     :is(li) {
-      @compose pl:.375em;
+      padding-left: .375em;
     }
 
     .task-list-item {
-      @compose text-indent:-1.75em;
+      text-indent: -1.75em;
     }
 
     .task-list-item input {
-      @compose size:1em mr-xs;
+      width: 1em;
+      height: 1em;
+      margin-right: var(--spacing-xs);
       vertical-align: middle;
     }
 
     :is(.code, p, blockquote, ul, ol, details) {
-      @compose my:1.125em;
+      margin-block: 1.125em;
     }
 
     :is(figure) {
-      @compose my:2em;
+      margin-block: 2em;
     }
 
     :is(li) {
-      @compose my:.5625em;
+      margin-block: .5625em;
     }
 
     :is(li) :is(ul, ol, p) {
-      @compose my:.5625em;
+      margin-block: .5625em;
     }
 
     :is(figcaption, figure img) {
-      @compose mx:auto;
+      margin-inline: auto;
     }
 
     @variant sm {
       :is(h1, h2, h3, h4, h5, h6) {
-        @compose mt-2xl scroll-mt:100px;
+        margin-top: var(--spacing-2xl);
+        scroll-margin-top: 100px;
       }
     }
 
     :is(h1, h2, h3, h4, h5, h6) {
-      @compose mt-lg scroll-mt:60px;
+      margin-top: var(--spacing-lg);
+      scroll-margin-top: 60px;
     }
 
     :is(ul) {
-      @compose list-style:circle;
+      list-style: circle;
     }
 
     .contains-task-list {
-      @compose list-style:none;
+      list-style: none;
     }
 
     :is(strong, b, code, a, mark, h2, h3, h4, summary) {
-      @compose text-strong;
+      color: var(--color-text-strong);
     }
 
     ::marker {
-      @compose text-disabled;
+      color: var(--color-text-disabled);
     }
 
     :is(summary) {
-      @compose text-indent:-.875em;
+      text-indent: -.875em;
     }
 
     :is(summary) {
-      @compose ml:1em;
+      margin-left: 1em;
     }
 
     :is(blockquote) {
-      @compose bl:5px|solid|var(--color-line-subtle);
+      border-left: 5px solid var(--color-line-subtle);
     }
 
     :is(img) {
-      @compose h:auto;
+      height: auto;
     }
 
     :is(figcaption) {
-      @compose text-sm p:15px|20px|0 w:fit-content text-muted;
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+      padding: 15px 20px 0;
+      color: var(--color-text-muted);
+      width: fit-content;
     }
 
     :is(table) {
-      @compose w:100%;
+      width: 100%;
     }
 
     :is(table) {
-      @compose border-spacing:0;
+      border-spacing: 0;
     }
 
     :is(td, th) {
-      @compose bb:1px|solid|var(--color-line-muted);
+      border-bottom: 1px solid var(--color-line-muted);
     }
 
     :is(tbody) :is(tr:last-child)> :is(td, th) {
-      @compose border-bottom-width:0px;
+      border-bottom-width: 0px;
     }
 
     :is(thead) th {
-      @compose bb:1px|solid|var(--color-line-muted);
+      border-bottom: 1px solid var(--color-line-muted);
     }
 
     :is(hr) {
-      @compose bb:1px|solid|var(--color-line-muted) my-lg;
+      margin-block: var(--spacing-lg);
+      border-bottom: 1px solid var(--color-line-muted);
     }
 
     @variant sm {
       :is(hr) {
-        @compose my-2xl;
+        margin-block: var(--spacing-2xl);
       }
     }
 
     hr+* {
-      @compose mt:0;
+      margin-top: 0;
     }
 
     :is(th) {
-      @compose text-left;
+      text-align: left;
     }
 
     :is(td, th):first-child {
-      @compose pl:0;
+      padding-left: 0;
     }
 
     :is(td, th):last-child {
-      @compose pr:0;
+      padding-right: 0;
     }
 
     :is(th):first-child {
-      @compose white-space:pre;
+      white-space: pre;
     }
 
     :is(td, th) {
-      @compose p:.455625em|1.25em;
+      padding: .455625em 1.25em;
     }
 
     :is(table) code {
-      @compose font-xs leading:1 font-regular;
+      font-size: var(--font-size-xs);
+      font-weight: var(--font-weight-regular);
+      line-height: 1;
     }
 
     :is(p) code {
-      @compose leading:normal;
+      line-height: normal;
     }
 
     :is(th, td) {
-      @compose text-sm;
+      font-size: var(--font-size-sm);
+      line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+      letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
     }
 
     :is(th, td) {

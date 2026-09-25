@@ -1,27 +1,13 @@
-@theme light {
+@theme static light {
   --color-yellow: var(--color-yellow-40);
   --color-yellow-hover: var(--color-yellow-50);
   --color-on-yellow: var(--color-yellow-95);
   --color-yellow-line: color-mix(in oklab, var(--color-black) 10%, transparent);
 }
 
-@theme dark {
+@theme static dark {
   --color-yellow: var(--color-yellow-50);
   --color-yellow-hover: var(--color-yellow-40);
   --color-on-yellow: var(--color-yellow-95);
   --color-yellow-line: color-mix(in oklab, var(--color-white) 30%, transparent);
-}
-
-@layer components {
-  .yellow {
-    outline: 0.0625rem var(--color-yellow-line) solid;
-    background-color: var(--color-yellow);
-    color: var(--color-on-yellow);
-  }
-
-  .touch-yellow {
-    &:hover {
-      background-color: var(--color-yellow-hover);
-    }
-  }
 }

@@ -1,5 +1,7 @@
 'use client'
 
+import '~/site/styles/demo-feature-support.css'
+import '~/site/styles/demo.css'
 import { useSyncExternalStore } from 'react'
 
 const subscribe = () => () => {}

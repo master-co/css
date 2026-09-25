@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import type { IframeHTMLAttributes } from 'react'
 import clsx from 'clsx'
 import Demo from './Demo'

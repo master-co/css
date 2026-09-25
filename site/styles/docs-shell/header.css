@@ -1,0 +1,39 @@
+@reference "../../app/globals.css";
+
+@layer components {
+.app-header-nav {
+    font-size: var(--font-size-sm);
+    line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+    letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    -webkit-user-select: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-inline: var(--spacing-md);
+
+    &:disabled {
+      color: var(--color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    &:where(:hover, :active, .active) {
+      color: var(--color-text-strong);
+    }
+  }
+
+
+.app-header-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    color: var(--color-text-muted);
+    height: 48px;
+    min-width: 48px;
+
+    &:hover {
+      color: var(--color-text-strong);
+    }
+  }
+}

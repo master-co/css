@@ -1,5 +1,7 @@
 'use client'
 
+import '~/site/styles/demo-colors.css'
+import '~/site/styles/demo.css'
 import { createContext, useContext, useState, type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { IconCopy } from '@tabler/icons-react'
 

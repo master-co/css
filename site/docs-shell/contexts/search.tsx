@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/documentation-search.css'
 import Link from '../components/Link'
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from './i18n'

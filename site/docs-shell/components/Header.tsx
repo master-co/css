@@ -1,6 +1,6 @@
-
 'use client'
 
+import '~/site/styles/docs-shell/wrapper.css'
 import { throttle } from 'throttle-debounce'
 import { useLayoutEffect, useRef, useState } from 'react'
 import { isBrowser } from '../utils/isBrowser'

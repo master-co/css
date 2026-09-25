@@ -1,3 +1,4 @@
+import '~/site/styles/benchmark-metrics.css'
 import clsx from 'clsx'
 import Translate from '~/site/docs-shell/components/Translate'
 import type { BenchmarkMetric } from './types'

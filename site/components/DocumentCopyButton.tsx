@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/documentation-values.css'
 import { useState, useSyncExternalStore } from 'react'
 import { IconCheck, IconCopy } from '@tabler/icons-react'
 

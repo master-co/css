@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/code.css'
 import FileIcon from './FileIcon'
 import FolderSvg from '../../public/icons/folder.svg'
 

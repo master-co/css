@@ -1,3 +1,4 @@
+import '~/site/styles/benchmarks.css'
 import { useId, type ReactNode } from 'react'
 import clsx from 'clsx'
 import Translate from '~/site/docs-shell/components/Translate'

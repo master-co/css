@@ -1,3 +1,5 @@
+import '~/site/styles/demo-colors.css'
+import '~/site/styles/demo.css'
 import Demo from './Demo'
 import DemoCopyButton, { DemoCopyGroup } from './DemoCopyButton'
 import { getThemeVariables } from '~/site/utils/theme-variables'

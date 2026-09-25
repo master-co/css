@@ -143,6 +143,7 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         }
         const css = deliveredCSS.join('\n')
         if (!css) { routes[route] = null; continue }
+        assertRouteStylesheetBoundary(route, css)
         assertNoInlineVariableReferences(route, 'delivered CSS', css, inlineVariableNames)
         const hydrationReference = style && attributeValue(style.attributes, 'data-master-css-hydration-manifest')
         const hydrationText = hydrationReference ? await readFile(publicOutputPath(hydrationReference), 'utf8') : ''
@@ -199,6 +200,44 @@ async function createSiteCSSContractSnapshot(): Promise<SiteCSSContractSnapshot>
         rules: sortRecord(rules),
         contracts: sortRecord(contracts),
         routes: sortRecord(routes)
+    }
+}
+
+function assertRouteStylesheetBoundary(route: string, css: string) {
+    if (/(?:^|[;{}])\s*@(compose|reference|light|dark|variant)\b/.test(css)) {
+        throw new Error(`${route} delivers an uncompiled Master CSS directive.`)
+    }
+    const selectors = {
+        reference: '.reference-document',
+        benchmark: '.benchmark-bars',
+        demo: '.site-demo',
+        button: '.btn{'
+    }
+    const expected: Record<string, Partial<Record<keyof typeof selectors, boolean>>> = {
+        '/': { reference: false, benchmark: false, demo: false, button: false },
+        '/play': { reference: false, benchmark: false, demo: false, button: false },
+        '/guide': { reference: false, benchmark: false },
+        '/reference': { reference: true, benchmark: false, demo: false },
+        '/guide/benchmarks': { benchmark: true, reference: false },
+        '/design-system': { demo: true, benchmark: true, reference: false },
+        '/examples/responsive-button': { button: true, reference: false, benchmark: false, demo: false }
+    }
+    for (const [group, present] of Object.entries(expected[route] ?? {})) {
+        if (css.includes(selectors[group as keyof typeof selectors]) !== present) {
+            throw new Error(`${route} ${present ? 'is missing' : 'unexpectedly includes'} ${group} styles.`)
+        }
+    }
+    const requiredVariables: Record<string, string[]> = {
+        '/': ['--color-text-subtle:', '--color-surface-muted:'],
+        '/guide': ['--leading-md:', '--shadow-lg:'],
+        '/reference': ['--color-blue:', '--leading-md:'],
+        '/design-system': ['--color-demo-line:', '--leading-lg:'],
+        '/design-system/review/asset': ['--color-text-link:'],
+        '/design-system/review/data-table': ['--spacing-3xs:'],
+        '/examples/responsive-button': ['--color-yellow:', '--color-on-yellow:']
+    }
+    for (const variable of requiredVariables[route] ?? []) {
+        if (!css.includes(variable)) throw new Error(`${route} is missing the theme declaration ${variable}`)
     }
 }
 

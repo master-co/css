@@ -1,3 +1,5 @@
+import '~/site/styles/demo-interactions.css'
+import '~/site/styles/demo.css'
 import type { ReactNode } from 'react'
 import DemoIndex from './DemoIndex'
 

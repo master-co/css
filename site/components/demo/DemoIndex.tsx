@@ -1,3 +1,5 @@
+import '~/site/styles/demo-interactions.css'
+import '~/site/styles/demo.css'
 export interface DemoIndexGroup {
   title: string
   links: readonly { href: string, label: string }[]

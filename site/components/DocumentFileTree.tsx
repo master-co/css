@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-index.css'
 import { IconFile, IconFolder } from '@tabler/icons-react'
 
 export interface DocumentFileEntry {

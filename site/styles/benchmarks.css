@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 @layer components {
   .benchmark-samples { container-type: inline-size; }
   .benchmark-samples > dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-xs); margin: 0; }
@@ -57,18 +59,5 @@
     .benchmark-table-scroll { overflow: visible; max-height: none; }
     .benchmark-table-scroll table { width: 100%; }
     .benchmark-table-scroll :is(th, td) { white-space: normal; overflow-wrap: anywhere; }
-  }
-}
-
-@layer components {
-  .benchmark-metrics { container-type: inline-size; display: grid; margin: 0; border-top: 1px solid var(--color-line-subtle); }
-  .benchmark-metric { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: .2rem 1rem; border-bottom: 1px solid var(--color-line-subtle); padding: .85rem .25rem; }
-  .benchmark-metric dt { color: var(--color-text-body); font-size: .8125rem; font-weight: 500; }
-  .benchmark-metric dd { margin: 0; }
-  .benchmark-metric-value { font: 550 .875rem/1.4 var(--font-family-mono); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-  .benchmark-metric-detail { grid-column: 1 / -1; color: var(--color-text-muted); font-size: .75rem; line-height: 1.5; }
-  @container (min-width: 36rem) {
-    .benchmark-metric { grid-template-columns: minmax(0, 1fr) minmax(6.5rem, .65fr) minmax(0, 1.5fr); gap: .35rem 1rem; }
-    .benchmark-metric-detail { grid-column: auto; }
   }
 }

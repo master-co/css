@@ -1,3 +1,4 @@
+import '~/site/styles/benchmarks.css'
 import type { ReactNode } from 'react'
 import Translate from '~/site/docs-shell/components/Translate'
 import BenchmarkScrollRegion from './BenchmarkScrollRegion'

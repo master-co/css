@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import { useId } from 'react'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 import Translate from '~/site/docs-shell/components/Translate'

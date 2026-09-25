@@ -37,7 +37,7 @@ const MASTER_CSS_MANIFEST_RESOURCE_QUERY = new RegExp(MASTER_CSS_MANIFEST_QUERY.
 const MASTER_CSS_MANIFEST_IMPORT_CONTENT_PATTERN = new RegExp(`\\${MASTER_CSS_MANIFEST_QUERY}`)
 const MASTER_CSS_VIRTUAL_MANIFEST_PATH_PATTERN = createVirtualDefaultManifestModulePathPattern()
 const MASTER_CSS_VIRTUAL_EMITTED_GLOBALS_PATH_PATTERN = createVirtualEmittedGlobalsModulePathPattern()
-const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createManifestEntryPattern().source}|@(compose|at)\\b`)
+const MASTER_CSS_STYLE_CONTENT_PATTERN = new RegExp(`${createManifestEntryPattern().source}|@(compose|at|reference|variant|light|dark)\\b`)
 const NEXT_INSTRUMENTATION_CLIENT_ID = 'private-next-instrumentation-client'
 const MASTER_CSS_USER_INSTRUMENTATION_CLIENT_ID = 'private-next-master-css-user-instrumentation-client'
 const NEXT_REQUIRE_INSTRUMENTATION_CLIENT_IDS = [
@@ -558,7 +558,6 @@ function applyMasterCSSStaticTurbopackConfig(
     ],
     type: 'css' as const
   }
-
   return {
     ...turbopackConfig,
     rules: {

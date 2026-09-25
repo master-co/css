@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import Code from '~/site/docs-shell/components/Code'
 import DocumentCopyButton from './DocumentCopyButton'
 import DocumentDisclosure from './DocumentDisclosure'

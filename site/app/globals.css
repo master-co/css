@@ -1,10 +1,4 @@
 @import '@master/css';
-@import '../styles/docs-shell/main.css';
+@import '../styles/docs-shell/theme.css';
 @import '../styles/base.css';
-@import '../styles/btn.css';
-@import '../styles/reference.css';
-@import '../styles/documentation-index.css';
-@import '../styles/documentation-values.css';
-@import '../styles/demo.css';
-@import '../styles/benchmarks.css';
-@import '../styles/docs-shell/documentation-search.css';
+@import '../styles/demo-theme.css';

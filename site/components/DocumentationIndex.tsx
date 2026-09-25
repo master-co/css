@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/documentation-index.css'
 import { useEffect, useState } from 'react'
 import { IconArrowRight, type IconBook } from '@tabler/icons-react'
 import Link from '~/site/docs-shell/components/Link'

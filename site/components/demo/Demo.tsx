@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import type { HTMLAttributes, ReactNode } from 'react'
 import clsx from 'clsx'
 

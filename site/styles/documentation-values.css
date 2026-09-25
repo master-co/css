@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 @layer components {
   .doc-values {
     container-type: inline-size;

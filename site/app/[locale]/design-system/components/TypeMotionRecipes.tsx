@@ -1,3 +1,4 @@
+import '~/site/styles/demo-interactions.css'
 import { FoundationTypography, FoundationTypeComparison, FoundationMotion, FoundationTransition, FoundationDialog } from '~/site/components/demo/FoundationTypeMotion'
 
 const examples = [

@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/header.css'
 import type { editor } from 'monaco-editor'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useDebouncedCallback } from 'use-debounce'

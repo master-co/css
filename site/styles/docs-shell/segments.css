@@ -1,0 +1,31 @@
+@reference "../../app/globals.css";
+
+@layer components {
+.segments {
+    display: flex;
+    border-radius: var(--radius-lg);
+    padding: 5px;
+    background-color: var(--color-surface-muted);
+    width: fit-content;
+  }
+
+
+.segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    padding-inline: var(--spacing-sm);
+    white-space: nowrap;
+    font-size: var(--font-size-xs);
+    font-weight: 460;
+    line-height: 1.375rem;
+
+    &.active {
+      outline: 1px solid var(--color-line-subtle);
+      background-color: var(--color-surface-raised);
+      box-shadow: var(--shadow-xs);
+      color: var(--color-text-strong);
+    }
+  }
+}

@@ -1,0 +1,86 @@
+@reference "../../app/globals.css";
+
+@layer components {
+.box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-line-base);
+    padding: 15px 20px;
+    background-color: var(--color-surface-raised);
+    color: var(--color-text-strong);
+    font-size: var(--font-size-sm);
+
+    @dark {
+      border-color: color-mix(in oklab,oklch(100% 0 none) 5%,transparent);
+    }
+  }
+
+
+.box-perspective-pink {
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-pink-70);
+    background-color: color-mix(in oklab,var(--color-pink-70) 10%,transparent);
+  }
+
+
+.demo-ground {
+    background-clip: padding-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 1 1 auto;
+    contain: content;
+  }
+
+
+.demo {
+    background-clip: padding-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 1 1 auto;
+    contain: content;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--color-line-subtle);
+  }
+
+
+.app-demo {
+    background-clip: padding-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    flex: 1 1 auto;
+    contain: content;
+    padding: var(--spacing-xl);
+
+    @variant 3xs {
+      padding: var(--spacing-2xl);
+    }
+  }
+}
+
+@layer defaults {
+.demo-ground {
+    background: var(--stripe);
+  }
+
+
+.demo {
+    background: var(--stripe);
+  }
+
+
+.app-demo {
+    background: var(--stripe);
+  }
+}

@@ -1,0 +1,24 @@
+@reference "../app/globals.css";
+
+@layer components {
+  .demo-theme-preview { border: 1px solid var(--color-demo-line); border-radius: var(--radius-sm); overflow: hidden; }
+  .demo-copy { position: relative; display: inline-block; }
+  .demo-copy-status:empty { display: none; }
+  .demo-copy-status { display: block; margin-top: var(--spacing-xs); font-size: .75rem; overflow-wrap: anywhere; }
+  .demo-copy-status:not(:empty) { max-width: 28rem; margin-top: .625rem; padding: .45rem .65rem; border-left: 2px solid var(--color-demo-blue); background: var(--color-demo-surface); color: var(--color-text-body); font: 500 .75rem/1.5 var(--font-family-mono); }
+  .demo-copy-feedback { position: static; margin-bottom: var(--spacing-lg); padding: .625rem .75rem; border-left: 2px solid var(--color-demo-blue); background: var(--color-demo-surface); color: var(--color-text-body); font: 500 .75rem/1.5 var(--font-family-mono); overflow-wrap: anywhere; }
+
+  .demo-palette { container-type: inline-size; display: grid; gap: var(--spacing-lg); }
+  .demo-palette-title { margin: 0 0 .625rem; color: var(--color-text-strong); font-size: .8125rem; font-weight: 600; line-height: 1.45; text-transform: capitalize; }
+  .demo-palette-row { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--spacing-xs); }
+  @container (min-width: 28rem) { .demo-palette-row { grid-template-columns: repeat(13, minmax(0, 1fr)); gap: var(--spacing-3xs); } }
+  .demo-token-preview { --demo-token-color: var(--demo-token-light); display: inline-block; width: 1.5em; height: 1.5em; margin-right: var(--spacing-sm); border-radius: var(--radius-xs); vertical-align: middle; }
+  .dark .demo-token-preview { --demo-token-color: var(--demo-token-dark); }
+  .demo-token-preview[data-paint="background"] { background: var(--demo-token-color); outline: 1px solid var(--color-demo-line); outline-offset: -1px; }
+  .demo-token-preview[data-paint="line"] { border: 2px solid var(--demo-token-color); }
+  .demo-token-preview[data-paint="text"] { color: var(--demo-token-color); font-size: 1rem; }
+  .demo-palette-row > div { text-align: center; }
+  .demo-palette-row .demo-copy { display: block; }
+  .demo-palette-chip { display: block; width: 100%; height: 2.75rem; border: 1px solid var(--color-demo-line); border-radius: var(--radius-xs); cursor: pointer; }
+  .demo-palette-chip:hover { border-color: var(--color-demo-blue); box-shadow: 0 0 0 1px var(--color-demo-blue); }
+}

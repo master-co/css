@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/demo.css'
 import styled from '@master/styled.react'
 
 const Demo = styled.div(

@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/header.css'
 import Header from './Header'
 import HeaderNav from './HeaderNav'
 import LanguageButton from './LanguageButton'

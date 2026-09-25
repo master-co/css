@@ -1,5 +1,7 @@
 'use client'
 
+import '~/site/styles/demo-interactions.css'
+import '~/site/styles/demo.css'
 import { useEffect, useId, useRef, useState, type ReactNode } from 'react'
 import ResizeZone from '~/site/docs-shell/components/ResizeZone'
 import { DemoControls } from './primitives'

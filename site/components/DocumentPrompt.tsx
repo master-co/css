@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import DocumentCopyButton from './DocumentCopyButton'
 
 export interface DocumentPromptProps {

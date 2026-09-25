@@ -1,186 +1,150 @@
-@import './theme.css';
-@import './switch.css';
-@import './code.css';
-@import './docs.css';
-@import './prose.css';
-@import './scrollbar.css';
+@reference "../../app/globals.css";
 
 @layer components {
-  .hr {
-    @compose bb:1px|solid|var(--color-line-muted) my-2xl;
+.hr {
+    margin-block: var(--spacing-2xl);
+    border-bottom: 1px solid var(--color-line-muted);
   }
 
-  .segments {
-    @compose flex p:5px r-lg w:fit-content surface-muted;
+
+.accent {
+    background-color: var(--color-primary);
+    color: var(--color-text-primary);
   }
 
-  .segment {
-    @compose flex items-center justify-center r-sm px-sm font-weight:460 font-xs leading:1.375rem white-space:nowrap;
 
-    &.active {
-      @compose surface-raised shadow-xs outline:1px|solid|var(--color-line-subtle) text-strong;
-    }
+.app-sticky-th {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-surface-raised);
+    z-index: 1;
   }
 
-  .box {
-    @compose flex items-center justify-center b:1px|solid|var(--color-line-base) p:15px|20px r-md surface-raised text-strong font-sm text-center;
 
-    @dark {
-      @compose b-white/.05;
-    }
+.app-neutral {
+    color: var(--color-text-strong);
+    background-color: var(--color-float);
   }
 
-  .box-perspective-pink {
-    @compose b:1px|solid|var(--color-pink-70) r-md bg-pink-70/.1;
+
+.app-object {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    -webkit-text-decoration: none!important;
+    text-decoration: none!important;
+    outline: 1px solid var(--color-line-subtle);
+    background-color: var(--color-surface-raised);
+    outline-offset: 0;
   }
 
-  .demo-ground {
-    @compose bg-clip-padding flex items-center justify-center rel flex:1|1|auto flex-wrap;
-    contain: content;
-  }
 
-  .demo {
-    @compose bg-clip-padding flex items-center justify-center rel flex:1|1|auto flex-wrap;
-    contain: content;
-    @compose b:1px|solid|var(--color-line-subtle) r-lg;
-  }
-
-  .accent {
-    @compose bg-primary text-primary;
-  }
-
-  .app-sticky-th {
-    @compose sticky surface-raised top z:1;
-  }
-
-  .app-wrapper {
-    @compose mx:auto px:1.25rem;
-
-    @variant sm {
-      @compose px:2.5rem;
-    }
-  }
-
-  .app-demo {
-    @compose bg-clip-padding flex items-center justify-center rel flex:1|1|auto flex-wrap;
-    contain: content;
-    @compose p-xl;
-
-    @variant 3xs {
-      @compose p-2xl;
-    }
-  }
-
-  .app-neutral {
-    @compose background-color:var(--color-float) text-strong;
-  }
-
-  .app-object {
-    @compose inline-flex items-center justify-center outline:1px|solid|var(--color-line-subtle) text-decoration:none! surface-raised outline-offset:0;
-  }
-
-  .app-object-interactive {
-    @compose user-select:none;
+.app-object-interactive {
+    -webkit-user-select: none;
+    user-select: none;
 
     &:hover {
-      @compose text-strong;
+      color: var(--color-text-strong);
     }
 
     &:focus {
-      @compose outline:2px|solid|var(--color-focus)! outline-offset-4xs!;
+      outline: 2px solid var(--color-focus)!important;
+      outline-offset: var(--spacing-4xs)!important;
     }
 
     &.disabled {
-      @compose background-color:transparent! filter:grayscale(1);
+      background-color: transparent!important;
+      filter: grayscale(1);
     }
 
     @dark {
       &:hover {
-        @compose bg-gray-80;
+        background-color: var(--color-gray-80);
       }
     }
 
     @light {
       &:hover {
-        @compose bg-neutral-5;
+        background-color: var(--color-neutral-5);
       }
     }
   }
 
-  .app-panel {
-    @compose surface-raised shadow-sm;
+
+.app-panel {
+    background-color: var(--color-surface-raised);
+    box-shadow: var(--shadow-sm);
   }
 
-  .app-float {
-    @compose flex items-center justify-center p:15px|20px r:5px background-color:var(--color-float) shadow-sm;
+
+.app-float {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    padding: 15px 20px;
+    box-shadow: var(--shadow-sm);
+    background-color: var(--color-float);
   }
 
-  .app-nav {
-    @compose text-sm user-select:none;
+
+.app-nav {
+    font-size: var(--font-size-sm);
+    line-height: max(1.8em - max(0rem, var(--font-size-sm) - 1rem) * 1.12, var(--font-size-sm));
+    letter-spacing: clamp(-.072em, calc((var(--font-size-sm) - 1rem) * -.048), 0em);
+    -webkit-user-select: none;
+    user-select: none;
 
     &:disabled {
-      @compose text-disabled;
+      color: var(--color-text-disabled);
       cursor: not-allowed;
     }
 
     &:where(:hover, :active, .active) {
-      @compose text-strong;
+      color: var(--color-text-strong);
     }
   }
 
-  .app-box {
-    @compose flex items-center justify-center b:1px|solid|var(--color-line-base) p-xs r-md min:3rem surface-raised font-medium font-sm;
+
+.app-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-md);
+    padding: var(--spacing-xs);
+    border: 1px solid var(--color-line-base);
+    min-width: 3rem;
+    min-height: 3rem;
+    background-color: var(--color-surface-raised);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
   }
 
-  .app-icon {
-    @compose inline-flex fill-text-muted/.1 stroke-text-muted;
+
+.app-icon {
+    display: inline-flex;
+    fill: color-mix(in oklab,var(--color-text-muted) 10%,transparent);
+    stroke: var(--color-text-muted);
   }
 
-  .app-icon-primary {
-    @compose inline-flex fill-accent/.1 stroke-accent;
+
+.app-icon-primary {
+    display: inline-flex;
+    fill: color-mix(in oklab,var(--color-accent) 10%,transparent);
+    stroke: var(--color-accent);
   }
 
-  .app-icon-red {
-    @compose inline-flex fill-crimson-40/.1 stroke-crimson-40;
+
+.app-icon-red {
+    display: inline-flex;
+    fill: color-mix(in oklab,var(--color-crimson-40) 10%,transparent);
+    stroke: var(--color-crimson-40);
   }
 
-  .app-header-nav {
-    @compose text-sm user-select:none;
-    @compose flex items-center justify-center mx-md;
 
-    &:disabled {
-      @compose text-disabled;
-      cursor: not-allowed;
-    }
-
-    &:where(:hover, :active, .active) {
-      @compose text-strong;
-    }
-  }
-
-  .app-header-icon {
-    @compose flex items-center justify-center flex:0|0|auto text-muted h:48px min-w:48px;
-
-    &:hover {
-      @compose text-strong;
-    }
-  }
-
-  .app-subtitle {
-    @compose fg-accent font-weight:460 font-sm;
-  }
-}
-
-@layer defaults {
-  .demo-ground {
-    @compose background:var(--stripe);
-  }
-
-  .demo {
-    @compose background:var(--stripe);
-  }
-
-  .app-demo {
-    @compose background:var(--stripe);
+.app-subtitle {
+    color: var(--color-accent);
+    font-size: var(--font-size-sm);
+    font-weight: 460;
   }
 }

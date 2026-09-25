@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/segments.css'
 import { useState } from 'react'
 import clsx from 'clsx'
 

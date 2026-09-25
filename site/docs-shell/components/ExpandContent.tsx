@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/btn.css'
 import clsx from 'clsx'
 import { useState } from 'react'
 import { useTranslation } from '../contexts/i18n'

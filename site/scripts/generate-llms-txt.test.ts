@@ -157,7 +157,7 @@ test('configured recipes validate their full markup and retain actual token and 
   assert.match(configuredExampleCSS(spacing.source, configuredMarkupClasses(spacing.html)), /padding:var\(--spacing-card\)/)
   const layers = projectStyleExamples.layers
   const css = configuredExampleCSS(layers.source, configuredMarkupClasses(layers.html))
-  assert.match(css, /@layer components\{\.card\{/)
+  assert.match(css, /@layer components\s*\{\s*\.card\{/)
   assert.match(css, /@layer utilities\{/)
   assert.match(css, /\.p-sm\{padding:var\(--spacing-sm\)\}/)
   const modes = projectStyleExamples.modes

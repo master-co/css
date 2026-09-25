@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import { IconArrowUp } from '@tabler/icons-react'
 import Demo from './Demo'
 import DemoContainer from './DemoContainer'

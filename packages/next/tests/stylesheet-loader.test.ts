@@ -137,6 +137,40 @@ describe('Next style CSS loader', () => {
     expect(result.dependencies).toContain(tokenPath)
   })
 
+  it('lowers referenced mode directives in a locally imported stylesheet', async () => {
+    const root = createFixture()
+    const globalsPath = join(root, 'app/globals.css')
+    const localPath = join(root, 'app/local.css')
+    writeFileSync(globalsPath, '@import "@master/css";')
+
+    const result = await runStylesheetLoader(root, localPath, [
+      '@reference "./globals.css";',
+      '@layer components { .card { @dark { color: red; } } }'
+    ].join('\n'))
+
+    expect(result.content).toContain('.card')
+    expect(result.content).toContain('color:red')
+    expect(result.content).not.toContain('@reference')
+    expect(result.content).not.toContain('@dark')
+    expect(result.dependencies).toContain(globalsPath)
+  })
+
+  it('emits a theme variable used by native CSS in a referenced local stylesheet', async () => {
+    const root = createFixture()
+    const globalsPath = join(root, 'app/globals.css')
+    writeFileSync(globalsPath, '@master entry; @theme { --color-brand: #123456; }')
+
+    const result = await runStylesheetLoader(
+      root,
+      join(root, 'app/button.css'),
+      '@reference "./globals.css"; .button { color: var(--color-brand); }'
+    )
+
+    expect(result.content).toMatch(/color:\s*var\(--color-brand\)/)
+    expect(result.content).toContain('--color-brand:')
+    expect(result.content).not.toContain('@reference')
+  })
+
   it('emits referenced default theme variables for page-level CSS', async () => {
     const root = createFixture()
     const globalsPath = join(root, 'app/globals.css')

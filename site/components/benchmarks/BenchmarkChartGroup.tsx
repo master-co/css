@@ -1,3 +1,4 @@
+import '~/site/styles/benchmarks.css'
 import BenchmarkBars from './BenchmarkBars'
 import type { BenchmarkBarItem } from './types'
 import Translate from '~/site/docs-shell/components/Translate'

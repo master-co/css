@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/benchmarks.css'
 import { useId, type KeyboardEvent, type ReactNode } from 'react'
 
 /** Mobile WebKit does not consistently scroll a focused div with arrow keys. */

@@ -1,5 +1,7 @@
 'use client'
 
+import '~/site/styles/btn.css'
+import '~/site/styles/btn-yellow.css'
 import clsx from 'clsx'
 import Demo from '~/site/docs-shell/components/Demo'
 import Image from 'next/image'

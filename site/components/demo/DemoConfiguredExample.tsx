@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import Code from '~/site/docs-shell/components/Code'
 import Demo from './Demo'
 import DemoViewport from './DemoViewport'

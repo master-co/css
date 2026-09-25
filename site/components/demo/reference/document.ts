@@ -7,9 +7,9 @@ import preset from '../../../utils/preset-manifest'
 import type { DemoScene, ReferenceDemoSection } from './types'
 
 const siteRoot = path.basename(process.cwd()) === 'site' ? process.cwd() : path.join(process.cwd(), 'site')
-const tokenFile = path.join(siteRoot, 'styles/demo.css')
+const tokenFile = path.join(siteRoot, 'styles/demo-theme.css')
 const frameFile = path.join(siteRoot, 'components/demo/reference/frame.css')
-let tokens = readFileSync(tokenFile, 'utf8').split('@layer components')[0]
+let tokens = readFileSync(tokenFile, 'utf8')
 const frameCSS = readFileSync(frameFile, 'utf8')
 let shared = compileManifestSync(`@mode light { .light { @slot; } }\n@mode dark { .dark { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest
 
@@ -20,7 +20,7 @@ export function demoDocument(section: ReferenceDemoSection, scene: DemoScene) {
   // These files are read assets, so development HMR does not invalidate them.
   const developing = process.env.NODE_ENV === 'development'
   if (developing) {
-    const nextTokens = readFileSync(tokenFile, 'utf8').split('@layer components')[0]
+    const nextTokens = readFileSync(tokenFile, 'utf8')
     if (nextTokens !== tokens) {
       tokens = nextTokens
       shared = compileManifestSync(`@mode light { .light { @slot; } }\n@mode dark { .dark { @slot; } }\n${tokens}`, { baseManifest: preset }).manifest

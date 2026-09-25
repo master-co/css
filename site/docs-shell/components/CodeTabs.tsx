@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/code.css'
 
 
 import { toJsxRuntime } from 'hast-util-to-jsx-runtime'

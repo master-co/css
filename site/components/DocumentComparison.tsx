@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import type { ReactNode } from 'react'
 
 /** Opt-in wrapper for short, two-column Markdown comparisons in reading layouts. */

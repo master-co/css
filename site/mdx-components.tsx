@@ -45,32 +45,12 @@ import DeliveryFlow from './components/DeliveryFlow'
 import DocumentFileTree from './components/DocumentFileTree'
 import PackageTree from './components/PackageTree'
 import PackageAuthoringExample from './components/demo/PackageAuthoringExample'
-import {
-  BenchmarkBars,
-  BenchmarkChartGroup,
-  BenchmarkDataTable,
-  BenchmarkSource,
-  BenchmarkDelta,
-  BenchmarkFigure,
-  BenchmarkMetrics,
-  BenchmarkSampleSummary,
-  BenchmarkStackedBars
-} from './components/benchmarks'
 
 const Class2CSS = dynamic(() => import('./components/Class2CSS'))
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
   return {
     InstallationModeTabs,
-    BenchmarkBars,
-    BenchmarkChartGroup,
-    BenchmarkDataTable,
-    BenchmarkSource,
-    BenchmarkDelta,
-    BenchmarkFigure,
-    BenchmarkMetrics,
-    BenchmarkSampleSummary,
-    BenchmarkStackedBars,
     Class2CSS: (props: any) => <Class2CSS {...props} />,
     ...mdxComponents,
     ...demoComponents,

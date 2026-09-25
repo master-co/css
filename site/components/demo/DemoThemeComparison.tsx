@@ -1,3 +1,5 @@
+import '~/site/styles/demo-colors.css'
+import '~/site/styles/demo.css'
 import Demo from './Demo'
 import DemoViewport from './DemoViewport'
 import { DemoComparison, DemoLabel } from './primitives'

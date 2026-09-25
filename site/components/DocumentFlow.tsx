@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-index.css'
 export interface DocumentFlowStep {
   title: string
   description: string

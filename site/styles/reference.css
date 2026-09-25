@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 @layer components {
   .reference-document :is(h1, h2, h3) { overflow-wrap: anywhere; }
   .reference-document :is(h2, h3, tr, span)[id] { scroll-margin-top: 8rem; }

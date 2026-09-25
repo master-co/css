@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/demo.css'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 
 /** A dedicated measurement wrapper, never inserted between layout items and their parent. */

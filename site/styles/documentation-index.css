@@ -1,3 +1,5 @@
+@reference "../app/globals.css";
+
 @layer components {
   .doc-index { container-type: inline-size; margin-top: var(--spacing-xl); }
   .doc-index :is(h2, h3, p, ul) { margin: 0; }

@@ -1,3 +1,5 @@
+import '~/site/styles/demo-asset.css'
+import '~/site/styles/demo.css'
 import { IconDownload } from '@tabler/icons-react'
 import Demo from './Demo'
 import { DemoMedia } from './primitives'

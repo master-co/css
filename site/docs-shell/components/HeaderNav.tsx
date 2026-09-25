@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/header.css'
 import Link from './Link'
 import DocBadge from './DocBadge'
 import clsx from 'clsx'

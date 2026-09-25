@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-index.css'
 import type { ReactNode } from 'react'
 import Link from '~/site/docs-shell/components/Link'
 import { IconArrowRight } from '@tabler/icons-react'

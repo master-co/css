@@ -1,0 +1,16 @@
+@reference "../app/globals.css";
+
+@layer components {
+  .demo-asset-preview { display: grid; place-items: center; min-height: var(--demo-asset-preview-size); padding: var(--spacing-lg); }
+  .demo-asset-preview[data-surface="light"] { background: var(--color-demo-asset-light); }
+  .demo-asset-preview[data-surface="dark"] { background: var(--color-demo-asset-dark); }
+  .demo-asset-preview img { display: block; margin: 0; max-width: 100%; max-height: 6rem; width: auto; height: auto; }
+  .demo-asset-preview .demo-media { background: transparent; box-shadow: none; }
+  .demo-asset .demo-title { font-size: .875rem; line-height: 1.4; }
+  .demo-asset-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-sm); }
+  .demo-asset-format { display: inline-flex; align-items: center; min-height: 1.5rem; padding: .125rem .45rem; border: 1px solid var(--color-demo-line); border-radius: var(--radius-xs); color: var(--color-demo-muted); font: 600 .6875rem/1.3 var(--font-family-mono); letter-spacing: .04em; }
+  .demo-asset-footer a { display: inline-flex; align-items: center; gap: var(--spacing-xs); min-height: 2.75rem; padding: .5rem .75rem; border: 1px solid color-mix(in oklab, var(--color-demo-blue) 30%, var(--color-demo-line)); border-radius: var(--radius-sm); color: var(--color-demo-blue); font-size: .75rem; font-weight: 600; text-decoration: none; }
+  .demo-asset-footer a:hover { border-color: var(--color-demo-blue); background: color-mix(in oklab, var(--color-demo-blue) 7%, var(--color-demo-surface)); }
+  .demo-asset-footer a:focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+  .demo-asset-footer a svg { flex: none; }
+}

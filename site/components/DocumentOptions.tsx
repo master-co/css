@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import type { ReactNode } from 'react'
 
 export interface DocumentOption {

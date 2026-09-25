@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import type { ReactNode } from 'react'
 
 /** A native disclosure remains usable before JavaScript loads. */

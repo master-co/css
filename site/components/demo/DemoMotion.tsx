@@ -1,5 +1,7 @@
 'use client'
 
+import '~/site/styles/demo-interactions.css'
+import '~/site/styles/demo.css'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { IconPlayerPause, IconPlayerPlay, IconRefresh } from '@tabler/icons-react'
 import { DemoControls } from './primitives'

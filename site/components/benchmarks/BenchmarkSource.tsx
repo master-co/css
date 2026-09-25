@@ -1,3 +1,4 @@
+import '~/site/styles/benchmarks.css'
 import Translate from '~/site/docs-shell/components/Translate'
 
 export default function BenchmarkSource({ generatedAt, href, label = 'Committed snapshot' }: {

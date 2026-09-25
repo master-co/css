@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import type { ComponentPropsWithoutRef } from 'react'
 import clsx from 'clsx'
 

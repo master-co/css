@@ -1,23 +1,29 @@
+@reference "../../app/globals.css";
+
 @layer components {
   .scrollbar {
     &::scrollbar {
-      @compose size:0.25rem rounded bg-line-subtle;
+      border-radius: 1e9em;
+      width: 0.25rem;
+      height: 0.25rem;
+      background-color: var(--color-line-subtle);
     }
 
     &::-webkit-scrollbar-corner {
-      @compose background-color:transparent;
+      background-color: transparent;
     }
 
     &::scrollbar-thumb {
-      @compose rounded bg-line-subtle;
+      border-radius: 1e9em;
+      background-color: var(--color-line-subtle);
     }
 
     &::scrollbar-thumb:hover {
-      @compose bg-line-muted;
+      background-color: var(--color-line-muted);
     }
 
     &::scrollbar-thumb:active {
-      @compose bg-line-base;
+      background-color: var(--color-line-base);
     }
 
     @supports (-moz-appearance: none) {
@@ -27,15 +33,15 @@
 
   .scrollbar-concealed {
     &:not(:hover)::scrollbar {
-      @compose invisible;
+      visibility: hidden;
     }
 
     &:not(:hover)::scrollbar-thumb {
-      @compose invisible;
+      visibility: hidden;
     }
 
     &::scrollbar {
-      @compose background-color:transparent!;
+      background-color: transparent!important;
     }
   }
 }

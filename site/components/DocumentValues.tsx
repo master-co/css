@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import { createElement } from 'react'
 
 export interface DocumentValueRow {

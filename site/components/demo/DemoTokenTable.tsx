@@ -1,3 +1,4 @@
+import '~/site/styles/demo-colors.css'
 import type { ReactNode } from 'react'
 import InlineCode from '~/site/docs-shell/components/InlineCode'
 

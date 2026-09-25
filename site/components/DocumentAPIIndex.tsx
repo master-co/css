@@ -1,3 +1,4 @@
+import '~/site/styles/documentation-values.css'
 import Link from '~/site/docs-shell/components/Link'
 import { IconArrowUpRight } from '@tabler/icons-react'
 import DocumentIdentifier from './DocumentIdentifier'

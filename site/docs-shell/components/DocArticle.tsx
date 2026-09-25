@@ -1,3 +1,6 @@
+import '~/site/styles/docs-shell/demo.css'
+import '~/site/styles/docs-shell/docs.css'
+import '~/site/styles/docs-shell/prose.css'
 
 import clsx from 'clsx'
 

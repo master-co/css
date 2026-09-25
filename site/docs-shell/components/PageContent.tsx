@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/scrollbar.css'
 import ContentsSvg from '../../public/images/contents.svg'
 import { anchor } from '../utils/anchor'
 import Link from './Link'

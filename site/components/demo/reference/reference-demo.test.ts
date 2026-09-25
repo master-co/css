@@ -60,9 +60,10 @@ test('clear uses different float heights and real side-specific clearing', async
 
 test('new demo tokens are defined and specimens do not force layout on demo items', async () => {
   const css = await readFile(new URL('../../../styles/demo.css', import.meta.url), 'utf8')
+  const theme = await readFile(new URL('../../../styles/demo-theme.css', import.meta.url), 'utf8')
   const itemRule = css.match(/:where\(\.demo-item\)\s*\{([^}]+)\}/)![1]
   assert.doesNotMatch(itemRule, /(?:display|position|contain|overflow|width|height|padding)\s*:/)
   for (const token of ['canvas', 'surface', 'line', 'grid', 'text', 'muted', 'blue', 'violet', 'amber', 'neutral']) {
-    assert.equal([...css.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 2, token)
+    assert.equal([...theme.matchAll(new RegExp(`--color-demo-${token}:`, 'g'))].length, 2, token)
   }
 })

@@ -1,3 +1,4 @@
+import '~/site/styles/demo.css'
 import type { HTMLAttributes, ReactElement, ReactNode, SVGAttributes } from 'react'
 import Image, { type ImageProps as NextImageProps } from 'next/image'
 import clsx from 'clsx'

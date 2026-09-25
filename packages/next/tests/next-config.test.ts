@@ -105,6 +105,19 @@ function createMasterCSSRuntimeTestModule() {
 }
 
 describe('withMasterCSS', () => {
+  it('routes local CSS directives through the Turbopack stylesheet loader', () => {
+    const config = withMasterCSS({}, { mode: 'progressive' }) as any
+    const rules = config.turbopack.rules['*'] as { condition?: { all?: { content?: RegExp }[] }; loaders?: { loader: string }[] }[]
+    const styleRule = rules.find(rule => rule.loaders?.some(loader => typeof loader.loader === 'string' && loader.loader.endsWith('/stylesheet-loader.js')))
+    const pattern = styleRule?.condition?.all?.find(condition => condition.content)?.content
+
+    expect(pattern).toBeInstanceOf(RegExp)
+    for (const directive of ['@reference "./globals.css";', '@variant sm {}', '@light {}', '@dark {}']) {
+      expect(pattern!.test(directive)).toBe(true)
+    }
+    expect(pattern!.test('.card { color: red; }')).toBe(false)
+  })
+
   it('sets the Next adapter path and registers options', () => {
     const nextConfig = withMasterCSS({ reactStrictMode: true }, { mode: 'progressive', buildReport: 'master-css.json' })
 

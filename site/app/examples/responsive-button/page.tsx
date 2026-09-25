@@ -1,3 +1,5 @@
+import '~/site/styles/btn.css'
+import '~/site/styles/btn-yellow.css'
 export const dynamic = 'force-static'
 export const revalidate = false
 

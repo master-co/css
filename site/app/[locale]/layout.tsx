@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/main.css'
 import i18n from '~/site/docs-shell/common/i18n.config.js'
 import RootClient from '../root'
 import { importTranslations } from '~/site/docs-shell/utils/i18n'

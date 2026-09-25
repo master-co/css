@@ -1,0 +1,12 @@
+@reference "../app/globals.css";
+
+@layer components {
+  .demo-feature-support { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: .5rem 1rem; padding: .625rem .75rem; border: 1px solid var(--color-demo-line); border-radius: var(--radius-xs); background: var(--color-demo-surface); color: var(--color-demo-muted); font-size: .75rem; }
+  .demo-feature-support code { overflow-wrap: anywhere; font-family: var(--font-family-mono); font-size: .75rem; color: var(--color-text-strong); }
+  .demo-feature-support span { display: inline-flex; align-items: center; gap: .5rem; margin-left: 0; color: var(--color-demo-muted); font-weight: 550; }
+  .demo-feature-support span::before { content: ''; flex: none; width: .4375rem; height: .4375rem; border-radius: 50%; background: var(--color-demo-muted); }
+  .demo-feature-support[data-supported="true"] span::before { background: var(--color-demo-blue); }
+  @media (width < 40rem) {
+    .demo-feature-support { grid-template-columns: minmax(0, 1fr); }
+  }
+}

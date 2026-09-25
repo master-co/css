@@ -1,3 +1,5 @@
+@reference "../../app/globals.css";
+
 @layer components {
   .monaco-editor {
     --vscode-editor-background: transparent !important;
@@ -5,160 +7,212 @@
     --vscode-focusBorder: transparent !important;
 
     .mtku {
-      @compose text-decoration:none!;
+      -webkit-text-decoration: none!important;
+      text-decoration: none!important;
     }
   }
 
   .shiki {
-    @compose rel z:0;
+    position: relative;
+    z-index: 0;
 
     &.has-focused .line {
-      @compose transition:filter|.2s;
+      transition: filter .2s;
       will-change: filter;
     }
 
     &.has-focused:not(:hover) .line:not(.focus) {
-      @compose filter:blur(3px);
+      filter: blur(3px);
     }
   }
 
   .code {
-    @compose flex flex-col;
+    display: flex;
+    flex-direction: column;
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
   }
 
   .code-wrapper {
-    @compose rel flex:1|1|auto overflow:auto p:1rem|0 r-lg surface-muted leading:20px white-space:nowrap;
+    position: relative;
+    border-radius: var(--radius-lg);
+    flex: 1 1 auto;
+    overflow: auto;
+    padding: 1rem 0;
+    white-space: nowrap;
+    background-color: var(--color-surface-muted);
+    line-height: 20px;
     counter-reset: line;
     hyphens: none;
     font-size: 13px;
 
     &:before {
-      @compose abs left top h:100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
       content: '';
     }
 
     .silence {
-      @compose text-muted!;
+      color: var(--color-text-muted)!important;
       contain: strict;
     }
 
     del {
-      @compose fg:inherit!;
+      color: inherit!important;
     }
 
     .silence * {
-      @compose text-muted!;
+      color: var(--color-text-muted)!important;
     }
   }
 
   .code-block {
-    @compose block font-size:inherit font-regular leading:inherit min-w:100% w:max-content white-space:pre word-spacing:normal;
+    display: block;
+    white-space: pre;
+    font-weight: var(--font-weight-regular);
+    font-size: inherit;
+    line-height: inherit;
+    min-width: 100%;
+    width: max-content;
+    word-spacing: normal;
     word-break: normal;
 
     &::before,
     &::after {
-      @compose content:none;
+      content: none;
     }
   }
 
   .code-bar {
-    @compose flex surface-muted font-xs;
+    display: flex;
+    background-color: var(--color-surface-muted);
+    font-size: var(--font-size-xs);
   }
 
   .code-line-add {
-    @compose block border-left-width:2px pl:calc(1.25rem-2px) text-success;
+    display: block;
+    color: var(--color-text-success);
+    border-left-width: 2px;
+    padding-left: calc(1.25rem - 2px);
 
     &:not(:only-child):before {
       content: '+' !important;
     }
 
     &::before {
-      @compose text-success!;
+      color: var(--color-text-success)!important;
     }
 
     @light {
-      @compose bg-beryl-0;
+      background-color: var(--color-beryl-0);
     }
 
     @dark {
-      @compose bg-beryl-50/.1;
+      background-color: color-mix(in oklab,var(--color-beryl-50) 10%,transparent);
     }
   }
 
   .code-line-remove {
-    @compose block border-left-width:2px pl:calc(1.25rem-2px) text-danger;
+    display: block;
+    color: var(--color-text-danger);
+    border-left-width: 2px;
+    padding-left: calc(1.25rem - 2px);
 
     &:not(:only-child):before {
       content: '-' !important;
     }
 
     &::before {
-      @compose text-danger!;
+      color: var(--color-text-danger)!important;
     }
 
     @light {
-      @compose bg-crimson-0;
+      background-color: var(--color-crimson-0);
     }
 
     @dark {
-      @compose bg-crimson-50/.1;
+      background-color: color-mix(in oklab,var(--color-crimson-50) 10%,transparent);
     }
   }
 
   .code-line-active {
-    @compose block;
+    display: block;
 
     @dark {
-      @compose bg-gray-80;
+      background-color: var(--color-gray-80);
     }
 
     @light {
-      @compose bg-neutral-5;
+      background-color: var(--color-neutral-5);
     }
   }
 
   .line {
-    @compose block px:1.25rem;
+    display: block;
+    padding-inline: 1.25rem;
 
     &:not(:only-child):before {
-      @compose inline-block pr-md text-right ml:-5px text-disabled w:30px font-size:80%;
+      display: inline-block;
+      text-align: right;
+      color: var(--color-text-disabled);
+      padding-right: var(--spacing-md);
+      font-size: 80%;
+      margin-left: -5px;
+      width: 30px;
       content: counter(line);
       counter-increment: line;
     }
   }
 
   .mark {
-    @compose box-decoration-break:clone m:-2px|0 p:2px|0 r-sm;
+    border-radius: var(--radius-sm);
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    margin: -2px 0;
+    padding: 2px 0;
 
     &:has(+ .mark) {
-      @compose rtr:0px rbr:0px;
+      border-bottom-right-radius: 0px;
+      border-top-right-radius: 0px;
     }
 
     & + .mark {
-      @compose rtl:0px rbl:0px;
+      border-bottom-left-radius: 0px;
+      border-top-left-radius: 0px;
     }
 
     @dark {
-      @compose fg:var(--shiki-dark);
+      color: var(--shiki-dark);
     }
 
     @light {
-      @compose fg:var(--shiki-light) bg-neutral-10;
+      background-color: var(--color-neutral-10);
+      color: var(--shiki-light);
     }
   }
 
   .code-mark-warn {
-    @compose background-color:transparent! text-decoration:underline|var(--color-text-yellow)|wavy|1px text-underline-offset:2px;
+    -webkit-text-decoration: underline var(--color-text-yellow) wavy 1px;
+    text-decoration: underline var(--color-text-yellow) wavy 1px;
+    background-color: transparent!important;
+    text-underline-offset: 2px;
   }
 
   .code-mark-error {
-    @compose background-color:transparent! text-decoration:underline|var(--color-text-red)|wavy|1px text-underline-offset:2px;
+    -webkit-text-decoration: underline var(--color-text-red) wavy 1px;
+    text-decoration: underline var(--color-text-red) wavy 1px;
+    background-color: transparent!important;
+    text-underline-offset: 2px;
   }
 
   .flash {
-    @compose animation:flash|1s|forwards|ease-in m:-2px|-3px outline:1px|solid|transparent p:2px|3px r-sm;
+    border-radius: var(--radius-sm);
+    animation: flash 1s forwards ease-in;
+    margin: -2px -3px;
+    outline: 1px solid transparent;
+    padding: 2px 3px;
     contain: strict;
   }
 }
@@ -211,13 +265,13 @@
   .shiki {
     @dark {
       span {
-        @compose fg:var(--shiki-dark);
+        color: var(--shiki-dark);
       }
     }
 
     @light {
       span {
-        @compose fg:var(--shiki-light);
+        color: var(--shiki-light);
       }
     }
   }

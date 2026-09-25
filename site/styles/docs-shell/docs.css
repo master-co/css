@@ -1,26 +1,31 @@
+@reference "../../app/globals.css";
+
 @layer components {
   .doc-card {
-    @compose p-xl surface-raised shadow-lg w:100%;
+    padding: var(--spacing-xl);
+    background-color: var(--color-surface-raised);
+    box-shadow: var(--shadow-lg);
+    width: 100%;
   }
 
   .doc-table {
-    @compose bb:1px|solid|var(--color-line-muted);
+    border-bottom: 1px solid var(--color-line-muted);
     overflow-x: auto;
 
     :is(tbody tr:last th, tbody tr:last td) {
-      @compose border-bottom-width:0px!;
+      border-bottom-width: 0px!important;
     }
 
     :is(thead th) {
-      @compose white-space:nowrap;
+      white-space: nowrap;
     }
 
     :is(td, th) p {
-      @compose m:0;
+      margin: 0;
     }
 
     td p code {
-      @compose font-size:85%;
+      font-size: 85%;
     }
 
     :is(tr, th, td, tbody, thead) {
@@ -33,10 +38,11 @@
   }
 
   .doc-pure-list {
-    @compose list-style:none pl:0;
+    list-style: none;
+    padding-left: 0;
 
     li {
-      @compose pl:0;
+      padding-left: 0;
     }
   }
 }

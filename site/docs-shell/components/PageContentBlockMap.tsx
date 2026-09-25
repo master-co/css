@@ -1,5 +1,6 @@
 'use client'
 
+import '~/site/styles/docs-shell/scrollbar.css'
 import clsx from 'clsx'
 import { useTranslation } from '../contexts/i18n'
 import { anchor } from '../utils/anchor'

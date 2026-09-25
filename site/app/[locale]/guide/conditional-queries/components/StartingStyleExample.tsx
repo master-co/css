@@ -1,3 +1,5 @@
+import '~/site/styles/btn.css'
+import '~/site/styles/btn-yellow.css'
 import Demo from '~/site/docs-shell/components/Demo'
 
 export default () => <>

@@ -1,3 +1,4 @@
+import '~/site/styles/docs-shell/code.css'
 
 
 import { HTMLAttributes } from 'react'

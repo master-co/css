@@ -20,7 +20,7 @@
 .item { display: grid; flex: 1 1 0; min-width: 0; min-height: 4rem; place-items: center; font: 600 .75rem/1 var(--font-family-mono); }
 .previousAxes { display: grid; grid-template-columns: 1.5rem minmax(0, 1fr); gap: var(--spacing-xs); width: 100%; min-width: 0; }
 .previousInline, .previousBlock { color: var(--color-demo-muted); font-family: var(--font-mono), monospace; font-size: .625rem; }
-.previousInline { grid-column: 2; display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-demo-line); padding-bottom: var(--spacing-3xs); }
+.previousInline { grid-column: 2; display: flex; justify-content: space-between; border-bottom: 1px solid var(--color-demo-line); padding-bottom: var(--spacing-review-detail); }
 .previousBlock { writing-mode: vertical-rl; display: flex; justify-content: space-between; border-right: 1px solid var(--color-demo-line); }
 .sectionHeading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: .75rem 2rem; }
 .sectionHeading p { margin: 0 0 1rem; color: var(--color-text-muted); font-size: .8125rem; }
